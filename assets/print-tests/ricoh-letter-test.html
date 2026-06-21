@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ricoh Letter Print Certification Test</title>
+  <style>
+    @page {
+      size: Letter;
+      margin: 0.5in;
+    }
+
+    :root {
+      color: #111827;
+      font-family: Arial, Helvetica, sans-serif;
+      line-height: 1.45;
+    }
+
+    body {
+      margin: 0;
+      background: #f3f4f6;
+    }
+
+    main,
+    .answer-key {
+      box-sizing: border-box;
+      width: 8.5in;
+      min-height: 11in;
+      margin: 0 auto 24px;
+      padding: 0.5in;
+      background: white;
+    }
+
+    .safe-area {
+      border: 2px dashed #2563eb;
+      padding: 0.25in;
+      min-height: 9.5in;
+    }
+
+    h1,
+    h2 {
+      margin-top: 0;
+    }
+
+    .instructions,
+    .question-block,
+    .answer-block {
+      break-inside: avoid;
+      page-break-inside: avoid;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      margin: 18px 0;
+      padding: 14px;
+    }
+
+    .question-block h3,
+    .answer-block h3 {
+      margin-top: 0;
+    }
+
+    .answer-key {
+      break-before: page;
+      page-break-before: always;
+    }
+
+    @media print {
+      body {
+        background: white;
+      }
+
+      main,
+      .answer-key {
+        width: auto;
+        min-height: auto;
+        margin: 0;
+        padding: 0;
+      }
+
+      .safe-area {
+        min-height: 9.5in;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <section class="safe-area" aria-label="Visible safe print area">
+      <h1>Ricoh Letter Print Certification Test</h1>
+      <section class="instructions">
+        <h2>Target Print Path</h2>
+        <ol>
+          <li>Open this file in a Mac browser.</li>
+          <li>Press Command-P.</li>
+          <li>Use default margins and default scale.</li>
+          <li>Print on the wireless Ricoh printer over school WiFi.</li>
+          <li>Use US Letter paper.</li>
+        </ol>
+      </section>
+
+      <p>This standalone page verifies that printable Teacher OS outputs fit safely on US Letter paper, avoid horizontal overflow, preserve logical page breaks, and include an answer key on a separate page.</p>
+
+      <section class="question-block">
+        <h3>Question 1</h3>
+        <p>Read the sample paragraph. Underline the sentence that states the main idea.</p>
+        <p>The class prepared for science lab by checking goggles, notebooks, and pencils. Each student followed directions carefully so the experiment could begin safely.</p>
+      </section>
+
+      <section class="question-block">
+        <h3>Question 2</h3>
+        <p>Write one complete sentence explaining why clear directions matter during a classroom activity.</p>
+        <p>Answer: ________________________________________________________________</p>
+      </section>
+
+      <section class="question-block">
+        <h3>Question 3</h3>
+        <p>Circle the best answer: Which tool would a student most likely use to record observations?</p>
+        <ol type="A">
+          <li>Notebook</li>
+          <li>Lunchbox</li>
+          <li>Backpack</li>
+          <li>Jacket</li>
+        </ol>
+      </section>
+    </section>
+  </main>
+
+  <section class="answer-key">
+    <div class="safe-area">
+      <h2>Answer Key</h2>
+      <section class="answer-block">
+        <h3>Question 1</h3>
+        <p>Main idea sentence: Each student followed directions carefully so the experiment could begin safely.</p>
+      </section>
+      <section class="answer-block">
+        <h3>Question 2</h3>
+        <p>Sample answer: Clear directions matter because they help students work safely and understand what to do.</p>
+      </section>
+      <section class="answer-block">
+        <h3>Question 3</h3>
+        <p>A. Notebook</p>
+      </section>
+    </div>
+  </section>
+</body>
+</html>

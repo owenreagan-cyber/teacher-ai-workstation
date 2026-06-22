@@ -33,9 +33,13 @@ defaults write com.apple.desktopservices DSDontWriteUSBStores -bool true
 # Disable automatic text substitutions because smart quotes, smart dashes,
 # autocorrect, and autocapitalization interfere with code, Markdown, shell
 # commands, and prompts.
+echo "Disabling smart quotes because they can break code and shell commands..."
 defaults write NSGlobalDomain NSAutomaticQuoteSubstitutionEnabled -bool false
+echo "Disabling smart dashes because they can break CLI flags..."
 defaults write NSGlobalDomain NSAutomaticDashSubstitutionEnabled -bool false
+echo "Disabling autocorrect because it can damage prompts, Markdown, and commands..."
 defaults write NSGlobalDomain NSAutomaticSpellingCorrectionEnabled -bool false
+echo "Disabling autocapitalization because it can damage prompts, Markdown, and commands..."
 defaults write NSGlobalDomain NSAutomaticCapitalizationEnabled -bool false
 
 killall Finder >/dev/null 2>&1 || true

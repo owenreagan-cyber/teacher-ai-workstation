@@ -21,6 +21,10 @@
 - The workstation is MacBook-first.
 - The AI strategy is local-first, with hybrid AI later.
 - Local tools should support later teacher workflows without requiring cloud databases on Day 1.
+- Terminal environment uses zsh with Starship, Zoxide, Atuin, Eza, Bat, FZF, Ripgrep, UV, LLM, and Fabric.
+- Local AI memory is shared unified memory.
+- Avoid running multiple large models in Ollama and LM Studio at the same time.
+- Use `aiflush` before heavy coding/model switching if memory pressure is high.
 
 ## Phase 0 boundary
 

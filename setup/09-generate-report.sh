@@ -40,7 +40,7 @@ architecture="$(uname -m)"
   echo "- Scope: automated Phase 0A Day 1 setup report only"
   echo
   echo "## Installed apps summary"
-  for app in brew git gh node python3 ollama dockutil; do
+  for app in brew git gh node python3 ollama dockutil starship zoxide atuin eza bat fzf rg uv llm fabric; do
     if command -v "${app}" >/dev/null 2>&1; then
       echo "- PASS: ${app} found"
     else
@@ -64,6 +64,7 @@ architecture="$(uname -m)"
   echo "- Fast keyboard repeat and tap-to-click requested"
   echo "- .DS_Store prevention on network and USB volumes requested"
   echo "- Smart quotes, smart dashes, autocorrect, and autocapitalization disabled for code, Markdown, shell commands, and prompts"
+  echo "- Teacher AI Workstation managed zsh block requested in ~/.zshrc"
   echo
   echo "## GitHub status"
   echo "- ${github_status}"
@@ -74,6 +75,7 @@ architecture="$(uname -m)"
   echo
   echo "## Manual steps remaining"
   echo "- Complete Focus Modes, widgets, browser profiles, Raycast preferences, Obsidian vault setup, 1Password sign-in, AlDente preferences, iPad/iPhone Focus sync, and Ricoh physical printing."
+  echo "- Review docs/backup-exclusions.md before applying Time Machine or cloud backup exclusions."
   echo "- Complete docs/day-1-manual-steps.md, restart once, then rerun bash setup/99-verify-setup.sh."
   echo
   echo "## Optional failures"

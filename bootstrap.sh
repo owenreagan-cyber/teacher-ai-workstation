@@ -41,11 +41,8 @@ setup_scripts=(
   "setup/07-git-github.sh"
   "setup/08-local-ai.sh"
   "setup/09-generate-report.sh"
+  "setup/10-shell-profile.sh"
 )
-
-if [[ -f "setup/10-shell-profile.sh" ]]; then
-  setup_scripts+=("setup/10-shell-profile.sh")
-fi
 
 setup_scripts+=("setup/99-verify-setup.sh")
 
@@ -54,5 +51,7 @@ for script in "${setup_scripts[@]}"; do
 done
 
 log ""
-log "🎉 Phase 0 setup finished. Review any WARN messages above, complete the manual checklist, restart once, then rerun: bash setup/99-verify-setup.sh"
+log "🎉 Phase 0 setup finished. Review any WARN messages above."
+log "Shell enhancements may require opening a new Terminal window, or running: source ~/.zshrc"
+log "Complete the manual checklist, restart once, then rerun final verification: bash setup/99-verify-setup.sh"
 log "Remember: automated verification is not final manual certification."

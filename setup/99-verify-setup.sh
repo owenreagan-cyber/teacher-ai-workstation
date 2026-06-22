@@ -4,6 +4,9 @@ set -euo pipefail
 export PATH="/opt/homebrew/bin:${PATH}"
 EXPECTED_HTTPS="https://github.com/owenreagan-cyber/teacher-ai-workstation.git"
 EXPECTED_SSH="git@github.com:owenreagan-cyber/teacher-ai-workstation.git"
+ZSHRC="${HOME}/.zshrc"
+START_MARKER="# >>> teacher-ai-workstation >>>"
+END_MARKER="# <<< teacher-ai-workstation <<<"
 failure_count=0
 
 pass() { echo "PASS: $1"; }
@@ -23,6 +26,23 @@ check_command() {
   fi
 }
 
+check_default_false() {
+  local domain="$1"
+  local key="$2"
+  local label="$3"
+  local value=""
+
+  value="$(defaults read "${domain}" "${key}" 2>/dev/null || true)"
+  case "${value}" in
+    0|false|FALSE)
+      pass "${label} is disabled."
+      ;;
+    *)
+      fail "${label} is not disabled."
+      ;;
+  esac
+}
+
 echo "Verifying Teacher AI Workstation Phase 0 setup..."
 echo "This verifies scriptable setup only."
 echo "It is not final manual certification."
@@ -34,6 +54,16 @@ check_command gh
 check_command node
 check_command python3 "Python 3"
 check_command ollama
+check_command starship
+check_command zoxide
+check_command atuin
+check_command eza
+check_command bat
+check_command fzf
+check_command rg "ripgrep"
+check_command uv
+check_command llm
+check_command fabric
 
 if command -v dockutil >/dev/null 2>&1; then
   pass "dockutil is installed."
@@ -92,6 +122,23 @@ else
   warn "Ollama CLI is missing, so the service could not be checked."
 fi
 
+if [[ -f "${ZSHRC}" ]]; then
+  pass "~/.zshrc exists."
+else
+  fail "~/.zshrc is missing."
+fi
+
+if [[ -f "${ZSHRC}" ]] && grep -qF "${START_MARKER}" "${ZSHRC}" && grep -qF "${END_MARKER}" "${ZSHRC}"; then
+  pass "~/.zshrc contains the teacher-ai-workstation managed block."
+else
+  fail "~/.zshrc does not contain the teacher-ai-workstation managed block."
+fi
+
+check_default_false NSGlobalDomain NSAutomaticQuoteSubstitutionEnabled "Smart quote substitution"
+check_default_false NSGlobalDomain NSAutomaticDashSubstitutionEnabled "Smart dash substitution"
+check_default_false NSGlobalDomain NSAutomaticSpellingCorrectionEnabled "Autocorrect"
+check_default_false NSGlobalDomain NSAutomaticCapitalizationEnabled "Autocapitalization"
+
 echo
 echo "Human-verified Day 1 items:"
 warn "Focus Modes, widgets, browser profiles, Raycast preferences, Obsidian vault setup, 1Password sign-in, AlDente preferences, iPad/iPhone Focus sync, and Ricoh physical printing are human-verified."
@@ -99,7 +146,7 @@ echo "Complete docs/day-1-manual-steps.md, restart once, then rerun: bash setup/
 
 if (( failure_count > 0 )); then
   echo
-  fail "Automated verification found ${failure_count} critical item(s)."
+  echo "FAIL: Automated verification found ${failure_count} critical item(s)."
   echo "Fix the FAIL items above, then rerun: bash setup/99-verify-setup.sh"
   exit 1
 fi

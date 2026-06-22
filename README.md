@@ -76,6 +76,7 @@ The bootstrap script runs the setup scripts in order:
 - `setup/07-git-github.sh`: helps configure Git and GitHub basics without adding secrets.
 - `setup/08-local-ai.sh`: checks Ollama and asks before any model download.
 - `setup/09-generate-report.sh`: writes a local setup report.
+- `setup/10-shell-profile.sh`: activates safe zsh terminal enhancements in `~/.zshrc`.
 - `setup/99-verify-setup.sh`: verifies scriptable setup only.
 
 Logs are written to `logs/setup.log`.
@@ -101,6 +102,26 @@ Then rerun:
 `setup/99-verify-setup.sh` is automated verification only. It is not final manual certification.
 
 Focus Modes, widgets, browser profiles, Raycast preferences, Obsidian vault setup, 1Password sign-in, AlDente preferences, iPad/iPhone Focus sync, and Ricoh physical printing must be checked by a human in `docs/day-1-manual-steps.md`.
+
+## Shell profile and terminal enhancements
+
+Phase 0 installs modern CLI tools including Starship, Zoxide, Atuin, Eza, Bat, FZF, Ripgrep, UV, LLM, and Fabric.
+
+`setup/10-shell-profile.sh` activates them in `~/.zshrc` using a clearly marked managed block. It is safe to rerun and does not delete personal shell customizations outside that block.
+
+After bootstrap finishes, open a new Terminal window or run:
+
+```bash
+source ~/.zshrc
+```
+
+## FileVault and backups
+
+Enable FileVault during Apple setup.
+
+For a privacy-focused local-first workstation, prefer generating a local FileVault recovery key and storing it securely in 1Password or another trusted password manager. Do not lose this key.
+
+Review `docs/backup-exclusions.md` before setting up Time Machine or cloud backup exclusions.
 
 ## Phase 0A Completion Checklist
 

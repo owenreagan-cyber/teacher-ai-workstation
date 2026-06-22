@@ -13,6 +13,9 @@ brew "ripgrep"
 brew "bat"
 brew "eza"
 brew "ollama"
+brew "llm"
+brew "fabric"
+brew "atuin"
 
 cask "cursor"
 cask "ghostty"
@@ -27,3 +30,8 @@ cask "iina"
 cask "aldente"
 cask "1password"
 cask "font-fira-code-nerd-font"
+
+# Optional paid/manual apps:
+# CleanShot X is useful but paid; do not require it for Day 1.
+# Backblaze and Carbon Copy Cloner are useful later; do not install them by default.
+# Discord and Spotify are optional personal apps; do not install them by default unless already present.

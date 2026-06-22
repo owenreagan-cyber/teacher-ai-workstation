@@ -4,27 +4,35 @@ set -euo pipefail
 export PATH="/opt/homebrew/bin:${PATH}"
 EXPECTED_HTTPS="https://github.com/owenreagan-cyber/teacher-ai-workstation.git"
 EXPECTED_SSH="git@github.com:owenreagan-cyber/teacher-ai-workstation.git"
+failure_count=0
 
 pass() { echo "PASS: $1"; }
 warn() { echo "WARN: $1"; }
-fail() { echo "FAIL: $1"; }
+fail() {
+  echo "FAIL: $1"
+  failure_count=$((failure_count + 1))
+}
 
 check_command() {
   local name="$1"
+  local label="${2:-$1}"
   if command -v "${name}" >/dev/null 2>&1; then
-    pass "${name} is installed."
+    pass "${label} is installed."
   else
-    fail "${name} is missing."
+    fail "${label} is missing."
   fi
 }
 
 echo "Verifying Teacher AI Workstation Phase 0 setup..."
+echo "This verifies scriptable setup only."
+echo "It is not final manual certification."
+echo
 
 check_command brew
 check_command git
 check_command gh
 check_command node
-check_command python
+check_command python3 "Python 3"
 check_command ollama
 
 if command -v dockutil >/dev/null 2>&1; then
@@ -83,3 +91,18 @@ if command -v ollama >/dev/null 2>&1; then
 else
   warn "Ollama CLI is missing, so the service could not be checked."
 fi
+
+echo
+echo "Human-verified Day 1 items:"
+warn "Focus Modes, widgets, browser profiles, Raycast preferences, Obsidian vault setup, 1Password sign-in, AlDente preferences, iPad/iPhone Focus sync, and Ricoh physical printing are human-verified."
+echo "Complete docs/day-1-manual-steps.md, restart once, then rerun: bash setup/99-verify-setup.sh"
+
+if (( failure_count > 0 )); then
+  echo
+  fail "Automated verification found ${failure_count} critical item(s)."
+  echo "Fix the FAIL items above, then rerun: bash setup/99-verify-setup.sh"
+  exit 1
+fi
+
+echo
+pass "Automated verification completed without critical FAIL items."

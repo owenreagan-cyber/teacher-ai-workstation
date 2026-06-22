@@ -27,19 +27,32 @@ run_step() {
 
 log "Welcome to the Teacher AI Workstation Phase 0 setup."
 log "We will check your Mac, install tools, apply helpful settings, create folders, and verify the result."
+log "The final verification step checks automated setup only. Manual Day 1 items stay in docs/day-1-manual-steps.md."
 log "A full log will be saved to ${LOG_FILE}."
 
-run_step "setup/00-check-system.sh"
-run_step "setup/01-install-homebrew.sh"
-run_step "setup/02-install-apps.sh"
-run_step "setup/03-macos-defaults.sh"
-run_step "setup/04-folder-structure.sh"
-run_step "setup/05-dock-layout.sh"
-run_step "setup/06-wallpapers.sh"
-run_step "setup/07-git-github.sh"
-run_step "setup/08-local-ai.sh"
-run_step "setup/09-generate-report.sh"
-run_step "setup/99-verify-setup.sh"
+setup_scripts=(
+  "setup/00-check-system.sh"
+  "setup/01-install-homebrew.sh"
+  "setup/02-install-apps.sh"
+  "setup/03-macos-defaults.sh"
+  "setup/04-folder-structure.sh"
+  "setup/05-dock-layout.sh"
+  "setup/06-wallpapers.sh"
+  "setup/07-git-github.sh"
+  "setup/08-local-ai.sh"
+  "setup/09-generate-report.sh"
+)
+
+if [[ -f "setup/10-shell-profile.sh" ]]; then
+  setup_scripts+=("setup/10-shell-profile.sh")
+fi
+
+setup_scripts+=("setup/99-verify-setup.sh")
+
+for script in "${setup_scripts[@]}"; do
+  run_step "${script}"
+done
 
 log ""
-log "🎉 Phase 0 setup finished. Review any WARN messages above, then continue when ready."
+log "🎉 Phase 0 setup finished. Review any WARN messages above, complete the manual checklist, restart once, then rerun: bash setup/99-verify-setup.sh"
+log "Remember: automated verification is not final manual certification."

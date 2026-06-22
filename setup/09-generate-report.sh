@@ -37,9 +37,10 @@ architecture="$(uname -m)"
   echo "- Date/time: $(date)"
   echo "- macOS version: ${macos_version}"
   echo "- Machine architecture: ${architecture}"
+  echo "- Scope: automated Phase 0A Day 1 setup report only"
   echo
   echo "## Installed apps summary"
-  for app in brew git gh node python ollama dockutil; do
+  for app in brew git gh node python3 ollama dockutil; do
     if command -v "${app}" >/dev/null 2>&1; then
       echo "- PASS: ${app} found"
     else
@@ -57,11 +58,12 @@ architecture="$(uname -m)"
   done
   echo
   echo "## Settings applied"
-  echo "- Finder file extensions, path bar, and status bar requested"
+  echo "- Finder file extensions, hidden files, path bar, status bar, and folders-on-top requested"
   echo "- Dock autohide, Dock tile size, and hidden recent apps requested"
   echo "- Screenshot location requested: ${HOME}/Screenshots"
   echo "- Fast keyboard repeat and tap-to-click requested"
   echo "- .DS_Store prevention on network and USB volumes requested"
+  echo "- Smart quotes, smart dashes, autocorrect, and autocapitalization disabled for code, Markdown, shell commands, and prompts"
   echo
   echo "## GitHub status"
   echo "- ${github_status}"
@@ -71,7 +73,8 @@ architecture="$(uname -m)"
   echo "- ${ollama_status}"
   echo
   echo "## Manual steps remaining"
-  echo "- Complete Focus modes, browser profiles, widgets, Raycast preferences, Obsidian vault, 1Password, AlDente, iPad/iPhone Focus sync, and Ricoh printer certification."
+  echo "- Complete Focus Modes, widgets, browser profiles, Raycast preferences, Obsidian vault setup, 1Password sign-in, AlDente preferences, iPad/iPhone Focus sync, and Ricoh physical printing."
+  echo "- Complete docs/day-1-manual-steps.md, restart once, then rerun bash setup/99-verify-setup.sh."
   echo
   echo "## Optional failures"
   echo "- Review logs/setup.log for WARN messages from optional apps, GitHub authentication, Dock items, wallpaper setup, or Ollama model pulls."

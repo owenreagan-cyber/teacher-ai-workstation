@@ -37,3 +37,15 @@ Each month, review:
 ## Safety reminder
 
 Training should make the assistant more teachable before making it more powerful.
+
+## Training with the Phase 1B CLI
+
+Use the CLI to train the assistant safely:
+
+- Run `bin/chief-of-staff --workflow request-training-materials --question "What should I give you first?"`.
+- Add approved writing samples manually after anonymization and review.
+- Run `--dry-run` before real model calls.
+- Use `--show-context` to confirm exactly what files are included.
+- Use `--status` to debug setup.
+- Run `assistant/training/eval-prompts.md` after context changes.
+- Update `assistant/training/feedback-log.md` after outputs are used, edited, or rejected.

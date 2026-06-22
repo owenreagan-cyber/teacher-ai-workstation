@@ -101,6 +101,28 @@ architecture="$(uname -m)"
     fi
   done
   echo
+  echo "## Chief of Staff CLI readiness"
+  if [[ -f "bin/chief-of-staff" ]]; then
+    echo "- PASS: bin/chief-of-staff present"
+  else
+    echo "- WARN: bin/chief-of-staff missing"
+  fi
+  if [[ -x "bin/chief-of-staff" ]]; then
+    echo "- PASS: bin/chief-of-staff executable"
+  else
+    echo "- WARN: bin/chief-of-staff is not executable"
+  fi
+  if [[ -f "docs/interactive-chief-of-staff-cli.md" ]]; then
+    echo "- PASS: docs/interactive-chief-of-staff-cli.md present"
+  else
+    echo "- WARN: docs/interactive-chief-of-staff-cli.md missing"
+  fi
+  if [[ -f "tests/smoke-chief-of-staff-cli.sh" ]]; then
+    echo "- PASS: tests/smoke-chief-of-staff-cli.sh present"
+  else
+    echo "- WARN: tests/smoke-chief-of-staff-cli.sh missing"
+  fi
+  echo
   echo "## Manual steps remaining"
   echo "- Complete Focus Modes, widgets, browser profiles, Raycast preferences, Obsidian vault setup, 1Password sign-in, AlDente preferences, iPad/iPhone Focus sync, and Ricoh physical printing."
   echo "- Review docs/3d-printing-day-1-setup.md and 3d-agent/verification/pre-slicer-checklist.md before using AI-generated 3D designs."

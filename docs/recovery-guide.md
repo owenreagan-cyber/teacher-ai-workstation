@@ -126,6 +126,42 @@ If commercial/reference files get mixed, move unapproved or downloaded reference
 
 Reference-Only is a warning/category folder, not a software restriction.
 
+## Recover Chief of Staff CLI
+
+If `bin/chief-of-staff` is not executable, run:
+
+```bash
+chmod +x bin/chief-of-staff tests/smoke-chief-of-staff-cli.sh
+```
+
+If `llm` is missing, rerun:
+
+```bash
+brew bundle --file=./Brewfile
+```
+
+or rerun:
+
+```bash
+./bootstrap.sh
+```
+
+If a workflow name fails, run:
+
+```bash
+bin/chief-of-staff --list-workflows
+```
+
+If the CLI includes the wrong context, rerun with `--dry-run` and inspect the included files.
+
+If the CLI cannot find the repo, run it from inside the repo or set:
+
+```bash
+export CHIEF_OF_STAFF_REPO="/path/to/teacher-ai-workstation"
+```
+
+If a large context file is refused, choose a smaller file or intentionally rerun with `--force-large-context`.
+
 ## Recover if Xcode Command Line Tools interrupted setup
 
 If setup stopped because Xcode Command Line Tools were missing, run:

@@ -45,6 +45,31 @@ For a privacy-focused local-first workstation, prefer generating a local FileVau
 - [ ] Review `3d-agent/verification/pre-slicer-checklist.md` before printing AI-generated designs
 - [ ] Remember: verification checklists are advisory and do not block printing
 
+## Optional Chief of Staff CLI test
+
+After bootstrap finishes and you open a new Terminal window, run:
+
+```bash
+bin/chief-of-staff --status
+```
+
+Then run:
+
+```bash
+bin/chief-of-staff --list-workflows
+```
+
+Then try:
+
+```bash
+bin/chief-of-staff \
+  --workflow request-training-materials \
+  --question "What should I give you first?" \
+  --dry-run
+```
+
+`--dry-run` does not call a model. It only shows the prompt/context that would be sent. `--status` helps confirm the CLI found the repo and required docs.
+
 ## Finish Day 1
 
 - [ ] Mac restarted after automated setup and manual configuration

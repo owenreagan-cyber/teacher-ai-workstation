@@ -100,6 +100,11 @@ fi
 [[ -f "3d-agent/verification/pre-slicer-checklist.md" ]] && pass "3d-agent/verification/pre-slicer-checklist.md exists." || warn "3d-agent/verification/pre-slicer-checklist.md is missing."
 [[ -f "3d-agent/training/openscad-test-suite.md" ]] && pass "3d-agent/training/openscad-test-suite.md exists." || warn "3d-agent/training/openscad-test-suite.md is missing."
 [[ -f "3d-agent/training/llm-routing-for-cad.md" ]] && pass "3d-agent/training/llm-routing-for-cad.md exists." || warn "3d-agent/training/llm-routing-for-cad.md is missing."
+[[ -f "bin/chief-of-staff" ]] && pass "bin/chief-of-staff exists." || warn "bin/chief-of-staff is missing."
+[[ -x "bin/chief-of-staff" ]] && pass "bin/chief-of-staff is executable." || warn "bin/chief-of-staff is not executable."
+[[ -f "docs/interactive-chief-of-staff-cli.md" ]] && pass "docs/interactive-chief-of-staff-cli.md exists." || warn "docs/interactive-chief-of-staff-cli.md is missing."
+[[ -f "tests/smoke-chief-of-staff-cli.sh" ]] && pass "tests/smoke-chief-of-staff-cli.sh exists." || warn "tests/smoke-chief-of-staff-cli.sh is missing."
+[[ -x "tests/smoke-chief-of-staff-cli.sh" ]] && pass "tests/smoke-chief-of-staff-cli.sh is executable." || warn "tests/smoke-chief-of-staff-cli.sh is not executable."
 
 screenshot_location="$(defaults read com.apple.screencapture location 2>/dev/null || true)"
 if [[ "${screenshot_location}" == "${HOME}/Screenshots" ]]; then

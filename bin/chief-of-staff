@@ -1,0 +1,498 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+VERSION="chief-of-staff CLI phase-1b"
+LARGE_CONTEXT_BYTES=204800
+
+usage() {
+  cat <<'EOF'
+Teacher AI Chief of Staff CLI
+
+Usage:
+  bin/chief-of-staff --workflow <name> --question <text> [options]
+
+Options:
+  --workflow <name>                     Select one workflow.
+  --question <text>                     Ask a question.
+  --context <path>                      Include one explicit context file. May be repeated.
+  --include-approved-writing-samples    Include approved writing samples.
+  --model <model-name>                  Pass a model name to the llm CLI.
+  --dry-run                             Print the assembled prompt and do not call a model.
+  --list-workflows                      List available workflow names.
+  --show-context                        Show included file list and exit.
+  --no-model                            Print a manual copy/paste prompt and do not call a model.
+  --force-large-context                 Include files larger than 200 KB intentionally.
+  --status                              Show setup status and exit.
+  --version                             Show version and exit.
+  --help                                Show this help.
+
+Examples:
+  bin/chief-of-staff --status
+  bin/chief-of-staff --list-workflows
+  bin/chief-of-staff --workflow request-training-materials --question "What should I give you first?"
+  bin/chief-of-staff --workflow project-review --context examples/sample-project-note.md --question "What is the next action?" --dry-run
+EOF
+}
+
+die() {
+  echo "ERROR: $1" >&2
+  exit 1
+}
+
+workflow_path_for_name() {
+  case "$1" in
+    morning-brief) printf '%s\n' "assistant/workflows/morning-brief.md" ;;
+    project-review) printf '%s\n' "assistant/workflows/project-review.md" ;;
+    lesson-support) printf '%s\n' "assistant/workflows/lesson-support.md" ;;
+    email-style-support) printf '%s\n' "assistant/workflows/email-style-support.md" ;;
+    request-training-materials) printf '%s\n' "assistant/workflows/request-training-materials.md" ;;
+    intake-review) printf '%s\n' "assistant/workflows/intake-review.md" ;;
+    verify-before-use) printf '%s\n' "assistant/workflows/verify-before-use.md" ;;
+    app-development-support) printf '%s\n' "assistant/workflows/app-development-support.md" ;;
+    troubleshooting-support) printf '%s\n' "assistant/workflows/troubleshooting-support.md" ;;
+    3d-printing-coordination) printf '%s\n' "assistant/workflows/3d-printing-coordination.md" ;;
+    *) return 1 ;;
+  esac
+}
+
+list_workflows() {
+  cat <<'EOF'
+3d-printing-coordination
+app-development-support
+email-style-support
+intake-review
+lesson-support
+morning-brief
+project-review
+request-training-materials
+troubleshooting-support
+verify-before-use
+EOF
+}
+
+is_repo_root() {
+  local candidate="$1"
+  [[ -d "${candidate}" ]] &&
+    [[ -f "${candidate}/README.md" ]] &&
+    [[ -f "${candidate}/assistant/chief-of-staff.md" ]] &&
+    [[ -d "${candidate}/assistant/workflows" ]]
+}
+
+script_dir() {
+  local source_dir
+  source_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
+  printf '%s\n' "${source_dir}"
+}
+
+resolve_repo_root() {
+  local candidate=""
+
+  if [[ -n "${CHIEF_OF_STAFF_REPO:-}" ]]; then
+    candidate="$(cd "${CHIEF_OF_STAFF_REPO}" 2>/dev/null && pwd -P || true)"
+    if is_repo_root "${candidate}"; then
+      printf '%s\n' "${candidate}"
+      return 0
+    fi
+    die "CHIEF_OF_STAFF_REPO is set but does not point to the teacher-ai-workstation repo root."
+  fi
+
+  candidate="$(git rev-parse --show-toplevel 2>/dev/null || true)"
+  if [[ -n "${candidate}" ]] && is_repo_root "${candidate}"; then
+    printf '%s\n' "${candidate}"
+    return 0
+  fi
+
+  candidate="$(cd "$(script_dir)/.." && pwd -P)"
+  if is_repo_root "${candidate}"; then
+    printf '%s\n' "${candidate}"
+    return 0
+  fi
+
+  die "Could not find the teacher-ai-workstation repo root. Run this from inside the repo or set CHIEF_OF_STAFF_REPO=/path/to/teacher-ai-workstation."
+}
+
+file_size_bytes() {
+  local file="$1"
+  local size=""
+  size="$(stat -f%z "${file}" 2>/dev/null || true)"
+  if [[ -z "${size}" ]]; then
+    size="$(stat -c%s "${file}" 2>/dev/null || true)"
+  fi
+  printf '%s\n' "${size:-0}"
+}
+
+absolute_file_path() {
+  local path="$1"
+  local dir
+  local base
+  dir="$(dirname "${path}")"
+  base="$(basename "${path}")"
+  (cd "${dir}" && printf '%s/%s\n' "$(pwd -P)" "${base}")
+}
+
+source_label_for_path() {
+  local abs_path="$1"
+  local repo_root="$2"
+  case "${abs_path}" in
+    "${repo_root}/"*) printf '%s\n' "${abs_path#"${repo_root}/"}" ;;
+    *) printf '%s\n' "${abs_path}" ;;
+  esac
+}
+
+append_source() {
+  local repo_root="$1"
+  local relative_path="$2"
+  local abs_path="${repo_root}/${relative_path}"
+
+  printf '\n---\n\n'
+  printf '## SOURCE: %s\n\n' "${relative_path}"
+  cat "${abs_path}"
+  printf '\n'
+}
+
+append_context_source() {
+  local repo_root="$1"
+  local abs_path="$2"
+  local label
+  label="$(source_label_for_path "${abs_path}" "${repo_root}")"
+
+  printf '\n---\n\n'
+  printf '## SOURCE: %s\n\n' "${label}"
+  cat "${abs_path}"
+  printf '\n'
+}
+
+status_line_file() {
+  local label="$1"
+  local path="$2"
+  if [[ -f "${path}" ]]; then
+    printf 'PASS: %s exists\n' "${label}"
+  else
+    printf 'WARN: %s missing\n' "${label}"
+  fi
+}
+
+status_line_dir() {
+  local label="$1"
+  local path="$2"
+  if [[ -d "${path}" ]]; then
+    printf 'PASS: %s exists\n' "${label}"
+  else
+    printf 'WARN: %s missing\n' "${label}"
+  fi
+}
+
+show_status() {
+  local repo_root="$1"
+  echo "${VERSION}"
+  echo "Resolved repo root: ${repo_root}"
+  echo
+  status_line_file "assistant/chief-of-staff.md" "${repo_root}/assistant/chief-of-staff.md"
+  status_line_file "assistant/permissions.md" "${repo_root}/assistant/permissions.md"
+  status_line_file "assistant/failure-recovery-policy.md" "${repo_root}/assistant/failure-recovery-policy.md"
+  status_line_file "assistant/sensitivity-rules.md" "${repo_root}/assistant/sensitivity-rules.md"
+  status_line_file "assistant/model-routing.md" "${repo_root}/assistant/model-routing.md"
+  status_line_file "assistant/writing-style.md" "${repo_root}/assistant/writing-style.md"
+  status_line_dir "assistant/workflows" "${repo_root}/assistant/workflows"
+
+  if command -v llm >/dev/null 2>&1; then
+    echo "PASS: llm is installed/on PATH"
+  else
+    echo "WARN: llm is not installed or not on PATH"
+  fi
+
+  status_line_file "approved-samples.md" "${repo_root}/assistant/training/writing-samples/approved-samples.md"
+
+  if [[ -f "${repo_root}/assistant/training/writing-samples/raw-inbox.md" ]]; then
+    echo "PASS: raw-inbox.md exists and is excluded"
+  else
+    echo "WARN: raw-inbox.md missing"
+  fi
+
+  if [[ -f "${repo_root}/assistant/training/writing-samples/rejected-samples.md" ]]; then
+    echo "PASS: rejected-samples.md exists and is excluded"
+  else
+    echo "WARN: rejected-samples.md missing"
+  fi
+}
+
+workflow=""
+question=""
+model="${CHIEF_OF_STAFF_MODEL:-}"
+dry_run=0
+include_approved_samples=0
+show_context=0
+no_model=0
+force_large_context=0
+contexts=()
+
+if [[ $# -eq 0 ]]; then
+  usage
+  exit 0
+fi
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --help)
+      usage
+      exit 0
+      ;;
+    --version)
+      echo "${VERSION}"
+      exit 0
+      ;;
+    --status)
+      repo_root="$(resolve_repo_root)"
+      show_status "${repo_root}"
+      exit 0
+      ;;
+    --list-workflows)
+      list_workflows
+      exit 0
+      ;;
+    --workflow)
+      [[ $# -ge 2 ]] || die "--workflow requires a name."
+      workflow="$2"
+      shift 2
+      ;;
+    --question)
+      [[ $# -ge 2 ]] || die "--question requires text."
+      question="$2"
+      shift 2
+      ;;
+    --context)
+      [[ $# -ge 2 ]] || die "--context requires a file path."
+      contexts+=("$2")
+      shift 2
+      ;;
+    --include-approved-writing-samples)
+      include_approved_samples=1
+      shift
+      ;;
+    --model)
+      [[ $# -ge 2 ]] || die "--model requires a model name."
+      model="$2"
+      shift 2
+      ;;
+    --dry-run)
+      dry_run=1
+      shift
+      ;;
+    --show-context)
+      show_context=1
+      shift
+      ;;
+    --no-model)
+      no_model=1
+      shift
+      ;;
+    --force-large-context)
+      force_large_context=1
+      shift
+      ;;
+    *)
+      die "Unknown option: $1. Run bin/chief-of-staff --help for usage."
+      ;;
+  esac
+done
+
+repo_root="$(resolve_repo_root)"
+
+[[ -n "${workflow}" ]] || die "--workflow is required for a Chief of Staff run. Use --list-workflows to see options."
+workflow_relative="$(workflow_path_for_name "${workflow}" || true)"
+if [[ -z "${workflow_relative}" ]]; then
+  echo "Unknown workflow: ${workflow}" >&2
+  echo "Available workflows:" >&2
+  list_workflows >&2
+  exit 1
+fi
+
+[[ -f "${repo_root}/${workflow_relative}" ]] || die "Workflow file is missing: ${workflow_relative}"
+
+base_docs=(
+  "assistant/chief-of-staff.md"
+  "assistant/permissions.md"
+  "assistant/failure-recovery-policy.md"
+  "assistant/sensitivity-rules.md"
+  "assistant/model-routing.md"
+  "assistant/writing-style.md"
+)
+
+included_files=()
+for base_doc in "${base_docs[@]}"; do
+  [[ -f "${repo_root}/${base_doc}" ]] || die "Required base doc is missing: ${base_doc}"
+  included_files+=("${base_doc}")
+done
+
+included_files+=("${workflow_relative}")
+
+approved_samples_relative="assistant/training/writing-samples/approved-samples.md"
+if (( include_approved_samples == 1 )); then
+  if [[ -f "${repo_root}/${approved_samples_relative}" ]]; then
+    included_files+=("${approved_samples_relative}")
+  else
+    echo "WARN: approved writing samples requested, but ${approved_samples_relative} does not exist." >&2
+  fi
+fi
+
+raw_inbox_abs="${repo_root}/assistant/training/writing-samples/raw-inbox.md"
+rejected_abs="${repo_root}/assistant/training/writing-samples/rejected-samples.md"
+context_abs_paths=()
+large_warnings=()
+
+for context_path in "${contexts[@]+"${contexts[@]}"}"; do
+  if [[ ! -e "${context_path}" ]]; then
+    die "Context path does not exist: ${context_path}"
+  fi
+
+  if [[ -d "${context_path}" ]]; then
+    die "Context path is a directory: ${context_path}. Pass specific files instead; directories are not read recursively."
+  fi
+
+  abs_context="$(absolute_file_path "${context_path}")"
+  if [[ "${abs_context}" == "${raw_inbox_abs}" ]]; then
+    die "Refusing to include raw-inbox.md. It is a staging area only and must never be automatically loaded as assistant context."
+  fi
+  if [[ "${abs_context}" == "${rejected_abs}" ]]; then
+    die "Refusing to include rejected-samples.md. Rejected examples must not shape assistant context."
+  fi
+
+  size_bytes="$(file_size_bytes "${abs_context}")"
+  if [[ "${size_bytes}" =~ ^[0-9]+$ ]] && (( size_bytes > LARGE_CONTEXT_BYTES )); then
+    if (( force_large_context == 0 )); then
+      die "This file is larger than 200 KB. Rerun with --force-large-context if you intentionally want to include it: ${context_path}"
+    fi
+    large_warnings+=("$(source_label_for_path "${abs_context}" "${repo_root}") (${size_bytes} bytes)")
+  fi
+
+  context_abs_paths+=("${abs_context}")
+  included_files+=("$(source_label_for_path "${abs_context}" "${repo_root}")")
+done
+
+if (( show_context == 1 )); then
+  echo "Files that would be included, in final prompt order:"
+  for included in "${included_files[@]}"; do
+    echo "- ${included}"
+  done
+  exit 0
+fi
+
+[[ -n "${question}" ]] || die "--question is required unless using --help, --status, --version, --list-workflows, or --show-context."
+
+assembled_prompt="$(
+  cat <<EOF
+# Teacher AI Chief of Staff Run
+
+## Operating Rules
+
+- Use only the provided context.
+- Distinguish known facts from assumptions.
+- Say "I don't have a source for this" when no source exists.
+- Cite included file names when possible.
+- Include Verify Before Use for factual, curricular, historical, scientific, technical, app-development, troubleshooting, or 3D design claims.
+- Never send, publish, delete, or modify anything.
+- If content appears sensitive, pause and ask before continuing.
+- Do not treat raw-inbox.md or rejected-samples.md as approved context.
+
+## Included Files
+
+EOF
+  for included in "${included_files[@]}"; do
+    printf -- '- %s\n' "${included}"
+  done
+
+  if [[ "${#large_warnings[@]}" -gt 0 ]]; then
+    cat <<'EOF'
+
+## Large Context Warnings
+
+EOF
+    for warning in "${large_warnings[@]+"${large_warnings[@]}"}"; do
+      printf -- '- Included with --force-large-context: %s\n' "${warning}"
+    done
+  fi
+
+  cat <<'EOF'
+
+## Base Context
+EOF
+  for base_doc in "${base_docs[@]}"; do
+    append_source "${repo_root}" "${base_doc}"
+  done
+
+  cat <<'EOF'
+
+## Workflow
+EOF
+  append_source "${repo_root}" "${workflow_relative}"
+
+  if (( include_approved_samples == 1 )) && [[ -f "${repo_root}/${approved_samples_relative}" ]]; then
+    cat <<'EOF'
+
+## Approved Writing Samples
+EOF
+    append_source "${repo_root}" "${approved_samples_relative}"
+  fi
+
+  cat <<'EOF'
+
+## User Context
+EOF
+  for abs_context in "${context_abs_paths[@]+"${context_abs_paths[@]}"}"; do
+    append_context_source "${repo_root}" "${abs_context}"
+  done
+
+  cat <<EOF
+
+## User Question
+
+${question}
+
+## Required Response Footer
+
+- Sources used
+- Known facts
+- Assumptions
+- Verify before use
+- Confidence
+- Next action
+EOF
+)"
+
+if (( dry_run == 1 )); then
+  printf '%s\n' "${assembled_prompt}"
+  exit 0
+fi
+
+if (( no_model == 1 )); then
+  cat <<'EOF'
+The assembled prompt is below. Copy/paste it into ChatGPT, Claude, or another model.
+
+For easier copy/paste, redirect this output to a file:
+bin/chief-of-staff ... --no-model > chief-of-staff-prompt.txt
+
+----- BEGIN CHIEF OF STAFF PROMPT -----
+EOF
+  printf '%s\n' "${assembled_prompt}"
+  echo "----- END CHIEF OF STAFF PROMPT -----"
+  exit 0
+fi
+
+if ! command -v llm >/dev/null 2>&1; then
+  cat <<'EOF'
+The llm CLI is not installed or not on PATH. Run bootstrap first or install it with Homebrew, then try again.
+
+The assembled prompt is printed below so you can copy/paste it manually.
+
+----- BEGIN CHIEF OF STAFF PROMPT -----
+EOF
+  printf '%s\n' "${assembled_prompt}"
+  echo "----- END CHIEF OF STAFF PROMPT -----"
+  exit 0
+fi
+
+if [[ -n "${model}" ]]; then
+  printf '%s\n' "${assembled_prompt}" | llm -m "${model}"
+else
+  printf '%s\n' "${assembled_prompt}" | llm
+fi

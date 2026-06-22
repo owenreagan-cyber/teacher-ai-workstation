@@ -155,6 +155,22 @@ See:
 - `docs/3d-printing-roadmap.md`
 - `3d-agent/README.md`
 
+## Phase 1B: Interactive Chief of Staff CLI
+
+The CLI is the first runnable Chief of Staff interface.
+
+It uses approved Markdown context and explicit files only. It does not scan Drive, Gmail, or local folders. It supports dry-run mode so Owen can inspect the exact prompt/context before any model call.
+
+It also supports `--status` and `--show-context` for debugging, making it safe to test before connecting any external data sources.
+
+Example:
+
+```bash
+bin/chief-of-staff --workflow request-training-materials --question "What should I give you first?"
+```
+
+See `docs/interactive-chief-of-staff-cli.md`.
+
 ## Phase 0A Completion Checklist
 
 Before moving to later Teacher OS development, confirm:

@@ -77,6 +77,30 @@ fi
 [[ -d "${HOME}/Pictures/Teacher OS Wallpapers/Teacher Mode" ]] && pass "Teacher Mode wallpaper folder exists." || fail "Teacher Mode wallpaper folder is missing."
 [[ -d "${HOME}/Pictures/Teacher OS Wallpapers/Casual Anime Mode" ]] && pass "Casual Anime Mode wallpaper folder exists." || fail "Casual Anime Mode wallpaper folder is missing."
 
+if [[ -d "/Applications/Bambu Studio.app" || -d "/Applications/BambuStudio.app" ]]; then
+  pass "Bambu Studio app is installed."
+else
+  warn "Bambu Studio app was not found in /Applications."
+fi
+
+if command -v openscad >/dev/null 2>&1; then
+  pass "openscad is installed."
+else
+  warn "openscad is missing."
+fi
+
+[[ -d "${HOME}/3D-Printing" ]] && pass "~/3D-Printing exists." || warn "~/3D-Printing is missing."
+[[ -d "${HOME}/3D-Printing/Business" ]] && pass "~/3D-Printing/Business exists." || warn "~/3D-Printing/Business is missing."
+[[ -d "${HOME}/3D-Printing/Classroom" ]] && pass "~/3D-Printing/Classroom exists." || warn "~/3D-Printing/Classroom is missing."
+[[ -d "${HOME}/3D-Printing/Reference-Only" ]] && pass "~/3D-Printing/Reference-Only exists." || warn "~/3D-Printing/Reference-Only is missing."
+
+[[ -f "3d-agent/README.md" ]] && pass "3d-agent/README.md exists." || warn "3d-agent/README.md is missing."
+[[ -f "docs/3d-printing-day-1-setup.md" ]] && pass "docs/3d-printing-day-1-setup.md exists." || warn "docs/3d-printing-day-1-setup.md is missing."
+[[ -f "3d-agent/verification/README.md" ]] && pass "3d-agent/verification/README.md exists." || warn "3d-agent/verification/README.md is missing."
+[[ -f "3d-agent/verification/pre-slicer-checklist.md" ]] && pass "3d-agent/verification/pre-slicer-checklist.md exists." || warn "3d-agent/verification/pre-slicer-checklist.md is missing."
+[[ -f "3d-agent/training/openscad-test-suite.md" ]] && pass "3d-agent/training/openscad-test-suite.md exists." || warn "3d-agent/training/openscad-test-suite.md is missing."
+[[ -f "3d-agent/training/llm-routing-for-cad.md" ]] && pass "3d-agent/training/llm-routing-for-cad.md exists." || warn "3d-agent/training/llm-routing-for-cad.md is missing."
+
 screenshot_location="$(defaults read com.apple.screencapture location 2>/dev/null || true)"
 if [[ "${screenshot_location}" == "${HOME}/Screenshots" ]]; then
   pass "Screenshot location is ${HOME}/Screenshots."

@@ -139,6 +139,22 @@ See:
 - `docs/chief-of-staff-roadmap.md`
 - `docs/assistant-training-guide.md`
 
+## Future Specialist: 3D Design Agent
+
+Phase 0 now prewires the Mac for future 3D design work.
+
+The 3D Design Agent is a future specialist for classroom and business 3D printing. It is separate from, but coordinated by, the Chief of Staff.
+
+Bambu Studio and OpenSCAD are installed/prepared. Personal/reference work is separated from commercial product work. The 3D Agent can warn, classify, and recommend review, but cannot block or stop printing.
+
+Full 3D Agent implementation comes after the teaching Chief of Staff foundation.
+
+See:
+
+- `docs/3d-printing-day-1-setup.md`
+- `docs/3d-printing-roadmap.md`
+- `3d-agent/README.md`
+
 ## Phase 0A Completion Checklist
 
 Before moving to later Teacher OS development, confirm:

@@ -36,6 +36,15 @@
 - It is local-first where possible.
 - It must not autonomously send, publish, modify, or delete without approval.
 
+## Future 3D Design Agent Readiness
+
+- 3D printing is both classroom/hobby and business work.
+- Bambu Studio is the default slicer.
+- OpenSCAD is the initial AI-friendly CAD path.
+- Future 3D Agent should support business products, classroom fidgets/prizes, product memory, print QA, Bambu Studio verification, and copyright/IP/reference warnings.
+- Personal/reference designs must stay separate from commercial products.
+- The 3D Agent is advisory only and cannot block or stop prints.
+
 ## Phase 0 boundary
 
 Phase 0 is setup only.

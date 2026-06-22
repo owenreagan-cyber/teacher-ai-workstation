@@ -104,6 +104,28 @@ If Homebrew reports a cask problem, rerun verification afterward:
 bash setup/99-verify-setup.sh
 ```
 
+If OpenSCAD is missing, rerun:
+
+```bash
+brew bundle --file=./Brewfile
+```
+
+If Bambu Studio is missing, rerun `brew bundle --file=./Brewfile` or install it manually.
+
+If 3D folders are missing, rerun:
+
+```bash
+bash setup/04-folder-structure.sh
+```
+
+If commercial/reference files get mixed, move unapproved or downloaded reference files to:
+
+```bash
+~/3D-Printing/Reference-Only
+```
+
+Reference-Only is a warning/category folder, not a software restriction.
+
 ## Recover if Xcode Command Line Tools interrupted setup
 
 If setup stopped because Xcode Command Line Tools were missing, run:

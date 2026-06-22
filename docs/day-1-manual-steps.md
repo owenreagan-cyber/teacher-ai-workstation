@@ -34,6 +34,17 @@ For a privacy-focused local-first workstation, prefer generating a local FileVau
 - [ ] Reviewed `docs/backup-exclusions.md`
 - [ ] Ricoh printer certification completed later at school
 
+## Optional 3D readiness
+
+- [ ] Open Bambu Studio once if installed
+- [ ] Sign in only if desired
+- [ ] Confirm printer/profile setup later
+- [ ] Do not configure printer automation on Day 1
+- [ ] Confirm `~/3D-Printing` folders exist
+- [ ] Review `docs/3d-printing-day-1-setup.md`
+- [ ] Review `3d-agent/verification/pre-slicer-checklist.md` before printing AI-generated designs
+- [ ] Remember: verification checklists are advisory and do not block printing
+
 ## Finish Day 1
 
 - [ ] Mac restarted after automated setup and manual configuration

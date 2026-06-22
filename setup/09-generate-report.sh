@@ -28,6 +28,16 @@ else
   ollama_status="CLI missing"
 fi
 
+openscad_status="Missing"
+if command -v openscad >/dev/null 2>&1; then
+  openscad_status="Available"
+fi
+
+bambu_studio_status="Missing"
+if [[ -d "/Applications/Bambu Studio.app" || -d "/Applications/BambuStudio.app" ]]; then
+  bambu_studio_status="Installed"
+fi
+
 macos_version="$(sw_vers -productVersion 2>/dev/null || echo 'unknown')"
 architecture="$(uname -m)"
 
@@ -73,8 +83,27 @@ architecture="$(uname -m)"
   echo "## Ollama status"
   echo "- ${ollama_status}"
   echo
+  echo "## 3D readiness"
+  echo "- OpenSCAD: ${openscad_status}"
+  echo "- Bambu Studio: ${bambu_studio_status}"
+  for folder in "${HOME}/3D-Printing" "${HOME}/3D-Printing/Business" "${HOME}/3D-Printing/Classroom" "${HOME}/3D-Printing/Reference-Only"; do
+    if [[ -d "${folder}" ]]; then
+      echo "- PASS: ${folder}"
+    else
+      echo "- WARN: ${folder} missing"
+    fi
+  done
+  for doc in "3d-agent/verification/README.md" "3d-agent/verification/pre-slicer-checklist.md"; do
+    if [[ -f "${doc}" ]]; then
+      echo "- PASS: ${doc}"
+    else
+      echo "- WARN: ${doc} missing"
+    fi
+  done
+  echo
   echo "## Manual steps remaining"
   echo "- Complete Focus Modes, widgets, browser profiles, Raycast preferences, Obsidian vault setup, 1Password sign-in, AlDente preferences, iPad/iPhone Focus sync, and Ricoh physical printing."
+  echo "- Review docs/3d-printing-day-1-setup.md and 3d-agent/verification/pre-slicer-checklist.md before using AI-generated 3D designs."
   echo "- Review docs/backup-exclusions.md before applying Time Machine or cloud backup exclusions."
   echo "- Complete docs/day-1-manual-steps.md, restart once, then rerun bash setup/99-verify-setup.sh."
   echo

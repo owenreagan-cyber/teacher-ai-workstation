@@ -123,6 +123,20 @@ architecture="$(uname -m)"
     echo "- WARN: tests/smoke-chief-of-staff-cli.sh missing"
   fi
   echo
+  echo "## Chief of Staff memory readiness"
+  if [[ -d "assistant/memory" ]]; then
+    echo "- PASS: assistant/memory present"
+  else
+    echo "- WARN: assistant/memory missing"
+  fi
+  for doc in "assistant/memory/projects.md" "assistant/memory/teaching-context.md" "assistant/memory/writing-style-rules.md" "assistant/memory/preferences.md" "assistant/memory/decisions.md" "assistant/memory/active-priorities.md" "assistant/memory/memory-log.md"; do
+    if [[ -f "${doc}" ]]; then
+      echo "- PASS: ${doc}"
+    else
+      echo "- WARN: ${doc} missing"
+    fi
+  done
+  echo
   echo "## Manual steps remaining"
   echo "- Complete Focus Modes, widgets, browser profiles, Raycast preferences, Obsidian vault setup, 1Password sign-in, AlDente preferences, iPad/iPhone Focus sync, and Ricoh physical printing."
   echo "- Review docs/3d-printing-day-1-setup.md and 3d-agent/verification/pre-slicer-checklist.md before using AI-generated 3D designs."

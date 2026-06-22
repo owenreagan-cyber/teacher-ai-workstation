@@ -162,6 +162,22 @@ export CHIEF_OF_STAFF_REPO="/path/to/teacher-ai-workstation"
 
 If a large context file is refused, choose a smaller file or intentionally rerun with `--force-large-context`.
 
+## Recover Chief of Staff memory
+
+If memory files are missing, rerun the repo update or restore `assistant/memory` from Git.
+
+If memory is accidentally included, rerun without `--include-memory`.
+
+If memory seems stale, edit the Markdown file directly and label uncertain facts as "needs review."
+
+If sensitive information is accidentally added to memory, remove it immediately and do not use that file as context until reviewed.
+
+If `--memory-status` shows stale files, review and update the relevant Markdown file or label the facts "needs review."
+
+If `--validate-memory` warns, inspect the file manually before including memory.
+
+If `memory-log.md` is missing, restore it from Git or recreate it from `assistant/memory/README.md` guidance.
+
 ## Recover if Xcode Command Line Tools interrupted setup
 
 If setup stopped because Xcode Command Line Tools were missing, run:

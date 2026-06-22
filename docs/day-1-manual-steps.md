@@ -70,6 +70,32 @@ bin/chief-of-staff \
 
 `--dry-run` does not call a model. It only shows the prompt/context that would be sent. `--status` helps confirm the CLI found the repo and required docs.
 
+## Optional Chief of Staff memory test
+
+Run:
+
+```bash
+bin/chief-of-staff --memory-status
+```
+
+Then run:
+
+```bash
+bin/chief-of-staff --validate-memory
+```
+
+Try a dry run with memory:
+
+```bash
+bin/chief-of-staff \
+  --workflow project-review \
+  --include-memory \
+  --question "What should I work on next?" \
+  --dry-run
+```
+
+This only prints or checks local Markdown context. It does not call a model. Use `--show-context` to confirm memory files are included.
+
 ## Finish Day 1
 
 - [ ] Mac restarted after automated setup and manual configuration

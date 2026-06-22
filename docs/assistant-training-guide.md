@@ -49,3 +49,18 @@ Use the CLI to train the assistant safely:
 - Use `--status` to debug setup.
 - Run `assistant/training/eval-prompts.md` after context changes.
 - Update `assistant/training/feedback-log.md` after outputs are used, edited, or rejected.
+
+# Using Memory in Training
+
+Memory files are approved context, not raw training data.
+
+- Writing style memory should start low-confidence until approved writing samples exist.
+- Project memory should be reviewed when projects change.
+- Use `--dry-run` to inspect memory inclusion.
+- Use `--show-context` to confirm included files.
+- Use `--memory-status` to check freshness.
+- Use `--validate-memory` before including memory in a real model call.
+- Use `assistant/memory/memory-log.md` when changing memory files.
+- Use `assistant/training/feedback-log.md` after outputs to update memory manually.
+- After updating `writing-style-rules.md` confidence, record the reason in `memory-log.md`.
+- Run `assistant/training/eval-prompts.md` after meaningful memory changes.

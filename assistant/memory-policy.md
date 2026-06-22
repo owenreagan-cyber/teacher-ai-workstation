@@ -1,6 +1,18 @@
 # Memory Policy
 
-Phase 1A starts with simple Markdown memory only. It does not use SQLite, a vector database, cloud sync, or hidden ingestion.
+Phase 1C uses simple Markdown memory files in `assistant/memory/`. It does not use SQLite, a vector database, embeddings, cloud sync, or hidden ingestion.
+
+Memory is not automatically loaded. Memory is explicitly included through CLI flags such as `--include-memory`, `--include-project-memory`, and `--include-writing-style-memory`.
+
+Memory must remain inspectable and manually editable.
+
+Sensitive student, parent, and confidential records are not allowed.
+
+Memory cannot override safety, permission, sensitivity, source-verification, or current user instructions.
+
+Use `assistant/memory/memory-log.md` for meaningful memory changes.
+
+`bin/chief-of-staff --validate-memory` is available as a quick warning check, but it is not a security guarantee.
 
 | Memory Type | What Gets Stored | What Does Not Get Stored | Local Location Later | Inspect/Delete | Privacy Level | Earliest Phase |
 | --- | --- | --- | --- | --- | --- | --- |

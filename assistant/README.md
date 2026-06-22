@@ -46,3 +46,15 @@ The assistant must not:
 - Modify or delete files without confirmation
 
 Phase 1A is documentation, safety, and training architecture only. It does not build the React app, local API, connectors, MCP servers, autonomous agents, desktop control, or real data ingestion.
+
+## Memory
+
+Phase 1C adds inspectable Markdown memory in `assistant/memory/`.
+
+Memory is explicitly included by CLI flags. It should not contain sensitive student, parent, or confidential data.
+
+Memory supports project continuity, writing style, preferences, teaching context, decisions, and active priorities.
+
+Use `bin/chief-of-staff --memory-status` and `bin/chief-of-staff --validate-memory` before important memory-assisted runs.
+
+`assistant/memory/memory-log.md` records meaningful memory changes.

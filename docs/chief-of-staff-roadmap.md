@@ -2,21 +2,23 @@
 
 ## Phase 1A: Safety and training docs
 
-Create the role, permission model, memory policy, sensitivity rules, workflows, training docs, eval prompts, and future source map. No app is built.
+Complete. Create the role, permission model, memory policy, sensitivity rules, workflows, training docs, eval prompts, and future source map. No app is built.
 
 ## Phase 1B: Interactive CLI with approved Markdown context
 
-Build a small interactive tool that can read only approved Markdown context files.
+Complete. Build a small interactive tool that can read only approved Markdown context files.
 
 Phase 1B proves the assistant loop in the terminal before any UI, connector, or automation. It is the next implementation step after the safety/training layer.
 
 ## Phase 1C: Project Memory and Writing Style Memory
 
-Add simple Project Memory and Writing Style Memory workflows using inspectable Markdown.
+Add explicit Markdown memory for project memory, teaching context, writing style rules, preferences, decisions, and active priorities. Memory is included only by CLI flags.
 
 ## Phase 1D: Intake review queue
 
 Create a workflow for reviewing raw candidate samples before they become approved training context.
+
+Phase 1D adds intake review before raw materials become approved context.
 
 ## Phase 1E: Selected local folder indexing
 
@@ -42,4 +44,4 @@ Define a handoff path for 3D design, printing, product, and business tasks.
 
 Canvas publishing, desktop control, MCP, and autonomous agents are allowed only after safety gates, permissions, source handling, review workflows, and explicit human confirmation are proven.
 
-The "open new MacBook Pro M5 Pro" step should come after Phase 1D and a Phase 0D Final Installer Audit, unless Owen intentionally decides to run the installer earlier.
+The "open new MacBook Pro M5 Pro" checkpoint should come after Phase 1D and a Phase 0D Final Installer Audit, unless Owen intentionally decides to run the installer earlier.

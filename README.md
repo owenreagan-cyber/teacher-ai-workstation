@@ -171,6 +171,22 @@ bin/chief-of-staff --workflow request-training-materials --question "What should
 
 See `docs/interactive-chief-of-staff-cli.md`.
 
+## Phase 1C: Project Memory + Writing Style Memory
+
+The Chief of Staff now has approved Markdown memory files.
+
+Memory is optional and explicit. Use `--include-memory` to include all approved memory, or targeted flags to include only project, writing style, teaching context, preferences, decisions, or active priorities memory.
+
+Memory does not scan personal files, Drive, Gmail, Canvas, or local folders.
+
+Use `--memory-status` to inspect memory freshness. Use `--validate-memory` as a quick warning check before important memory-assisted runs.
+
+Example:
+
+```bash
+bin/chief-of-staff --workflow project-review --include-memory --question "What should I work on next?"
+```
+
 ## Phase 0A Completion Checklist
 
 Before moving to later Teacher OS development, confirm:

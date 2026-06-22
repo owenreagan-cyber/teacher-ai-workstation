@@ -105,6 +105,15 @@ fi
 [[ -f "docs/interactive-chief-of-staff-cli.md" ]] && pass "docs/interactive-chief-of-staff-cli.md exists." || warn "docs/interactive-chief-of-staff-cli.md is missing."
 [[ -f "tests/smoke-chief-of-staff-cli.sh" ]] && pass "tests/smoke-chief-of-staff-cli.sh exists." || warn "tests/smoke-chief-of-staff-cli.sh is missing."
 [[ -x "tests/smoke-chief-of-staff-cli.sh" ]] && pass "tests/smoke-chief-of-staff-cli.sh is executable." || warn "tests/smoke-chief-of-staff-cli.sh is not executable."
+[[ -f "assistant/memory/README.md" ]] && pass "assistant/memory/README.md exists." || warn "assistant/memory/README.md is missing."
+[[ -f "assistant/memory/projects.md" ]] && pass "assistant/memory/projects.md exists." || warn "assistant/memory/projects.md is missing."
+[[ -f "assistant/memory/teaching-context.md" ]] && pass "assistant/memory/teaching-context.md exists." || warn "assistant/memory/teaching-context.md is missing."
+[[ -f "assistant/memory/writing-style-rules.md" ]] && pass "assistant/memory/writing-style-rules.md exists." || warn "assistant/memory/writing-style-rules.md is missing."
+[[ -f "assistant/memory/preferences.md" ]] && pass "assistant/memory/preferences.md exists." || warn "assistant/memory/preferences.md is missing."
+[[ -f "assistant/memory/decisions.md" ]] && pass "assistant/memory/decisions.md exists." || warn "assistant/memory/decisions.md is missing."
+[[ -f "assistant/memory/active-priorities.md" ]] && pass "assistant/memory/active-priorities.md exists." || warn "assistant/memory/active-priorities.md is missing."
+[[ -f "assistant/memory/memory-review-checklist.md" ]] && pass "assistant/memory/memory-review-checklist.md exists." || warn "assistant/memory/memory-review-checklist.md is missing."
+[[ -f "assistant/memory/memory-log.md" ]] && pass "assistant/memory/memory-log.md exists." || warn "assistant/memory/memory-log.md is missing."
 
 screenshot_location="$(defaults read com.apple.screencapture location 2>/dev/null || true)"
 if [[ "${screenshot_location}" == "${HOME}/Screenshots" ]]; then

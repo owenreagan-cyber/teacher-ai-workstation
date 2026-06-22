@@ -10,6 +10,7 @@ bin/chief-of-staff --list-workflows >/dev/null
 bin/chief-of-staff --show-context --workflow request-training-materials >/dev/null
 bin/chief-of-staff --workflow request-training-materials --question "What do you need from me?" --dry-run >/dev/null
 bin/chief-of-staff --workflow request-training-materials --question "What do you need from me?" --dry-run > /tmp/chief-of-staff-dry-run.txt
+grep -q '^---$' /tmp/chief-of-staff-dry-run.txt
 grep -q "SOURCE: assistant/chief-of-staff.md" /tmp/chief-of-staff-dry-run.txt
 if grep -q "## SOURCE:" /tmp/chief-of-staff-dry-run.txt; then
   echo "FAIL: dry-run prompt should not contain heading-style source markers"
@@ -17,6 +18,28 @@ if grep -q "## SOURCE:" /tmp/chief-of-staff-dry-run.txt; then
 fi
 bin/chief-of-staff --workflow project-review --context examples/sample-project-note.md --question "What is the next action?" --dry-run >/dev/null
 bin/chief-of-staff --workflow project-review --context examples/sample-project-note.md --question "What is the next action?" --no-model > /tmp/chief-of-staff-prompt.txt
+bin/chief-of-staff --workflow project-review --include-memory --question "test" --dry-run >/dev/null
+bin/chief-of-staff --workflow project-review --include-project-memory --question "test" --dry-run >/dev/null
+bin/chief-of-staff --workflow project-review --include-writing-style-memory --question "test" --dry-run >/dev/null
+bin/chief-of-staff --show-context --workflow project-review --include-memory > /tmp/chief-of-staff-show-context.txt
+grep -q "assistant/memory/projects.md" /tmp/chief-of-staff-show-context.txt
+bin/chief-of-staff --workflow project-review --question "test" --dry-run > /tmp/chief-of-staff-no-memory.txt
+if grep -q "SOURCE: assistant/memory/projects.md" /tmp/chief-of-staff-no-memory.txt; then
+  echo "FAIL: normal dry-run should not include memory"
+  exit 1
+fi
+bin/chief-of-staff --workflow project-review --include-memory --question "test" --dry-run > /tmp/chief-of-staff-memory.txt
+grep -q "SOURCE: assistant/memory/projects.md" /tmp/chief-of-staff-memory.txt
+if grep -q "SOURCE: assistant/memory/memory-review-checklist.md" /tmp/chief-of-staff-memory.txt; then
+  echo "FAIL: memory-review-checklist.md should not be auto-included"
+  exit 1
+fi
+if grep -q "SOURCE: assistant/memory/memory-log.md" /tmp/chief-of-staff-memory.txt; then
+  echo "FAIL: memory-log.md should not be auto-included"
+  exit 1
+fi
+bin/chief-of-staff --memory-status >/dev/null
+bin/chief-of-staff --validate-memory >/dev/null
 
 expect_failure() {
   local label="$1"

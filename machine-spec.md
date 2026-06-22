@@ -26,6 +26,16 @@
 - Avoid running multiple large models in Ollama and LM Studio at the same time.
 - Use `aiflush` before heavy coding/model switching if memory pressure is high.
 
+## Assistant Agent Priority
+
+- The Teacher AI Chief of Staff is the primary post-Phase-0 product.
+- It is teaching-first.
+- It supports lesson ideas, project memory, writing style, app development, and troubleshooting.
+- It coordinates with a future 3D Design Agent later.
+- It is permission-based.
+- It is local-first where possible.
+- It must not autonomously send, publish, modify, or delete without approval.
+
 ## Phase 0 boundary
 
 Phase 0 is setup only.

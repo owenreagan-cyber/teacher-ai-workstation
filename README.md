@@ -123,6 +123,22 @@ For a privacy-focused local-first workstation, prefer generating a local FileVau
 
 Review `docs/backup-exclusions.md` before setting up Time Machine or cloud backup exclusions.
 
+## Next Major Priority: Teacher AI Chief of Staff
+
+Phase 0 prepares the Mac. Phase 1 builds the assistant foundation.
+
+The Teacher AI Chief of Staff is the primary post-Phase-0 product. It starts as an interactive, permission-based assistant, not an autonomous system.
+
+Teaching is the primary focus: lesson support, project memory, writing style, planning, and guided troubleshooting. App development and technical debugging support are secondary. 3D printing will become a future specialist agent, with the Chief of Staff coordinating notes and handoffs later.
+
+Phase 1A adds safety, training, permissions, memory, sensitivity, source, workflow, and evaluation docs before any app implementation.
+
+See:
+
+- `assistant/README.md`
+- `docs/chief-of-staff-roadmap.md`
+- `docs/assistant-training-guide.md`
+
 ## Phase 0A Completion Checklist
 
 Before moving to later Teacher OS development, confirm:

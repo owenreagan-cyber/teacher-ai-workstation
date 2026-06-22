@@ -2,6 +2,20 @@
 
 Use this beginner-friendly checklist on the first day with the new MacBook Pro.
 
+# Before opening the MacBook
+
+Run from the repo on the existing machine or Codex/local clone:
+
+```bash
+bash setup/98-final-audit.sh
+```
+
+Then:
+
+- If PASS: proceed to opening the new MacBook with live assistant guidance.
+- If PASS WITH WARNINGS: review warnings, then decide.
+- If FAIL: fix before opening the MacBook.
+
 ## Before running bootstrap
 
 - [ ] Mac was set up as new, not from Migration Assistant

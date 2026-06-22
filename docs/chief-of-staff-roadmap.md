@@ -16,17 +16,19 @@ Complete. Add explicit Markdown memory for project memory, teaching context, wri
 
 ## Phase 1D: Intake review queue
 
-Create a Markdown review queue for candidate material before it becomes approved context, memory, writing samples, workflow guidance, or future knowledge files.
+Complete. Create a Markdown review queue for candidate material before it becomes approved context, memory, writing samples, workflow guidance, or future knowledge files.
 
 Phase 1D creates the human review gate before future indexing or connectors. Raw intake is not approved context. Approved summaries can be included explicitly.
 
 ## Phase 0D: Final Installer Audit
 
-Audit the installer, verification scripts, Day 1 manual steps, and recovery paths before opening the new MacBook Pro M5 Pro, unless Owen intentionally chooses an earlier checkpoint.
+Run the final repository preflight before opening the new MacBook Pro M5 Pro. Phase 0D checks installer readiness, docs, CLI readiness, memory/intake safety, 3D readiness, `.gitignore` protection, and recovery paths.
+
+After Phase 0D passes, the next step is the live MacBook setup walkthrough.
 
 ## Phase 1E: Selected local folder indexing
 
-Index only selected local folders after review gates are proven. Phase 1E should read only reviewed or approved folders, never full-home scanning.
+Index only selected local folders after the Mac is physically set up and verified. Phase 1E should read only reviewed or approved folders, never full-home scanning.
 
 ## Phase 1F: Google Drive selected-folder connector
 
@@ -48,4 +50,4 @@ Define a handoff path for 3D design, printing, product, and business tasks.
 
 Canvas publishing, desktop control, MCP, and autonomous agents are allowed only after safety gates, permissions, source handling, review workflows, and explicit human confirmation are proven.
 
-The "open new MacBook Pro M5 Pro" checkpoint should come after Phase 1D and Phase 0D Final Installer Audit, unless Owen intentionally decides to run the installer earlier.
+The "open new MacBook Pro M5 Pro" checkpoint should come after Phase 0D Final Installer Audit, unless Owen intentionally decides to run the installer earlier.

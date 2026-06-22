@@ -123,6 +123,24 @@ architecture="$(uname -m)"
     echo "- WARN: tests/smoke-chief-of-staff-cli.sh missing"
   fi
   echo
+  echo "## Final Audit"
+  if [[ -f "docs/final-installer-audit.md" ]]; then
+    echo "- PASS: docs/final-installer-audit.md present"
+  else
+    echo "- WARN: docs/final-installer-audit.md missing"
+  fi
+  if [[ -f "setup/98-final-audit.sh" ]]; then
+    echo "- PASS: setup/98-final-audit.sh present"
+  else
+    echo "- WARN: setup/98-final-audit.sh missing"
+  fi
+  if [[ -x "setup/98-final-audit.sh" ]]; then
+    echo "- PASS: setup/98-final-audit.sh executable"
+  else
+    echo "- WARN: setup/98-final-audit.sh is not executable"
+  fi
+  echo "- Note: final audit is run manually before opening the MacBook."
+  echo
   echo "## Chief of Staff memory readiness"
   if [[ -d "assistant/memory" ]]; then
     echo "- PASS: assistant/memory present"

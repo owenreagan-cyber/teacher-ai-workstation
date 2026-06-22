@@ -43,6 +43,7 @@ Options:
   --intake-diff                         Show uncommitted intake changes and exit.
   --next-intake-id                      Print the next ITEM-#### ID and exit.
   --validate-intake                     Run lightweight intake safety checks and exit.
+  --preflight                           Run non-model Chief of Staff readiness checks and exit.
   --version                             Show version and exit.
   --help                                Show this help.
 
@@ -709,6 +710,57 @@ show_status() {
   echo "Intake validation: run --validate-intake before including intake in a real model call."
 }
 
+chief_preflight() {
+  local repo_root="$1"
+  local script_path
+  local failures=0
+  local output_file
+
+  script_path="$(absolute_file_path "${BASH_SOURCE[0]}")"
+
+  echo "Chief of Staff Preflight"
+  echo
+  echo "Repo root: ${repo_root}"
+  echo "No model will be called."
+  echo
+
+  run_preflight_check() {
+    local label="$1"
+    local optional="$2"
+    shift 2
+    output_file="$(mktemp "${TMPDIR:-/tmp}/chief-preflight.XXXXXX")"
+    if CHIEF_OF_STAFF_REPO="${repo_root}" "$@" >"${output_file}" 2>&1; then
+      echo "PASS: ${label}"
+    else
+      if grep -q "Unknown option" "${output_file}" && [[ "${optional}" == "optional" ]]; then
+        echo "WARN: ${label} is not implemented."
+      elif [[ "${optional}" == "optional" ]]; then
+        echo "WARN: ${label} returned a warning or nonzero result."
+        sed 's/^/  /' "${output_file}"
+      else
+        echo "FAIL: ${label} failed."
+        sed 's/^/  /' "${output_file}"
+        failures=$((failures + 1))
+      fi
+    fi
+    rm -f "${output_file}"
+  }
+
+  run_preflight_check "--status" "required" "${script_path}" --status
+  run_preflight_check "--memory-status" "optional" "${script_path}" --memory-status
+  run_preflight_check "--validate-memory" "optional" "${script_path}" --validate-memory
+  run_preflight_check "--intake-status" "optional" "${script_path}" --intake-status
+  run_preflight_check "--validate-intake" "optional" "${script_path}" --validate-intake
+
+  echo
+  if (( failures > 0 )); then
+    echo "Chief of Staff Preflight Result: FAIL"
+    return 1
+  fi
+
+  echo "Chief of Staff Preflight Result: PASS"
+}
+
 workflow=""
 question=""
 model="${CHIEF_OF_STAFF_MODEL:-}"
@@ -784,6 +836,11 @@ while [[ $# -gt 0 ]]; do
     --validate-intake)
       repo_root="$(resolve_repo_root)"
       validate_intake "${repo_root}"
+      exit 0
+      ;;
+    --preflight)
+      repo_root="$(resolve_repo_root)"
+      chief_preflight "${repo_root}"
       exit 0
       ;;
     --list-workflows)

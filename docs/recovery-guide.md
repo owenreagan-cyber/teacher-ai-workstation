@@ -58,6 +58,41 @@ setup/99-verify-setup.sh
 
 `setup/99-verify-setup.sh` verifies scriptable setup only. Focus Modes, widgets, browser profiles, Raycast preferences, Obsidian vault setup, 1Password sign-in, AlDente preferences, iPad/iPhone Focus sync, and Ricoh physical printing are human-verified in `docs/day-1-manual-steps.md`.
 
+## Final audit failed
+
+Run the final audit again after fixing issues:
+
+```bash
+bash setup/98-final-audit.sh
+```
+
+If scripts are not executable, run:
+
+```bash
+chmod +x bootstrap.sh setup/*.sh bin/chief-of-staff tests/smoke-chief-of-staff-cli.sh
+```
+
+If CLI smoke tests fail, run:
+
+```bash
+tests/smoke-chief-of-staff-cli.sh
+```
+
+If memory or intake validation warns or fails, run:
+
+```bash
+bin/chief-of-staff --validate-memory
+bin/chief-of-staff --validate-intake
+```
+
+If optional CLI flags are missing, review whether they were intentionally skipped or need a follow-up patch.
+
+If `.gitignore` safety checks fail, restore intake ignore rules.
+
+If secret scan fails, remove the secret immediately, rotate the credential if it was real, and do not proceed until clean.
+
+If untracked files appear, decide whether to delete, ignore, or intentionally keep them outside the commit.
+
 ## Inspect shell profile changes
 
 The installer manages only one marked block in `~/.zshrc`.

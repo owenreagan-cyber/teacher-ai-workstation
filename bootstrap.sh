@@ -44,6 +44,8 @@ setup_scripts=(
   "setup/10-shell-profile.sh"
 )
 
+# setup/98-final-audit.sh is intentionally not run by bootstrap.
+# It is a preflight repo audit to run before opening the new MacBook.
 setup_scripts+=("setup/99-verify-setup.sh")
 
 for script in "${setup_scripts[@]}"; do

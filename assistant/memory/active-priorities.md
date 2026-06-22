@@ -9,22 +9,22 @@ Completed:
 - Phase 0C - 3D Design Agent Readiness + Verification Foundation
 - Phase 1A - Chief of Staff Safety + Training Layer
 - Phase 1B - Interactive Chief of Staff CLI
+- Phase 1C - Project Memory + Writing Style Memory
+- Phase 1D - Intake Review Queue
 
 Now:
 
-- Phase 1C - Project Memory + Writing Style Memory
+- Phase 0D - Final Installer Audit
 
 Next:
 
-- Phase 1D - Intake Review Queue
-- Phase 0D - Final Installer Audit
 - Open new MacBook Pro M5 Pro
 - Run installer and manual setup
 - Phase 1E - Selected local folder indexing
 
 ## Open New MacBook Pro Placement
 
-The "open new MacBook Pro M5 Pro" checkpoint should happen after Phase 1D and Phase 0D Final Installer Audit unless Owen intentionally decides to run the installer earlier.
+The "open new MacBook Pro M5 Pro" checkpoint should happen after Phase 0D Final Installer Audit unless Owen intentionally decides to run the installer earlier.
 
 When that checkpoint arrives, the assistant should provide literal step-by-step setup instructions beginning with:
 

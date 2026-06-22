@@ -8,6 +8,22 @@ Phase 0A Day 1 is only the core Mac setup. It makes the Mac clean, safe, organiz
 
 It does not build the React app, Canvas tools, agents, Docker services, Supabase, Firestore, MongoDB, or classroom content workflows.
 
+## Before Opening the New MacBook Pro
+
+Run the final repo audit before physically opening the new MacBook.
+
+This confirms the repo is ready. It does not install anything. It does not call a model. It checks docs, scripts, CLI, memory, intake, 3D readiness, `.gitignore` safety, and obvious secret patterns.
+
+From the repo root, run:
+
+```bash
+bash setup/98-final-audit.sh
+```
+
+If it passes, move to the live MacBook setup walkthrough. If it fails, fix the FAIL items before opening the MacBook. WARN items should be reviewed but may not block setup.
+
+Open the MacBook only after Phase 0D passes, then follow live instructions from the assistant.
+
 ## Exact Day 1 Flow
 
 Follow these steps in order on the unopened MacBook Pro.
@@ -78,6 +94,8 @@ The bootstrap script runs the setup scripts in order:
 - `setup/09-generate-report.sh`: writes a local setup report.
 - `setup/10-shell-profile.sh`: activates safe zsh terminal enhancements in `~/.zshrc`.
 - `setup/99-verify-setup.sh`: verifies scriptable setup only.
+
+`setup/98-final-audit.sh` is intentionally not part of the bootstrap run. It is a preflight repo audit to run before opening the new MacBook.
 
 Logs are written to `logs/setup.log`.
 
@@ -218,6 +236,18 @@ bin/chief-of-staff \
   --question "What needs review?" \
   --dry-run
 ```
+
+## Phase 0D: Final Installer Audit
+
+Phase 0D adds the final repository preflight before opening the new MacBook Pro M5 Pro.
+
+Run:
+
+```bash
+bash setup/98-final-audit.sh
+```
+
+The audit checks repo cleanliness, setup scripts, CLI readiness, memory and intake safety checks, 3D readiness, `.gitignore` protection, recovery docs, and obvious secret patterns. It does not install anything and does not call a model.
 
 ## Phase 0A Completion Checklist
 

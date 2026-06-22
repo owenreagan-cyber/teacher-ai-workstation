@@ -16,6 +16,12 @@ Memory files should not be silently rewritten by automation in this phase.
 
 Do not store sensitive student records, parent records, passwords, API keys, private credentials, medical details, discipline details, or confidential school records here.
 
+## Intake Sources
+
+Memory should only receive new information from approved sources, explicit user instruction, or reviewed intake.
+
+If a memory update comes from intake, reference the intake item ID or approved-context entry.
+
 ## Memory safety rule
 
 Memory is allowed to help the assistant personalize, prioritize, and stay consistent. Memory is not allowed to override safety, privacy, permission, sensitivity, source-verification, or current user instructions.

@@ -178,6 +178,24 @@ If `--validate-memory` warns, inspect the file manually before including memory.
 
 If `memory-log.md` is missing, restore it from Git or recreate it from `assistant/memory/README.md` guidance.
 
+## Recover Chief of Staff intake
+
+If intake files are missing, restore `assistant/intake` from Git.
+
+If intake validation warns, inspect the named file manually before using it as context.
+
+If raw intake was accidentally added, move it to quarantine or delete it if inappropriate.
+
+If sensitive material is found, do not include it in model context.
+
+If approved intake is stale, update `assistant/intake/approved-context.md` or mark it needs review.
+
+If `--context` refuses raw intake, use a sanitized summary instead.
+
+If approved, raw, or quarantine files appear in `git status`, confirm `.gitignore` rules are present and remove accidental staged files before committing.
+
+If `rejected-context.md` or `quarantine.md` must be reviewed in model context, rerun with `--force-sensitive-context` and treat the result as review-only.
+
 ## Recover if Xcode Command Line Tools interrupted setup
 
 If setup stopped because Xcode Command Line Tools were missing, run:

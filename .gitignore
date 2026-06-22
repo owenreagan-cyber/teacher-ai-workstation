@@ -6,3 +6,12 @@ dist/
 .env
 .env.*
 *.local
+
+assistant/intake/raw/*
+!assistant/intake/raw/.gitkeep
+
+assistant/intake/quarantine-files/*
+!assistant/intake/quarantine-files/.gitkeep
+
+assistant/intake/approved-files/*
+!assistant/intake/approved-files/.gitkeep

@@ -32,3 +32,7 @@ Use `assistant/memory/memory-log.md` for meaningful memory changes.
 - Raw candidate writing samples are never automatically trusted.
 - The assistant must ask before creating persistent memory.
 - Full-drive or full-inbox memory is not allowed.
+- Intake is the review stage before material becomes memory.
+- Memory files should only receive information that has been approved or summarized through review.
+- Raw intake should not be copied directly into memory without review.
+- Intake decisions should be logged.

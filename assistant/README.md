@@ -58,3 +58,13 @@ Memory supports project continuity, writing style, preferences, teaching context
 Use `bin/chief-of-staff --memory-status` and `bin/chief-of-staff --validate-memory` before important memory-assisted runs.
 
 `assistant/memory/memory-log.md` records meaningful memory changes.
+
+## Intake Review Queue
+
+Phase 1D adds a safe review queue before material becomes approved context.
+
+Raw intake is never loaded automatically. Approved intake summaries can be included explicitly with `--include-approved-intake`.
+
+Intake exists to prepare for future local folder indexing, Google Drive, Gmail, and Canvas connectors safely. Candidate material should be reviewed, sanitized, approved, rejected, quarantined, or deferred before it becomes memory, writing samples, workflow guidance, or future knowledge files.
+
+The actual raw, quarantine, and approved file folders are ignored by Git except for `.gitkeep`. `assistant/intake/approved-context.md` is the safe Markdown summary file.

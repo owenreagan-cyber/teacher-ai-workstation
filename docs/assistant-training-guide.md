@@ -64,3 +64,15 @@ Memory files are approved context, not raw training data.
 - Use `assistant/training/feedback-log.md` after outputs to update memory manually.
 - After updating `writing-style-rules.md` confidence, record the reason in `memory-log.md`.
 - Run `assistant/training/eval-prompts.md` after meaningful memory changes.
+
+# Intake Before Training
+
+Raw samples should go through intake before becoming approved writing samples or memory.
+
+- Use the `intake-review` workflow to classify candidate material.
+- Use `assistant/intake/approved-context.md` for sanitized summaries.
+- Use `assistant/intake/rejected-context.md` and `assistant/intake/quarantine.md` to prevent accidental reuse.
+- Use `assistant/intake/intake-log.md` to trace review decisions.
+- Use `bin/chief-of-staff --validate-intake` before including intake in model context.
+- Use `bin/chief-of-staff --intake-summary` to see queue health.
+- Use `bin/chief-of-staff --next-intake-id` before adding new queue items.

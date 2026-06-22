@@ -18,6 +18,7 @@ The CLI assembles approved Markdown context, one selected workflow, optional app
 - It does not scan Drive, Gmail, Apple Mail, or local folders.
 - It does not recursively read directories.
 - It does not auto-load raw or rejected writing samples.
+- It does not auto-load raw intake, rejected intake, quarantine intake, or approved file folders.
 - It does not send email, publish Canvas content, modify files, delete files, or run background jobs.
 - It does not hardcode a model.
 
@@ -168,6 +169,79 @@ bin/chief-of-staff --validate-memory
 ```
 
 When `--show-context` lists memory older than 30 days, it marks it with `[STALE?]`.
+
+## Intake Review Queue
+
+Phase 1D adds `assistant/intake/`, a Markdown review queue for candidate context. It exists before local indexing, Drive, Gmail, or Canvas connectors so material can be reviewed by Owen before it becomes approved context.
+
+Intake is not automatic memory. Raw intake is not approved context. Approved summaries are safer than raw pasted data because they can remove sensitive details, preserve only the useful learning, and cite the intake item that was reviewed.
+
+### Intake areas
+
+- `assistant/intake/raw/`: unreviewed holding area; ignored by Git except `.gitkeep`; refused with `--context`.
+- `assistant/intake/approved-context.md`: safe Markdown summaries that can be included with `--include-approved-intake`.
+- `assistant/intake/approved-files/`: reviewed files such as PDFs or exports; ignored by Git except `.gitkeep`; not read automatically.
+- `assistant/intake/rejected-context.md`: minimal rejected-item index; not approved context.
+- `assistant/intake/quarantine.md`: review-needed index for sensitive, unclear, private, copyrighted, or risky material.
+- `assistant/intake/quarantine-files/`: file holding area for quarantined artifacts; ignored by Git except `.gitkeep`; refused with `--context`.
+- `assistant/intake/intake-log.md`: review activity log; not auto-included.
+
+`approved-context.md` is for sanitized Markdown summaries. `approved-files/` is for actual reviewed artifacts and is not automatically read by the CLI. Raw intake folders are refused with `--context` because they may contain copied files, private data, or material that has not passed review.
+
+### Intake flags
+
+- `--include-approved-intake`: include `assistant/intake/approved-context.md`.
+- `--include-intake-policy`: include `assistant/intake/intake-policy.md`.
+- `--include-intake-queue`: include `assistant/intake/review-queue.md`.
+- `--include-intake-checklist`: include `assistant/intake/intake-review-checklist.md`.
+- `--intake-status`: show intake file status.
+- `--intake-summary`: show queue counts and validation status.
+- `--intake-diff`: show uncommitted changes in `assistant/intake/` and `.gitignore`.
+- `--next-intake-id`: print the next `ITEM-####` ID.
+- `--validate-intake`: scan approved intake Markdown files for obvious warning patterns.
+- `--force-sensitive-context`: allow `rejected-context.md` or `quarantine.md` as review-only context.
+
+`--force-large-context` is only for file-size overrides. `--force-sensitive-context` is only for explicitly reviewing non-approved intake files. It does not turn rejected or quarantined material into approved context.
+
+### Intake examples
+
+```bash
+bin/chief-of-staff --intake-status
+```
+
+```bash
+bin/chief-of-staff --intake-summary
+```
+
+```bash
+bin/chief-of-staff --intake-diff
+```
+
+```bash
+bin/chief-of-staff --next-intake-id
+```
+
+```bash
+bin/chief-of-staff --validate-intake
+```
+
+```bash
+bin/chief-of-staff \
+  --workflow intake-review \
+  --include-intake-policy \
+  --include-intake-queue \
+  --include-intake-checklist \
+  --question "Review the pending intake queue and suggest next actions." \
+  --dry-run
+```
+
+```bash
+bin/chief-of-staff \
+  --workflow project-review \
+  --include-approved-intake \
+  --question "What approved intake context affects current priorities?" \
+  --dry-run
+```
 
 ## Large file handling
 

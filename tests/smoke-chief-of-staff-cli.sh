@@ -3,6 +3,13 @@ set -euo pipefail
 
 echo "Running Chief of Staff CLI smoke tests..."
 
+raw_intake_test_file="assistant/intake/raw/smoke-test-context.md"
+cleanup() {
+  rm -f "${raw_intake_test_file}"
+}
+trap cleanup EXIT
+printf '%s\n' "sample raw intake test file" > "${raw_intake_test_file}"
+
 bin/chief-of-staff --help >/dev/null
 bin/chief-of-staff --version >/dev/null
 bin/chief-of-staff --status >/dev/null
@@ -40,6 +47,41 @@ if grep -q "SOURCE: assistant/memory/memory-log.md" /tmp/chief-of-staff-memory.t
 fi
 bin/chief-of-staff --memory-status >/dev/null
 bin/chief-of-staff --validate-memory >/dev/null
+bin/chief-of-staff --intake-status >/dev/null
+bin/chief-of-staff --intake-summary >/dev/null
+bin/chief-of-staff --intake-diff >/dev/null
+bin/chief-of-staff --next-intake-id > /tmp/chief-of-staff-next-intake-id.txt
+grep -q '^ITEM-0002$' /tmp/chief-of-staff-next-intake-id.txt
+bin/chief-of-staff --validate-intake >/dev/null
+bin/chief-of-staff --workflow project-review --include-approved-intake --question "test" --dry-run >/dev/null
+bin/chief-of-staff --workflow project-review --include-intake-policy --question "test" --dry-run >/dev/null
+bin/chief-of-staff --workflow intake-review --include-intake-queue --question "test" --dry-run >/dev/null
+bin/chief-of-staff --workflow intake-review --include-intake-checklist --question "test" --dry-run >/dev/null
+bin/chief-of-staff --show-context --workflow project-review --include-approved-intake > /tmp/chief-of-staff-show-intake-context.txt
+grep -q "assistant/intake/approved-context.md" /tmp/chief-of-staff-show-intake-context.txt
+bin/chief-of-staff --workflow project-review --question "test" --dry-run > /tmp/chief-of-staff-no-intake.txt
+if grep -q "SOURCE: assistant/intake/approved-context.md" /tmp/chief-of-staff-no-intake.txt; then
+  echo "FAIL: normal dry-run should not include approved intake"
+  exit 1
+fi
+bin/chief-of-staff --workflow project-review --include-approved-intake --question "test" --dry-run > /tmp/chief-of-staff-approved-intake.txt
+grep -q "SOURCE: assistant/intake/approved-context.md" /tmp/chief-of-staff-approved-intake.txt
+if grep -q "SOURCE: assistant/intake/rejected-context.md" /tmp/chief-of-staff-approved-intake.txt; then
+  echo "FAIL: approved intake should not include rejected-context.md"
+  exit 1
+fi
+if grep -q "SOURCE: assistant/intake/quarantine.md" /tmp/chief-of-staff-approved-intake.txt; then
+  echo "FAIL: approved intake should not include quarantine.md"
+  exit 1
+fi
+if grep -q "SOURCE: assistant/intake/intake-log.md" /tmp/chief-of-staff-approved-intake.txt; then
+  echo "FAIL: approved intake should not include intake-log.md"
+  exit 1
+fi
+if grep -q "SOURCE: assistant/intake/review-queue.md" /tmp/chief-of-staff-approved-intake.txt; then
+  echo "FAIL: approved intake should not include review-queue.md"
+  exit 1
+fi
 
 expect_failure() {
   local label="$1"
@@ -84,5 +126,53 @@ expect_failure "correctly refused rejected-samples" \
     --context assistant/training/writing-samples/rejected-samples.md \
     --question "test" \
     --dry-run
+
+expect_failure "correctly refused intake raw folder" \
+  "Refusing to include intake file-holding folders" \
+  bin/chief-of-staff \
+    --workflow project-review \
+    --context assistant/intake/raw/ \
+    --question "test" \
+    --dry-run
+
+expect_failure "correctly refused file under intake raw folder" \
+  "Refusing to include intake file-holding folders" \
+  bin/chief-of-staff \
+    --workflow project-review \
+    --context "${raw_intake_test_file}" \
+    --question "test" \
+    --dry-run
+
+expect_failure "correctly refused rejected intake without force" \
+  "Refusing to include non-approved intake context" \
+  bin/chief-of-staff \
+    --workflow project-review \
+    --context assistant/intake/rejected-context.md \
+    --question "test" \
+    --dry-run
+
+expect_failure "correctly refused quarantine intake without force" \
+  "Refusing to include non-approved intake context" \
+  bin/chief-of-staff \
+    --workflow project-review \
+    --context assistant/intake/quarantine.md \
+    --question "test" \
+    --dry-run
+
+bin/chief-of-staff \
+  --workflow project-review \
+  --context assistant/intake/rejected-context.md \
+  --force-sensitive-context \
+  --question "test" \
+  --dry-run > /tmp/chief-of-staff-rejected-force.txt
+grep -q "Sensitive Context Warnings" /tmp/chief-of-staff-rejected-force.txt
+
+bin/chief-of-staff \
+  --workflow project-review \
+  --context assistant/intake/quarantine.md \
+  --force-sensitive-context \
+  --question "test" \
+  --dry-run > /tmp/chief-of-staff-quarantine-force.txt
+grep -q "Sensitive Context Warnings" /tmp/chief-of-staff-quarantine-force.txt
 
 echo "PASS: Chief of Staff CLI smoke tests passed."

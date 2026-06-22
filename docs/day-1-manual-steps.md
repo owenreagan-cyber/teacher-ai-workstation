@@ -96,6 +96,40 @@ bin/chief-of-staff \
 
 This only prints or checks local Markdown context. It does not call a model. Use `--show-context` to confirm memory files are included.
 
+## Optional Chief of Staff intake test
+
+Run:
+
+```bash
+bin/chief-of-staff --intake-status
+```
+
+Then run:
+
+```bash
+bin/chief-of-staff --intake-summary
+```
+
+Then run:
+
+```bash
+bin/chief-of-staff --validate-intake
+```
+
+Try an intake dry run:
+
+```bash
+bin/chief-of-staff \
+  --workflow intake-review \
+  --include-intake-policy \
+  --include-intake-queue \
+  --include-intake-checklist \
+  --question "What needs review?" \
+  --dry-run
+```
+
+These commands do not scan the Mac. They do not call a model when `--dry-run` is used. They only inspect repo Markdown files.
+
 ## Finish Day 1
 
 - [ ] Mac restarted after automated setup and manual configuration

@@ -187,6 +187,38 @@ Example:
 bin/chief-of-staff --workflow project-review --include-memory --question "What should I work on next?"
 ```
 
+## Phase 1D: Intake Review Queue
+
+The Chief of Staff now has a Markdown-based intake queue for reviewing candidate context before approval.
+
+Raw intake is not approved context. Approved intake summaries can be included explicitly with `--include-approved-intake`.
+
+Raw, quarantine, and approved file folders are ignored by Git except for `.gitkeep`. This prepares the repo for later selected local folder indexing and connected-source workflows without unsafe automatic ingestion.
+
+Examples:
+
+```bash
+bin/chief-of-staff --intake-status
+```
+
+```bash
+bin/chief-of-staff --intake-summary
+```
+
+```bash
+bin/chief-of-staff --validate-intake
+```
+
+```bash
+bin/chief-of-staff \
+  --workflow intake-review \
+  --include-intake-policy \
+  --include-intake-queue \
+  --include-intake-checklist \
+  --question "What needs review?" \
+  --dry-run
+```
+
 ## Phase 0A Completion Checklist
 
 Before moving to later Teacher OS development, confirm:

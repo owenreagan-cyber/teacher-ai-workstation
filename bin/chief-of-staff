@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-VERSION="chief-of-staff CLI phase-1c"
+VERSION="chief-of-staff CLI phase-1d"
 LARGE_CONTEXT_BYTES=204800
 STALE_MEMORY_SECONDS=$((30 * 24 * 60 * 60))
 
@@ -24,15 +24,25 @@ Options:
   --include-preferences-memory          Include preference memory only.
   --include-decisions-memory            Include decision memory only.
   --include-active-priorities-memory    Include active priorities memory only.
+  --include-approved-intake             Include approved intake summaries only.
+  --include-intake-policy               Include the intake policy.
+  --include-intake-queue                Include the intake review queue.
+  --include-intake-checklist            Include the intake review checklist.
   --model <model-name>                  Pass a model name to the llm CLI.
   --dry-run                             Print the assembled prompt and do not call a model.
   --list-workflows                      List available workflow names.
   --show-context                        Show included file list and exit.
   --no-model                            Print a manual copy/paste prompt and do not call a model.
   --force-large-context                 Include files larger than 200 KB intentionally.
+  --force-sensitive-context             Include rejected/quarantine intake files for review only.
   --status                              Show setup status and exit.
   --memory-status                       Show memory file status and exit.
   --validate-memory                     Run lightweight memory safety checks and exit.
+  --intake-status                       Show intake file status and exit.
+  --intake-summary                      Show intake queue counts and exit.
+  --intake-diff                         Show uncommitted intake changes and exit.
+  --next-intake-id                      Print the next ITEM-#### ID and exit.
+  --validate-intake                     Run lightweight intake safety checks and exit.
   --version                             Show version and exit.
   --help                                Show this help.
 
@@ -231,6 +241,33 @@ assistant/memory/memory-log.md
 EOF
 }
 
+intake_files_all() {
+  cat <<'EOF'
+assistant/intake/README.md
+assistant/intake/intake-policy.md
+assistant/intake/review-queue.md
+assistant/intake/approved-context.md
+assistant/intake/rejected-context.md
+assistant/intake/quarantine.md
+assistant/intake/intake-log.md
+assistant/intake/intake-review-checklist.md
+assistant/intake/templates/intake-item-template.md
+assistant/intake/templates/review-decision-template.md
+assistant/intake/templates/sanitized-summary-template.md
+EOF
+}
+
+intake_files_validate() {
+  cat <<'EOF'
+assistant/intake/review-queue.md
+assistant/intake/approved-context.md
+assistant/intake/rejected-context.md
+assistant/intake/quarantine.md
+assistant/intake/intake-log.md
+assistant/intake/intake-review-checklist.md
+EOF
+}
+
 memory_purpose() {
   case "$1" in
     assistant/memory/README.md) echo "memory usage rules" ;;
@@ -243,6 +280,23 @@ memory_purpose() {
     assistant/memory/memory-review-checklist.md) echo "manual memory review checklist" ;;
     assistant/memory/memory-log.md) echo "manual memory change log" ;;
     *) echo "memory file" ;;
+  esac
+}
+
+intake_purpose() {
+  case "$1" in
+    assistant/intake/README.md) echo "intake usage rules" ;;
+    assistant/intake/intake-policy.md) echo "review and promotion policy" ;;
+    assistant/intake/review-queue.md) echo "pending candidate material" ;;
+    assistant/intake/approved-context.md) echo "approved sanitized intake summaries" ;;
+    assistant/intake/rejected-context.md) echo "minimal rejected-item index" ;;
+    assistant/intake/quarantine.md) echo "quarantine index for review-needed material" ;;
+    assistant/intake/intake-log.md) echo "chronological intake activity log" ;;
+    assistant/intake/intake-review-checklist.md) echo "manual review checklist" ;;
+    assistant/intake/templates/intake-item-template.md) echo "new intake item template" ;;
+    assistant/intake/templates/review-decision-template.md) echo "review decision template" ;;
+    assistant/intake/templates/sanitized-summary-template.md) echo "sanitized summary template" ;;
+    *) echo "intake file" ;;
   esac
 }
 
@@ -264,6 +318,49 @@ file_modified_date() {
     date -r "${modified_epoch}" "+%Y-%m-%d" 2>/dev/null || date -d "@${modified_epoch}" "+%Y-%m-%d" 2>/dev/null || echo "unknown"
   else
     echo "unknown"
+  fi
+}
+
+count_markdown_heading() {
+  local file="$1"
+  local pattern="$2"
+  if [[ -f "${file}" ]]; then
+    grep -Ec "${pattern}" "${file}" || true
+  else
+    echo "0"
+  fi
+}
+
+count_markdown_text() {
+  local file="$1"
+  local pattern="$2"
+  if [[ -f "${file}" ]]; then
+    grep -Eic "${pattern}" "${file}" || true
+  else
+    echo "0"
+  fi
+}
+
+intake_queue_count() {
+  count_markdown_heading "$1" '^### Intake Item: ITEM-[0-9]{4}'
+}
+
+approved_intake_count() {
+  count_markdown_heading "$1" '^### Approved Item: APPROVED-[0-9]{4}'
+}
+
+rejected_intake_count() {
+  count_markdown_heading "$1" '^### Rejected Item: REJECTED-[0-9]{4}'
+}
+
+quarantined_intake_count() {
+  count_markdown_heading "$1" '^### Quarantined Item: QUARANTINE-[0-9]{4}'
+}
+
+last_intake_log_heading() {
+  local file="$1"
+  if [[ -f "${file}" ]]; then
+    grep -E '^### ' "${file}" | tail -1 || true
   fi
 }
 
@@ -293,6 +390,177 @@ print_included_file_for_show_context() {
     echo "- ${relative_path} [STALE?]"
   else
     echo "- ${relative_path}"
+  fi
+}
+
+show_intake_status() {
+  local repo_root="$1"
+  local relative_path
+  local abs_path
+  local size_bytes
+  local modified_date
+
+  echo "Chief of Staff Intake Status"
+  echo
+  echo "Repo root: ${repo_root}"
+  echo
+  status_line_dir "assistant/intake" "${repo_root}/assistant/intake"
+  status_line_dir "assistant/intake/raw" "${repo_root}/assistant/intake/raw"
+  status_line_dir "assistant/intake/quarantine-files" "${repo_root}/assistant/intake/quarantine-files"
+  status_line_dir "assistant/intake/approved-files" "${repo_root}/assistant/intake/approved-files"
+  echo
+  echo "Counts:"
+  echo "- Pending queue entries: $(intake_queue_count "${repo_root}/assistant/intake/review-queue.md")"
+  echo "- Approved entries: $(approved_intake_count "${repo_root}/assistant/intake/approved-context.md")"
+  echo "- Rejected entries: $(rejected_intake_count "${repo_root}/assistant/intake/rejected-context.md")"
+  echo "- Quarantined entries: $(quarantined_intake_count "${repo_root}/assistant/intake/quarantine.md")"
+  echo
+
+  while IFS= read -r relative_path; do
+    abs_path="${repo_root}/${relative_path}"
+    if [[ -f "${abs_path}" ]]; then
+      echo "PASS: ${relative_path}"
+      size_bytes="$(file_size_bytes "${abs_path}")"
+      modified_date="$(file_modified_date "${abs_path}")"
+      echo "Size: ${size_bytes} bytes"
+      echo "Modified: ${modified_date}"
+      echo "Purpose: $(intake_purpose "${relative_path}")"
+    else
+      echo "WARN: ${relative_path} missing"
+      echo "Purpose: $(intake_purpose "${relative_path}")"
+    fi
+    echo
+  done < <(intake_files_all)
+}
+
+INTAKE_WARNING_COUNT=0
+
+add_intake_warning() {
+  local print_warnings="$1"
+  local relative_path="$2"
+  local category="$3"
+
+  INTAKE_WARNING_COUNT=$((INTAKE_WARNING_COUNT + 1))
+  if [[ "${print_warnings}" == "yes" ]]; then
+    echo "WARN: ${relative_path} may contain ${category}."
+  fi
+}
+
+scan_intake_for_warnings() {
+  local repo_root="$1"
+  local print_warnings="${2:-no}"
+  local relative_path
+  local abs_path
+
+  INTAKE_WARNING_COUNT=0
+
+  while IFS= read -r relative_path; do
+    abs_path="${repo_root}/${relative_path}"
+    [[ -f "${abs_path}" ]] || continue
+
+    if grep -Eiq '(^|[^[:alnum:]_])password[[:space:]]*[:=][[:space:]]*[^[:space:]]+' "${abs_path}"; then
+      add_intake_warning "${print_warnings}" "${relative_path}" "assigned password-like text"
+    fi
+    if grep -Eiq '(^|[^[:alnum:]_])api[_-]?key[[:space:]]*[:=][[:space:]]*[^[:space:]]+' "${abs_path}"; then
+      add_intake_warning "${print_warnings}" "${relative_path}" "assigned api_key-like text"
+    fi
+    if grep -Eiq '(^|[^[:alnum:]_])secret[[:space:]]*[:=][[:space:]]*[^[:space:]]+' "${abs_path}"; then
+      add_intake_warning "${print_warnings}" "${relative_path}" "assigned secret-like text"
+    fi
+    if grep -Eiq '(^|[^[:alnum:]_])token[[:space:]]*[:=][[:space:]]*[^[:space:]]+' "${abs_path}"; then
+      add_intake_warning "${print_warnings}" "${relative_path}" "assigned token-like text"
+    fi
+    if grep -Eq -- '-----BEGIN [A-Z ]*PRIVATE KEY-----' "${abs_path}"; then
+      add_intake_warning "${print_warnings}" "${relative_path}" "private-key-block markers"
+    fi
+    if grep -Eiq '(^|[^[:alnum:]_])student[_-]?id[[:space:]]*[:=][[:space:]]*[^[:space:]]+' "${abs_path}"; then
+      add_intake_warning "${print_warnings}" "${relative_path}" "student_id-like text"
+    fi
+    if grep -Eq '[0-9]{3}-[0-9]{2}-[0-9]{4}' "${abs_path}"; then
+      add_intake_warning "${print_warnings}" "${relative_path}" "SSN-like text"
+    fi
+    if grep -Eiq '[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}' "${abs_path}"; then
+      add_intake_warning "${print_warnings}" "${relative_path}" "email-like text"
+    fi
+    if grep -Eq '(\([0-9]{3}\)[[:space:]]*|[0-9]{3}[-.[:space:]])[0-9]{3}[-.[:space:]][0-9]{4}' "${abs_path}"; then
+      add_intake_warning "${print_warnings}" "${relative_path}" "phone-number-like text"
+    fi
+  done < <(intake_files_validate)
+}
+
+validate_intake() {
+  local repo_root="$1"
+
+  echo "Chief of Staff Intake Validation"
+  echo
+  echo "This is a quick warning system, not a security guarantee."
+  echo
+
+  scan_intake_for_warnings "${repo_root}" "yes"
+
+  if (( INTAKE_WARNING_COUNT > 0 )); then
+    echo
+    echo "Review warnings manually before including intake. Warnings may be false positives."
+    echo "Values are not printed here; inspect the named files directly if needed."
+    exit 1
+  fi
+
+  echo "PASS: No obvious sensitive-data warning patterns found in intake Markdown files."
+}
+
+show_intake_summary() {
+  local repo_root="$1"
+  local review_queue="${repo_root}/assistant/intake/review-queue.md"
+  local approved_context="${repo_root}/assistant/intake/approved-context.md"
+  local rejected_context="${repo_root}/assistant/intake/rejected-context.md"
+  local quarantine_index="${repo_root}/assistant/intake/quarantine.md"
+  local intake_log="${repo_root}/assistant/intake/intake-log.md"
+  local last_heading
+
+  scan_intake_for_warnings "${repo_root}" "no"
+  last_heading="$(last_intake_log_heading "${intake_log}")"
+
+  echo "Chief of Staff Intake Summary"
+  echo
+  echo "- Pending queue entries: $(intake_queue_count "${review_queue}")"
+  echo "- Approved entries: $(approved_intake_count "${approved_context}")"
+  echo "- Rejected entries: $(rejected_intake_count "${rejected_context}")"
+  echo "- Quarantined entries: $(quarantined_intake_count "${quarantine_index}")"
+  echo "- Needs-more-context mentions: $(count_markdown_text "${review_queue}" 'needs[- ]more[- ]context|needs more context')"
+  echo "- Deferred mentions: $(count_markdown_text "${review_queue}" 'deferred')"
+  echo "- Last intake-log heading: ${last_heading:-none found}"
+  if (( INTAKE_WARNING_COUNT > 0 )); then
+    echo "- Intake validation: would warn (${INTAKE_WARNING_COUNT} warning(s)); run --validate-intake for details."
+  else
+    echo "- Intake validation: PASS"
+  fi
+}
+
+show_intake_diff() {
+  local repo_root="$1"
+  local diff_output
+
+  diff_output="$(git -C "${repo_root}" diff -- assistant/intake/ .gitignore)"
+  if [[ -z "${diff_output}" ]]; then
+    echo "No uncommitted intake changes found."
+  else
+    printf '%s\n' "${diff_output}"
+  fi
+}
+
+next_intake_id() {
+  local repo_root="$1"
+  local queue_file="${repo_root}/assistant/intake/review-queue.md"
+  local max_id=""
+
+  if [[ -f "${queue_file}" ]]; then
+    max_id="$(grep -Eoh 'ITEM-[0-9]{4}' "${queue_file}" | sed 's/ITEM-//' | sort -n | tail -1 || true)"
+  fi
+
+  if [[ -z "${max_id}" ]]; then
+    echo "ITEM-0001"
+  else
+    printf 'ITEM-%04d\n' "$((10#${max_id} + 1))"
   fi
 }
 
@@ -436,6 +704,9 @@ show_status() {
   while IFS= read -r memory_file; do
     status_line_file "${memory_file}" "${repo_root}/${memory_file}"
   done < <(memory_files_all)
+  echo "Intake status: run --intake-status for detailed intake file status."
+  echo "Intake summary: run --intake-summary for queue counts."
+  echo "Intake validation: run --validate-intake before including intake in a real model call."
 }
 
 workflow=""
@@ -450,9 +721,14 @@ include_teaching_context_memory=0
 include_preferences_memory=0
 include_decisions_memory=0
 include_active_priorities_memory=0
+include_approved_intake=0
+include_intake_policy=0
+include_intake_queue=0
+include_intake_checklist=0
 show_context=0
 no_model=0
 force_large_context=0
+force_sensitive_context=0
 contexts=()
 
 if [[ $# -eq 0 ]]; then
@@ -483,6 +759,31 @@ while [[ $# -gt 0 ]]; do
     --validate-memory)
       repo_root="$(resolve_repo_root)"
       validate_memory "${repo_root}"
+      exit 0
+      ;;
+    --intake-status)
+      repo_root="$(resolve_repo_root)"
+      show_intake_status "${repo_root}"
+      exit 0
+      ;;
+    --intake-summary)
+      repo_root="$(resolve_repo_root)"
+      show_intake_summary "${repo_root}"
+      exit 0
+      ;;
+    --intake-diff)
+      repo_root="$(resolve_repo_root)"
+      show_intake_diff "${repo_root}"
+      exit 0
+      ;;
+    --next-intake-id)
+      repo_root="$(resolve_repo_root)"
+      next_intake_id "${repo_root}"
+      exit 0
+      ;;
+    --validate-intake)
+      repo_root="$(resolve_repo_root)"
+      validate_intake "${repo_root}"
       exit 0
       ;;
     --list-workflows)
@@ -536,6 +837,22 @@ while [[ $# -gt 0 ]]; do
       include_active_priorities_memory=1
       shift
       ;;
+    --include-approved-intake)
+      include_approved_intake=1
+      shift
+      ;;
+    --include-intake-policy)
+      include_intake_policy=1
+      shift
+      ;;
+    --include-intake-queue)
+      include_intake_queue=1
+      shift
+      ;;
+    --include-intake-checklist)
+      include_intake_checklist=1
+      shift
+      ;;
     --model)
       [[ $# -ge 2 ]] || die "--model requires a model name."
       model="$2"
@@ -555,6 +872,10 @@ while [[ $# -gt 0 ]]; do
       ;;
     --force-large-context)
       force_large_context=1
+      shift
+      ;;
+    --force-sensitive-context)
+      force_sensitive_context=1
       shift
       ;;
     *)
@@ -633,6 +954,34 @@ for memory_relative in "${memory_relatives[@]+"${memory_relatives[@]}"}"; do
   included_files+=("${memory_relative}")
 done
 
+intake_relatives=()
+add_intake_relative() {
+  local relative_path="$1"
+  local existing
+  for existing in "${intake_relatives[@]+"${intake_relatives[@]}"}"; do
+    [[ "${existing}" == "${relative_path}" ]] && return 0
+  done
+  [[ -f "${repo_root}/${relative_path}" ]] || die "Requested intake file is missing: ${relative_path}"
+  intake_relatives+=("${relative_path}")
+}
+
+if (( include_approved_intake == 1 )); then
+  add_intake_relative "assistant/intake/approved-context.md"
+fi
+if (( include_intake_policy == 1 )); then
+  add_intake_relative "assistant/intake/intake-policy.md"
+fi
+if (( include_intake_queue == 1 )); then
+  add_intake_relative "assistant/intake/review-queue.md"
+fi
+if (( include_intake_checklist == 1 )); then
+  add_intake_relative "assistant/intake/intake-review-checklist.md"
+fi
+
+for intake_relative in "${intake_relatives[@]+"${intake_relatives[@]}"}"; do
+  included_files+=("${intake_relative}")
+done
+
 approved_samples_relative="assistant/training/writing-samples/approved-samples.md"
 if (( include_approved_samples == 1 )); then
   if [[ -f "${repo_root}/${approved_samples_relative}" ]]; then
@@ -644,24 +993,43 @@ fi
 
 raw_inbox_abs="${repo_root}/assistant/training/writing-samples/raw-inbox.md"
 rejected_abs="${repo_root}/assistant/training/writing-samples/rejected-samples.md"
+intake_raw_dir_abs="${repo_root}/assistant/intake/raw"
+intake_quarantine_files_dir_abs="${repo_root}/assistant/intake/quarantine-files"
+intake_approved_files_dir_abs="${repo_root}/assistant/intake/approved-files"
+intake_rejected_abs="${repo_root}/assistant/intake/rejected-context.md"
+intake_quarantine_abs="${repo_root}/assistant/intake/quarantine.md"
 context_abs_paths=()
 large_warnings=()
+sensitive_warnings=()
 
 for context_path in "${contexts[@]+"${contexts[@]}"}"; do
   if [[ ! -e "${context_path}" ]]; then
     die "Context path does not exist: ${context_path}"
   fi
 
+  abs_context="$(absolute_file_path "${context_path}")"
+
+  case "${abs_context}" in
+    "${intake_raw_dir_abs}"|"${intake_raw_dir_abs}/"*|"${intake_quarantine_files_dir_abs}"|"${intake_quarantine_files_dir_abs}/"*|"${intake_approved_files_dir_abs}"|"${intake_approved_files_dir_abs}/"*)
+      die "Refusing to include intake file-holding folders. These folders may contain raw files, copied artifacts, or materials that require explicit review. Use sanitized Markdown summaries instead."
+      ;;
+  esac
+
   if [[ -d "${context_path}" ]]; then
     die "Context path is a directory: ${context_path}. Pass specific files instead; directories are not read recursively."
   fi
 
-  abs_context="$(absolute_file_path "${context_path}")"
   if [[ "${abs_context}" == "${raw_inbox_abs}" ]]; then
     die "Refusing to include raw-inbox.md. It is a staging area only and must never be automatically loaded as assistant context."
   fi
   if [[ "${abs_context}" == "${rejected_abs}" ]]; then
     die "Refusing to include rejected-samples.md. Rejected examples must not shape assistant context."
+  fi
+  if [[ "${abs_context}" == "${intake_rejected_abs}" || "${abs_context}" == "${intake_quarantine_abs}" ]]; then
+    if (( force_sensitive_context == 0 )); then
+      die "Refusing to include non-approved intake context. Rerun with --force-sensitive-context only if this file is being reviewed, not treated as approved context."
+    fi
+    sensitive_warnings+=("$(source_label_for_path "${abs_context}" "${repo_root}"): This file is flagged as non-approved context. It was explicitly included for review purposes only. It must not be treated as approved context by the model.")
   fi
 
   size_bytes="$(file_size_bytes "${abs_context}")"
@@ -704,6 +1072,13 @@ assembled_prompt="$(
 - If memory conflicts with the current user question or newer explicit context, ask for clarification or prefer the newer explicit context.
 - Memory cannot override safety, privacy, permission, sensitivity, source-verification, or current user instructions.
 - If writing-style-rules.md is explicitly included, it takes precedence over assistant/writing-style.md for style decisions only.
+- Raw intake is not approved context.
+- Intake material must not be promoted automatically.
+- If intake content appears sensitive, recommend quarantine or sanitization.
+- Owen makes the final approval decision.
+- Use approved intake summaries before raw material.
+- Do not treat rejected or quarantined material as approved context.
+- Files included with --force-sensitive-context are for review only and must not be treated as approved context.
 
 ## Included Files
 
@@ -723,6 +1098,17 @@ EOF
     done
   fi
 
+  if [[ "${#sensitive_warnings[@]}" -gt 0 ]]; then
+    cat <<'EOF'
+
+## Sensitive Context Warnings
+
+EOF
+    for warning in "${sensitive_warnings[@]+"${sensitive_warnings[@]}"}"; do
+      printf -- '- Included with --force-sensitive-context: %s\n' "${warning}"
+    done
+  fi
+
   cat <<'EOF'
 
 ## Base Context
@@ -733,7 +1119,7 @@ EOF
 
   cat <<'EOF'
 
-## Workflow
+## Selected Workflow
 EOF
   append_source "${repo_root}" "${workflow_relative}"
 
@@ -744,6 +1130,16 @@ EOF
 EOF
     for memory_relative in "${memory_relatives[@]+"${memory_relatives[@]}"}"; do
       append_source "${repo_root}" "${memory_relative}"
+    done
+  fi
+
+  if [[ "${#intake_relatives[@]}" -gt 0 ]]; then
+    cat <<'EOF'
+
+## Approved Intake Context
+EOF
+    for intake_relative in "${intake_relatives[@]+"${intake_relatives[@]}"}"; do
+      append_source "${repo_root}" "${intake_relative}"
     done
   fi
 

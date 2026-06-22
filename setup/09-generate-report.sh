@@ -137,6 +137,20 @@ architecture="$(uname -m)"
     fi
   done
   echo
+  echo "## Chief of Staff intake readiness"
+  if [[ -d "assistant/intake" ]]; then
+    echo "- PASS: assistant/intake present"
+  else
+    echo "- WARN: assistant/intake missing"
+  fi
+  for doc in "assistant/intake/review-queue.md" "assistant/intake/approved-context.md" "assistant/intake/intake-policy.md" "assistant/intake/intake-log.md" "assistant/intake/intake-review-checklist.md" "assistant/intake/raw/.gitkeep" "assistant/intake/quarantine-files/.gitkeep" "assistant/intake/approved-files/.gitkeep"; do
+    if [[ -f "${doc}" ]]; then
+      echo "- PASS: ${doc}"
+    else
+      echo "- WARN: ${doc} missing"
+    fi
+  done
+  echo
   echo "## Manual steps remaining"
   echo "- Complete Focus Modes, widgets, browser profiles, Raycast preferences, Obsidian vault setup, 1Password sign-in, AlDente preferences, iPad/iPhone Focus sync, and Ricoh physical printing."
   echo "- Review docs/3d-printing-day-1-setup.md and 3d-agent/verification/pre-slicer-checklist.md before using AI-generated 3D designs."

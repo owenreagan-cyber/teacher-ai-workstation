@@ -57,8 +57,8 @@ Use this exact source header format for every included file:
 
 ```markdown
 ---
-
-## SOURCE: relative/path/to/file.md
+SOURCE: relative/path/to/file.md
+---
 ```
 
 ## Safety rules

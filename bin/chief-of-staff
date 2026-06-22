@@ -144,8 +144,9 @@ append_source() {
   local relative_path="$2"
   local abs_path="${repo_root}/${relative_path}"
 
-  printf '\n---\n\n'
-  printf '## SOURCE: %s\n\n' "${relative_path}"
+  printf '\n---\n'
+  printf 'SOURCE: %s\n' "${relative_path}"
+  printf -- '---\n\n'
   cat "${abs_path}"
   printf '\n'
 }
@@ -156,8 +157,9 @@ append_context_source() {
   local label
   label="$(source_label_for_path "${abs_path}" "${repo_root}")"
 
-  printf '\n---\n\n'
-  printf '## SOURCE: %s\n\n' "${label}"
+  printf '\n---\n'
+  printf 'SOURCE: %s\n' "${label}"
+  printf -- '---\n\n'
   cat "${abs_path}"
   printf '\n'
 }

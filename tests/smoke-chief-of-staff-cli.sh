@@ -9,6 +9,12 @@ bin/chief-of-staff --status >/dev/null
 bin/chief-of-staff --list-workflows >/dev/null
 bin/chief-of-staff --show-context --workflow request-training-materials >/dev/null
 bin/chief-of-staff --workflow request-training-materials --question "What do you need from me?" --dry-run >/dev/null
+bin/chief-of-staff --workflow request-training-materials --question "What do you need from me?" --dry-run > /tmp/chief-of-staff-dry-run.txt
+grep -q "SOURCE: assistant/chief-of-staff.md" /tmp/chief-of-staff-dry-run.txt
+if grep -q "## SOURCE:" /tmp/chief-of-staff-dry-run.txt; then
+  echo "FAIL: dry-run prompt should not contain heading-style source markers"
+  exit 1
+fi
 bin/chief-of-staff --workflow project-review --context examples/sample-project-note.md --question "What is the next action?" --dry-run >/dev/null
 bin/chief-of-staff --workflow project-review --context examples/sample-project-note.md --question "What is the next action?" --no-model > /tmp/chief-of-staff-prompt.txt
 

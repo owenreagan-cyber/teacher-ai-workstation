@@ -4,18 +4,18 @@ These principles govern the Teacher AI Workstation as it grows from a setup repo
 
 ## One next action
 
-The system should avoid overwhelming Owen with giant checklists. When possible, tools and assistants should answer:
+The system must avoid overwhelming Owen with giant checklists. When possible, tools and assistants must answer:
 
 - What is the one highest-priority thing to do next?
 - Is it required today?
 - Where should it be done?
 - What exact command, app, or page should be opened?
 
-A full status report is useful, but it should not replace a clear next action.
+A full status report is useful, but it must not replace a clear next action.
 
 ## Capabilities, not credentials
 
-Agents should receive capabilities, not passwords.
+Agents must receive capabilities, not passwords.
 
 A safe capability might be:
 
@@ -33,9 +33,9 @@ An unsafe credential pattern is:
 
 ## Read-only before write
 
-Every automation path should begin with read-only inspection before making changes.
+Every automation path must begin with read-only inspection before making changes.
 
-Preferred order:
+Required order:
 
 1. Inspect.
 2. Report.
@@ -46,9 +46,9 @@ Preferred order:
 
 ## Preview before apply
 
-Scripts that change settings should support preview or dry-run mode whenever practical.
+Scripts that change settings must support preview or dry-run mode whenever practical.
 
-A script should explain:
+A script must explain:
 
 - What it will do.
 - What it will not do.
@@ -58,7 +58,7 @@ A script should explain:
 
 ## Backup before change
 
-Before changing user-facing macOS or app configuration, scripts should preserve enough information to undo or explain the change.
+Before changing user-facing macOS or app configuration, scripts must preserve enough information to undo or explain the change.
 
 Examples:
 
@@ -82,7 +82,7 @@ Human approval is required before actions that touch:
 
 The system must not claim it verified something that cannot be reliably verified.
 
-For example, macOS privacy permissions are often not reliably checkable from shell scripts. In those cases the script should say:
+For example, macOS privacy permissions are often not reliably checkable from shell scripts. In those cases the script must say:
 
 > Opened the correct settings page. Human verification is still required.
 
@@ -90,9 +90,9 @@ False confidence is worse than no check.
 
 ## No invisible work
 
-Every action should be visible, approved, and reported.
+Every action must be visible, approved, and reported.
 
-The system should not silently:
+The system must not silently:
 
 - Create issues.
 - Create branches.
@@ -103,8 +103,8 @@ The system should not silently:
 
 ## Documentation before automation
 
-When a workflow is confusing or risky, document the truth table first. Automation should be built on a shared understanding of what is installed, what needs an account, what needs human approval, and what agents can safely access.
+When a workflow is confusing or risky, document the truth table first. Automation must be built on a shared understanding of what is installed, what needs an account, what needs human approval, and what agents can safely access.
 
 ## Optional stays optional
 
-Optional tools should not appear as critical failures. They should be warnings, recommendations, or later-phase items unless Owen explicitly makes them required.
+Optional tools must not appear as critical failures. They should be warnings, recommendations, or later-phase items unless Owen explicitly makes them required.

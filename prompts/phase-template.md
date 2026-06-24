@@ -4,6 +4,8 @@ Use this template when planning a new workstation phase.
 
 This template is designed to prevent scope creep, invisible work, and unsafe automation.
 
+Before using this template, review `docs/change-approval-process.md` and confirm the current approval level.
+
 ## Phase name
 
 `Phase X: <short name>`
@@ -109,6 +111,36 @@ Examples:
 - Owen reviewed the output.
 - Pull request matches approved scope.
 
+## Standard implementation report format
+
+When implementation work is completed, report back using this structure:
+
+```text
+Implemented:
+- Files created:
+  - <path>
+- Files updated:
+  - <path>
+- Files intentionally not changed:
+  - <path or area>
+
+Verification:
+- <checks performed>
+
+Risks / notes:
+- <remaining risks or follow-ups>
+
+Recommended next phase:
+- <next approved or proposed phase>
+
+Commit / PR:
+- Branch: <branch>
+- PR: <number or URL>
+- Suggested commit message: <message>
+```
+
+Do not claim tests passed unless they were actually run.
+
 ## Suggested branch name
 
 `phase-x-short-name`
@@ -132,3 +164,5 @@ Before making changes, confirm whether Owen asked for:
 - Merge approval.
 
 If the request says `review`, do not perform write actions.
+
+Follow `docs/change-approval-process.md` when deciding whether an action is allowed.

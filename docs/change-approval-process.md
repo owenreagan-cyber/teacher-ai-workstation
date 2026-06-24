@@ -76,6 +76,20 @@ Use this flow unless Owen explicitly instructs otherwise:
 8. Merge approval.
 9. Merge.
 
+## Premature or superseded issues
+
+If an issue, branch, pull request, or other write action is created before the correct approval gate, it must not become the source of truth by default.
+
+The correction process is:
+
+1. Acknowledge that it was created before approval.
+2. Ask Owen whether to close, keep, or rewrite it.
+3. If Owen approves closure, add a clear comment explaining that it was premature or superseded.
+4. Close it before creating the replacement planning item.
+5. Reference the replacement issue or pull request when available.
+
+A premature issue should not be used for implementation unless Owen explicitly re-approves its contents.
+
 ## No invisible work
 
 Every action must be one of these:

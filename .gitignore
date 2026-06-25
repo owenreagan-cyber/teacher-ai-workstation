@@ -12,6 +12,7 @@ dist/
 .teacher-ai-workstation/
 reddit-token.json
 reddit-config.json
+unsplash-config.json
 
 assistant/intake/raw/*
 !assistant/intake/raw/.gitkeep

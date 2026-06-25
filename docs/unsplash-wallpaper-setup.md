@@ -75,6 +75,30 @@ minimal abstract background
 clean classroom desk
 ```
 
+## API search dry-run
+
+Run a real metadata-only search without downloading images:
+
+```bash
+python3 scripts/unsplash-wallpaper-search.py \
+  --api-search \
+  --preset teacher_coding_calm \
+  --limit 3 \
+  --orientation landscape
+```
+
+The script should print:
+
+- candidate description
+- Unsplash photo ID
+- photographer name and username
+- image dimensions
+- Unsplash page URL
+- whether a regular image URL is present
+- rate-limit remaining
+
+The script must not print the access key.
+
 ## Download/review rule
 
 Downloaded images are candidates, not automatically approved.

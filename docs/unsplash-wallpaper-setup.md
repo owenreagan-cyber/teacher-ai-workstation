@@ -99,6 +99,44 @@ The script should print:
 
 The script must not print the access key.
 
+## Selected download workflow
+
+Downloads require an explicit reviewed photo ID, a target, and a confirmation flag.
+
+Preview a selected photo without downloading:
+
+```bash
+python3 scripts/unsplash-wallpaper-search.py \
+  --download-photo-id CCu-16eRBOs \
+  --target teacher
+```
+
+Actually download the selected candidate and update the manifest:
+
+```bash
+python3 scripts/unsplash-wallpaper-search.py \
+  --download-photo-id CCu-16eRBOs \
+  --target teacher \
+  --confirm-download
+```
+
+Targets:
+
+```text
+teacher
+presentation
+```
+
+The script should:
+
+- fetch the selected Unsplash photo metadata
+- print the selected candidate before download
+- refuse to download unless `--confirm-download` is present
+- register the Unsplash download event when possible
+- save the image to the selected approved folder
+- update the local source manifest
+- mark the review status as `teacher-candidate`
+
 ## Download/review rule
 
 Downloaded images are candidates, not automatically approved.
@@ -126,12 +164,15 @@ Required useful metadata:
 - source_url
 - source_title
 - creator_or_author
+- creator_username
 - downloaded_at
 - intended_use
 - license_status
 - review_status
 - notes
 - unsplash_photo_id
+- width
+- height
 
 ## Rate-limit behavior
 

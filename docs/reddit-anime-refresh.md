@@ -4,6 +4,18 @@ Phase 0E-D3 adds a safe refresh workflow for Casual Anime Mode images.
 
 Owen wants Reddit anime/aesthetic images to support his custom local workstation profile, including wallpapers and Photos widget candidates. This content is for personal/local workstation use unless separately reviewed.
 
+## Current finding
+
+A dry-run test against Reddit's unauthenticated public JSON endpoint returned:
+
+```text
+HTTP Error 403: Blocked
+```
+
+That is useful signal. The dry-run passed, but the external unauthenticated fetch did not.
+
+Therefore Phase 0E-D3 must pivot to authenticated Reddit API access before any real download workflow or weekly automation is approved.
+
 ## Intended use
 
 Allowed by default:
@@ -15,11 +27,12 @@ Allowed by default:
 
 Not allowed by default:
 
-- Business branding.
-- Commercial 3D products.
-- Product listings.
-- Customer/client assets.
+- Public branding.
+- Product images or product designs.
+- Listing images.
 - Public classroom slide decks.
+- School websites or handouts.
+- Public social posts.
 
 Default decision rule:
 
@@ -27,33 +40,59 @@ Default decision rule:
 Reddit/anime content = Reference-Only until reviewed.
 ```
 
-## Refresh modes
+## Revised sub-phases
 
-### Manual trigger
+### 0E-D3-A: Documentation and local-state safety
 
-Run:
+Add:
 
-```bash
-scripts/refresh-anime-inspiration.sh
+- Reddit developer setup documentation.
+- Reference-Only policy.
+- Source manifest schema.
+- Token/config path specification.
+- `.gitignore` guards.
+
+No downloads. No weekly automation.
+
+### 0E-D3-B: Reddit auth setup
+
+Add a dedicated auth setup script:
+
+```text
+scripts/reddit-auth-setup.py
 ```
 
-This should refresh the local candidate folders and update the source manifest.
+It must:
 
-### Dry run
+- Use local credentials from an approved path or 1Password-backed workflow.
+- Store tokens outside the repo at `~/.teacher-ai-workstation/reddit-token.json`.
+- Refuse token paths inside the repo.
+- Support `--test-auth`.
+- Successfully fetch at least one image candidate through the authenticated API path before the phase is considered unblocked.
 
-Run:
+### 0E-D3-C: Manual refresh
 
-```bash
-python3 scripts/refresh-anime-inspiration.py --dry-run --limit 10
+Add a runtime refresh script:
+
+```text
+scripts/reddit-refresh.py
 ```
 
-This previews candidates without downloading.
+It must:
 
-### Weekly automatic refresh
+- Use a stored valid token.
+- Check token validity before refresh.
+- Print clear re-authorization instructions if auth is missing or invalid.
+- Use a descriptive User-Agent.
+- Use low limits and rate-limit-aware request behavior.
+- Mark all Reddit/anime items as Reference-Only by default.
+- Update `~/Pictures/Teacher-AI-Workstation/source-manifest.json`.
 
-A future/optional LaunchAgent can run once per week.
+### 0E-D3-D: Weekly automation
 
-The first version should install only after Owen explicitly runs an installer script. It should not silently enable weekly background downloads.
+Only after manual refresh succeeds end-to-end, add optional weekly automation.
+
+Weekly automation must be explicit and reversible. It should not exist in the repo until the authenticated manual workflow works.
 
 ## Folder targets
 
@@ -79,54 +118,38 @@ All downloaded images must be recorded in:
 ~/Pictures/Teacher-AI-Workstation/source-manifest.json
 ```
 
-Each image entry should include:
-
-- local_path
-- source_platform
-- source_url
-- source_title
-- creator_or_author
-- downloaded_at
-- intended_use
-- license_status
-- review_status
-- notes
-
-## Refresh behavior
-
-The script should:
-
-- Use configured subreddit presets.
-- Respect a low default limit.
-- Avoid duplicate URLs already present in the manifest.
-- Save only image-like URLs.
-- Use a descriptive user-agent.
-- Avoid storing secrets.
-- Default all Reddit/anime items to `reference-only`.
-
-## Weekly scheduling boundary
-
-Weekly refresh should be implemented with a user LaunchAgent under:
+See:
 
 ```text
-~/Library/LaunchAgents/
+docs/source-manifest-schema.md
 ```
 
-The LaunchAgent should run as Owen, not root.
+## Token and config paths
 
-Logs should go to:
+Approved local paths:
 
 ```text
-~/Library/Logs/teacher-ai-workstation/
+~/.teacher-ai-workstation/reddit-config.json
+~/.teacher-ai-workstation/reddit-token.json
 ```
 
-The weekly job should be removable with an uninstall script.
+Scripts must refuse to write token/config files inside the repository directory.
+
+## 403 behavior
+
+If Reddit blocks an unauthenticated request, scripts should print an actionable message such as:
+
+```text
+Reddit blocked unauthenticated access. Configure Reddit auth before downloading images. See docs/reddit-developer-setup.md.
+```
+
+Do not silently proceed as if zero candidates is a normal successful refresh.
 
 ## Future Photos widget path
 
 Possible future improvement:
 
-1. Refresh Reddit reference images.
+1. Refresh Reddit reference images through authenticated access.
 2. Copy selected images to Photos import folder.
 3. Import approved images into a Photos album named `Casual Anime Shuffle`.
 4. Use the Photos widget to show that album.

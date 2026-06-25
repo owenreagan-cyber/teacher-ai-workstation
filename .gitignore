@@ -7,6 +7,12 @@ dist/
 .env.*
 *.local
 
+# Local workstation state and credential/token files.
+# These must stay outside the repository in normal use, but keep this guard anyway.
+.teacher-ai-workstation/
+reddit-token.json
+reddit-config.json
+
 assistant/intake/raw/*
 !assistant/intake/raw/.gitkeep
 

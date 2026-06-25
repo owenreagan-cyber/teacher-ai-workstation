@@ -1,0 +1,34 @@
+{
+  "mode": "casual-anime",
+  "display_scaling": "leave macOS Displays setting on Default",
+  "dock": {
+    "tilesize": 48,
+    "autohide": true,
+    "show_recents": false
+  },
+  "desktop": {
+    "icon_size": 80,
+    "text_size": 14,
+    "grid_spacing": 64
+  },
+  "folders": {
+    "wallpapers": "~/Pictures/Teacher-AI-Workstation/Wallpapers/Casual-Anime",
+    "anime_reference": "~/Pictures/Teacher-AI-Workstation/Reference-Only/Anime-Inspiration",
+    "photos_import": "~/Pictures/Teacher-AI-Workstation/Photos-Import/Casual-Anime-Shuffle",
+    "screenshots": "~/Screenshots"
+  },
+  "manual_settings": {
+    "cursor_font_size": "16 if coding casually",
+    "terminal_font_size": "16",
+    "pointer_size": "slightly larger than default if needed",
+    "widgets": ["Photos", "Music or Spotify", "Weather", "Battery", "Clock", "Calendar"]
+  },
+  "future_playlists": [
+    "Lofi Anime Coding",
+    "Night Drive Synthwave",
+    "Chill J-Pop Focus",
+    "Video Game Study",
+    "Creative 3D Design",
+    "Teacher Planning Calm"
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "mode": "teacher-coding",
+  "display_scaling": "leave macOS Displays setting on Default",
+  "dock": {
+    "tilesize": 40,
+    "autohide": true,
+    "show_recents": false
+  },
+  "desktop": {
+    "icon_size": 68,
+    "text_size": 13,
+    "grid_spacing": 54
+  },
+  "folders": {
+    "wallpapers": "~/Pictures/Teacher-AI-Workstation/Wallpapers/Teacher-Coding",
+    "presentation_wallpapers": "~/Pictures/Teacher-AI-Workstation/Wallpapers/Presentation",
+    "screenshots": "~/Screenshots"
+  },
+  "manual_settings": {
+    "cursor_font_size": "15 or 16",
+    "terminal_font_size": "15 or 16",
+    "pointer_size": "slightly larger than default if needed",
+    "widgets": ["Calendar", "Reminders", "Weather", "Battery", "Clock"]
+  }
+}

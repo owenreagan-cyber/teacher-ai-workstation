@@ -1,0 +1,48 @@
+{
+  "version": 1,
+  "unsplash": {
+    "default_intended_use": "teacher-candidate",
+    "default_review_status": "teacher-candidate",
+    "queries": [
+      {
+        "name": "teacher_coding_calm",
+        "query": "dark desk setup calm workspace",
+        "target_folder": "~/Pictures/Teacher-AI-Workstation/Wallpapers/Teacher-Coding",
+        "notes": "Low-clutter backgrounds for coding and teacher planning."
+      },
+      {
+        "name": "teacher_presentation_nature",
+        "query": "calm nature background classroom presentation",
+        "target_folder": "~/Pictures/Teacher-AI-Workstation/Wallpapers/Presentation",
+        "notes": "Potential slide or presentation backgrounds."
+      },
+      {
+        "name": "teacher_library_soft",
+        "query": "quiet library soft light",
+        "target_folder": "~/Pictures/Teacher-AI-Workstation/Wallpapers/Presentation",
+        "notes": "Warm school-friendly presentation background candidates."
+      }
+    ]
+  },
+  "reddit": {
+    "default_intended_use": "personal-reference-only",
+    "default_review_status": "reference-only",
+    "subreddits": [
+      {
+        "name": "ImaginarySliceOfLife",
+        "target_folder": "~/Pictures/Teacher-AI-Workstation/Reference-Only/Anime-Inspiration",
+        "notes": "Personal/reference-only cozy illustration inspiration."
+      },
+      {
+        "name": "Animewallpaper",
+        "target_folder": "~/Pictures/Teacher-AI-Workstation/Reference-Only/Anime-Inspiration",
+        "notes": "Personal/reference-only anime wallpaper candidates."
+      },
+      {
+        "name": "Moescape",
+        "target_folder": "~/Pictures/Teacher-AI-Workstation/Reference-Only/Anime-Inspiration",
+        "notes": "Personal/reference-only anime aesthetic inspiration."
+      }
+    ]
+  }
+}

@@ -95,6 +95,8 @@ check_dir "${workspace_dir}"
 check_file "${workspace_dir}/README.md"
 check_file "${queue_file}"
 check_dir "${templates_dir}"
+check_file "${workspace_dir}/briefs/README.md"
+check_file "scripts/lesson-brief-status.sh"
 
 for template in "${templates[@]}"; do
   check_file "${template}"

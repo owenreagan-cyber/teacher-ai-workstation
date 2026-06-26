@@ -21,6 +21,22 @@ It exists to prepare safe, structured teacher planning workflows before future l
 - `templates/assessment-template.md`: starter structure for checks for understanding.
 - `templates/materials-checklist-template.md`: starter structure for materials and prep.
 
+## Lesson Brief Helper
+
+Create a local draft lesson brief for teacher review:
+
+```bash
+bin/chief-of-staff --create-lesson-brief LESSON_SLUG
+```
+
+Check lesson brief helper status:
+
+```bash
+bin/chief-of-staff --lesson-brief-status
+```
+
+Drafts are written under `assistant/lesson-planning/briefs/`, are local and gitignored, and require human review before classroom use.
+
 ## Future Use
 
 Future tools may help create briefs, activities, assessments, and materials checklists from the queue and templates. Those tools should remain local-first and should require human review before classroom use.

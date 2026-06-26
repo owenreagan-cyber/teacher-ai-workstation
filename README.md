@@ -156,6 +156,14 @@ See:
 - `assistant/README.md`
 - `docs/chief-of-staff-roadmap.md`
 - `docs/assistant-training-guide.md`
+- `docs/lesson-brief-helper.md`
+
+Local lesson brief commands:
+
+```bash
+bin/chief-of-staff --lesson-brief-status
+bin/chief-of-staff --create-lesson-brief LESSON_SLUG
+```
 
 ## Future Specialist: 3D Design Agent
 

@@ -18,18 +18,18 @@ Completed:
 
 Now:
 
-- Developer Mode project templates
+- Lesson brief helper
 
 Next:
 
-- Lesson brief helper
+- Lesson activity and assessment helper
 - Later: selected local folder indexing
 
 ## Phase 1 Boundary
 
 Phase 0E Vibe Engine is complete and verified. Phase 1 is beginning with audit/readiness work.
 
-Do not claim automatic lesson generation, real app generation, or deployment exists. The current system has a CLI, dashboard, memory files, workflows, intake review queue, lesson planning scaffold, and Developer Mode template work, but not lesson generation, production apps, local indexing, or Gmail/Drive integrations.
+Do not claim automatic lesson generation, LLM drafting by default, classroom-ready lesson production, real app generation, or deployment exists. The current system has a CLI, dashboard, memory files, workflows, intake review queue, lesson planning scaffold, and Developer Mode template work, but not lesson generation, production apps, local indexing, or Gmail/Drive integrations.
 
 ## Open New MacBook Pro Placement
 

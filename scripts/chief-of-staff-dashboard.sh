@@ -230,6 +230,30 @@ else
   warn "lesson planning status script missing: scripts/lesson-planning-status.sh"
 fi
 
+section "Developer Mode"
+if [[ -f scripts/developer-mode-status.sh ]]; then
+  developer_output=""
+  developer_result=0
+  capture_command developer_output developer_result bash scripts/developer-mode-status.sh
+  developer_pass="$(summary_count "${developer_output}" "PASS")"
+  developer_warn="$(summary_count "${developer_output}" "WARN")"
+  developer_fail="$(summary_count "${developer_output}" "FAIL")"
+
+  if [[ -n "${developer_pass}" && -n "${developer_warn}" && -n "${developer_fail}" ]]; then
+    printf 'Developer Mode: PASS %s / WARN %s / FAIL %s\n' "${developer_pass}" "${developer_warn}" "${developer_fail}"
+  else
+    printf 'Developer Mode: status command completed\n'
+  fi
+
+  if [[ "${developer_result}" == "0" ]]; then
+    pass "Developer Mode status completed"
+  else
+    fail "Developer Mode status failed"
+  fi
+else
+  warn "Developer Mode status script missing: scripts/developer-mode-status.sh"
+fi
+
 section "Build Queue / Next Action"
 if [[ -f docs/build-queue.md ]]; then
   next_pr="$(awk '

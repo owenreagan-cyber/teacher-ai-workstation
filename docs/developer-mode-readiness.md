@@ -38,6 +38,9 @@ Ready now:
 
 - Chief of Staff CLI foundation.
 - Lesson support workflow.
+- Lesson planning workspace scaffold.
+- Developer Mode folder structure.
+- Reusable local project templates.
 - App development support workflow.
 - Project memory structure.
 - Intake review queue.
@@ -47,9 +50,6 @@ Ready now:
 
 Not ready yet:
 
-- dedicated Developer Mode folder structure.
-- reusable local project templates.
-- lesson planning workspace scaffold.
 - selected local indexing plan.
 - external service connectors.
 - secrets/capability broker.

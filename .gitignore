@@ -22,3 +22,6 @@ assistant/intake/quarantine-files/*
 
 assistant/intake/approved-files/*
 !assistant/intake/approved-files/.gitkeep
+
+# Local Developer Mode generated projects
+developer-mode/projects/

@@ -256,6 +256,9 @@ Phase 0E adds the visual/vibe/image-safety layer for the Teacher AI Workstation.
 * [Phase 0E Completion Handoff](docs/phase-0e-completion-handoff.md)
 * [Phase 0E Quick Commands](docs/phase-0e-quick-commands.md)
 * [Phase 1 Readiness Checklist](docs/phase-1-readiness-checklist.md)
+* [Phase 1 Chief of Staff Status Audit](docs/phase-1-chief-of-staff-status-audit.md)
+* [Developer Mode Readiness](docs/developer-mode-readiness.md)
+* [Build Queue](docs/build-queue.md)
 * [Open Threads](docs/open-threads.md)
 
 ## Phase 0A Completion Checklist

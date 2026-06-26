@@ -1,0 +1,25 @@
+{
+  "mode": "casual-anime",
+  "album_name": "Casual Anime Shuffle",
+  "suggested_widgets": [
+    "Photos",
+    "Weather",
+    "Clock",
+    "Battery",
+    "Calendar",
+    "Music/Spotify"
+  ],
+  "layout": {
+    "photos": "medium or large",
+    "weather": "small",
+    "clock": "small",
+    "battery": "small",
+    "calendar": "small or medium"
+  },
+  "notes": [
+    "Plan only; not automated.",
+    "Photos album creation is manual.",
+    "Widget placement is manual.",
+    "Keep personal anime/reference images private and reference-only by default."
+  ]
+}

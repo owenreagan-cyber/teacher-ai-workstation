@@ -25,3 +25,7 @@ assistant/intake/approved-files/*
 
 # Local Developer Mode generated projects
 developer-mode/projects/
+
+# Local lesson brief drafts
+assistant/lesson-planning/briefs/*.md
+!assistant/lesson-planning/briefs/README.md

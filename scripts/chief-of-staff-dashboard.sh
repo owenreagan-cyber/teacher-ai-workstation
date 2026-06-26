@@ -230,6 +230,30 @@ else
   warn "lesson planning status script missing: scripts/lesson-planning-status.sh"
 fi
 
+section "Lesson Briefs"
+if [[ -f scripts/lesson-brief-status.sh ]]; then
+  brief_output=""
+  brief_result=0
+  capture_command brief_output brief_result bash scripts/lesson-brief-status.sh
+  brief_pass="$(summary_count "${brief_output}" "PASS")"
+  brief_warn="$(summary_count "${brief_output}" "WARN")"
+  brief_fail="$(summary_count "${brief_output}" "FAIL")"
+
+  if [[ -n "${brief_pass}" && -n "${brief_warn}" && -n "${brief_fail}" ]]; then
+    printf 'Lesson Briefs: PASS %s / WARN %s / FAIL %s\n' "${brief_pass}" "${brief_warn}" "${brief_fail}"
+  else
+    printf 'Lesson Briefs: status command completed\n'
+  fi
+
+  if [[ "${brief_result}" == "0" ]]; then
+    pass "lesson brief status completed"
+  else
+    fail "lesson brief status failed"
+  fi
+else
+  warn "lesson brief status script missing: scripts/lesson-brief-status.sh"
+fi
+
 section "Developer Mode"
 if [[ -f scripts/developer-mode-status.sh ]]; then
   developer_output=""

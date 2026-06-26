@@ -19,20 +19,20 @@ Track active projects, project status, next actions, blockers, and decisions.
 - Status: active
 - Category: operations / app-development
 - Goal: Prepare a MacBook-first Teacher AI Workstation with safe setup, assistant foundations, and future specialist support.
-- Current phase: Developer Mode project templates
-- Last known next action: Add safe local starter templates and manual project creation for teacher tools.
+- Current phase: Lesson brief helper
+- Last known next action: Add a safe local Lesson Brief Helper for human-reviewed drafts.
 - Blockers: none known
 - Source: repo roadmap and current implementation work
 - Last reviewed: 2026-06-26
-- Notes: Phase 0E is complete. Keep Phase 1 local-first, inspectable, and beginner-friendly. Do not claim automatic lesson generation, real app generation, or deployment exists.
+- Notes: Phase 0E is complete. Keep Phase 1 local-first, inspectable, and beginner-friendly. Do not claim automatic lesson generation, LLM drafting by default, classroom-ready lesson production, real app generation, or deployment exists.
 
 ### Teacher AI Chief of Staff
 
 - Status: active
 - Category: teaching / app-development
 - Goal: Build a teaching-first, permission-based assistant for planning, memory, writing, troubleshooting, and project support.
-- Current phase: Developer Mode project templates
-- Last known next action: Review Developer Mode templates, then move toward a lesson brief helper.
+- Current phase: Lesson brief helper
+- Last known next action: Review the Lesson Brief Helper, then move toward a lesson activity and assessment helper.
 - Blockers: approved real writing samples are not added yet; Gmail/Drive integrations require explicit future permission and safety review
 - Source: Phase 1A-1D docs, dashboard docs, lesson planning scaffold, and Developer Mode template work
 - Last reviewed: 2026-06-26

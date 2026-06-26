@@ -20,6 +20,10 @@ Use generic topics, source notes, and next actions. Lesson drafts require human 
 - ready
 - archived
 
+## Lesson Brief Helper Note
+
+Future helpers may use this queue, but the current Lesson Brief Helper uses a safe slug only and does not parse queue rows yet. Keep queue entries generic and safe for future review.
+
 ## Queue
 
 | Title | Grade/Subject | Date Needed | Standards/Source Notes | Materials | Status | Review Status | Next Action |

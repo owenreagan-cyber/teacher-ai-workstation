@@ -19,24 +19,24 @@ Track active projects, project status, next actions, blockers, and decisions.
 - Status: active
 - Category: operations / app-development
 - Goal: Prepare a MacBook-first Teacher AI Workstation with safe setup, assistant foundations, and future specialist support.
-- Current phase: Phase 1C - Project Memory + Writing Style Memory
-- Last known next action: Implement explicit Markdown memory files and CLI memory flags.
+- Current phase: Phase 1 status audit and Developer Mode readiness
+- Last known next action: Audit existing Chief of Staff pieces and prepare the safest first Phase 1 build.
 - Blockers: none known
 - Source: repo roadmap and current implementation work
-- Last reviewed: initial planning phase
-- Notes: Keep local-first, inspectable, and beginner-friendly.
+- Last reviewed: 2026-06-26
+- Notes: Phase 0E is complete. Keep Phase 1 local-first, inspectable, and beginner-friendly.
 
 ### Teacher AI Chief of Staff
 
 - Status: active
 - Category: teaching / app-development
 - Goal: Build a teaching-first, permission-based assistant for planning, memory, writing, troubleshooting, and project support.
-- Current phase: Phase 1C - Project Memory + Writing Style Memory
-- Last known next action: Add memory files that can be explicitly included by CLI flags.
-- Blockers: approved real writing samples are not added yet
-- Source: Phase 1A and Phase 1B docs
-- Last reviewed: initial planning phase
-- Notes: Teaching remains the primary focus.
+- Current phase: Phase 1 status audit and Developer Mode readiness
+- Last known next action: Build a Chief of Staff command launcher / status dashboard after the audit PR.
+- Blockers: approved real writing samples are not added yet; Gmail/Drive integrations require explicit future permission and safety review
+- Source: Phase 1A-1D docs and current audit
+- Last reviewed: 2026-06-26
+- Notes: Teaching remains the primary focus. Do not claim the full Chief of Staff is built yet.
 
 ### 3D Design Agent readiness
 
@@ -49,6 +49,14 @@ Track active projects, project status, next actions, blockers, and decisions.
 - Source: Phase 0C readiness docs
 - Last reviewed: initial planning phase
 - Notes: Advisory only; human operator makes final print decisions.
+
+## Open Threads
+
+- Reddit API approval pending; Reddit/anime automation paused.
+- Real image approvals pending.
+- Spotify automation not started.
+- Vibe Panel scaffold-only.
+- Gmail/Drive integrations permission-gated.
 
 ## Paused Projects
 

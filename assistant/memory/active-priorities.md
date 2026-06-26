@@ -7,6 +7,8 @@ Completed:
 - Phase 0A - Day 1 Core Installer
 - Phase 0B - Hardening Injector
 - Phase 0C - 3D Design Agent Readiness + Verification Foundation
+- Phase 0D - Final Installer Audit
+- Phase 0E - Vibe Engine
 - Phase 1A - Chief of Staff Safety + Training Layer
 - Phase 1B - Interactive Chief of Staff CLI
 - Phase 1C - Project Memory + Writing Style Memory
@@ -14,13 +16,20 @@ Completed:
 
 Now:
 
-- Phase 0D - Final Installer Audit
+- Phase 1 Chief of Staff status audit and Developer Mode readiness
 
 Next:
 
-- Open new MacBook Pro M5 Pro
-- Run installer and manual setup
-- Phase 1E - Selected local folder indexing
+- Chief of Staff command launcher / status dashboard
+- Lesson planning workspace scaffold
+- Developer Mode project templates
+- Later: selected local folder indexing
+
+## Phase 1 Boundary
+
+Phase 0E Vibe Engine is complete and verified. Phase 1 is beginning with audit/readiness work.
+
+Do not claim the Chief of Staff is fully built. The current system has a CLI, memory files, workflows, and intake review queue, but not the full dashboard, lesson workspace, Developer Mode templates, local indexing, or Gmail/Drive integrations.
 
 ## Open New MacBook Pro Placement
 

@@ -19,24 +19,24 @@ Track active projects, project status, next actions, blockers, and decisions.
 - Status: active
 - Category: operations / app-development
 - Goal: Prepare a MacBook-first Teacher AI Workstation with safe setup, assistant foundations, and future specialist support.
-- Current phase: Lesson planning workspace scaffold
-- Last known next action: Add safe local lesson planning folders, templates, docs, and status checks.
+- Current phase: Developer Mode project templates
+- Last known next action: Add safe local starter templates and manual project creation for teacher tools.
 - Blockers: none known
 - Source: repo roadmap and current implementation work
 - Last reviewed: 2026-06-26
-- Notes: Phase 0E is complete. Keep Phase 1 local-first, inspectable, and beginner-friendly. Do not claim automatic lesson generation exists.
+- Notes: Phase 0E is complete. Keep Phase 1 local-first, inspectable, and beginner-friendly. Do not claim automatic lesson generation, real app generation, or deployment exists.
 
 ### Teacher AI Chief of Staff
 
 - Status: active
 - Category: teaching / app-development
 - Goal: Build a teaching-first, permission-based assistant for planning, memory, writing, troubleshooting, and project support.
-- Current phase: Lesson planning workspace scaffold
-- Last known next action: Review the local lesson planning scaffold, then move toward Developer Mode project templates.
+- Current phase: Developer Mode project templates
+- Last known next action: Review Developer Mode templates, then move toward a lesson brief helper.
 - Blockers: approved real writing samples are not added yet; Gmail/Drive integrations require explicit future permission and safety review
-- Source: Phase 1A-1D docs, dashboard docs, and current lesson planning scaffold work
+- Source: Phase 1A-1D docs, dashboard docs, lesson planning scaffold, and Developer Mode template work
 - Last reviewed: 2026-06-26
-- Notes: Teaching remains the primary focus. Do not claim the full Chief of Staff or automatic lesson generation is built yet.
+- Notes: Teaching remains the primary focus. Do not claim the full Chief of Staff, automatic lesson generation, real app generation, or deployment is built yet.
 
 ### 3D Design Agent readiness
 

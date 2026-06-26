@@ -199,9 +199,17 @@ Lesson Planning Workspace:
 bin/chief-of-staff --lesson-status
 ```
 
+Developer Mode Project Templates:
+
+```bash
+bin/chief-of-staff --developer-status
+bin/chief-of-staff --create-developer-project TEMPLATE_NAME PROJECT_SLUG
+```
+
 See `docs/interactive-chief-of-staff-cli.md`.
 See `docs/chief-of-staff-dashboard.md`.
 See `docs/lesson-planning-workspace.md`.
+See `docs/developer-mode-project-templates.md`.
 
 ## Phase 1C: Project Memory + Writing Style Memory
 

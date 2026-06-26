@@ -1,0 +1,79 @@
+{
+  "playlist_concepts": [
+    {
+      "id": "casual-anime",
+      "vibe_mode": "casual_anime",
+      "display_name": "Casual Anime",
+      "mood": "cozy, playful, relaxed, anime-inspired",
+      "search_terms": [
+        "lofi anime",
+        "chill j-pop",
+        "anime study beats",
+        "night city synthwave"
+      ],
+      "manual_playlist_name": "Vibe: Casual Anime",
+      "automation_status": "manual_only_scaffold",
+      "notes": "Create manually in Spotify for now. No OAuth, API calls, or credentials in this repo."
+    },
+    {
+      "id": "teacher-coding",
+      "vibe_mode": "teacher_coding",
+      "display_name": "Teacher Coding",
+      "mood": "focused, calm, low-distraction",
+      "search_terms": [
+        "deep focus",
+        "coding focus",
+        "ambient study",
+        "calm electronic"
+      ],
+      "manual_playlist_name": "Vibe: Teacher Coding",
+      "automation_status": "manual_only_scaffold",
+      "notes": "Manual playlist only until a later approved Spotify OAuth phase."
+    },
+    {
+      "id": "planning-calm",
+      "vibe_mode": "planning_calm",
+      "display_name": "Planning Calm",
+      "mood": "soft, organized, reflective",
+      "search_terms": [
+        "calm planning",
+        "morning focus",
+        "soft piano focus",
+        "teacher planning"
+      ],
+      "manual_playlist_name": "Vibe: Planning Calm",
+      "automation_status": "manual_only_scaffold",
+      "notes": "Use for lesson planning, prep blocks, and review sessions."
+    },
+    {
+      "id": "presentation-setup",
+      "vibe_mode": "presentation_setup",
+      "display_name": "Presentation Setup",
+      "mood": "clean, confident, quiet",
+      "search_terms": [
+        "instrumental calm",
+        "clean ambient",
+        "presentation focus",
+        "classroom calm"
+      ],
+      "manual_playlist_name": "Vibe: Presentation Setup",
+      "automation_status": "manual_only_scaffold",
+      "notes": "Keep classroom-facing choices appropriate and non-distracting."
+    },
+    {
+      "id": "creative-3d-design",
+      "vibe_mode": "creative_3d_design",
+      "display_name": "Creative 3D Design",
+      "mood": "curious, maker-focused, upbeat",
+      "search_terms": [
+        "creative focus",
+        "maker music",
+        "synthwave design",
+        "instrumental creativity"
+      ],
+      "manual_playlist_name": "Vibe: Creative 3D Design",
+      "automation_status": "manual_only_scaffold",
+      "notes": "Manual playlist for 3D ideation and product sketches. No commercial/media rights are implied."
+    }
+  ]
+}

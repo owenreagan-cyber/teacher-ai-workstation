@@ -249,6 +249,15 @@ bash setup/98-final-audit.sh
 
 The audit checks repo cleanliness, setup scripts, CLI readiness, memory and intake safety checks, 3D readiness, `.gitignore` protection, recovery docs, and obvious secret patterns. It does not install anything and does not call a model.
 
+### Phase 0E Vibe Engine handoff
+
+Phase 0E adds the visual/vibe/image-safety layer for the Teacher AI Workstation. For the current completion status, verification command, and handoff into Phase 1, see:
+
+* [Phase 0E Completion Handoff](docs/phase-0e-completion-handoff.md)
+* [Phase 0E Quick Commands](docs/phase-0e-quick-commands.md)
+* [Phase 1 Readiness Checklist](docs/phase-1-readiness-checklist.md)
+* [Open Threads](docs/open-threads.md)
+
 ## Phase 0A Completion Checklist
 
 Before moving to later Teacher OS development, confirm:

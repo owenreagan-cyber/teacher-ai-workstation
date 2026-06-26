@@ -12,7 +12,10 @@ Teacher AI Chief of Staff CLI
 Usage:
   bin/chief-of-staff --workflow <name> --question <text> [options]
 
-Options:
+Meta commands:
+  --dashboard                          Show local Chief of Staff dashboard and exit.
+
+Workflow options:
   --workflow <name>                     Select one workflow.
   --question <text>                     Ask a question.
   --context <path>                      Include one explicit context file. May be repeated.
@@ -48,6 +51,7 @@ Options:
   --help                                Show this help.
 
 Examples:
+  bin/chief-of-staff --dashboard
   bin/chief-of-staff --status
   bin/chief-of-staff --list-workflows
   bin/chief-of-staff --workflow request-training-materials --question "What should I give you first?"
@@ -796,6 +800,15 @@ while [[ $# -gt 0 ]]; do
       ;;
     --version)
       echo "${VERSION}"
+      exit 0
+      ;;
+    --dashboard)
+      repo_root="$(resolve_repo_root)"
+      dashboard_script="${repo_root}/scripts/chief-of-staff-dashboard.sh"
+      if [[ ! -f "${dashboard_script}" ]]; then
+        die "Dashboard script is missing: scripts/chief-of-staff-dashboard.sh"
+      fi
+      bash "${dashboard_script}"
       exit 0
       ;;
     --status)

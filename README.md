@@ -187,7 +187,14 @@ Example:
 bin/chief-of-staff --workflow request-training-materials --question "What should I give you first?"
 ```
 
+Dashboard:
+
+```bash
+bin/chief-of-staff --dashboard
+```
+
 See `docs/interactive-chief-of-staff-cli.md`.
+See `docs/chief-of-staff-dashboard.md`.
 
 ## Phase 1C: Project Memory + Writing Style Memory
 

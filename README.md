@@ -193,8 +193,15 @@ Dashboard:
 bin/chief-of-staff --dashboard
 ```
 
+Lesson Planning Workspace:
+
+```bash
+bin/chief-of-staff --lesson-status
+```
+
 See `docs/interactive-chief-of-staff-cli.md`.
 See `docs/chief-of-staff-dashboard.md`.
+See `docs/lesson-planning-workspace.md`.
 
 ## Phase 1C: Project Memory + Writing Style Memory
 

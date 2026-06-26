@@ -13,15 +13,14 @@ Completed:
 - Phase 1B - Interactive Chief of Staff CLI
 - Phase 1C - Project Memory + Writing Style Memory
 - Phase 1D - Intake Review Queue
+- Chief of Staff command launcher / status dashboard
 
 Now:
 
-- Phase 1 Chief of Staff status audit and Developer Mode readiness
+- Lesson planning workspace scaffold
 
 Next:
 
-- Chief of Staff command launcher / status dashboard
-- Lesson planning workspace scaffold
 - Developer Mode project templates
 - Later: selected local folder indexing
 
@@ -29,7 +28,7 @@ Next:
 
 Phase 0E Vibe Engine is complete and verified. Phase 1 is beginning with audit/readiness work.
 
-Do not claim the Chief of Staff is fully built. The current system has a CLI, memory files, workflows, and intake review queue, but not the full dashboard, lesson workspace, Developer Mode templates, local indexing, or Gmail/Drive integrations.
+Do not claim automatic lesson generation exists. The current system has a CLI, dashboard, memory files, workflows, intake review queue, and lesson planning scaffold work, but not lesson generation, Developer Mode templates, local indexing, or Gmail/Drive integrations.
 
 ## Open New MacBook Pro Placement
 

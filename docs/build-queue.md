@@ -10,22 +10,26 @@ Phase 0E Vibe Engine.
 
 Phase 1 Teacher Chief of Staff + Developer Mode readiness.
 
+## Recently Completed
+
+- Chief of Staff command launcher / status dashboard.
+
 ## Current PR
 
-Chief of Staff command launcher / status dashboard.
-
-Scope: Local/read-only dashboard that summarizes Phase 0E, Phase 1, workflows, LLM CLI readiness, memory, intake, build queue, and safety reminders. No external integrations.
-
-## Next PR
-
-Lesson planning workspace scaffold
+Lesson planning workspace scaffold.
 
 Scope: Local folders/docs/templates for lesson planning workflows. No student data, no Gmail/Drive, no external integrations.
 
+## Next PR
+
+Developer Mode project templates
+
+Scope: Local starter templates for small lesson tools/apps/scripts. No deployment, no secrets, no external integrations.
+
 ## Next Recommended PRs
 
-1. Chief of Staff command launcher / status dashboard. Current PR.
-2. Lesson planning workspace scaffold.
+1. Chief of Staff command launcher / status dashboard. Recently completed.
+2. Lesson planning workspace scaffold. Current PR.
 3. Developer Mode project templates.
 4. Safe local document indexing plan.
 5. Later: permissioned Gmail/Drive integrations.

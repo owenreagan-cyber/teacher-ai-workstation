@@ -1,0 +1,61 @@
+{
+  "statuses": {
+    "incoming": {
+      "folder": "~/Pictures/Teacher-AI-Workstation/Image-Review/Incoming-Candidates",
+      "description": "Images that have not been reviewed yet."
+    },
+    "reference_only": {
+      "folder": "~/Pictures/Teacher-AI-Workstation/Image-Review/Reference-Only",
+      "description": "Inspiration images that should not be used directly."
+    },
+    "approved_personal_wallpaper": {
+      "folder": "~/Pictures/Teacher-AI-Workstation/Image-Review/Approved-Personal-Wallpaper",
+      "description": "Images approved for private/personal wallpaper use only."
+    },
+    "approved_photos_widget": {
+      "folder": "~/Pictures/Teacher-AI-Workstation/Image-Review/Approved-Photos-Widget",
+      "description": "Images approved for private/personal Photos widget use only."
+    },
+    "approved_presentation_safe": {
+      "folder": "~/Pictures/Teacher-AI-Workstation/Image-Review/Approved-Presentation-Safe",
+      "description": "Images approved for classroom/public presentation backgrounds."
+    },
+    "rejected_or_hold": {
+      "folder": "~/Pictures/Teacher-AI-Workstation/Image-Review/Rejected-or-Hold",
+      "description": "Unclear, questionable, duplicate, low-quality, or not-yet-approved images."
+    }
+  },
+  "intended_uses": {
+    "personal_wallpaper": {
+      "requires_status": "approved_personal_wallpaper",
+      "final_folder": "~/Pictures/Teacher-AI-Workstation/Wallpapers/Casual-Anime"
+    },
+    "photos_widget": {
+      "requires_status": "approved_photos_widget",
+      "final_folder": "~/Pictures/Teacher-AI-Workstation/Photos-Import/Casual-Anime-Shuffle"
+    },
+    "classroom_presentation": {
+      "requires_status": "approved_presentation_safe",
+      "final_folder": "~/Pictures/Teacher-AI-Workstation/Wallpapers/Presentation"
+    },
+    "reference_only": {
+      "requires_status": "reference_only",
+      "final_folder": "~/Pictures/Teacher-AI-Workstation/Reference-Only/Anime-Inspiration"
+    },
+    "business_or_commercial": {
+      "requires_status": "not_supported_by_this_queue",
+      "note": "Requires explicit review/licensing outside this scaffold."
+    },
+    "commercial_3d_printing": {
+      "requires_status": "not_supported_by_this_queue",
+      "note": "Requires explicit IP/licensing review before any product or sale use."
+    }
+  },
+  "default_rules": [
+    "Anime, Reddit, fan-art, and character images default to reference_only.",
+    "Unclear source defaults to rejected_or_hold or reference_only.",
+    "Public or commercial use requires explicit review/licensing.",
+    "Classroom presentation use requires approved_presentation_safe approval.",
+    "Personal wallpaper/widget use can be approved locally after human review."
+  ]
+}

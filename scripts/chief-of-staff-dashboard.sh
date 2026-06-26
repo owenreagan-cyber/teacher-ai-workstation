@@ -206,6 +206,30 @@ else
   warn "skipping intake status because bin/chief-of-staff is not executable"
 fi
 
+section "Lesson Planning Workspace"
+if [[ -f scripts/lesson-planning-status.sh ]]; then
+  lesson_output=""
+  lesson_result=0
+  capture_command lesson_output lesson_result bash scripts/lesson-planning-status.sh
+  lesson_pass="$(summary_count "${lesson_output}" "PASS")"
+  lesson_warn="$(summary_count "${lesson_output}" "WARN")"
+  lesson_fail="$(summary_count "${lesson_output}" "FAIL")"
+
+  if [[ -n "${lesson_pass}" && -n "${lesson_warn}" && -n "${lesson_fail}" ]]; then
+    printf 'Lesson Planning: PASS %s / WARN %s / FAIL %s\n' "${lesson_pass}" "${lesson_warn}" "${lesson_fail}"
+  else
+    printf 'Lesson Planning: status command completed\n'
+  fi
+
+  if [[ "${lesson_result}" == "0" ]]; then
+    pass "lesson planning workspace status completed"
+  else
+    fail "lesson planning workspace status failed"
+  fi
+else
+  warn "lesson planning status script missing: scripts/lesson-planning-status.sh"
+fi
+
 section "Build Queue / Next Action"
 if [[ -f docs/build-queue.md ]]; then
   next_pr="$(awk '

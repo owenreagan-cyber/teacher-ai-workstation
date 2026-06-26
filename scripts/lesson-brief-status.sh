@@ -59,9 +59,8 @@ fi
 briefs=()
 if [[ -d "${briefs_dir}" ]]; then
   while IFS= read -r -d '' file; do
-    [[ "$(basename "${file}")" == "README.md" ]] && continue
     briefs+=("${file}")
-  done < <(find "${briefs_dir}" -maxdepth 1 -type f -name '*.md' -print0 | sort -z)
+  done < <(find "${briefs_dir}" -maxdepth 1 -type f -name '*.md' ! -name 'README.md' -print0 | sort -z)
 fi
 
 brief_count="${#briefs[@]}"
@@ -76,24 +75,23 @@ if (( brief_count > 0 )); then
   if (( brief_count > 5 )); then
     printf -- '- and %s more\n' "$((brief_count - 5))"
   fi
-fi
-
-for file in "${briefs[@]}"; do
-  base="$(basename "${file}")"
-  head_15="$(head -15 "${file}")"
-  grep -q 'Status: draft' <<<"${head_15}" && pass "${base} metadata includes Status: draft" || warn "${base} metadata missing Status: draft"
-  grep -q 'Human review required: yes' <<<"${head_15}" && pass "${base} metadata includes human review requirement" || warn "${base} metadata missing Human review required: yes"
-  grep -q 'Student-sensitive data allowed: no' <<<"${head_15}" && pass "${base} metadata blocks student-sensitive data" || warn "${base} metadata missing Student-sensitive data allowed: no"
-  grep -q 'Safety Notice' "${file}" && pass "${base} includes Safety Notice" || warn "${base} missing Safety Notice"
-  risky_found=0
-  for label in 'Student:' 'Parent email:' 'IEP:' '504:' 'Medical:' 'Behavior:' 'API key:' 'Secret:'; do
-    if grep -q "${label}" "${file}"; then
-      warn "${base} contains risky label: ${label}"
-      risky_found=1
-    fi
+  for file in "${briefs[@]}"; do
+    base="$(basename "${file}")"
+    head_15="$(head -15 "${file}")"
+    grep -q 'Status: draft' <<<"${head_15}" && pass "${base} metadata includes Status: draft" || warn "${base} metadata missing Status: draft"
+    grep -q 'Human review required: yes' <<<"${head_15}" && pass "${base} metadata includes human review requirement" || warn "${base} metadata missing Human review required: yes"
+    grep -q 'Student-sensitive data allowed: no' <<<"${head_15}" && pass "${base} metadata blocks student-sensitive data" || warn "${base} metadata missing Student-sensitive data allowed: no"
+    grep -q 'Safety Notice' "${file}" && pass "${base} includes Safety Notice" || warn "${base} missing Safety Notice"
+    risky_found=0
+    for label in 'Student:' 'Parent email:' 'IEP:' '504:' 'Medical:' 'Behavior:' 'API key:' 'Secret:'; do
+      if grep -q "${label}" "${file}"; then
+        warn "${base} contains risky label: ${label}"
+        risky_found=1
+      fi
+    done
+    [[ "${risky_found}" == "0" ]] && pass "${base} has no obvious risky labels"
   done
-  [[ "${risky_found}" == "0" ]] && pass "${base} has no obvious risky labels"
-done
+fi
 
 printf '\nSummary\n'
 printf 'PASS: %s\n' "${PASS_COUNT}"

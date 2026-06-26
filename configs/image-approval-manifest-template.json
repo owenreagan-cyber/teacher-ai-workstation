@@ -1,0 +1,36 @@
+{
+  "schema_version": "1.0",
+  "purpose": "Template for human-reviewed image approval records before wallpaper, Photos widget, classroom presentation, reference, business, or 3D printing use.",
+  "entries": [
+    {
+      "id": "example-001",
+      "filename": "example-image.jpg",
+      "local_path": "~/Pictures/Teacher-AI-Workstation/Image-Review/Incoming-Candidates/example-image.jpg",
+      "source_platform": "example-source",
+      "source_url": "unknown",
+      "creator": "unknown",
+      "license_or_usage_note": "Placeholder only. Replace with source, license, attribution, or usage notes from human review.",
+      "intended_use": "reference_only",
+      "review_status": "reference_only",
+      "reviewer": "Owen",
+      "review_date": "YYYY-MM-DD",
+      "notes": "Example entry only. Unknown source should default to reference_only or rejected_or_hold."
+    }
+  ],
+  "allowed_intended_use_examples": [
+    "reference_only",
+    "personal_wallpaper",
+    "photos_widget",
+    "classroom_presentation",
+    "business_or_commercial",
+    "commercial_3d_printing"
+  ],
+  "allowed_review_status_examples": [
+    "incoming",
+    "reference_only",
+    "approved_personal_wallpaper",
+    "approved_photos_widget",
+    "approved_presentation_safe",
+    "rejected_or_hold"
+  ]
+}

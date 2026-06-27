@@ -74,6 +74,16 @@ bin/chief-of-staff --lesson-queue-status
 
 This is read-only. It does not generate content, edit the queue, or modify drafts.
 
+## Lesson Planning Workflow
+
+Use the Lesson Workflow Status helper to review the safe local sequence from planning queue to lesson brief to supporting drafts to pack status to queue status to human review.
+
+```bash
+bin/chief-of-staff --lesson-workflow-status
+```
+
+This is read-only. It does not generate content, edit the queue, or modify drafts.
+
 ## Future Use
 
 Future tools may help create briefs, activities, assessments, and materials checklists from the queue and templates. Those tools should remain local-first and should require human review before classroom use.

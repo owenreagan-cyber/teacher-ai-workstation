@@ -30,6 +30,8 @@ The Lesson Pack Status view can summarize generated local briefs and drafts by s
 
 Lesson Slug is optional but recommended. Use lowercase letters, numbers, and hyphens only. The queue status helper uses this slug to match local lesson briefs and drafts.
 
+Use the workflow guide to move from queue idea to safe slug to local draft files to human review. The workflow guide does not generate content or edit this queue.
+
 ## Queue
 
 | Title | Lesson Slug | Grade/Subject | Date Needed | Standards/Source Notes | Materials | Status | Review Status | Next Action |

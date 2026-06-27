@@ -19,8 +19,8 @@ Track active projects, project status, next actions, blockers, and decisions.
 - Status: active
 - Category: operations / app-development
 - Goal: Prepare a MacBook-first Teacher AI Workstation with safe setup, assistant foundations, and future specialist support.
-- Current phase: Cursor Workflow Operating System
-- Last known next action: Add repo-level Cursor rules, workflow docs, prompt template, PR checklist, and read-only Cursor workflow status helper.
+- Current phase: Safe local lesson review checklist
+- Last known next action: Add a local read-only checklist and status helper for human review before classroom use.
 - Blockers: none known
 - Source: repo roadmap and current implementation work
 - Last reviewed: 2026-06-26
@@ -31,8 +31,8 @@ Track active projects, project status, next actions, blockers, and decisions.
 - Status: active
 - Category: teaching / app-development
 - Goal: Build a teaching-first, permission-based assistant for planning, memory, writing, troubleshooting, and project support.
-- Current phase: Cursor Workflow Operating System
-- Last known next action: Coordinate ChatGPT prompts, Cursor implementation, GitHub PR review, and local dashboard verification through the Cursor Workflow Operating System.
+- Current phase: Safe local lesson review checklist
+- Last known next action: Verify local lesson briefs and supporting drafts with the Safe Local Lesson Review Checklist before classroom use.
 - Blockers: approved real writing samples are not added yet; Gmail/Drive integrations require explicit future permission and safety review
 - Source: Phase 1A-1D docs, dashboard docs, lesson planning scaffold, and Developer Mode template work
 - Last reviewed: 2026-06-26

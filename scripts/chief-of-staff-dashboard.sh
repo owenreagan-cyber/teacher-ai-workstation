@@ -348,6 +348,29 @@ else
   warn "lesson workflow status script missing: scripts/lesson-workflow-status.sh"
 fi
 
+section "Lesson Review Checklist"
+if [[ -f scripts/lesson-review-checklist-status.sh ]]; then
+  review_result=0
+  review_output="$(bash scripts/lesson-review-checklist-status.sh 2>&1)" || review_result=$?
+  review_pass="$(summary_count "${review_output}" "PASS")"
+  review_warn="$(summary_count "${review_output}" "WARN")"
+  review_fail="$(summary_count "${review_output}" "FAIL")"
+
+  if [[ "${review_result}" != "0" ]]; then
+    printf 'Lesson Review Checklist: status command completed\n'
+    printf '%s\n' "${review_output}"
+    fail "lesson review checklist status failed"
+  elif [[ -n "${review_pass}" && -n "${review_warn}" && -n "${review_fail}" ]]; then
+    printf 'Lesson Review Checklist: PASS %s / WARN %s / FAIL %s\n' "${review_pass}" "${review_warn}" "${review_fail}"
+    pass "lesson review checklist status completed"
+  else
+    printf 'Lesson Review Checklist: status command completed\n'
+    pass "lesson review checklist status completed"
+  fi
+else
+  warn "lesson review checklist status script missing: scripts/lesson-review-checklist-status.sh"
+fi
+
 section "Cursor Workflow"
 if [[ -f scripts/cursor-workflow-status.sh ]]; then
   cursor_result=0

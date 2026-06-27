@@ -190,6 +190,14 @@ Local lesson workflow status command:
 bin/chief-of-staff --lesson-workflow-status
 ```
 
+Local lesson review checklist status command:
+
+```bash
+bin/chief-of-staff --lesson-review-checklist-status
+```
+
+See `docs/safe-local-lesson-review-checklist.md`.
+
 ## Future Specialist: 3D Design Agent
 
 Phase 0 now prewires the Mac for future 3D design work.

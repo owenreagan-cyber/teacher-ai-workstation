@@ -22,9 +22,9 @@ Phase 1 Teacher Chief of Staff + safe local lesson workflows.
 
 ## Current PR
 
-Lesson planning workflow guide.
+Cursor Workflow Operating System.
 
-Scope: Local documentation and read-only workflow status helper that explains the safe sequence from planning queue to lesson brief to supporting drafts to pack status to queue status to human review. No student data, no Gmail/Drive, no external integrations, no automatic lesson generation.
+Scope: Local workflow/process documentation, repo-level Cursor rules, reusable prompt template, PR review checklist, and read-only Cursor workflow status helper. No student data, no Gmail/Drive, no external integrations, no automatic lesson generation, no lesson-generation behavior changes.
 
 ## Next PR
 

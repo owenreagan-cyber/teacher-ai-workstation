@@ -239,6 +239,16 @@ bin/chief-of-staff --developer-status
 bin/chief-of-staff --create-developer-project TEMPLATE_NAME PROJECT_SLUG
 ```
 
+## Cursor Workflow
+
+Local Cursor workflow status command:
+
+```bash
+bin/chief-of-staff --cursor-workflow-status
+```
+
+See `docs/cursor-workflow-operating-system.md`.
+
 See `docs/interactive-chief-of-staff-cli.md`.
 See `docs/chief-of-staff-dashboard.md`.
 See `docs/lesson-planning-workspace.md`.

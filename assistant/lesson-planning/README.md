@@ -16,6 +16,7 @@ It exists to prepare safe, structured teacher planning workflows before future l
 ## Current Files
 
 - `planning-queue.md`: safe queue for generic lesson planning ideas.
+- `drafts/README.md`: tracked marker for local activity, assessment, and materials drafts.
 - `templates/lesson-brief-template.md`: starter structure for future lesson briefs.
 - `templates/activity-template.md`: starter structure for classroom activities.
 - `templates/assessment-template.md`: starter structure for checks for understanding.
@@ -36,6 +37,22 @@ bin/chief-of-staff --lesson-brief-status
 ```
 
 Drafts are written under `assistant/lesson-planning/briefs/`, are local and gitignored, and require human review before classroom use.
+
+## Lesson Draft Helper
+
+Create a local activity, assessment, or materials checklist draft for teacher review:
+
+```bash
+bin/chief-of-staff --create-lesson-draft TYPE LESSON_SLUG
+```
+
+Check lesson draft helper status:
+
+```bash
+bin/chief-of-staff --lesson-draft-status
+```
+
+Valid types are `activity`, `assessment`, and `materials`. Drafts are written under `assistant/lesson-planning/drafts/`, are local and gitignored, and require human review before classroom use.
 
 ## Future Use
 

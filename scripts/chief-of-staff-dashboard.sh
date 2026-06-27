@@ -254,6 +254,31 @@ else
   warn "lesson brief status script missing: scripts/lesson-brief-status.sh"
 fi
 
+section "Lesson Drafts"
+if [[ -f scripts/lesson-draft-status.sh ]]; then
+  draft_result=0
+  draft_output="$(bash scripts/lesson-draft-status.sh 2>&1)" || draft_result=$?
+  draft_pass="$(summary_count "${draft_output}" "PASS")"
+  draft_warn="$(summary_count "${draft_output}" "WARN")"
+  draft_fail="$(summary_count "${draft_output}" "FAIL")"
+
+  if [[ "${draft_result}" != "0" ]]; then
+    printf 'Lesson Drafts: status command completed\n'
+  elif [[ -n "${draft_pass}" && -n "${draft_warn}" && -n "${draft_fail}" ]]; then
+    printf 'Lesson Drafts: PASS %s / WARN %s / FAIL %s\n' "${draft_pass}" "${draft_warn}" "${draft_fail}"
+  else
+    printf 'Lesson Drafts: status command completed\n'
+  fi
+
+  if [[ "${draft_result}" == "0" ]]; then
+    pass "lesson draft status completed"
+  else
+    fail "lesson draft status failed"
+  fi
+else
+  warn "lesson draft status script missing: scripts/lesson-draft-status.sh"
+fi
+
 section "Developer Mode"
 if [[ -f scripts/developer-mode-status.sh ]]; then
   developer_output=""

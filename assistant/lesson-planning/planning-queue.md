@@ -26,12 +26,14 @@ Future helpers may use this queue, but the current Lesson Brief Helper uses a sa
 
 The Lesson Draft Helper can create local activity, assessment, and materials drafts from a safe type and slug. It does not parse queue rows yet.
 
-The Lesson Pack Status view can summarize generated local briefs and drafts by safe slug. It does not parse queue rows yet.
+The Lesson Pack Status view can summarize generated local briefs and drafts by safe slug.
+
+Lesson Slug is optional but recommended. Use lowercase letters, numbers, and hyphens only. The queue status helper uses this slug to match local lesson briefs and drafts.
 
 ## Queue
 
-| Title | Grade/Subject | Date Needed | Standards/Source Notes | Materials | Status | Review Status | Next Action |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| Fractions Review | Grade 4 Math | TBD | Teacher-provided source notes needed | Paper, pencils, fraction strips | idea | needs human review | Add source notes and objective |
-| Map Skills Introduction | Grade 4 Social Studies | TBD | Teacher-provided map skills source needed | Map handouts, colored pencils | idea | needs human review | Add source notes and vocabulary |
-| Ecosystems Vocabulary Practice | Grade 4 Science | TBD | Teacher-provided vocabulary list needed | Vocabulary cards, notebook paper | idea | needs human review | Add approved vocabulary list |
+| Title | Lesson Slug | Grade/Subject | Date Needed | Standards/Source Notes | Materials | Status | Review Status | Next Action |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Fractions Review | fractions-review | Grade 4 Math | TBD | Teacher-provided source notes needed | Paper, pencils, fraction strips | idea | needs human review | Add source notes and objective |
+| Map Skills Introduction | map-skills-introduction | Grade 4 Social Studies | TBD | Teacher-provided map skills source needed | Map handouts, colored pencils | idea | needs human review | Add source notes and vocabulary |
+| Ecosystems Vocabulary Practice | ecosystems-vocabulary-practice | Grade 4 Science | TBD | Teacher-provided vocabulary list needed | Vocabulary cards, notebook paper | idea | needs human review | Add approved vocabulary list |

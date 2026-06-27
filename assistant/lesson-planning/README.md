@@ -84,6 +84,16 @@ bin/chief-of-staff --lesson-workflow-status
 
 This is read-only. It does not generate content, edit the queue, or modify drafts.
 
+## Safe Local Lesson Review Checklist
+
+Use the Lesson Review Checklist Status helper before classroom use.
+
+```bash
+bin/chief-of-staff --lesson-review-checklist-status
+```
+
+This is read-only. It does not approve lessons, generate content, edit drafts, or publish/share anything. Human review is required.
+
 ## Future Use
 
 Future tools may help create briefs, activities, assessments, and materials checklists from the queue and templates. Those tools should remain local-first and should require human review before classroom use.

@@ -261,6 +261,13 @@ check_text "docs/open-threads.md" "Reddit API approval is pending|Reddit API app
 check_text "docs/open-threads.md" "Spotify.*not automated|Spotify automation pending" "Spotify automation remains open"
 check_text "docs/open-threads.md" "Vibe Panel.*scaffold|Vibe Panel.*pending" "Vibe Panel remains scaffold/pending"
 
+section "Lesson Review Checklist Files"
+for path in \
+  docs/safe-local-lesson-review-checklist.md \
+  scripts/lesson-review-checklist-status.sh; do
+  check_required_file "${path}"
+done
+
 section "Cursor Workflow Files"
 for path in \
   .cursor/rules/teacher-ai-workstation.mdc \
@@ -272,6 +279,7 @@ for path in \
 done
 
 section "Syntax Checks"
+check_bash_syntax "scripts/lesson-review-checklist-status.sh"
 check_bash_syntax "scripts/cursor-workflow-status.sh"
 check_bash_syntax "scripts/phase-1-status.sh"
 check_bash_syntax "bin/chief-of-staff"

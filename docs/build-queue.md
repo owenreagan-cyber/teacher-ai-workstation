@@ -22,19 +22,19 @@ Phase 1 Teacher Chief of Staff + safe local lesson workflows.
 
 ## Current PR
 
-Cursor Workflow Operating System.
+Safe local lesson review checklist.
 
-Scope: Local workflow/process documentation, repo-level Cursor rules, reusable prompt template, PR review checklist, and read-only Cursor workflow status helper. No student data, no Gmail/Drive, no external integrations, no automatic lesson generation, no lesson-generation behavior changes.
+Scope: Local read-only checklist and status helper that guides human review of lesson briefs and supporting drafts before classroom use. No student data, no Gmail/Drive, no external integrations, no automatic lesson generation, and no automatic review approval.
 
 ## Next PR
 
-Safe local lesson review checklist
+Single-slug lesson review view
 
-Scope: Local read-only checklist that helps verify lesson briefs and supporting drafts are classroom-ready for human review without adding student data, external integrations, or automatic lesson generation.
+Scope: Local read-only helper that shows one safe lesson slug’s queue row, brief/draft file presence, pack status, queue status, and review checklist reminders. No automatic review approval, no student data, no external integrations, and no lesson generation.
 
 ## Next Recommended PRs
 
-1. Safe local lesson review checklist.
+1. Single-slug lesson review view.
 2. Safe local document indexing plan.
 3. Later: permissioned Gmail/Drive integrations.
 4. Later: secrets/capability broker.

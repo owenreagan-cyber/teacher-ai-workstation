@@ -94,6 +94,16 @@ bin/chief-of-staff --lesson-review-checklist-status
 
 This is read-only. It does not approve lessons, generate content, edit drafts, or publish/share anything. Human review is required.
 
+## Single-Slug Lesson Review View
+
+Use the Single-Slug Lesson Review View to inspect one safe lesson slug's queue and local file context.
+
+```bash
+bin/chief-of-staff --lesson-review-view fractions-review
+```
+
+This is read-only. It does not approve lessons, generate content, edit drafts, or publish/share anything. Human review is required.
+
 ## Future Use
 
 Future tools may help create briefs, activities, assessments, and materials checklists from the queue and templates. Those tools should remain local-first and should require human review before classroom use.

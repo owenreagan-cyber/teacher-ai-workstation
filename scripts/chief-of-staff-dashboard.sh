@@ -371,6 +371,14 @@ else
   warn "lesson review checklist status script missing: scripts/lesson-review-checklist-status.sh"
 fi
 
+section "Single-Slug Lesson Review"
+if [[ -f scripts/lesson-review-view.sh ]] && bash -n scripts/lesson-review-view.sh 2>/dev/null && [[ -f bin/chief-of-staff ]] && grep -q -- '--lesson-review-view' bin/chief-of-staff; then
+  printf 'Single-Slug Lesson Review: available\n'
+  pass "Single-Slug Lesson Review available"
+else
+  fail "Single-Slug Lesson Review is not available"
+fi
+
 section "Cursor Workflow"
 if [[ -f scripts/cursor-workflow-status.sh ]]; then
   cursor_result=0

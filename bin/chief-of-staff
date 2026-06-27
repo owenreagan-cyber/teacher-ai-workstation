@@ -24,6 +24,7 @@ Meta commands:
   --lesson-queue-status                Show local lesson queue integration status and exit.
   --lesson-workflow-status             Show local lesson planning workflow status and exit.
   --lesson-review-checklist-status     Show local lesson review checklist status and exit.
+  --lesson-review-view <lesson-slug>   Show local single-slug lesson review view and exit.
   --cursor-workflow-status             Show local Cursor workflow status and exit.
   --developer-status                   Show local Developer Mode status and exit.
   --create-developer-project <template> <slug>
@@ -75,6 +76,7 @@ Examples:
   bin/chief-of-staff --lesson-queue-status
   bin/chief-of-staff --lesson-workflow-status
   bin/chief-of-staff --lesson-review-checklist-status
+  bin/chief-of-staff --lesson-review-view fractions-review
   bin/chief-of-staff --cursor-workflow-status
   bin/chief-of-staff --developer-status
   bin/chief-of-staff --create-developer-project lesson-helper fractions-review-helper
@@ -127,6 +129,7 @@ Local command: lesson pack status
 Local command: lesson queue integration status
 Local command: lesson planning workflow status
 Local command: lesson review checklist status
+Local command: single-slug lesson review view
 Local command: Cursor workflow status
 Local command: developer mode status
 Local command: create developer project from template
@@ -939,6 +942,19 @@ while [[ $# -gt 0 ]]; do
         die "Lesson review checklist status script is missing: scripts/lesson-review-checklist-status.sh"
       fi
       bash "${lesson_review_checklist_status_script}"
+      exit 0
+      ;;
+    --lesson-review-view)
+      if [[ -z "${2:-}" ]]; then
+        echo "Usage: bin/chief-of-staff --lesson-review-view LESSON_SLUG" >&2
+        exit 1
+      fi
+      repo_root="$(resolve_repo_root)"
+      lesson_review_view_script="${repo_root}/scripts/lesson-review-view.sh"
+      if [[ ! -f "${lesson_review_view_script}" ]]; then
+        die "Lesson review view script is missing: scripts/lesson-review-view.sh"
+      fi
+      bash "${lesson_review_view_script}" "$2"
       exit 0
       ;;
     --cursor-workflow-status)

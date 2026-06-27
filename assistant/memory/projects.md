@@ -19,8 +19,8 @@ Track active projects, project status, next actions, blockers, and decisions.
 - Status: active
 - Category: operations / app-development
 - Goal: Prepare a MacBook-first Teacher AI Workstation with safe setup, assistant foundations, and future specialist support.
-- Current phase: Safe local lesson review checklist
-- Last known next action: Add a local read-only checklist and status helper for human review before classroom use.
+- Current phase: Single-slug lesson review view
+- Last known next action: Add a read-only single-slug review view for queue and local file context before human review.
 - Blockers: none known
 - Source: repo roadmap and current implementation work
 - Last reviewed: 2026-06-26
@@ -31,8 +31,8 @@ Track active projects, project status, next actions, blockers, and decisions.
 - Status: active
 - Category: teaching / app-development
 - Goal: Build a teaching-first, permission-based assistant for planning, memory, writing, troubleshooting, and project support.
-- Current phase: Safe local lesson review checklist
-- Last known next action: Verify local lesson briefs and supporting drafts with the Safe Local Lesson Review Checklist before classroom use.
+- Current phase: Single-slug lesson review view
+- Last known next action: Inspect one safe lesson slug's queue row, brief/draft presence, and review reminders in one read-only view.
 - Blockers: approved real writing samples are not added yet; Gmail/Drive integrations require explicit future permission and safety review
 - Source: Phase 1A-1D docs, dashboard docs, lesson planning scaffold, and Developer Mode template work
 - Last reviewed: 2026-06-26

@@ -21,14 +21,15 @@ Completed:
 - Lesson brief queue integration
 - Lesson planning workflow guide
 - Cursor Workflow Operating System
+- Safe local lesson review checklist
 
 Now:
 
-- Safe local lesson review checklist
+- Single-slug lesson review view
 
 Next:
 
-- Single-slug lesson review view or safe local document indexing plan, depending on build queue
+- Review notes template or safe local document indexing plan, depending on build queue
 - Later: selected local folder indexing
 
 ## Phase 1 Boundary

@@ -22,19 +22,19 @@ Phase 1 Teacher Chief of Staff + safe local lesson workflows.
 
 ## Current PR
 
-Safe local lesson review checklist.
+Single-slug lesson review view.
 
-Scope: Local read-only checklist and status helper that guides human review of lesson briefs and supporting drafts before classroom use. No student data, no Gmail/Drive, no external integrations, no automatic lesson generation, and no automatic review approval.
+Scope: Local read-only helper that shows one safe lesson slug's queue row, brief/draft file presence, pack and queue status context, and review checklist reminders. No automatic review approval, no student data, no external integrations, and no lesson generation.
 
 ## Next PR
 
-Single-slug lesson review view
+Review notes template
 
-Scope: Local read-only helper that shows one safe lesson slug’s queue row, brief/draft file presence, pack status, queue status, and review checklist reminders. No automatic review approval, no student data, no external integrations, and no lesson generation.
+Scope: Local-only template for Owen's personal human review notes after inspecting a lesson slug. No automatic approval, no student data, no external integrations, no lesson generation, and no storing official review status.
 
 ## Next Recommended PRs
 
-1. Single-slug lesson review view.
+1. Review notes template.
 2. Safe local document indexing plan.
 3. Later: permissioned Gmail/Drive integrations.
 4. Later: secrets/capability broker.

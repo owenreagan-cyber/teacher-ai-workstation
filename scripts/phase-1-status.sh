@@ -261,6 +261,13 @@ check_text "docs/open-threads.md" "Reddit API approval is pending|Reddit API app
 check_text "docs/open-threads.md" "Spotify.*not automated|Spotify automation pending" "Spotify automation remains open"
 check_text "docs/open-threads.md" "Vibe Panel.*scaffold|Vibe Panel.*pending" "Vibe Panel remains scaffold/pending"
 
+section "Single-Slug Lesson Review Files"
+for path in \
+  docs/single-slug-lesson-review-view.md \
+  scripts/lesson-review-view.sh; do
+  check_required_file "${path}"
+done
+
 section "Lesson Review Checklist Files"
 for path in \
   docs/safe-local-lesson-review-checklist.md \
@@ -279,6 +286,7 @@ for path in \
 done
 
 section "Syntax Checks"
+check_bash_syntax "scripts/lesson-review-view.sh"
 check_bash_syntax "scripts/lesson-review-checklist-status.sh"
 check_bash_syntax "scripts/cursor-workflow-status.sh"
 check_bash_syntax "scripts/phase-1-status.sh"

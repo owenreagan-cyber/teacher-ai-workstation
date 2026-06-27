@@ -119,11 +119,20 @@ check_file "scripts/lesson-workflow-status.sh"
 check_file "docs/lesson-planning-workflow-guide.md"
 check_file "docs/safe-local-lesson-review-checklist.md"
 check_file "scripts/lesson-review-checklist-status.sh"
+check_file "docs/single-slug-lesson-review-view.md"
+check_file "scripts/lesson-review-view.sh"
 if [[ -f scripts/lesson-review-checklist-status.sh ]]; then
   if bash -n scripts/lesson-review-checklist-status.sh; then
     pass "lesson review checklist status script passes bash syntax"
   else
     fail "lesson review checklist status script fails bash syntax"
+  fi
+fi
+if [[ -f scripts/lesson-review-view.sh ]]; then
+  if bash -n scripts/lesson-review-view.sh; then
+    pass "lesson review view script passes bash syntax"
+  else
+    fail "lesson review view script fails bash syntax"
   fi
 fi
 if [[ -f scripts/lesson-workflow-status.sh ]]; then

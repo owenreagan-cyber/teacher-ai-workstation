@@ -99,6 +99,14 @@ check_file "${workspace_dir}/briefs/README.md"
 check_file "scripts/lesson-brief-status.sh"
 check_file "${workspace_dir}/drafts/README.md"
 check_file "scripts/lesson-draft-status.sh"
+check_file "scripts/lesson-pack-status.sh"
+if [[ -f scripts/lesson-pack-status.sh ]]; then
+  if bash -n scripts/lesson-pack-status.sh; then
+    pass "lesson pack status script passes bash syntax"
+  else
+    fail "lesson pack status script fails bash syntax"
+  fi
+fi
 
 for template in "${templates[@]}"; do
   check_file "${template}"

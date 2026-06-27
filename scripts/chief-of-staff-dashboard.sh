@@ -279,6 +279,29 @@ else
   warn "lesson draft status script missing: scripts/lesson-draft-status.sh"
 fi
 
+section "Lesson Packs"
+if [[ -f scripts/lesson-pack-status.sh ]]; then
+  pack_result=0
+  pack_output="$(bash scripts/lesson-pack-status.sh 2>&1)" || pack_result=$?
+  pack_pass="$(summary_count "${pack_output}" "PASS")"
+  pack_warn="$(summary_count "${pack_output}" "WARN")"
+  pack_fail="$(summary_count "${pack_output}" "FAIL")"
+
+  if [[ "${pack_result}" != "0" ]]; then
+    printf 'Lesson Packs: status command completed\n'
+    printf '%s\n' "${pack_output}"
+    fail "lesson pack status failed"
+  elif [[ -n "${pack_pass}" && -n "${pack_warn}" && -n "${pack_fail}" ]]; then
+    printf 'Lesson Packs: PASS %s / WARN %s / FAIL %s\n' "${pack_pass}" "${pack_warn}" "${pack_fail}"
+    pass "lesson pack status completed"
+  else
+    printf 'Lesson Packs: status command completed\n'
+    pass "lesson pack status completed"
+  fi
+else
+  warn "lesson pack status script missing: scripts/lesson-pack-status.sh"
+fi
+
 section "Developer Mode"
 if [[ -f scripts/developer-mode-status.sh ]]; then
   developer_output=""

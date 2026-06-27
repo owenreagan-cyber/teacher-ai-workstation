@@ -54,6 +54,16 @@ bin/chief-of-staff --lesson-draft-status
 
 Valid types are `activity`, `assessment`, and `materials`. Drafts are written under `assistant/lesson-planning/drafts/`, are local and gitignored, and require human review before classroom use.
 
+## Lesson Pack Status
+
+Review local generated lesson briefs and related activity, assessment, and materials drafts:
+
+```bash
+bin/chief-of-staff --lesson-pack-status
+```
+
+The status view is read-only. It groups generated files by safe lesson slug and reports whether each pack is complete or incomplete.
+
 ## Future Use
 
 Future tools may help create briefs, activities, assessments, and materials checklists from the queue and templates. Those tools should remain local-first and should require human review before classroom use.

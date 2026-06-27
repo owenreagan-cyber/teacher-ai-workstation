@@ -172,6 +172,12 @@ bin/chief-of-staff --lesson-draft-status
 bin/chief-of-staff --create-lesson-draft TYPE LESSON_SLUG
 ```
 
+Local lesson pack status command:
+
+```bash
+bin/chief-of-staff --lesson-pack-status
+```
+
 ## Future Specialist: 3D Design Agent
 
 Phase 0 now prewires the Mac for future 3D design work.
@@ -225,6 +231,7 @@ See `docs/interactive-chief-of-staff-cli.md`.
 See `docs/chief-of-staff-dashboard.md`.
 See `docs/lesson-planning-workspace.md`.
 See `docs/lesson-activity-assessment-helper.md`.
+See `docs/lesson-pack-status-planner.md`.
 See `docs/developer-mode-project-templates.md`.
 
 ## Phase 1C: Project Memory + Writing Style Memory

@@ -16,21 +16,22 @@ Completed:
 - Chief of Staff command launcher / status dashboard
 - Lesson planning workspace scaffold
 - Lesson brief helper
+- Lesson activity and assessment helper
 
 Now:
 
-- Lesson activity and assessment helper
+- Lesson pack status and planner
 
 Next:
 
-- Lesson pack status and planner
+- Lesson brief queue integration after human review
 - Later: selected local folder indexing
 
 ## Phase 1 Boundary
 
 Phase 0E Vibe Engine is complete and verified. Phase 1 is beginning with audit/readiness work.
 
-Do not claim automatic lesson generation, LLM drafting by default, classroom-ready lesson production, real app generation, or deployment exists. The current system has a CLI, dashboard, memory files, workflows, intake review queue, lesson planning scaffold, lesson brief helper, lesson draft helper, and Developer Mode template work, but not lesson generation, production apps, local indexing, or Gmail/Drive integrations.
+Do not claim automatic lesson generation, LLM drafting by default, classroom-ready lesson production, real app generation, or deployment exists. The current system has a CLI, dashboard, memory files, workflows, intake review queue, lesson planning scaffold, lesson brief helper, lesson draft helper, lesson pack status view, and Developer Mode template work, but not lesson generation, production apps, local indexing, or Gmail/Drive integrations.
 
 ## Open New MacBook Pro Placement
 

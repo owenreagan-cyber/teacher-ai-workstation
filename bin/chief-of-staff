@@ -20,6 +20,7 @@ Meta commands:
   --lesson-draft-status                Show local lesson draft helper status and exit.
   --create-lesson-draft <type> <lesson-slug>
                                        Create a local activity, assessment, or materials draft.
+  --lesson-pack-status                 Show local lesson pack status and exit.
   --developer-status                   Show local Developer Mode status and exit.
   --create-developer-project <template> <slug>
                                        Copy a Developer Mode template into local projects.
@@ -66,6 +67,7 @@ Examples:
   bin/chief-of-staff --create-lesson-brief fractions-review
   bin/chief-of-staff --lesson-draft-status
   bin/chief-of-staff --create-lesson-draft activity fractions-review
+  bin/chief-of-staff --lesson-pack-status
   bin/chief-of-staff --developer-status
   bin/chief-of-staff --create-developer-project lesson-helper fractions-review-helper
   bin/chief-of-staff --status
@@ -113,6 +115,7 @@ Local command: lesson brief status
 Local command: create lesson brief draft
 Local command: lesson draft status
 Local command: create lesson activity, assessment, or materials draft
+Local command: lesson pack status
 Local command: developer mode status
 Local command: create developer project from template
 EOF
@@ -888,6 +891,15 @@ while [[ $# -gt 0 ]]; do
       type="$2"
       lesson_slug="$3"
       bash "${create_lesson_draft_script}" "$type" "$lesson_slug"
+      exit 0
+      ;;
+    --lesson-pack-status)
+      repo_root="$(resolve_repo_root)"
+      lesson_pack_status_script="${repo_root}/scripts/lesson-pack-status.sh"
+      if [[ ! -f "${lesson_pack_status_script}" ]]; then
+        die "Lesson pack status script is missing: scripts/lesson-pack-status.sh"
+      fi
+      bash "${lesson_pack_status_script}"
       exit 0
       ;;
     --developer-status)

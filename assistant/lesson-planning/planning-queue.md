@@ -26,6 +26,8 @@ Future helpers may use this queue, but the current Lesson Brief Helper uses a sa
 
 The Lesson Draft Helper can create local activity, assessment, and materials drafts from a safe type and slug. It does not parse queue rows yet.
 
+The Lesson Pack Status view can summarize generated local briefs and drafts by safe slug. It does not parse queue rows yet.
+
 ## Queue
 
 | Title | Grade/Subject | Date Needed | Standards/Source Notes | Materials | Status | Review Status | Next Action |

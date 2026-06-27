@@ -302,6 +302,29 @@ else
   warn "lesson pack status script missing: scripts/lesson-pack-status.sh"
 fi
 
+section "Lesson Queue"
+if [[ -f scripts/lesson-queue-status.sh ]]; then
+  queue_result=0
+  queue_output="$(bash scripts/lesson-queue-status.sh 2>&1)" || queue_result=$?
+  queue_pass="$(summary_count "${queue_output}" "PASS")"
+  queue_warn="$(summary_count "${queue_output}" "WARN")"
+  queue_fail="$(summary_count "${queue_output}" "FAIL")"
+
+  if [[ "${queue_result}" != "0" ]]; then
+    printf 'Lesson Queue: status command completed\n'
+    printf '%s\n' "${queue_output}"
+    fail "lesson queue status failed"
+  elif [[ -n "${queue_pass}" && -n "${queue_warn}" && -n "${queue_fail}" ]]; then
+    printf 'Lesson Queue: PASS %s / WARN %s / FAIL %s\n' "${queue_pass}" "${queue_warn}" "${queue_fail}"
+    pass "lesson queue status completed"
+  else
+    printf 'Lesson Queue: status command completed\n'
+    pass "lesson queue status completed"
+  fi
+else
+  warn "lesson queue status script missing: scripts/lesson-queue-status.sh"
+fi
+
 section "Developer Mode"
 if [[ -f scripts/developer-mode-status.sh ]]; then
   developer_output=""

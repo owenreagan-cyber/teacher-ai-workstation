@@ -107,6 +107,14 @@ if [[ -f scripts/lesson-pack-status.sh ]]; then
     fail "lesson pack status script fails bash syntax"
   fi
 fi
+check_file "scripts/lesson-queue-status.sh"
+if [[ -f scripts/lesson-queue-status.sh ]]; then
+  if bash -n scripts/lesson-queue-status.sh; then
+    pass "lesson queue status script passes bash syntax"
+  else
+    fail "lesson queue status script fails bash syntax"
+  fi
+fi
 
 for template in "${templates[@]}"; do
   check_file "${template}"
@@ -120,6 +128,7 @@ done
 
 for column in \
   "Title" \
+  "Lesson Slug" \
   "Grade/Subject" \
   "Date Needed" \
   "Standards/Source Notes" \
@@ -156,7 +165,7 @@ if [[ -f "${queue_file}" ]]; then
       statuses["archived"] = 0
     }
     /^\|/ && $0 !~ /^\|[[:space:]]*---/ && $0 !~ /^\|[[:space:]]*Title[[:space:]]*\|/ {
-      status = $7
+      status = $8
       gsub(/^[[:space:]]+|[[:space:]]+$/, "", status)
       if (status in statuses) {
         statuses[status]++

@@ -62,7 +62,7 @@ if [[ ! -s "${template}" ]]; then
   exit 1
 fi
 
-destination="${drafts_dir}/${draft_type}-${LESSON_SLUG}.md"
+destination="${drafts_dir}/${LESSON_SLUG}-${draft_type}.md"
 if [[ -e "${destination}" ]]; then
   echo "ERROR: draft already exists and will not be overwritten: ${destination}" >&2
   exit 1

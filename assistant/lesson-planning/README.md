@@ -64,6 +64,16 @@ bin/chief-of-staff --lesson-pack-status
 
 The status view is read-only. It groups generated files by safe lesson slug and reports whether each pack is complete or incomplete.
 
+## Lesson Queue Integration
+
+Use the Lesson Queue Status helper to review whether planning queue rows have safe lesson slugs and matching local lesson files.
+
+```bash
+bin/chief-of-staff --lesson-queue-status
+```
+
+This is read-only. It does not generate content, edit the queue, or modify drafts.
+
 ## Future Use
 
 Future tools may help create briefs, activities, assessments, and materials checklists from the queue and templates. Those tools should remain local-first and should require human review before classroom use.

@@ -18,22 +18,23 @@ Phase 1 Teacher Chief of Staff + safe local lesson workflows.
 - Lesson brief helper.
 - Lesson activity and assessment helper.
 - Lesson pack status and planner.
+- Lesson brief queue integration after human review.
 
 ## Current PR
 
-Lesson brief queue integration after human review.
+Lesson planning workflow guide.
 
-Scope: Local read-only helper that compares safe planning queue rows to local generated lesson brief, activity, assessment, and materials files. No student data, no Gmail/Drive, no external integrations, no automatic lesson generation.
+Scope: Local documentation and read-only workflow status helper that explains the safe sequence from planning queue to lesson brief to supporting drafts to pack status to queue status to human review. No student data, no Gmail/Drive, no external integrations, no automatic lesson generation.
 
 ## Next PR
 
-Lesson planning workflow guide
+Safe local lesson review checklist
 
-Scope: Local documentation and optional read-only checklist that explains the safe sequence from planning queue to lesson brief to supporting drafts to pack status to human review. No student data, no Gmail/Drive, no external integrations, no automatic lesson generation.
+Scope: Local read-only checklist that helps verify lesson briefs and supporting drafts are classroom-ready for human review without adding student data, external integrations, or automatic lesson generation.
 
 ## Next Recommended PRs
 
-1. Lesson planning workflow guide.
+1. Safe local lesson review checklist.
 2. Safe local document indexing plan.
 3. Later: permissioned Gmail/Drive integrations.
 4. Later: secrets/capability broker.

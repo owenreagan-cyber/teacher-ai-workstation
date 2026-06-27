@@ -184,6 +184,12 @@ Local lesson queue status command:
 bin/chief-of-staff --lesson-queue-status
 ```
 
+Local lesson workflow status command:
+
+```bash
+bin/chief-of-staff --lesson-workflow-status
+```
+
 ## Future Specialist: 3D Design Agent
 
 Phase 0 now prewires the Mac for future 3D design work.
@@ -239,6 +245,7 @@ See `docs/lesson-planning-workspace.md`.
 See `docs/lesson-activity-assessment-helper.md`.
 See `docs/lesson-pack-status-planner.md`.
 See `docs/lesson-brief-queue-integration.md`.
+See `docs/lesson-planning-workflow-guide.md`.
 See `docs/developer-mode-project-templates.md`.
 
 ## Phase 1C: Project Memory + Writing Style Memory

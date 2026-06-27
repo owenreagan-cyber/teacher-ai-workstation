@@ -115,6 +115,15 @@ if [[ -f scripts/lesson-queue-status.sh ]]; then
     fail "lesson queue status script fails bash syntax"
   fi
 fi
+check_file "scripts/lesson-workflow-status.sh"
+check_file "docs/lesson-planning-workflow-guide.md"
+if [[ -f scripts/lesson-workflow-status.sh ]]; then
+  if bash -n scripts/lesson-workflow-status.sh; then
+    pass "lesson workflow status script passes bash syntax"
+  else
+    fail "lesson workflow status script fails bash syntax"
+  fi
+fi
 
 for template in "${templates[@]}"; do
   check_file "${template}"

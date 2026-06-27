@@ -18,14 +18,15 @@ Completed:
 - Lesson brief helper
 - Lesson activity and assessment helper
 - Lesson pack status and planner
+- Lesson brief queue integration
 
 Now:
 
-- Lesson brief queue integration
+- Lesson planning workflow guide
 
 Next:
 
-- Lesson planning workflow guide, or another small local planning helper depending on build queue
+- A small safe local planning helper or safe local document indexing plan, depending on build queue
 - Later: selected local folder indexing
 
 ## Phase 1 Boundary

@@ -19,8 +19,8 @@ Track active projects, project status, next actions, blockers, and decisions.
 - Status: active
 - Category: operations / app-development
 - Goal: Prepare a MacBook-first Teacher AI Workstation with safe setup, assistant foundations, and future specialist support.
-- Current phase: Lesson brief queue integration
-- Last known next action: Add a read-only helper that compares planning queue rows to local lesson briefs and drafts.
+- Current phase: Lesson planning workflow guide
+- Last known next action: Add a local workflow guide and read-only status helper for the safe lesson planning sequence.
 - Blockers: none known
 - Source: repo roadmap and current implementation work
 - Last reviewed: 2026-06-26
@@ -31,8 +31,8 @@ Track active projects, project status, next actions, blockers, and decisions.
 - Status: active
 - Category: teaching / app-development
 - Goal: Build a teaching-first, permission-based assistant for planning, memory, writing, troubleshooting, and project support.
-- Current phase: Lesson brief queue integration
-- Last known next action: Review planning queue rows against safe local lesson slugs and generated files.
+- Current phase: Lesson planning workflow guide
+- Last known next action: Review the safe local sequence from planning queue to lesson brief to supporting drafts to human review.
 - Blockers: approved real writing samples are not added yet; Gmail/Drive integrations require explicit future permission and safety review
 - Source: Phase 1A-1D docs, dashboard docs, lesson planning scaffold, and Developer Mode template work
 - Last reviewed: 2026-06-26

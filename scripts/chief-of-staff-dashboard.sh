@@ -325,6 +325,29 @@ else
   warn "lesson queue status script missing: scripts/lesson-queue-status.sh"
 fi
 
+section "Lesson Workflow"
+if [[ -f scripts/lesson-workflow-status.sh ]]; then
+  workflow_result=0
+  workflow_output="$(bash scripts/lesson-workflow-status.sh 2>&1)" || workflow_result=$?
+  workflow_pass="$(summary_count "${workflow_output}" "PASS")"
+  workflow_warn="$(summary_count "${workflow_output}" "WARN")"
+  workflow_fail="$(summary_count "${workflow_output}" "FAIL")"
+
+  if [[ "${workflow_result}" != "0" ]]; then
+    printf 'Lesson Workflow: status command completed\n'
+    printf '%s\n' "${workflow_output}"
+    fail "lesson workflow status failed"
+  elif [[ -n "${workflow_pass}" && -n "${workflow_warn}" && -n "${workflow_fail}" ]]; then
+    printf 'Lesson Workflow: PASS %s / WARN %s / FAIL %s\n' "${workflow_pass}" "${workflow_warn}" "${workflow_fail}"
+    pass "lesson workflow status completed"
+  else
+    printf 'Lesson Workflow: status command completed\n'
+    pass "lesson workflow status completed"
+  fi
+else
+  warn "lesson workflow status script missing: scripts/lesson-workflow-status.sh"
+fi
+
 section "Developer Mode"
 if [[ -f scripts/developer-mode-status.sh ]]; then
   developer_output=""

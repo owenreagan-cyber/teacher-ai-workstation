@@ -1,0 +1,45 @@
+---
+description: Teacher AI Workstation repo workflow, safety boundaries, and Cursor operating rules
+alwaysApply: true
+---
+
+# Teacher AI Workstation — Cursor Rules
+
+This repository is Owen Reagan's Teacher AI Workstation.
+
+## Default Mode
+
+- Safe, local-first, human-reviewed.
+- Prefer read-only status checks and documentation over behavior changes unless the task explicitly requires implementation.
+- Do not change lesson-generation behavior unless Owen explicitly requests it in a separate approved PR.
+
+## Git Workflow
+
+- Never commit directly to `main`.
+- Always run preflight before editing: clean working tree, on `main`, up to date with `origin/main`, dashboard passing on local `main`.
+- Always work on a feature branch.
+- Always show a no-commit review before committing unless Owen explicitly says to commit after review.
+- Never merge without explicit Owen approval.
+- If any unexpected file changes appear, stop and explain before committing.
+- If any command fails, stop and report exact output.
+
+## Safety Boundaries
+
+- Never add student-sensitive data.
+- Never add real student names.
+- Never add Gmail, Google Drive, Google Calendar, APIs, OAuth, secrets, or school-system integrations without a separate approved PR.
+- Never create network calls unless the prompt explicitly authorizes them.
+- Generated lesson files in `assistant/lesson-planning/briefs/` and `assistant/lesson-planning/drafts/` should remain local and gitignored unless explicitly instructed otherwise.
+
+## Verification
+
+- Dashboard on local `main` is the final source of truth after merge.
+- Use parseable Summary blocks (`PASS:`, `WARN:`, `FAIL:`) for status scripts.
+- Capture status-script output in dashboard scripts so `set -euo pipefail` does not abort early.
+
+## References
+
+- Workflow guide: `docs/cursor-workflow-operating-system.md`
+- Prompt template: `docs/cursor-prompt-template.md`
+- PR review checklist: `docs/cursor-pr-review-checklist.md`
+- Status command: `bin/chief-of-staff --cursor-workflow-status`

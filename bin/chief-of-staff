@@ -23,6 +23,7 @@ Meta commands:
   --lesson-pack-status                 Show local lesson pack status and exit.
   --lesson-queue-status                Show local lesson queue integration status and exit.
   --lesson-workflow-status             Show local lesson planning workflow status and exit.
+  --cursor-workflow-status             Show local Cursor workflow status and exit.
   --developer-status                   Show local Developer Mode status and exit.
   --create-developer-project <template> <slug>
                                        Copy a Developer Mode template into local projects.
@@ -72,6 +73,7 @@ Examples:
   bin/chief-of-staff --lesson-pack-status
   bin/chief-of-staff --lesson-queue-status
   bin/chief-of-staff --lesson-workflow-status
+  bin/chief-of-staff --cursor-workflow-status
   bin/chief-of-staff --developer-status
   bin/chief-of-staff --create-developer-project lesson-helper fractions-review-helper
   bin/chief-of-staff --status
@@ -122,6 +124,7 @@ Local command: create lesson activity, assessment, or materials draft
 Local command: lesson pack status
 Local command: lesson queue integration status
 Local command: lesson planning workflow status
+Local command: Cursor workflow status
 Local command: developer mode status
 Local command: create developer project from template
 EOF
@@ -924,6 +927,15 @@ while [[ $# -gt 0 ]]; do
         die "Lesson workflow status script is missing: scripts/lesson-workflow-status.sh"
       fi
       bash "${lesson_workflow_status_script}"
+      exit 0
+      ;;
+    --cursor-workflow-status)
+      repo_root="$(resolve_repo_root)"
+      cursor_workflow_status_script="${repo_root}/scripts/cursor-workflow-status.sh"
+      if [[ ! -f "${cursor_workflow_status_script}" ]]; then
+        die "Cursor workflow status script is missing: scripts/cursor-workflow-status.sh"
+      fi
+      bash "${cursor_workflow_status_script}"
       exit 0
       ;;
     --developer-status)

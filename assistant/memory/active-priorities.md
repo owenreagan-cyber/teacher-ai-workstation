@@ -19,14 +19,15 @@ Completed:
 - Lesson activity and assessment helper
 - Lesson pack status and planner
 - Lesson brief queue integration
+- Lesson planning workflow guide
 
 Now:
 
-- Lesson planning workflow guide
+- Cursor Workflow Operating System
 
 Next:
 
-- A small safe local planning helper or safe local document indexing plan, depending on build queue
+- Safe local lesson review checklist
 - Later: selected local folder indexing
 
 ## Phase 1 Boundary

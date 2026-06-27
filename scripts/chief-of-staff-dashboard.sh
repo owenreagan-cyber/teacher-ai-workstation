@@ -348,6 +348,29 @@ else
   warn "lesson workflow status script missing: scripts/lesson-workflow-status.sh"
 fi
 
+section "Cursor Workflow"
+if [[ -f scripts/cursor-workflow-status.sh ]]; then
+  cursor_result=0
+  cursor_output="$(bash scripts/cursor-workflow-status.sh 2>&1)" || cursor_result=$?
+  cursor_pass="$(summary_count "${cursor_output}" "PASS")"
+  cursor_warn="$(summary_count "${cursor_output}" "WARN")"
+  cursor_fail="$(summary_count "${cursor_output}" "FAIL")"
+
+  if [[ "${cursor_result}" != "0" ]]; then
+    printf 'Cursor Workflow: status command completed\n'
+    printf '%s\n' "${cursor_output}"
+    fail "cursor workflow status failed"
+  elif [[ -n "${cursor_pass}" && -n "${cursor_warn}" && -n "${cursor_fail}" ]]; then
+    printf 'Cursor Workflow: PASS %s / WARN %s / FAIL %s\n' "${cursor_pass}" "${cursor_warn}" "${cursor_fail}"
+    pass "cursor workflow status completed"
+  else
+    printf 'Cursor Workflow: status command completed\n'
+    pass "cursor workflow status completed"
+  fi
+else
+  warn "cursor workflow status script missing: scripts/cursor-workflow-status.sh"
+fi
+
 section "Developer Mode"
 if [[ -f scripts/developer-mode-status.sh ]]; then
   developer_output=""

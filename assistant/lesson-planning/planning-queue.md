@@ -24,6 +24,8 @@ Use generic topics, source notes, and next actions. Lesson drafts require human 
 
 Future helpers may use this queue, but the current Lesson Brief Helper uses a safe slug only and does not parse queue rows yet. Keep queue entries generic and safe for future review.
 
+The Lesson Draft Helper can create local activity, assessment, and materials drafts from a safe type and slug. It does not parse queue rows yet.
+
 ## Queue
 
 | Title | Grade/Subject | Date Needed | Standards/Source Notes | Materials | Status | Review Status | Next Action |

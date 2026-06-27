@@ -29,3 +29,7 @@ developer-mode/projects/
 # Local lesson brief drafts
 assistant/lesson-planning/briefs/*.md
 !assistant/lesson-planning/briefs/README.md
+
+# Local lesson activity, assessment, and materials drafts
+assistant/lesson-planning/drafts/*.md
+!assistant/lesson-planning/drafts/README.md

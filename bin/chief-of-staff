@@ -17,6 +17,9 @@ Meta commands:
   --lesson-status                      Show local lesson planning workspace status and exit.
   --lesson-brief-status                Show local lesson brief helper status and exit.
   --create-lesson-brief <lesson-slug>  Create a local draft lesson brief for review.
+  --lesson-draft-status                Show local lesson draft helper status and exit.
+  --create-lesson-draft <type> <lesson-slug>
+                                       Create a local activity, assessment, or materials draft.
   --developer-status                   Show local Developer Mode status and exit.
   --create-developer-project <template> <slug>
                                        Copy a Developer Mode template into local projects.
@@ -61,6 +64,8 @@ Examples:
   bin/chief-of-staff --lesson-status
   bin/chief-of-staff --lesson-brief-status
   bin/chief-of-staff --create-lesson-brief fractions-review
+  bin/chief-of-staff --lesson-draft-status
+  bin/chief-of-staff --create-lesson-draft activity fractions-review
   bin/chief-of-staff --developer-status
   bin/chief-of-staff --create-developer-project lesson-helper fractions-review-helper
   bin/chief-of-staff --status
@@ -106,6 +111,8 @@ verify-before-use
 Local command: lesson planning workspace status
 Local command: lesson brief status
 Local command: create lesson brief draft
+Local command: lesson draft status
+Local command: create lesson activity, assessment, or materials draft
 Local command: developer mode status
 Local command: create developer project from template
 EOF
@@ -856,6 +863,31 @@ while [[ $# -gt 0 ]]; do
         die "Lesson brief creation script is missing: scripts/create-lesson-brief.sh"
       fi
       bash "${create_lesson_brief_script}" "$2"
+      exit 0
+      ;;
+    --lesson-draft-status)
+      repo_root="$(resolve_repo_root)"
+      lesson_draft_status_script="${repo_root}/scripts/lesson-draft-status.sh"
+      if [[ ! -f "${lesson_draft_status_script}" ]]; then
+        die "Lesson draft status script is missing: scripts/lesson-draft-status.sh"
+      fi
+      bash "${lesson_draft_status_script}"
+      exit 0
+      ;;
+    --create-lesson-draft)
+      if [[ -z "${2:-}" || -z "${3:-}" ]]; then
+        echo "Usage: bin/chief-of-staff --create-lesson-draft TYPE LESSON_SLUG" >&2
+        echo "TYPE must be one of: activity, assessment, materials" >&2
+        exit 1
+      fi
+      repo_root="$(resolve_repo_root)"
+      create_lesson_draft_script="${repo_root}/scripts/create-lesson-draft.sh"
+      if [[ ! -f "${create_lesson_draft_script}" ]]; then
+        die "Lesson draft creation script is missing: scripts/create-lesson-draft.sh"
+      fi
+      type="$2"
+      lesson_slug="$3"
+      bash "${create_lesson_draft_script}" "$type" "$lesson_slug"
       exit 0
       ;;
     --developer-status)

@@ -74,15 +74,15 @@ Track active projects, project status, next actions, blockers, and decisions.
 
 ### Appearance & Vibe — Automated Wallpaper and Photo Curator
 
-- Status: parked (Phase S rotation handoff and safety audit active build; foundation stack complete after this PR)
+- Status: parked (foundation stack complete for now; returning to Chief of Staff / Teacher Workstation core)
 - Category: personal / operations
 - Goal: Future local Mac curator for wallpaper/photo candidate review, approve/dismiss, and rotation-folder storage.
-- Current phase: Phase S rotation handoff and safety audit (planning/status/sample readiness validation only).
-- Last known next action: Return to Chief of Staff / Teacher Workstation core.
+- Current phase: Paused after rotation handoff and safety audit (foundation stack complete for now; live curator not started).
+- Last known next action: Chief of Staff dashboard readability pass.
 - Blockers: full curator not implemented; human approval gates required before automation
-- Source: docs/wallpaper-photo-metadata-schema.md, docs/wallpaper-photo-rotation-handoff-safety-audit.md, docs/wallpaper-photo-notification-foundation.md, docs/wallpaper-photo-scheduler-foundation.md, assistant/appearance-vibe/wallpaper-photo-curator/, and build queue
+- Source: docs/return-to-chief-of-staff-core.md, docs/wallpaper-photo-rotation-handoff-safety-audit.md, assistant/appearance-vibe/wallpaper-photo-curator/, and build queue
 - Last reviewed: 2026-06-28
-- Notes: Notification foundation is complete. Rotation handoff and safety audit is planning/status/sample readiness validation only. Full curator foundation stack complete for now; live curator not started. No real rotation, file moves, copies, deletions, folder scans, fetcher, real image processing, scheduler, notifications, network calls, API clients, OAuth, secrets, Reddit integration, or Devvit integration exists yet. Reddit may be a future source only. Devvit may be a future Reddit-native companion only.
+- Notes: Wallpaper/photo curator foundation stack is complete for now. Live curator implementation is not started. No fetcher, real image processing, scheduler, notifications, network calls, API clients, OAuth, secrets, Reddit integration, or Devvit integration exists yet. Reddit may be a future source only. Devvit may be a future Reddit-native companion only.
 
 ### Project Name
 

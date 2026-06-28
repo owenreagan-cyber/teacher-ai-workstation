@@ -189,15 +189,19 @@ Option D: Add a real local review UI implementation in a later PR after explicit
 Option E: Add real source fetching only after explicit network/API/source approval.
 ```
 
+Appearance & Vibe wallpaper/photo curator foundation stack: complete for now. Live curator implementation: not started. See `docs/return-to-chief-of-staff-core.md`.
+
 ## Commands Reference
 
 ```bash
 bin/chief-of-staff --wallpaper-photo-rotation-handoff-safety-status
 bin/chief-of-staff --wallpaper-photo-rotation-handoff-validator
+bin/chief-of-staff --return-to-core-status
 bin/chief-of-staff --wallpaper-photo-notification-foundation-status
 bin/chief-of-staff --wallpaper-photo-scheduler-foundation-status
 bin/chief-of-staff --wallpaper-photo-image-processor-foundation-status
 bin/chief-of-staff --dashboard
 bash scripts/wallpaper-photo-rotation-handoff-safety-status.sh
 bash scripts/wallpaper-photo-rotation-handoff-validator.sh
+bash scripts/return-to-chief-of-staff-core-status.sh
 ```

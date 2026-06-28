@@ -45,19 +45,19 @@ Completed:
 - Wallpaper/photo image processor foundation
 - Wallpaper/photo scheduler foundation
 - Wallpaper/photo notification foundation
+- Wallpaper/photo rotation handoff and safety audit
 
 Now:
 
-- Wallpaper/photo rotation handoff and safety audit (planning/status/sample readiness validation only)
+- Return to Chief of Staff / Teacher Workstation core (planning/status checkpoint only)
 
 Next:
 
-- Return to Chief of Staff / Teacher Workstation core
-- Later: selected local folder indexing
+- Chief of Staff dashboard readability pass
 
 ## Parked Future
 
-- Appearance & Vibe: Automated Wallpaper and Photo Curator (Phase S rotation handoff and safety audit in progress; full curator foundation stack complete after this PR; live curator not implemented; no real rotation, file moves, copies, deletions, folder scans, queue writes, wallpaper changes, Photos changes, fetcher, real image processing, scheduler, notifications, network calls, API clients, OAuth, secrets, Reddit integration, or Devvit integration yet; Reddit future source only; Devvit future companion only)
+- Appearance & Vibe: Automated Wallpaper and Photo Curator (foundation stack complete for now; live curator not started; paused; returning to Chief of Staff / Teacher Workstation core; no fetcher, real image processing, scheduler, notifications, network calls, API clients, OAuth, secrets, Reddit integration, or Devvit integration yet; Reddit future source only; Devvit future companion only)
 - 3D Design Factory Agent remains parked until Chief of Staff and Teacher Workstation foundations are mature
 
 ## Phase 1 Boundary

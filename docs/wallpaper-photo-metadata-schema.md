@@ -9,10 +9,14 @@ This PR adds schema and fictional sample records only. It does not fetch images,
 ## Current Status
 
 ```text
-Current status: Phase E metadata schema and sample records complete. Phase F temp queue rules complete. Phase G queue file format documented separately.
+Current status: Phase E metadata schema and sample records complete. Phase F temp queue rules complete. Phase G queue file format complete. Phase H Approve/Dismiss UI design complete. Phase I image processing rules documented separately.
 ```
 
-Schema files live in `assistant/appearance-vibe/wallpaper-photo-curator/`. Temp queue rules live in `docs/wallpaper-photo-temp-queue-rules.md`. Queue file format lives in `docs/wallpaper-photo-queue-file-format.md`. No curator runtime, live queues, or real candidate images exist yet.
+Schema files live in `assistant/appearance-vibe/wallpaper-photo-curator/`. Temp queue rules live in `docs/wallpaper-photo-temp-queue-rules.md`. Queue file format lives in `docs/wallpaper-photo-queue-file-format.md`. Approve/Dismiss UI design lives in `docs/wallpaper-photo-approve-dismiss-ui-design.md`. Image processing rules live in `docs/wallpaper-photo-image-processing-rules.md`. No curator runtime, live queues, live UI, live processing, or real candidate images exist yet.
+
+## Relationship to Image Processing Rules
+
+Phase I defines planning rules for future wallpaper and photo-widget output profiles, format preferences, crop/fit strategy, and duplicate/watermark risk thresholds. Metadata fields such as `width`, `height`, `duplicate_risk`, and `processed_output_path` support future processing handoff. See `docs/wallpaper-photo-image-processing-rules.md`.
 
 ## Relationship to Queue File Format
 
@@ -186,6 +190,7 @@ bin/chief-of-staff --wallpaper-photo-temp-queue-status
 bin/chief-of-staff --wallpaper-photo-queue-file-status
 bin/chief-of-staff --wallpaper-photo-queue-file-validator
 bin/chief-of-staff --wallpaper-photo-approve-dismiss-ui-status
+bin/chief-of-staff --wallpaper-photo-image-processing-status
 bin/chief-of-staff --wallpaper-photo-folder-creation-status
 bin/chief-of-staff --wallpaper-photo-dry-run-folder-validator
 bin/chief-of-staff --dashboard
@@ -194,4 +199,5 @@ bash scripts/wallpaper-photo-temp-queue-status.sh
 bash scripts/wallpaper-photo-queue-file-status.sh
 bash scripts/wallpaper-photo-queue-file-validator.sh
 bash scripts/wallpaper-photo-approve-dismiss-ui-status.sh
+bash scripts/wallpaper-photo-image-processing-status.sh
 ```

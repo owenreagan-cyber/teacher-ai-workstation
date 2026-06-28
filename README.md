@@ -289,6 +289,14 @@ bin/chief-of-staff --wallpaper-photo-approve-dismiss-ui-status
 
 See `docs/wallpaper-photo-approve-dismiss-ui-design.md`.
 
+Wallpaper/photo image processing rules status command:
+
+```bash
+bin/chief-of-staff --wallpaper-photo-image-processing-status
+```
+
+See `docs/wallpaper-photo-image-processing-rules.md`.
+
 Local command launcher status command:
 
 ```bash

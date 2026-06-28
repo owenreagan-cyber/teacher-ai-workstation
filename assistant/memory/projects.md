@@ -19,8 +19,8 @@ Track active projects, project status, next actions, blockers, and decisions.
 - Status: active
 - Category: operations / app-development
 - Goal: Prepare a MacBook-first Teacher AI Workstation with safe setup, assistant foundations, and future specialist support.
-- Current phase: Wallpaper/photo image processing rules
-- Last known next action: Add local image processing planning rules without live processing or image tools.
+- Current phase: Wallpaper/photo local automation scheduler plan
+- Last known next action: Add local scheduler planning design without scheduler implementation or automation runtime.
 - Blockers: none known
 - Source: repo roadmap and current implementation work
 - Last reviewed: 2026-06-26
@@ -31,8 +31,8 @@ Track active projects, project status, next actions, blockers, and decisions.
 - Status: active
 - Category: teaching / app-development
 - Goal: Build a teaching-first, permission-based assistant for planning, memory, writing, troubleshooting, and project support.
-- Current phase: Wallpaper/photo image processing rules
-- Last known next action: Add local image processing planning rules without live processing or image tools.
+- Current phase: Wallpaper/photo local automation scheduler plan
+- Last known next action: Add local scheduler planning design without scheduler implementation or automation runtime.
 - Blockers: approved real writing samples are not added yet; Gmail/Drive integrations require explicit future permission and safety review
 - Source: Phase 1A-1D docs, dashboard docs, lesson planning scaffold, and Developer Mode template work
 - Last reviewed: 2026-06-26
@@ -74,15 +74,15 @@ Track active projects, project status, next actions, blockers, and decisions.
 
 ### Appearance & Vibe — Automated Wallpaper and Photo Curator
 
-- Status: parked (Phase I image processing rules active build)
+- Status: parked (Phase J local scheduler plan active build)
 - Category: personal / operations
 - Goal: Future local Mac curator for wallpaper/photo candidate review, approve/dismiss, and rotation-folder storage.
-- Current phase: Phase I image processing rules (planning/status only).
-- Last known next action: Wallpaper/photo local automation scheduler plan PR.
+- Current phase: Phase J local automation scheduler plan (planning/status only).
+- Last known next action: Wallpaper/photo approved-source fetcher plan PR.
 - Blockers: full curator not implemented; human approval gates required before automation
 - Source: docs/wallpaper-photo-metadata-schema.md, assistant/appearance-vibe/wallpaper-photo-curator/, and build queue
 - Last reviewed: 2026-06-28
-- Notes: Approve/Dismiss UI design is complete. Image processing rules are planning/status only. Full curator not implemented. Reddit may be a future source only. Devvit may be a future Reddit-native companion only.
+- Notes: Image processing rules are complete. Scheduler plan is planning/status only. No scheduler, launch agent, cron job, or unattended run exists yet. Full curator not implemented. Reddit may be a future source only. Devvit may be a future Reddit-native companion only.
 
 ### Project Name
 

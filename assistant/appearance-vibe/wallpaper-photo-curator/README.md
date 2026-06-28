@@ -12,7 +12,7 @@ This folder stores planning assets only for the future Automated Wallpaper and P
 - No image processing.
 - No student data.
 - Future metadata files should avoid copyrighted image URLs until source rules are approved.
-- Temp queue rules, queue file format, Approve/Dismiss UI design, and image processing rules are planning/status only—no live queues, UI, or processing.
+- Temp queue rules, queue file format, Approve/Dismiss UI design, image processing rules, and local scheduler plan are planning/status only—no live queues, UI, processing, or scheduler.
 
 ## Files
 
@@ -30,6 +30,7 @@ bin/chief-of-staff --wallpaper-photo-queue-file-status
 bin/chief-of-staff --wallpaper-photo-queue-file-validator
 bin/chief-of-staff --wallpaper-photo-approve-dismiss-ui-status
 bin/chief-of-staff --wallpaper-photo-image-processing-status
+bin/chief-of-staff --wallpaper-photo-local-scheduler-status
 ```
 
-See `docs/wallpaper-photo-metadata-schema.md`, `docs/wallpaper-photo-temp-queue-rules.md`, `docs/wallpaper-photo-queue-file-format.md`, `docs/wallpaper-photo-approve-dismiss-ui-design.md`, and `docs/wallpaper-photo-image-processing-rules.md`.
+See `docs/wallpaper-photo-metadata-schema.md`, `docs/wallpaper-photo-temp-queue-rules.md`, `docs/wallpaper-photo-queue-file-format.md`, `docs/wallpaper-photo-approve-dismiss-ui-design.md`, `docs/wallpaper-photo-image-processing-rules.md`, and `docs/wallpaper-photo-local-automation-scheduler-plan.md`.

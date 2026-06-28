@@ -300,6 +300,13 @@ for path in \
   check_required_file "${path}"
 done
 
+section "Wallpaper/Photo Local Scheduler Plan Files"
+for path in \
+  docs/wallpaper-photo-local-automation-scheduler-plan.md \
+  scripts/wallpaper-photo-local-scheduler-status.sh; do
+  check_required_file "${path}"
+done
+
 section "Wallpaper/Photo Metadata Schema Files"
 for path in \
   docs/wallpaper-photo-metadata-schema.md \
@@ -385,6 +392,7 @@ check_bash_syntax "scripts/wallpaper-photo-queue-file-validator.sh"
 check_bash_syntax "scripts/wallpaper-photo-queue-file-status.sh"
 check_bash_syntax "scripts/wallpaper-photo-approve-dismiss-ui-status.sh"
 check_bash_syntax "scripts/wallpaper-photo-image-processing-status.sh"
+check_bash_syntax "scripts/wallpaper-photo-local-scheduler-status.sh"
 check_bash_syntax "scripts/wallpaper-photo-metadata-status.sh"
 check_bash_syntax "scripts/wallpaper-photo-create-folders.sh"
 check_bash_syntax "scripts/wallpaper-photo-folder-creation-status.sh"
@@ -412,7 +420,7 @@ section "Recommendation"
 if (( CRITICAL_BLOCKER > 0 )); then
   printf 'Fix critical Chief of Staff CLI, memory, intake, or script problems before the next build PR.\n'
 else
-  printf 'Next recommended PR: Wallpaper/photo local automation scheduler plan.\n'
+  printf 'Next recommended PR: Wallpaper/photo approved-source fetcher plan.\n'
 fi
 
 if (( COMPARE_0E == 1 && CRITICAL_BLOCKER == 0 )); then

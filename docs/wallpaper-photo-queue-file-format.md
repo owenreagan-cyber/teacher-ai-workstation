@@ -24,7 +24,7 @@ Queue records reference the metadata schema conceptually. Each queue record incl
 
 ## Relationship to Approve/Dismiss UI Design
 
-Phase H defines how a future review UI would present queue records and support Approve, Dismiss, Block, and Needs More Info decisions. Phase I defines image processing rules after approval. See `docs/wallpaper-photo-approve-dismiss-ui-design.md` and `docs/wallpaper-photo-image-processing-rules.md`. This PR does not implement a live UI or write queue decisions.
+Phase H defines how a future review UI would present queue records and support Approve, Dismiss, Block, and Needs More Info decisions. Phase I defines image processing rules after approval. Phase J defines local automation scheduler planning. See `docs/wallpaper-photo-approve-dismiss-ui-design.md`, `docs/wallpaper-photo-image-processing-rules.md`, and `docs/wallpaper-photo-local-automation-scheduler-plan.md`. This PR does not implement a live UI or write queue decisions.
 
 ## Queue File Concept
 
@@ -174,6 +174,7 @@ bin/chief-of-staff --wallpaper-photo-queue-file-status
 bin/chief-of-staff --wallpaper-photo-queue-file-validator
 bin/chief-of-staff --wallpaper-photo-approve-dismiss-ui-status
 bin/chief-of-staff --wallpaper-photo-image-processing-status
+bin/chief-of-staff --wallpaper-photo-local-scheduler-status
 bin/chief-of-staff --wallpaper-photo-temp-queue-status
 bin/chief-of-staff --wallpaper-photo-metadata-status
 bin/chief-of-staff --dashboard
@@ -181,4 +182,5 @@ bash scripts/wallpaper-photo-queue-file-status.sh
 bash scripts/wallpaper-photo-queue-file-validator.sh
 bash scripts/wallpaper-photo-approve-dismiss-ui-status.sh
 bash scripts/wallpaper-photo-image-processing-status.sh
+bash scripts/wallpaper-photo-local-scheduler-status.sh
 ```

@@ -45,6 +45,8 @@ Meta commands:
                                        Show wallpaper/photo Approve/Dismiss UI design status and exit.
   --wallpaper-photo-image-processing-status
                                        Show wallpaper/photo image processing rules status and exit.
+  --wallpaper-photo-local-scheduler-status
+                                       Show wallpaper/photo local automation scheduler plan status and exit.
   --command-launcher-status            Show Chief of Staff command launcher status and exit.
   --cursor-workflow-status             Show local Cursor workflow status and exit.
   --developer-status                   Show local Developer Mode status and exit.
@@ -112,6 +114,7 @@ Examples:
   bin/chief-of-staff --wallpaper-photo-queue-file-validator
   bin/chief-of-staff --wallpaper-photo-approve-dismiss-ui-status
   bin/chief-of-staff --wallpaper-photo-image-processing-status
+  bin/chief-of-staff --wallpaper-photo-local-scheduler-status
   bin/chief-of-staff --command-launcher-status
   bin/chief-of-staff --cursor-workflow-status
   bin/chief-of-staff --developer-status
@@ -186,6 +189,7 @@ Local command: wallpaper photo queue file status
 Local command: wallpaper photo queue file validator
 Local command: wallpaper photo approve dismiss UI status
 Local command: wallpaper photo image processing status
+Local command: wallpaper photo local scheduler status
 Verification
 intake-review
 verify-before-use
@@ -1130,6 +1134,15 @@ while [[ $# -gt 0 ]]; do
         die "Wallpaper photo image processing status script is missing: scripts/wallpaper-photo-image-processing-status.sh"
       fi
       bash "${wallpaper_image_processing_status_script}"
+      exit 0
+      ;;
+    --wallpaper-photo-local-scheduler-status)
+      repo_root="$(resolve_repo_root)"
+      wallpaper_local_scheduler_status_script="${repo_root}/scripts/wallpaper-photo-local-scheduler-status.sh"
+      if [[ ! -f "${wallpaper_local_scheduler_status_script}" ]]; then
+        die "Wallpaper photo local scheduler status script is missing: scripts/wallpaper-photo-local-scheduler-status.sh"
+      fi
+      bash "${wallpaper_local_scheduler_status_script}"
       exit 0
       ;;
     --command-launcher-status)

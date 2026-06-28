@@ -46,25 +46,26 @@ Phase 1 Teacher Chief of Staff + safe local lesson workflows.
 - Return to Chief of Staff / Teacher Workstation core.
 - Chief of Staff dashboard readability pass.
 - Chief of Staff command map cleanup.
+- Chief of Staff help examples polish.
 
 ## Current PR
 
-Chief of Staff help examples polish.
+Chief of Staff workflow quick-start guide.
 
-Scope: Improve example command blocks and common-user workflows in Chief of Staff help/readme docs after command map cleanup. Preserve every existing command and status check. No new live integrations, no network calls, no wallpaper/photo curator implementation, no lesson generation changes, no student data, and no automation.
+Scope: Add a plain-English quick-start guide for common Chief of Staff / Teacher Workstation workflows: what to run daily, before a PR, after a merge, for lesson review, and for safe status checks. Preserve every existing command and status check. No new live integrations, no network calls, no wallpaper/photo curator implementation, no lesson generation changes, no student data, and no automation.
 
 Appearance & Vibe wallpaper/photo curator foundation stack: complete for now.
 Live curator implementation: not started.
 
 ## Next PR
 
-Chief of Staff workflow quick-start guide
+Dashboard section summary polish
 
-Scope: Add a plain-English quick-start guide for common Chief of Staff / Teacher Workstation workflows: what to run daily, before a PR, after a merge, for lesson review, and for safe status checks. Preserve every existing command and status check. No new live integrations, no network calls, no wallpaper/photo curator implementation, no lesson generation changes, no student data, and no automation.
+Scope: Add clearer high-level summaries for major dashboard sections after the workflow quick-start guide. Preserve every existing command and status check. No new live integrations, no network calls, no wallpaper/photo curator implementation, no lesson generation changes, no student data, and no automation.
 
 ## Next Recommended PRs
 
-1. Chief of Staff workflow quick-start guide.
+1. Dashboard section summary polish.
 2. Later: permissioned Gmail/Drive integrations.
 3. Later: secrets/capability broker.
 

@@ -232,6 +232,29 @@ else
   warn "Chief of Staff help examples status script missing: scripts/chief-of-staff-help-examples-status.sh"
 fi
 
+section "Chief of Staff Workflow Quick-Start Guide"
+if [[ -f scripts/chief-of-staff-workflow-quick-start-status.sh ]]; then
+  workflow_quick_start_result=0
+  workflow_quick_start_output="$(bash scripts/chief-of-staff-workflow-quick-start-status.sh 2>&1)" || workflow_quick_start_result=$?
+  workflow_quick_start_pass="$(summary_count "${workflow_quick_start_output}" "PASS")"
+  workflow_quick_start_warn="$(summary_count "${workflow_quick_start_output}" "WARN")"
+  workflow_quick_start_fail="$(summary_count "${workflow_quick_start_output}" "FAIL")"
+
+  if [[ "${workflow_quick_start_result}" != "0" ]]; then
+    printf 'Chief of Staff Workflow Quick-Start Guide: status command completed\n'
+    printf '%s\n' "${workflow_quick_start_output}"
+    fail "Chief of Staff workflow quick-start status failed"
+  elif [[ -n "${workflow_quick_start_pass}" && -n "${workflow_quick_start_warn}" && -n "${workflow_quick_start_fail}" ]]; then
+    printf 'Chief of Staff Workflow Quick-Start Guide: PASS %s / WARN %s / FAIL %s\n' "${workflow_quick_start_pass}" "${workflow_quick_start_warn}" "${workflow_quick_start_fail}"
+    pass "Chief of Staff workflow quick-start status completed"
+  else
+    printf 'Chief of Staff Workflow Quick-Start Guide: status command completed\n'
+    pass "Chief of Staff workflow quick-start status completed"
+  fi
+else
+  warn "Chief of Staff workflow quick-start status script missing: scripts/chief-of-staff-workflow-quick-start-status.sh"
+fi
+
 group_banner "Chief of Staff Workflow Status"
 
 section "Available Chief of Staff Workflows and Command Groups"

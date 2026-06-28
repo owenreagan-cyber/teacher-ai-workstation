@@ -14,6 +14,8 @@ Current status: command map cleanup complete.
 
 Help examples polish adds common-workflow example blocks. See `docs/chief-of-staff-help-examples-polish.md`.
 
+Workflow quick-start guide adds plain-English daily/PR/merge workflows. See `docs/chief-of-staff-workflow-quick-start-guide.md`.
+
 Help text and `--list-workflows` group related commands more clearly. Status commands, validators, and dry-run helpers are easier to distinguish.
 
 ## Why This Cleanup Exists
@@ -170,9 +172,11 @@ no student data
 ```bash
 bin/chief-of-staff --command-map-status
 bin/chief-of-staff --help-examples-status
+bin/chief-of-staff --workflow-quick-start-status
 bin/chief-of-staff --help
 bin/chief-of-staff --list-workflows
 bin/chief-of-staff --dashboard
 bash scripts/chief-of-staff-command-map-status.sh
 bash scripts/chief-of-staff-help-examples-status.sh
+bash scripts/chief-of-staff-workflow-quick-start-status.sh
 ```

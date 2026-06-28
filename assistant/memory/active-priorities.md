@@ -49,14 +49,15 @@ Completed:
 - Return to Chief of Staff / Teacher Workstation core
 - Chief of Staff dashboard readability pass
 - Chief of Staff command map cleanup
+- Chief of Staff help examples polish
 
 Now:
 
-- Chief of Staff help examples polish (help-examples/status only)
+- Chief of Staff workflow quick-start guide (quick-start/status only)
 
 Next:
 
-- Chief of Staff workflow quick-start guide
+- Dashboard section summary polish
 
 ## Parked Future
 

@@ -305,6 +305,14 @@ bin/chief-of-staff --wallpaper-photo-local-scheduler-status
 
 See `docs/wallpaper-photo-local-automation-scheduler-plan.md`.
 
+Wallpaper/photo approved-source fetcher plan status command:
+
+```bash
+bin/chief-of-staff --wallpaper-photo-source-fetcher-plan-status
+```
+
+See `docs/wallpaper-photo-approved-source-fetcher-plan.md`.
+
 Local command launcher status command:
 
 ```bash

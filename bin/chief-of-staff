@@ -47,6 +47,8 @@ Meta commands:
                                        Show wallpaper/photo image processing rules status and exit.
   --wallpaper-photo-local-scheduler-status
                                        Show wallpaper/photo local automation scheduler plan status and exit.
+  --wallpaper-photo-source-fetcher-plan-status
+                                       Show wallpaper/photo approved-source fetcher plan status and exit.
   --command-launcher-status            Show Chief of Staff command launcher status and exit.
   --cursor-workflow-status             Show local Cursor workflow status and exit.
   --developer-status                   Show local Developer Mode status and exit.
@@ -115,6 +117,7 @@ Examples:
   bin/chief-of-staff --wallpaper-photo-approve-dismiss-ui-status
   bin/chief-of-staff --wallpaper-photo-image-processing-status
   bin/chief-of-staff --wallpaper-photo-local-scheduler-status
+  bin/chief-of-staff --wallpaper-photo-source-fetcher-plan-status
   bin/chief-of-staff --command-launcher-status
   bin/chief-of-staff --cursor-workflow-status
   bin/chief-of-staff --developer-status
@@ -190,6 +193,7 @@ Local command: wallpaper photo queue file validator
 Local command: wallpaper photo approve dismiss UI status
 Local command: wallpaper photo image processing status
 Local command: wallpaper photo local scheduler status
+Local command: wallpaper photo source fetcher plan status
 Verification
 intake-review
 verify-before-use
@@ -1143,6 +1147,15 @@ while [[ $# -gt 0 ]]; do
         die "Wallpaper photo local scheduler status script is missing: scripts/wallpaper-photo-local-scheduler-status.sh"
       fi
       bash "${wallpaper_local_scheduler_status_script}"
+      exit 0
+      ;;
+    --wallpaper-photo-source-fetcher-plan-status)
+      repo_root="$(resolve_repo_root)"
+      wallpaper_source_fetcher_plan_status_script="${repo_root}/scripts/wallpaper-photo-source-fetcher-plan-status.sh"
+      if [[ ! -f "${wallpaper_source_fetcher_plan_status_script}" ]]; then
+        die "Wallpaper photo source fetcher plan status script is missing: scripts/wallpaper-photo-source-fetcher-plan-status.sh"
+      fi
+      bash "${wallpaper_source_fetcher_plan_status_script}"
       exit 0
       ;;
     --command-launcher-status)

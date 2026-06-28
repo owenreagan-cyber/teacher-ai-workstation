@@ -209,14 +209,18 @@ Phase O: Dry-run scheduler
 Phase P: Manual scheduler helper
 ```
 
+Phase J defined local automation scheduler planning with dry-run first and never-run-unattended rules. Phase K defines approved-source fetcher planning. See `docs/wallpaper-photo-approved-source-fetcher-plan.md`. A future scheduler must not fetch sources until approved-source rules and network behavior are separately approved.
+
 ## Commands Reference
 
 ```bash
 bin/chief-of-staff --wallpaper-photo-local-scheduler-status
+bin/chief-of-staff --wallpaper-photo-source-fetcher-plan-status
 bin/chief-of-staff --wallpaper-photo-image-processing-status
 bin/chief-of-staff --wallpaper-photo-approve-dismiss-ui-status
 bin/chief-of-staff --wallpaper-photo-queue-file-status
 bin/chief-of-staff --wallpaper-photo-metadata-status
 bin/chief-of-staff --dashboard
 bash scripts/wallpaper-photo-local-scheduler-status.sh
+bash scripts/wallpaper-photo-source-fetcher-plan-status.sh
 ```

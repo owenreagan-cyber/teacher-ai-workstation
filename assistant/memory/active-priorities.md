@@ -25,14 +25,15 @@ Completed:
 - Single-slug lesson review view
 - Align next recommended PR
 - Review notes template
+- Safe local document indexing plan
 
 Now:
 
-- Safe local document indexing plan
+- Chief of Staff command launcher / status dashboard refinement
 
 Next:
 
-- Chief of Staff command launcher / status dashboard refinement
+- Dashboard polish and command grouping follow-up
 - Later: selected local folder indexing
 
 ## Phase 1 Boundary

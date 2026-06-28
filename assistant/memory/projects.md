@@ -19,8 +19,8 @@ Track active projects, project status, next actions, blockers, and decisions.
 - Status: active
 - Category: operations / app-development
 - Goal: Prepare a MacBook-first Teacher AI Workstation with safe setup, assistant foundations, and future specialist support.
-- Current phase: Safe local document indexing plan
-- Last known next action: Add planning-only documentation and read-only status helper for future safe local document indexing.
+- Current phase: Chief of Staff command launcher / status dashboard refinement
+- Last known next action: Improve local command discoverability and dashboard visibility with a command launcher guide and status helper.
 - Blockers: none known
 - Source: repo roadmap and current implementation work
 - Last reviewed: 2026-06-26
@@ -31,8 +31,8 @@ Track active projects, project status, next actions, blockers, and decisions.
 - Status: active
 - Category: teaching / app-development
 - Goal: Build a teaching-first, permission-based assistant for planning, memory, writing, troubleshooting, and project support.
-- Current phase: Safe local document indexing plan
-- Last known next action: Define allowlist-first, human-approved phases for future local document indexing without implementing indexing yet.
+- Current phase: Chief of Staff command launcher / status dashboard refinement
+- Last known next action: Group safe local commands and make dashboard/status discoverability clearer without adding integrations.
 - Blockers: approved real writing samples are not added yet; Gmail/Drive integrations require explicit future permission and safety review
 - Source: Phase 1A-1D docs, dashboard docs, lesson planning scaffold, and Developer Mode template work
 - Last reviewed: 2026-06-26

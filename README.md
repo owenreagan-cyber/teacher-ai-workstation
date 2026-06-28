@@ -222,6 +222,14 @@ bin/chief-of-staff --document-indexing-plan-status
 
 See `docs/safe-local-document-indexing-plan.md`.
 
+Local command launcher status command:
+
+```bash
+bin/chief-of-staff --command-launcher-status
+```
+
+See `docs/chief-of-staff-command-launcher-refinement.md`.
+
 ## Future Specialist: 3D Design Agent
 
 Phase 0 now prewires the Mac for future 3D design work.

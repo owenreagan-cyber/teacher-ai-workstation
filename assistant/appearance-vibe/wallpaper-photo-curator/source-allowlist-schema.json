@@ -1,0 +1,134 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Wallpaper Photo Curator Source Allowlist",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "allowlist_name",
+    "sources",
+    "created_at",
+    "updated_at",
+    "notes"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string"
+    },
+    "allowlist_name": {
+      "type": "string"
+    },
+    "sources": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "source_id",
+          "source_name",
+          "source_type",
+          "source_url",
+          "allowed_content_types",
+          "permission_note",
+          "license_review_status",
+          "terms_review_note",
+          "robots_or_policy_note",
+          "rate_limit_note",
+          "requires_auth",
+          "status",
+          "approved_by",
+          "approved_at",
+          "last_reviewed_at",
+          "notes"
+        ],
+        "properties": {
+          "source_id": {
+            "type": "string"
+          },
+          "source_name": {
+            "type": "string"
+          },
+          "source_type": {
+            "type": "string",
+            "enum": [
+              "fictional_sample",
+              "future_approved_site",
+              "future_reddit_source",
+              "future_local_folder",
+              "manual_entry",
+              "future_devvit_companion"
+            ]
+          },
+          "source_url": {
+            "type": "string"
+          },
+          "allowed_content_types": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "permission_note": {
+            "type": "string"
+          },
+          "license_review_status": {
+            "type": "string",
+            "enum": [
+              "fictional_sample",
+              "unknown_needs_review",
+              "permission_confirmed",
+              "public_domain",
+              "creative_commons",
+              "personal_use_only",
+              "not_allowed"
+            ]
+          },
+          "terms_review_note": {
+            "type": "string"
+          },
+          "robots_or_policy_note": {
+            "type": "string"
+          },
+          "rate_limit_note": {
+            "type": "string"
+          },
+          "requires_auth": {
+            "type": "boolean"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "proposed",
+              "approved_for_dry_run",
+              "approved_for_fetching_later",
+              "paused",
+              "blocked",
+              "needs_more_info"
+            ]
+          },
+          "approved_by": {
+            "type": "string"
+          },
+          "approved_at": {
+            "type": "string"
+          },
+          "last_reviewed_at": {
+            "type": "string"
+          },
+          "notes": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "created_at": {
+      "type": "string"
+    },
+    "updated_at": {
+      "type": "string"
+    },
+    "notes": {
+      "type": "string"
+    }
+  }
+}

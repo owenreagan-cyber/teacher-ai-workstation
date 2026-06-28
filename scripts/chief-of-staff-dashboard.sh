@@ -704,6 +704,29 @@ else
   warn "wallpaper photo source fetcher plan status script missing: scripts/wallpaper-photo-source-fetcher-plan-status.sh"
 fi
 
+section "Wallpaper/Photo Source Allowlist Foundation"
+if [[ -f scripts/wallpaper-photo-source-allowlist-status.sh ]]; then
+  wallpaper_source_allowlist_result=0
+  wallpaper_source_allowlist_output="$(bash scripts/wallpaper-photo-source-allowlist-status.sh 2>&1)" || wallpaper_source_allowlist_result=$?
+  wallpaper_source_allowlist_pass="$(summary_count "${wallpaper_source_allowlist_output}" "PASS")"
+  wallpaper_source_allowlist_warn="$(summary_count "${wallpaper_source_allowlist_output}" "WARN")"
+  wallpaper_source_allowlist_fail="$(summary_count "${wallpaper_source_allowlist_output}" "FAIL")"
+
+  if [[ "${wallpaper_source_allowlist_result}" != "0" ]]; then
+    printf 'Wallpaper/Photo Source Allowlist Foundation: status command completed\n'
+    printf '%s\n' "${wallpaper_source_allowlist_output}"
+    fail "wallpaper photo source allowlist foundation status failed"
+  elif [[ -n "${wallpaper_source_allowlist_pass}" && -n "${wallpaper_source_allowlist_warn}" && -n "${wallpaper_source_allowlist_fail}" ]]; then
+    printf 'Wallpaper/Photo Source Allowlist Foundation: PASS %s / WARN %s / FAIL %s\n' "${wallpaper_source_allowlist_pass}" "${wallpaper_source_allowlist_warn}" "${wallpaper_source_allowlist_fail}"
+    pass "wallpaper photo source allowlist foundation status completed"
+  else
+    printf 'Wallpaper/Photo Source Allowlist Foundation: status command completed\n'
+    pass "wallpaper photo source allowlist foundation status completed"
+  fi
+else
+  warn "wallpaper photo source allowlist status script missing: scripts/wallpaper-photo-source-allowlist-status.sh"
+fi
+
 section "Cursor Workflow"
 if [[ -f scripts/cursor-workflow-status.sh ]]; then
   cursor_result=0

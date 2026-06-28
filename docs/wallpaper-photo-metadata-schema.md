@@ -9,14 +9,14 @@ This PR adds schema and fictional sample records only. It does not fetch images,
 ## Current Status
 
 ```text
-Current status: Phase E metadata schema and sample records complete. Phase F temp queue rules complete. Phase G queue file format complete. Phase H Approve/Dismiss UI design complete. Phase I image processing rules complete. Phase J local scheduler plan complete. Phase K approved-source fetcher plan documented separately.
+Current status: Phase E metadata schema and sample records complete. Phase F temp queue rules complete. Phase G queue file format complete. Phase H Approve/Dismiss UI design complete. Phase I image processing rules complete. Phase J local scheduler plan complete. Phase K approved-source fetcher plan complete. Phase Q source allowlist foundation documented separately.
 ```
 
-Schema files live in `assistant/appearance-vibe/wallpaper-photo-curator/`. Temp queue rules live in `docs/wallpaper-photo-temp-queue-rules.md`. Queue file format lives in `docs/wallpaper-photo-queue-file-format.md`. Approve/Dismiss UI design lives in `docs/wallpaper-photo-approve-dismiss-ui-design.md`. Image processing rules live in `docs/wallpaper-photo-image-processing-rules.md`. Local scheduler plan lives in `docs/wallpaper-photo-local-automation-scheduler-plan.md`. Approved-source fetcher plan lives in `docs/wallpaper-photo-approved-source-fetcher-plan.md`. No curator runtime, live queues, live UI, live processing, fetcher, or real candidate images exist yet.
+Schema files live in `assistant/appearance-vibe/wallpaper-photo-curator/`. Temp queue rules live in `docs/wallpaper-photo-temp-queue-rules.md`. Queue file format lives in `docs/wallpaper-photo-queue-file-format.md`. Approve/Dismiss UI design lives in `docs/wallpaper-photo-approve-dismiss-ui-design.md`. Image processing rules live in `docs/wallpaper-photo-image-processing-rules.md`. Local scheduler plan lives in `docs/wallpaper-photo-local-automation-scheduler-plan.md`. Approved-source fetcher plan lives in `docs/wallpaper-photo-approved-source-fetcher-plan.md`. Source allowlist foundation lives in `docs/wallpaper-photo-source-allowlist-foundation.md`. No curator runtime, live queues, live UI, live processing, fetcher, or real candidate images exist yet.
 
 ## Relationship to Approved-Source Fetcher Plan
 
-Phase K defines planning rules for future approved sources, allowlists, permission review, dry-run discovery, and rate-limit boundaries before any network call. Metadata fields such as `source_type`, `source_name`, `source_url`, `license_status`, and `permission_note` support future source handoff. See `docs/wallpaper-photo-approved-source-fetcher-plan.md`.
+Phase K defines planning rules for future approved sources, allowlists, permission review, dry-run discovery, and rate-limit boundaries before any network call. Phase Q defines the local source allowlist file format and dry-run validator. Metadata fields such as `source_type`, `source_name`, `source_url`, `license_status`, and `permission_note` support future source handoff. See `docs/wallpaper-photo-approved-source-fetcher-plan.md` and `docs/wallpaper-photo-source-allowlist-foundation.md`.
 
 ## Relationship to Image Processing Rules
 
@@ -184,6 +184,7 @@ Phase H: Approve/Dismiss UI design
 Phase I: Image processing rules
 Phase J: Local automation scheduler
 Phase K: Approved-source fetcher
+Phase Q: Source allowlist foundation
 ```
 
 ## Commands Reference
@@ -197,6 +198,8 @@ bin/chief-of-staff --wallpaper-photo-approve-dismiss-ui-status
 bin/chief-of-staff --wallpaper-photo-image-processing-status
 bin/chief-of-staff --wallpaper-photo-local-scheduler-status
 bin/chief-of-staff --wallpaper-photo-source-fetcher-plan-status
+bin/chief-of-staff --wallpaper-photo-source-allowlist-status
+bin/chief-of-staff --wallpaper-photo-source-allowlist-validator
 bin/chief-of-staff --wallpaper-photo-folder-creation-status
 bin/chief-of-staff --wallpaper-photo-dry-run-folder-validator
 bin/chief-of-staff --dashboard
@@ -208,4 +211,6 @@ bash scripts/wallpaper-photo-approve-dismiss-ui-status.sh
 bash scripts/wallpaper-photo-image-processing-status.sh
 bash scripts/wallpaper-photo-local-scheduler-status.sh
 bash scripts/wallpaper-photo-source-fetcher-plan-status.sh
+bash scripts/wallpaper-photo-source-allowlist-status.sh
+bash scripts/wallpaper-photo-source-allowlist-validator.sh
 ```

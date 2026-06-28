@@ -16,7 +16,7 @@ Schema files live in `assistant/appearance-vibe/wallpaper-photo-curator/`. Temp 
 
 ## Relationship to Queue File Format
 
-Phase G defines a queue file JSON format and dry-run validator for fictional/local queue records. Queue records share review and path fields with metadata records. See `docs/wallpaper-photo-queue-file-format.md`.
+Phase G defines a queue file JSON format and dry-run validator for fictional/local queue records. Phase H defines the Approve/Dismiss review UI design. See `docs/wallpaper-photo-approve-dismiss-ui-design.md`.
 
 ## Relationship to Temp Queue Rules
 
@@ -185,6 +185,7 @@ bin/chief-of-staff --wallpaper-photo-metadata-status
 bin/chief-of-staff --wallpaper-photo-temp-queue-status
 bin/chief-of-staff --wallpaper-photo-queue-file-status
 bin/chief-of-staff --wallpaper-photo-queue-file-validator
+bin/chief-of-staff --wallpaper-photo-approve-dismiss-ui-status
 bin/chief-of-staff --wallpaper-photo-folder-creation-status
 bin/chief-of-staff --wallpaper-photo-dry-run-folder-validator
 bin/chief-of-staff --dashboard
@@ -192,4 +193,5 @@ bash scripts/wallpaper-photo-metadata-status.sh
 bash scripts/wallpaper-photo-temp-queue-status.sh
 bash scripts/wallpaper-photo-queue-file-status.sh
 bash scripts/wallpaper-photo-queue-file-validator.sh
+bash scripts/wallpaper-photo-approve-dismiss-ui-status.sh
 ```

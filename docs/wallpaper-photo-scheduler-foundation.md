@@ -222,14 +222,20 @@ Phase U: Future manual scheduler helper implementation, only after separate appr
 Phase V: Future launch method implementation, only after separate approval
 ```
 
+Phase Q defined scheduler foundation with run intents, cadence options, and preflight checks. Phase R defines notification foundation with review-ready summary fields and dry-run notification previews. See `docs/wallpaper-photo-notification-foundation.md`.
+
 ## Commands Reference
 
 ```bash
 bin/chief-of-staff --wallpaper-photo-scheduler-foundation-status
 bin/chief-of-staff --wallpaper-photo-scheduler-run-plan-validator
+bin/chief-of-staff --wallpaper-photo-notification-foundation-status
+bin/chief-of-staff --wallpaper-photo-notification-plan-validator
 bin/chief-of-staff --wallpaper-photo-local-scheduler-status
 bin/chief-of-staff --wallpaper-photo-image-processor-foundation-status
 bin/chief-of-staff --dashboard
 bash scripts/wallpaper-photo-scheduler-foundation-status.sh
 bash scripts/wallpaper-photo-scheduler-run-plan-validator.sh
+bash scripts/wallpaper-photo-notification-foundation-status.sh
+bash scripts/wallpaper-photo-notification-plan-validator.sh
 ```

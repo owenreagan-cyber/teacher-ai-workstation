@@ -819,6 +819,29 @@ else
   warn "wallpaper photo scheduler foundation status script missing: scripts/wallpaper-photo-scheduler-foundation-status.sh"
 fi
 
+section "Wallpaper/Photo Notification Foundation"
+if [[ -f scripts/wallpaper-photo-notification-foundation-status.sh ]]; then
+  wallpaper_notification_foundation_result=0
+  wallpaper_notification_foundation_output="$(bash scripts/wallpaper-photo-notification-foundation-status.sh 2>&1)" || wallpaper_notification_foundation_result=$?
+  wallpaper_notification_foundation_pass="$(summary_count "${wallpaper_notification_foundation_output}" "PASS")"
+  wallpaper_notification_foundation_warn="$(summary_count "${wallpaper_notification_foundation_output}" "WARN")"
+  wallpaper_notification_foundation_fail="$(summary_count "${wallpaper_notification_foundation_output}" "FAIL")"
+
+  if [[ "${wallpaper_notification_foundation_result}" != "0" ]]; then
+    printf 'Wallpaper/Photo Notification Foundation: status command completed\n'
+    printf '%s\n' "${wallpaper_notification_foundation_output}"
+    fail "wallpaper photo notification foundation status failed"
+  elif [[ -n "${wallpaper_notification_foundation_pass}" && -n "${wallpaper_notification_foundation_warn}" && -n "${wallpaper_notification_foundation_fail}" ]]; then
+    printf 'Wallpaper/Photo Notification Foundation: PASS %s / WARN %s / FAIL %s\n' "${wallpaper_notification_foundation_pass}" "${wallpaper_notification_foundation_warn}" "${wallpaper_notification_foundation_fail}"
+    pass "wallpaper photo notification foundation status completed"
+  else
+    printf 'Wallpaper/Photo Notification Foundation: status command completed\n'
+    pass "wallpaper photo notification foundation status completed"
+  fi
+else
+  warn "wallpaper photo notification foundation status script missing: scripts/wallpaper-photo-notification-foundation-status.sh"
+fi
+
 section "Cursor Workflow"
 if [[ -f scripts/cursor-workflow-status.sh ]]; then
   cursor_result=0

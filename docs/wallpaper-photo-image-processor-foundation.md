@@ -24,7 +24,7 @@ Phase O defined sample review UI state with simulated approve/dismiss controls. 
 
 ## Relationship to Scheduler Foundation
 
-Phase Q defines scheduler foundation with run intents, cadence options, and preflight checks. A future scheduler must not process images until processor behavior is separately approved. See `docs/wallpaper-photo-scheduler-foundation.md`.
+Phase Q defines scheduler foundation with run intents, cadence options, and preflight checks. A future scheduler must not process images until processor behavior is separately approved. Phase R defines notification foundation with review-ready summary fields. See `docs/wallpaper-photo-scheduler-foundation.md` and `docs/wallpaper-photo-notification-foundation.md`.
 
 ## Relationship to Metadata Schema
 
@@ -231,6 +231,8 @@ bin/chief-of-staff --wallpaper-photo-image-processor-foundation-status
 bin/chief-of-staff --wallpaper-photo-image-processing-plan-validator
 bin/chief-of-staff --wallpaper-photo-scheduler-foundation-status
 bin/chief-of-staff --wallpaper-photo-scheduler-run-plan-validator
+bin/chief-of-staff --wallpaper-photo-notification-foundation-status
+bin/chief-of-staff --wallpaper-photo-notification-plan-validator
 bin/chief-of-staff --wallpaper-photo-image-processing-status
 bin/chief-of-staff --wallpaper-photo-review-ui-prototype-status
 bin/chief-of-staff --dashboard
@@ -238,4 +240,6 @@ bash scripts/wallpaper-photo-image-processor-foundation-status.sh
 bash scripts/wallpaper-photo-image-processing-plan-validator.sh
 bash scripts/wallpaper-photo-scheduler-foundation-status.sh
 bash scripts/wallpaper-photo-scheduler-run-plan-validator.sh
+bash scripts/wallpaper-photo-notification-foundation-status.sh
+bash scripts/wallpaper-photo-notification-plan-validator.sh
 ```

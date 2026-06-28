@@ -383,6 +383,20 @@ bin/chief-of-staff --wallpaper-photo-scheduler-run-plan-validator
 
 See `docs/wallpaper-photo-scheduler-foundation.md`.
 
+Wallpaper/photo notification foundation status command:
+
+```bash
+bin/chief-of-staff --wallpaper-photo-notification-foundation-status
+```
+
+Wallpaper/photo notification plan dry-run validator command:
+
+```bash
+bin/chief-of-staff --wallpaper-photo-notification-plan-validator
+```
+
+See `docs/wallpaper-photo-notification-foundation.md`.
+
 Local command launcher status command:
 
 ```bash

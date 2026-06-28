@@ -209,13 +209,15 @@ Phase O: Dry-run scheduler
 Phase P: Manual scheduler helper
 ```
 
-Phase J defined local automation scheduler planning with dry-run first and never-run-unattended rules. Phase K defines approved-source fetcher planning. Phase Q defines scheduler foundation with run intents, cadence options, pause/disable behavior, and preflight checks before any scheduler runtime. See `docs/wallpaper-photo-scheduler-foundation.md`. Source allowlist, simulated discovery, review UI prototype, and image processor foundation must pass before any future scheduler is considered. See `docs/wallpaper-photo-approved-source-fetcher-plan.md`, `docs/wallpaper-photo-source-allowlist-foundation.md`, `docs/wallpaper-photo-simulated-approved-source-discovery-plan.md`, `docs/wallpaper-photo-live-local-review-ui-prototype-plan.md`, and `docs/wallpaper-photo-image-processor-foundation.md`. A future scheduler must not fetch sources until approved-source rules and network behavior are separately approved.
+Phase J defined local automation scheduler planning with dry-run first and never-run-unattended rules. Phase K defines approved-source fetcher planning. Phase Q defines scheduler foundation with run intents, cadence options, pause/disable behavior, and preflight checks before any scheduler runtime. Phase R defines notification foundation with review-ready summary fields before any notification mechanism exists. See `docs/wallpaper-photo-scheduler-foundation.md` and `docs/wallpaper-photo-notification-foundation.md`. Source allowlist, simulated discovery, review UI prototype, and image processor foundation must pass before any future scheduler is considered. See `docs/wallpaper-photo-approved-source-fetcher-plan.md`, `docs/wallpaper-photo-source-allowlist-foundation.md`, `docs/wallpaper-photo-simulated-approved-source-discovery-plan.md`, `docs/wallpaper-photo-live-local-review-ui-prototype-plan.md`, and `docs/wallpaper-photo-image-processor-foundation.md`. A future scheduler must not fetch sources until approved-source rules and network behavior are separately approved.
 
 ## Commands Reference
 
 ```bash
 bin/chief-of-staff --wallpaper-photo-scheduler-foundation-status
 bin/chief-of-staff --wallpaper-photo-scheduler-run-plan-validator
+bin/chief-of-staff --wallpaper-photo-notification-foundation-status
+bin/chief-of-staff --wallpaper-photo-notification-plan-validator
 bin/chief-of-staff --wallpaper-photo-local-scheduler-status
 bin/chief-of-staff --wallpaper-photo-source-fetcher-plan-status
 bin/chief-of-staff --wallpaper-photo-source-allowlist-status
@@ -229,6 +231,8 @@ bin/chief-of-staff --wallpaper-photo-metadata-status
 bin/chief-of-staff --dashboard
 bash scripts/wallpaper-photo-scheduler-foundation-status.sh
 bash scripts/wallpaper-photo-scheduler-run-plan-validator.sh
+bash scripts/wallpaper-photo-notification-foundation-status.sh
+bash scripts/wallpaper-photo-notification-plan-validator.sh
 bash scripts/wallpaper-photo-local-scheduler-status.sh
 bash scripts/wallpaper-photo-source-fetcher-plan-status.sh
 ```

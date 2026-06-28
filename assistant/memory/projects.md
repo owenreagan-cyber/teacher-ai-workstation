@@ -74,15 +74,15 @@ Track active projects, project status, next actions, blockers, and decisions.
 
 ### Appearance & Vibe — Automated Wallpaper and Photo Curator
 
-- Status: parked (Phase Q scheduler foundation active build)
+- Status: parked (Phase R notification foundation active build)
 - Category: personal / operations
 - Goal: Future local Mac curator for wallpaper/photo candidate review, approve/dismiss, and rotation-folder storage.
-- Current phase: Phase Q scheduler foundation (planning/status/sample scheduler run plan validation only).
-- Last known next action: Wallpaper/photo notification foundation PR.
+- Current phase: Phase R notification foundation (planning/status/sample notification plan validation only).
+- Last known next action: Wallpaper/photo rotation handoff and safety audit PR.
 - Blockers: full curator not implemented; human approval gates required before automation
-- Source: docs/wallpaper-photo-metadata-schema.md, docs/wallpaper-photo-scheduler-foundation.md, docs/wallpaper-photo-image-processor-foundation.md, docs/wallpaper-photo-live-local-review-ui-prototype-plan.md, assistant/appearance-vibe/wallpaper-photo-curator/, and build queue
+- Source: docs/wallpaper-photo-metadata-schema.md, docs/wallpaper-photo-notification-foundation.md, docs/wallpaper-photo-scheduler-foundation.md, docs/wallpaper-photo-image-processor-foundation.md, docs/wallpaper-photo-live-local-review-ui-prototype-plan.md, assistant/appearance-vibe/wallpaper-photo-curator/, and build queue
 - Last reviewed: 2026-06-28
-- Notes: Image processor foundation is complete. Scheduler foundation is planning/status/sample scheduler run plan validation only. No real scheduler, launch agents, cron jobs, background jobs, unattended runs, notifications, fetcher, real image processing, network calls, API clients, OAuth, secrets, Reddit integration, or Devvit integration exists yet. Full curator not implemented. Reddit may be a future source only. Devvit may be a future Reddit-native companion only.
+- Notes: Scheduler foundation is complete. Notification foundation is planning/status/sample notification plan validation only. No real notifications, notification mechanism, osascript, terminal-notifier, fetcher, real image processing, network calls, API clients, OAuth, secrets, Reddit integration, or Devvit integration exists yet. Full curator not implemented. Reddit may be a future source only. Devvit may be a future Reddit-native companion only.
 
 ### Project Name
 

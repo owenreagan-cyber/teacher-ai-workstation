@@ -19,12 +19,13 @@ Phase 1 Teacher Chief of Staff + safe local lesson workflows.
 - Lesson activity and assessment helper.
 - Lesson pack status and planner.
 - Lesson brief queue integration after human review.
+- Single-slug lesson review view.
 
 ## Current PR
 
-Single-slug lesson review view.
+Align next recommended PR.
 
-Scope: Local read-only helper that shows one safe lesson slug's queue row, brief/draft file presence, pack and queue status context, and review checklist reminders. No automatic review approval, no student data, no external integrations, and no lesson generation.
+Scope: Align dashboard, build queue, memory, and phase status recommendation text to Review notes template. Local documentation/status alignment only.
 
 ## Next PR
 

@@ -185,8 +185,12 @@ Phase K: Approved-source fetcher
 
 ```bash
 bin/chief-of-staff --wallpaper-photo-temp-queue-status
+bin/chief-of-staff --wallpaper-photo-queue-file-status
+bin/chief-of-staff --wallpaper-photo-queue-file-validator
 bin/chief-of-staff --wallpaper-photo-metadata-status
 bin/chief-of-staff --wallpaper-photo-folder-creation-status
 bin/chief-of-staff --dashboard
 bash scripts/wallpaper-photo-temp-queue-status.sh
+bash scripts/wallpaper-photo-queue-file-status.sh
+bash scripts/wallpaper-photo-queue-file-validator.sh
 ```

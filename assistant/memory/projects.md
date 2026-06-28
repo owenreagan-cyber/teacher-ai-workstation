@@ -19,8 +19,8 @@ Track active projects, project status, next actions, blockers, and decisions.
 - Status: active
 - Category: operations / app-development
 - Goal: Prepare a MacBook-first Teacher AI Workstation with safe setup, assistant foundations, and future specialist support.
-- Current phase: Wallpaper/photo temp queue rules
-- Last known next action: Add local planning/status rules for future temp candidate queues without live queues or image handling.
+- Current phase: Wallpaper/photo queue file format and dry-run validator
+- Last known next action: Add local queue file format and dry-run validator without live queues or image handling.
 - Blockers: none known
 - Source: repo roadmap and current implementation work
 - Last reviewed: 2026-06-26
@@ -31,8 +31,8 @@ Track active projects, project status, next actions, blockers, and decisions.
 - Status: active
 - Category: teaching / app-development
 - Goal: Build a teaching-first, permission-based assistant for planning, memory, writing, troubleshooting, and project support.
-- Current phase: Wallpaper/photo temp queue rules
-- Last known next action: Add local planning/status rules for future temp candidate queues without live queues or image handling.
+- Current phase: Wallpaper/photo queue file format and dry-run validator
+- Last known next action: Add local queue file format and dry-run validator without live queues or image handling.
 - Blockers: approved real writing samples are not added yet; Gmail/Drive integrations require explicit future permission and safety review
 - Source: Phase 1A-1D docs, dashboard docs, lesson planning scaffold, and Developer Mode template work
 - Last reviewed: 2026-06-26
@@ -74,15 +74,15 @@ Track active projects, project status, next actions, blockers, and decisions.
 
 ### Appearance & Vibe — Automated Wallpaper and Photo Curator
 
-- Status: parked (Phase F temp queue rules active build)
+- Status: parked (Phase G queue file format active build)
 - Category: personal / operations
 - Goal: Future local Mac curator for wallpaper/photo candidate review, approve/dismiss, and rotation-folder storage.
-- Current phase: Phase F temp queue rules (local-only planning/status).
-- Last known next action: Wallpaper/photo queue file format and dry-run validator PR.
+- Current phase: Phase G queue file format and dry-run validator (local-only).
+- Last known next action: Wallpaper/photo Approve/Dismiss UI design PR.
 - Blockers: full curator not implemented; human approval gates required before automation
 - Source: docs/wallpaper-photo-metadata-schema.md, assistant/appearance-vibe/wallpaper-photo-curator/, and build queue
 - Last reviewed: 2026-06-28
-- Notes: Metadata schema and fictional samples are complete. Temp queue rules are local-only planning. Full curator not implemented. Reddit may be a future source only. Devvit may be a future Reddit-native companion only.
+- Notes: Temp queue rules are complete. Queue file validation is dry-run only. Full curator not implemented. Reddit may be a future source only. Devvit may be a future Reddit-native companion only.
 
 ### Project Name
 

@@ -272,6 +272,15 @@ bin/chief-of-staff --wallpaper-photo-temp-queue-status
 
 See `docs/wallpaper-photo-temp-queue-rules.md`.
 
+Wallpaper/photo queue file format status command:
+
+```bash
+bin/chief-of-staff --wallpaper-photo-queue-file-status
+bin/chief-of-staff --wallpaper-photo-queue-file-validator
+```
+
+See `docs/wallpaper-photo-queue-file-format.md`.
+
 Local command launcher status command:
 
 ```bash

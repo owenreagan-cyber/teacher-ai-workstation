@@ -9,10 +9,14 @@ This PR adds schema and fictional sample records only. It does not fetch images,
 ## Current Status
 
 ```text
-Current status: Phase E metadata schema and sample records complete. Phase F temp queue rules documented separately.
+Current status: Phase E metadata schema and sample records complete. Phase F temp queue rules complete. Phase G queue file format documented separately.
 ```
 
-Schema files live in `assistant/appearance-vibe/wallpaper-photo-curator/`. Temp queue rules live in `docs/wallpaper-photo-temp-queue-rules.md`. No curator runtime, live queues, or real candidate images exist yet.
+Schema files live in `assistant/appearance-vibe/wallpaper-photo-curator/`. Temp queue rules live in `docs/wallpaper-photo-temp-queue-rules.md`. Queue file format lives in `docs/wallpaper-photo-queue-file-format.md`. No curator runtime, live queues, or real candidate images exist yet.
+
+## Relationship to Queue File Format
+
+Phase G defines a queue file JSON format and dry-run validator for fictional/local queue records. Queue records share review and path fields with metadata records. See `docs/wallpaper-photo-queue-file-format.md`.
 
 ## Relationship to Temp Queue Rules
 
@@ -179,9 +183,13 @@ Phase K: Approved-source fetcher
 ```bash
 bin/chief-of-staff --wallpaper-photo-metadata-status
 bin/chief-of-staff --wallpaper-photo-temp-queue-status
+bin/chief-of-staff --wallpaper-photo-queue-file-status
+bin/chief-of-staff --wallpaper-photo-queue-file-validator
 bin/chief-of-staff --wallpaper-photo-folder-creation-status
 bin/chief-of-staff --wallpaper-photo-dry-run-folder-validator
 bin/chief-of-staff --dashboard
 bash scripts/wallpaper-photo-metadata-status.sh
 bash scripts/wallpaper-photo-temp-queue-status.sh
+bash scripts/wallpaper-photo-queue-file-status.sh
+bash scripts/wallpaper-photo-queue-file-validator.sh
 ```

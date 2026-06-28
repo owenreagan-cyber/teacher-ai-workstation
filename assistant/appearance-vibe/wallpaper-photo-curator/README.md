@@ -5,25 +5,29 @@ This folder stores planning assets only for the future Automated Wallpaper and P
 ## Rules
 
 - No real images go here.
-- Sample records in `sample-records.json` are fictional and safe.
+- Sample records in `sample-records.json` and `sample-queue.json` are fictional and safe.
 - No API keys or secrets.
 - No Reddit or Devvit integration yet.
 - No network calls.
 - No image processing.
 - No student data.
 - Future metadata files should avoid copyrighted image URLs until source rules are approved.
-- Temp queue rules are planning/status only—no live queues.
+- Temp queue rules and queue file format are planning/status only—no live queues.
 
 ## Files
 
 - `metadata-schema.json` — JSON Schema for candidate metadata records (includes optional queue fields).
-- `sample-records.json` — Three fictional sample records for local validation.
+- `sample-records.json` — Three fictional sample metadata records for local validation.
+- `queue-file-format.json` — JSON Schema for future queue files.
+- `sample-queue.json` — Fictional sample queue file for dry-run validation.
 
 ## Status
 
 ```bash
 bin/chief-of-staff --wallpaper-photo-metadata-status
 bin/chief-of-staff --wallpaper-photo-temp-queue-status
+bin/chief-of-staff --wallpaper-photo-queue-file-status
+bin/chief-of-staff --wallpaper-photo-queue-file-validator
 ```
 
-See `docs/wallpaper-photo-metadata-schema.md` and `docs/wallpaper-photo-temp-queue-rules.md`.
+See `docs/wallpaper-photo-metadata-schema.md`, `docs/wallpaper-photo-temp-queue-rules.md`, and `docs/wallpaper-photo-queue-file-format.md`.

@@ -73,13 +73,17 @@ If a folder already exists, the helper reports it as already present and does no
 bin/chief-of-staff --wallpaper-photo-folder-creation-status
 bin/chief-of-staff --wallpaper-photo-create-folders --dry-run
 bin/chief-of-staff --wallpaper-photo-create-folders --create
+bin/chief-of-staff --wallpaper-photo-metadata-status
 bin/chief-of-staff --wallpaper-photo-dry-run-folder-validator
 bin/chief-of-staff --wallpaper-photo-folder-design-status
 bin/chief-of-staff --dashboard
 bash scripts/wallpaper-photo-folder-creation-status.sh
 bash scripts/wallpaper-photo-create-folders.sh --dry-run
 bash scripts/wallpaper-photo-create-folders.sh --create
+bash scripts/wallpaper-photo-metadata-status.sh
 ```
+
+See also `docs/wallpaper-photo-metadata-schema.md` for Phase E metadata schema and samples.
 
 For testing only:
 

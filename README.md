@@ -256,6 +256,14 @@ bin/chief-of-staff --wallpaper-photo-create-folders --create
 
 See `docs/wallpaper-photo-manual-folder-creation-helper.md`.
 
+Wallpaper/photo metadata schema status command:
+
+```bash
+bin/chief-of-staff --wallpaper-photo-metadata-status
+```
+
+See `docs/wallpaper-photo-metadata-schema.md`.
+
 Local command launcher status command:
 
 ```bash

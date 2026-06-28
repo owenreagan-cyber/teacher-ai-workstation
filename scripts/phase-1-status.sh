@@ -269,6 +269,16 @@ for path in \
   check_required_file "${path}"
 done
 
+section "Wallpaper/Photo Metadata Schema Files"
+for path in \
+  docs/wallpaper-photo-metadata-schema.md \
+  assistant/appearance-vibe/wallpaper-photo-curator/README.md \
+  assistant/appearance-vibe/wallpaper-photo-curator/metadata-schema.json \
+  assistant/appearance-vibe/wallpaper-photo-curator/sample-records.json \
+  scripts/wallpaper-photo-metadata-status.sh; do
+  check_required_file "${path}"
+done
+
 section "Wallpaper/Photo Manual Folder Creation Helper Files"
 for path in \
   docs/wallpaper-photo-manual-folder-creation-helper.md \
@@ -339,6 +349,7 @@ done
 
 section "Syntax Checks"
 check_bash_syntax "scripts/command-launcher-status.sh"
+check_bash_syntax "scripts/wallpaper-photo-metadata-status.sh"
 check_bash_syntax "scripts/wallpaper-photo-create-folders.sh"
 check_bash_syntax "scripts/wallpaper-photo-folder-creation-status.sh"
 check_bash_syntax "scripts/wallpaper-photo-dry-run-folder-validator.sh"
@@ -365,7 +376,7 @@ section "Recommendation"
 if (( CRITICAL_BLOCKER > 0 )); then
   printf 'Fix critical Chief of Staff CLI, memory, intake, or script problems before the next build PR.\n'
 else
-  printf 'Next recommended PR: Wallpaper/photo metadata schema and sample records.\n'
+  printf 'Next recommended PR: Wallpaper/photo temp queue rules.\n'
 fi
 
 if (( COMPARE_0E == 1 && CRITICAL_BLOCKER == 0 )); then

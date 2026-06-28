@@ -355,6 +355,20 @@ bin/chief-of-staff --wallpaper-photo-review-ui-state-validator
 
 See `docs/wallpaper-photo-live-local-review-ui-prototype-plan.md`.
 
+Wallpaper/photo image processor foundation status command:
+
+```bash
+bin/chief-of-staff --wallpaper-photo-image-processor-foundation-status
+```
+
+Wallpaper/photo image processing plan dry-run validator command:
+
+```bash
+bin/chief-of-staff --wallpaper-photo-image-processing-plan-validator
+```
+
+See `docs/wallpaper-photo-image-processor-foundation.md`.
+
 Local command launcher status command:
 
 ```bash

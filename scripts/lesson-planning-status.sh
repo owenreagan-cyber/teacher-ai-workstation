@@ -121,6 +121,9 @@ check_file "docs/safe-local-lesson-review-checklist.md"
 check_file "scripts/lesson-review-checklist-status.sh"
 check_file "docs/single-slug-lesson-review-view.md"
 check_file "scripts/lesson-review-view.sh"
+check_file "docs/review-notes-template.md"
+check_file "assistant/lesson-planning/review-notes/README.md"
+check_file "scripts/review-notes-template-status.sh"
 if [[ -f scripts/lesson-review-checklist-status.sh ]]; then
   if bash -n scripts/lesson-review-checklist-status.sh; then
     pass "lesson review checklist status script passes bash syntax"
@@ -133,6 +136,13 @@ if [[ -f scripts/lesson-review-view.sh ]]; then
     pass "lesson review view script passes bash syntax"
   else
     fail "lesson review view script fails bash syntax"
+  fi
+fi
+if [[ -f scripts/review-notes-template-status.sh ]]; then
+  if bash -n scripts/review-notes-template-status.sh; then
+    pass "review notes template status script passes bash syntax"
+  else
+    fail "review notes template status script fails bash syntax"
   fi
 fi
 if [[ -f scripts/lesson-workflow-status.sh ]]; then

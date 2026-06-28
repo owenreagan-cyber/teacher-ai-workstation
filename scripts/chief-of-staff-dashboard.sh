@@ -379,6 +379,29 @@ else
   fail "Single-Slug Lesson Review is not available"
 fi
 
+section "Review Notes Template"
+if [[ -f scripts/review-notes-template-status.sh ]]; then
+  notes_result=0
+  notes_output="$(bash scripts/review-notes-template-status.sh 2>&1)" || notes_result=$?
+  notes_pass="$(summary_count "${notes_output}" "PASS")"
+  notes_warn="$(summary_count "${notes_output}" "WARN")"
+  notes_fail="$(summary_count "${notes_output}" "FAIL")"
+
+  if [[ "${notes_result}" != "0" ]]; then
+    printf 'Review Notes Template: status command completed\n'
+    printf '%s\n' "${notes_output}"
+    fail "review notes template status failed"
+  elif [[ -n "${notes_pass}" && -n "${notes_warn}" && -n "${notes_fail}" ]]; then
+    printf 'Review Notes Template: PASS %s / WARN %s / FAIL %s\n' "${notes_pass}" "${notes_warn}" "${notes_fail}"
+    pass "review notes template status completed"
+  else
+    printf 'Review Notes Template: status command completed\n'
+    pass "review notes template status completed"
+  fi
+else
+  warn "review notes template status script missing: scripts/review-notes-template-status.sh"
+fi
+
 section "Cursor Workflow"
 if [[ -f scripts/cursor-workflow-status.sh ]]; then
   cursor_result=0

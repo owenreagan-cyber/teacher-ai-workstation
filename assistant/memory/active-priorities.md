@@ -23,15 +23,15 @@ Completed:
 - Cursor Workflow Operating System
 - Safe local lesson review checklist
 - Single-slug lesson review view
+- Align next recommended PR
 
 Now:
 
-- Align next recommended PR
+- Review notes template
 
 Next:
 
-- Review notes template
-- Later: safe local document indexing plan
+- Safe local document indexing plan
 - Later: selected local folder indexing
 
 ## Phase 1 Boundary

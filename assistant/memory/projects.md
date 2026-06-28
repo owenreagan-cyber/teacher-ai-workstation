@@ -20,7 +20,7 @@ Track active projects, project status, next actions, blockers, and decisions.
 - Category: operations / app-development
 - Goal: Prepare a MacBook-first Teacher AI Workstation with safe setup, assistant foundations, and future specialist support.
 - Current phase: Review notes template
-- Last known next action: Add a local-only template for Owen's personal human review notes after inspecting a lesson slug.
+- Last known next action: Add a local-only template for optional personal human review notes after inspecting a lesson slug.
 - Blockers: none known
 - Source: repo roadmap and current implementation work
 - Last reviewed: 2026-06-26
@@ -32,7 +32,7 @@ Track active projects, project status, next actions, blockers, and decisions.
 - Category: teaching / app-development
 - Goal: Build a teaching-first, permission-based assistant for planning, memory, writing, troubleshooting, and project support.
 - Current phase: Review notes template
-- Last known next action: Prepare a local-only review notes template with no automatic approval, student data, external integrations, or official review status storage.
+- Last known next action: Provide optional local review notes template guidance without official review status storage.
 - Blockers: approved real writing samples are not added yet; Gmail/Drive integrations require explicit future permission and safety review
 - Source: Phase 1A-1D docs, dashboard docs, lesson planning scaffold, and Developer Mode template work
 - Last reviewed: 2026-06-26

@@ -20,23 +20,23 @@ Phase 1 Teacher Chief of Staff + safe local lesson workflows.
 - Lesson pack status and planner.
 - Lesson brief queue integration after human review.
 - Single-slug lesson review view.
+- Align next recommended PR.
 
 ## Current PR
 
-Align next recommended PR.
-
-Scope: Align dashboard, build queue, memory, and phase status recommendation text to Review notes template. Local documentation/status alignment only.
-
-## Next PR
-
-Review notes template
+Review notes template.
 
 Scope: Local-only template for Owen's personal human review notes after inspecting a lesson slug. No automatic approval, no student data, no external integrations, no lesson generation, and no storing official review status.
 
+## Next PR
+
+Safe local document indexing plan
+
+Scope: Local planning documentation for safe folder indexing without Gmail/Drive integrations, student data, automatic indexing, or network calls.
+
 ## Next Recommended PRs
 
-1. Review notes template.
-2. Safe local document indexing plan.
+1. Safe local document indexing plan.
 3. Later: permissioned Gmail/Drive integrations.
 4. Later: secrets/capability broker.
 

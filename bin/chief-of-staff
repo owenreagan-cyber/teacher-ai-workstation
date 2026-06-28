@@ -61,6 +61,10 @@ Meta commands:
                                        Show wallpaper/photo review UI prototype plan status and exit.
   --wallpaper-photo-review-ui-state-validator
                                        Run wallpaper/photo review UI state dry-run validator and exit.
+  --wallpaper-photo-image-processor-foundation-status
+                                       Show wallpaper/photo image processor foundation status and exit.
+  --wallpaper-photo-image-processing-plan-validator
+                                       Run wallpaper/photo image processing plan dry-run validator and exit.
   --command-launcher-status            Show Chief of Staff command launcher status and exit.
   --cursor-workflow-status             Show local Cursor workflow status and exit.
   --developer-status                   Show local Developer Mode status and exit.
@@ -136,6 +140,8 @@ Examples:
   bin/chief-of-staff --wallpaper-photo-simulated-discovery-validator
   bin/chief-of-staff --wallpaper-photo-review-ui-prototype-status
   bin/chief-of-staff --wallpaper-photo-review-ui-state-validator
+  bin/chief-of-staff --wallpaper-photo-image-processor-foundation-status
+  bin/chief-of-staff --wallpaper-photo-image-processing-plan-validator
   bin/chief-of-staff --command-launcher-status
   bin/chief-of-staff --cursor-workflow-status
   bin/chief-of-staff --developer-status
@@ -218,6 +224,8 @@ Local command: wallpaper photo simulated discovery status
 Local command: wallpaper photo simulated discovery validator
 Local command: wallpaper photo review UI prototype status
 Local command: wallpaper photo review UI state validator
+Local command: wallpaper photo image processor foundation status
+Local command: wallpaper photo image processing plan validator
 Verification
 intake-review
 verify-before-use
@@ -1237,6 +1245,25 @@ while [[ $# -gt 0 ]]; do
       fi
       shift
       bash "${wallpaper_review_ui_state_validator_script}" "$@"
+      exit 0
+      ;;
+    --wallpaper-photo-image-processor-foundation-status)
+      repo_root="$(resolve_repo_root)"
+      wallpaper_image_processor_foundation_status_script="${repo_root}/scripts/wallpaper-photo-image-processor-foundation-status.sh"
+      if [[ ! -f "${wallpaper_image_processor_foundation_status_script}" ]]; then
+        die "Wallpaper photo image processor foundation status script is missing: scripts/wallpaper-photo-image-processor-foundation-status.sh"
+      fi
+      bash "${wallpaper_image_processor_foundation_status_script}"
+      exit 0
+      ;;
+    --wallpaper-photo-image-processing-plan-validator)
+      repo_root="$(resolve_repo_root)"
+      wallpaper_image_processing_plan_validator_script="${repo_root}/scripts/wallpaper-photo-image-processing-plan-validator.sh"
+      if [[ ! -f "${wallpaper_image_processing_plan_validator_script}" ]]; then
+        die "Wallpaper photo image processing plan validator script is missing: scripts/wallpaper-photo-image-processing-plan-validator.sh"
+      fi
+      shift
+      bash "${wallpaper_image_processing_plan_validator_script}" "$@"
       exit 0
       ;;
     --command-launcher-status)

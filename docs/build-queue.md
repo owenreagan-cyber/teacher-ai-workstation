@@ -38,29 +38,30 @@ Phase 1 Teacher Chief of Staff + safe local lesson workflows.
 - Wallpaper/photo approved-source fetcher plan.
 - Wallpaper/photo source allowlist foundation.
 - Wallpaper/photo simulated approved-source discovery plan.
+- Wallpaper/photo live local review UI prototype plan.
 
 ## Current PR
 
-Wallpaper/photo live local review UI prototype plan.
-
-Scope: Planning/status design for a future local review UI prototype that reads fictional sample queue/discovery data and shows candidate review concepts. No live UI implementation yet, no server, no app framework, no image rendering, no queue writes, no network calls, no Reddit/Devvit integration, no image downloading, no image processing, no scheduler, no notifications, and no macOS wallpaper/Photos automation.
-
-## Next PR
-
-Wallpaper/photo image processor foundation
+Wallpaper/photo image processor foundation.
 
 Scope: Consolidated planning/status foundation for future dry-run and manual image processing behavior, including processing input contracts, output intent reports, manual-only gates, and dry-run validation. No real image processing yet, no conversion, no resizing, no cropping, no preview rendering, no output writes, no file deletion, no network calls, no queue writes, no scheduler, no notifications, no Reddit/Devvit integration, and no macOS wallpaper/Photos automation.
 
+## Next PR
+
+Wallpaper/photo scheduler foundation
+
+Scope: Consolidated planning/status foundation for future dry-run scheduler and manual scheduler helper behavior, including run intent reports, pause/disable gates, manual-only commands, and validation. No real scheduler yet, no launch agents, no cron jobs, no background jobs, no unattended runs, no notifications, no network calls, no image fetching, no image processing, no queue writes, no Reddit/Devvit integration, and no macOS wallpaper/Photos automation.
+
 ## Next Recommended PRs
 
-1. Wallpaper/photo image processor foundation.
+1. Wallpaper/photo scheduler foundation.
 2. Later: permissioned Gmail/Drive integrations.
 3. Later: secrets/capability broker.
 
 ## Parked / Future
 
 - 3D Design Factory Agent: Parked until Chief of Staff and Teacher Workstation foundations are mature.
-- Appearance & Vibe: Automated Wallpaper and Photo Curator (Phase O review UI prototype plan in progress; Phases P–T remain future).
+- Appearance & Vibe: Automated Wallpaper and Photo Curator (Phase P image processor foundation in progress; Phases Q–U remain future).
 
 ## Open Threads
 

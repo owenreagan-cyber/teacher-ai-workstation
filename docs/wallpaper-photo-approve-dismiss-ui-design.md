@@ -16,7 +16,7 @@ Design lives in this document and the read-only status script. No live UI, queue
 
 ## Relationship to Queue File Format
 
-Phase G defined queue file JSON format and dry-run validation. Phase H describes how a future UI would read queue records from validated queue files and present them for human review. Phase O defines sample review UI state with simulated action labels only. See `docs/wallpaper-photo-live-local-review-ui-prototype-plan.md`. This PR does not write queue decisions or create live queue files.
+Phase G defined queue file JSON format and dry-run validation. Phase H describes how a future UI would read queue records from validated queue files and present them for human review. Phase O defines sample review UI state with simulated action labels only. Phase P defines image processor foundation with output intents before any file operations. See `docs/wallpaper-photo-live-local-review-ui-prototype-plan.md` and `docs/wallpaper-photo-image-processor-foundation.md`. This PR does not write queue decisions or create live queue files.
 
 ## Relationship to Temp Queue Rules
 
@@ -220,6 +220,8 @@ Phase O: Live local review UI prototype plan
 bin/chief-of-staff --wallpaper-photo-approve-dismiss-ui-status
 bin/chief-of-staff --wallpaper-photo-review-ui-prototype-status
 bin/chief-of-staff --wallpaper-photo-review-ui-state-validator
+bin/chief-of-staff --wallpaper-photo-image-processor-foundation-status
+bin/chief-of-staff --wallpaper-photo-image-processing-plan-validator
 bin/chief-of-staff --wallpaper-photo-image-processing-status
 bin/chief-of-staff --wallpaper-photo-local-scheduler-status
 bin/chief-of-staff --wallpaper-photo-queue-file-status

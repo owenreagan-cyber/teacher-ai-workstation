@@ -773,6 +773,29 @@ else
   warn "wallpaper photo review UI prototype status script missing: scripts/wallpaper-photo-review-ui-prototype-status.sh"
 fi
 
+section "Wallpaper/Photo Image Processor Foundation"
+if [[ -f scripts/wallpaper-photo-image-processor-foundation-status.sh ]]; then
+  wallpaper_image_processor_result=0
+  wallpaper_image_processor_output="$(bash scripts/wallpaper-photo-image-processor-foundation-status.sh 2>&1)" || wallpaper_image_processor_result=$?
+  wallpaper_image_processor_pass="$(summary_count "${wallpaper_image_processor_output}" "PASS")"
+  wallpaper_image_processor_warn="$(summary_count "${wallpaper_image_processor_output}" "WARN")"
+  wallpaper_image_processor_fail="$(summary_count "${wallpaper_image_processor_output}" "FAIL")"
+
+  if [[ "${wallpaper_image_processor_result}" != "0" ]]; then
+    printf 'Wallpaper/Photo Image Processor Foundation: status command completed\n'
+    printf '%s\n' "${wallpaper_image_processor_output}"
+    fail "wallpaper photo image processor foundation status failed"
+  elif [[ -n "${wallpaper_image_processor_pass}" && -n "${wallpaper_image_processor_warn}" && -n "${wallpaper_image_processor_fail}" ]]; then
+    printf 'Wallpaper/Photo Image Processor Foundation: PASS %s / WARN %s / FAIL %s\n' "${wallpaper_image_processor_pass}" "${wallpaper_image_processor_warn}" "${wallpaper_image_processor_fail}"
+    pass "wallpaper photo image processor foundation status completed"
+  else
+    printf 'Wallpaper/Photo Image Processor Foundation: status command completed\n'
+    pass "wallpaper photo image processor foundation status completed"
+  fi
+else
+  warn "wallpaper photo image processor foundation status script missing: scripts/wallpaper-photo-image-processor-foundation-status.sh"
+fi
+
 section "Cursor Workflow"
 if [[ -f scripts/cursor-workflow-status.sh ]]; then
   cursor_result=0

@@ -28,19 +28,20 @@ Completed:
 - Safe local document indexing plan
 - Chief of Staff command launcher / status dashboard refinement
 - Dashboard polish and command grouping follow-up
+- Appearance & Vibe automated wallpaper/photo curator plan
 
 Now:
 
-- Appearance & Vibe automated wallpaper/photo curator plan
+- Wallpaper/photo rotation folder design
 
 Next:
 
-- Wallpaper/photo rotation folder design
+- Wallpaper/photo dry-run folder validator
 - Later: selected local folder indexing
 
 ## Parked Future
 
-- Appearance & Vibe: Automated Wallpaper and Photo Curator (planning-only; local Mac curator is the future core runtime; Reddit may be a future source; Devvit may be a future Reddit-native companion only)
+- Appearance & Vibe: Automated Wallpaper and Photo Curator (Phase B folder design in progress; full curator not implemented; human approval gates required; Reddit may be a future source only; Devvit may be a future Reddit-native companion only)
 - 3D Design Factory Agent remains parked until Chief of Staff and Teacher Workstation foundations are mature
 
 ## Phase 1 Boundary

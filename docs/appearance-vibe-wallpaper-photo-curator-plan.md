@@ -12,6 +12,8 @@ This PR is planning-only. It does not fetch images, download images, process ima
 Current status: Phase A planning only.
 ```
 
+Phase B folder design is documented in `docs/wallpaper-photo-rotation-folder-design.md`. No curator folders are created yet.
+
 No curator runtime, fetcher, review UI, image worker, or rotation-folder automation exists yet.
 
 ## Why This Belongs in Appearance & Vibe
@@ -272,9 +274,13 @@ Phase J: Optional Devvit companion app
 
 ```bash
 bin/chief-of-staff --wallpaper-photo-curator-plan-status
+bin/chief-of-staff --wallpaper-photo-folder-design-status
 bin/chief-of-staff --dashboard
 bash scripts/wallpaper-photo-curator-plan-status.sh
+bash scripts/wallpaper-photo-folder-design-status.sh
 ```
+
+See also `docs/wallpaper-photo-rotation-folder-design.md` for Phase B folder layout.
 
 ## What This PR Does Not Implement
 

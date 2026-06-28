@@ -29,6 +29,8 @@ Meta commands:
   --document-indexing-plan-status      Show safe local document indexing plan status and exit.
   --wallpaper-photo-curator-plan-status
                                        Show Appearance & Vibe wallpaper/photo curator plan status and exit.
+  --wallpaper-photo-folder-design-status
+                                       Show wallpaper/photo rotation folder design status and exit.
   --command-launcher-status            Show Chief of Staff command launcher status and exit.
   --cursor-workflow-status             Show local Cursor workflow status and exit.
   --developer-status                   Show local Developer Mode status and exit.
@@ -85,6 +87,7 @@ Examples:
   bin/chief-of-staff --review-notes-template-status
   bin/chief-of-staff --document-indexing-plan-status
   bin/chief-of-staff --wallpaper-photo-curator-plan-status
+  bin/chief-of-staff --wallpaper-photo-folder-design-status
   bin/chief-of-staff --command-launcher-status
   bin/chief-of-staff --cursor-workflow-status
   bin/chief-of-staff --developer-status
@@ -149,6 +152,7 @@ Local command: Cursor workflow status
 Future-Safety
 Local command: document indexing plan status
 Local command: wallpaper photo curator plan status
+Local command: wallpaper photo folder design status
 Verification
 intake-review
 verify-before-use
@@ -1001,6 +1005,15 @@ while [[ $# -gt 0 ]]; do
         die "Wallpaper photo curator plan status script is missing: scripts/wallpaper-photo-curator-plan-status.sh"
       fi
       bash "${wallpaper_curator_plan_status_script}"
+      exit 0
+      ;;
+    --wallpaper-photo-folder-design-status)
+      repo_root="$(resolve_repo_root)"
+      wallpaper_folder_design_status_script="${repo_root}/scripts/wallpaper-photo-folder-design-status.sh"
+      if [[ ! -f "${wallpaper_folder_design_status_script}" ]]; then
+        die "Wallpaper photo folder design status script is missing: scripts/wallpaper-photo-folder-design-status.sh"
+      fi
+      bash "${wallpaper_folder_design_status_script}"
       exit 0
       ;;
     --command-launcher-status)

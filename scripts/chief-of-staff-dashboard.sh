@@ -474,6 +474,29 @@ else
   warn "wallpaper photo curator plan status script missing: scripts/wallpaper-photo-curator-plan-status.sh"
 fi
 
+section "Wallpaper/Photo Folder Design"
+if [[ -f scripts/wallpaper-photo-folder-design-status.sh ]]; then
+  wallpaper_folder_design_result=0
+  wallpaper_folder_design_output="$(bash scripts/wallpaper-photo-folder-design-status.sh 2>&1)" || wallpaper_folder_design_result=$?
+  wallpaper_folder_design_pass="$(summary_count "${wallpaper_folder_design_output}" "PASS")"
+  wallpaper_folder_design_warn="$(summary_count "${wallpaper_folder_design_output}" "WARN")"
+  wallpaper_folder_design_fail="$(summary_count "${wallpaper_folder_design_output}" "FAIL")"
+
+  if [[ "${wallpaper_folder_design_result}" != "0" ]]; then
+    printf 'Wallpaper/Photo Folder Design: status command completed\n'
+    printf '%s\n' "${wallpaper_folder_design_output}"
+    fail "wallpaper photo folder design status failed"
+  elif [[ -n "${wallpaper_folder_design_pass}" && -n "${wallpaper_folder_design_warn}" && -n "${wallpaper_folder_design_fail}" ]]; then
+    printf 'Wallpaper/Photo Folder Design: PASS %s / WARN %s / FAIL %s\n' "${wallpaper_folder_design_pass}" "${wallpaper_folder_design_warn}" "${wallpaper_folder_design_fail}"
+    pass "wallpaper photo folder design status completed"
+  else
+    printf 'Wallpaper/Photo Folder Design: status command completed\n'
+    pass "wallpaper photo folder design status completed"
+  fi
+else
+  warn "wallpaper photo folder design status script missing: scripts/wallpaper-photo-folder-design-status.sh"
+fi
+
 section "Cursor Workflow"
 if [[ -f scripts/cursor-workflow-status.sh ]]; then
   cursor_result=0

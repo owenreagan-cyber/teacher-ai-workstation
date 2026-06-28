@@ -230,6 +230,14 @@ bin/chief-of-staff --wallpaper-photo-curator-plan-status
 
 See `docs/appearance-vibe-wallpaper-photo-curator-plan.md`.
 
+Wallpaper/photo rotation folder design status command:
+
+```bash
+bin/chief-of-staff --wallpaper-photo-folder-design-status
+```
+
+See `docs/wallpaper-photo-rotation-folder-design.md`.
+
 Local command launcher status command:
 
 ```bash

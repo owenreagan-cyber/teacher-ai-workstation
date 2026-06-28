@@ -5,14 +5,15 @@ This folder stores planning assets only for the future Automated Wallpaper and P
 ## Rules
 
 - No real images go here.
-- Sample records in `sample-records.json`, `sample-queue.json`, `sample-source-allowlist.json`, `sample-discovery-report.json`, `sample-review-ui-state.json`, and `sample-image-processing-plan.json` are fictional and safe.
+- Sample records in `sample-records.json`, `sample-queue.json`, `sample-source-allowlist.json`, `sample-discovery-report.json`, `sample-review-ui-state.json`, `sample-image-processing-plan.json`, and `sample-scheduler-run-plan.json` are fictional and safe.
 - No API keys or secrets.
 - No Reddit or Devvit integration yet.
 - No network calls.
 - No image processing, rendering, or file reads/writes.
+- No scheduler, launch agents, cron jobs, background jobs, or notifications.
 - No student data.
 - Future metadata files should avoid copyrighted image URLs until source rules are approved.
-- Temp queue rules, queue file format, Approve/Dismiss UI design, image processing rules, local scheduler plan, approved-source fetcher plan, source allowlist foundation, simulated discovery plan, review UI prototype plan, and image processor foundation are planning/status only—no live queues, UI, processing, rendering, scheduler, fetcher, discovery, or source fetching.
+- Temp queue rules, queue file format, Approve/Dismiss UI design, image processing rules, local scheduler plan, approved-source fetcher plan, source allowlist foundation, simulated discovery plan, review UI prototype plan, image processor foundation, and scheduler foundation are planning/status only—no live queues, UI, processing, rendering, scheduler runtime, fetcher, discovery, or source fetching.
 
 ## Files
 
@@ -25,6 +26,7 @@ This folder stores planning assets only for the future Automated Wallpaper and P
 - `sample-discovery-report.json` — Fictional simulated discovery report with candidate-count placeholders.
 - `sample-review-ui-state.json` — Fictional sample review UI state with candidate cards and simulated action labels.
 - `sample-image-processing-plan.json` — Fictional sample processing plan with output intents and report-only fit/crop strategies.
+- `sample-scheduler-run-plan.json` — Fictional sample scheduler run plan with run intents and pause/disable placeholders.
 
 ## Status
 
@@ -45,6 +47,8 @@ bin/chief-of-staff --wallpaper-photo-review-ui-prototype-status
 bin/chief-of-staff --wallpaper-photo-review-ui-state-validator
 bin/chief-of-staff --wallpaper-photo-image-processor-foundation-status
 bin/chief-of-staff --wallpaper-photo-image-processing-plan-validator
+bin/chief-of-staff --wallpaper-photo-scheduler-foundation-status
+bin/chief-of-staff --wallpaper-photo-scheduler-run-plan-validator
 ```
 
-See `docs/wallpaper-photo-metadata-schema.md`, `docs/wallpaper-photo-temp-queue-rules.md`, `docs/wallpaper-photo-queue-file-format.md`, `docs/wallpaper-photo-approve-dismiss-ui-design.md`, `docs/wallpaper-photo-image-processing-rules.md`, `docs/wallpaper-photo-local-automation-scheduler-plan.md`, `docs/wallpaper-photo-approved-source-fetcher-plan.md`, `docs/wallpaper-photo-source-allowlist-foundation.md`, `docs/wallpaper-photo-simulated-approved-source-discovery-plan.md`, `docs/wallpaper-photo-live-local-review-ui-prototype-plan.md`, and `docs/wallpaper-photo-image-processor-foundation.md`.
+See `docs/wallpaper-photo-metadata-schema.md`, `docs/wallpaper-photo-temp-queue-rules.md`, `docs/wallpaper-photo-queue-file-format.md`, `docs/wallpaper-photo-approve-dismiss-ui-design.md`, `docs/wallpaper-photo-image-processing-rules.md`, `docs/wallpaper-photo-local-automation-scheduler-plan.md`, `docs/wallpaper-photo-approved-source-fetcher-plan.md`, `docs/wallpaper-photo-source-allowlist-foundation.md`, `docs/wallpaper-photo-simulated-approved-source-discovery-plan.md`, `docs/wallpaper-photo-live-local-review-ui-prototype-plan.md`, `docs/wallpaper-photo-image-processor-foundation.md`, and `docs/wallpaper-photo-scheduler-foundation.md`.

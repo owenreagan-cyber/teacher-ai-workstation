@@ -369,6 +369,20 @@ bin/chief-of-staff --wallpaper-photo-image-processing-plan-validator
 
 See `docs/wallpaper-photo-image-processor-foundation.md`.
 
+Wallpaper/photo scheduler foundation status command:
+
+```bash
+bin/chief-of-staff --wallpaper-photo-scheduler-foundation-status
+```
+
+Wallpaper/photo scheduler run plan dry-run validator command:
+
+```bash
+bin/chief-of-staff --wallpaper-photo-scheduler-run-plan-validator
+```
+
+See `docs/wallpaper-photo-scheduler-foundation.md`.
+
 Local command launcher status command:
 
 ```bash

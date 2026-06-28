@@ -19,8 +19,8 @@ Track active projects, project status, next actions, blockers, and decisions.
 - Status: active
 - Category: operations / app-development
 - Goal: Prepare a MacBook-first Teacher AI Workstation with safe setup, assistant foundations, and future specialist support.
-- Current phase: Wallpaper/photo image processor foundation
-- Last known next action: Add image processor foundation planning/status and sample processing plan validation without real image processing, file reads, or file writes.
+- Current phase: Wallpaper/photo scheduler foundation
+- Last known next action: Add scheduler foundation planning/status and sample scheduler run plan validation without real scheduler, launch agents, cron jobs, background jobs, or notifications.
 - Blockers: none known
 - Source: repo roadmap and current implementation work
 - Last reviewed: 2026-06-26
@@ -31,8 +31,8 @@ Track active projects, project status, next actions, blockers, and decisions.
 - Status: active
 - Category: teaching / app-development
 - Goal: Build a teaching-first, permission-based assistant for planning, memory, writing, troubleshooting, and project support.
-- Current phase: Wallpaper/photo image processor foundation
-- Last known next action: Add image processor foundation planning/status and sample processing plan validation without real image processing, file reads, or file writes.
+- Current phase: Wallpaper/photo scheduler foundation
+- Last known next action: Add scheduler foundation planning/status and sample scheduler run plan validation without real scheduler, launch agents, cron jobs, background jobs, or notifications.
 - Blockers: approved real writing samples are not added yet; Gmail/Drive integrations require explicit future permission and safety review
 - Source: Phase 1A-1D docs, dashboard docs, lesson planning scaffold, and Developer Mode template work
 - Last reviewed: 2026-06-26
@@ -74,15 +74,15 @@ Track active projects, project status, next actions, blockers, and decisions.
 
 ### Appearance & Vibe — Automated Wallpaper and Photo Curator
 
-- Status: parked (Phase P image processor foundation active build)
+- Status: parked (Phase Q scheduler foundation active build)
 - Category: personal / operations
 - Goal: Future local Mac curator for wallpaper/photo candidate review, approve/dismiss, and rotation-folder storage.
-- Current phase: Phase P image processor foundation (planning/status/sample processing plan validation only).
-- Last known next action: Wallpaper/photo scheduler foundation PR.
+- Current phase: Phase Q scheduler foundation (planning/status/sample scheduler run plan validation only).
+- Last known next action: Wallpaper/photo notification foundation PR.
 - Blockers: full curator not implemented; human approval gates required before automation
-- Source: docs/wallpaper-photo-metadata-schema.md, docs/wallpaper-photo-image-processor-foundation.md, docs/wallpaper-photo-live-local-review-ui-prototype-plan.md, assistant/appearance-vibe/wallpaper-photo-curator/, and build queue
+- Source: docs/wallpaper-photo-metadata-schema.md, docs/wallpaper-photo-scheduler-foundation.md, docs/wallpaper-photo-image-processor-foundation.md, docs/wallpaper-photo-live-local-review-ui-prototype-plan.md, assistant/appearance-vibe/wallpaper-photo-curator/, and build queue
 - Last reviewed: 2026-06-28
-- Notes: Review UI prototype plan is complete. Image processor foundation is planning/status/sample processing plan validation only. No real image processing, file reads, file writes, conversion, resizing, cropping, previews, processed outputs, fetcher, network calls, API clients, OAuth, secrets, Reddit integration, Devvit integration, scheduler, or notifications exists yet. Full curator not implemented. Reddit may be a future source only. Devvit may be a future Reddit-native companion only.
+- Notes: Image processor foundation is complete. Scheduler foundation is planning/status/sample scheduler run plan validation only. No real scheduler, launch agents, cron jobs, background jobs, unattended runs, notifications, fetcher, real image processing, network calls, API clients, OAuth, secrets, Reddit integration, or Devvit integration exists yet. Full curator not implemented. Reddit may be a future source only. Devvit may be a future Reddit-native companion only.
 
 ### Project Name
 

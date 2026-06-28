@@ -12,7 +12,7 @@ This PR is the folder design step only. It does not create folders, fetch images
 Current status: Phase B planning only.
 ```
 
-Phase D manual folder creation helper is in `docs/wallpaper-photo-manual-folder-creation-helper.md`. Phase E metadata schema is in `docs/wallpaper-photo-metadata-schema.md`.
+Phase D manual folder creation helper is in `docs/wallpaper-photo-manual-folder-creation-helper.md`. Phase E metadata schema is in `docs/wallpaper-photo-metadata-schema.md`. Phase S rotation handoff and safety audit defines readiness gates before any future handoff into rotation folders. See `docs/wallpaper-photo-rotation-handoff-safety-audit.md`.
 
 ## Relationship to the Curator Plan
 
@@ -235,12 +235,16 @@ bin/chief-of-staff --wallpaper-photo-folder-design-status
 bin/chief-of-staff --wallpaper-photo-dry-run-folder-validator
 bin/chief-of-staff --wallpaper-photo-folder-creation-status
 bin/chief-of-staff --wallpaper-photo-create-folders --dry-run
+bin/chief-of-staff --wallpaper-photo-rotation-handoff-safety-status
+bin/chief-of-staff --wallpaper-photo-rotation-handoff-validator
 bin/chief-of-staff --wallpaper-photo-metadata-status
 bin/chief-of-staff --wallpaper-photo-curator-plan-status
 bin/chief-of-staff --dashboard
 bash scripts/wallpaper-photo-folder-design-status.sh
 bash scripts/wallpaper-photo-dry-run-folder-validator.sh
 bash scripts/wallpaper-photo-create-folders.sh --dry-run
+bash scripts/wallpaper-photo-rotation-handoff-safety-status.sh
+bash scripts/wallpaper-photo-rotation-handoff-validator.sh
 ```
 
-See also `docs/wallpaper-photo-dry-run-folder-validator.md` for Phase C dry-run path validation and `docs/wallpaper-photo-manual-folder-creation-helper.md` for Phase D manual creation.
+See also `docs/wallpaper-photo-dry-run-folder-validator.md` for Phase C dry-run path validation, `docs/wallpaper-photo-manual-folder-creation-helper.md` for Phase D manual creation, and `docs/wallpaper-photo-rotation-handoff-safety-audit.md` for Phase S rotation handoff and safety audit.

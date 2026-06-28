@@ -218,14 +218,20 @@ Phase U: Future real notification helper implementation, only after separate app
 Phase V: Future scheduler-notification connection, only after separate approval
 ```
 
+Phase R defined notification foundation with review-ready summary fields and dry-run notification previews. Phase S defines rotation handoff and safety audit with readiness gates before any file handoff. See `docs/wallpaper-photo-rotation-handoff-safety-audit.md`.
+
 ## Commands Reference
 
 ```bash
 bin/chief-of-staff --wallpaper-photo-notification-foundation-status
 bin/chief-of-staff --wallpaper-photo-notification-plan-validator
+bin/chief-of-staff --wallpaper-photo-rotation-handoff-safety-status
+bin/chief-of-staff --wallpaper-photo-rotation-handoff-validator
 bin/chief-of-staff --wallpaper-photo-scheduler-foundation-status
 bin/chief-of-staff --wallpaper-photo-review-ui-prototype-status
 bin/chief-of-staff --dashboard
 bash scripts/wallpaper-photo-notification-foundation-status.sh
 bash scripts/wallpaper-photo-notification-plan-validator.sh
+bash scripts/wallpaper-photo-rotation-handoff-safety-status.sh
+bash scripts/wallpaper-photo-rotation-handoff-validator.sh
 ```

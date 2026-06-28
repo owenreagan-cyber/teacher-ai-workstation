@@ -44,19 +44,20 @@ Completed:
 - Wallpaper/photo live local review UI prototype plan
 - Wallpaper/photo image processor foundation
 - Wallpaper/photo scheduler foundation
+- Wallpaper/photo notification foundation
 
 Now:
 
-- Wallpaper/photo notification foundation (planning/status/sample notification plan validation only)
+- Wallpaper/photo rotation handoff and safety audit (planning/status/sample readiness validation only)
 
 Next:
 
-- Wallpaper/photo rotation handoff and safety audit
+- Return to Chief of Staff / Teacher Workstation core
 - Later: selected local folder indexing
 
 ## Parked Future
 
-- Appearance & Vibe: Automated Wallpaper and Photo Curator (Phase R notification foundation in progress; full curator not implemented; no real notifications, notification mechanism, osascript, terminal-notifier, scheduler, launch agents, cron jobs, background jobs, unattended runs, fetcher, real image processing, network calls, API clients, OAuth, secrets, Reddit integration, or Devvit integration yet; Reddit future source only; Devvit future companion only)
+- Appearance & Vibe: Automated Wallpaper and Photo Curator (Phase S rotation handoff and safety audit in progress; full curator foundation stack complete after this PR; live curator not implemented; no real rotation, file moves, copies, deletions, folder scans, queue writes, wallpaper changes, Photos changes, fetcher, real image processing, scheduler, notifications, network calls, API clients, OAuth, secrets, Reddit integration, or Devvit integration yet; Reddit future source only; Devvit future companion only)
 - 3D Design Factory Agent remains parked until Chief of Staff and Teacher Workstation foundations are mature
 
 ## Phase 1 Boundary

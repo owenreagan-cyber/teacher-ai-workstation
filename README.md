@@ -397,6 +397,20 @@ bin/chief-of-staff --wallpaper-photo-notification-plan-validator
 
 See `docs/wallpaper-photo-notification-foundation.md`.
 
+Wallpaper/photo rotation handoff safety audit status command:
+
+```bash
+bin/chief-of-staff --wallpaper-photo-rotation-handoff-safety-status
+```
+
+Wallpaper/photo rotation handoff dry-run validator command:
+
+```bash
+bin/chief-of-staff --wallpaper-photo-rotation-handoff-validator
+```
+
+See `docs/wallpaper-photo-rotation-handoff-safety-audit.md`.
+
 Local command launcher status command:
 
 ```bash

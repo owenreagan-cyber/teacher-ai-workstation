@@ -497,6 +497,29 @@ else
   warn "wallpaper photo folder design status script missing: scripts/wallpaper-photo-folder-design-status.sh"
 fi
 
+section "Wallpaper/Photo Dry-Run Folder Validator"
+if [[ -f scripts/wallpaper-photo-dry-run-folder-validator.sh ]]; then
+  wallpaper_dry_run_result=0
+  wallpaper_dry_run_output="$(bash scripts/wallpaper-photo-dry-run-folder-validator.sh 2>&1)" || wallpaper_dry_run_result=$?
+  wallpaper_dry_run_pass="$(summary_count "${wallpaper_dry_run_output}" "PASS")"
+  wallpaper_dry_run_warn="$(summary_count "${wallpaper_dry_run_output}" "WARN")"
+  wallpaper_dry_run_fail="$(summary_count "${wallpaper_dry_run_output}" "FAIL")"
+
+  if [[ "${wallpaper_dry_run_result}" != "0" ]]; then
+    printf 'Wallpaper/Photo Dry-Run Folder Validator: status command completed\n'
+    printf '%s\n' "${wallpaper_dry_run_output}"
+    fail "wallpaper photo dry-run folder validator failed"
+  elif [[ -n "${wallpaper_dry_run_pass}" && -n "${wallpaper_dry_run_warn}" && -n "${wallpaper_dry_run_fail}" ]]; then
+    printf 'Wallpaper/Photo Dry-Run Folder Validator: PASS %s / WARN %s / FAIL %s\n' "${wallpaper_dry_run_pass}" "${wallpaper_dry_run_warn}" "${wallpaper_dry_run_fail}"
+    pass "wallpaper photo dry-run folder validator completed"
+  else
+    printf 'Wallpaper/Photo Dry-Run Folder Validator: status command completed\n'
+    pass "wallpaper photo dry-run folder validator completed"
+  fi
+else
+  warn "wallpaper photo dry-run folder validator script missing: scripts/wallpaper-photo-dry-run-folder-validator.sh"
+fi
+
 section "Cursor Workflow"
 if [[ -f scripts/cursor-workflow-status.sh ]]; then
   cursor_result=0

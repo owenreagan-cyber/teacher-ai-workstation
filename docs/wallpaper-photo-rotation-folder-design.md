@@ -12,7 +12,7 @@ This PR is the folder design step only. It does not create folders, fetch images
 Current status: Phase B planning only.
 ```
 
-No curator folders exist yet. No folder-creation helper, dry-run validator, or metadata files are implemented in this PR.
+Phase C dry-run validation lives in `docs/wallpaper-photo-dry-run-folder-validator.md`. No curator folders are created yet.
 
 ## Relationship to the Curator Plan
 
@@ -232,7 +232,11 @@ This PR does not create metadata files or databases.
 
 ```bash
 bin/chief-of-staff --wallpaper-photo-folder-design-status
+bin/chief-of-staff --wallpaper-photo-dry-run-folder-validator
 bin/chief-of-staff --wallpaper-photo-curator-plan-status
 bin/chief-of-staff --dashboard
 bash scripts/wallpaper-photo-folder-design-status.sh
+bash scripts/wallpaper-photo-dry-run-folder-validator.sh
 ```
+
+See also `docs/wallpaper-photo-dry-run-folder-validator.md` for Phase C dry-run path validation.

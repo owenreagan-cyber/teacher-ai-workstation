@@ -14,6 +14,8 @@ Current status: dashboard readability pass complete.
 
 Command map cleanup improves `--help` and `--list-workflows` discoverability. See `docs/chief-of-staff-command-map-cleanup.md`.
 
+Help examples polish adds common-workflow example blocks. See `docs/chief-of-staff-help-examples-polish.md`.
+
 The dashboard groups core workstation, Chief of Staff workflow, lesson planning, developer/Cursor, Appearance & Vibe foundation, recommendation, and final health summary sections more clearly.
 
 ## Why This Pass Exists
@@ -117,5 +119,7 @@ no student data
 bin/chief-of-staff --dashboard
 bin/chief-of-staff --return-to-core-status
 bin/chief-of-staff --dashboard-readability-status
+bin/chief-of-staff --help-examples-status
 bash scripts/chief-of-staff-dashboard-readability-status.sh
+bash scripts/chief-of-staff-help-examples-status.sh
 ```

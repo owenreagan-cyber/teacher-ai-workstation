@@ -19,8 +19,8 @@ Track active projects, project status, next actions, blockers, and decisions.
 - Status: active
 - Category: operations / app-development
 - Goal: Prepare a MacBook-first Teacher AI Workstation with safe setup, assistant foundations, and future specialist support.
-- Current phase: Wallpaper/photo manual folder creation helper
-- Last known next action: Add explicit create-mode folder helper with dry-run default; dashboard/status remain read-only.
+- Current phase: Wallpaper/photo metadata schema and sample records
+- Last known next action: Add local JSON schema and fictional sample metadata records without fetching or storing real images.
 - Blockers: none known
 - Source: repo roadmap and current implementation work
 - Last reviewed: 2026-06-26
@@ -31,8 +31,8 @@ Track active projects, project status, next actions, blockers, and decisions.
 - Status: active
 - Category: teaching / app-development
 - Goal: Build a teaching-first, permission-based assistant for planning, memory, writing, troubleshooting, and project support.
-- Current phase: Wallpaper/photo manual folder creation helper
-- Last known next action: Add explicit create-mode folder helper with dry-run default; dashboard/status remain read-only.
+- Current phase: Wallpaper/photo metadata schema and sample records
+- Last known next action: Add local JSON schema and fictional sample metadata records without fetching or storing real images.
 - Blockers: approved real writing samples are not added yet; Gmail/Drive integrations require explicit future permission and safety review
 - Source: Phase 1A-1D docs, dashboard docs, lesson planning scaffold, and Developer Mode template work
 - Last reviewed: 2026-06-26
@@ -74,15 +74,15 @@ Track active projects, project status, next actions, blockers, and decisions.
 
 ### Appearance & Vibe — Automated Wallpaper and Photo Curator
 
-- Status: parked (Phase D manual folder creation helper active build)
+- Status: parked (Phase E metadata schema active build)
 - Category: personal / operations
 - Goal: Future local Mac curator for wallpaper/photo candidate review, approve/dismiss, and rotation-folder storage.
-- Current phase: Phase D manual folder creation helper (dry-run default; explicit create only).
-- Last known next action: Wallpaper/photo metadata schema and sample records PR.
+- Current phase: Phase E metadata schema and fictional sample records (local-only).
+- Last known next action: Wallpaper/photo temp queue rules PR.
 - Blockers: full curator not implemented; human approval gates required before automation
-- Source: docs/wallpaper-photo-manual-folder-creation-helper.md, docs/wallpaper-photo-dry-run-folder-validator.md, and build queue
+- Source: docs/wallpaper-photo-metadata-schema.md, assistant/appearance-vibe/wallpaper-photo-curator/, and build queue
 - Last reviewed: 2026-06-28
-- Notes: Dashboard and status checks do not create folders. Reddit may be a future source only. Devvit may be a future Reddit-native companion only.
+- Notes: Schema and samples are fictional and safe. Reddit may be a future source only. Devvit may be a future Reddit-native companion only.
 
 ### Project Name
 

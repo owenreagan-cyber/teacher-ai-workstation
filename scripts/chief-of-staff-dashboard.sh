@@ -543,6 +543,29 @@ else
   warn "wallpaper photo folder creation status script missing: scripts/wallpaper-photo-folder-creation-status.sh"
 fi
 
+section "Wallpaper/Photo Metadata Schema"
+if [[ -f scripts/wallpaper-photo-metadata-status.sh ]]; then
+  wallpaper_metadata_result=0
+  wallpaper_metadata_output="$(bash scripts/wallpaper-photo-metadata-status.sh 2>&1)" || wallpaper_metadata_result=$?
+  wallpaper_metadata_pass="$(summary_count "${wallpaper_metadata_output}" "PASS")"
+  wallpaper_metadata_warn="$(summary_count "${wallpaper_metadata_output}" "WARN")"
+  wallpaper_metadata_fail="$(summary_count "${wallpaper_metadata_output}" "FAIL")"
+
+  if [[ "${wallpaper_metadata_result}" != "0" ]]; then
+    printf 'Wallpaper/Photo Metadata Schema: status command completed\n'
+    printf '%s\n' "${wallpaper_metadata_output}"
+    fail "wallpaper photo metadata status failed"
+  elif [[ -n "${wallpaper_metadata_pass}" && -n "${wallpaper_metadata_warn}" && -n "${wallpaper_metadata_fail}" ]]; then
+    printf 'Wallpaper/Photo Metadata Schema: PASS %s / WARN %s / FAIL %s\n' "${wallpaper_metadata_pass}" "${wallpaper_metadata_warn}" "${wallpaper_metadata_fail}"
+    pass "wallpaper photo metadata status completed"
+  else
+    printf 'Wallpaper/Photo Metadata Schema: status command completed\n'
+    pass "wallpaper photo metadata status completed"
+  fi
+else
+  warn "wallpaper photo metadata status script missing: scripts/wallpaper-photo-metadata-status.sh"
+fi
+
 section "Cursor Workflow"
 if [[ -f scripts/cursor-workflow-status.sh ]]; then
   cursor_result=0

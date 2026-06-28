@@ -1,0 +1,172 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Wallpaper Photo Curator Candidate Metadata",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "candidate_id",
+    "candidate_type",
+    "source_type",
+    "source_name",
+    "source_url",
+    "candidate_url",
+    "title",
+    "creator_name",
+    "license_status",
+    "permission_note",
+    "content_rating",
+    "nsfw_flag",
+    "width",
+    "height",
+    "aspect_ratio",
+    "file_format",
+    "file_size_bytes",
+    "wallpaper_fit_score",
+    "photo_widget_fit_score",
+    "duplicate_risk",
+    "watermark_risk",
+    "review_status",
+    "review_decision",
+    "reviewed_by",
+    "reviewed_at",
+    "local_temp_path",
+    "processed_output_path",
+    "created_at",
+    "updated_at",
+    "notes"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string"
+    },
+    "candidate_id": {
+      "type": "string"
+    },
+    "candidate_type": {
+      "type": "string",
+      "enum": ["wallpaper", "photo_widget", "both"]
+    },
+    "source_type": {
+      "type": "string",
+      "enum": [
+        "fictional_sample",
+        "future_reddit_source",
+        "future_devvit_companion",
+        "future_approved_site",
+        "future_local_folder",
+        "manual_entry"
+      ]
+    },
+    "source_name": {
+      "type": "string"
+    },
+    "source_url": {
+      "type": "string"
+    },
+    "candidate_url": {
+      "type": "string"
+    },
+    "title": {
+      "type": "string"
+    },
+    "creator_name": {
+      "type": "string"
+    },
+    "license_status": {
+      "type": "string",
+      "enum": [
+        "fictional_sample",
+        "unknown_needs_review",
+        "permission_confirmed",
+        "public_domain",
+        "creative_commons",
+        "personal_use_only",
+        "not_allowed"
+      ]
+    },
+    "permission_note": {
+      "type": "string"
+    },
+    "content_rating": {
+      "type": "string",
+      "enum": ["safe", "needs_review", "blocked"]
+    },
+    "nsfw_flag": {
+      "type": "boolean"
+    },
+    "width": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "height": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "aspect_ratio": {
+      "type": "string"
+    },
+    "file_format": {
+      "type": "string"
+    },
+    "file_size_bytes": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "wallpaper_fit_score": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100
+    },
+    "photo_widget_fit_score": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100
+    },
+    "duplicate_risk": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100
+    },
+    "watermark_risk": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100
+    },
+    "review_status": {
+      "type": "string",
+      "enum": ["unreviewed", "approved", "dismissed", "blocked", "needs_more_info"]
+    },
+    "review_decision": {
+      "type": "string",
+      "enum": [
+        "none",
+        "approve_for_processing",
+        "dismiss_delete_candidate",
+        "block_source",
+        "needs_more_info"
+      ]
+    },
+    "reviewed_by": {
+      "type": "string"
+    },
+    "reviewed_at": {
+      "type": "string"
+    },
+    "local_temp_path": {
+      "type": "string"
+    },
+    "processed_output_path": {
+      "type": "string"
+    },
+    "created_at": {
+      "type": "string"
+    },
+    "updated_at": {
+      "type": "string"
+    },
+    "notes": {
+      "type": "string"
+    }
+  }
+}

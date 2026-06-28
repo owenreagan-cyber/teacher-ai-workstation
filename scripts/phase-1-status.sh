@@ -269,6 +269,13 @@ for path in \
   check_required_file "${path}"
 done
 
+section "Appearance & Vibe Wallpaper/Photo Curator Plan Files"
+for path in \
+  docs/appearance-vibe-wallpaper-photo-curator-plan.md \
+  scripts/wallpaper-photo-curator-plan-status.sh; do
+  check_required_file "${path}"
+done
+
 section "Safe Local Document Indexing Plan Files"
 for path in \
   docs/safe-local-document-indexing-plan.md \
@@ -310,6 +317,7 @@ done
 
 section "Syntax Checks"
 check_bash_syntax "scripts/command-launcher-status.sh"
+check_bash_syntax "scripts/wallpaper-photo-curator-plan-status.sh"
 check_bash_syntax "scripts/document-indexing-plan-status.sh"
 check_bash_syntax "scripts/review-notes-template-status.sh"
 check_bash_syntax "scripts/lesson-review-view.sh"
@@ -331,7 +339,7 @@ section "Recommendation"
 if (( CRITICAL_BLOCKER > 0 )); then
   printf 'Fix critical Chief of Staff CLI, memory, intake, or script problems before the next build PR.\n'
 else
-  printf 'Next recommended PR: Appearance & Vibe automated wallpaper/photo curator plan.\n'
+  printf 'Next recommended PR: Wallpaper/photo rotation folder design.\n'
 fi
 
 if (( COMPARE_0E == 1 && CRITICAL_BLOCKER == 0 )); then

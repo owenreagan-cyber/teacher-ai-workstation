@@ -19,8 +19,8 @@ Track active projects, project status, next actions, blockers, and decisions.
 - Status: active
 - Category: operations / app-development
 - Goal: Prepare a MacBook-first Teacher AI Workstation with safe setup, assistant foundations, and future specialist support.
-- Current phase: Dashboard polish and command grouping follow-up
-- Last known next action: Polish dashboard reading order and grouped command discovery after the command launcher refinement.
+- Current phase: Appearance & Vibe automated wallpaper/photo curator plan
+- Last known next action: Add planning-only design for Automated Wallpaper and Photo Curator with local Mac curator as core runtime.
 - Blockers: none known
 - Source: repo roadmap and current implementation work
 - Last reviewed: 2026-06-26
@@ -31,8 +31,8 @@ Track active projects, project status, next actions, blockers, and decisions.
 - Status: active
 - Category: teaching / app-development
 - Goal: Build a teaching-first, permission-based assistant for planning, memory, writing, troubleshooting, and project support.
-- Current phase: Dashboard polish and command grouping follow-up
-- Last known next action: Clarify dashboard sections and command groups without adding integrations.
+- Current phase: Appearance & Vibe automated wallpaper/photo curator plan
+- Last known next action: Document future curator flow, safety boundaries, and Reddit/Devvit decisions without implementing automation.
 - Blockers: approved real writing samples are not added yet; Gmail/Drive integrations require explicit future permission and safety review
 - Source: Phase 1A-1D docs, dashboard docs, lesson planning scaffold, and Developer Mode template work
 - Last reviewed: 2026-06-26
@@ -74,15 +74,15 @@ Track active projects, project status, next actions, blockers, and decisions.
 
 ### Appearance & Vibe — Automated Wallpaper and Photo Curator
 
-- Status: parked
+- Status: parked (planning-only active build)
 - Category: personal / operations
-- Goal: Future local app for wallpaper/photo candidate review, approve/dismiss, and rotation-folder storage.
-- Current phase: Planning only; documented in dashboard polish follow-up guide.
-- Last known next action: Appearance & Vibe automated wallpaper/photo curator plan PR (planning-only).
-- Blockers: not an active build; no image fetching, Reddit, Devvit, or macOS automation in current phase
-- Source: docs/dashboard-polish-command-grouping-follow-up.md and build queue
+- Goal: Future local Mac curator for wallpaper/photo candidate review, approve/dismiss, and rotation-folder storage.
+- Current phase: Phase A planning only via appearance-vibe-wallpaper-photo-curator-plan doc.
+- Last known next action: Wallpaper/photo rotation folder design PR (planning-only folder destinations).
+- Blockers: no fetcher, review UI, image worker, or macOS automation implemented
+- Source: docs/appearance-vibe-wallpaper-photo-curator-plan.md and build queue
 - Last reviewed: 2026-06-28
-- Notes: Parked future idea only. Human review required before any classroom or system use.
+- Notes: Local Mac curator is the future core runtime. Reddit may be a future source. Devvit may be a future Reddit-native companion only, not the Mac automation core.
 
 ### Project Name
 

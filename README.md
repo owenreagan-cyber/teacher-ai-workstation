@@ -222,6 +222,14 @@ bin/chief-of-staff --document-indexing-plan-status
 
 See `docs/safe-local-document-indexing-plan.md`.
 
+Appearance & Vibe wallpaper/photo curator plan status command:
+
+```bash
+bin/chief-of-staff --wallpaper-photo-curator-plan-status
+```
+
+See `docs/appearance-vibe-wallpaper-photo-curator-plan.md`.
+
 Local command launcher status command:
 
 ```bash

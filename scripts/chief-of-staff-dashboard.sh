@@ -451,6 +451,29 @@ else
   warn "document indexing plan status script missing: scripts/document-indexing-plan-status.sh"
 fi
 
+section "Appearance & Vibe Wallpaper/Photo Curator Plan"
+if [[ -f scripts/wallpaper-photo-curator-plan-status.sh ]]; then
+  wallpaper_curator_result=0
+  wallpaper_curator_output="$(bash scripts/wallpaper-photo-curator-plan-status.sh 2>&1)" || wallpaper_curator_result=$?
+  wallpaper_curator_pass="$(summary_count "${wallpaper_curator_output}" "PASS")"
+  wallpaper_curator_warn="$(summary_count "${wallpaper_curator_output}" "WARN")"
+  wallpaper_curator_fail="$(summary_count "${wallpaper_curator_output}" "FAIL")"
+
+  if [[ "${wallpaper_curator_result}" != "0" ]]; then
+    printf 'Appearance & Vibe Wallpaper/Photo Curator Plan: status command completed\n'
+    printf '%s\n' "${wallpaper_curator_output}"
+    fail "wallpaper photo curator plan status failed"
+  elif [[ -n "${wallpaper_curator_pass}" && -n "${wallpaper_curator_warn}" && -n "${wallpaper_curator_fail}" ]]; then
+    printf 'Appearance & Vibe Wallpaper/Photo Curator Plan: PASS %s / WARN %s / FAIL %s\n' "${wallpaper_curator_pass}" "${wallpaper_curator_warn}" "${wallpaper_curator_fail}"
+    pass "wallpaper photo curator plan status completed"
+  else
+    printf 'Appearance & Vibe Wallpaper/Photo Curator Plan: status command completed\n'
+    pass "wallpaper photo curator plan status completed"
+  fi
+else
+  warn "wallpaper photo curator plan status script missing: scripts/wallpaper-photo-curator-plan-status.sh"
+fi
+
 section "Cursor Workflow"
 if [[ -f scripts/cursor-workflow-status.sh ]]; then
   cursor_result=0

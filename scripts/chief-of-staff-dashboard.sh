@@ -589,6 +589,29 @@ else
   warn "wallpaper photo temp queue status script missing: scripts/wallpaper-photo-temp-queue-status.sh"
 fi
 
+section "Wallpaper/Photo Queue File Format"
+if [[ -f scripts/wallpaper-photo-queue-file-status.sh ]]; then
+  wallpaper_queue_file_result=0
+  wallpaper_queue_file_output="$(bash scripts/wallpaper-photo-queue-file-status.sh 2>&1)" || wallpaper_queue_file_result=$?
+  wallpaper_queue_file_pass="$(summary_count "${wallpaper_queue_file_output}" "PASS")"
+  wallpaper_queue_file_warn="$(summary_count "${wallpaper_queue_file_output}" "WARN")"
+  wallpaper_queue_file_fail="$(summary_count "${wallpaper_queue_file_output}" "FAIL")"
+
+  if [[ "${wallpaper_queue_file_result}" != "0" ]]; then
+    printf 'Wallpaper/Photo Queue File Format: status command completed\n'
+    printf '%s\n' "${wallpaper_queue_file_output}"
+    fail "wallpaper photo queue file status failed"
+  elif [[ -n "${wallpaper_queue_file_pass}" && -n "${wallpaper_queue_file_warn}" && -n "${wallpaper_queue_file_fail}" ]]; then
+    printf 'Wallpaper/Photo Queue File Format: PASS %s / WARN %s / FAIL %s\n' "${wallpaper_queue_file_pass}" "${wallpaper_queue_file_warn}" "${wallpaper_queue_file_fail}"
+    pass "wallpaper photo queue file status completed"
+  else
+    printf 'Wallpaper/Photo Queue File Format: status command completed\n'
+    pass "wallpaper photo queue file status completed"
+  fi
+else
+  warn "wallpaper photo queue file status script missing: scripts/wallpaper-photo-queue-file-status.sh"
+fi
+
 section "Cursor Workflow"
 if [[ -f scripts/cursor-workflow-status.sh ]]; then
   cursor_result=0

@@ -38,6 +38,9 @@ Meta commands:
   --wallpaper-photo-create-folders     Run manual wallpaper/photo folder helper (--dry-run default).
   --wallpaper-photo-metadata-status    Show wallpaper/photo metadata schema status and exit.
   --wallpaper-photo-temp-queue-status  Show wallpaper/photo temp queue rules status and exit.
+  --wallpaper-photo-queue-file-status  Show wallpaper/photo queue file format status and exit.
+  --wallpaper-photo-queue-file-validator
+                                       Run wallpaper/photo queue file dry-run validator and exit.
   --command-launcher-status            Show Chief of Staff command launcher status and exit.
   --cursor-workflow-status             Show local Cursor workflow status and exit.
   --developer-status                   Show local Developer Mode status and exit.
@@ -101,6 +104,8 @@ Examples:
   bin/chief-of-staff --wallpaper-photo-create-folders --create
   bin/chief-of-staff --wallpaper-photo-metadata-status
   bin/chief-of-staff --wallpaper-photo-temp-queue-status
+  bin/chief-of-staff --wallpaper-photo-queue-file-status
+  bin/chief-of-staff --wallpaper-photo-queue-file-validator
   bin/chief-of-staff --command-launcher-status
   bin/chief-of-staff --cursor-workflow-status
   bin/chief-of-staff --developer-status
@@ -171,6 +176,8 @@ Local command: wallpaper photo folder creation status
 Local command: wallpaper photo create folders manual helper
 Local command: wallpaper photo metadata status
 Local command: wallpaper photo temp queue status
+Local command: wallpaper photo queue file status
+Local command: wallpaper photo queue file validator
 Verification
 intake-review
 verify-before-use
@@ -1078,6 +1085,25 @@ while [[ $# -gt 0 ]]; do
         die "Wallpaper photo temp queue status script is missing: scripts/wallpaper-photo-temp-queue-status.sh"
       fi
       bash "${wallpaper_temp_queue_status_script}"
+      exit 0
+      ;;
+    --wallpaper-photo-queue-file-status)
+      repo_root="$(resolve_repo_root)"
+      wallpaper_queue_file_status_script="${repo_root}/scripts/wallpaper-photo-queue-file-status.sh"
+      if [[ ! -f "${wallpaper_queue_file_status_script}" ]]; then
+        die "Wallpaper photo queue file status script is missing: scripts/wallpaper-photo-queue-file-status.sh"
+      fi
+      bash "${wallpaper_queue_file_status_script}"
+      exit 0
+      ;;
+    --wallpaper-photo-queue-file-validator)
+      repo_root="$(resolve_repo_root)"
+      wallpaper_queue_file_validator_script="${repo_root}/scripts/wallpaper-photo-queue-file-validator.sh"
+      if [[ ! -f "${wallpaper_queue_file_validator_script}" ]]; then
+        die "Wallpaper photo queue file validator script is missing: scripts/wallpaper-photo-queue-file-validator.sh"
+      fi
+      shift
+      bash "${wallpaper_queue_file_validator_script}" "$@"
       exit 0
       ;;
     --command-launcher-status)

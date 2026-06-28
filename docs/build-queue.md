@@ -30,29 +30,30 @@ Phase 1 Teacher Chief of Staff + safe local lesson workflows.
 - Wallpaper/photo dry-run folder validator.
 - Wallpaper/photo manual folder creation helper.
 - Wallpaper/photo metadata schema and sample records.
+- Wallpaper/photo temp queue rules.
 
 ## Current PR
 
-Wallpaper/photo temp queue rules.
+Wallpaper/photo queue file format and dry-run validator.
 
-Scope: Local planning/status rules for future temp candidate queues (max 10 wallpaper, max 10 photo-widget, review states, stale handling concepts). No live queues, no queue folders, no image fetching, downloading, processing, deletion, folder scanning, Reddit, Devvit, network calls, or macOS automation.
+Scope: Local queue file format and dry-run validation for fictional/local queue records only. No live queues, no queue folders, no image fetching, downloading, processing, deletion, folder scanning, Reddit, Devvit, network calls, or macOS automation.
 
 ## Next PR
 
-Wallpaper/photo queue file format and dry-run validator
+Wallpaper/photo Approve/Dismiss UI design
 
-Scope: Local planning/status and dry-run validation for a future queue file format. It should validate fictional/local queue records only and must not fetch images, download images, process images, delete files, scan folders, call networks, use Reddit/Devvit, send notifications, run background jobs, or automate macOS wallpaper/Photos settings.
+Scope: Local planning/status design for a future review UI that shows wallpaper/photo candidates and supports Approve, Dismiss, Block, and Needs More Info decisions. No live UI implementation, no image fetching, no image downloading, no image processing, no deletion, no folder scanning, no network calls, no Reddit, no Devvit, no notifications, no background jobs, and no macOS wallpaper/Photos automation.
 
 ## Next Recommended PRs
 
-1. Wallpaper/photo queue file format and dry-run validator.
+1. Wallpaper/photo Approve/Dismiss UI design.
 2. Later: permissioned Gmail/Drive integrations.
 3. Later: secrets/capability broker.
 
 ## Parked / Future
 
 - 3D Design Factory Agent: Parked until Chief of Staff and Teacher Workstation foundations are mature.
-- Appearance & Vibe: Automated Wallpaper and Photo Curator (Phase F temp queue rules in progress; Phases G–K remain future).
+- Appearance & Vibe: Automated Wallpaper and Photo Curator (Phase G queue file format in progress; Phases H–K remain future).
 
 ## Open Threads
 

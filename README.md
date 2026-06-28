@@ -419,6 +419,14 @@ bin/chief-of-staff --return-to-core-status
 
 See `docs/return-to-chief-of-staff-core.md`.
 
+Chief of Staff dashboard readability pass status command:
+
+```bash
+bin/chief-of-staff --dashboard-readability-status
+```
+
+See `docs/chief-of-staff-dashboard-readability-pass.md`.
+
 Local command launcher status command:
 
 ```bash

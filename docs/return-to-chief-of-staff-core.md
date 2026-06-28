@@ -112,5 +112,7 @@ no student data
 ```bash
 bin/chief-of-staff --return-to-core-status
 bin/chief-of-staff --dashboard
+bin/chief-of-staff --dashboard-readability-status
 bash scripts/return-to-chief-of-staff-core-status.sh
+bash scripts/chief-of-staff-dashboard-readability-status.sh
 ```

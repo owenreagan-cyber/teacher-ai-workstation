@@ -31,6 +31,12 @@ section() {
   printf '%s\n' '----------------------------------------'
 }
 
+group_banner() {
+  printf '\n'
+  printf '=== %s ===\n' "$1"
+  printf '%s\n' '----------------------------------------'
+}
+
 capture_command() {
   local __output_var="$1"
   local __result_var="$2"
@@ -110,7 +116,10 @@ printf 'Branch: %s\n' "${branch:-unknown}"
 printf 'Commit: %s\n' "${commit:-unknown}"
 printf 'Run at: %s\n' "${run_at}"
 printf 'Read-only: yes\n'
-printf 'Dashboard reading order: health -> workflows -> command launcher -> lesson sections -> recommendation\n'
+printf 'Dashboard scan order: Core Workstation -> Chief of Staff Workflow -> Lesson Planning -> Future-Safety -> Appearance & Vibe Foundation -> Developer/Cursor -> Recommendation -> Final Health Summary\n'
+printf 'Health summary: see Final Health Summary at end (PASS/WARN/FAIL)\n'
+
+group_banner "Core Workstation Status"
 
 section "Workstation Phase Status"
 if [[ -f scripts/verify-phase-0e.sh ]]; then
@@ -153,6 +162,31 @@ if [[ -f scripts/return-to-chief-of-staff-core-status.sh ]]; then
 else
   warn "return to Chief of Staff core status script missing: scripts/return-to-chief-of-staff-core-status.sh"
 fi
+
+section "Chief of Staff Dashboard Readability Pass"
+if [[ -f scripts/chief-of-staff-dashboard-readability-status.sh ]]; then
+  dashboard_readability_result=0
+  dashboard_readability_output="$(bash scripts/chief-of-staff-dashboard-readability-status.sh 2>&1)" || dashboard_readability_result=$?
+  dashboard_readability_pass="$(summary_count "${dashboard_readability_output}" "PASS")"
+  dashboard_readability_warn="$(summary_count "${dashboard_readability_output}" "WARN")"
+  dashboard_readability_fail="$(summary_count "${dashboard_readability_output}" "FAIL")"
+
+  if [[ "${dashboard_readability_result}" != "0" ]]; then
+    printf 'Chief of Staff Dashboard Readability Pass: status command completed\n'
+    printf '%s\n' "${dashboard_readability_output}"
+    fail "Chief of Staff dashboard readability status failed"
+  elif [[ -n "${dashboard_readability_pass}" && -n "${dashboard_readability_warn}" && -n "${dashboard_readability_fail}" ]]; then
+    printf 'Chief of Staff Dashboard Readability Pass: PASS %s / WARN %s / FAIL %s\n' "${dashboard_readability_pass}" "${dashboard_readability_warn}" "${dashboard_readability_fail}"
+    pass "Chief of Staff dashboard readability status completed"
+  else
+    printf 'Chief of Staff Dashboard Readability Pass: status command completed\n'
+    pass "Chief of Staff dashboard readability status completed"
+  fi
+else
+  warn "Chief of Staff dashboard readability status script missing: scripts/chief-of-staff-dashboard-readability-status.sh"
+fi
+
+group_banner "Chief of Staff Workflow Status"
 
 section "Available Chief of Staff Workflows and Command Groups"
 if [[ ! -f bin/chief-of-staff ]]; then
@@ -254,6 +288,8 @@ if [[ -x bin/chief-of-staff ]]; then
 else
   warn "skipping intake status because bin/chief-of-staff is not executable"
 fi
+
+group_banner "Lesson Planning Status"
 
 section "Lesson Planning Workspace"
 if [[ -f scripts/lesson-planning-status.sh ]]; then
@@ -451,6 +487,8 @@ else
   warn "review notes template status script missing: scripts/review-notes-template-status.sh"
 fi
 
+group_banner "Future-Safety / Parked Work"
+
 section "Safe Local Document Indexing Plan"
 if [[ -f scripts/document-indexing-plan-status.sh ]]; then
   document_indexing_result=0
@@ -473,6 +511,9 @@ if [[ -f scripts/document-indexing-plan-status.sh ]]; then
 else
   warn "document indexing plan status script missing: scripts/document-indexing-plan-status.sh"
 fi
+
+group_banner "Appearance & Vibe Foundation Status"
+printf 'Foundation stack complete for now. Live wallpaper/photo curator implementation not started.\n'
 
 section "Appearance & Vibe Wallpaper/Photo Curator Plan"
 if [[ -f scripts/wallpaper-photo-curator-plan-status.sh ]]; then
@@ -888,6 +929,8 @@ else
   warn "wallpaper photo rotation handoff safety status script missing: scripts/wallpaper-photo-rotation-handoff-safety-status.sh"
 fi
 
+group_banner "Developer / Cursor Workflow Status"
+
 section "Cursor Workflow"
 if [[ -f scripts/cursor-workflow-status.sh ]]; then
   cursor_result=0
@@ -935,6 +978,8 @@ else
   warn "Developer Mode status script missing: scripts/developer-mode-status.sh"
 fi
 
+group_banner "Recommendation"
+
 section "Build Queue / Next Recommended Action"
 if [[ -f docs/build-queue.md ]]; then
   next_pr="$(awk '
@@ -943,6 +988,7 @@ if [[ -f docs/build-queue.md ]]; then
   ' docs/build-queue.md)"
   if [[ -n "${next_pr}" ]]; then
     pass "next recommended PR found"
+    printf '\n>>> Next recommended PR: %s <<<\n\n' "${next_pr}"
     printf 'Next recommended PR: %s\n' "${next_pr}"
     printf 'Run the matching status helper after dashboard if you are starting that build.\n'
   else
@@ -960,6 +1006,8 @@ cat <<'EOF'
 - Human review before sending/sharing.
 - Connected services require explicit future permission.
 EOF
+
+group_banner "Final Health Summary"
 
 section "Summary"
 printf 'PASS: %s\n' "${PASS_COUNT}"

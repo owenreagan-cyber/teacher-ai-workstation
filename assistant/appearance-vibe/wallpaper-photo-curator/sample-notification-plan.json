@@ -1,0 +1,132 @@
+{
+  "schema_version": "1.0.0",
+  "plan_name": "fictional_notification_plan",
+  "mode": "simulated",
+  "notifications_enabled": false,
+  "notifications_sent": false,
+  "notification_mechanism": "none",
+  "network_calls": false,
+  "scheduler_enabled": false,
+  "queue_writes": false,
+  "image_processing": false,
+  "notification_previews": [
+    {
+      "notification_id": "fictional-review-ready-001",
+      "notification_type": "review_ready",
+      "mode": "simulated",
+      "would_send_notification": false,
+      "candidate_count": 3,
+      "wallpaper_candidate_count": 2,
+      "photo_widget_candidate_count": 1,
+      "blocked_candidate_count": 0,
+      "needs_review_count": 3,
+      "source_count": 2,
+      "message_title": "Review ready (simulated)",
+      "message_body": "3 fictional candidates need manual review. No automation is active.",
+      "action_labels": [
+        "open_review_ui_simulated",
+        "view_safety_summary"
+      ],
+      "blocked_actions": [
+        "no_approve_from_notification",
+        "no_dismiss_from_notification",
+        "no_queue_write"
+      ],
+      "manual_approval_required": true,
+      "notes": "Fictional review-ready preview. No notification sent."
+    },
+    {
+      "notification_id": "fictional-dry-run-complete-001",
+      "notification_type": "dry_run_complete",
+      "mode": "simulated",
+      "would_send_notification": false,
+      "candidate_count": 0,
+      "wallpaper_candidate_count": 0,
+      "photo_widget_candidate_count": 0,
+      "blocked_candidate_count": 0,
+      "needs_review_count": 0,
+      "source_count": 0,
+      "message_title": "Dry-run complete (simulated)",
+      "message_body": "Fictional dry-run finished. Counts only. Manual review still required.",
+      "action_labels": [
+        "view_safety_summary",
+        "keep_disabled"
+      ],
+      "blocked_actions": [
+        "no_notification_sent",
+        "no_scheduler_start"
+      ],
+      "manual_approval_required": true,
+      "notes": "Fictional dry-run complete preview. No notification sent."
+    },
+    {
+      "notification_id": "fictional-safety-blocked-001",
+      "notification_type": "safety_blocked",
+      "mode": "simulated",
+      "would_send_notification": false,
+      "candidate_count": 1,
+      "wallpaper_candidate_count": 0,
+      "photo_widget_candidate_count": 0,
+      "blocked_candidate_count": 1,
+      "needs_review_count": 0,
+      "source_count": 1,
+      "message_title": "Safety blocked (simulated)",
+      "message_body": "1 fictional candidate blocked by safety rules. Review manually before any action.",
+      "action_labels": [
+        "view_safety_summary",
+        "needs_more_info"
+      ],
+      "blocked_actions": [
+        "no_image_fetch",
+        "no_image_processing",
+        "no_queue_write"
+      ],
+      "manual_approval_required": true,
+      "notes": "Fictional safety-blocked preview. No notification sent."
+    },
+    {
+      "notification_id": "fictional-disabled-001",
+      "notification_type": "disabled",
+      "mode": "simulated",
+      "would_send_notification": false,
+      "candidate_count": 0,
+      "wallpaper_candidate_count": 0,
+      "photo_widget_candidate_count": 0,
+      "blocked_candidate_count": 0,
+      "needs_review_count": 0,
+      "source_count": 0,
+      "message_title": "Notifications disabled (simulated)",
+      "message_body": "Notifications remain disabled. This is a fictional planning preview only.",
+      "action_labels": [
+        "keep_disabled",
+        "view_safety_summary"
+      ],
+      "blocked_actions": [
+        "no_real_notifications",
+        "no_notification_mechanism"
+      ],
+      "manual_approval_required": true,
+      "notes": "Fictional disabled notification example for planning only."
+    }
+  ],
+  "blocked_actions": [
+    "no_real_notifications",
+    "no_macos_notification_calls",
+    "no_osascript",
+    "no_terminal_notifier",
+    "no_scheduler_implementation",
+    "no_launch_agents",
+    "no_cron_jobs",
+    "no_background_jobs",
+    "no_unattended_runs",
+    "no_network_calls",
+    "no_image_fetching",
+    "no_image_processing",
+    "no_queue_writes",
+    "no_reddit_integration",
+    "no_devvit_integration",
+    "no_macos_wallpaper_changes",
+    "no_photos_changes"
+  ],
+  "notes": "Fictional sample notification plan for local planning only. Not a live notification system."
+}

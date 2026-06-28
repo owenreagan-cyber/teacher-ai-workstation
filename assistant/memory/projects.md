@@ -19,8 +19,8 @@ Track active projects, project status, next actions, blockers, and decisions.
 - Status: active
 - Category: operations / app-development
 - Goal: Prepare a MacBook-first Teacher AI Workstation with safe setup, assistant foundations, and future specialist support.
-- Current phase: Wallpaper/photo Approve/Dismiss UI design
-- Last known next action: Add local Approve/Dismiss UI design without live UI or queue writes.
+- Current phase: Wallpaper/photo image processing rules
+- Last known next action: Add local image processing planning rules without live processing or image tools.
 - Blockers: none known
 - Source: repo roadmap and current implementation work
 - Last reviewed: 2026-06-26
@@ -31,8 +31,8 @@ Track active projects, project status, next actions, blockers, and decisions.
 - Status: active
 - Category: teaching / app-development
 - Goal: Build a teaching-first, permission-based assistant for planning, memory, writing, troubleshooting, and project support.
-- Current phase: Wallpaper/photo Approve/Dismiss UI design
-- Last known next action: Add local Approve/Dismiss UI design without live UI or queue writes.
+- Current phase: Wallpaper/photo image processing rules
+- Last known next action: Add local image processing planning rules without live processing or image tools.
 - Blockers: approved real writing samples are not added yet; Gmail/Drive integrations require explicit future permission and safety review
 - Source: Phase 1A-1D docs, dashboard docs, lesson planning scaffold, and Developer Mode template work
 - Last reviewed: 2026-06-26
@@ -74,15 +74,15 @@ Track active projects, project status, next actions, blockers, and decisions.
 
 ### Appearance & Vibe — Automated Wallpaper and Photo Curator
 
-- Status: parked (Phase H Approve/Dismiss UI design active build)
+- Status: parked (Phase I image processing rules active build)
 - Category: personal / operations
 - Goal: Future local Mac curator for wallpaper/photo candidate review, approve/dismiss, and rotation-folder storage.
-- Current phase: Phase H Approve/Dismiss UI design (design-only).
-- Last known next action: Wallpaper/photo image processing rules PR.
+- Current phase: Phase I image processing rules (planning/status only).
+- Last known next action: Wallpaper/photo local automation scheduler plan PR.
 - Blockers: full curator not implemented; human approval gates required before automation
 - Source: docs/wallpaper-photo-metadata-schema.md, assistant/appearance-vibe/wallpaper-photo-curator/, and build queue
 - Last reviewed: 2026-06-28
-- Notes: Queue file format and dry-run validator are complete. Approve/Dismiss UI design is design-only. Full curator not implemented. Reddit may be a future source only. Devvit may be a future Reddit-native companion only.
+- Notes: Approve/Dismiss UI design is complete. Image processing rules are planning/status only. Full curator not implemented. Reddit may be a future source only. Devvit may be a future Reddit-native companion only.
 
 ### Project Name
 

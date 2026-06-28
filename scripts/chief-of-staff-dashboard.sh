@@ -635,6 +635,29 @@ else
   warn "wallpaper photo approve dismiss UI status script missing: scripts/wallpaper-photo-approve-dismiss-ui-status.sh"
 fi
 
+section "Wallpaper/Photo Image Processing Rules"
+if [[ -f scripts/wallpaper-photo-image-processing-status.sh ]]; then
+  wallpaper_image_processing_result=0
+  wallpaper_image_processing_output="$(bash scripts/wallpaper-photo-image-processing-status.sh 2>&1)" || wallpaper_image_processing_result=$?
+  wallpaper_image_processing_pass="$(summary_count "${wallpaper_image_processing_output}" "PASS")"
+  wallpaper_image_processing_warn="$(summary_count "${wallpaper_image_processing_output}" "WARN")"
+  wallpaper_image_processing_fail="$(summary_count "${wallpaper_image_processing_output}" "FAIL")"
+
+  if [[ "${wallpaper_image_processing_result}" != "0" ]]; then
+    printf 'Wallpaper/Photo Image Processing Rules: status command completed\n'
+    printf '%s\n' "${wallpaper_image_processing_output}"
+    fail "wallpaper photo image processing status failed"
+  elif [[ -n "${wallpaper_image_processing_pass}" && -n "${wallpaper_image_processing_warn}" && -n "${wallpaper_image_processing_fail}" ]]; then
+    printf 'Wallpaper/Photo Image Processing Rules: PASS %s / WARN %s / FAIL %s\n' "${wallpaper_image_processing_pass}" "${wallpaper_image_processing_warn}" "${wallpaper_image_processing_fail}"
+    pass "wallpaper photo image processing status completed"
+  else
+    printf 'Wallpaper/Photo Image Processing Rules: status command completed\n'
+    pass "wallpaper photo image processing status completed"
+  fi
+else
+  warn "wallpaper photo image processing status script missing: scripts/wallpaper-photo-image-processing-status.sh"
+fi
+
 section "Cursor Workflow"
 if [[ -f scripts/cursor-workflow-status.sh ]]; then
   cursor_result=0

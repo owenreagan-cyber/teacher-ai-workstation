@@ -35,19 +35,20 @@ Completed:
 - Wallpaper/photo metadata schema and sample records
 - Wallpaper/photo temp queue rules
 - Wallpaper/photo queue file format and dry-run validator
+- Wallpaper/photo Approve/Dismiss UI design
 
 Now:
 
-- Wallpaper/photo Approve/Dismiss UI design (design-only)
+- Wallpaper/photo image processing rules (planning/status only)
 
 Next:
 
-- Wallpaper/photo image processing rules
+- Wallpaper/photo local automation scheduler plan
 - Later: selected local folder indexing
 
 ## Parked Future
 
-- Appearance & Vibe: Automated Wallpaper and Photo Curator (Phase H Approve/Dismiss UI design in progress; full curator not implemented; Reddit future source only; Devvit future companion only)
+- Appearance & Vibe: Automated Wallpaper and Photo Curator (Phase I image processing rules in progress; full curator not implemented; Reddit future source only; Devvit future companion only)
 - 3D Design Factory Agent remains parked until Chief of Staff and Teacher Workstation foundations are mature
 
 ## Phase 1 Boundary

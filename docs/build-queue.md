@@ -32,29 +32,30 @@ Phase 1 Teacher Chief of Staff + safe local lesson workflows.
 - Wallpaper/photo metadata schema and sample records.
 - Wallpaper/photo temp queue rules.
 - Wallpaper/photo queue file format and dry-run validator.
+- Wallpaper/photo Approve/Dismiss UI design.
 
 ## Current PR
 
-Wallpaper/photo Approve/Dismiss UI design.
+Wallpaper/photo image processing rules.
 
-Scope: Local planning/status design for a future review UI with Approve, Dismiss, Block, and Needs More Info decisions. No live UI, no image rendering, no queue writes, no image fetching, downloading, processing, deletion, folder scanning, Reddit, Devvit, network calls, or macOS automation.
+Scope: Local planning/status rules for future image processing (output sizing, format preferences, aspect ratio, crop/fit, duplicate/watermark risk, metadata handoff). No live processing, conversion, resizing, cropping, previews, deletion, folder scanning, Reddit, Devvit, network calls, or macOS automation.
 
 ## Next PR
 
-Wallpaper/photo image processing rules
+Wallpaper/photo local automation scheduler plan
 
-Scope: Local planning/status rules for future image processing behavior, including output sizing, format preferences, aspect ratio handling, duplicate/watermark risk review, and processing handoff boundaries. No live image processing, no image fetching, no image downloading, no deletion, no folder scanning, no network calls, no Reddit, no Devvit, no notifications, no background jobs, and no macOS wallpaper/Photos automation.
+Scope: Planning/status design for future local scheduling behavior, including user-controlled cadence, dry-run checks, safe notifications, and never-running-unattended boundaries. No scheduler implementation, no launch agents, no cron jobs, no background jobs, no image fetching, no image downloading, no image processing, no folder scanning, no network calls, no Reddit, no Devvit, and no macOS wallpaper/Photos automation.
 
 ## Next Recommended PRs
 
-1. Wallpaper/photo image processing rules.
+1. Wallpaper/photo local automation scheduler plan.
 2. Later: permissioned Gmail/Drive integrations.
 3. Later: secrets/capability broker.
 
 ## Parked / Future
 
 - 3D Design Factory Agent: Parked until Chief of Staff and Teacher Workstation foundations are mature.
-- Appearance & Vibe: Automated Wallpaper and Photo Curator (Phase H Approve/Dismiss UI design in progress; Phases I–L remain future).
+- Appearance & Vibe: Automated Wallpaper and Photo Curator (Phase I image processing rules in progress; Phases J–N remain future).
 
 ## Open Threads
 

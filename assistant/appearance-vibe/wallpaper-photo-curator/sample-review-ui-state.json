@@ -1,0 +1,180 @@
+{
+  "schema_version": "1.0.0",
+  "ui_state_name": "fictional_review_ui_state",
+  "mode": "simulated",
+  "network_calls": false,
+  "source_allowlist_file": "assistant/appearance-vibe/wallpaper-photo-curator/sample-source-allowlist.json",
+  "discovery_report_file": "assistant/appearance-vibe/wallpaper-photo-curator/sample-discovery-report.json",
+  "queue_file": "assistant/appearance-vibe/wallpaper-photo-curator/sample-queue.json",
+  "metadata_file": "assistant/appearance-vibe/wallpaper-photo-curator/sample-records.json",
+  "candidate_cards": [
+    {
+      "candidate_id": "fictional-wallpaper-001",
+      "candidate_type": "wallpaper",
+      "source_id": "fictional-approved-site-001",
+      "source_name": "Fictional Approved Wallpaper Site",
+      "source_type": "future_approved_site",
+      "review_status": "unreviewed",
+      "review_decision": "none",
+      "content_rating": "safe",
+      "nsfw_flag": false,
+      "license_status": "fictional_sample",
+      "permission_note": "Fictional planning sample only. No real image or license.",
+      "wallpaper_fit_score": 92,
+      "photo_widget_fit_score": 40,
+      "duplicate_risk": 5,
+      "watermark_risk": 0,
+      "image_preview_status": "not_rendered",
+      "actions_available": [
+        "approve_simulated",
+        "dismiss_simulated",
+        "needs_more_info",
+        "open_metadata_details",
+        "open_source_details",
+        "open_processing_rules"
+      ],
+      "blocked_actions": [
+        "no_queue_writes",
+        "no_image_rendering",
+        "no_image_previews",
+        "no_file_deletion",
+        "no_network_calls"
+      ],
+      "notes": "Fictional wallpaper candidate card for simulated review UI state only."
+    },
+    {
+      "candidate_id": "fictional-photo-widget-001",
+      "candidate_type": "photo_widget",
+      "source_id": "fictional-local-folder-001",
+      "source_name": "Fictional Local Folder Manual Entry",
+      "source_type": "manual_entry",
+      "review_status": "unreviewed",
+      "review_decision": "none",
+      "content_rating": "safe",
+      "nsfw_flag": false,
+      "license_status": "fictional_sample",
+      "permission_note": "Fictional manual entry permission note for local planning only.",
+      "wallpaper_fit_score": 35,
+      "photo_widget_fit_score": 88,
+      "duplicate_risk": 8,
+      "watermark_risk": 0,
+      "image_preview_status": "not_rendered",
+      "actions_available": [
+        "approve_simulated",
+        "dismiss_simulated",
+        "needs_more_info",
+        "open_metadata_details",
+        "open_source_details",
+        "open_processing_rules"
+      ],
+      "blocked_actions": [
+        "no_queue_writes",
+        "no_image_rendering",
+        "no_image_previews",
+        "no_file_deletion",
+        "no_network_calls"
+      ],
+      "notes": "Fictional photo widget candidate card for simulated review UI state only."
+    },
+    {
+      "candidate_id": "fictional-future-reddit-card-001",
+      "candidate_type": "wallpaper",
+      "source_id": "fictional-future-reddit-001",
+      "source_name": "Fictional Future Reddit Source",
+      "source_type": "future_reddit_source",
+      "review_status": "needs_more_info",
+      "review_decision": "none",
+      "content_rating": "safe",
+      "nsfw_flag": false,
+      "license_status": "unknown_needs_review",
+      "permission_note": "Fictional future Reddit permission note. Reddit remains future-only.",
+      "wallpaper_fit_score": 0,
+      "photo_widget_fit_score": 0,
+      "duplicate_risk": 0,
+      "watermark_risk": 0,
+      "image_preview_status": "not_rendered",
+      "actions_available": [
+        "needs_more_info",
+        "open_metadata_details",
+        "open_source_details",
+        "open_processing_rules"
+      ],
+      "blocked_actions": [
+        "no_queue_writes",
+        "no_image_rendering",
+        "no_image_previews",
+        "no_file_deletion",
+        "no_network_calls",
+        "no_approve_simulated",
+        "no_dismiss_simulated"
+      ],
+      "notes": "Fictional future Reddit candidate card placeholder. Source not ready for simulated review."
+    },
+    {
+      "candidate_id": "fictional-future-devvit-card-001",
+      "candidate_type": "both",
+      "source_id": "fictional-future-devvit-001",
+      "source_name": "Fictional Future Devvit Companion",
+      "source_type": "future_devvit_companion",
+      "review_status": "needs_more_info",
+      "review_decision": "none",
+      "content_rating": "safe",
+      "nsfw_flag": false,
+      "license_status": "unknown_needs_review",
+      "permission_note": "Fictional future Devvit companion permission note. Devvit remains future-only.",
+      "wallpaper_fit_score": 0,
+      "photo_widget_fit_score": 0,
+      "duplicate_risk": 0,
+      "watermark_risk": 0,
+      "image_preview_status": "not_rendered",
+      "actions_available": [
+        "needs_more_info",
+        "open_metadata_details",
+        "open_source_details",
+        "open_processing_rules"
+      ],
+      "blocked_actions": [
+        "no_queue_writes",
+        "no_image_rendering",
+        "no_image_previews",
+        "no_file_deletion",
+        "no_network_calls",
+        "no_approve_simulated",
+        "no_dismiss_simulated"
+      ],
+      "notes": "Fictional future Devvit candidate card placeholder. Source not ready for simulated review."
+    }
+  ],
+  "empty_states": [
+    "empty queue",
+    "no approved sources",
+    "discovery report missing",
+    "metadata missing",
+    "source allowlist missing",
+    "candidate blocked",
+    "candidate needs review",
+    "validator failed"
+  ],
+  "action_labels": [
+    "approve_simulated",
+    "dismiss_simulated",
+    "needs_more_info",
+    "open_metadata_details",
+    "open_source_details",
+    "open_processing_rules"
+  ],
+  "blocked_actions": [
+    "no_live_ui",
+    "no_server",
+    "no_image_rendering",
+    "no_image_previews",
+    "no_queue_writes",
+    "no_file_deletion",
+    "no_network_calls",
+    "no_reddit_integration",
+    "no_devvit_integration",
+    "no_scheduler",
+    "no_notifications"
+  ],
+  "notes": "Fictional sample review UI state for local planning only. Not a live UI runtime."
+}

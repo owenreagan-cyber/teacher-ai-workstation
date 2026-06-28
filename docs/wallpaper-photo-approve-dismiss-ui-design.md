@@ -16,7 +16,7 @@ Design lives in this document and the read-only status script. No live UI, queue
 
 ## Relationship to Queue File Format
 
-Phase G defined queue file JSON format and dry-run validation. Phase H describes how a future UI would read queue records from validated queue files and present them for human review. This PR does not write queue decisions or create live queue files.
+Phase G defined queue file JSON format and dry-run validation. Phase H describes how a future UI would read queue records from validated queue files and present them for human review. Phase O defines sample review UI state with simulated action labels only. See `docs/wallpaper-photo-live-local-review-ui-prototype-plan.md`. This PR does not write queue decisions or create live queue files.
 
 ## Relationship to Temp Queue Rules
 
@@ -211,13 +211,15 @@ Phase H: Approve/Dismiss UI design
 Phase I: Image processing rules
 Phase J: Local automation scheduler
 Phase K: Approved-source fetcher
-Phase L: Live local review UI prototype
+Phase O: Live local review UI prototype plan
 ```
 
 ## Commands Reference
 
 ```bash
 bin/chief-of-staff --wallpaper-photo-approve-dismiss-ui-status
+bin/chief-of-staff --wallpaper-photo-review-ui-prototype-status
+bin/chief-of-staff --wallpaper-photo-review-ui-state-validator
 bin/chief-of-staff --wallpaper-photo-image-processing-status
 bin/chief-of-staff --wallpaper-photo-local-scheduler-status
 bin/chief-of-staff --wallpaper-photo-queue-file-status
@@ -226,6 +228,8 @@ bin/chief-of-staff --wallpaper-photo-temp-queue-status
 bin/chief-of-staff --wallpaper-photo-metadata-status
 bin/chief-of-staff --dashboard
 bash scripts/wallpaper-photo-approve-dismiss-ui-status.sh
+bash scripts/wallpaper-photo-review-ui-prototype-status.sh
+bash scripts/wallpaper-photo-review-ui-state-validator.sh
 bash scripts/wallpaper-photo-image-processing-status.sh
 bash scripts/wallpaper-photo-local-scheduler-status.sh
 ```

@@ -19,8 +19,8 @@ Track active projects, project status, next actions, blockers, and decisions.
 - Status: active
 - Category: operations / app-development
 - Goal: Prepare a MacBook-first Teacher AI Workstation with safe setup, assistant foundations, and future specialist support.
-- Current phase: Wallpaper/photo simulated approved-source discovery plan
-- Last known next action: Add simulated discovery planning/status using fictional allowlist and report records without real discovery or network calls.
+- Current phase: Wallpaper/photo live local review UI prototype plan
+- Last known next action: Add review UI prototype planning/status and sample UI state validation without live UI, server, or image rendering.
 - Blockers: none known
 - Source: repo roadmap and current implementation work
 - Last reviewed: 2026-06-26
@@ -31,8 +31,8 @@ Track active projects, project status, next actions, blockers, and decisions.
 - Status: active
 - Category: teaching / app-development
 - Goal: Build a teaching-first, permission-based assistant for planning, memory, writing, troubleshooting, and project support.
-- Current phase: Wallpaper/photo simulated approved-source discovery plan
-- Last known next action: Add simulated discovery planning/status using fictional allowlist and report records without real discovery or network calls.
+- Current phase: Wallpaper/photo live local review UI prototype plan
+- Last known next action: Add review UI prototype planning/status and sample UI state validation without live UI, server, or image rendering.
 - Blockers: approved real writing samples are not added yet; Gmail/Drive integrations require explicit future permission and safety review
 - Source: Phase 1A-1D docs, dashboard docs, lesson planning scaffold, and Developer Mode template work
 - Last reviewed: 2026-06-26
@@ -74,15 +74,15 @@ Track active projects, project status, next actions, blockers, and decisions.
 
 ### Appearance & Vibe — Automated Wallpaper and Photo Curator
 
-- Status: parked (Phase N simulated discovery plan active build)
+- Status: parked (Phase O review UI prototype plan active build)
 - Category: personal / operations
 - Goal: Future local Mac curator for wallpaper/photo candidate review, approve/dismiss, and rotation-folder storage.
-- Current phase: Phase N simulated approved-source discovery plan (simulated planning/status only).
-- Last known next action: Wallpaper/photo live local review UI prototype plan PR.
+- Current phase: Phase O live local review UI prototype plan (planning/status/sample UI state validation only).
+- Last known next action: Wallpaper/photo image processor foundation PR.
 - Blockers: full curator not implemented; human approval gates required before automation
-- Source: docs/wallpaper-photo-metadata-schema.md, docs/wallpaper-photo-source-allowlist-foundation.md, docs/wallpaper-photo-simulated-approved-source-discovery-plan.md, assistant/appearance-vibe/wallpaper-photo-curator/, and build queue
+- Source: docs/wallpaper-photo-metadata-schema.md, docs/wallpaper-photo-simulated-approved-source-discovery-plan.md, docs/wallpaper-photo-live-local-review-ui-prototype-plan.md, assistant/appearance-vibe/wallpaper-photo-curator/, and build queue
 - Last reviewed: 2026-06-28
-- Notes: Source allowlist foundation is complete. Simulated discovery is local-only and uses fictional allowlist/report records. No fetcher, network calls, API clients, OAuth, secrets, Reddit integration, or Devvit integration exists yet. Full curator not implemented. Reddit may be a future source only. Devvit may be a future Reddit-native companion only.
+- Notes: Simulated discovery plan is complete. Review UI prototype plan is planning/status/sample UI state validation only. No live UI, server, image rendering, preview rendering, queue writes, fetcher, network calls, API clients, OAuth, secrets, Reddit integration, or Devvit integration exists yet. Full curator not implemented. Reddit may be a future source only. Devvit may be a future Reddit-native companion only.
 
 ### Project Name
 

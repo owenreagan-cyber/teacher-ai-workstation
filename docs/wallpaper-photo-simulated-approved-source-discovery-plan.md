@@ -167,14 +167,20 @@ Phase T: Notification foundation
 Phase U: Rotation handoff and safety audit
 ```
 
+Phase N defines simulated approved-source discovery planning. Phase O defines live local review UI prototype planning. See `docs/wallpaper-photo-live-local-review-ui-prototype-plan.md`.
+
 ## Commands Reference
 
 ```bash
 bin/chief-of-staff --wallpaper-photo-simulated-discovery-status
 bin/chief-of-staff --wallpaper-photo-simulated-discovery-validator
+bin/chief-of-staff --wallpaper-photo-review-ui-prototype-status
+bin/chief-of-staff --wallpaper-photo-review-ui-state-validator
 bin/chief-of-staff --wallpaper-photo-source-allowlist-status
 bin/chief-of-staff --wallpaper-photo-source-fetcher-plan-status
 bin/chief-of-staff --dashboard
 bash scripts/wallpaper-photo-simulated-discovery-status.sh
 bash scripts/wallpaper-photo-simulated-discovery-validator.sh
+bash scripts/wallpaper-photo-review-ui-prototype-status.sh
+bash scripts/wallpaper-photo-review-ui-state-validator.sh
 ```

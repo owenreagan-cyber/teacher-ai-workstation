@@ -261,6 +261,13 @@ check_text "docs/open-threads.md" "Reddit API approval is pending|Reddit API app
 check_text "docs/open-threads.md" "Spotify.*not automated|Spotify automation pending" "Spotify automation remains open"
 check_text "docs/open-threads.md" "Vibe Panel.*scaffold|Vibe Panel.*pending" "Vibe Panel remains scaffold/pending"
 
+section "Safe Local Document Indexing Plan Files"
+for path in \
+  docs/safe-local-document-indexing-plan.md \
+  scripts/document-indexing-plan-status.sh; do
+  check_required_file "${path}"
+done
+
 section "Review Notes Template Files"
 for path in \
   docs/review-notes-template.md \
@@ -294,6 +301,7 @@ for path in \
 done
 
 section "Syntax Checks"
+check_bash_syntax "scripts/document-indexing-plan-status.sh"
 check_bash_syntax "scripts/review-notes-template-status.sh"
 check_bash_syntax "scripts/lesson-review-view.sh"
 check_bash_syntax "scripts/lesson-review-checklist-status.sh"
@@ -314,7 +322,7 @@ section "Recommendation"
 if (( CRITICAL_BLOCKER > 0 )); then
   printf 'Fix critical Chief of Staff CLI, memory, intake, or script problems before the next build PR.\n'
 else
-  printf 'Next recommended PR: Safe local document indexing plan.\n'
+  printf 'Next recommended PR: Chief of Staff command launcher / status dashboard refinement.\n'
 fi
 
 if (( COMPARE_0E == 1 && CRITICAL_BLOCKER == 0 )); then

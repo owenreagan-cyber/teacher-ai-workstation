@@ -1,6 +1,6 @@
 # Build Queue
 
-Last updated: 2026-06-27
+Last updated: 2026-06-28
 
 ## Current Completed Phase
 
@@ -21,24 +21,29 @@ Phase 1 Teacher Chief of Staff + safe local lesson workflows.
 - Lesson brief queue integration after human review.
 - Single-slug lesson review view.
 - Align next recommended PR.
+- Review notes template.
 
 ## Current PR
 
-Review notes template.
+Safe local document indexing plan.
 
-Scope: Local-only template for Owen's personal human review notes after inspecting a lesson slug. No automatic approval, no student data, no external integrations, no lesson generation, and no storing official review status.
+Scope: Local planning documentation and read-only status helper for future opt-in local document inventory/indexing. No actual indexing, folder scanning, embeddings, vector database, Gmail/Drive integrations, student data, or network calls.
 
 ## Next PR
 
-Safe local document indexing plan
+Chief of Staff command launcher / status dashboard refinement
 
-Scope: Local planning documentation for safe folder indexing without Gmail/Drive integrations, student data, automatic indexing, or network calls.
+Scope: Small local UX refinement for the Chief of Staff command launcher and dashboard/status discoverability. No external integrations, no student data, no network calls, no LLM calls, and no changes to lesson generation behavior.
 
 ## Next Recommended PRs
 
-1. Safe local document indexing plan.
-3. Later: permissioned Gmail/Drive integrations.
-4. Later: secrets/capability broker.
+1. Chief of Staff command launcher / status dashboard refinement.
+2. Later: permissioned Gmail/Drive integrations.
+3. Later: secrets/capability broker.
+
+## Parked / Future
+
+- 3D Design Factory Agent: Parked until Chief of Staff and Teacher Workstation foundations are mature.
 
 ## Open Threads
 

@@ -297,6 +297,14 @@ bin/chief-of-staff --wallpaper-photo-image-processing-status
 
 See `docs/wallpaper-photo-image-processing-rules.md`.
 
+Wallpaper/photo local automation scheduler plan status command:
+
+```bash
+bin/chief-of-staff --wallpaper-photo-local-scheduler-status
+```
+
+See `docs/wallpaper-photo-local-automation-scheduler-plan.md`.
+
 Local command launcher status command:
 
 ```bash

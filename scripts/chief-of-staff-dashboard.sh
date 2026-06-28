@@ -658,6 +658,29 @@ else
   warn "wallpaper photo image processing status script missing: scripts/wallpaper-photo-image-processing-status.sh"
 fi
 
+section "Wallpaper/Photo Local Scheduler Plan"
+if [[ -f scripts/wallpaper-photo-local-scheduler-status.sh ]]; then
+  wallpaper_local_scheduler_result=0
+  wallpaper_local_scheduler_output="$(bash scripts/wallpaper-photo-local-scheduler-status.sh 2>&1)" || wallpaper_local_scheduler_result=$?
+  wallpaper_local_scheduler_pass="$(summary_count "${wallpaper_local_scheduler_output}" "PASS")"
+  wallpaper_local_scheduler_warn="$(summary_count "${wallpaper_local_scheduler_output}" "WARN")"
+  wallpaper_local_scheduler_fail="$(summary_count "${wallpaper_local_scheduler_output}" "FAIL")"
+
+  if [[ "${wallpaper_local_scheduler_result}" != "0" ]]; then
+    printf 'Wallpaper/Photo Local Scheduler Plan: status command completed\n'
+    printf '%s\n' "${wallpaper_local_scheduler_output}"
+    fail "wallpaper photo local scheduler status failed"
+  elif [[ -n "${wallpaper_local_scheduler_pass}" && -n "${wallpaper_local_scheduler_warn}" && -n "${wallpaper_local_scheduler_fail}" ]]; then
+    printf 'Wallpaper/Photo Local Scheduler Plan: PASS %s / WARN %s / FAIL %s\n' "${wallpaper_local_scheduler_pass}" "${wallpaper_local_scheduler_warn}" "${wallpaper_local_scheduler_fail}"
+    pass "wallpaper photo local scheduler status completed"
+  else
+    printf 'Wallpaper/Photo Local Scheduler Plan: status command completed\n'
+    pass "wallpaper photo local scheduler status completed"
+  fi
+else
+  warn "wallpaper photo local scheduler status script missing: scripts/wallpaper-photo-local-scheduler-status.sh"
+fi
+
 section "Cursor Workflow"
 if [[ -f scripts/cursor-workflow-status.sh ]]; then
   cursor_result=0

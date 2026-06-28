@@ -219,6 +219,7 @@ Phase L: Live local review UI prototype
 ```bash
 bin/chief-of-staff --wallpaper-photo-approve-dismiss-ui-status
 bin/chief-of-staff --wallpaper-photo-image-processing-status
+bin/chief-of-staff --wallpaper-photo-local-scheduler-status
 bin/chief-of-staff --wallpaper-photo-queue-file-status
 bin/chief-of-staff --wallpaper-photo-queue-file-validator
 bin/chief-of-staff --wallpaper-photo-temp-queue-status
@@ -226,4 +227,5 @@ bin/chief-of-staff --wallpaper-photo-metadata-status
 bin/chief-of-staff --dashboard
 bash scripts/wallpaper-photo-approve-dismiss-ui-status.sh
 bash scripts/wallpaper-photo-image-processing-status.sh
+bash scripts/wallpaper-photo-local-scheduler-status.sh
 ```

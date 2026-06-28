@@ -1,0 +1,90 @@
+{
+  "schema_version": "1.0.0",
+  "allowlist_name": "fictional_wallpaper_photo_source_allowlist",
+  "sources": [
+    {
+      "source_id": "fictional-approved-site-001",
+      "source_name": "Fictional Approved Wallpaper Site",
+      "source_type": "future_approved_site",
+      "source_url": "https://example.invalid/fictional-approved-wallpaper-site",
+      "allowed_content_types": [
+        "conceptual-wallpaper-metadata",
+        "conceptual-photo-widget-metadata"
+      ],
+      "permission_note": "Fictional planning sample only. Permission reviewed for dry-run validation, not real fetching.",
+      "license_review_status": "fictional_sample",
+      "terms_review_note": "Fictional terms review note for planning only.",
+      "robots_or_policy_note": "Fictional robots/policy note for planning only.",
+      "rate_limit_note": "Fictional conservative rate limit note for planning only.",
+      "requires_auth": false,
+      "status": "approved_for_dry_run",
+      "approved_by": "fictional-reviewer",
+      "approved_at": "2026-06-28T20:00:00Z",
+      "last_reviewed_at": "2026-06-28T20:00:00Z",
+      "notes": "Fictional approved site source for dry-run allowlist validation only."
+    },
+    {
+      "source_id": "fictional-local-folder-001",
+      "source_name": "Fictional Local Folder Manual Entry",
+      "source_type": "manual_entry",
+      "source_url": "https://example.invalid/fictional-local-folder-source",
+      "allowed_content_types": [
+        "conceptual-local-folder-metadata"
+      ],
+      "permission_note": "Fictional manual entry permission note for local planning only.",
+      "license_review_status": "fictional_sample",
+      "terms_review_note": "Fictional manual entry terms review note.",
+      "robots_or_policy_note": "Not applicable for fictional local folder planning sample.",
+      "rate_limit_note": "No network rate limit for fictional local folder sample.",
+      "requires_auth": false,
+      "status": "approved_for_dry_run",
+      "approved_by": "fictional-reviewer",
+      "approved_at": "2026-06-28T20:05:00Z",
+      "last_reviewed_at": "2026-06-28T20:05:00Z",
+      "notes": "Fictional local folder/manual entry source for dry-run allowlist validation only."
+    },
+    {
+      "source_id": "fictional-future-reddit-001",
+      "source_name": "Fictional Future Reddit Source",
+      "source_type": "future_reddit_source",
+      "source_url": "https://example.invalid/fictional-future-reddit-source",
+      "allowed_content_types": [
+        "conceptual-wallpaper-metadata"
+      ],
+      "permission_note": "Fictional future Reddit permission note. Reddit remains future-only.",
+      "license_review_status": "unknown_needs_review",
+      "terms_review_note": "Fictional future Reddit terms review note.",
+      "robots_or_policy_note": "Fictional future Reddit robots/policy note.",
+      "rate_limit_note": "Fictional future Reddit rate limit note.",
+      "requires_auth": true,
+      "status": "proposed",
+      "approved_by": "",
+      "approved_at": "",
+      "last_reviewed_at": "2026-06-28T20:10:00Z",
+      "notes": "Fictional future Reddit source placeholder. No Reddit integration in this PR."
+    },
+    {
+      "source_id": "fictional-future-devvit-001",
+      "source_name": "Fictional Future Devvit Companion",
+      "source_type": "future_devvit_companion",
+      "source_url": "https://example.invalid/fictional-future-devvit-companion",
+      "allowed_content_types": [
+        "conceptual-companion-metadata"
+      ],
+      "permission_note": "Fictional future Devvit companion permission note. Devvit remains future-only.",
+      "license_review_status": "unknown_needs_review",
+      "terms_review_note": "Fictional future Devvit terms review note.",
+      "robots_or_policy_note": "Fictional future Devvit robots/policy note.",
+      "rate_limit_note": "Fictional future Devvit rate limit note.",
+      "requires_auth": true,
+      "status": "proposed",
+      "approved_by": "",
+      "approved_at": "",
+      "last_reviewed_at": "2026-06-28T20:15:00Z",
+      "notes": "Fictional future Devvit companion placeholder. No Devvit integration in this PR."
+    }
+  ],
+  "created_at": "2026-06-28T20:00:00Z",
+  "updated_at": "2026-06-28T20:15:00Z",
+  "notes": "Fictional sample source allowlist for local dry-run validation only. Not a live allowlist."
+}

@@ -313,6 +313,20 @@ bin/chief-of-staff --wallpaper-photo-source-fetcher-plan-status
 
 See `docs/wallpaper-photo-approved-source-fetcher-plan.md`.
 
+Wallpaper/photo source allowlist foundation status command:
+
+```bash
+bin/chief-of-staff --wallpaper-photo-source-allowlist-status
+```
+
+Wallpaper/photo source allowlist dry-run validator command:
+
+```bash
+bin/chief-of-staff --wallpaper-photo-source-allowlist-validator
+```
+
+See `docs/wallpaper-photo-source-allowlist-foundation.md`.
+
 Local command launcher status command:
 
 ```bash

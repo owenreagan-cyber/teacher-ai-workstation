@@ -443,6 +443,22 @@ bin/chief-of-staff --help-examples-status
 
 See `docs/chief-of-staff-help-examples-polish.md`.
 
+Chief of Staff workflow quick-start guide status command:
+
+```bash
+bin/chief-of-staff --workflow-quick-start-status
+```
+
+See `docs/chief-of-staff-workflow-quick-start-guide.md`.
+
+Quick start (start here):
+
+```bash
+bin/chief-of-staff --dashboard
+bin/chief-of-staff --list-workflows
+bin/chief-of-staff --workflow-quick-start-status
+```
+
 Common examples (daily health check, teacher review, developer/Cursor verification):
 
 ```bash

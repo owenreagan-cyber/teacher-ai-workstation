@@ -246,6 +246,16 @@ bin/chief-of-staff --wallpaper-photo-dry-run-folder-validator
 
 See `docs/wallpaper-photo-dry-run-folder-validator.md`.
 
+Wallpaper/photo folder creation helper commands:
+
+```bash
+bin/chief-of-staff --wallpaper-photo-folder-creation-status
+bin/chief-of-staff --wallpaper-photo-create-folders --dry-run
+bin/chief-of-staff --wallpaper-photo-create-folders --create
+```
+
+See `docs/wallpaper-photo-manual-folder-creation-helper.md`.
+
 Local command launcher status command:
 
 ```bash

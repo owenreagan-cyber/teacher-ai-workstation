@@ -102,9 +102,10 @@ Markdown workflows such as `project-review`, `lesson-support`, and `app-developm
 
 ```bash
 bin/chief-of-staff --document-indexing-plan-status
+bin/chief-of-staff --wallpaper-photo-curator-plan-status
 ```
 
-These are planning-only helpers. They do not index documents, scan folders, or call external services.
+These are planning-only helpers. They do not index documents, scan folders, fetch images, or call external services.
 
 ## Recommended Daily Flow
 
@@ -124,11 +125,17 @@ Future Appearance & Vibe Upgrade:
 Automated Wallpaper and Photo Curator
 ```
 
-Parked/future only.
+Planning-only. See `docs/appearance-vibe-wallpaper-photo-curator-plan.md` for the full future design.
+
+Status command:
+
+```bash
+bin/chief-of-staff --wallpaper-photo-curator-plan-status
+```
 
 A future local app may automatically fetch wallpaper/photo candidates from approved sources, keep a small temporary review queue, notify Owen, show Approve/Dismiss choices, delete dismissed images, process approved images, and store them in wallpaper/photo-widget rotation folders.
 
-Future boundaries for this PR:
+Future boundaries (dashboard polish PR and curator plan PR):
 
 ```text
 Not implemented in this PR.

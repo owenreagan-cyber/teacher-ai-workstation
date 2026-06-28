@@ -34,19 +34,20 @@ Completed:
 - Wallpaper/photo manual folder creation helper
 - Wallpaper/photo metadata schema and sample records
 - Wallpaper/photo temp queue rules
+- Wallpaper/photo queue file format and dry-run validator
 
 Now:
 
-- Wallpaper/photo queue file format and dry-run validator (dry-run validation only)
+- Wallpaper/photo Approve/Dismiss UI design (design-only)
 
 Next:
 
-- Wallpaper/photo Approve/Dismiss UI design
+- Wallpaper/photo image processing rules
 - Later: selected local folder indexing
 
 ## Parked Future
 
-- Appearance & Vibe: Automated Wallpaper and Photo Curator (Phase G queue file format in progress; full curator not implemented; Reddit future source only; Devvit future companion only)
+- Appearance & Vibe: Automated Wallpaper and Photo Curator (Phase H Approve/Dismiss UI design in progress; full curator not implemented; Reddit future source only; Devvit future companion only)
 - 3D Design Factory Agent remains parked until Chief of Staff and Teacher Workstation foundations are mature
 
 ## Phase 1 Boundary

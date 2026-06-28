@@ -612,6 +612,29 @@ else
   warn "wallpaper photo queue file status script missing: scripts/wallpaper-photo-queue-file-status.sh"
 fi
 
+section "Wallpaper/Photo Approve/Dismiss UI Design"
+if [[ -f scripts/wallpaper-photo-approve-dismiss-ui-status.sh ]]; then
+  wallpaper_approve_dismiss_ui_result=0
+  wallpaper_approve_dismiss_ui_output="$(bash scripts/wallpaper-photo-approve-dismiss-ui-status.sh 2>&1)" || wallpaper_approve_dismiss_ui_result=$?
+  wallpaper_approve_dismiss_ui_pass="$(summary_count "${wallpaper_approve_dismiss_ui_output}" "PASS")"
+  wallpaper_approve_dismiss_ui_warn="$(summary_count "${wallpaper_approve_dismiss_ui_output}" "WARN")"
+  wallpaper_approve_dismiss_ui_fail="$(summary_count "${wallpaper_approve_dismiss_ui_output}" "FAIL")"
+
+  if [[ "${wallpaper_approve_dismiss_ui_result}" != "0" ]]; then
+    printf 'Wallpaper/Photo Approve/Dismiss UI Design: status command completed\n'
+    printf '%s\n' "${wallpaper_approve_dismiss_ui_output}"
+    fail "wallpaper photo approve dismiss UI status failed"
+  elif [[ -n "${wallpaper_approve_dismiss_ui_pass}" && -n "${wallpaper_approve_dismiss_ui_warn}" && -n "${wallpaper_approve_dismiss_ui_fail}" ]]; then
+    printf 'Wallpaper/Photo Approve/Dismiss UI Design: PASS %s / WARN %s / FAIL %s\n' "${wallpaper_approve_dismiss_ui_pass}" "${wallpaper_approve_dismiss_ui_warn}" "${wallpaper_approve_dismiss_ui_fail}"
+    pass "wallpaper photo approve dismiss UI status completed"
+  else
+    printf 'Wallpaper/Photo Approve/Dismiss UI Design: status command completed\n'
+    pass "wallpaper photo approve dismiss UI status completed"
+  fi
+else
+  warn "wallpaper photo approve dismiss UI status script missing: scripts/wallpaper-photo-approve-dismiss-ui-status.sh"
+fi
+
 section "Cursor Workflow"
 if [[ -f scripts/cursor-workflow-status.sh ]]; then
   cursor_result=0

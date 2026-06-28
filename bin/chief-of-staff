@@ -41,6 +41,8 @@ Meta commands:
   --wallpaper-photo-queue-file-status  Show wallpaper/photo queue file format status and exit.
   --wallpaper-photo-queue-file-validator
                                        Run wallpaper/photo queue file dry-run validator and exit.
+  --wallpaper-photo-approve-dismiss-ui-status
+                                       Show wallpaper/photo Approve/Dismiss UI design status and exit.
   --command-launcher-status            Show Chief of Staff command launcher status and exit.
   --cursor-workflow-status             Show local Cursor workflow status and exit.
   --developer-status                   Show local Developer Mode status and exit.
@@ -106,6 +108,7 @@ Examples:
   bin/chief-of-staff --wallpaper-photo-temp-queue-status
   bin/chief-of-staff --wallpaper-photo-queue-file-status
   bin/chief-of-staff --wallpaper-photo-queue-file-validator
+  bin/chief-of-staff --wallpaper-photo-approve-dismiss-ui-status
   bin/chief-of-staff --command-launcher-status
   bin/chief-of-staff --cursor-workflow-status
   bin/chief-of-staff --developer-status
@@ -178,6 +181,7 @@ Local command: wallpaper photo metadata status
 Local command: wallpaper photo temp queue status
 Local command: wallpaper photo queue file status
 Local command: wallpaper photo queue file validator
+Local command: wallpaper photo approve dismiss UI status
 Verification
 intake-review
 verify-before-use
@@ -1104,6 +1108,15 @@ while [[ $# -gt 0 ]]; do
       fi
       shift
       bash "${wallpaper_queue_file_validator_script}" "$@"
+      exit 0
+      ;;
+    --wallpaper-photo-approve-dismiss-ui-status)
+      repo_root="$(resolve_repo_root)"
+      wallpaper_approve_dismiss_ui_status_script="${repo_root}/scripts/wallpaper-photo-approve-dismiss-ui-status.sh"
+      if [[ ! -f "${wallpaper_approve_dismiss_ui_status_script}" ]]; then
+        die "Wallpaper photo Approve/Dismiss UI status script is missing: scripts/wallpaper-photo-approve-dismiss-ui-status.sh"
+      fi
+      bash "${wallpaper_approve_dismiss_ui_status_script}"
       exit 0
       ;;
     --command-launcher-status)

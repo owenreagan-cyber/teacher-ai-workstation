@@ -281,6 +281,14 @@ bin/chief-of-staff --wallpaper-photo-queue-file-validator
 
 See `docs/wallpaper-photo-queue-file-format.md`.
 
+Wallpaper/photo Approve/Dismiss UI design status command:
+
+```bash
+bin/chief-of-staff --wallpaper-photo-approve-dismiss-ui-status
+```
+
+See `docs/wallpaper-photo-approve-dismiss-ui-design.md`.
+
 Local command launcher status command:
 
 ```bash

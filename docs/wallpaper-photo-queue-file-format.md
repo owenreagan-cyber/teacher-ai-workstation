@@ -22,6 +22,10 @@ Phase F defined temp queue rules (max 10 wallpaper, max 10 photo-widget, max 20 
 
 Queue records reference the metadata schema conceptually. Each queue record includes a subset of metadata fields needed for queue position, review state, and traceability. Full metadata records in `metadata-schema.json` remain the canonical candidate shape; queue files group queue-ready fields for future review workflows.
 
+## Relationship to Approve/Dismiss UI Design
+
+Phase H defines how a future review UI would present queue records and support Approve, Dismiss, Block, and Needs More Info decisions. See `docs/wallpaper-photo-approve-dismiss-ui-design.md`. This PR does not implement a live UI or write queue decisions.
+
 ## Queue File Concept
 
 A future queue file is a single JSON document describing one temporary candidate queue. It contains queue metadata (`queue_name`, `queue_type`, `max_candidates`) and an array of fictional or approved candidate records. Sample queue files in this repo are planning artifacts only.
@@ -168,9 +172,11 @@ Phase K: Approved-source fetcher
 ```bash
 bin/chief-of-staff --wallpaper-photo-queue-file-status
 bin/chief-of-staff --wallpaper-photo-queue-file-validator
+bin/chief-of-staff --wallpaper-photo-approve-dismiss-ui-status
 bin/chief-of-staff --wallpaper-photo-temp-queue-status
 bin/chief-of-staff --wallpaper-photo-metadata-status
 bin/chief-of-staff --dashboard
 bash scripts/wallpaper-photo-queue-file-status.sh
 bash scripts/wallpaper-photo-queue-file-validator.sh
+bash scripts/wallpaper-photo-approve-dismiss-ui-status.sh
 ```

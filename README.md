@@ -206,6 +206,14 @@ bin/chief-of-staff --lesson-review-view LESSON_SLUG
 
 See `docs/single-slug-lesson-review-view.md`.
 
+Local review notes template status command:
+
+```bash
+bin/chief-of-staff --review-notes-template-status
+```
+
+See `docs/review-notes-template.md`.
+
 ## Future Specialist: 3D Design Agent
 
 Phase 0 now prewires the Mac for future 3D design work.

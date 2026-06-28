@@ -104,6 +104,16 @@ bin/chief-of-staff --lesson-review-view fractions-review
 
 This is read-only. It does not approve lessons, generate content, edit drafts, or publish/share anything. Human review is required.
 
+## Review Notes Template
+
+Use the Review Notes Template for optional personal human review notes after inspecting a lesson slug.
+
+```bash
+bin/chief-of-staff --review-notes-template-status
+```
+
+Copy `docs/review-notes-template.md` manually into `assistant/lesson-planning/review-notes/` if desired. Notes are local only, optional, and not official review status.
+
 ## Future Use
 
 Future tools may help create briefs, activities, assessments, and materials checklists from the queue and templates. Those tools should remain local-first and should require human review before classroom use.

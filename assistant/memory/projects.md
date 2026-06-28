@@ -19,8 +19,8 @@ Track active projects, project status, next actions, blockers, and decisions.
 - Status: active
 - Category: operations / app-development
 - Goal: Prepare a MacBook-first Teacher AI Workstation with safe setup, assistant foundations, and future specialist support.
-- Current phase: Review notes template
-- Last known next action: Add a local-only template for optional personal human review notes after inspecting a lesson slug.
+- Current phase: Safe local document indexing plan
+- Last known next action: Add planning-only documentation and read-only status helper for future safe local document indexing.
 - Blockers: none known
 - Source: repo roadmap and current implementation work
 - Last reviewed: 2026-06-26
@@ -31,12 +31,24 @@ Track active projects, project status, next actions, blockers, and decisions.
 - Status: active
 - Category: teaching / app-development
 - Goal: Build a teaching-first, permission-based assistant for planning, memory, writing, troubleshooting, and project support.
-- Current phase: Review notes template
-- Last known next action: Provide optional local review notes template guidance without official review status storage.
+- Current phase: Safe local document indexing plan
+- Last known next action: Define allowlist-first, human-approved phases for future local document indexing without implementing indexing yet.
 - Blockers: approved real writing samples are not added yet; Gmail/Drive integrations require explicit future permission and safety review
 - Source: Phase 1A-1D docs, dashboard docs, lesson planning scaffold, and Developer Mode template work
 - Last reviewed: 2026-06-26
 - Notes: Teaching remains the primary focus. Do not claim the full Chief of Staff, automatic lesson generation, real app generation, or deployment is built yet.
+
+### 3D Design Factory Agent
+
+- Status: parked
+- Category: 3D-printing / business / classroom
+- Goal: Future specialist for classroom and business 3D design/printing workflows.
+- Current phase: Parked until Chief of Staff and Teacher Workstation foundations are mature.
+- Last known next action: Keep advisory 3D readiness docs separate from active Chief of Staff lesson workflow builds.
+- Blockers: active build focus remains Chief of Staff and Teacher Workstation foundations
+- Source: Phase 0C readiness docs and build queue
+- Last reviewed: 2026-06-28
+- Notes: Parked until Chief of Staff and Teacher Workstation foundations are mature. Advisory only; human operator makes final print decisions.
 
 ### 3D Design Agent readiness
 

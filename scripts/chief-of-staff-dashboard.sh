@@ -402,6 +402,29 @@ else
   warn "review notes template status script missing: scripts/review-notes-template-status.sh"
 fi
 
+section "Safe Local Document Indexing Plan"
+if [[ -f scripts/document-indexing-plan-status.sh ]]; then
+  document_indexing_result=0
+  document_indexing_output="$(bash scripts/document-indexing-plan-status.sh 2>&1)" || document_indexing_result=$?
+  document_indexing_pass="$(summary_count "${document_indexing_output}" "PASS")"
+  document_indexing_warn="$(summary_count "${document_indexing_output}" "WARN")"
+  document_indexing_fail="$(summary_count "${document_indexing_output}" "FAIL")"
+
+  if [[ "${document_indexing_result}" != "0" ]]; then
+    printf 'Safe Local Document Indexing Plan: status command completed\n'
+    printf '%s\n' "${document_indexing_output}"
+    fail "document indexing plan status failed"
+  elif [[ -n "${document_indexing_pass}" && -n "${document_indexing_warn}" && -n "${document_indexing_fail}" ]]; then
+    printf 'Safe Local Document Indexing Plan: PASS %s / WARN %s / FAIL %s\n' "${document_indexing_pass}" "${document_indexing_warn}" "${document_indexing_fail}"
+    pass "document indexing plan status completed"
+  else
+    printf 'Safe Local Document Indexing Plan: status command completed\n'
+    pass "document indexing plan status completed"
+  fi
+else
+  warn "document indexing plan status script missing: scripts/document-indexing-plan-status.sh"
+fi
+
 section "Cursor Workflow"
 if [[ -f scripts/cursor-workflow-status.sh ]]; then
   cursor_result=0

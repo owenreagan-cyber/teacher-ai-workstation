@@ -214,6 +214,14 @@ bin/chief-of-staff --review-notes-template-status
 
 See `docs/review-notes-template.md`.
 
+Local document indexing plan status command:
+
+```bash
+bin/chief-of-staff --document-indexing-plan-status
+```
+
+See `docs/safe-local-document-indexing-plan.md`.
+
 ## Future Specialist: 3D Design Agent
 
 Phase 0 now prewires the Mac for future 3D design work.

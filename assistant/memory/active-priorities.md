@@ -24,14 +24,15 @@ Completed:
 - Safe local lesson review checklist
 - Single-slug lesson review view
 - Align next recommended PR
+- Review notes template
 
 Now:
 
-- Review notes template
+- Safe local document indexing plan
 
 Next:
 
-- Safe local document indexing plan
+- Chief of Staff command launcher / status dashboard refinement
 - Later: selected local folder indexing
 
 ## Phase 1 Boundary

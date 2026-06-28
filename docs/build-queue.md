@@ -43,25 +43,26 @@ Phase 1 Teacher Chief of Staff + safe local lesson workflows.
 - Wallpaper/photo scheduler foundation.
 - Wallpaper/photo notification foundation.
 - Wallpaper/photo rotation handoff and safety audit.
+- Return to Chief of Staff / Teacher Workstation core.
 
 ## Current PR
 
-Return to Chief of Staff / Teacher Workstation core.
+Chief of Staff dashboard readability pass.
 
-Scope: Pause the Appearance & Vibe wallpaper/photo curator after completing the local planning/status foundation stack. Return build priority to Chief of Staff / Teacher Workstation core. No new live integrations, no wallpaper/photo curator implementation, no network calls, and no automation.
+Scope: Improve dashboard readability after the large Appearance & Vibe expansion. Group long sections more clearly, make the health summary easier to scan, and preserve every existing command/status check. No new live integrations, no network calls, no wallpaper/photo curator implementation, no lesson generation changes, no student data, and no automation.
 
 Appearance & Vibe wallpaper/photo curator foundation stack: complete for now.
 Live curator implementation: not started.
 
 ## Next PR
 
-Chief of Staff dashboard readability pass
+Chief of Staff command map cleanup
 
-Scope: Improve dashboard readability after the large Appearance & Vibe expansion. Group long sections more clearly, make the health summary easier to scan, and preserve every existing command/status check. No new live integrations, no network calls, no wallpaper/photo curator implementation, no lesson generation changes, no student data, and no automation.
+Scope: Improve the organization, naming consistency, and discoverability of Chief of Staff commands after the dashboard readability pass. Preserve every existing command and status check. No new live integrations, no network calls, no wallpaper/photo curator implementation, no lesson generation changes, no student data, and no automation.
 
 ## Next Recommended PRs
 
-1. Chief of Staff dashboard readability pass.
+1. Chief of Staff command map cleanup.
 2. Later: permissioned Gmail/Drive integrations.
 3. Later: secrets/capability broker.
 

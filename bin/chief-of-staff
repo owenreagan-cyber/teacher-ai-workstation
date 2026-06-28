@@ -78,6 +78,7 @@ Meta commands:
   --wallpaper-photo-rotation-handoff-validator
                                        Run wallpaper/photo rotation handoff dry-run validator and exit.
   --return-to-core-status              Show return to Chief of Staff core planning status and exit.
+  --dashboard-readability-status       Show Chief of Staff dashboard readability pass status and exit.
   --command-launcher-status            Show Chief of Staff command launcher status and exit.
   --cursor-workflow-status             Show local Cursor workflow status and exit.
   --developer-status                   Show local Developer Mode status and exit.
@@ -162,6 +163,7 @@ Examples:
   bin/chief-of-staff --wallpaper-photo-rotation-handoff-safety-status
   bin/chief-of-staff --wallpaper-photo-rotation-handoff-validator
   bin/chief-of-staff --return-to-core-status
+  bin/chief-of-staff --dashboard-readability-status
   bin/chief-of-staff --command-launcher-status
   bin/chief-of-staff --cursor-workflow-status
   bin/chief-of-staff --developer-status
@@ -254,6 +256,8 @@ Local command: wallpaper photo rotation handoff safety status
 Local command: wallpaper photo rotation handoff validator
 Chief of Staff / Teacher Workstation Core
 Local command: return to chief of staff core status
+Dashboard
+Local command: dashboard readability status
 Verification
 intake-review
 verify-before-use
@@ -1358,6 +1362,15 @@ while [[ $# -gt 0 ]]; do
         die "Return to Chief of Staff core status script is missing: scripts/return-to-chief-of-staff-core-status.sh"
       fi
       bash "${return_to_core_status_script}"
+      exit 0
+      ;;
+    --dashboard-readability-status)
+      repo_root="$(resolve_repo_root)"
+      dashboard_readability_status_script="${repo_root}/scripts/chief-of-staff-dashboard-readability-status.sh"
+      if [[ ! -f "${dashboard_readability_status_script}" ]]; then
+        die "Chief of Staff dashboard readability status script is missing: scripts/chief-of-staff-dashboard-readability-status.sh"
+      fi
+      bash "${dashboard_readability_status_script}"
       exit 0
       ;;
     --command-launcher-status)

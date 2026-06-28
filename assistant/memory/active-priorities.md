@@ -46,14 +46,15 @@ Completed:
 - Wallpaper/photo scheduler foundation
 - Wallpaper/photo notification foundation
 - Wallpaper/photo rotation handoff and safety audit
+- Return to Chief of Staff / Teacher Workstation core
 
 Now:
 
-- Return to Chief of Staff / Teacher Workstation core (planning/status checkpoint only)
+- Chief of Staff dashboard readability pass (readability/status only)
 
 Next:
 
-- Chief of Staff dashboard readability pass
+- Chief of Staff command map cleanup
 
 ## Parked Future
 

@@ -520,6 +520,29 @@ else
   warn "wallpaper photo dry-run folder validator script missing: scripts/wallpaper-photo-dry-run-folder-validator.sh"
 fi
 
+section "Wallpaper/Photo Folder Creation Helper"
+if [[ -f scripts/wallpaper-photo-folder-creation-status.sh ]]; then
+  wallpaper_folder_creation_result=0
+  wallpaper_folder_creation_output="$(bash scripts/wallpaper-photo-folder-creation-status.sh 2>&1)" || wallpaper_folder_creation_result=$?
+  wallpaper_folder_creation_pass="$(summary_count "${wallpaper_folder_creation_output}" "PASS")"
+  wallpaper_folder_creation_warn="$(summary_count "${wallpaper_folder_creation_output}" "WARN")"
+  wallpaper_folder_creation_fail="$(summary_count "${wallpaper_folder_creation_output}" "FAIL")"
+
+  if [[ "${wallpaper_folder_creation_result}" != "0" ]]; then
+    printf 'Wallpaper/Photo Folder Creation Helper: status command completed\n'
+    printf '%s\n' "${wallpaper_folder_creation_output}"
+    fail "wallpaper photo folder creation status failed"
+  elif [[ -n "${wallpaper_folder_creation_pass}" && -n "${wallpaper_folder_creation_warn}" && -n "${wallpaper_folder_creation_fail}" ]]; then
+    printf 'Wallpaper/Photo Folder Creation Helper: PASS %s / WARN %s / FAIL %s\n' "${wallpaper_folder_creation_pass}" "${wallpaper_folder_creation_warn}" "${wallpaper_folder_creation_fail}"
+    pass "wallpaper photo folder creation status completed"
+  else
+    printf 'Wallpaper/Photo Folder Creation Helper: status command completed\n'
+    pass "wallpaper photo folder creation status completed"
+  fi
+else
+  warn "wallpaper photo folder creation status script missing: scripts/wallpaper-photo-folder-creation-status.sh"
+fi
+
 section "Cursor Workflow"
 if [[ -f scripts/cursor-workflow-status.sh ]]; then
   cursor_result=0

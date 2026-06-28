@@ -121,14 +121,17 @@ Phase I: Local automation scheduler
 Phase J: Approved-source fetcher
 ```
 
-Phase C is complete as a dry-run validator only. Phases D–J remain future work.
+Phase C dry-run validation is complete. Phase D manual folder creation helper is in `docs/wallpaper-photo-manual-folder-creation-helper.md`.
 
 ## Commands Reference
 
 ```bash
 bin/chief-of-staff --wallpaper-photo-dry-run-folder-validator
+bin/chief-of-staff --wallpaper-photo-folder-creation-status
+bin/chief-of-staff --wallpaper-photo-create-folders --dry-run
 bin/chief-of-staff --wallpaper-photo-folder-design-status
 bin/chief-of-staff --wallpaper-photo-curator-plan-status
 bin/chief-of-staff --dashboard
 bash scripts/wallpaper-photo-dry-run-folder-validator.sh
+bash scripts/wallpaper-photo-create-folders.sh --dry-run
 ```

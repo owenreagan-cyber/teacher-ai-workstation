@@ -269,6 +269,14 @@ for path in \
   check_required_file "${path}"
 done
 
+section "Wallpaper/Photo Manual Folder Creation Helper Files"
+for path in \
+  docs/wallpaper-photo-manual-folder-creation-helper.md \
+  scripts/wallpaper-photo-create-folders.sh \
+  scripts/wallpaper-photo-folder-creation-status.sh; do
+  check_required_file "${path}"
+done
+
 section "Wallpaper/Photo Dry-Run Folder Validator Files"
 for path in \
   docs/wallpaper-photo-dry-run-folder-validator.md \
@@ -331,6 +339,8 @@ done
 
 section "Syntax Checks"
 check_bash_syntax "scripts/command-launcher-status.sh"
+check_bash_syntax "scripts/wallpaper-photo-create-folders.sh"
+check_bash_syntax "scripts/wallpaper-photo-folder-creation-status.sh"
 check_bash_syntax "scripts/wallpaper-photo-dry-run-folder-validator.sh"
 check_bash_syntax "scripts/wallpaper-photo-folder-design-status.sh"
 check_bash_syntax "scripts/wallpaper-photo-curator-plan-status.sh"
@@ -355,7 +365,7 @@ section "Recommendation"
 if (( CRITICAL_BLOCKER > 0 )); then
   printf 'Fix critical Chief of Staff CLI, memory, intake, or script problems before the next build PR.\n'
 else
-  printf 'Next recommended PR: Wallpaper/photo manual folder creation helper.\n'
+  printf 'Next recommended PR: Wallpaper/photo metadata schema and sample records.\n'
 fi
 
 if (( COMPARE_0E == 1 && CRITICAL_BLOCKER == 0 )); then

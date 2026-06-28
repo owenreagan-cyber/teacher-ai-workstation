@@ -33,6 +33,9 @@ Meta commands:
                                        Show wallpaper/photo rotation folder design status and exit.
   --wallpaper-photo-dry-run-folder-validator
                                        Run wallpaper/photo dry-run folder validator and exit.
+  --wallpaper-photo-folder-creation-status
+                                       Show wallpaper/photo folder creation helper status and exit.
+  --wallpaper-photo-create-folders     Run manual wallpaper/photo folder helper (--dry-run default).
   --command-launcher-status            Show Chief of Staff command launcher status and exit.
   --cursor-workflow-status             Show local Cursor workflow status and exit.
   --developer-status                   Show local Developer Mode status and exit.
@@ -91,6 +94,9 @@ Examples:
   bin/chief-of-staff --wallpaper-photo-curator-plan-status
   bin/chief-of-staff --wallpaper-photo-folder-design-status
   bin/chief-of-staff --wallpaper-photo-dry-run-folder-validator
+  bin/chief-of-staff --wallpaper-photo-folder-creation-status
+  bin/chief-of-staff --wallpaper-photo-create-folders --dry-run
+  bin/chief-of-staff --wallpaper-photo-create-folders --create
   bin/chief-of-staff --command-launcher-status
   bin/chief-of-staff --cursor-workflow-status
   bin/chief-of-staff --developer-status
@@ -157,6 +163,8 @@ Local command: document indexing plan status
 Local command: wallpaper photo curator plan status
 Local command: wallpaper photo folder design status
 Local command: wallpaper photo dry-run folder validator
+Local command: wallpaper photo folder creation status
+Local command: wallpaper photo create folders manual helper
 Verification
 intake-review
 verify-before-use
@@ -1027,6 +1035,25 @@ while [[ $# -gt 0 ]]; do
         die "Wallpaper photo dry-run folder validator script is missing: scripts/wallpaper-photo-dry-run-folder-validator.sh"
       fi
       bash "${wallpaper_dry_run_validator_script}"
+      exit 0
+      ;;
+    --wallpaper-photo-folder-creation-status)
+      repo_root="$(resolve_repo_root)"
+      wallpaper_folder_creation_status_script="${repo_root}/scripts/wallpaper-photo-folder-creation-status.sh"
+      if [[ ! -f "${wallpaper_folder_creation_status_script}" ]]; then
+        die "Wallpaper photo folder creation status script is missing: scripts/wallpaper-photo-folder-creation-status.sh"
+      fi
+      bash "${wallpaper_folder_creation_status_script}"
+      exit 0
+      ;;
+    --wallpaper-photo-create-folders)
+      repo_root="$(resolve_repo_root)"
+      wallpaper_create_folders_script="${repo_root}/scripts/wallpaper-photo-create-folders.sh"
+      if [[ ! -f "${wallpaper_create_folders_script}" ]]; then
+        die "Wallpaper photo create folders script is missing: scripts/wallpaper-photo-create-folders.sh"
+      fi
+      shift
+      bash "${wallpaper_create_folders_script}" "$@"
       exit 0
       ;;
     --command-launcher-status)

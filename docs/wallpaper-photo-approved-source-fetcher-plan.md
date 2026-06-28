@@ -24,7 +24,7 @@ Phase I defined image processing rules for approved candidates. Source fetching 
 
 ## Relationship to Metadata Schema
 
-Source metadata in `metadata-schema.json` uses `source_type`, `source_name`, `source_url`, `license_status`, and `permission_note`. Phase Q defines the local source allowlist file format and dry-run validator. See `docs/wallpaper-photo-source-allowlist-foundation.md`. Future allowlist entries would extend those concepts with explicit approval fields before any fetcher runs.
+Source metadata in `metadata-schema.json` uses `source_type`, `source_name`, `source_url`, `license_status`, and `permission_note`. Phase Q defines the local source allowlist file format and dry-run validator. Phase N defines simulated approved-source discovery planning. See `docs/wallpaper-photo-source-allowlist-foundation.md` and `docs/wallpaper-photo-simulated-approved-source-discovery-plan.md`. Future allowlist entries would extend those concepts with explicit approval fields before any fetcher runs.
 
 ## Approved Source Concept
 
@@ -242,6 +242,8 @@ Phase S: First approved-source dry-run discovery
 bin/chief-of-staff --wallpaper-photo-source-fetcher-plan-status
 bin/chief-of-staff --wallpaper-photo-source-allowlist-status
 bin/chief-of-staff --wallpaper-photo-source-allowlist-validator
+bin/chief-of-staff --wallpaper-photo-simulated-discovery-status
+bin/chief-of-staff --wallpaper-photo-simulated-discovery-validator
 bin/chief-of-staff --wallpaper-photo-local-scheduler-status
 bin/chief-of-staff --wallpaper-photo-image-processing-status
 bin/chief-of-staff --wallpaper-photo-metadata-status
@@ -249,4 +251,6 @@ bin/chief-of-staff --dashboard
 bash scripts/wallpaper-photo-source-fetcher-plan-status.sh
 bash scripts/wallpaper-photo-source-allowlist-status.sh
 bash scripts/wallpaper-photo-source-allowlist-validator.sh
+bash scripts/wallpaper-photo-simulated-discovery-status.sh
+bash scripts/wallpaper-photo-simulated-discovery-validator.sh
 ```

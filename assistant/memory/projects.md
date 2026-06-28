@@ -19,8 +19,8 @@ Track active projects, project status, next actions, blockers, and decisions.
 - Status: active
 - Category: operations / app-development
 - Goal: Prepare a MacBook-first Teacher AI Workstation with safe setup, assistant foundations, and future specialist support.
-- Current phase: Wallpaper/photo source allowlist foundation
-- Last known next action: Add source allowlist file format and dry-run validator without fetcher implementation or network calls.
+- Current phase: Wallpaper/photo simulated approved-source discovery plan
+- Last known next action: Add simulated discovery planning/status using fictional allowlist and report records without real discovery or network calls.
 - Blockers: none known
 - Source: repo roadmap and current implementation work
 - Last reviewed: 2026-06-26
@@ -31,8 +31,8 @@ Track active projects, project status, next actions, blockers, and decisions.
 - Status: active
 - Category: teaching / app-development
 - Goal: Build a teaching-first, permission-based assistant for planning, memory, writing, troubleshooting, and project support.
-- Current phase: Wallpaper/photo source allowlist foundation
-- Last known next action: Add source allowlist file format and dry-run validator without fetcher implementation or network calls.
+- Current phase: Wallpaper/photo simulated approved-source discovery plan
+- Last known next action: Add simulated discovery planning/status using fictional allowlist and report records without real discovery or network calls.
 - Blockers: approved real writing samples are not added yet; Gmail/Drive integrations require explicit future permission and safety review
 - Source: Phase 1A-1D docs, dashboard docs, lesson planning scaffold, and Developer Mode template work
 - Last reviewed: 2026-06-26
@@ -74,15 +74,15 @@ Track active projects, project status, next actions, blockers, and decisions.
 
 ### Appearance & Vibe — Automated Wallpaper and Photo Curator
 
-- Status: parked (Phase Q source allowlist foundation active build)
+- Status: parked (Phase N simulated discovery plan active build)
 - Category: personal / operations
 - Goal: Future local Mac curator for wallpaper/photo candidate review, approve/dismiss, and rotation-folder storage.
-- Current phase: Phase Q source allowlist foundation (file format and dry-run validator).
-- Last known next action: Wallpaper/photo simulated approved-source discovery plan PR.
+- Current phase: Phase N simulated approved-source discovery plan (simulated planning/status only).
+- Last known next action: Wallpaper/photo live local review UI prototype plan PR.
 - Blockers: full curator not implemented; human approval gates required before automation
-- Source: docs/wallpaper-photo-metadata-schema.md, docs/wallpaper-photo-source-allowlist-foundation.md, assistant/appearance-vibe/wallpaper-photo-curator/, and build queue
+- Source: docs/wallpaper-photo-metadata-schema.md, docs/wallpaper-photo-source-allowlist-foundation.md, docs/wallpaper-photo-simulated-approved-source-discovery-plan.md, assistant/appearance-vibe/wallpaper-photo-curator/, and build queue
 - Last reviewed: 2026-06-28
-- Notes: Approved-source fetcher plan is complete. Source allowlist foundation combines file format and dry-run validator. No fetcher, network calls, API clients, OAuth, secrets, Reddit integration, or Devvit integration exists yet. Full curator not implemented. Reddit may be a future source only. Devvit may be a future Reddit-native companion only.
+- Notes: Source allowlist foundation is complete. Simulated discovery is local-only and uses fictional allowlist/report records. No fetcher, network calls, API clients, OAuth, secrets, Reddit integration, or Devvit integration exists yet. Full curator not implemented. Reddit may be a future source only. Devvit may be a future Reddit-native companion only.
 
 ### Project Name
 

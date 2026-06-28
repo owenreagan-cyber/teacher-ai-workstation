@@ -53,6 +53,10 @@ Meta commands:
                                        Show wallpaper/photo source allowlist foundation status and exit.
   --wallpaper-photo-source-allowlist-validator
                                        Run wallpaper/photo source allowlist dry-run validator and exit.
+  --wallpaper-photo-simulated-discovery-status
+                                       Show wallpaper/photo simulated discovery status and exit.
+  --wallpaper-photo-simulated-discovery-validator
+                                       Run wallpaper/photo simulated discovery dry-run validator and exit.
   --command-launcher-status            Show Chief of Staff command launcher status and exit.
   --cursor-workflow-status             Show local Cursor workflow status and exit.
   --developer-status                   Show local Developer Mode status and exit.
@@ -124,6 +128,8 @@ Examples:
   bin/chief-of-staff --wallpaper-photo-source-fetcher-plan-status
   bin/chief-of-staff --wallpaper-photo-source-allowlist-status
   bin/chief-of-staff --wallpaper-photo-source-allowlist-validator
+  bin/chief-of-staff --wallpaper-photo-simulated-discovery-status
+  bin/chief-of-staff --wallpaper-photo-simulated-discovery-validator
   bin/chief-of-staff --command-launcher-status
   bin/chief-of-staff --cursor-workflow-status
   bin/chief-of-staff --developer-status
@@ -202,6 +208,8 @@ Local command: wallpaper photo local scheduler status
 Local command: wallpaper photo source fetcher plan status
 Local command: wallpaper photo source allowlist status
 Local command: wallpaper photo source allowlist validator
+Local command: wallpaper photo simulated discovery status
+Local command: wallpaper photo simulated discovery validator
 Verification
 intake-review
 verify-before-use
@@ -1183,6 +1191,25 @@ while [[ $# -gt 0 ]]; do
       fi
       shift
       bash "${wallpaper_source_allowlist_validator_script}" "$@"
+      exit 0
+      ;;
+    --wallpaper-photo-simulated-discovery-status)
+      repo_root="$(resolve_repo_root)"
+      wallpaper_simulated_discovery_status_script="${repo_root}/scripts/wallpaper-photo-simulated-discovery-status.sh"
+      if [[ ! -f "${wallpaper_simulated_discovery_status_script}" ]]; then
+        die "Wallpaper photo simulated discovery status script is missing: scripts/wallpaper-photo-simulated-discovery-status.sh"
+      fi
+      bash "${wallpaper_simulated_discovery_status_script}"
+      exit 0
+      ;;
+    --wallpaper-photo-simulated-discovery-validator)
+      repo_root="$(resolve_repo_root)"
+      wallpaper_simulated_discovery_validator_script="${repo_root}/scripts/wallpaper-photo-simulated-discovery-validator.sh"
+      if [[ ! -f "${wallpaper_simulated_discovery_validator_script}" ]]; then
+        die "Wallpaper photo simulated discovery validator script is missing: scripts/wallpaper-photo-simulated-discovery-validator.sh"
+      fi
+      shift
+      bash "${wallpaper_simulated_discovery_validator_script}" "$@"
       exit 0
       ;;
     --command-launcher-status)

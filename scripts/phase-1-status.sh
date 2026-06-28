@@ -324,6 +324,15 @@ for path in \
   check_required_file "${path}"
 done
 
+section "Wallpaper/Photo Simulated Discovery Files"
+for path in \
+  docs/wallpaper-photo-simulated-approved-source-discovery-plan.md \
+  assistant/appearance-vibe/wallpaper-photo-curator/sample-discovery-report.json \
+  scripts/wallpaper-photo-simulated-discovery-validator.sh \
+  scripts/wallpaper-photo-simulated-discovery-status.sh; do
+  check_required_file "${path}"
+done
+
 section "Wallpaper/Photo Metadata Schema Files"
 for path in \
   docs/wallpaper-photo-metadata-schema.md \
@@ -413,6 +422,8 @@ check_bash_syntax "scripts/wallpaper-photo-local-scheduler-status.sh"
 check_bash_syntax "scripts/wallpaper-photo-source-fetcher-plan-status.sh"
 check_bash_syntax "scripts/wallpaper-photo-source-allowlist-validator.sh"
 check_bash_syntax "scripts/wallpaper-photo-source-allowlist-status.sh"
+check_bash_syntax "scripts/wallpaper-photo-simulated-discovery-validator.sh"
+check_bash_syntax "scripts/wallpaper-photo-simulated-discovery-status.sh"
 check_bash_syntax "scripts/wallpaper-photo-metadata-status.sh"
 check_bash_syntax "scripts/wallpaper-photo-create-folders.sh"
 check_bash_syntax "scripts/wallpaper-photo-folder-creation-status.sh"
@@ -440,7 +451,7 @@ section "Recommendation"
 if (( CRITICAL_BLOCKER > 0 )); then
   printf 'Fix critical Chief of Staff CLI, memory, intake, or script problems before the next build PR.\n'
 else
-  printf 'Next recommended PR: Wallpaper/photo simulated approved-source discovery plan.\n'
+  printf 'Next recommended PR: Wallpaper/photo live local review UI prototype plan.\n'
 fi
 
 if (( COMPARE_0E == 1 && CRITICAL_BLOCKER == 0 )); then

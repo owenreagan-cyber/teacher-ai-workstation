@@ -727,6 +727,29 @@ else
   warn "wallpaper photo source allowlist status script missing: scripts/wallpaper-photo-source-allowlist-status.sh"
 fi
 
+section "Wallpaper/Photo Simulated Discovery"
+if [[ -f scripts/wallpaper-photo-simulated-discovery-status.sh ]]; then
+  wallpaper_simulated_discovery_result=0
+  wallpaper_simulated_discovery_output="$(bash scripts/wallpaper-photo-simulated-discovery-status.sh 2>&1)" || wallpaper_simulated_discovery_result=$?
+  wallpaper_simulated_discovery_pass="$(summary_count "${wallpaper_simulated_discovery_output}" "PASS")"
+  wallpaper_simulated_discovery_warn="$(summary_count "${wallpaper_simulated_discovery_output}" "WARN")"
+  wallpaper_simulated_discovery_fail="$(summary_count "${wallpaper_simulated_discovery_output}" "FAIL")"
+
+  if [[ "${wallpaper_simulated_discovery_result}" != "0" ]]; then
+    printf 'Wallpaper/Photo Simulated Discovery: status command completed\n'
+    printf '%s\n' "${wallpaper_simulated_discovery_output}"
+    fail "wallpaper photo simulated discovery status failed"
+  elif [[ -n "${wallpaper_simulated_discovery_pass}" && -n "${wallpaper_simulated_discovery_warn}" && -n "${wallpaper_simulated_discovery_fail}" ]]; then
+    printf 'Wallpaper/Photo Simulated Discovery: PASS %s / WARN %s / FAIL %s\n' "${wallpaper_simulated_discovery_pass}" "${wallpaper_simulated_discovery_warn}" "${wallpaper_simulated_discovery_fail}"
+    pass "wallpaper photo simulated discovery status completed"
+  else
+    printf 'Wallpaper/Photo Simulated Discovery: status command completed\n'
+    pass "wallpaper photo simulated discovery status completed"
+  fi
+else
+  warn "wallpaper photo simulated discovery status script missing: scripts/wallpaper-photo-simulated-discovery-status.sh"
+fi
+
 section "Cursor Workflow"
 if [[ -f scripts/cursor-workflow-status.sh ]]; then
   cursor_result=0

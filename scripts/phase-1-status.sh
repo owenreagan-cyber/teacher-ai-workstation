@@ -264,6 +264,7 @@ check_text "docs/open-threads.md" "Vibe Panel.*scaffold|Vibe Panel.*pending" "Vi
 section "Chief of Staff Command Launcher Files"
 for path in \
   docs/chief-of-staff-command-launcher-refinement.md \
+  docs/dashboard-polish-command-grouping-follow-up.md \
   scripts/command-launcher-status.sh; do
   check_required_file "${path}"
 done
@@ -330,7 +331,7 @@ section "Recommendation"
 if (( CRITICAL_BLOCKER > 0 )); then
   printf 'Fix critical Chief of Staff CLI, memory, intake, or script problems before the next build PR.\n'
 else
-  printf 'Next recommended PR: Dashboard polish and command grouping follow-up.\n'
+  printf 'Next recommended PR: Appearance & Vibe automated wallpaper/photo curator plan.\n'
 fi
 
 if (( COMPARE_0E == 1 && CRITICAL_BLOCKER == 0 )); then

@@ -34,9 +34,11 @@ Status helpers are read-only unless explicitly documented otherwise (for example
 | Everyday | Dashboard, setup, workflows, and command discovery |
 | Lesson Planning | Workspace, briefs, drafts, packs, queue, workflow |
 | Lesson Review | Checklist, single-slug view, review notes template |
-| Developer Mode | Local developer project templates and status |
-| Planning and Future-Safety | Document indexing plan and Cursor workflow |
-| Workflow/Verification | Phase checks, intake, memory, and validation helpers |
+| Developer and Workflow | Developer Mode, Cursor workflow, and support workflows |
+| Future-Safety | Document indexing plan and other planning-only helpers |
+| Verification | Intake review, verify-before-use, and validation helpers |
+
+See also `docs/dashboard-polish-command-grouping-follow-up.md` for dashboard reading order and polish notes.
 
 ## Everyday Commands
 
@@ -76,22 +78,22 @@ bin/chief-of-staff --review-notes-template-status
 
 These helpers guide human review. They do not approve lessons or store official review status.
 
-## Developer Mode Commands
+## Developer and Workflow Commands
 
 ```bash
 bin/chief-of-staff --developer-status
+bin/chief-of-staff --cursor-workflow-status
 ```
 
 Developer project template creation is available through `--create-developer-project`. It copies local templates only.
 
-## Planning and Future-Safety Commands
+## Future-Safety Commands
 
 ```bash
 bin/chief-of-staff --document-indexing-plan-status
-bin/chief-of-staff --cursor-workflow-status
 ```
 
-These are planning and workflow helpers. They do not index documents, scan folders, or call external services.
+These are planning-only helpers. They do not index documents, scan folders, or call external services.
 
 ## Dashboard Meaning
 

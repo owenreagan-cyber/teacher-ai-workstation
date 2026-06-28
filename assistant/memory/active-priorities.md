@@ -26,15 +26,21 @@ Completed:
 - Align next recommended PR
 - Review notes template
 - Safe local document indexing plan
+- Chief of Staff command launcher / status dashboard refinement
 
 Now:
 
-- Chief of Staff command launcher / status dashboard refinement
+- Dashboard polish and command grouping follow-up
 
 Next:
 
-- Dashboard polish and command grouping follow-up
+- Appearance & Vibe automated wallpaper/photo curator plan
 - Later: selected local folder indexing
+
+## Parked Future
+
+- Appearance & Vibe: Automated Wallpaper and Photo Curator (planning only; not implemented in dashboard polish PR)
+- 3D Design Factory Agent remains parked until Chief of Staff and Teacher Workstation foundations are mature
 
 ## Phase 1 Boundary
 

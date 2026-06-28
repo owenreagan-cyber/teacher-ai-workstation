@@ -110,6 +110,7 @@ printf 'Branch: %s\n' "${branch:-unknown}"
 printf 'Commit: %s\n' "${commit:-unknown}"
 printf 'Run at: %s\n' "${run_at}"
 printf 'Read-only: yes\n'
+printf 'Dashboard reading order: health -> workflows -> command launcher -> lesson sections -> recommendation\n'
 
 section "Workstation Phase Status"
 if [[ -f scripts/verify-phase-0e.sh ]]; then
@@ -130,12 +131,13 @@ else
   warn "Phase 1 status script missing: scripts/phase-1-status.sh"
 fi
 
-section "Available Chief of Staff Workflows"
+section "Available Chief of Staff Workflows and Command Groups"
 if [[ ! -f bin/chief-of-staff ]]; then
   fail "Chief of Staff CLI missing: bin/chief-of-staff"
 elif [[ ! -x bin/chief-of-staff ]]; then
   warn "Chief of Staff CLI is not executable. Fix with: chmod +x bin/chief-of-staff"
 else
+  printf 'Grouped discovery: bin/chief-of-staff --list-workflows\n'
   workflows_output=""
   workflows_result=0
   capture_command workflows_output workflows_result bin/chief-of-staff --list-workflows
@@ -150,6 +152,7 @@ fi
 
 section "Command Launcher"
 if [[ -f scripts/command-launcher-status.sh ]]; then
+  printf 'Use --command-launcher-status for grouped Everyday / Lesson / Developer / Future-Safety commands.\n'
   command_launcher_result=0
   command_launcher_output="$(bash scripts/command-launcher-status.sh 2>&1)" || command_launcher_result=$?
   command_launcher_pass="$(summary_count "${command_launcher_output}" "PASS")"
@@ -495,7 +498,7 @@ else
   warn "Developer Mode status script missing: scripts/developer-mode-status.sh"
 fi
 
-section "Build Queue / Next Action"
+section "Build Queue / Next Recommended Action"
 if [[ -f docs/build-queue.md ]]; then
   next_pr="$(awk '
     /^## Next PR[[:space:]]*$/ { in_next = 1; next }
@@ -504,6 +507,7 @@ if [[ -f docs/build-queue.md ]]; then
   if [[ -n "${next_pr}" ]]; then
     pass "next recommended PR found"
     printf 'Next recommended PR: %s\n' "${next_pr}"
+    printf 'Run the matching status helper after dashboard if you are starting that build.\n'
   else
     warn "Next recommended PR could not be read from docs/build-queue.md."
   fi

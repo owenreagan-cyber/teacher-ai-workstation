@@ -51,7 +51,7 @@ Workflow options:
   --include-intake-checklist            Include the intake review checklist.
   --model <model-name>                  Pass a model name to the llm CLI.
   --dry-run                             Print the assembled prompt and do not call a model.
-  --list-workflows                      List available workflow names.
+  --list-workflows                      List grouped workflow names and local commands.
   --show-context                        Show included file list and exit.
   --no-model                            Print a manual copy/paste prompt and do not call a model.
   --force-large-context                 Include files larger than 200 KB intentionally.
@@ -116,16 +116,15 @@ workflow_path_for_name() {
 
 list_workflows() {
   cat <<'EOF'
-3d-printing-coordination
-app-development-support
-email-style-support
-intake-review
-lesson-support
+Everyday
 morning-brief
 project-review
 request-training-materials
 troubleshooting-support
-verify-before-use
+email-style-support
+lesson-support
+Local command: command launcher status
+Lesson Planning
 Local command: lesson planning workspace status
 Local command: lesson brief status
 Local command: create lesson brief draft
@@ -134,14 +133,21 @@ Local command: create lesson activity, assessment, or materials draft
 Local command: lesson pack status
 Local command: lesson queue integration status
 Local command: lesson planning workflow status
+Lesson Review
 Local command: lesson review checklist status
 Local command: single-slug lesson review view
 Local command: review notes template status
-Local command: document indexing plan status
-Local command: command launcher status
-Local command: Cursor workflow status
+Developer and Workflow
+3d-printing-coordination
+app-development-support
 Local command: developer mode status
 Local command: create developer project from template
+Local command: Cursor workflow status
+Future-Safety
+Local command: document indexing plan status
+Verification
+intake-review
+verify-before-use
 EOF
 }
 

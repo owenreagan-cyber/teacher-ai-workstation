@@ -89,6 +89,7 @@ fi
 cd "${repo_root}"
 
 guide="docs/chief-of-staff-command-launcher-refinement.md"
+polish_guide="docs/dashboard-polish-command-grouping-follow-up.md"
 
 section "Chief of Staff Command Launcher"
 cat <<'EOF'
@@ -103,14 +104,23 @@ cat <<'EOF'
 Everyday
 Lesson Planning
 Lesson Review
-Developer Mode
-Planning and Future-Safety
-Workflow/Verification
+Developer and Workflow
+Future-Safety
+Verification
 EOF
 
 section "Workflow Checks"
 
 check_file "${guide}"
+check_file "${polish_guide}"
+
+check_text "${polish_guide}" "Dashboard Reading Order" "polish guide includes dashboard reading order"
+check_text "${polish_guide}" "Developer and Workflow" "polish guide includes Developer and Workflow group"
+check_text "${polish_guide}" "Future-Safety" "polish guide includes Future-Safety group"
+check_text "${polish_guide}" "Automated Wallpaper and Photo Curator" "polish guide includes Automated Wallpaper and Photo Curator"
+check_text "${polish_guide}" "Not implemented in this PR" "polish guide states wallpaper curator not implemented"
+check_text "${polish_guide}" "No Reddit or Devvit" "polish guide states no Reddit or Devvit in this PR"
+check_text "${polish_guide}" "No image fetching in this PR" "polish guide states no image fetching in this PR"
 
 check_text "${guide}" "local only" "guide mentions local only"
 check_text "${guide}" "read-only" "guide mentions read-only"

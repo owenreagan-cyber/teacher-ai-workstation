@@ -19,8 +19,8 @@ Track active projects, project status, next actions, blockers, and decisions.
 - Status: active
 - Category: operations / app-development
 - Goal: Prepare a MacBook-first Teacher AI Workstation with safe setup, assistant foundations, and future specialist support.
-- Current phase: Chief of Staff command launcher / status dashboard refinement
-- Last known next action: Improve local command discoverability and dashboard visibility with a command launcher guide and status helper.
+- Current phase: Dashboard polish and command grouping follow-up
+- Last known next action: Polish dashboard reading order and grouped command discovery after the command launcher refinement.
 - Blockers: none known
 - Source: repo roadmap and current implementation work
 - Last reviewed: 2026-06-26
@@ -31,8 +31,8 @@ Track active projects, project status, next actions, blockers, and decisions.
 - Status: active
 - Category: teaching / app-development
 - Goal: Build a teaching-first, permission-based assistant for planning, memory, writing, troubleshooting, and project support.
-- Current phase: Chief of Staff command launcher / status dashboard refinement
-- Last known next action: Group safe local commands and make dashboard/status discoverability clearer without adding integrations.
+- Current phase: Dashboard polish and command grouping follow-up
+- Last known next action: Clarify dashboard sections and command groups without adding integrations.
 - Blockers: approved real writing samples are not added yet; Gmail/Drive integrations require explicit future permission and safety review
 - Source: Phase 1A-1D docs, dashboard docs, lesson planning scaffold, and Developer Mode template work
 - Last reviewed: 2026-06-26
@@ -71,6 +71,18 @@ Track active projects, project status, next actions, blockers, and decisions.
 - Gmail/Drive integrations permission-gated.
 
 ## Paused Projects
+
+### Appearance & Vibe — Automated Wallpaper and Photo Curator
+
+- Status: parked
+- Category: personal / operations
+- Goal: Future local app for wallpaper/photo candidate review, approve/dismiss, and rotation-folder storage.
+- Current phase: Planning only; documented in dashboard polish follow-up guide.
+- Last known next action: Appearance & Vibe automated wallpaper/photo curator plan PR (planning-only).
+- Blockers: not an active build; no image fetching, Reddit, Devvit, or macOS automation in current phase
+- Source: docs/dashboard-polish-command-grouping-follow-up.md and build queue
+- Last reviewed: 2026-06-28
+- Notes: Parked future idea only. Human review required before any classroom or system use.
 
 ### Project Name
 

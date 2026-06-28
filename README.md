@@ -230,6 +230,16 @@ bin/chief-of-staff --command-launcher-status
 
 See `docs/chief-of-staff-command-launcher-refinement.md`.
 
+Dashboard and grouped command discovery:
+
+```bash
+bin/chief-of-staff --dashboard
+bin/chief-of-staff --command-launcher-status
+bin/chief-of-staff --list-workflows
+```
+
+See `docs/dashboard-polish-command-grouping-follow-up.md`.
+
 ## Future Specialist: 3D Design Agent
 
 Phase 0 now prewires the Mac for future 3D design work.

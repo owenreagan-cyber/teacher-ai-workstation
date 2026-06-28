@@ -42,32 +42,33 @@ Phase 1 Teacher Chief of Staff + safe local lesson workflows.
 - Wallpaper/photo image processor foundation.
 - Wallpaper/photo scheduler foundation.
 - Wallpaper/photo notification foundation.
+- Wallpaper/photo rotation handoff and safety audit.
 
 ## Current PR
 
-Wallpaper/photo rotation handoff and safety audit.
+Return to Chief of Staff / Teacher Workstation core.
 
-Scope: Consolidated planning/status foundation for future approved local rotation handoff and final safety audit, including manual handoff rules, checklist, readiness gates, and launch boundary review. No real file moves, no folder scanning, no wallpaper/Photos automation, no image processing, no queue writes, no scheduler, no notifications, no network calls, and no Reddit/Devvit integration.
-
-## Next PR
-
-Return to Chief of Staff / Teacher Workstation core
-
-Scope: Pause the Appearance & Vibe wallpaper/photo curator after completing the local planning/status foundation stack. Next work should return to Chief of Staff / Teacher Workstation core unless explicitly approved otherwise. The live wallpaper/photo curator is not implemented yet.
+Scope: Pause the Appearance & Vibe wallpaper/photo curator after completing the local planning/status foundation stack. Return build priority to Chief of Staff / Teacher Workstation core. No new live integrations, no wallpaper/photo curator implementation, no network calls, and no automation.
 
 Appearance & Vibe wallpaper/photo curator foundation stack: complete for now.
 Live curator implementation: not started.
 
+## Next PR
+
+Chief of Staff dashboard readability pass
+
+Scope: Improve dashboard readability after the large Appearance & Vibe expansion. Group long sections more clearly, make the health summary easier to scan, and preserve every existing command/status check. No new live integrations, no network calls, no wallpaper/photo curator implementation, no lesson generation changes, no student data, and no automation.
+
 ## Next Recommended PRs
 
-1. Return to Chief of Staff / Teacher Workstation core.
+1. Chief of Staff dashboard readability pass.
 2. Later: permissioned Gmail/Drive integrations.
 3. Later: secrets/capability broker.
 
 ## Parked / Future
 
 - 3D Design Factory Agent: Parked until Chief of Staff and Teacher Workstation foundations are mature.
-- Appearance & Vibe: Automated Wallpaper and Photo Curator (Phase S rotation handoff and safety audit in progress; foundation stack complete after this PR; live curator not started; Phases T–V remain future).
+- Appearance & Vibe: Automated Wallpaper and Photo Curator (foundation stack complete for now; live curator not started; paused while returning to Chief of Staff / Teacher Workstation core).
 
 ## Open Threads
 

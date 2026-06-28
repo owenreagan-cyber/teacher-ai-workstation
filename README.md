@@ -411,6 +411,14 @@ bin/chief-of-staff --wallpaper-photo-rotation-handoff-validator
 
 See `docs/wallpaper-photo-rotation-handoff-safety-audit.md`.
 
+Return to Chief of Staff / Teacher Workstation core status command:
+
+```bash
+bin/chief-of-staff --return-to-core-status
+```
+
+See `docs/return-to-chief-of-staff-core.md`.
+
 Local command launcher status command:
 
 ```bash

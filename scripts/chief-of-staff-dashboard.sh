@@ -131,6 +131,29 @@ else
   warn "Phase 1 status script missing: scripts/phase-1-status.sh"
 fi
 
+section "Return to Chief of Staff / Teacher Workstation Core"
+if [[ -f scripts/return-to-chief-of-staff-core-status.sh ]]; then
+  return_to_core_result=0
+  return_to_core_output="$(bash scripts/return-to-chief-of-staff-core-status.sh 2>&1)" || return_to_core_result=$?
+  return_to_core_pass="$(summary_count "${return_to_core_output}" "PASS")"
+  return_to_core_warn="$(summary_count "${return_to_core_output}" "WARN")"
+  return_to_core_fail="$(summary_count "${return_to_core_output}" "FAIL")"
+
+  if [[ "${return_to_core_result}" != "0" ]]; then
+    printf 'Return to Chief of Staff / Teacher Workstation Core: status command completed\n'
+    printf '%s\n' "${return_to_core_output}"
+    fail "return to Chief of Staff core status failed"
+  elif [[ -n "${return_to_core_pass}" && -n "${return_to_core_warn}" && -n "${return_to_core_fail}" ]]; then
+    printf 'Return to Chief of Staff / Teacher Workstation Core: PASS %s / WARN %s / FAIL %s\n' "${return_to_core_pass}" "${return_to_core_warn}" "${return_to_core_fail}"
+    pass "return to Chief of Staff core status completed"
+  else
+    printf 'Return to Chief of Staff / Teacher Workstation Core: status command completed\n'
+    pass "return to Chief of Staff core status completed"
+  fi
+else
+  warn "return to Chief of Staff core status script missing: scripts/return-to-chief-of-staff-core-status.sh"
+fi
+
 section "Available Chief of Staff Workflows and Command Groups"
 if [[ ! -f bin/chief-of-staff ]]; then
   fail "Chief of Staff CLI missing: bin/chief-of-staff"

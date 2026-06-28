@@ -2,6 +2,8 @@
 
 This folder stores planning assets only for the future Automated Wallpaper and Photo Curator.
 
+The Appearance & Vibe wallpaper/photo curator foundation stack is complete for now. Live curator implementation is not started. Work is paused while returning to Chief of Staff / Teacher Workstation core.
+
 ## Rules
 
 - No real images go here.
@@ -55,6 +57,7 @@ bin/chief-of-staff --wallpaper-photo-notification-foundation-status
 bin/chief-of-staff --wallpaper-photo-notification-plan-validator
 bin/chief-of-staff --wallpaper-photo-rotation-handoff-safety-status
 bin/chief-of-staff --wallpaper-photo-rotation-handoff-validator
+bin/chief-of-staff --return-to-core-status
 ```
 
-See `docs/wallpaper-photo-metadata-schema.md`, `docs/wallpaper-photo-temp-queue-rules.md`, `docs/wallpaper-photo-queue-file-format.md`, `docs/wallpaper-photo-approve-dismiss-ui-design.md`, `docs/wallpaper-photo-image-processing-rules.md`, `docs/wallpaper-photo-local-automation-scheduler-plan.md`, `docs/wallpaper-photo-approved-source-fetcher-plan.md`, `docs/wallpaper-photo-source-allowlist-foundation.md`, `docs/wallpaper-photo-simulated-approved-source-discovery-plan.md`, `docs/wallpaper-photo-live-local-review-ui-prototype-plan.md`, `docs/wallpaper-photo-image-processor-foundation.md`, `docs/wallpaper-photo-scheduler-foundation.md`, `docs/wallpaper-photo-notification-foundation.md`, and `docs/wallpaper-photo-rotation-handoff-safety-audit.md`.
+See `docs/wallpaper-photo-metadata-schema.md`, `docs/wallpaper-photo-temp-queue-rules.md`, `docs/wallpaper-photo-queue-file-format.md`, `docs/wallpaper-photo-approve-dismiss-ui-design.md`, `docs/wallpaper-photo-image-processing-rules.md`, `docs/wallpaper-photo-local-automation-scheduler-plan.md`, `docs/wallpaper-photo-approved-source-fetcher-plan.md`, `docs/wallpaper-photo-source-allowlist-foundation.md`, `docs/wallpaper-photo-simulated-approved-source-discovery-plan.md`, `docs/wallpaper-photo-live-local-review-ui-prototype-plan.md`, `docs/wallpaper-photo-image-processor-foundation.md`, `docs/wallpaper-photo-scheduler-foundation.md`, `docs/wallpaper-photo-notification-foundation.md`, `docs/wallpaper-photo-rotation-handoff-safety-audit.md`, and `docs/return-to-chief-of-staff-core.md`.

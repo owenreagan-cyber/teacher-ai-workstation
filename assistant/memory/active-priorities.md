@@ -47,14 +47,15 @@ Completed:
 - Wallpaper/photo notification foundation
 - Wallpaper/photo rotation handoff and safety audit
 - Return to Chief of Staff / Teacher Workstation core
+- Chief of Staff dashboard readability pass
 
 Now:
 
-- Chief of Staff dashboard readability pass (readability/status only)
+- Chief of Staff command map cleanup (discoverability/status only)
 
 Next:
 
-- Chief of Staff command map cleanup
+- Chief of Staff help examples polish
 
 ## Parked Future
 

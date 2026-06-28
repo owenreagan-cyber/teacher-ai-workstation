@@ -427,6 +427,14 @@ bin/chief-of-staff --dashboard-readability-status
 
 See `docs/chief-of-staff-dashboard-readability-pass.md`.
 
+Chief of Staff command map cleanup status command:
+
+```bash
+bin/chief-of-staff --command-map-status
+```
+
+See `docs/chief-of-staff-command-map-cleanup.md`.
+
 Local command launcher status command:
 
 ```bash

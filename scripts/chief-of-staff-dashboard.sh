@@ -186,6 +186,29 @@ else
   warn "Chief of Staff dashboard readability status script missing: scripts/chief-of-staff-dashboard-readability-status.sh"
 fi
 
+section "Chief of Staff Command Map Cleanup"
+if [[ -f scripts/chief-of-staff-command-map-status.sh ]]; then
+  command_map_result=0
+  command_map_output="$(bash scripts/chief-of-staff-command-map-status.sh 2>&1)" || command_map_result=$?
+  command_map_pass="$(summary_count "${command_map_output}" "PASS")"
+  command_map_warn="$(summary_count "${command_map_output}" "WARN")"
+  command_map_fail="$(summary_count "${command_map_output}" "FAIL")"
+
+  if [[ "${command_map_result}" != "0" ]]; then
+    printf 'Chief of Staff Command Map Cleanup: status command completed\n'
+    printf '%s\n' "${command_map_output}"
+    fail "Chief of Staff command map status failed"
+  elif [[ -n "${command_map_pass}" && -n "${command_map_warn}" && -n "${command_map_fail}" ]]; then
+    printf 'Chief of Staff Command Map Cleanup: PASS %s / WARN %s / FAIL %s\n' "${command_map_pass}" "${command_map_warn}" "${command_map_fail}"
+    pass "Chief of Staff command map status completed"
+  else
+    printf 'Chief of Staff Command Map Cleanup: status command completed\n'
+    pass "Chief of Staff command map status completed"
+  fi
+else
+  warn "Chief of Staff command map status script missing: scripts/chief-of-staff-command-map-status.sh"
+fi
+
 group_banner "Chief of Staff Workflow Status"
 
 section "Available Chief of Staff Workflows and Command Groups"

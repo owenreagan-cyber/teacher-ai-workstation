@@ -12,6 +12,8 @@ This PR improves dashboard readability only. This pass is about preserving all e
 Current status: dashboard readability pass complete.
 ```
 
+Command map cleanup improves `--help` and `--list-workflows` discoverability. See `docs/chief-of-staff-command-map-cleanup.md`.
+
 The dashboard groups core workstation, Chief of Staff workflow, lesson planning, developer/Cursor, Appearance & Vibe foundation, recommendation, and final health summary sections more clearly.
 
 ## Why This Pass Exists

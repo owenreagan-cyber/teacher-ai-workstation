@@ -238,6 +238,14 @@ bin/chief-of-staff --wallpaper-photo-folder-design-status
 
 See `docs/wallpaper-photo-rotation-folder-design.md`.
 
+Wallpaper/photo dry-run folder validator command:
+
+```bash
+bin/chief-of-staff --wallpaper-photo-dry-run-folder-validator
+```
+
+See `docs/wallpaper-photo-dry-run-folder-validator.md`.
+
 Local command launcher status command:
 
 ```bash

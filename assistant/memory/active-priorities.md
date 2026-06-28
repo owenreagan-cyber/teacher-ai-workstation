@@ -29,19 +29,20 @@ Completed:
 - Chief of Staff command launcher / status dashboard refinement
 - Dashboard polish and command grouping follow-up
 - Appearance & Vibe automated wallpaper/photo curator plan
+- Wallpaper/photo rotation folder design
 
 Now:
 
-- Wallpaper/photo rotation folder design
+- Wallpaper/photo dry-run folder validator
 
 Next:
 
-- Wallpaper/photo dry-run folder validator
+- Wallpaper/photo manual folder creation helper
 - Later: selected local folder indexing
 
 ## Parked Future
 
-- Appearance & Vibe: Automated Wallpaper and Photo Curator (Phase B folder design in progress; full curator not implemented; human approval gates required; Reddit may be a future source only; Devvit may be a future Reddit-native companion only)
+- Appearance & Vibe: Automated Wallpaper and Photo Curator (Phase C dry-run validator in progress; conceptual path checks only; no folders created; Reddit future source only; Devvit future companion only)
 - 3D Design Factory Agent remains parked until Chief of Staff and Teacher Workstation foundations are mature
 
 ## Phase 1 Boundary

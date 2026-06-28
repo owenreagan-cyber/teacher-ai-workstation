@@ -26,29 +26,30 @@ Phase 1 Teacher Chief of Staff + safe local lesson workflows.
 - Chief of Staff command launcher / status dashboard refinement.
 - Dashboard polish and command grouping follow-up.
 - Appearance & Vibe automated wallpaper/photo curator plan.
+- Wallpaper/photo rotation folder design.
 
 ## Current PR
 
-Wallpaper/photo rotation folder design.
+Wallpaper/photo dry-run folder validator.
 
-Scope: Planning-only local folder and destination design for future wallpaper/photo rotation folders, temp candidate folders, approval queue folders, processed-output folders, and metadata concepts. No folder creation, no image fetching, no image downloading, no image processing, no Reddit, no Devvit, no network calls, and no macOS automation implemented yet.
+Scope: Local dry-run validator for the future wallpaper/photo curator folder design. Reports whether conceptual paths are valid strings and whether parent location concepts look safe. No folder creation, no file deletion, no folder scanning, no image fetching, no image downloading, no image processing, no Reddit, no Devvit, no network calls, and no macOS automation.
 
 ## Next PR
 
-Wallpaper/photo dry-run folder validator
+Wallpaper/photo manual folder creation helper
 
-Scope: Local dry-run validator for the future wallpaper/photo curator folder design. It should report whether conceptual paths are valid and whether parent locations would be available, but it must not create folders, delete files, scan folders, fetch images, download images, process images, send notifications, run background jobs, or automate macOS wallpaper/Photos settings.
+Scope: Local, explicit, user-run helper that creates the approved wallpaper/photo curator folder structure only after the dry-run validator passes and Owen intentionally runs the command. No image fetching, no image downloading, no image processing, no folder scanning, no deletion, no Reddit, no Devvit, no network calls, no background jobs, and no macOS wallpaper/Photos automation.
 
 ## Next Recommended PRs
 
-1. Wallpaper/photo dry-run folder validator.
+1. Wallpaper/photo manual folder creation helper.
 2. Later: permissioned Gmail/Drive integrations.
 3. Later: secrets/capability broker.
 
 ## Parked / Future
 
 - 3D Design Factory Agent: Parked until Chief of Staff and Teacher Workstation foundations are mature.
-- Appearance & Vibe: Automated Wallpaper and Photo Curator (Phase B folder design in progress; Phases C–J remain future).
+- Appearance & Vibe: Automated Wallpaper and Photo Curator (Phase C dry-run validator in progress; Phases D–J remain future).
 
 ## Open Threads
 

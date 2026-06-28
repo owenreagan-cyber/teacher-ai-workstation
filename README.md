@@ -341,6 +341,20 @@ bin/chief-of-staff --wallpaper-photo-simulated-discovery-validator
 
 See `docs/wallpaper-photo-simulated-approved-source-discovery-plan.md`.
 
+Wallpaper/photo review UI prototype status command:
+
+```bash
+bin/chief-of-staff --wallpaper-photo-review-ui-prototype-status
+```
+
+Wallpaper/photo review UI state dry-run validator command:
+
+```bash
+bin/chief-of-staff --wallpaper-photo-review-ui-state-validator
+```
+
+See `docs/wallpaper-photo-live-local-review-ui-prototype-plan.md`.
+
 Local command launcher status command:
 
 ```bash

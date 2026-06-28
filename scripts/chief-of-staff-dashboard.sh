@@ -750,6 +750,29 @@ else
   warn "wallpaper photo simulated discovery status script missing: scripts/wallpaper-photo-simulated-discovery-status.sh"
 fi
 
+section "Wallpaper/Photo Review UI Prototype"
+if [[ -f scripts/wallpaper-photo-review-ui-prototype-status.sh ]]; then
+  wallpaper_review_ui_result=0
+  wallpaper_review_ui_output="$(bash scripts/wallpaper-photo-review-ui-prototype-status.sh 2>&1)" || wallpaper_review_ui_result=$?
+  wallpaper_review_ui_pass="$(summary_count "${wallpaper_review_ui_output}" "PASS")"
+  wallpaper_review_ui_warn="$(summary_count "${wallpaper_review_ui_output}" "WARN")"
+  wallpaper_review_ui_fail="$(summary_count "${wallpaper_review_ui_output}" "FAIL")"
+
+  if [[ "${wallpaper_review_ui_result}" != "0" ]]; then
+    printf 'Wallpaper/Photo Review UI Prototype: status command completed\n'
+    printf '%s\n' "${wallpaper_review_ui_output}"
+    fail "wallpaper photo review UI prototype status failed"
+  elif [[ -n "${wallpaper_review_ui_pass}" && -n "${wallpaper_review_ui_warn}" && -n "${wallpaper_review_ui_fail}" ]]; then
+    printf 'Wallpaper/Photo Review UI Prototype: PASS %s / WARN %s / FAIL %s\n' "${wallpaper_review_ui_pass}" "${wallpaper_review_ui_warn}" "${wallpaper_review_ui_fail}"
+    pass "wallpaper photo review UI prototype status completed"
+  else
+    printf 'Wallpaper/Photo Review UI Prototype: status command completed\n'
+    pass "wallpaper photo review UI prototype status completed"
+  fi
+else
+  warn "wallpaper photo review UI prototype status script missing: scripts/wallpaper-photo-review-ui-prototype-status.sh"
+fi
+
 section "Cursor Workflow"
 if [[ -f scripts/cursor-workflow-status.sh ]]; then
   cursor_result=0

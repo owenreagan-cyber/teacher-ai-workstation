@@ -16,7 +16,7 @@ Rules live in this document and the read-only status script. No live processor, 
 
 ## Relationship to Approve/Dismiss UI Design
 
-Phase H defined a future review UI with Approve, Dismiss, Block, and Needs More Info decisions. Phase I defines what may happen **after** a candidate is approved for processing. Processing must not run until Approve/Dismiss UI behavior and queue write rules are separately approved.
+Phase H defined a future review UI with Approve, Dismiss, Block, and Needs More Info decisions. Phase O defines sample review UI state with simulated action labels only. See `docs/wallpaper-photo-live-local-review-ui-prototype-plan.md`. Phase I defines what may happen **after** a candidate is approved for processing. Processing must not run until Approve/Dismiss UI behavior and queue write rules are separately approved.
 
 ## Relationship to Queue File Format
 
@@ -216,15 +216,17 @@ Phase I defined image processing rules for approved candidates. Phase J defines 
 Phase I: Image processing rules
 Phase J: Local automation scheduler
 Phase K: Approved-source fetcher
-Phase L: Live local review UI prototype
-Phase M: Dry-run image processor
-Phase N: Manual image processor
+Phase O: Live local review UI prototype plan
+Phase P: Image processor foundation
+Phase Q: Scheduler foundation
 ```
 
 ## Commands Reference
 
 ```bash
 bin/chief-of-staff --wallpaper-photo-image-processing-status
+bin/chief-of-staff --wallpaper-photo-review-ui-prototype-status
+bin/chief-of-staff --wallpaper-photo-review-ui-state-validator
 bin/chief-of-staff --wallpaper-photo-local-scheduler-status
 bin/chief-of-staff --wallpaper-photo-source-fetcher-plan-status
 bin/chief-of-staff --wallpaper-photo-approve-dismiss-ui-status
@@ -232,6 +234,8 @@ bin/chief-of-staff --wallpaper-photo-queue-file-status
 bin/chief-of-staff --wallpaper-photo-metadata-status
 bin/chief-of-staff --dashboard
 bash scripts/wallpaper-photo-image-processing-status.sh
+bash scripts/wallpaper-photo-review-ui-prototype-status.sh
+bash scripts/wallpaper-photo-review-ui-state-validator.sh
 bash scripts/wallpaper-photo-local-scheduler-status.sh
 bash scripts/wallpaper-photo-source-fetcher-plan-status.sh
 ```

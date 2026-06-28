@@ -842,6 +842,29 @@ else
   warn "wallpaper photo notification foundation status script missing: scripts/wallpaper-photo-notification-foundation-status.sh"
 fi
 
+section "Wallpaper/Photo Rotation Handoff and Safety Audit"
+if [[ -f scripts/wallpaper-photo-rotation-handoff-safety-status.sh ]]; then
+  wallpaper_rotation_handoff_result=0
+  wallpaper_rotation_handoff_output="$(bash scripts/wallpaper-photo-rotation-handoff-safety-status.sh 2>&1)" || wallpaper_rotation_handoff_result=$?
+  wallpaper_rotation_handoff_pass="$(summary_count "${wallpaper_rotation_handoff_output}" "PASS")"
+  wallpaper_rotation_handoff_warn="$(summary_count "${wallpaper_rotation_handoff_output}" "WARN")"
+  wallpaper_rotation_handoff_fail="$(summary_count "${wallpaper_rotation_handoff_output}" "FAIL")"
+
+  if [[ "${wallpaper_rotation_handoff_result}" != "0" ]]; then
+    printf 'Wallpaper/Photo Rotation Handoff and Safety Audit: status command completed\n'
+    printf '%s\n' "${wallpaper_rotation_handoff_output}"
+    fail "wallpaper photo rotation handoff safety status failed"
+  elif [[ -n "${wallpaper_rotation_handoff_pass}" && -n "${wallpaper_rotation_handoff_warn}" && -n "${wallpaper_rotation_handoff_fail}" ]]; then
+    printf 'Wallpaper/Photo Rotation Handoff and Safety Audit: PASS %s / WARN %s / FAIL %s\n' "${wallpaper_rotation_handoff_pass}" "${wallpaper_rotation_handoff_warn}" "${wallpaper_rotation_handoff_fail}"
+    pass "wallpaper photo rotation handoff safety status completed"
+  else
+    printf 'Wallpaper/Photo Rotation Handoff and Safety Audit: status command completed\n'
+    pass "wallpaper photo rotation handoff safety status completed"
+  fi
+else
+  warn "wallpaper photo rotation handoff safety status script missing: scripts/wallpaper-photo-rotation-handoff-safety-status.sh"
+fi
+
 section "Cursor Workflow"
 if [[ -f scripts/cursor-workflow-status.sh ]]; then
   cursor_result=0

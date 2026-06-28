@@ -73,6 +73,10 @@ Meta commands:
                                        Show wallpaper/photo notification foundation status and exit.
   --wallpaper-photo-notification-plan-validator
                                        Run wallpaper/photo notification plan dry-run validator and exit.
+  --wallpaper-photo-rotation-handoff-safety-status
+                                       Show wallpaper/photo rotation handoff safety audit status and exit.
+  --wallpaper-photo-rotation-handoff-validator
+                                       Run wallpaper/photo rotation handoff dry-run validator and exit.
   --command-launcher-status            Show Chief of Staff command launcher status and exit.
   --cursor-workflow-status             Show local Cursor workflow status and exit.
   --developer-status                   Show local Developer Mode status and exit.
@@ -154,6 +158,8 @@ Examples:
   bin/chief-of-staff --wallpaper-photo-scheduler-run-plan-validator
   bin/chief-of-staff --wallpaper-photo-notification-foundation-status
   bin/chief-of-staff --wallpaper-photo-notification-plan-validator
+  bin/chief-of-staff --wallpaper-photo-rotation-handoff-safety-status
+  bin/chief-of-staff --wallpaper-photo-rotation-handoff-validator
   bin/chief-of-staff --command-launcher-status
   bin/chief-of-staff --cursor-workflow-status
   bin/chief-of-staff --developer-status
@@ -242,6 +248,8 @@ Local command: wallpaper photo scheduler foundation status
 Local command: wallpaper photo scheduler run plan validator
 Local command: wallpaper photo notification foundation status
 Local command: wallpaper photo notification plan validator
+Local command: wallpaper photo rotation handoff safety status
+Local command: wallpaper photo rotation handoff validator
 Verification
 intake-review
 verify-before-use
@@ -1318,6 +1326,25 @@ while [[ $# -gt 0 ]]; do
       fi
       shift
       bash "${wallpaper_notification_plan_validator_script}" "$@"
+      exit 0
+      ;;
+    --wallpaper-photo-rotation-handoff-safety-status)
+      repo_root="$(resolve_repo_root)"
+      wallpaper_rotation_handoff_safety_status_script="${repo_root}/scripts/wallpaper-photo-rotation-handoff-safety-status.sh"
+      if [[ ! -f "${wallpaper_rotation_handoff_safety_status_script}" ]]; then
+        die "Wallpaper photo rotation handoff safety status script is missing: scripts/wallpaper-photo-rotation-handoff-safety-status.sh"
+      fi
+      bash "${wallpaper_rotation_handoff_safety_status_script}"
+      exit 0
+      ;;
+    --wallpaper-photo-rotation-handoff-validator)
+      repo_root="$(resolve_repo_root)"
+      wallpaper_rotation_handoff_validator_script="${repo_root}/scripts/wallpaper-photo-rotation-handoff-validator.sh"
+      if [[ ! -f "${wallpaper_rotation_handoff_validator_script}" ]]; then
+        die "Wallpaper photo rotation handoff validator script is missing: scripts/wallpaper-photo-rotation-handoff-validator.sh"
+      fi
+      shift
+      bash "${wallpaper_rotation_handoff_validator_script}" "$@"
       exit 0
       ;;
     --command-launcher-status)

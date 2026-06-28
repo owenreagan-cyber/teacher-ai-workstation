@@ -369,6 +369,15 @@ for path in \
   check_required_file "${path}"
 done
 
+section "Wallpaper/Photo Rotation Handoff and Safety Audit Files"
+for path in \
+  docs/wallpaper-photo-rotation-handoff-safety-audit.md \
+  assistant/appearance-vibe/wallpaper-photo-curator/sample-rotation-handoff-readiness-report.json \
+  scripts/wallpaper-photo-rotation-handoff-validator.sh \
+  scripts/wallpaper-photo-rotation-handoff-safety-status.sh; do
+  check_required_file "${path}"
+done
+
 section "Wallpaper/Photo Metadata Schema Files"
 for path in \
   docs/wallpaper-photo-metadata-schema.md \
@@ -468,6 +477,8 @@ check_bash_syntax "scripts/wallpaper-photo-scheduler-run-plan-validator.sh"
 check_bash_syntax "scripts/wallpaper-photo-scheduler-foundation-status.sh"
 check_bash_syntax "scripts/wallpaper-photo-notification-plan-validator.sh"
 check_bash_syntax "scripts/wallpaper-photo-notification-foundation-status.sh"
+check_bash_syntax "scripts/wallpaper-photo-rotation-handoff-validator.sh"
+check_bash_syntax "scripts/wallpaper-photo-rotation-handoff-safety-status.sh"
 check_bash_syntax "scripts/wallpaper-photo-metadata-status.sh"
 check_bash_syntax "scripts/wallpaper-photo-create-folders.sh"
 check_bash_syntax "scripts/wallpaper-photo-folder-creation-status.sh"
@@ -495,7 +506,7 @@ section "Recommendation"
 if (( CRITICAL_BLOCKER > 0 )); then
   printf 'Fix critical Chief of Staff CLI, memory, intake, or script problems before the next build PR.\n'
 else
-  printf 'Next recommended PR: Wallpaper/photo rotation handoff and safety audit.\n'
+  printf 'Next recommended PR: Return to Chief of Staff / Teacher Workstation core.\n'
 fi
 
 if (( COMPARE_0E == 1 && CRITICAL_BLOCKER == 0 )); then

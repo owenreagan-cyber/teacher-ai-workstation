@@ -74,15 +74,15 @@ Track active projects, project status, next actions, blockers, and decisions.
 
 ### Appearance & Vibe — Automated Wallpaper and Photo Curator
 
-- Status: parked (Phase R notification foundation active build)
+- Status: parked (Phase S rotation handoff and safety audit active build; foundation stack complete after this PR)
 - Category: personal / operations
 - Goal: Future local Mac curator for wallpaper/photo candidate review, approve/dismiss, and rotation-folder storage.
-- Current phase: Phase R notification foundation (planning/status/sample notification plan validation only).
-- Last known next action: Wallpaper/photo rotation handoff and safety audit PR.
+- Current phase: Phase S rotation handoff and safety audit (planning/status/sample readiness validation only).
+- Last known next action: Return to Chief of Staff / Teacher Workstation core.
 - Blockers: full curator not implemented; human approval gates required before automation
-- Source: docs/wallpaper-photo-metadata-schema.md, docs/wallpaper-photo-notification-foundation.md, docs/wallpaper-photo-scheduler-foundation.md, docs/wallpaper-photo-image-processor-foundation.md, docs/wallpaper-photo-live-local-review-ui-prototype-plan.md, assistant/appearance-vibe/wallpaper-photo-curator/, and build queue
+- Source: docs/wallpaper-photo-metadata-schema.md, docs/wallpaper-photo-rotation-handoff-safety-audit.md, docs/wallpaper-photo-notification-foundation.md, docs/wallpaper-photo-scheduler-foundation.md, assistant/appearance-vibe/wallpaper-photo-curator/, and build queue
 - Last reviewed: 2026-06-28
-- Notes: Scheduler foundation is complete. Notification foundation is planning/status/sample notification plan validation only. No real notifications, notification mechanism, osascript, terminal-notifier, fetcher, real image processing, network calls, API clients, OAuth, secrets, Reddit integration, or Devvit integration exists yet. Full curator not implemented. Reddit may be a future source only. Devvit may be a future Reddit-native companion only.
+- Notes: Notification foundation is complete. Rotation handoff and safety audit is planning/status/sample readiness validation only. Full curator foundation stack complete for now; live curator not started. No real rotation, file moves, copies, deletions, folder scans, fetcher, real image processing, scheduler, notifications, network calls, API clients, OAuth, secrets, Reddit integration, or Devvit integration exists yet. Reddit may be a future source only. Devvit may be a future Reddit-native companion only.
 
 ### Project Name
 

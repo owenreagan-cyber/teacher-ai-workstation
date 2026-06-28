@@ -264,6 +264,14 @@ bin/chief-of-staff --wallpaper-photo-metadata-status
 
 See `docs/wallpaper-photo-metadata-schema.md`.
 
+Wallpaper/photo temp queue rules status command:
+
+```bash
+bin/chief-of-staff --wallpaper-photo-temp-queue-status
+```
+
+See `docs/wallpaper-photo-temp-queue-rules.md`.
+
 Local command launcher status command:
 
 ```bash

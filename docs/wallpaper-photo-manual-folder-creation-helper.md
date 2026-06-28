@@ -74,6 +74,7 @@ bin/chief-of-staff --wallpaper-photo-folder-creation-status
 bin/chief-of-staff --wallpaper-photo-create-folders --dry-run
 bin/chief-of-staff --wallpaper-photo-create-folders --create
 bin/chief-of-staff --wallpaper-photo-metadata-status
+bin/chief-of-staff --wallpaper-photo-temp-queue-status
 bin/chief-of-staff --wallpaper-photo-dry-run-folder-validator
 bin/chief-of-staff --wallpaper-photo-folder-design-status
 bin/chief-of-staff --dashboard
@@ -81,9 +82,11 @@ bash scripts/wallpaper-photo-folder-creation-status.sh
 bash scripts/wallpaper-photo-create-folders.sh --dry-run
 bash scripts/wallpaper-photo-create-folders.sh --create
 bash scripts/wallpaper-photo-metadata-status.sh
+bash scripts/wallpaper-photo-temp-queue-status.sh
 ```
 
 See also `docs/wallpaper-photo-metadata-schema.md` for Phase E metadata schema and samples.
+See also `docs/wallpaper-photo-temp-queue-rules.md` for Phase F temp queue rules.
 
 For testing only:
 

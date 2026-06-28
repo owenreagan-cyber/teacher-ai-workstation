@@ -167,6 +167,23 @@
     },
     "notes": {
       "type": "string"
+    },
+    "queue_name": {
+      "type": "string"
+    },
+    "queue_position": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "queue_added_at": {
+      "type": "string"
+    },
+    "queue_expires_at": {
+      "type": "string"
+    },
+    "stale_after_days": {
+      "type": "integer",
+      "minimum": 0
     }
   }
 }

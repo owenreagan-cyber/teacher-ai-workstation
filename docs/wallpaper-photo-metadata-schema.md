@@ -9,10 +9,14 @@ This PR adds schema and fictional sample records only. It does not fetch images,
 ## Current Status
 
 ```text
-Current status: Phase E metadata schema and sample records.
+Current status: Phase E metadata schema and sample records complete. Phase F temp queue rules documented separately.
 ```
 
-Schema files live in `assistant/appearance-vibe/wallpaper-photo-curator/`. No curator runtime or real candidate images exist yet.
+Schema files live in `assistant/appearance-vibe/wallpaper-photo-curator/`. Temp queue rules live in `docs/wallpaper-photo-temp-queue-rules.md`. No curator runtime, live queues, or real candidate images exist yet.
+
+## Relationship to Temp Queue Rules
+
+Phase F defines planning rules for future temporary candidate queues (max 10 wallpaper, max 10 photo-widget, review states). Optional queue fields in the schema (`queue_name`, `queue_position`, `queue_added_at`, `queue_expires_at`, `stale_after_days`) support future queue metadata only. This PR does not create live queues or queue folders.
 
 ## Relationship to the Folder Creation Helper
 
@@ -65,7 +69,17 @@ notes
 
 ## Optional Fields
 
-None in v1. All listed fields are required in `metadata-schema.json` with `additionalProperties: false`.
+Optional queue-related fields for future temp queue metadata (not required in v1 records):
+
+```text
+queue_name
+queue_position
+queue_added_at
+queue_expires_at
+stale_after_days
+```
+
+See `docs/wallpaper-photo-temp-queue-rules.md` for queue size limits and review rules.
 
 ## Source and Permission Fields
 
@@ -153,18 +167,21 @@ All use `https://example.invalid/` URLs and fictional creator names. Sample reco
 ```text
 Phase E: Metadata schema and sample records
 Phase F: Temp queue rules
-Phase G: Approve/Dismiss UI design
-Phase H: Image processing rules
-Phase I: Local automation scheduler
-Phase J: Approved-source fetcher
+Phase G: Queue file format and dry-run validator
+Phase H: Approve/Dismiss UI design
+Phase I: Image processing rules
+Phase J: Local automation scheduler
+Phase K: Approved-source fetcher
 ```
 
 ## Commands Reference
 
 ```bash
 bin/chief-of-staff --wallpaper-photo-metadata-status
+bin/chief-of-staff --wallpaper-photo-temp-queue-status
 bin/chief-of-staff --wallpaper-photo-folder-creation-status
 bin/chief-of-staff --wallpaper-photo-dry-run-folder-validator
 bin/chief-of-staff --dashboard
 bash scripts/wallpaper-photo-metadata-status.sh
+bash scripts/wallpaper-photo-temp-queue-status.sh
 ```

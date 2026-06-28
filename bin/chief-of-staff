@@ -27,6 +27,7 @@ Meta commands:
   --lesson-review-view <lesson-slug>   Show local single-slug lesson review view and exit.
   --review-notes-template-status       Show local review notes template status and exit.
   --document-indexing-plan-status      Show safe local document indexing plan status and exit.
+  --command-launcher-status            Show Chief of Staff command launcher status and exit.
   --cursor-workflow-status             Show local Cursor workflow status and exit.
   --developer-status                   Show local Developer Mode status and exit.
   --create-developer-project <template> <slug>
@@ -81,6 +82,7 @@ Examples:
   bin/chief-of-staff --lesson-review-view fractions-review
   bin/chief-of-staff --review-notes-template-status
   bin/chief-of-staff --document-indexing-plan-status
+  bin/chief-of-staff --command-launcher-status
   bin/chief-of-staff --cursor-workflow-status
   bin/chief-of-staff --developer-status
   bin/chief-of-staff --create-developer-project lesson-helper fractions-review-helper
@@ -136,6 +138,7 @@ Local command: lesson review checklist status
 Local command: single-slug lesson review view
 Local command: review notes template status
 Local command: document indexing plan status
+Local command: command launcher status
 Local command: Cursor workflow status
 Local command: developer mode status
 Local command: create developer project from template
@@ -979,6 +982,15 @@ while [[ $# -gt 0 ]]; do
         die "Document indexing plan status script is missing: scripts/document-indexing-plan-status.sh"
       fi
       bash "${document_indexing_plan_status_script}"
+      exit 0
+      ;;
+    --command-launcher-status)
+      repo_root="$(resolve_repo_root)"
+      command_launcher_status_script="${repo_root}/scripts/command-launcher-status.sh"
+      if [[ ! -f "${command_launcher_status_script}" ]]; then
+        die "Command launcher status script is missing: scripts/command-launcher-status.sh"
+      fi
+      bash "${command_launcher_status_script}"
       exit 0
       ;;
     --cursor-workflow-status)

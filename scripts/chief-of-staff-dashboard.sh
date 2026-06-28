@@ -148,6 +148,29 @@ else
   fi
 fi
 
+section "Command Launcher"
+if [[ -f scripts/command-launcher-status.sh ]]; then
+  command_launcher_result=0
+  command_launcher_output="$(bash scripts/command-launcher-status.sh 2>&1)" || command_launcher_result=$?
+  command_launcher_pass="$(summary_count "${command_launcher_output}" "PASS")"
+  command_launcher_warn="$(summary_count "${command_launcher_output}" "WARN")"
+  command_launcher_fail="$(summary_count "${command_launcher_output}" "FAIL")"
+
+  if [[ "${command_launcher_result}" != "0" ]]; then
+    printf 'Command Launcher: status command completed\n'
+    printf '%s\n' "${command_launcher_output}"
+    fail "command launcher status failed"
+  elif [[ -n "${command_launcher_pass}" && -n "${command_launcher_warn}" && -n "${command_launcher_fail}" ]]; then
+    printf 'Command Launcher: PASS %s / WARN %s / FAIL %s\n' "${command_launcher_pass}" "${command_launcher_warn}" "${command_launcher_fail}"
+    pass "command launcher status completed"
+  else
+    printf 'Command Launcher: status command completed\n'
+    pass "command launcher status completed"
+  fi
+else
+  warn "command launcher status script missing: scripts/command-launcher-status.sh"
+fi
+
 section "LLM CLI Readiness"
 llm_path="$(command -v llm 2>/dev/null || true)"
 if [[ -z "${llm_path}" ]]; then

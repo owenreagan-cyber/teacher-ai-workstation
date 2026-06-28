@@ -22,22 +22,23 @@ Phase 1 Teacher Chief of Staff + safe local lesson workflows.
 - Single-slug lesson review view.
 - Align next recommended PR.
 - Review notes template.
+- Safe local document indexing plan.
 
 ## Current PR
 
-Safe local document indexing plan.
-
-Scope: Local planning documentation and read-only status helper for future opt-in local document inventory/indexing. No actual indexing, folder scanning, embeddings, vector database, Gmail/Drive integrations, student data, or network calls.
-
-## Next PR
-
-Chief of Staff command launcher / status dashboard refinement
+Chief of Staff command launcher / status dashboard refinement.
 
 Scope: Small local UX refinement for the Chief of Staff command launcher and dashboard/status discoverability. No external integrations, no student data, no network calls, no LLM calls, and no changes to lesson generation behavior.
 
+## Next PR
+
+Dashboard polish and command grouping follow-up
+
+Scope: Small local-only polish pass for command grouping, dashboard wording, and discoverability after the command launcher refinement. No external integrations, no student data, no network calls, no LLM calls, and no changes to lesson generation behavior.
+
 ## Next Recommended PRs
 
-1. Chief of Staff command launcher / status dashboard refinement.
+1. Dashboard polish and command grouping follow-up.
 2. Later: permissioned Gmail/Drive integrations.
 3. Later: secrets/capability broker.
 

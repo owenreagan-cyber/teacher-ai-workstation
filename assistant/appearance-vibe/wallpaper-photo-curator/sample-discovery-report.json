@@ -1,0 +1,63 @@
+{
+  "schema_version": "1.0.0",
+  "report_name": "fictional_simulated_discovery_report",
+  "source_allowlist_file": "assistant/appearance-vibe/wallpaper-photo-curator/sample-source-allowlist.json",
+  "generated_at": "2026-06-28T21:00:00Z",
+  "mode": "simulated",
+  "network_calls": false,
+  "records": [
+    {
+      "source_id": "fictional-approved-site-001",
+      "source_name": "Fictional Approved Wallpaper Site",
+      "source_type": "future_approved_site",
+      "source_status": "approved_for_dry_run",
+      "discovery_status": "simulated_ready",
+      "candidate_count_estimate": 3,
+      "wallpaper_candidate_estimate": 2,
+      "photo_widget_candidate_estimate": 1,
+      "blocked_reason": "",
+      "network_calls": false,
+      "notes": "Fictional simulated discovery ready for dry-run review only. No real candidates fetched."
+    },
+    {
+      "source_id": "fictional-local-folder-001",
+      "source_name": "Fictional Local Folder Manual Entry",
+      "source_type": "manual_entry",
+      "source_status": "approved_for_dry_run",
+      "discovery_status": "simulated_ready",
+      "candidate_count_estimate": 2,
+      "wallpaper_candidate_estimate": 1,
+      "photo_widget_candidate_estimate": 1,
+      "blocked_reason": "",
+      "network_calls": false,
+      "notes": "Fictional local folder simulated counts only. No folder scanning occurred."
+    },
+    {
+      "source_id": "fictional-future-reddit-001",
+      "source_name": "Fictional Future Reddit Source",
+      "source_type": "future_reddit_source",
+      "source_status": "proposed",
+      "discovery_status": "not_ready",
+      "candidate_count_estimate": 0,
+      "wallpaper_candidate_estimate": 0,
+      "photo_widget_candidate_estimate": 0,
+      "blocked_reason": "Source status is proposed. Reddit remains future-only.",
+      "network_calls": false,
+      "notes": "Fictional future Reddit placeholder. No Reddit integration or fetching."
+    },
+    {
+      "source_id": "fictional-future-devvit-001",
+      "source_name": "Fictional Future Devvit Companion",
+      "source_type": "future_devvit_companion",
+      "source_status": "proposed",
+      "discovery_status": "not_ready",
+      "candidate_count_estimate": 0,
+      "wallpaper_candidate_estimate": 0,
+      "photo_widget_candidate_estimate": 0,
+      "blocked_reason": "Source status is proposed. Devvit remains future-only.",
+      "network_calls": false,
+      "notes": "Fictional future Devvit placeholder. No Devvit integration or fetching."
+    }
+  ],
+  "notes": "Fictional simulated discovery report for local planning only. Not a live discovery output."
+}

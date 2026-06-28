@@ -327,6 +327,20 @@ bin/chief-of-staff --wallpaper-photo-source-allowlist-validator
 
 See `docs/wallpaper-photo-source-allowlist-foundation.md`.
 
+Wallpaper/photo simulated discovery status command:
+
+```bash
+bin/chief-of-staff --wallpaper-photo-simulated-discovery-status
+```
+
+Wallpaper/photo simulated discovery dry-run validator command:
+
+```bash
+bin/chief-of-staff --wallpaper-photo-simulated-discovery-validator
+```
+
+See `docs/wallpaper-photo-simulated-approved-source-discovery-plan.md`.
+
 Local command launcher status command:
 
 ```bash

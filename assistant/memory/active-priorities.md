@@ -39,19 +39,20 @@ Completed:
 - Wallpaper/photo image processing rules
 - Wallpaper/photo local automation scheduler plan
 - Wallpaper/photo approved-source fetcher plan
+- Wallpaper/photo source allowlist foundation
 
 Now:
 
-- Wallpaper/photo source allowlist foundation (file format and dry-run validator)
+- Wallpaper/photo simulated approved-source discovery plan (simulated planning/status only)
 
 Next:
 
-- Wallpaper/photo simulated approved-source discovery plan
+- Wallpaper/photo live local review UI prototype plan
 - Later: selected local folder indexing
 
 ## Parked Future
 
-- Appearance & Vibe: Automated Wallpaper and Photo Curator (Phase Q source allowlist foundation in progress; full curator not implemented; no fetcher, network calls, API clients, OAuth, secrets, Reddit integration, or Devvit integration yet; Reddit future source only; Devvit future companion only)
+- Appearance & Vibe: Automated Wallpaper and Photo Curator (Phase N simulated discovery plan in progress; full curator not implemented; no fetcher, network calls, API clients, OAuth, secrets, Reddit integration, or Devvit integration yet; Reddit future source only; Devvit future companion only)
 - 3D Design Factory Agent remains parked until Chief of Staff and Teacher Workstation foundations are mature
 
 ## Phase 1 Boundary

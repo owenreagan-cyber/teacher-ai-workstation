@@ -435,6 +435,24 @@ bin/chief-of-staff --command-map-status
 
 See `docs/chief-of-staff-command-map-cleanup.md`.
 
+Chief of Staff help examples polish status command:
+
+```bash
+bin/chief-of-staff --help-examples-status
+```
+
+See `docs/chief-of-staff-help-examples-polish.md`.
+
+Common examples (daily health check, teacher review, developer/Cursor verification):
+
+```bash
+bin/chief-of-staff --dashboard
+bin/chief-of-staff --list-workflows
+bin/chief-of-staff --lesson-review-view fractions-review
+bin/chief-of-staff --cursor-workflow-status
+bin/chief-of-staff --wallpaper-photo-create-folders --dry-run
+```
+
 Local command launcher status command:
 
 ```bash

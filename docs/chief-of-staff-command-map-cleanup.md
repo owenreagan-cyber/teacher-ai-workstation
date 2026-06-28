@@ -9,8 +9,10 @@ This PR improves command map discoverability only. This pass is about preserving
 ## Current Status
 
 ```text
-Current status: command map cleanup in progress.
+Current status: command map cleanup complete.
 ```
+
+Help examples polish adds common-workflow example blocks. See `docs/chief-of-staff-help-examples-polish.md`.
 
 Help text and `--list-workflows` group related commands more clearly. Status commands, validators, and dry-run helpers are easier to distinguish.
 
@@ -167,8 +169,10 @@ no student data
 
 ```bash
 bin/chief-of-staff --command-map-status
+bin/chief-of-staff --help-examples-status
 bin/chief-of-staff --help
 bin/chief-of-staff --list-workflows
 bin/chief-of-staff --dashboard
 bash scripts/chief-of-staff-command-map-status.sh
+bash scripts/chief-of-staff-help-examples-status.sh
 ```

@@ -18,6 +18,7 @@ Core Dashboard and Health:
   --dashboard                          Show local Chief of Staff dashboard and exit.
   --dashboard-readability-status       Show Chief of Staff dashboard readability pass status and exit.
   --command-map-status                 Show Chief of Staff command map cleanup status and exit.
+  --help-examples-status               Show Chief of Staff help examples polish status and exit.
   --command-launcher-status            Show Chief of Staff command launcher status and exit.
 
 Return to Core / Roadmap:
@@ -137,7 +138,38 @@ Workflow options:
   --version                             Show version and exit.
   --help                                Show this help.
 
-Examples:
+Examples (common workflows):
+
+Daily health check:
+  bin/chief-of-staff --dashboard
+
+Command discovery:
+  bin/chief-of-staff --list-workflows
+  bin/chief-of-staff --command-map-status
+  bin/chief-of-staff --help-examples-status
+  bin/chief-of-staff --dashboard-readability-status
+  bin/chief-of-staff --return-to-core-status
+
+Before and after PR:
+  bin/chief-of-staff --dashboard
+  bin/chief-of-staff --command-map-status
+  bin/chief-of-staff --help-examples-status
+
+Teacher review (safe local sample slug only; no student data):
+  bin/chief-of-staff --lesson-review-view fractions-review
+  bin/chief-of-staff --review-notes-template-status
+  bin/chief-of-staff --document-indexing-plan-status
+
+Developer / Cursor verification:
+  bin/chief-of-staff --cursor-workflow-status
+  bin/chief-of-staff --developer-status
+
+Appearance & Vibe safe status/dry-run (foundation only; live curator not started):
+  bin/chief-of-staff --wallpaper-photo-folder-creation-status
+  bin/chief-of-staff --wallpaper-photo-create-folders --dry-run
+  bin/chief-of-staff --wallpaper-photo-rotation-handoff-safety-status
+
+All command examples:
   bin/chief-of-staff --dashboard
   bin/chief-of-staff --lesson-status
   bin/chief-of-staff --lesson-brief-status
@@ -182,6 +214,7 @@ Examples:
   bin/chief-of-staff --return-to-core-status
   bin/chief-of-staff --dashboard-readability-status
   bin/chief-of-staff --command-map-status
+  bin/chief-of-staff --help-examples-status
   bin/chief-of-staff --command-launcher-status
   bin/chief-of-staff --cursor-workflow-status
   bin/chief-of-staff --developer-status
@@ -255,6 +288,7 @@ Core Dashboard and Health
 Local command: dashboard
 Local command: dashboard readability status
 Local command: command map status
+Local command: help examples status
 
 Appearance & Vibe Foundation (status only; live curator not started)
 Local command: wallpaper photo curator plan status
@@ -1414,6 +1448,15 @@ while [[ $# -gt 0 ]]; do
         die "Chief of Staff command map status script is missing: scripts/chief-of-staff-command-map-status.sh"
       fi
       bash "${command_map_status_script}"
+      exit 0
+      ;;
+    --help-examples-status)
+      repo_root="$(resolve_repo_root)"
+      help_examples_status_script="${repo_root}/scripts/chief-of-staff-help-examples-status.sh"
+      if [[ ! -f "${help_examples_status_script}" ]]; then
+        die "Chief of Staff help examples status script is missing: scripts/chief-of-staff-help-examples-status.sh"
+      fi
+      bash "${help_examples_status_script}"
       exit 0
       ;;
     --command-launcher-status)

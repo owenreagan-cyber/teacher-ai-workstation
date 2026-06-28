@@ -209,6 +209,29 @@ else
   warn "Chief of Staff command map status script missing: scripts/chief-of-staff-command-map-status.sh"
 fi
 
+section "Chief of Staff Help Examples Polish"
+if [[ -f scripts/chief-of-staff-help-examples-status.sh ]]; then
+  help_examples_result=0
+  help_examples_output="$(bash scripts/chief-of-staff-help-examples-status.sh 2>&1)" || help_examples_result=$?
+  help_examples_pass="$(summary_count "${help_examples_output}" "PASS")"
+  help_examples_warn="$(summary_count "${help_examples_output}" "WARN")"
+  help_examples_fail="$(summary_count "${help_examples_output}" "FAIL")"
+
+  if [[ "${help_examples_result}" != "0" ]]; then
+    printf 'Chief of Staff Help Examples Polish: status command completed\n'
+    printf '%s\n' "${help_examples_output}"
+    fail "Chief of Staff help examples status failed"
+  elif [[ -n "${help_examples_pass}" && -n "${help_examples_warn}" && -n "${help_examples_fail}" ]]; then
+    printf 'Chief of Staff Help Examples Polish: PASS %s / WARN %s / FAIL %s\n' "${help_examples_pass}" "${help_examples_warn}" "${help_examples_fail}"
+    pass "Chief of Staff help examples status completed"
+  else
+    printf 'Chief of Staff Help Examples Polish: status command completed\n'
+    pass "Chief of Staff help examples status completed"
+  fi
+else
+  warn "Chief of Staff help examples status script missing: scripts/chief-of-staff-help-examples-status.sh"
+fi
+
 group_banner "Chief of Staff Workflow Status"
 
 section "Available Chief of Staff Workflows and Command Groups"

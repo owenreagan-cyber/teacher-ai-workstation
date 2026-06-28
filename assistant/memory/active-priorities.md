@@ -48,14 +48,15 @@ Completed:
 - Wallpaper/photo rotation handoff and safety audit
 - Return to Chief of Staff / Teacher Workstation core
 - Chief of Staff dashboard readability pass
+- Chief of Staff command map cleanup
 
 Now:
 
-- Chief of Staff command map cleanup (discoverability/status only)
+- Chief of Staff help examples polish (help-examples/status only)
 
 Next:
 
-- Chief of Staff help examples polish
+- Chief of Staff workflow quick-start guide
 
 ## Parked Future
 

@@ -16,7 +16,7 @@ Fetcher plan lives in this document and the read-only status script. No fetcher,
 
 ## Relationship to Local Scheduler Plan
 
-Phase J defined local automation scheduler planning with dry-run first and never-run-unattended rules. Phase K defines what sources may be considered before any future scheduler triggers discovery. A future scheduler must not fetch sources until approved-source rules and network behavior are separately approved.
+Phase J defined local automation scheduler planning with dry-run first and never-run-unattended rules. Phase K defines what sources may be considered before any future scheduler triggers discovery. Phase Q defines scheduler foundation with run intents, cadence options, and preflight checks before any scheduler runtime. See `docs/wallpaper-photo-scheduler-foundation.md`. A future scheduler must not fetch sources until approved-source rules and network behavior are separately approved.
 
 ## Relationship to Image Processing Rules
 
@@ -244,6 +244,8 @@ bin/chief-of-staff --wallpaper-photo-source-allowlist-status
 bin/chief-of-staff --wallpaper-photo-source-allowlist-validator
 bin/chief-of-staff --wallpaper-photo-simulated-discovery-status
 bin/chief-of-staff --wallpaper-photo-simulated-discovery-validator
+bin/chief-of-staff --wallpaper-photo-scheduler-foundation-status
+bin/chief-of-staff --wallpaper-photo-scheduler-run-plan-validator
 bin/chief-of-staff --wallpaper-photo-local-scheduler-status
 bin/chief-of-staff --wallpaper-photo-image-processing-status
 bin/chief-of-staff --wallpaper-photo-metadata-status
@@ -253,4 +255,6 @@ bash scripts/wallpaper-photo-source-allowlist-status.sh
 bash scripts/wallpaper-photo-source-allowlist-validator.sh
 bash scripts/wallpaper-photo-simulated-discovery-status.sh
 bash scripts/wallpaper-photo-simulated-discovery-validator.sh
+bash scripts/wallpaper-photo-scheduler-foundation-status.sh
+bash scripts/wallpaper-photo-scheduler-run-plan-validator.sh
 ```

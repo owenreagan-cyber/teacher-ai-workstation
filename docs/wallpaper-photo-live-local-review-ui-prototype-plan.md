@@ -184,7 +184,7 @@ Phase S: Rotation handoff and safety audit
 Phase T: Future live UI implementation, only after separate approval
 ```
 
-Phase O defines live local review UI prototype planning. Phase P defines image processor foundation with output intents and sample processing plan validation. See `docs/wallpaper-photo-image-processor-foundation.md`.
+Phase O defines live local review UI prototype planning. Phase P defines image processor foundation with output intents and sample processing plan validation. Phase Q defines scheduler foundation with run intents and preflight checks. See `docs/wallpaper-photo-image-processor-foundation.md` and `docs/wallpaper-photo-scheduler-foundation.md`.
 
 ## Commands Reference
 
@@ -193,6 +193,8 @@ bin/chief-of-staff --wallpaper-photo-review-ui-prototype-status
 bin/chief-of-staff --wallpaper-photo-review-ui-state-validator
 bin/chief-of-staff --wallpaper-photo-image-processor-foundation-status
 bin/chief-of-staff --wallpaper-photo-image-processing-plan-validator
+bin/chief-of-staff --wallpaper-photo-scheduler-foundation-status
+bin/chief-of-staff --wallpaper-photo-scheduler-run-plan-validator
 bin/chief-of-staff --wallpaper-photo-simulated-discovery-status
 bin/chief-of-staff --wallpaper-photo-source-allowlist-status
 bin/chief-of-staff --wallpaper-photo-approve-dismiss-ui-status
@@ -201,4 +203,6 @@ bash scripts/wallpaper-photo-review-ui-prototype-status.sh
 bash scripts/wallpaper-photo-review-ui-state-validator.sh
 bash scripts/wallpaper-photo-image-processor-foundation-status.sh
 bash scripts/wallpaper-photo-image-processing-plan-validator.sh
+bash scripts/wallpaper-photo-scheduler-foundation-status.sh
+bash scripts/wallpaper-photo-scheduler-run-plan-validator.sh
 ```

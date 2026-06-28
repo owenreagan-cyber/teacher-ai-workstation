@@ -22,6 +22,10 @@ Phase I defined image processing rules for approved candidates. Phase P defines 
 
 Phase O defined sample review UI state with simulated approve/dismiss controls. Phase P shows how approved candidates would map to processing input contracts and output intents without processing. See `docs/wallpaper-photo-live-local-review-ui-prototype-plan.md`.
 
+## Relationship to Scheduler Foundation
+
+Phase Q defines scheduler foundation with run intents, cadence options, and preflight checks. A future scheduler must not process images until processor behavior is separately approved. See `docs/wallpaper-photo-scheduler-foundation.md`.
+
 ## Relationship to Metadata Schema
 
 Processing input contracts extend metadata fields such as `candidate_id`, `candidate_type`, dimensions, fit scores, and risk fields from `metadata-schema.json`. Output intents describe future targets before processed files exist.
@@ -225,9 +229,13 @@ Phase U: Future manual image processor implementation, only after separate appro
 ```bash
 bin/chief-of-staff --wallpaper-photo-image-processor-foundation-status
 bin/chief-of-staff --wallpaper-photo-image-processing-plan-validator
+bin/chief-of-staff --wallpaper-photo-scheduler-foundation-status
+bin/chief-of-staff --wallpaper-photo-scheduler-run-plan-validator
 bin/chief-of-staff --wallpaper-photo-image-processing-status
 bin/chief-of-staff --wallpaper-photo-review-ui-prototype-status
 bin/chief-of-staff --dashboard
 bash scripts/wallpaper-photo-image-processor-foundation-status.sh
 bash scripts/wallpaper-photo-image-processing-plan-validator.sh
+bash scripts/wallpaper-photo-scheduler-foundation-status.sh
+bash scripts/wallpaper-photo-scheduler-run-plan-validator.sh
 ```

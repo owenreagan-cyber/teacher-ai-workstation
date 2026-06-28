@@ -351,6 +351,15 @@ for path in \
   check_required_file "${path}"
 done
 
+section "Wallpaper/Photo Scheduler Foundation Files"
+for path in \
+  docs/wallpaper-photo-scheduler-foundation.md \
+  assistant/appearance-vibe/wallpaper-photo-curator/sample-scheduler-run-plan.json \
+  scripts/wallpaper-photo-scheduler-run-plan-validator.sh \
+  scripts/wallpaper-photo-scheduler-foundation-status.sh; do
+  check_required_file "${path}"
+done
+
 section "Wallpaper/Photo Metadata Schema Files"
 for path in \
   docs/wallpaper-photo-metadata-schema.md \
@@ -446,6 +455,8 @@ check_bash_syntax "scripts/wallpaper-photo-review-ui-state-validator.sh"
 check_bash_syntax "scripts/wallpaper-photo-review-ui-prototype-status.sh"
 check_bash_syntax "scripts/wallpaper-photo-image-processing-plan-validator.sh"
 check_bash_syntax "scripts/wallpaper-photo-image-processor-foundation-status.sh"
+check_bash_syntax "scripts/wallpaper-photo-scheduler-run-plan-validator.sh"
+check_bash_syntax "scripts/wallpaper-photo-scheduler-foundation-status.sh"
 check_bash_syntax "scripts/wallpaper-photo-metadata-status.sh"
 check_bash_syntax "scripts/wallpaper-photo-create-folders.sh"
 check_bash_syntax "scripts/wallpaper-photo-folder-creation-status.sh"
@@ -473,7 +484,7 @@ section "Recommendation"
 if (( CRITICAL_BLOCKER > 0 )); then
   printf 'Fix critical Chief of Staff CLI, memory, intake, or script problems before the next build PR.\n'
 else
-  printf 'Next recommended PR: Wallpaper/photo scheduler foundation.\n'
+  printf 'Next recommended PR: Wallpaper/photo notification foundation.\n'
 fi
 
 if (( COMPARE_0E == 1 && CRITICAL_BLOCKER == 0 )); then

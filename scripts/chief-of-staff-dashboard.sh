@@ -796,6 +796,29 @@ else
   warn "wallpaper photo image processor foundation status script missing: scripts/wallpaper-photo-image-processor-foundation-status.sh"
 fi
 
+section "Wallpaper/Photo Scheduler Foundation"
+if [[ -f scripts/wallpaper-photo-scheduler-foundation-status.sh ]]; then
+  wallpaper_scheduler_foundation_result=0
+  wallpaper_scheduler_foundation_output="$(bash scripts/wallpaper-photo-scheduler-foundation-status.sh 2>&1)" || wallpaper_scheduler_foundation_result=$?
+  wallpaper_scheduler_foundation_pass="$(summary_count "${wallpaper_scheduler_foundation_output}" "PASS")"
+  wallpaper_scheduler_foundation_warn="$(summary_count "${wallpaper_scheduler_foundation_output}" "WARN")"
+  wallpaper_scheduler_foundation_fail="$(summary_count "${wallpaper_scheduler_foundation_output}" "FAIL")"
+
+  if [[ "${wallpaper_scheduler_foundation_result}" != "0" ]]; then
+    printf 'Wallpaper/Photo Scheduler Foundation: status command completed\n'
+    printf '%s\n' "${wallpaper_scheduler_foundation_output}"
+    fail "wallpaper photo scheduler foundation status failed"
+  elif [[ -n "${wallpaper_scheduler_foundation_pass}" && -n "${wallpaper_scheduler_foundation_warn}" && -n "${wallpaper_scheduler_foundation_fail}" ]]; then
+    printf 'Wallpaper/Photo Scheduler Foundation: PASS %s / WARN %s / FAIL %s\n' "${wallpaper_scheduler_foundation_pass}" "${wallpaper_scheduler_foundation_warn}" "${wallpaper_scheduler_foundation_fail}"
+    pass "wallpaper photo scheduler foundation status completed"
+  else
+    printf 'Wallpaper/Photo Scheduler Foundation: status command completed\n'
+    pass "wallpaper photo scheduler foundation status completed"
+  fi
+else
+  warn "wallpaper photo scheduler foundation status script missing: scripts/wallpaper-photo-scheduler-foundation-status.sh"
+fi
+
 section "Cursor Workflow"
 if [[ -f scripts/cursor-workflow-status.sh ]]; then
   cursor_result=0

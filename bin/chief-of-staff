@@ -65,6 +65,10 @@ Meta commands:
                                        Show wallpaper/photo image processor foundation status and exit.
   --wallpaper-photo-image-processing-plan-validator
                                        Run wallpaper/photo image processing plan dry-run validator and exit.
+  --wallpaper-photo-scheduler-foundation-status
+                                       Show wallpaper/photo scheduler foundation status and exit.
+  --wallpaper-photo-scheduler-run-plan-validator
+                                       Run wallpaper/photo scheduler run plan dry-run validator and exit.
   --command-launcher-status            Show Chief of Staff command launcher status and exit.
   --cursor-workflow-status             Show local Cursor workflow status and exit.
   --developer-status                   Show local Developer Mode status and exit.
@@ -142,6 +146,8 @@ Examples:
   bin/chief-of-staff --wallpaper-photo-review-ui-state-validator
   bin/chief-of-staff --wallpaper-photo-image-processor-foundation-status
   bin/chief-of-staff --wallpaper-photo-image-processing-plan-validator
+  bin/chief-of-staff --wallpaper-photo-scheduler-foundation-status
+  bin/chief-of-staff --wallpaper-photo-scheduler-run-plan-validator
   bin/chief-of-staff --command-launcher-status
   bin/chief-of-staff --cursor-workflow-status
   bin/chief-of-staff --developer-status
@@ -226,6 +232,8 @@ Local command: wallpaper photo review UI prototype status
 Local command: wallpaper photo review UI state validator
 Local command: wallpaper photo image processor foundation status
 Local command: wallpaper photo image processing plan validator
+Local command: wallpaper photo scheduler foundation status
+Local command: wallpaper photo scheduler run plan validator
 Verification
 intake-review
 verify-before-use
@@ -1264,6 +1272,25 @@ while [[ $# -gt 0 ]]; do
       fi
       shift
       bash "${wallpaper_image_processing_plan_validator_script}" "$@"
+      exit 0
+      ;;
+    --wallpaper-photo-scheduler-foundation-status)
+      repo_root="$(resolve_repo_root)"
+      wallpaper_scheduler_foundation_status_script="${repo_root}/scripts/wallpaper-photo-scheduler-foundation-status.sh"
+      if [[ ! -f "${wallpaper_scheduler_foundation_status_script}" ]]; then
+        die "Wallpaper photo scheduler foundation status script is missing: scripts/wallpaper-photo-scheduler-foundation-status.sh"
+      fi
+      bash "${wallpaper_scheduler_foundation_status_script}"
+      exit 0
+      ;;
+    --wallpaper-photo-scheduler-run-plan-validator)
+      repo_root="$(resolve_repo_root)"
+      wallpaper_scheduler_run_plan_validator_script="${repo_root}/scripts/wallpaper-photo-scheduler-run-plan-validator.sh"
+      if [[ ! -f "${wallpaper_scheduler_run_plan_validator_script}" ]]; then
+        die "Wallpaper photo scheduler run plan validator script is missing: scripts/wallpaper-photo-scheduler-run-plan-validator.sh"
+      fi
+      shift
+      bash "${wallpaper_scheduler_run_plan_validator_script}" "$@"
       exit 0
       ;;
     --command-launcher-status)

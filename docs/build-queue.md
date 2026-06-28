@@ -34,29 +34,30 @@ Phase 1 Teacher Chief of Staff + safe local lesson workflows.
 - Wallpaper/photo queue file format and dry-run validator.
 - Wallpaper/photo Approve/Dismiss UI design.
 - Wallpaper/photo image processing rules.
+- Wallpaper/photo local automation scheduler plan.
 
 ## Current PR
 
-Wallpaper/photo local automation scheduler plan.
+Wallpaper/photo approved-source fetcher plan.
 
-Scope: Planning/status design for future local scheduling (user-controlled cadence, dry-run first, preflight checks, notification boundaries, never-run-unattended rules). No scheduler, launch agents, cron jobs, background jobs, notifications, image handling, Reddit, Devvit, network calls, or macOS automation.
+Scope: Planning/status design for future approved-source fetching (allowlist, permission notes, dry-run discovery, rate-limit boundaries, explicit approval before network calls). No fetcher, network calls, API clients, OAuth, secrets, Reddit/Devvit integration, image handling, queue writes, scheduler, or macOS automation.
 
 ## Next PR
 
-Wallpaper/photo approved-source fetcher plan
+Wallpaper/photo source allowlist file format
 
-Scope: Planning/status design for future approved-source fetching behavior, including source allowlist requirements, source permission notes, safe dry-run discovery, rate-limit boundaries, and explicit approval before any network call. No fetcher implementation, no network calls, no Reddit/Devvit integration, no API clients, no image downloading, no image processing, no folder scanning, no queue writes, no background jobs, and no macOS wallpaper/Photos automation.
+Scope: Planning/status and local file-format design for future approved wallpaper/photo sources, including fictional safe sample allowlist entries, source permission fields, license review fields, rate-limit notes, and dry-run validation. No network calls, no fetcher implementation, no Reddit/Devvit integration, no API clients, no OAuth, no image downloading, no image processing, no queue writes, no scheduler, no background jobs, and no macOS wallpaper/Photos automation.
 
 ## Next Recommended PRs
 
-1. Wallpaper/photo approved-source fetcher plan.
+1. Wallpaper/photo source allowlist file format.
 2. Later: permissioned Gmail/Drive integrations.
 3. Later: secrets/capability broker.
 
 ## Parked / Future
 
 - 3D Design Factory Agent: Parked until Chief of Staff and Teacher Workstation foundations are mature.
-- Appearance & Vibe: Automated Wallpaper and Photo Curator (Phase J local scheduler plan in progress; Phases K–P remain future).
+- Appearance & Vibe: Automated Wallpaper and Photo Curator (Phase K approved-source fetcher plan in progress; Phases L–S remain future).
 
 ## Open Threads
 

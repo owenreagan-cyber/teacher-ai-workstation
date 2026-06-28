@@ -681,6 +681,29 @@ else
   warn "wallpaper photo local scheduler status script missing: scripts/wallpaper-photo-local-scheduler-status.sh"
 fi
 
+section "Wallpaper/Photo Source Fetcher Plan"
+if [[ -f scripts/wallpaper-photo-source-fetcher-plan-status.sh ]]; then
+  wallpaper_source_fetcher_result=0
+  wallpaper_source_fetcher_output="$(bash scripts/wallpaper-photo-source-fetcher-plan-status.sh 2>&1)" || wallpaper_source_fetcher_result=$?
+  wallpaper_source_fetcher_pass="$(summary_count "${wallpaper_source_fetcher_output}" "PASS")"
+  wallpaper_source_fetcher_warn="$(summary_count "${wallpaper_source_fetcher_output}" "WARN")"
+  wallpaper_source_fetcher_fail="$(summary_count "${wallpaper_source_fetcher_output}" "FAIL")"
+
+  if [[ "${wallpaper_source_fetcher_result}" != "0" ]]; then
+    printf 'Wallpaper/Photo Source Fetcher Plan: status command completed\n'
+    printf '%s\n' "${wallpaper_source_fetcher_output}"
+    fail "wallpaper photo source fetcher plan status failed"
+  elif [[ -n "${wallpaper_source_fetcher_pass}" && -n "${wallpaper_source_fetcher_warn}" && -n "${wallpaper_source_fetcher_fail}" ]]; then
+    printf 'Wallpaper/Photo Source Fetcher Plan: PASS %s / WARN %s / FAIL %s\n' "${wallpaper_source_fetcher_pass}" "${wallpaper_source_fetcher_warn}" "${wallpaper_source_fetcher_fail}"
+    pass "wallpaper photo source fetcher plan status completed"
+  else
+    printf 'Wallpaper/Photo Source Fetcher Plan: status command completed\n'
+    pass "wallpaper photo source fetcher plan status completed"
+  fi
+else
+  warn "wallpaper photo source fetcher plan status script missing: scripts/wallpaper-photo-source-fetcher-plan-status.sh"
+fi
+
 section "Cursor Workflow"
 if [[ -f scripts/cursor-workflow-status.sh ]]; then
   cursor_result=0

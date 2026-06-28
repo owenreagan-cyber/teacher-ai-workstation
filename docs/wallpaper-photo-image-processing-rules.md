@@ -208,7 +208,7 @@ no automatic Reddit or Devvit use
 - This PR does not add network calls.
 - This PR does not add APIs, OAuth, or secrets.
 
-Phase I defined image processing rules for approved candidates. Phase J defines local automation scheduler planning. See `docs/wallpaper-photo-local-automation-scheduler-plan.md`. Future processing must not run on a schedule until scheduler and processor behavior are separately approved.
+Phase I defined image processing rules for approved candidates. Phase J defines local automation scheduler planning. Phase K defines approved-source fetcher planning. See `docs/wallpaper-photo-local-automation-scheduler-plan.md` and `docs/wallpaper-photo-approved-source-fetcher-plan.md`. Future processing must not run on a schedule until scheduler, source, and processor behavior are separately approved.
 
 ## Future Implementation Phases
 
@@ -226,10 +226,12 @@ Phase N: Manual image processor
 ```bash
 bin/chief-of-staff --wallpaper-photo-image-processing-status
 bin/chief-of-staff --wallpaper-photo-local-scheduler-status
+bin/chief-of-staff --wallpaper-photo-source-fetcher-plan-status
 bin/chief-of-staff --wallpaper-photo-approve-dismiss-ui-status
 bin/chief-of-staff --wallpaper-photo-queue-file-status
 bin/chief-of-staff --wallpaper-photo-metadata-status
 bin/chief-of-staff --dashboard
 bash scripts/wallpaper-photo-image-processing-status.sh
 bash scripts/wallpaper-photo-local-scheduler-status.sh
+bash scripts/wallpaper-photo-source-fetcher-plan-status.sh
 ```

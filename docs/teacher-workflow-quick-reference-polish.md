@@ -9,10 +9,10 @@ This PR adds a Teacher Workflow quick-reference only. This pass is about preserv
 ## Current Status
 
 ```text
-Current status: teacher workflow quick-reference polish in progress.
+Current status: teacher workflow quick-reference polish complete.
 ```
 
-Quick-reference rules are documented for local status commands only.
+Teacher Workflow status summary adds a compact stack status view. See `docs/teacher-workflow-status-summary.md`.
 
 ## Why This Quick Reference Exists
 

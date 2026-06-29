@@ -224,6 +224,7 @@ Related docs:
 - `docs/prompt-pack-stack-completion-marker.md`
 - `docs/core-teacher-workstation-planning-cleanup.md`
 - `docs/teacher-workflow-quick-reference-polish.md`
+- `docs/teacher-workflow-status-summary.md`
 - `.cursor/rules/teacher-ai-workstation.mdc`
 
 Use `docs/workflow-docs-cross-link-polish.md` as the map for workflow docs.
@@ -231,7 +232,8 @@ Use `docs/workflow-docs-navigation-status-summary.md` to verify the workflow doc
 Use `docs/prompt-pack-stack-completion-marker.md` to confirm the reusable prompt pack documentation stack is complete for now.
 Use `docs/core-teacher-workstation-planning-cleanup.md` for current core Teacher Workstation planning focus, safe teacher workflow commands, and next build priorities.
 Use `docs/teacher-workflow-quick-reference-polish.md` for a compact quick-reference of safe Teacher Workstation commands and docs.
-The next recommended PR is Teacher workflow status summary.
+Use `docs/teacher-workflow-status-summary.md` for a compact status summary of complete, planning-only, and future-only Teacher Workflow work.
+The next recommended PR is Teacher planning command detail polish.
 Use `docs/prompt-pack-handoff-summary.md` to understand the current reusable prompt pack stack.
 The handoff summary points to maintenance, freshness, stale-reference audit, reference index, workflow navigation, verification bundles, and lifecycle guardrails.
 Use `docs/prompt-pack-reference-index.md` to find reusable prompt pack references.

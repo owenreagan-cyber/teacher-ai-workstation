@@ -12,7 +12,7 @@ This PR returns to core Teacher Workstation planning cleanup. This PR tightens p
 Current status: core Teacher Workstation planning cleanup complete.
 ```
 
-Teacher Workflow quick-reference polish adds a compact safe command and doc reference. See `docs/teacher-workflow-quick-reference-polish.md`.
+Teacher Workflow status summary adds a compact stack status view. See `docs/teacher-workflow-status-summary.md`.
 
 ## Why This Cleanup Exists
 

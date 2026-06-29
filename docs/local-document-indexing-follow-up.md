@@ -14,7 +14,7 @@ Current status: local document indexing follow-up complete.
 
 Core Teacher Workstation planning cleanup tightens teacher workflow planning references. See `docs/core-teacher-workstation-planning-cleanup.md`.
 
-Teacher Workflow quick-reference polish adds a compact safe command and doc reference. See `docs/teacher-workflow-quick-reference-polish.md`.
+Teacher Workflow status summary adds a compact stack status view. See `docs/teacher-workflow-status-summary.md`.
 
 Project memory cleanup improves active priorities and project memory clarity. See `docs/project-memory-cleanup.md`.
 

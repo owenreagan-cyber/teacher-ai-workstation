@@ -12,6 +12,8 @@ This PR improves safe local document indexing plan/status visibility only. This 
 Current status: local document indexing follow-up complete.
 ```
 
+Core Teacher Workstation planning cleanup tightens teacher workflow planning references. See `docs/core-teacher-workstation-planning-cleanup.md`.
+
 Project memory cleanup improves active priorities and project memory clarity. See `docs/project-memory-cleanup.md`.
 
 Document indexing remains planning/status only. Safe boundaries, future approval gates, and relationships to lesson review and review notes are documented for local status commands only.

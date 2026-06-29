@@ -677,6 +677,29 @@ else
   warn "review notes workflow polish status script missing: scripts/review-notes-workflow-polish-status.sh"
 fi
 
+section "Core Teacher Workstation Planning Cleanup"
+if [[ -f scripts/core-teacher-workstation-planning-cleanup-status.sh ]]; then
+  core_teacher_workstation_planning_cleanup_result=0
+  core_teacher_workstation_planning_cleanup_output="$(bash scripts/core-teacher-workstation-planning-cleanup-status.sh 2>&1)" || core_teacher_workstation_planning_cleanup_result=$?
+  core_teacher_workstation_planning_cleanup_pass="$(summary_count "${core_teacher_workstation_planning_cleanup_output}" "PASS")"
+  core_teacher_workstation_planning_cleanup_warn="$(summary_count "${core_teacher_workstation_planning_cleanup_output}" "WARN")"
+  core_teacher_workstation_planning_cleanup_fail="$(summary_count "${core_teacher_workstation_planning_cleanup_output}" "FAIL")"
+
+  if [[ "${core_teacher_workstation_planning_cleanup_result}" != "0" ]]; then
+    printf 'Core Teacher Workstation Planning Cleanup: status command completed\n'
+    printf '%s\n' "${core_teacher_workstation_planning_cleanup_output}"
+    fail "core Teacher Workstation planning cleanup status failed"
+  elif [[ -n "${core_teacher_workstation_planning_cleanup_pass}" && -n "${core_teacher_workstation_planning_cleanup_warn}" && -n "${core_teacher_workstation_planning_cleanup_fail}" ]]; then
+    printf 'Core Teacher Workstation Planning Cleanup: PASS %s / WARN %s / FAIL %s\n' "${core_teacher_workstation_planning_cleanup_pass}" "${core_teacher_workstation_planning_cleanup_warn}" "${core_teacher_workstation_planning_cleanup_fail}"
+    pass "core Teacher Workstation planning cleanup status completed"
+  else
+    printf 'Core Teacher Workstation Planning Cleanup: status command completed\n'
+    pass "core Teacher Workstation planning cleanup status completed"
+  fi
+else
+  warn "core Teacher Workstation planning cleanup status script missing: scripts/core-teacher-workstation-planning-cleanup-status.sh"
+fi
+
 end_section_summary "Lesson Planning Status"
 
 group_banner "Future-Safety / Parked Work"

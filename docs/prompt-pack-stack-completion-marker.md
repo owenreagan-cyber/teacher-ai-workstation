@@ -9,10 +9,10 @@ This PR marks the reusable prompt pack documentation stack complete for now. Thi
 ## Current Status
 
 ```text
-Current status: prompt pack stack completion marker in progress.
+Current status: prompt pack stack completion marker complete.
 ```
 
-Completion marker rules are documented for local status commands only.
+Core Teacher Workstation planning cleanup returns to core teacher workflow planning. See `docs/core-teacher-workstation-planning-cleanup.md`.
 
 ## Why This Completion Marker Exists
 

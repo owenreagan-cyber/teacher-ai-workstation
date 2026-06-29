@@ -267,7 +267,14 @@ See `docs/checklist-driven-prompt-template-tightening.md`, `docs/command-check-b
 
 ```text
 Prompt pack stack complete for now: docs/prompt-pack-stack-completion-marker.md
-Next safe return point: Core Teacher Workstation planning cleanup
+Core Teacher Workstation planning: docs/core-teacher-workstation-planning-cleanup.md
+Next recommended PR: Teacher workflow quick-reference polish
+```
+
+Core Teacher Workstation planning cleanup:
+
+```bash
+bin/chief-of-staff --core-teacher-workstation-planning-cleanup-status
 ```
 
 Prompt pack stack completion marker:
@@ -691,6 +698,14 @@ bin/chief-of-staff --teacher-planning-command-status
 ```
 
 See `docs/teacher-planning-command-organization.md`.
+
+Core Teacher Workstation planning cleanup status command:
+
+```bash
+bin/chief-of-staff --core-teacher-workstation-planning-cleanup-status
+```
+
+See `docs/core-teacher-workstation-planning-cleanup.md`, `docs/lesson-review-workflow-polish.md`, `docs/review-notes-workflow-polish.md`, `docs/local-document-indexing-follow-up.md`, and `docs/prompt-pack-stack-completion-marker.md`.
 
 Lesson review workflow polish status command:
 

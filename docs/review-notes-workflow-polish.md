@@ -12,6 +12,8 @@ This PR improves safe local review notes workflow guidance only. This pass is ab
 Current status: review notes workflow polish complete.
 ```
 
+Core Teacher Workstation planning cleanup tightens teacher workflow planning references. See `docs/core-teacher-workstation-planning-cleanup.md`.
+
 Local document indexing follow-up improves safe local document indexing plan/status visibility. See `docs/local-document-indexing-follow-up.md`.
 
 Project memory cleanup improves active priorities and project memory clarity. See `docs/project-memory-cleanup.md`.

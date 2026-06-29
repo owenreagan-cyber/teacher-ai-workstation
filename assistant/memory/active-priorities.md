@@ -2,7 +2,29 @@
 
 ## Current Roadmap
 
-Completed:
+### Recently Completed (workflow polish)
+
+- Review notes workflow polish: complete
+- Lesson review workflow polish: complete
+- Teacher planning command organization: complete
+- Dashboard section summary polish: complete
+- Workflow quick-start guide: complete
+- Help examples polish: complete
+- Command map cleanup: complete
+- Dashboard readability pass: complete
+- Return to Chief of Staff / Teacher Workstation core: complete
+- Local document indexing follow-up: complete
+- Appearance & Vibe wallpaper/photo foundation stack: complete for now
+
+### Now
+
+- Project memory cleanup (memory-cleanup/status only)
+
+### Next
+
+- Testing/checklist consolidation
+
+## Completed (earlier foundations)
 
 - Phase 0A - Day 1 Core Installer
 - Phase 0B - Hardening Injector
@@ -28,45 +50,15 @@ Completed:
 - Safe local document indexing plan
 - Chief of Staff command launcher / status dashboard refinement
 - Dashboard polish and command grouping follow-up
-- Appearance & Vibe automated wallpaper/photo curator plan
-- Wallpaper/photo rotation folder design
-- Wallpaper/photo dry-run folder validator
-- Wallpaper/photo manual folder creation helper
-- Wallpaper/photo metadata schema and sample records
-- Wallpaper/photo temp queue rules
-- Wallpaper/photo queue file format and dry-run validator
-- Wallpaper/photo Approve/Dismiss UI design
-- Wallpaper/photo image processing rules
-- Wallpaper/photo local automation scheduler plan
-- Wallpaper/photo approved-source fetcher plan
-- Wallpaper/photo source allowlist foundation
-- Wallpaper/photo simulated approved-source discovery plan
-- Wallpaper/photo live local review UI prototype plan
-- Wallpaper/photo image processor foundation
-- Wallpaper/photo scheduler foundation
-- Wallpaper/photo notification foundation
-- Wallpaper/photo rotation handoff and safety audit
+- Appearance & Vibe automated wallpaper/photo curator plan (foundation stack)
+- Wallpaper/photo rotation through notification foundation stack
 - Return to Chief of Staff / Teacher Workstation core
-- Chief of Staff dashboard readability pass
-- Chief of Staff command map cleanup
-- Chief of Staff help examples polish
-- Chief of Staff workflow quick-start guide
-- Dashboard section summary polish
-- Teacher planning command organization
-- Lesson review workflow polish
-- Review notes workflow polish
 
-Now:
-
-- Local document indexing follow-up (planning/status only)
-
-Next:
-
-- Project memory cleanup
+See `docs/project-memory-cleanup.md` for the full recent workflow polish summary.
 
 ## Parked Future
 
-- Appearance & Vibe: Automated Wallpaper and Photo Curator (foundation stack complete for now; live curator not started; paused; returning to Chief of Staff / Teacher Workstation core; no fetcher, real image processing, scheduler, notifications, network calls, API clients, OAuth, secrets, Reddit integration, or Devvit integration yet; Reddit future source only; Devvit future companion only)
+- Appearance & Vibe: Automated Wallpaper and Photo Curator (Appearance & Vibe wallpaper/photo foundation stack complete for now; live wallpaper/photo curator implementation is not started; paused; returning to Chief of Staff / Teacher Workstation core; no fetcher, real image processing, scheduler, notifications, network calls, API clients, OAuth, secrets, Reddit integration, or Devvit integration yet; Reddit future source only; Devvit future companion only)
 - 3D Design Factory Agent remains parked until Chief of Staff and Teacher Workstation foundations are mature
 
 ## Phase 1 Boundary

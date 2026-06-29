@@ -406,6 +406,13 @@ for path in \
   check_required_file "${path}"
 done
 
+section "Project Memory Cleanup Files"
+for path in \
+  docs/project-memory-cleanup.md \
+  scripts/project-memory-cleanup-status.sh; do
+  check_required_file "${path}"
+done
+
 section "Teacher Planning Command Organization Files"
 for path in \
   docs/teacher-planning-command-organization.md \
@@ -553,6 +560,7 @@ check_bash_syntax "scripts/return-to-chief-of-staff-core-status.sh"
 check_bash_syntax "scripts/lesson-review-workflow-polish-status.sh"
 check_bash_syntax "scripts/review-notes-workflow-polish-status.sh"
 check_bash_syntax "scripts/local-document-indexing-follow-up-status.sh"
+check_bash_syntax "scripts/project-memory-cleanup-status.sh"
 check_bash_syntax "scripts/teacher-planning-command-organization-status.sh"
 check_bash_syntax "scripts/dashboard-section-summary-status.sh"
 check_bash_syntax "scripts/chief-of-staff-workflow-quick-start-status.sh"
@@ -586,7 +594,7 @@ section "Recommendation"
 if (( CRITICAL_BLOCKER > 0 )); then
   printf 'Fix critical Chief of Staff CLI, memory, intake, or script problems before the next build PR.\n'
 else
-  printf 'Next recommended PR: Project memory cleanup.\n'
+  printf 'Next recommended PR: Testing/checklist consolidation.\n'
 fi
 
 if (( COMPARE_0E == 1 && CRITICAL_BLOCKER == 0 )); then

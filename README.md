@@ -230,6 +230,21 @@ bin/chief-of-staff --local-document-indexing-follow-up-status
 
 See `docs/local-document-indexing-follow-up.md`.
 
+Project memory cleanup status command:
+
+```bash
+bin/chief-of-staff --project-memory-cleanup-status
+```
+
+See `docs/project-memory-cleanup.md`.
+
+Project memory and roadmap (status only):
+
+```bash
+bin/chief-of-staff --dashboard
+bin/chief-of-staff --project-memory-cleanup-status
+```
+
 Document indexing status (planning only; no scanning or indexing):
 
 ```bash

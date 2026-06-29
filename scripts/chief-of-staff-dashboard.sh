@@ -728,6 +728,29 @@ else
   warn "local document indexing follow-up status script missing: scripts/local-document-indexing-follow-up-status.sh"
 fi
 
+section "Project Memory Cleanup"
+if [[ -f scripts/project-memory-cleanup-status.sh ]]; then
+  project_memory_cleanup_result=0
+  project_memory_cleanup_output="$(bash scripts/project-memory-cleanup-status.sh 2>&1)" || project_memory_cleanup_result=$?
+  project_memory_cleanup_pass="$(summary_count "${project_memory_cleanup_output}" "PASS")"
+  project_memory_cleanup_warn="$(summary_count "${project_memory_cleanup_output}" "WARN")"
+  project_memory_cleanup_fail="$(summary_count "${project_memory_cleanup_output}" "FAIL")"
+
+  if [[ "${project_memory_cleanup_result}" != "0" ]]; then
+    printf 'Project Memory Cleanup: status command completed\n'
+    printf '%s\n' "${project_memory_cleanup_output}"
+    fail "project memory cleanup status failed"
+  elif [[ -n "${project_memory_cleanup_pass}" && -n "${project_memory_cleanup_warn}" && -n "${project_memory_cleanup_fail}" ]]; then
+    printf 'Project Memory Cleanup: PASS %s / WARN %s / FAIL %s\n' "${project_memory_cleanup_pass}" "${project_memory_cleanup_warn}" "${project_memory_cleanup_fail}"
+    pass "project memory cleanup status completed"
+  else
+    printf 'Project Memory Cleanup: status command completed\n'
+    pass "project memory cleanup status completed"
+  fi
+else
+  warn "project memory cleanup status script missing: scripts/project-memory-cleanup-status.sh"
+fi
+
 end_section_summary "Future-Safety / Parked Work"
 
 group_banner "Appearance & Vibe Foundation Status"

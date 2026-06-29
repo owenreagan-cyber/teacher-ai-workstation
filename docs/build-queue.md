@@ -59,22 +59,22 @@ Phase 1 Teacher Chief of Staff + safe local lesson workflows.
 
 ## Current PR
 
-PR lifecycle guardrail consolidation.
+Branch hygiene and cleanup reference.
 
-Scope: Consolidate PR lifecycle guardrails so future prompts consistently verify preflight, branch state, no-commit review, PR open/unmerged state, merge state with non-null mergedAt, branch deletion, local main sync, clean working tree, and dashboard proof. Preserve every existing command and status check. No checks removed, no command behavior changes, no lesson generation changes, no document scanning/indexing implementation, no student data, no live integrations, no network calls, and no automation.
+Scope: Add branch hygiene and cleanup guidance for feature branches, remote deletion checks, local branch cleanup, and clean working tree proof after merges. Preserve every existing command and status check. No checks removed, no command behavior changes, no lesson generation changes, no document scanning/indexing implementation, no student data, no live integrations, no network calls, and no automation.
 
 Appearance & Vibe wallpaper/photo curator foundation stack: complete for now.
 Live curator implementation: not started.
 
 ## Next PR
 
-Branch hygiene and cleanup reference
+Local main proof report polish
 
-Scope: Add branch hygiene and cleanup guidance for feature branches, remote deletion checks, local branch cleanup, and clean working tree proof after merges. Preserve every existing command and status check. No checks removed, no command behavior changes, no lesson generation changes, no document scanning/indexing implementation, no student data, no live integrations, no network calls, and no automation.
+Scope: Polish final report and local-main proof expectations so every PR completion clearly shows branch, clean working tree, dashboard count, next recommended PR, merge commit, and branch deletion status. Preserve every existing command and status check. No checks removed, no command behavior changes, no lesson generation changes, no document scanning/indexing implementation, no student data, no live integrations, no network calls, and no automation.
 
 ## Next Recommended PRs
 
-1. Branch hygiene and cleanup reference.
+1. Local main proof report polish.
 2. Later: permissioned Gmail/Drive integrations.
 3. Later: secrets/capability broker.
 

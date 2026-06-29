@@ -9,10 +9,10 @@ This PR consolidates PR lifecycle guardrails only. This pass points to `docs/tes
 ## Current Status
 
 ```text
-Current status: PR lifecycle guardrail consolidation in progress.
+Current status: PR lifecycle guardrail consolidation complete.
 ```
 
-Lifecycle guardrails for preflight through final report are documented for local status commands only.
+Branch hygiene and cleanup reference continues branch-state and cleanup rules. See `docs/branch-hygiene-cleanup-reference.md`.
 
 ## Why This Consolidation Exists
 

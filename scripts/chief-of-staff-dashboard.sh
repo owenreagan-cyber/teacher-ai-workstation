@@ -843,6 +843,29 @@ else
   warn "PR lifecycle guardrail status script missing: scripts/pr-lifecycle-guardrail-status.sh"
 fi
 
+section "Branch Hygiene and Cleanup Reference"
+if [[ -f scripts/branch-hygiene-cleanup-status.sh ]]; then
+  branch_hygiene_cleanup_result=0
+  branch_hygiene_cleanup_output="$(bash scripts/branch-hygiene-cleanup-status.sh 2>&1)" || branch_hygiene_cleanup_result=$?
+  branch_hygiene_cleanup_pass="$(summary_count "${branch_hygiene_cleanup_output}" "PASS")"
+  branch_hygiene_cleanup_warn="$(summary_count "${branch_hygiene_cleanup_output}" "WARN")"
+  branch_hygiene_cleanup_fail="$(summary_count "${branch_hygiene_cleanup_output}" "FAIL")"
+
+  if [[ "${branch_hygiene_cleanup_result}" != "0" ]]; then
+    printf 'Branch Hygiene and Cleanup Reference: status command completed\n'
+    printf '%s\n' "${branch_hygiene_cleanup_output}"
+    fail "branch hygiene and cleanup reference status failed"
+  elif [[ -n "${branch_hygiene_cleanup_pass}" && -n "${branch_hygiene_cleanup_warn}" && -n "${branch_hygiene_cleanup_fail}" ]]; then
+    printf 'Branch Hygiene and Cleanup Reference: PASS %s / WARN %s / FAIL %s\n' "${branch_hygiene_cleanup_pass}" "${branch_hygiene_cleanup_warn}" "${branch_hygiene_cleanup_fail}"
+    pass "branch hygiene and cleanup reference status completed"
+  else
+    printf 'Branch Hygiene and Cleanup Reference: status command completed\n'
+    pass "branch hygiene and cleanup reference status completed"
+  fi
+else
+  warn "branch hygiene cleanup status script missing: scripts/branch-hygiene-cleanup-status.sh"
+fi
+
 end_section_summary "Future-Safety / Parked Work"
 
 group_banner "Appearance & Vibe Foundation Status"

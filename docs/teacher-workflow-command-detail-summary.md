@@ -14,6 +14,8 @@ Current status: teacher workflow command detail summary complete.
 
 Teacher Workflow safe-output examples document expected output shapes. See `docs/teacher-workflow-safe-output-examples.md`.
 
+Teacher Workflow safe-output checker verifies example docs remain safe. See `docs/teacher-workflow-safe-output-checker.md`.
+
 ## Why This Summary Exists
 
 After document indexing command detail polish, four command detail docs existed but there was no single summary linking them. This summary makes the command detail stack easy to find without implying document scanning, folder scanning, file indexing, content parsing, OCR, embeddings, vector database behavior, lesson generation, or student data handling exists.

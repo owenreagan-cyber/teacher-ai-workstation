@@ -861,6 +861,29 @@ else
   warn "Teacher Workflow safe-output examples status script missing: scripts/teacher-workflow-safe-output-examples-status.sh"
 fi
 
+section "Teacher Workflow Safe-Output Checker"
+if [[ -f scripts/teacher-workflow-safe-output-checker-status.sh ]]; then
+  teacher_workflow_safe_output_checker_result=0
+  teacher_workflow_safe_output_checker_output="$(bash scripts/teacher-workflow-safe-output-checker-status.sh 2>&1)" || teacher_workflow_safe_output_checker_result=$?
+  teacher_workflow_safe_output_checker_pass="$(summary_count "${teacher_workflow_safe_output_checker_output}" "PASS")"
+  teacher_workflow_safe_output_checker_warn="$(summary_count "${teacher_workflow_safe_output_checker_output}" "WARN")"
+  teacher_workflow_safe_output_checker_fail="$(summary_count "${teacher_workflow_safe_output_checker_output}" "FAIL")"
+
+  if [[ "${teacher_workflow_safe_output_checker_result}" != "0" ]]; then
+    printf 'Teacher Workflow Safe-Output Checker: status command completed\n'
+    printf '%s\n' "${teacher_workflow_safe_output_checker_output}"
+    fail "Teacher Workflow safe-output checker status failed"
+  elif [[ -n "${teacher_workflow_safe_output_checker_pass}" && -n "${teacher_workflow_safe_output_checker_warn}" && -n "${teacher_workflow_safe_output_checker_fail}" ]]; then
+    printf 'Teacher Workflow Safe-Output Checker: PASS %s / WARN %s / FAIL %s\n' "${teacher_workflow_safe_output_checker_pass}" "${teacher_workflow_safe_output_checker_warn}" "${teacher_workflow_safe_output_checker_fail}"
+    pass "Teacher Workflow safe-output checker status completed"
+  else
+    printf 'Teacher Workflow Safe-Output Checker: status command completed\n'
+    pass "Teacher Workflow safe-output checker status completed"
+  fi
+else
+  warn "Teacher Workflow safe-output checker status script missing: scripts/teacher-workflow-safe-output-checker-status.sh"
+fi
+
 end_section_summary "Lesson Planning Status"
 
 group_banner "Future-Safety / Parked Work"

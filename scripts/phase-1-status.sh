@@ -589,6 +589,14 @@ for path in \
 done
 check_bash_syntax scripts/teacher-workflow-output-examples-completion-status.sh
 
+section "Lesson-Planning Template Readiness Polish Files"
+for path in \
+  docs/lesson-planning-template-readiness-polish.md \
+  scripts/lesson-planning-template-readiness-status.sh; do
+  check_required_file "${path}"
+done
+check_bash_syntax scripts/lesson-planning-template-readiness-status.sh
+
 section "Teacher Planning Command Organization Files"
 for path in \
   docs/teacher-planning-command-organization.md \
@@ -762,6 +770,7 @@ check_bash_syntax "scripts/teacher-workflow-command-detail-summary-status.sh"
 check_bash_syntax "scripts/teacher-workflow-safe-output-examples-status.sh"
 check_bash_syntax "scripts/teacher-workflow-safe-output-checker-status.sh"
 check_bash_syntax "scripts/teacher-workflow-output-examples-completion-status.sh"
+check_bash_syntax "scripts/lesson-planning-template-readiness-status.sh"
 check_bash_syntax "scripts/teacher-planning-command-organization-status.sh"
 check_bash_syntax "scripts/dashboard-section-summary-status.sh"
 check_bash_syntax "scripts/chief-of-staff-workflow-quick-start-status.sh"
@@ -795,7 +804,7 @@ section "Recommendation"
 if (( CRITICAL_BLOCKER > 0 )); then
   printf 'Fix critical Chief of Staff CLI, memory, intake, or script problems before the next build PR.\n'
 else
-  printf 'Next recommended PR: Lesson-planning template readiness polish.\n'
+  printf 'Next recommended PR: Lesson-planning placeholder template skeleton.\n'
 fi
 
 if (( COMPARE_0E == 1 && CRITICAL_BLOCKER == 0 )); then

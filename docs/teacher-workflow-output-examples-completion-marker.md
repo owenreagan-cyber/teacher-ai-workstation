@@ -80,6 +80,8 @@ It must not scan or index documents.
 It must not add live integrations, network calls, or automation.
 ```
 
+Related: Lesson-planning template readiness polish (`docs/lesson-planning-template-readiness-polish.md`) continues this safe return in documentation/status mode only.
+
 ## Lesson-Planning Template Return Rules
 
 ```text

@@ -18,6 +18,8 @@ Teacher Workflow safe-output checker verifies example docs remain safe. See `doc
 
 Teacher Workflow output examples completion marker marks the command detail and safe-output stack complete for now. See `docs/teacher-workflow-output-examples-completion-marker.md`.
 
+Lesson-planning template readiness documents placeholder-only template examples. See `docs/lesson-planning-template-readiness-polish.md`.
+
 ## Why This Summary Exists
 
 After document indexing command detail polish, four command detail docs existed but there was no single summary linking them. This summary makes the command detail stack easy to find without implying document scanning, folder scanning, file indexing, content parsing, OCR, embeddings, vector database behavior, lesson generation, or student data handling exists.

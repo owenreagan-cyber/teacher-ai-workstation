@@ -128,6 +128,14 @@ bin/chief-of-staff --return-to-core-status
 
 Document indexing remains future-only until explicitly approved. These commands are planning/status only.
 
+## Lesson-Planning Template Readiness
+
+```bash
+bin/chief-of-staff --lesson-planning-template-readiness-status
+```
+
+See `docs/lesson-planning-template-readiness-polish.md` for placeholder-only template examples and planning-only boundaries. No real lesson generation, no generated briefs/drafts, and no student data.
+
 ## Developer / Cursor Workflow
 
 ```bash

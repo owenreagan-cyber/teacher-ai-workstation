@@ -907,6 +907,29 @@ else
   warn "Teacher Workflow output examples completion status script missing: scripts/teacher-workflow-output-examples-completion-status.sh"
 fi
 
+section "Lesson-Planning Template Readiness Polish"
+if [[ -f scripts/lesson-planning-template-readiness-status.sh ]]; then
+  lesson_planning_template_readiness_result=0
+  lesson_planning_template_readiness_output="$(bash scripts/lesson-planning-template-readiness-status.sh 2>&1)" || lesson_planning_template_readiness_result=$?
+  lesson_planning_template_readiness_pass="$(summary_count "${lesson_planning_template_readiness_output}" "PASS")"
+  lesson_planning_template_readiness_warn="$(summary_count "${lesson_planning_template_readiness_output}" "WARN")"
+  lesson_planning_template_readiness_fail="$(summary_count "${lesson_planning_template_readiness_output}" "FAIL")"
+
+  if [[ "${lesson_planning_template_readiness_result}" != "0" ]]; then
+    printf 'Lesson-Planning Template Readiness Polish: status command completed\n'
+    printf '%s\n' "${lesson_planning_template_readiness_output}"
+    fail "Lesson-planning template readiness status failed"
+  elif [[ -n "${lesson_planning_template_readiness_pass}" && -n "${lesson_planning_template_readiness_warn}" && -n "${lesson_planning_template_readiness_fail}" ]]; then
+    printf 'Lesson-Planning Template Readiness Polish: PASS %s / WARN %s / FAIL %s\n' "${lesson_planning_template_readiness_pass}" "${lesson_planning_template_readiness_warn}" "${lesson_planning_template_readiness_fail}"
+    pass "Lesson-planning template readiness status completed"
+  else
+    printf 'Lesson-Planning Template Readiness Polish: status command completed\n'
+    pass "Lesson-planning template readiness status completed"
+  fi
+else
+  warn "Lesson-planning template readiness status script missing: scripts/lesson-planning-template-readiness-status.sh"
+fi
+
 end_section_summary "Lesson Planning Status"
 
 group_banner "Future-Safety / Parked Work"

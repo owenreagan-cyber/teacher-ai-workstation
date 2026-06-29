@@ -23,15 +23,16 @@
 - Local main proof report polish: complete
 - Workflow docs cross-link polish: complete
 - Workflow docs navigation status summary: complete
+- Prompt pack maintenance checklist: complete
 - Appearance & Vibe wallpaper/photo foundation stack: complete for now
 
 ### Now
 
-- Prompt pack maintenance checklist (prompt-pack-maintenance/status only)
+- Prompt pack reference index (prompt-pack-index/status only)
 
 ### Next
 
-- Prompt pack reference index
+- Prompt pack stale-reference audit
 
 ## Completed (earlier foundations)
 

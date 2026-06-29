@@ -9,10 +9,10 @@ This PR adds prompt pack maintenance checklist guidance only. This pass is about
 ## Current Status
 
 ```text
-Current status: prompt pack maintenance checklist in progress.
+Current status: prompt pack maintenance checklist complete.
 ```
 
-Prompt pack maintenance rules are documented for local status commands only.
+Prompt pack reference index continues reusable prompt reference discovery. See `docs/prompt-pack-reference-index.md`.
 
 ## Why Prompt Pack Maintenance Exists
 
@@ -223,6 +223,10 @@ no wallpaper/photo curator implementation
 - This PR does not add external integrations.
 - This PR does not add network calls.
 - This PR does not add automation.
+
+## Related prompt docs
+
+- Prompt pack reference index: `docs/prompt-pack-reference-index.md`
 
 ## Commands Reference
 

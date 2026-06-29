@@ -218,6 +218,7 @@ no wallpaper/photo curator implementation
 - PR lifecycle: `docs/pr-lifecycle-guardrail-consolidation.md`
 - Workflow doc map: `docs/workflow-docs-cross-link-polish.md`
 - Prompt pack maintenance: `docs/prompt-pack-maintenance-checklist.md`
+- Prompt pack reference index: `docs/prompt-pack-reference-index.md`
 
 ## Commands Reference
 

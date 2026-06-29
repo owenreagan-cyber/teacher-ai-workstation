@@ -12,7 +12,7 @@ This PR adds workflow docs navigation status summary only. This pass is about pr
 Current status: workflow docs navigation status summary complete.
 ```
 
-Prompt pack maintenance checklist continues reusable prompt upkeep. See `docs/prompt-pack-maintenance-checklist.md`.
+Prompt pack reference index makes reusable prompt references easy to find. See `docs/prompt-pack-reference-index.md`.
 
 ## Why This Summary Exists
 
@@ -176,6 +176,7 @@ no wallpaper/photo curator implementation
 ## Related workflow docs
 
 - Prompt pack maintenance: `docs/prompt-pack-maintenance-checklist.md`
+- Prompt pack reference index: `docs/prompt-pack-reference-index.md`
 - Cross-link map: `docs/workflow-docs-cross-link-polish.md`
 
 ## Commands Reference

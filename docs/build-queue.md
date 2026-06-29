@@ -59,22 +59,22 @@ Phase 1 Teacher Chief of Staff + safe local lesson workflows.
 
 ## Current PR
 
-Local main proof report polish.
+Workflow docs cross-link polish.
 
-Scope: Polish final report and local-main proof expectations so every PR completion clearly shows branch, clean working tree, dashboard count, next recommended PR, merge commit, and branch deletion status. Preserve every existing command and status check. No checks removed, no command behavior changes, no lesson generation changes, no document scanning/indexing implementation, no student data, no live integrations, no network calls, and no automation.
+Scope: Add cross-links among the workflow, checklist, branch hygiene, lifecycle guardrail, and local-main proof docs so future prompts can navigate the process quickly. Preserve every existing command and status check. No checks removed, no command behavior changes, no lesson generation changes, no document scanning/indexing implementation, no student data, no live integrations, no network calls, and no automation.
 
 Appearance & Vibe wallpaper/photo curator foundation stack: complete for now.
 Live curator implementation: not started.
 
 ## Next PR
 
-Workflow docs cross-link polish
+Workflow docs navigation status summary
 
-Scope: Add cross-links among the workflow, checklist, branch hygiene, lifecycle guardrail, and local-main proof docs so future prompts can navigate the process quickly. Preserve every existing command and status check. No checks removed, no command behavior changes, no lesson generation changes, no document scanning/indexing implementation, no student data, no live integrations, no network calls, and no automation.
+Scope: Add a compact status summary that verifies the workflow documentation map, cross-links, and navigation path remain intact. Preserve every existing command and status check. No checks removed, no command behavior changes, no lesson generation changes, no document scanning/indexing implementation, no student data, no live integrations, no network calls, and no automation.
 
 ## Next Recommended PRs
 
-1. Workflow docs cross-link polish.
+1. Workflow docs navigation status summary.
 2. Later: permissioned Gmail/Drive integrations.
 3. Later: secrets/capability broker.
 

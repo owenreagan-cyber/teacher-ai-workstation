@@ -889,6 +889,29 @@ else
   warn "local main proof report status script missing: scripts/local-main-proof-report-status.sh"
 fi
 
+section "Workflow Docs Cross-Link Polish"
+if [[ -f scripts/workflow-docs-cross-link-status.sh ]]; then
+  workflow_docs_cross_link_result=0
+  workflow_docs_cross_link_output="$(bash scripts/workflow-docs-cross-link-status.sh 2>&1)" || workflow_docs_cross_link_result=$?
+  workflow_docs_cross_link_pass="$(summary_count "${workflow_docs_cross_link_output}" "PASS")"
+  workflow_docs_cross_link_warn="$(summary_count "${workflow_docs_cross_link_output}" "WARN")"
+  workflow_docs_cross_link_fail="$(summary_count "${workflow_docs_cross_link_output}" "FAIL")"
+
+  if [[ "${workflow_docs_cross_link_result}" != "0" ]]; then
+    printf 'Workflow Docs Cross-Link Polish: status command completed\n'
+    printf '%s\n' "${workflow_docs_cross_link_output}"
+    fail "workflow docs cross-link polish status failed"
+  elif [[ -n "${workflow_docs_cross_link_pass}" && -n "${workflow_docs_cross_link_warn}" && -n "${workflow_docs_cross_link_fail}" ]]; then
+    printf 'Workflow Docs Cross-Link Polish: PASS %s / WARN %s / FAIL %s\n' "${workflow_docs_cross_link_pass}" "${workflow_docs_cross_link_warn}" "${workflow_docs_cross_link_fail}"
+    pass "workflow docs cross-link polish status completed"
+  else
+    printf 'Workflow Docs Cross-Link Polish: status command completed\n'
+    pass "workflow docs cross-link polish status completed"
+  fi
+else
+  warn "workflow docs cross-link status script missing: scripts/workflow-docs-cross-link-status.sh"
+fi
+
 end_section_summary "Future-Safety / Parked Work"
 
 group_banner "Appearance & Vibe Foundation Status"

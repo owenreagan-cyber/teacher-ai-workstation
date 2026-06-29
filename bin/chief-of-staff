@@ -30,6 +30,7 @@ Core Dashboard and Health:
   --pr-lifecycle-guardrail-status      Show PR lifecycle guardrail consolidation status and exit.
   --branch-hygiene-cleanup-status      Show branch hygiene and cleanup reference status and exit.
   --local-main-proof-report-status     Show local main proof report polish status and exit.
+  --workflow-docs-cross-link-status    Show workflow docs cross-link polish status and exit.
   --command-launcher-status            Show Chief of Staff command launcher status and exit.
 
 Return to Core / Roadmap:
@@ -194,6 +195,7 @@ Teacher review (safe local sample slug only; no student data):
   bin/chief-of-staff --pr-lifecycle-guardrail-status
   bin/chief-of-staff --branch-hygiene-cleanup-status
   bin/chief-of-staff --local-main-proof-report-status
+  bin/chief-of-staff --workflow-docs-cross-link-status
 
 Developer / Cursor verification:
   bin/chief-of-staff --cursor-workflow-status
@@ -263,6 +265,7 @@ All command examples:
   bin/chief-of-staff --pr-lifecycle-guardrail-status
   bin/chief-of-staff --branch-hygiene-cleanup-status
   bin/chief-of-staff --local-main-proof-report-status
+  bin/chief-of-staff --workflow-docs-cross-link-status
   bin/chief-of-staff --command-launcher-status
   bin/chief-of-staff --cursor-workflow-status
   bin/chief-of-staff --developer-status
@@ -359,6 +362,9 @@ Local command: branch hygiene cleanup status
 
 Local Main Proof / Final Report
 Local command: local main proof report status
+
+Workflow Docs / Cross-Link
+Local command: workflow docs cross-link status
 
 Appearance & Vibe Foundation (status only; live curator not started)
 Local command: wallpaper photo curator plan status
@@ -1311,6 +1317,15 @@ while [[ $# -gt 0 ]]; do
         die "Local main proof report status script is missing: scripts/local-main-proof-report-status.sh"
       fi
       bash "${local_main_proof_report_status_script}"
+      exit 0
+      ;;
+    --workflow-docs-cross-link-status)
+      repo_root="$(resolve_repo_root)"
+      workflow_docs_cross_link_status_script="${repo_root}/scripts/workflow-docs-cross-link-status.sh"
+      if [[ ! -f "${workflow_docs_cross_link_status_script}" ]]; then
+        die "Workflow docs cross-link status script is missing: scripts/workflow-docs-cross-link-status.sh"
+      fi
+      bash "${workflow_docs_cross_link_status_script}"
       exit 0
       ;;
     --wallpaper-photo-curator-plan-status)

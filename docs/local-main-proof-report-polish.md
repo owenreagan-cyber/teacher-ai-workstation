@@ -11,10 +11,10 @@ See also `docs/branch-hygiene-cleanup-reference.md` and `docs/pr-lifecycle-guard
 ## Current Status
 
 ```text
-Current status: local main proof report polish in progress.
+Current status: local main proof report polish complete.
 ```
 
-Final report and local-main proof rules are documented for local status commands only.
+Workflow docs cross-link polish adds navigation among workflow docs. See `docs/workflow-docs-cross-link-polish.md`.
 
 ## Why Local Main Proof Exists
 
@@ -202,6 +202,12 @@ no wallpaper/photo curator implementation
 - This PR does not add external integrations.
 - This PR does not add network calls.
 - This PR does not add automation.
+
+## Related workflow docs
+
+- Branch hygiene: `docs/branch-hygiene-cleanup-reference.md`
+- PR lifecycle: `docs/pr-lifecycle-guardrail-consolidation.md`
+- Workflow doc map: `docs/workflow-docs-cross-link-polish.md`
 
 ## Commands Reference
 

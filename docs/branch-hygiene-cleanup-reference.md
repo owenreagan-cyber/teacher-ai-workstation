@@ -14,7 +14,7 @@ See also `docs/pr-lifecycle-guardrail-consolidation.md` for full PR lifecycle gu
 Current status: branch hygiene and cleanup reference complete.
 ```
 
-Local main proof report polish continues final report rules. See `docs/local-main-proof-report-polish.md`.
+Local main proof report polish continues final report rules. See `docs/local-main-proof-report-polish.md`. Workflow docs cross-link polish adds navigation map. See `docs/workflow-docs-cross-link-polish.md`.
 
 ## Why Branch Hygiene Exists
 
@@ -193,6 +193,12 @@ no wallpaper/photo curator implementation
 - This PR does not add external integrations.
 - This PR does not add network calls.
 - This PR does not add automation.
+
+## Related workflow docs
+
+- PR lifecycle: `docs/pr-lifecycle-guardrail-consolidation.md`
+- Local main proof: `docs/local-main-proof-report-polish.md`
+- Workflow doc map: `docs/workflow-docs-cross-link-polish.md`
 
 ## Commands Reference
 

@@ -12,7 +12,7 @@ This PR consolidates PR lifecycle guardrails only. This pass points to `docs/tes
 Current status: PR lifecycle guardrail consolidation complete.
 ```
 
-Branch hygiene and cleanup reference is complete. Local main proof report polish adds final report and dashboard count rules. See `docs/local-main-proof-report-polish.md`.
+Branch hygiene and cleanup reference is complete. See `docs/branch-hygiene-cleanup-reference.md`. Local main proof report polish adds final report and dashboard count rules. See `docs/local-main-proof-report-polish.md`. Workflow docs cross-link polish adds navigation map. See `docs/workflow-docs-cross-link-polish.md`.
 
 ## Why This Consolidation Exists
 
@@ -225,6 +225,13 @@ no wallpaper/photo curator implementation
 - This PR does not add external integrations.
 - This PR does not add network calls.
 - This PR does not add automation.
+
+## Related workflow docs
+
+- Branch hygiene: `docs/branch-hygiene-cleanup-reference.md`
+- Local main proof: `docs/local-main-proof-report-polish.md`
+- Verification bundles: `docs/testing-checklist-consolidation.md`
+- Workflow doc map: `docs/workflow-docs-cross-link-polish.md`
 
 ## Commands Reference
 

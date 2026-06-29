@@ -263,7 +263,22 @@ bin/chief-of-staff --checklist-driven-prompt-template-status
 bin/chief-of-staff --dashboard
 ```
 
-See `docs/checklist-driven-prompt-template-tightening.md`, `docs/command-check-bundle-reference-polish.md`, `docs/testing-checklist-consolidation.md`, `docs/pr-lifecycle-guardrail-consolidation.md`, `docs/branch-hygiene-cleanup-reference.md`, and `docs/local-main-proof-report-polish.md`.
+See `docs/checklist-driven-prompt-template-tightening.md`, `docs/command-check-bundle-reference-polish.md`, `docs/testing-checklist-consolidation.md`, `docs/pr-lifecycle-guardrail-consolidation.md`, `docs/branch-hygiene-cleanup-reference.md`, `docs/local-main-proof-report-polish.md`, and `docs/workflow-docs-cross-link-polish.md`.
+
+Workflow docs map:
+
+```bash
+bin/chief-of-staff --workflow-docs-cross-link-status
+```
+
+```text
+Cursor workflow operating system: docs/cursor-workflow-operating-system.md
+Cursor prompt template: docs/cursor-prompt-template.md
+Testing/checklist consolidation: docs/testing-checklist-consolidation.md
+PR lifecycle guardrail consolidation: docs/pr-lifecycle-guardrail-consolidation.md
+Branch hygiene and cleanup reference: docs/branch-hygiene-cleanup-reference.md
+Local main proof report polish: docs/local-main-proof-report-polish.md
+```
 
 PR lifecycle guardrails (every PR):
 
@@ -281,6 +296,16 @@ Local main proof and final report (every PR completion):
 
 ```bash
 bin/chief-of-staff --local-main-proof-report-status
+```
+
+```text
+Use docs/workflow-docs-cross-link-polish.md as the map for workflow docs.
+Cross-links help navigation but do not replace PR-specific checks.
+Cross-links do not replace no-commit review.
+Cross-links do not replace PR open/unmerged verification.
+Cross-links do not replace mergedAt non-null verification.
+Cross-links do not replace branch deletion verification.
+Cross-links do not replace final local-main dashboard proof.
 ```
 
 ```text

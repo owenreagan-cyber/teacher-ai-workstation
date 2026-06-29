@@ -12,7 +12,7 @@ This PR adds command/check bundle reference polish only. This pass points to the
 Current status: command/check bundle reference polish complete.
 ```
 
-Checklist-driven prompt template tightening is complete. PR lifecycle guardrail consolidation adds consolidated lifecycle guardrails. See `docs/pr-lifecycle-guardrail-consolidation.md`.
+Checklist-driven prompt template tightening is complete. PR lifecycle guardrail consolidation adds consolidated lifecycle guardrails. See `docs/pr-lifecycle-guardrail-consolidation.md`. Workflow doc map: `docs/workflow-docs-cross-link-polish.md`.
 
 Compact bundle picker and per-bundle references are documented for quick lookup without duplicating full check lists.
 
@@ -173,6 +173,12 @@ no wallpaper/photo curator implementation
 - This PR does not add external integrations.
 - This PR does not add network calls.
 - This PR does not add automation.
+
+## Related workflow docs
+
+- Full bundles: `docs/testing-checklist-consolidation.md`
+- Prompt template: `docs/checklist-driven-prompt-template-tightening.md`
+- Workflow doc map: `docs/workflow-docs-cross-link-polish.md`
 
 ## Commands Reference
 

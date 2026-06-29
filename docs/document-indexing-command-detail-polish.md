@@ -14,6 +14,8 @@ Current status: document indexing command detail polish complete.
 
 Teacher Workflow command detail summary links all command detail docs. See `docs/teacher-workflow-command-detail-summary.md`.
 
+Teacher Workflow safe-output examples document expected output shapes. See `docs/teacher-workflow-safe-output-examples.md`.
+
 ## Why Command Detail Matters
 
 After review notes command detail polish, safe Document Indexing planning commands were listed but command purpose, expected output, and planning-only boundaries still needed clearer detail. This polish makes the Document Indexing planning status commands easier to understand without implying document scanning, folder scanning, file indexing, content parsing, OCR, embeddings, vector database behavior, lesson generation, or student data handling exists.

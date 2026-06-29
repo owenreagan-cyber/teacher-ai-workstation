@@ -20,6 +20,8 @@ Document Indexing command detail polish tightens safe Document Indexing planning
 
 Teacher Workflow command detail summary links all command detail docs. See `docs/teacher-workflow-command-detail-summary.md`.
 
+Teacher Workflow safe-output examples document expected output shapes. See `docs/teacher-workflow-safe-output-examples.md`.
+
 ## Why This Cleanup Exists
 
 After prompt pack stack completion marker, the reusable prompt pack documentation stack was complete for now but core Teacher Workstation planning references still needed a focused cleanup pass. This cleanup makes teacher workflow priorities, safe commands, and next build priorities easy to find without weakening lifecycle gates or final local-main proof.

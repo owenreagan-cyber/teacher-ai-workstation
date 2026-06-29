@@ -9,10 +9,10 @@ This PR adds Teacher Workflow command detail summary only. This pass is about pr
 ## Current Status
 
 ```text
-Current status: teacher workflow command detail summary in progress.
+Current status: teacher workflow command detail summary complete.
 ```
 
-Command detail summary rules are documented for local status commands only.
+Teacher Workflow safe-output examples document expected output shapes. See `docs/teacher-workflow-safe-output-examples.md`.
 
 ## Why This Summary Exists
 

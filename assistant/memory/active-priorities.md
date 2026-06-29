@@ -29,15 +29,16 @@
 - Prompt pack freshness report polish: complete
 - Prompt pack handoff summary: complete
 - Prompt pack stack completion marker: complete
+- Core Teacher Workstation planning cleanup: complete
 - Appearance & Vibe wallpaper/photo foundation stack: complete for now
 
 ### Now
 
-- Core Teacher Workstation planning cleanup (core-teacher-workstation-planning/status only)
+- Teacher workflow quick-reference polish (teacher-workflow-quick-reference/status only)
 
 ### Next
 
-- Teacher workflow quick-reference polish
+- Teacher workflow status summary
 
 ## Completed (earlier foundations)
 

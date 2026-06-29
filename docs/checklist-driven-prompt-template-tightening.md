@@ -217,6 +217,7 @@ no wallpaper/photo curator implementation
 - Bundle reference: `docs/command-check-bundle-reference-polish.md`
 - PR lifecycle: `docs/pr-lifecycle-guardrail-consolidation.md`
 - Workflow doc map: `docs/workflow-docs-cross-link-polish.md`
+- Prompt pack maintenance: `docs/prompt-pack-maintenance-checklist.md`
 
 ## Commands Reference
 

@@ -797,6 +797,29 @@ else
   warn "command check bundle reference status script missing: scripts/command-check-bundle-reference-status.sh"
 fi
 
+section "Checklist-Driven Prompt Template Tightening"
+if [[ -f scripts/checklist-driven-prompt-template-status.sh ]]; then
+  checklist_prompt_template_result=0
+  checklist_prompt_template_output="$(bash scripts/checklist-driven-prompt-template-status.sh 2>&1)" || checklist_prompt_template_result=$?
+  checklist_prompt_template_pass="$(summary_count "${checklist_prompt_template_output}" "PASS")"
+  checklist_prompt_template_warn="$(summary_count "${checklist_prompt_template_output}" "WARN")"
+  checklist_prompt_template_fail="$(summary_count "${checklist_prompt_template_output}" "FAIL")"
+
+  if [[ "${checklist_prompt_template_result}" != "0" ]]; then
+    printf 'Checklist-Driven Prompt Template Tightening: status command completed\n'
+    printf '%s\n' "${checklist_prompt_template_output}"
+    fail "checklist-driven prompt template tightening status failed"
+  elif [[ -n "${checklist_prompt_template_pass}" && -n "${checklist_prompt_template_warn}" && -n "${checklist_prompt_template_fail}" ]]; then
+    printf 'Checklist-Driven Prompt Template Tightening: PASS %s / WARN %s / FAIL %s\n' "${checklist_prompt_template_pass}" "${checklist_prompt_template_warn}" "${checklist_prompt_template_fail}"
+    pass "checklist-driven prompt template tightening status completed"
+  else
+    printf 'Checklist-Driven Prompt Template Tightening: status command completed\n'
+    pass "checklist-driven prompt template tightening status completed"
+  fi
+else
+  warn "checklist-driven prompt template status script missing: scripts/checklist-driven-prompt-template-status.sh"
+fi
+
 end_section_summary "Future-Safety / Parked Work"
 
 group_banner "Appearance & Vibe Foundation Status"

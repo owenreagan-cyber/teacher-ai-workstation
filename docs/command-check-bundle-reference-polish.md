@@ -9,8 +9,10 @@ This PR adds command/check bundle reference polish only. This pass points to the
 ## Current Status
 
 ```text
-Current status: command/check bundle reference polish in progress.
+Current status: command/check bundle reference polish complete.
 ```
+
+Checklist-driven prompt template tightening adds lifecycle guardrail rules for bundle references. See `docs/checklist-driven-prompt-template-tightening.md`.
 
 Compact bundle picker and per-bundle references are documented for quick lookup without duplicating full check lists.
 

@@ -16,15 +16,16 @@
 - Local document indexing follow-up: complete
 - Project memory cleanup: complete
 - Testing/checklist consolidation: complete
+- Command/check bundle reference polish: complete
 - Appearance & Vibe wallpaper/photo foundation stack: complete for now
 
 ### Now
 
-- Command/check bundle reference polish (reference-polish/status only)
+- Checklist-driven prompt template tightening (template-tightening/status only)
 
 ### Next
 
-- Checklist-driven prompt template tightening
+- PR lifecycle guardrail consolidation
 
 ## Completed (earlier foundations)
 

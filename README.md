@@ -475,12 +475,29 @@ bin/chief-of-staff --lesson-review-workflow-status
 
 See `docs/lesson-review-workflow-polish.md`.
 
+Review notes workflow polish status command:
+
+```bash
+bin/chief-of-staff --review-notes-workflow-status
+```
+
+See `docs/review-notes-workflow-polish.md`.
+
 Lesson review workflow (safe sample slug only; no student data):
 
 ```bash
 bin/chief-of-staff --dashboard
 bin/chief-of-staff --lesson-review-view fractions-review
 bin/chief-of-staff --review-notes-template-status
+```
+
+Review notes workflow (safe sample slug only; no student data):
+
+```bash
+bin/chief-of-staff --dashboard
+bin/chief-of-staff --review-notes-workflow-status
+bin/chief-of-staff --review-notes-template-status
+bin/chief-of-staff --lesson-review-view fractions-review
 ```
 
 Teacher planning commands (safe sample slug only; no student data):

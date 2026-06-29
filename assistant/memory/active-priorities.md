@@ -53,14 +53,15 @@ Completed:
 - Chief of Staff workflow quick-start guide
 - Dashboard section summary polish
 - Teacher planning command organization
+- Lesson review workflow polish
 
 Now:
 
-- Lesson review workflow polish (workflow-polish/status only)
+- Review notes workflow polish (workflow-polish/status only)
 
 Next:
 
-- Review notes workflow polish
+- Local document indexing follow-up
 
 ## Parked Future
 

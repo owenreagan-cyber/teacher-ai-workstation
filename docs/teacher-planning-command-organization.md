@@ -14,6 +14,8 @@ Current status: teacher planning command organization complete.
 
 Lesson review workflow polish improves safe local review guidance. See `docs/lesson-review-workflow-polish.md`.
 
+Review notes workflow polish improves safe local review notes guidance. See `docs/review-notes-workflow-polish.md`.
+
 Teacher planning commands are grouped for easier discovery. Safe sample slugs and review-only boundaries are documented clearly.
 
 ## Why This Organization Pass Exists

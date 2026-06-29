@@ -19,24 +19,24 @@ Track active projects, project status, next actions, blockers, and decisions.
 - Status: active
 - Category: operations / app-development
 - Goal: Prepare a MacBook-first Teacher AI Workstation with safe setup, assistant foundations, and future specialist support.
-- Current phase: Teacher workflow output examples completion marker
-- Last known next action: Add Teacher Workflow output examples completion marker; then Lesson-planning template readiness polish. No check removals, weakened lifecycle guardrails, document scanning, folder scanning, file indexing, content parsing, OCR, embeddings, vector DB, lesson generation, real review notes, or student data.
+- Current phase: Lesson-planning template readiness polish
+- Last known next action: Add Lesson-planning template readiness polish; then Lesson-planning placeholder template skeleton. No check removals, weakened lifecycle guardrails, document scanning, folder scanning, file indexing, content parsing, OCR, embeddings, vector DB, lesson generation, generated briefs/drafts, real review notes, or student data.
 - Blockers: none known
-- Source: repo roadmap, build queue, `docs/teacher-workflow-output-examples-completion-marker.md`, `docs/teacher-workflow-safe-output-checker.md`, and `docs/testing-checklist-consolidation.md`
+- Source: repo roadmap, build queue, `docs/lesson-planning-template-readiness-polish.md`, `docs/teacher-workflow-output-examples-completion-marker.md`, and `docs/testing-checklist-consolidation.md`
 - Last reviewed: 2026-06-29
-- Notes: Phase 0E is complete. Teacher Workflow command detail and safe-output example stack is complete for now after this marker. Keep Phase 1 local-first, inspectable, and beginner-friendly. Do not claim automatic lesson generation, LLM drafting by default, classroom-ready lesson production, real app generation, or deployment exists. Do not imply document indexing is implemented.
+- Notes: Phase 0E is complete. Teacher Workflow command detail and safe-output example stack is complete for now. This PR returns to lesson-planning template readiness documentation/status only. Keep Phase 1 local-first, inspectable, and beginner-friendly. Do not claim automatic lesson generation, LLM drafting by default, classroom-ready lesson production, real app generation, or deployment exists. Do not imply document indexing is implemented.
 
 ### Teacher AI Chief of Staff
 
 - Status: active
 - Category: teaching / app-development
 - Goal: Build a teaching-first, permission-based assistant for planning, memory, writing, troubleshooting, and project support.
-- Current phase: Teacher workflow output examples completion marker
-- Last known next action: Add Teacher Workflow output examples completion marker; then Lesson-planning template readiness polish. No check removals, weakened lifecycle guardrails, document scanning, folder scanning, file indexing, content parsing, OCR, embeddings, vector DB, lesson generation, real review notes, or student data.
+- Current phase: Lesson-planning template readiness polish
+- Last known next action: Add Lesson-planning template readiness polish; then Lesson-planning placeholder template skeleton. No check removals, weakened lifecycle guardrails, document scanning, folder scanning, file indexing, content parsing, OCR, embeddings, vector DB, lesson generation, generated briefs/drafts, real review notes, or student data.
 - Blockers: approved real writing samples are not added yet; Gmail/Drive integrations require explicit future permission and safety review
-- Source: Phase 1A-1D docs, dashboard docs, lesson planning scaffold, Developer Mode template work, `docs/teacher-workflow-output-examples-completion-marker.md`, `docs/teacher-workflow-safe-output-checker.md`, and `docs/testing-checklist-consolidation.md`
+- Source: Phase 1A-1D docs, dashboard docs, lesson planning scaffold, Developer Mode template work, `docs/lesson-planning-template-readiness-polish.md`, `docs/teacher-workflow-output-examples-completion-marker.md`, and `docs/testing-checklist-consolidation.md`
 - Last reviewed: 2026-06-29
-- Notes: Teaching remains the primary focus. Teacher Workflow command detail and safe-output example stack is complete for now after this marker. Do not claim the full Chief of Staff, automatic lesson generation, real app generation, or deployment is built yet. Do not imply lesson generation changed.
+- Notes: Teaching remains the primary focus. Teacher Workflow command detail and safe-output example stack is complete for now. This PR returns to lesson-planning template readiness documentation/status only. Do not claim the full Chief of Staff, automatic lesson generation, real app generation, or deployment is built yet. Do not imply lesson generation changed.
 
 ### 3D Design Factory Agent
 

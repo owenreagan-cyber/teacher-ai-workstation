@@ -14,6 +14,8 @@ Current status: teacher workflow safe-output checker in progress.
 
 Safe-output checker rules are documented for local status commands only.
 
+Lesson-planning template readiness documents placeholder-only template examples. See `docs/lesson-planning-template-readiness-polish.md`.
+
 ## Why This Checker Exists
 
 After teacher workflow safe-output examples, example output shapes were documented but there was no single checker verifying those examples still show planning-only labels, placeholder counts, and safety boundaries. This checker makes safe-output example documentation easy to audit without implying document scanning, folder scanning, file indexing, content parsing, OCR, embeddings, vector database behavior, lesson generation, or student data handling exists.
@@ -147,6 +149,8 @@ Scope: Return to lesson-planning template work by documenting safe template read
 ```
 
 Related: Teacher Workflow output examples completion marker (`docs/teacher-workflow-output-examples-completion-marker.md`) marks the command detail and safe-output example stack complete for now.
+
+Related: Lesson-planning template readiness polish (`docs/lesson-planning-template-readiness-polish.md`) documents safe template readiness and placeholder-only examples.
 
 ## Lifecycle Guardrails Still Required
 

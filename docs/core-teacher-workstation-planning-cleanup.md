@@ -24,6 +24,8 @@ Teacher Workflow safe-output checker verifies example docs remain safe. See `doc
 
 Teacher Workflow output examples completion marker marks the command detail and safe-output stack complete for now. See `docs/teacher-workflow-output-examples-completion-marker.md`.
 
+Lesson-planning template readiness documents placeholder-only template examples. See `docs/lesson-planning-template-readiness-polish.md`.
+
 ## Why This Cleanup Exists
 
 After prompt pack stack completion marker, the reusable prompt pack documentation stack was complete for now but core Teacher Workstation planning references still needed a focused cleanup pass. This cleanup makes teacher workflow priorities, safe commands, and next build priorities easy to find without weakening lifecycle gates or final local-main proof.

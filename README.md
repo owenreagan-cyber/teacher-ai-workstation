@@ -310,7 +310,14 @@ Teacher Workflow command detail summary: docs/teacher-workflow-command-detail-su
 Teacher Workflow safe-output examples: docs/teacher-workflow-safe-output-examples.md
 Teacher Workflow safe-output checker: docs/teacher-workflow-safe-output-checker.md
 Teacher Workflow output examples completion marker: docs/teacher-workflow-output-examples-completion-marker.md
-Next recommended PR: Lesson-planning template readiness polish
+Lesson-planning template readiness: docs/lesson-planning-template-readiness-polish.md
+Next recommended PR: Lesson-planning placeholder template skeleton
+```
+
+Lesson-planning template readiness:
+
+```bash
+bin/chief-of-staff --lesson-planning-template-readiness-status
 ```
 
 Teacher Workflow output examples completion marker:

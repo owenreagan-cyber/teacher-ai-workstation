@@ -248,7 +248,8 @@ Use `docs/teacher-workflow-command-detail-summary.md` for a compact summary link
 Use `docs/teacher-workflow-safe-output-examples.md` for safe example output shapes for Teacher Workflow status commands.
 Use `docs/teacher-workflow-safe-output-checker.md` for read-only verification that safe-output example docs keep planning-only labels and safety boundaries visible.
 Use `docs/teacher-workflow-output-examples-completion-marker.md` to see the Teacher Workflow command detail and safe-output example stack marked complete for now and the next safe return point for lesson-planning template work.
-The next recommended PR is Lesson-planning template readiness polish.
+Use `docs/lesson-planning-template-readiness-polish.md` for safe lesson-planning template readiness, placeholder-only examples, and planning-only boundaries.
+The next recommended PR is Lesson-planning placeholder template skeleton.
 Use `docs/prompt-pack-handoff-summary.md` to understand the current reusable prompt pack stack.
 The handoff summary points to maintenance, freshness, stale-reference audit, reference index, workflow navigation, verification bundles, and lifecycle guardrails.
 Use `docs/prompt-pack-reference-index.md` to find reusable prompt pack references.

@@ -59,22 +59,22 @@ Phase 1 Teacher Chief of Staff + safe local lesson workflows.
 
 ## Current PR
 
-Teacher workflow output examples completion marker.
+Lesson-planning template readiness polish.
 
-Scope: Mark the Teacher Workflow command detail and safe-output example stack complete for now, then document the next safe return point for lesson-planning template work. Preserve every existing command and status check. No checks removed, no command behavior changes, no lesson generation changes, no document scanning/indexing implementation, no student data, no live integrations, no network calls, and no automation.
+Scope: Return to lesson-planning template work by documenting safe template readiness, placeholder-only examples, and planning-only boundaries. Preserve every existing command and status check. No checks removed, no command behavior changes, no real lesson generation, no generated lesson briefs/drafts, no document scanning/indexing implementation, no student data, no live integrations, no network calls, and no automation.
 
 Appearance & Vibe wallpaper/photo curator foundation stack: complete for now.
 Live curator implementation: not started.
 
 ## Next PR
 
-Lesson-planning template readiness polish
+Lesson-planning placeholder template skeleton
 
-Scope: Return to lesson-planning template work by documenting safe template readiness, placeholder-only examples, and planning-only boundaries. Preserve every existing command and status check. No checks removed, no command behavior changes, no real lesson generation, no generated lesson briefs/drafts, no document scanning/indexing implementation, no student data, no live integrations, no network calls, and no automation.
+Scope: Add a placeholder-only lesson-planning template skeleton for future safe lesson workflow work. Preserve every existing command and status check. No checks removed, no command behavior changes, no real lesson generation, no generated lesson briefs/drafts, no real review notes, no document scanning/indexing implementation, no student data, no live integrations, no network calls, and no automation.
 
 ## Next Recommended PRs
 
-1. Lesson-planning template readiness polish.
+1. Lesson-planning placeholder template skeleton.
 2. Later: permissioned Gmail/Drive integrations.
 3. Later: secrets/capability broker.
 

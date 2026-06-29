@@ -93,6 +93,8 @@ Teacher Planning Command Organization (status only; safe sample: fractions-revie
                                        Show Teacher Workflow safe-output checker status and exit.
   --teacher-workflow-output-examples-completion-status
                                        Show Teacher Workflow output examples completion marker status and exit.
+  --lesson-planning-template-readiness-status
+                                       Show Lesson-planning template readiness polish status and exit.
 
 Developer and Cursor Workflow:
   --cursor-workflow-status             Show local Cursor workflow status and exit.
@@ -214,6 +216,7 @@ Before and after PR:
   bin/chief-of-staff --help-examples-status
 
 Teacher review (safe local sample slug only; no student data):
+  bin/chief-of-staff --lesson-planning-template-readiness-status
   bin/chief-of-staff --teacher-workflow-output-examples-completion-status
   bin/chief-of-staff --teacher-workflow-safe-output-checker-status
   bin/chief-of-staff --teacher-workflow-safe-output-examples-status
@@ -311,6 +314,7 @@ All command examples:
   bin/chief-of-staff --teacher-workflow-status-summary
   bin/chief-of-staff --teacher-workflow-quick-reference-status
   bin/chief-of-staff --core-teacher-workstation-planning-cleanup-status
+  bin/chief-of-staff --lesson-planning-template-readiness-status
   bin/chief-of-staff --teacher-workflow-output-examples-completion-status
   bin/chief-of-staff --teacher-workflow-safe-output-checker-status
   bin/chief-of-staff --teacher-workflow-safe-output-examples-status
@@ -431,6 +435,7 @@ Local command: teacher workflow command detail summary status
 Local command: teacher workflow safe output examples status
 Local command: teacher workflow safe output checker status
 Local command: teacher workflow output examples completion status
+Local command: lesson planning template readiness status
 Local command: testing checklist status
 Local command: command check bundle reference status
 Local command: checklist driven prompt template status
@@ -1554,6 +1559,15 @@ while [[ $# -gt 0 ]]; do
         die "Teacher Workflow output examples completion status script is missing: scripts/teacher-workflow-output-examples-completion-status.sh"
       fi
       bash "${teacher_workflow_output_examples_completion_status_script}"
+      exit 0
+      ;;
+    --lesson-planning-template-readiness-status)
+      repo_root="$(resolve_repo_root)"
+      lesson_planning_template_readiness_status_script="${repo_root}/scripts/lesson-planning-template-readiness-status.sh"
+      if [[ ! -f "${lesson_planning_template_readiness_status_script}" ]]; then
+        die "Lesson-planning template readiness status script is missing: scripts/lesson-planning-template-readiness-status.sh"
+      fi
+      bash "${lesson_planning_template_readiness_status_script}"
       exit 0
       ;;
     --teacher-planning-command-detail-status)

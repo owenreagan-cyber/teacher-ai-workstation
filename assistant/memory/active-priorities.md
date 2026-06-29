@@ -39,15 +39,16 @@
 - Teacher workflow command detail summary: complete
 - Teacher workflow safe-output checker: complete
 - Teacher Workflow command detail and safe-output example stack: complete for now
+- Teacher workflow output examples completion marker: complete
 - Appearance & Vibe wallpaper/photo foundation stack: complete for now
 
 ### Now
 
-- Teacher workflow output examples completion marker (teacher-workflow-output-examples-completion/status only)
+- Lesson-planning template readiness polish (lesson-planning-template-readiness/status only)
 
 ### Next
 
-- Lesson-planning template readiness polish
+- Lesson-planning placeholder template skeleton
 
 ## Completed (earlier foundations)
 

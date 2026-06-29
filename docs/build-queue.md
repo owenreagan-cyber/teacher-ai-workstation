@@ -49,25 +49,26 @@ Phase 1 Teacher Chief of Staff + safe local lesson workflows.
 - Chief of Staff help examples polish.
 - Chief of Staff workflow quick-start guide.
 - Dashboard section summary polish.
+- Teacher planning command organization.
 
 ## Current PR
 
-Teacher planning command organization.
+Lesson review workflow polish.
 
-Scope: Improve lesson-planning command organization and discoverability after dashboard section summary polish. Preserve every existing command and status check. No lesson generation changes, no live integrations, no network calls, no student data, and no automation.
+Scope: Improve the safe local lesson review workflow, review status visibility, and review notes guidance. Preserve every existing command and status check. No lesson generation changes, no student data, no live integrations, no network calls, and no automation.
 
 Appearance & Vibe wallpaper/photo curator foundation stack: complete for now.
 Live curator implementation: not started.
 
 ## Next PR
 
-Lesson review workflow polish
+Review notes workflow polish
 
-Scope: Improve the safe local lesson review workflow, review status visibility, and review notes guidance. Preserve every existing command and status check. No lesson generation changes, no student data, no live integrations, no network calls, and no automation.
+Scope: Improve review notes template guidance, status visibility, and safe local review-note workflow. Preserve every existing command and status check. No lesson generation changes, no generated review notes, no student data, no live integrations, no network calls, and no automation.
 
 ## Next Recommended PRs
 
-1. Lesson review workflow polish.
+1. Review notes workflow polish.
 2. Later: permissioned Gmail/Drive integrations.
 3. Later: secrets/capability broker.
 

@@ -12,6 +12,8 @@ This PR improves help examples and workflow examples only. This pass is about pr
 Current status: help examples polish complete.
 ```
 
+Lesson review workflow polish improves safe local review guidance. See `docs/lesson-review-workflow-polish.md`.
+
 Workflow quick-start guide adds plain-English daily/PR/merge workflows. See `docs/chief-of-staff-workflow-quick-start-guide.md`.
 
 Help text and README include clearer common-workflow example blocks for daily health checks, teacher review, developer/Cursor verification, and safe Appearance & Vibe status/dry-run commands.
@@ -208,10 +210,12 @@ no student data
 
 ```bash
 bin/chief-of-staff --help-examples-status
+bin/chief-of-staff --lesson-review-workflow-status
 bin/chief-of-staff --workflow-quick-start-status
 bin/chief-of-staff --help
 bin/chief-of-staff --list-workflows
 bin/chief-of-staff --dashboard
 bash scripts/chief-of-staff-help-examples-status.sh
 bash scripts/chief-of-staff-workflow-quick-start-status.sh
+bash scripts/lesson-review-workflow-polish-status.sh
 ```

@@ -16,6 +16,8 @@ Lesson Review command detail polish tightens safe Lesson Review command referenc
 
 Review Notes command detail polish tightens safe Review Notes command references. See `docs/review-notes-command-detail-polish.md`.
 
+Document Indexing command detail polish tightens safe Document Indexing planning command references. See `docs/document-indexing-command-detail-polish.md`.
+
 ## Why This Status Summary Exists
 
 After teacher workflow quick-reference polish, safe commands and doc links were collected but there was no single summary of what is complete, planning-only, or future-only across the Teacher Workflow stack. This summary makes stack status visible without implying lesson generation, document indexing, or student data handling exists.

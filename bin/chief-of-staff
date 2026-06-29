@@ -68,6 +68,8 @@ Document and Review Workflows:
                                        Show Review Notes command detail polish status and exit.
   --review-notes-workflow-status       Show review notes workflow polish status and exit.
   --review-notes-template-status       Show local review notes template status and exit.
+  --document-indexing-command-detail-status
+                                       Show Document Indexing command detail polish status and exit.
   --document-indexing-plan-status      Show safe local document indexing plan status and exit.
   --local-document-indexing-follow-up-status
                                        Show local document indexing follow-up status and exit.
@@ -204,6 +206,7 @@ Before and after PR:
   bin/chief-of-staff --help-examples-status
 
 Teacher review (safe local sample slug only; no student data):
+  bin/chief-of-staff --document-indexing-command-detail-status
   bin/chief-of-staff --review-notes-command-detail-status
   bin/chief-of-staff --lesson-review-command-detail-status
   bin/chief-of-staff --teacher-planning-command-detail-status
@@ -296,6 +299,7 @@ All command examples:
   bin/chief-of-staff --teacher-workflow-status-summary
   bin/chief-of-staff --teacher-workflow-quick-reference-status
   bin/chief-of-staff --core-teacher-workstation-planning-cleanup-status
+  bin/chief-of-staff --document-indexing-command-detail-status
   bin/chief-of-staff --review-notes-command-detail-status
   bin/chief-of-staff --lesson-review-command-detail-status
   bin/chief-of-staff --lesson-review-workflow-status
@@ -377,6 +381,7 @@ Local command: review notes workflow status
 Local command: review notes template status
 Local command: document indexing plan status
 Local command: local document indexing follow-up status
+Local command: document indexing command detail status
 
 Teacher Planning Command Organization (status only; safe sample: fractions-review; no lesson generation)
 Local command: teacher planning command status
@@ -1520,6 +1525,15 @@ while [[ $# -gt 0 ]]; do
         die "Review Notes command detail status script is missing: scripts/review-notes-command-detail-status.sh"
       fi
       bash "${review_notes_command_detail_status_script}"
+      exit 0
+      ;;
+    --document-indexing-command-detail-status)
+      repo_root="$(resolve_repo_root)"
+      document_indexing_command_detail_status_script="${repo_root}/scripts/document-indexing-command-detail-status.sh"
+      if [[ ! -f "${document_indexing_command_detail_status_script}" ]]; then
+        die "Document Indexing command detail status script is missing: scripts/document-indexing-command-detail-status.sh"
+      fi
+      bash "${document_indexing_command_detail_status_script}"
       exit 0
       ;;
     --wallpaper-photo-curator-plan-status)

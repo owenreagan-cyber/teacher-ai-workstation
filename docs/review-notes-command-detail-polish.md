@@ -9,10 +9,10 @@ This PR adds Review Notes command detail polish only. This pass is about preserv
 ## Current Status
 
 ```text
-Current status: review notes command detail polish in progress.
+Current status: review notes command detail polish complete.
 ```
 
-Command detail rules are documented for local status commands only.
+Document Indexing command detail polish tightens safe Document Indexing planning command references. See `docs/document-indexing-command-detail-polish.md`.
 
 ## Why Command Detail Matters
 

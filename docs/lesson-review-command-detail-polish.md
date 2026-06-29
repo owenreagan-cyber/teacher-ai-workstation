@@ -14,6 +14,8 @@ Current status: lesson review command detail polish complete.
 
 Review Notes command detail polish tightens safe Review Notes command references. See `docs/review-notes-command-detail-polish.md`.
 
+Document Indexing command detail polish tightens safe Document Indexing planning command references. See `docs/document-indexing-command-detail-polish.md`.
+
 ## Why Command Detail Matters
 
 After teacher planning command detail polish, safe Lesson Review commands were listed but command purpose, expected output, and planning-only boundaries still needed clearer detail. This polish makes the Lesson Review status command easier to understand without implying real lesson review, lesson generation, document indexing, or student data handling exists.

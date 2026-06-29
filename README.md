@@ -230,6 +230,14 @@ bin/chief-of-staff --local-document-indexing-follow-up-status
 
 See `docs/local-document-indexing-follow-up.md`.
 
+Document Indexing command detail polish status command:
+
+```bash
+bin/chief-of-staff --document-indexing-command-detail-status
+```
+
+See `docs/document-indexing-command-detail-polish.md`, `docs/local-document-indexing-follow-up.md`, `docs/review-notes-command-detail-polish.md`, `docs/lesson-review-command-detail-polish.md`, `docs/teacher-planning-command-detail-polish.md`, `docs/teacher-workflow-status-summary.md`, `docs/teacher-workflow-quick-reference-polish.md`, and `docs/core-teacher-workstation-planning-cleanup.md`.
+
 Project memory cleanup status command:
 
 ```bash
@@ -273,7 +281,14 @@ Teacher Workflow status summary: docs/teacher-workflow-status-summary.md
 Teacher Planning command detail: docs/teacher-planning-command-detail-polish.md
 Lesson Review command detail: docs/lesson-review-command-detail-polish.md
 Review Notes command detail: docs/review-notes-command-detail-polish.md
-Next recommended PR: Document indexing command detail polish
+Document Indexing command detail: docs/document-indexing-command-detail-polish.md
+Next recommended PR: Teacher workflow command detail summary
+```
+
+Document Indexing command detail polish:
+
+```bash
+bin/chief-of-staff --document-indexing-command-detail-status
 ```
 
 Review Notes command detail polish:

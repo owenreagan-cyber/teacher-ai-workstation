@@ -14,6 +14,8 @@ Current status: review notes workflow polish complete.
 
 Local document indexing follow-up improves safe local document indexing plan/status visibility. See `docs/local-document-indexing-follow-up.md`.
 
+Project memory cleanup improves active priorities and project memory clarity. See `docs/project-memory-cleanup.md`.
+
 Review notes template guidance, safe sample slug rules, and teacher/Cursor workflows are documented for local status commands only.
 
 ## Why This Polish Exists

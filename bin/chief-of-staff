@@ -47,6 +47,7 @@ Document and Review Workflows:
   --document-indexing-plan-status      Show safe local document indexing plan status and exit.
   --local-document-indexing-follow-up-status
                                        Show local document indexing follow-up status and exit.
+  --project-memory-cleanup-status       Show project memory cleanup status and exit.
 
 Teacher Planning Command Organization (status only; safe sample: fractions-review; no lesson generation):
   --teacher-planning-command-status    Show teacher planning command organization status and exit.
@@ -178,6 +179,7 @@ Teacher review (safe local sample slug only; no student data):
   bin/chief-of-staff --review-notes-template-status
   bin/chief-of-staff --document-indexing-plan-status
   bin/chief-of-staff --local-document-indexing-follow-up-status
+  bin/chief-of-staff --project-memory-cleanup-status
 
 Developer / Cursor verification:
   bin/chief-of-staff --cursor-workflow-status
@@ -240,6 +242,7 @@ All command examples:
   bin/chief-of-staff --lesson-review-workflow-status
   bin/chief-of-staff --review-notes-workflow-status
   bin/chief-of-staff --local-document-indexing-follow-up-status
+  bin/chief-of-staff --project-memory-cleanup-status
   bin/chief-of-staff --command-launcher-status
   bin/chief-of-staff --cursor-workflow-status
   bin/chief-of-staff --developer-status
@@ -314,6 +317,7 @@ Local command: Cursor workflow status
 
 Chief of Staff / Teacher Workstation Core
 Local command: return to chief of staff core status
+Local command: project memory cleanup status
 
 Core Dashboard and Health
 Local command: dashboard
@@ -1212,6 +1216,15 @@ while [[ $# -gt 0 ]]; do
         die "Local document indexing follow-up status script is missing: scripts/local-document-indexing-follow-up-status.sh"
       fi
       bash "${local_document_indexing_followup_status_script}"
+      exit 0
+      ;;
+    --project-memory-cleanup-status)
+      repo_root="$(resolve_repo_root)"
+      project_memory_cleanup_status_script="${repo_root}/scripts/project-memory-cleanup-status.sh"
+      if [[ ! -f "${project_memory_cleanup_status_script}" ]]; then
+        die "Project memory cleanup status script is missing: scripts/project-memory-cleanup-status.sh"
+      fi
+      bash "${project_memory_cleanup_status_script}"
       exit 0
       ;;
     --wallpaper-photo-curator-plan-status)

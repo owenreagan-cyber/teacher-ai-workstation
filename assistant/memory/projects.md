@@ -19,24 +19,24 @@ Track active projects, project status, next actions, blockers, and decisions.
 - Status: active
 - Category: operations / app-development
 - Goal: Prepare a MacBook-first Teacher AI Workstation with safe setup, assistant foundations, and future specialist support.
-- Current phase: Local document indexing follow-up
-- Last known next action: Improve safe local document indexing plan/status visibility without document scanning, file indexing, content parsing, OCR, embeddings, vector DB, network calls, automation, lesson generation, real review notes, or student data.
+- Current phase: Project memory cleanup
+- Last known next action: Tighten active priorities and project memory for a scannable roadmap; then Testing/checklist consolidation. No document scanning, file indexing, lesson generation, real review notes, or student data.
 - Blockers: none known
-- Source: repo roadmap and current implementation work
-- Last reviewed: 2026-06-26
-- Notes: Phase 0E is complete. Keep Phase 1 local-first, inspectable, and beginner-friendly. Do not claim automatic lesson generation, LLM drafting by default, classroom-ready lesson production, real app generation, or deployment exists.
+- Source: repo roadmap, build queue, and `docs/project-memory-cleanup.md`
+- Last reviewed: 2026-06-29
+- Notes: Phase 0E is complete. Teacher planning/review workflow polish sequence is complete through local document indexing follow-up. Keep Phase 1 local-first, inspectable, and beginner-friendly. Do not claim automatic lesson generation, LLM drafting by default, classroom-ready lesson production, real app generation, or deployment exists. Do not imply document indexing is implemented.
 
 ### Teacher AI Chief of Staff
 
 - Status: active
 - Category: teaching / app-development
 - Goal: Build a teaching-first, permission-based assistant for planning, memory, writing, troubleshooting, and project support.
-- Current phase: Local document indexing follow-up
-- Last known next action: Improve safe local document indexing plan/status visibility without document scanning, file indexing, content parsing, OCR, embeddings, vector DB, network calls, automation, lesson generation, real review notes, or student data.
+- Current phase: Project memory cleanup
+- Last known next action: Tighten active priorities and project memory for a scannable roadmap; then Testing/checklist consolidation. No document scanning, file indexing, lesson generation, real review notes, or student data.
 - Blockers: approved real writing samples are not added yet; Gmail/Drive integrations require explicit future permission and safety review
-- Source: Phase 1A-1D docs, dashboard docs, lesson planning scaffold, and Developer Mode template work
-- Last reviewed: 2026-06-26
-- Notes: Teaching remains the primary focus. Do not claim the full Chief of Staff, automatic lesson generation, real app generation, or deployment is built yet.
+- Source: Phase 1A-1D docs, dashboard docs, lesson planning scaffold, Developer Mode template work, and `docs/project-memory-cleanup.md`
+- Last reviewed: 2026-06-29
+- Notes: Teaching remains the primary focus. Do not claim the full Chief of Staff, automatic lesson generation, real app generation, or deployment is built yet. Do not imply lesson generation changed.
 
 ### 3D Design Factory Agent
 
@@ -47,8 +47,8 @@ Track active projects, project status, next actions, blockers, and decisions.
 - Last known next action: Keep advisory 3D readiness docs separate from active Chief of Staff lesson workflow builds.
 - Blockers: active build focus remains Chief of Staff and Teacher Workstation foundations
 - Source: Phase 0C readiness docs and build queue
-- Last reviewed: 2026-06-28
-- Notes: Parked until Chief of Staff and Teacher Workstation foundations are mature. Advisory only; human operator makes final print decisions.
+- Last reviewed: 2026-06-29
+- Notes: 3D Design Factory Agent remains parked. Advisory only; human operator makes final print decisions.
 
 ### 3D Design Agent readiness
 
@@ -59,7 +59,7 @@ Track active projects, project status, next actions, blockers, and decisions.
 - Last known next action: Keep 3D agent separate from but coordinated by the Chief of Staff.
 - Blockers: actual printer/profile details need Owen confirmation
 - Source: Phase 0C readiness docs
-- Last reviewed: initial planning phase
+- Last reviewed: 2026-06-29
 - Notes: Advisory only; human operator makes final print decisions.
 
 ## Open Threads
@@ -77,24 +77,12 @@ Track active projects, project status, next actions, blockers, and decisions.
 - Status: parked (foundation stack complete for now; returning to Chief of Staff / Teacher Workstation core)
 - Category: personal / operations
 - Goal: Future local Mac curator for wallpaper/photo candidate review, approve/dismiss, and rotation-folder storage.
-- Current phase: Paused after rotation handoff and safety audit (foundation stack complete for now; live curator not started).
-- Last known next action: Project memory cleanup.
+- Current phase: Paused after rotation handoff and safety audit
+- Last known next action: Testing/checklist consolidation after project memory cleanup.
 - Blockers: full curator not implemented; human approval gates required before automation
-- Source: docs/lesson-review-workflow-polish.md, docs/teacher-planning-command-organization.md, docs/dashboard-section-summary-polish.md, docs/chief-of-staff-workflow-quick-start-guide.md, docs/chief-of-staff-help-examples-polish.md, docs/chief-of-staff-command-map-cleanup.md, docs/chief-of-staff-dashboard-readability-pass.md, docs/return-to-chief-of-staff-core.md, docs/wallpaper-photo-rotation-handoff-safety-audit.md, assistant/appearance-vibe/wallpaper-photo-curator/, and build queue
-- Last reviewed: 2026-06-28
-- Notes: Wallpaper/photo curator foundation stack is complete for now. Live curator implementation is not started. No fetcher, real image processing, scheduler, notifications, network calls, API clients, OAuth, secrets, Reddit integration, or Devvit integration exists yet. Reddit may be a future source only. Devvit may be a future Reddit-native companion only.
-
-### Project Name
-
-- Status:
-- Category: teaching / app-development / 3D-printing / personal / business / operations
-- Goal:
-- Current phase:
-- Last known next action:
-- Blockers:
-- Source:
-- Last reviewed:
-- Notes:
+- Source: `docs/project-memory-cleanup.md`, build queue, and Appearance & Vibe foundation docs
+- Last reviewed: 2026-06-29
+- Notes: Appearance & Vibe wallpaper/photo foundation stack complete for now. live wallpaper/photo curator implementation is not started. No fetcher, real image processing, scheduler, notifications, network calls, API clients, OAuth, secrets, Reddit integration, or Devvit integration exists yet. Reddit may be a future source only. Devvit may be a future Reddit-native companion only.
 
 ## Completed Projects
 

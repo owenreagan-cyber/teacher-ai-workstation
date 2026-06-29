@@ -52,25 +52,26 @@ Phase 1 Teacher Chief of Staff + safe local lesson workflows.
 - Teacher planning command organization.
 - Lesson review workflow polish.
 - Review notes workflow polish.
+- Local document indexing follow-up.
 
 ## Current PR
 
-Local document indexing follow-up.
+Project memory cleanup.
 
-Scope: Improve safe local document indexing plan/status visibility after review notes workflow polish. Preserve every existing command and status check. No document scanning, no file indexing implementation, no student data, no live integrations, no network calls, and no automation.
+Scope: Tighten active priorities and project memory after the teacher planning/review workflow polish work. Preserve every existing command and status check. No lesson generation changes, no document scanning/indexing implementation, no student data, no live integrations, no network calls, and no automation.
 
 Appearance & Vibe wallpaper/photo curator foundation stack: complete for now.
 Live curator implementation: not started.
 
 ## Next PR
 
-Project memory cleanup
+Testing/checklist consolidation
 
-Scope: Tighten active priorities and project memory after the teacher planning/review workflow polish work. Preserve every existing command and status check. No lesson generation changes, no document scanning/indexing implementation, no student data, no live integrations, no network calls, and no automation.
+Scope: Reduce repeated manual check blocks by documenting grouped check sets and reusable verification bundles. Preserve every existing command and status check. No checks removed, no command behavior changes, no lesson generation changes, no document scanning/indexing implementation, no student data, no live integrations, no network calls, and no automation.
 
 ## Next Recommended PRs
 
-1. Project memory cleanup.
+1. Testing/checklist consolidation.
 2. Later: permissioned Gmail/Drive integrations.
 3. Later: secrets/capability broker.
 

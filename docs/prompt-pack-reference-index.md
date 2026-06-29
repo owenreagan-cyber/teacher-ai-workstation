@@ -9,10 +9,10 @@ This PR adds prompt pack reference index guidance only. This pass is about prese
 ## Current Status
 
 ```text
-Current status: prompt pack reference index in progress.
+Current status: prompt pack reference index complete.
 ```
 
-Prompt pack reference index rules are documented for local status commands only.
+Prompt pack stale-reference audit continues reusable prompt freshness checks. See `docs/prompt-pack-stale-reference-audit.md`.
 
 ## Why This Index Exists
 
@@ -180,6 +180,11 @@ no wallpaper/photo curator implementation
 - This PR does not add external integrations.
 - This PR does not add network calls.
 - This PR does not add automation.
+
+## Related prompt docs
+
+- Prompt pack stale-reference audit: `docs/prompt-pack-stale-reference-audit.md`
+- Prompt pack maintenance: `docs/prompt-pack-maintenance-checklist.md`
 
 ## Commands Reference
 

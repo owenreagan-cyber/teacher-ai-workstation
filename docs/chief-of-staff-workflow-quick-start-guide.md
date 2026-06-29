@@ -18,6 +18,8 @@ Teacher planning command organization improves lesson-planning command discovera
 
 Lesson review workflow polish improves safe local review guidance. See `docs/lesson-review-workflow-polish.md`.
 
+Review notes workflow polish improves safe local review notes guidance. See `docs/review-notes-workflow-polish.md`.
+
 See also `docs/chief-of-staff-help-examples-polish.md` and `docs/chief-of-staff-command-map-cleanup.md` for example blocks and command grouping.
 
 ## First Command to Run
@@ -186,6 +188,7 @@ bin/chief-of-staff --workflow-quick-start-status
 bin/chief-of-staff --dashboard-section-summary-status
 bin/chief-of-staff --teacher-planning-command-status
 bin/chief-of-staff --lesson-review-workflow-status
+bin/chief-of-staff --review-notes-workflow-status
 bin/chief-of-staff --dashboard
 bin/chief-of-staff --help
 bin/chief-of-staff --list-workflows
@@ -193,4 +196,5 @@ bash scripts/chief-of-staff-workflow-quick-start-status.sh
 bash scripts/dashboard-section-summary-status.sh
 bash scripts/teacher-planning-command-organization-status.sh
 bash scripts/lesson-review-workflow-polish-status.sh
+bash scripts/review-notes-workflow-polish-status.sh
 ```

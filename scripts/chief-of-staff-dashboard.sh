@@ -654,6 +654,29 @@ else
   warn "lesson review workflow polish status script missing: scripts/lesson-review-workflow-polish-status.sh"
 fi
 
+section "Review Notes Workflow Polish"
+if [[ -f scripts/review-notes-workflow-polish-status.sh ]]; then
+  review_notes_workflow_result=0
+  review_notes_workflow_output="$(bash scripts/review-notes-workflow-polish-status.sh 2>&1)" || review_notes_workflow_result=$?
+  review_notes_workflow_pass="$(summary_count "${review_notes_workflow_output}" "PASS")"
+  review_notes_workflow_warn="$(summary_count "${review_notes_workflow_output}" "WARN")"
+  review_notes_workflow_fail="$(summary_count "${review_notes_workflow_output}" "FAIL")"
+
+  if [[ "${review_notes_workflow_result}" != "0" ]]; then
+    printf 'Review Notes Workflow Polish: status command completed\n'
+    printf '%s\n' "${review_notes_workflow_output}"
+    fail "review notes workflow polish status failed"
+  elif [[ -n "${review_notes_workflow_pass}" && -n "${review_notes_workflow_warn}" && -n "${review_notes_workflow_fail}" ]]; then
+    printf 'Review Notes Workflow Polish: PASS %s / WARN %s / FAIL %s\n' "${review_notes_workflow_pass}" "${review_notes_workflow_warn}" "${review_notes_workflow_fail}"
+    pass "review notes workflow polish status completed"
+  else
+    printf 'Review Notes Workflow Polish: status command completed\n'
+    pass "review notes workflow polish status completed"
+  fi
+else
+  warn "review notes workflow polish status script missing: scripts/review-notes-workflow-polish-status.sh"
+fi
+
 end_section_summary "Lesson Planning Status"
 
 group_banner "Future-Safety / Parked Work"

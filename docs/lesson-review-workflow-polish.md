@@ -9,8 +9,10 @@ This PR improves safe local lesson review workflow guidance only. This pass is a
 ## Current Status
 
 ```text
-Current status: lesson review workflow polish in progress.
+Current status: lesson review workflow polish complete.
 ```
+
+Review notes workflow polish improves safe local review notes guidance. See `docs/review-notes-workflow-polish.md`.
 
 Safe lesson review workflow steps, sample slug rules, and review notes guidance are documented for local status commands only.
 

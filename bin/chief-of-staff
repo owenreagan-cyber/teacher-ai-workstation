@@ -42,6 +42,7 @@ Document and Review Workflows:
   --lesson-review-checklist-status     Show local lesson review checklist status and exit.
   --lesson-review-view <lesson-slug>   Show local single-slug lesson review view and exit.
   --lesson-review-workflow-status      Show lesson review workflow polish status and exit.
+  --review-notes-workflow-status       Show review notes workflow polish status and exit.
   --review-notes-template-status       Show local review notes template status and exit.
   --document-indexing-plan-status      Show safe local document indexing plan status and exit.
 
@@ -169,6 +170,7 @@ Before and after PR:
 
 Teacher review (safe local sample slug only; no student data):
   bin/chief-of-staff --lesson-review-workflow-status
+  bin/chief-of-staff --review-notes-workflow-status
   bin/chief-of-staff --teacher-planning-command-status
   bin/chief-of-staff --lesson-review-view fractions-review
   bin/chief-of-staff --review-notes-template-status
@@ -233,6 +235,7 @@ All command examples:
   bin/chief-of-staff --dashboard-section-summary-status
   bin/chief-of-staff --teacher-planning-command-status
   bin/chief-of-staff --lesson-review-workflow-status
+  bin/chief-of-staff --review-notes-workflow-status
   bin/chief-of-staff --command-launcher-status
   bin/chief-of-staff --cursor-workflow-status
   bin/chief-of-staff --developer-status
@@ -290,6 +293,7 @@ Document and Review Workflows
 Local command: lesson review checklist status
 Local command: single-slug lesson review view
 Local command: lesson review workflow status
+Local command: review notes workflow status
 Local command: review notes template status
 Local command: document indexing plan status
 
@@ -1518,6 +1522,15 @@ while [[ $# -gt 0 ]]; do
         die "Lesson review workflow polish status script is missing: scripts/lesson-review-workflow-polish-status.sh"
       fi
       bash "${lesson_review_workflow_status_script}"
+      exit 0
+      ;;
+    --review-notes-workflow-status)
+      repo_root="$(resolve_repo_root)"
+      review_notes_workflow_status_script="${repo_root}/scripts/review-notes-workflow-polish-status.sh"
+      if [[ ! -f "${review_notes_workflow_status_script}" ]]; then
+        die "Review notes workflow polish status script is missing: scripts/review-notes-workflow-polish-status.sh"
+      fi
+      bash "${review_notes_workflow_status_script}"
       exit 0
       ;;
     --command-launcher-status)

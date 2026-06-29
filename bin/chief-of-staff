@@ -29,6 +29,7 @@ Core Dashboard and Health:
                                        Show checklist-driven prompt template tightening status and exit.
   --pr-lifecycle-guardrail-status      Show PR lifecycle guardrail consolidation status and exit.
   --branch-hygiene-cleanup-status      Show branch hygiene and cleanup reference status and exit.
+  --local-main-proof-report-status     Show local main proof report polish status and exit.
   --command-launcher-status            Show Chief of Staff command launcher status and exit.
 
 Return to Core / Roadmap:
@@ -192,6 +193,7 @@ Teacher review (safe local sample slug only; no student data):
   bin/chief-of-staff --checklist-driven-prompt-template-status
   bin/chief-of-staff --pr-lifecycle-guardrail-status
   bin/chief-of-staff --branch-hygiene-cleanup-status
+  bin/chief-of-staff --local-main-proof-report-status
 
 Developer / Cursor verification:
   bin/chief-of-staff --cursor-workflow-status
@@ -260,6 +262,7 @@ All command examples:
   bin/chief-of-staff --checklist-driven-prompt-template-status
   bin/chief-of-staff --pr-lifecycle-guardrail-status
   bin/chief-of-staff --branch-hygiene-cleanup-status
+  bin/chief-of-staff --local-main-proof-report-status
   bin/chief-of-staff --command-launcher-status
   bin/chief-of-staff --cursor-workflow-status
   bin/chief-of-staff --developer-status
@@ -353,6 +356,9 @@ Local command: PR lifecycle guardrail status
 
 Branch Hygiene / Cleanup
 Local command: branch hygiene cleanup status
+
+Local Main Proof / Final Report
+Local command: local main proof report status
 
 Appearance & Vibe Foundation (status only; live curator not started)
 Local command: wallpaper photo curator plan status
@@ -1296,6 +1302,15 @@ while [[ $# -gt 0 ]]; do
         die "Branch hygiene cleanup status script is missing: scripts/branch-hygiene-cleanup-status.sh"
       fi
       bash "${branch_hygiene_cleanup_status_script}"
+      exit 0
+      ;;
+    --local-main-proof-report-status)
+      repo_root="$(resolve_repo_root)"
+      local_main_proof_report_status_script="${repo_root}/scripts/local-main-proof-report-status.sh"
+      if [[ ! -f "${local_main_proof_report_status_script}" ]]; then
+        die "Local main proof report status script is missing: scripts/local-main-proof-report-status.sh"
+      fi
+      bash "${local_main_proof_report_status_script}"
       exit 0
       ;;
     --wallpaper-photo-curator-plan-status)

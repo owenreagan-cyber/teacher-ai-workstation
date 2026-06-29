@@ -263,7 +263,7 @@ bin/chief-of-staff --checklist-driven-prompt-template-status
 bin/chief-of-staff --dashboard
 ```
 
-See `docs/checklist-driven-prompt-template-tightening.md`, `docs/command-check-bundle-reference-polish.md`, `docs/testing-checklist-consolidation.md`, `docs/pr-lifecycle-guardrail-consolidation.md`, and `docs/branch-hygiene-cleanup-reference.md`.
+See `docs/checklist-driven-prompt-template-tightening.md`, `docs/command-check-bundle-reference-polish.md`, `docs/testing-checklist-consolidation.md`, `docs/pr-lifecycle-guardrail-consolidation.md`, `docs/branch-hygiene-cleanup-reference.md`, and `docs/local-main-proof-report-polish.md`.
 
 PR lifecycle guardrails (every PR):
 
@@ -275,6 +275,22 @@ Branch hygiene and cleanup (every PR):
 
 ```bash
 bin/chief-of-staff --branch-hygiene-cleanup-status
+```
+
+Local main proof and final report (every PR completion):
+
+```bash
+bin/chief-of-staff --local-main-proof-report-status
+```
+
+```text
+Every PR completion must prove local main.
+Every PR completion must report the local main commit.
+Every PR completion must report dashboard PASS/WARN/FAIL and health count.
+Every PR completion must report next recommended PR.
+Every PR completion must report branch deletion status.
+Every PR completion must end with final status: on main, clean working tree, dashboard passing.
+Final report polish does not replace merge verification or branch hygiene checks.
 ```
 
 ```text

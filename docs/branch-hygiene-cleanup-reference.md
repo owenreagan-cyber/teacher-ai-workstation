@@ -11,10 +11,10 @@ See also `docs/pr-lifecycle-guardrail-consolidation.md` for full PR lifecycle gu
 ## Current Status
 
 ```text
-Current status: branch hygiene and cleanup reference in progress.
+Current status: branch hygiene and cleanup reference complete.
 ```
 
-Branch hygiene rules for starting state through final local-main proof are documented for local status commands only.
+Local main proof report polish continues final report rules. See `docs/local-main-proof-report-polish.md`.
 
 ## Why Branch Hygiene Exists
 

@@ -97,6 +97,8 @@ Lifecycle guardrails: `docs/pr-lifecycle-guardrail-consolidation.md`
 
 Branch hygiene: `docs/branch-hygiene-cleanup-reference.md`
 
+Local main proof: `docs/local-main-proof-report-polish.md`
+
 Template tightening: `docs/checklist-driven-prompt-template-tightening.md`
 
 Compact picker: `docs/command-check-bundle-reference-polish.md`
@@ -114,12 +116,21 @@ Named bundles:
 - Post-Merge Verification Bundle
 
 ```bash
+bin/chief-of-staff --local-main-proof-report-status
 bin/chief-of-staff --branch-hygiene-cleanup-status
 bin/chief-of-staff --pr-lifecycle-guardrail-status
 bin/chief-of-staff --checklist-driven-prompt-template-status
 bin/chief-of-staff --command-check-bundle-reference-status
 bin/chief-of-staff --testing-checklist-status
 ```
+
+Every PR completion must prove local main.
+Every PR completion must report the local main commit.
+Every PR completion must report dashboard PASS/WARN/FAIL and health count.
+Every PR completion must report next recommended PR.
+Every PR completion must report branch deletion status.
+Every PR completion must end with final status: on main, clean working tree, dashboard passing.
+Final report polish does not replace merge verification or branch hygiene checks.
 
 Every PR prompt must name the expected branch.
 Every PR prompt must verify the current branch before work and before commit.

@@ -14,6 +14,8 @@ Current status: testing/checklist consolidation complete.
 
 Command/check bundle reference polish adds a compact picker pointing here. See `docs/command-check-bundle-reference-polish.md`.
 
+Checklist-driven prompt template tightening adds lifecycle guardrail rules for bundle use in Cursor prompts. See `docs/checklist-driven-prompt-template-tightening.md`.
+
 Reusable verification bundles are documented for core, documentation/status, teacher planning/review, document indexing safety, Appearance & Vibe safety, pre-commit review, and post-merge verification.
 
 ## Why This Consolidation Exists

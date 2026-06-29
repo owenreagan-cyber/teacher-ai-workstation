@@ -259,8 +259,11 @@ Command and check bundles (reference only):
 ```bash
 bin/chief-of-staff --command-check-bundle-reference-status
 bin/chief-of-staff --testing-checklist-status
+bin/chief-of-staff --checklist-driven-prompt-template-status
 bin/chief-of-staff --dashboard
 ```
+
+See `docs/checklist-driven-prompt-template-tightening.md`, `docs/command-check-bundle-reference-polish.md`, and `docs/testing-checklist-consolidation.md`.
 
 Project memory and roadmap (status only):
 

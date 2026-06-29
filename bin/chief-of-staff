@@ -25,6 +25,8 @@ Core Dashboard and Health:
   --testing-checklist-status            Show testing/checklist consolidation status and exit.
   --command-check-bundle-reference-status
                                        Show command/check bundle reference polish status and exit.
+  --checklist-driven-prompt-template-status
+                                       Show checklist-driven prompt template tightening status and exit.
   --command-launcher-status            Show Chief of Staff command launcher status and exit.
 
 Return to Core / Roadmap:
@@ -185,6 +187,7 @@ Teacher review (safe local sample slug only; no student data):
   bin/chief-of-staff --project-memory-cleanup-status
   bin/chief-of-staff --testing-checklist-status
   bin/chief-of-staff --command-check-bundle-reference-status
+  bin/chief-of-staff --checklist-driven-prompt-template-status
 
 Developer / Cursor verification:
   bin/chief-of-staff --cursor-workflow-status
@@ -250,6 +253,7 @@ All command examples:
   bin/chief-of-staff --project-memory-cleanup-status
   bin/chief-of-staff --testing-checklist-status
   bin/chief-of-staff --command-check-bundle-reference-status
+  bin/chief-of-staff --checklist-driven-prompt-template-status
   bin/chief-of-staff --command-launcher-status
   bin/chief-of-staff --cursor-workflow-status
   bin/chief-of-staff --developer-status
@@ -336,6 +340,7 @@ Local command: dashboard section summary status
 Local command: teacher planning command status
 Local command: testing checklist status
 Local command: command check bundle reference status
+Local command: checklist driven prompt template status
 
 Appearance & Vibe Foundation (status only; live curator not started)
 Local command: wallpaper photo curator plan status
@@ -1252,6 +1257,15 @@ while [[ $# -gt 0 ]]; do
         die "Command check bundle reference status script is missing: scripts/command-check-bundle-reference-status.sh"
       fi
       bash "${command_check_bundle_reference_status_script}"
+      exit 0
+      ;;
+    --checklist-driven-prompt-template-status)
+      repo_root="$(resolve_repo_root)"
+      checklist_prompt_template_status_script="${repo_root}/scripts/checklist-driven-prompt-template-status.sh"
+      if [[ ! -f "${checklist_prompt_template_status_script}" ]]; then
+        die "Checklist-driven prompt template status script is missing: scripts/checklist-driven-prompt-template-status.sh"
+      fi
+      bash "${checklist_prompt_template_status_script}"
       exit 0
       ;;
     --wallpaper-photo-curator-plan-status)

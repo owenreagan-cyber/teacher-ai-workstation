@@ -93,6 +93,8 @@ bin/chief-of-staff --dashboard
 
 ## 13. Reusable Verification Bundles
 
+Lifecycle guardrails: `docs/checklist-driven-prompt-template-tightening.md`
+
 Compact picker: `docs/command-check-bundle-reference-polish.md`
 
 Full commands: `docs/testing-checklist-consolidation.md`
@@ -108,11 +110,24 @@ Named bundles:
 - Post-Merge Verification Bundle
 
 ```bash
+bin/chief-of-staff --checklist-driven-prompt-template-status
 bin/chief-of-staff --command-check-bundle-reference-status
 bin/chief-of-staff --testing-checklist-status
 ```
 
-Bundles may shorten prompts but do **not** replace PR-specific checks, no-commit review, merge verification, or final local `main` dashboard proof.
+Reusable verification bundles may shorten future prompts.
+
+Reusable verification bundles do **not** replace PR-specific checks.
+
+Reusable verification bundles do **not** replace no-commit review.
+
+Reusable verification bundles do **not** replace PR open/unmerged verification.
+
+Reusable verification bundles do **not** replace mergedAt non-null verification.
+
+Reusable verification bundles do **not** replace final local-main dashboard proof.
+
+Every PR must still end on local `main`, clean working tree, and dashboard passing.
 
 ## 14. Approval Decision
 

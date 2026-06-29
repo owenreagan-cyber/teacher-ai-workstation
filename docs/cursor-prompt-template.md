@@ -262,21 +262,31 @@ Only call complete when local `main` has the merge and dashboard passes.
 
 ## Reusable verification bundles
 
+Lifecycle guardrails: `docs/checklist-driven-prompt-template-tightening.md`
+
 Compact bundle picker: `docs/command-check-bundle-reference-polish.md`
 
 Full bundle commands: `docs/testing-checklist-consolidation.md`
 
 ```bash
+bin/chief-of-staff --checklist-driven-prompt-template-status
 bin/chief-of-staff --command-check-bundle-reference-status
 bin/chief-of-staff --testing-checklist-status
 ```
 
-Bundle references may shorten future prompts but do **not** replace:
+Reusable verification bundles may shorten future prompts.
 
-- PR-specific checks
-- no-commit review
-- merge verification (`mergedAt` non-null after merge)
-- final local `main` with clean working tree and dashboard passing
+Reusable verification bundles do **not** replace PR-specific checks.
+
+Reusable verification bundles do **not** replace no-commit review.
+
+Reusable verification bundles do **not** replace PR open/unmerged verification.
+
+Reusable verification bundles do **not** replace mergedAt non-null verification.
+
+Reusable verification bundles do **not** replace final local-main dashboard proof.
+
+Every PR must still end on local `main`, clean working tree, and dashboard passing.
 
 ---
 
@@ -286,4 +296,5 @@ See also:
 - `docs/cursor-pr-review-checklist.md`
 - `docs/testing-checklist-consolidation.md`
 - `docs/command-check-bundle-reference-polish.md`
+- `docs/checklist-driven-prompt-template-tightening.md`
 - `.cursor/rules/teacher-ai-workstation.mdc`

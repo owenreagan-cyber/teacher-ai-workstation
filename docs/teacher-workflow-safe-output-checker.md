@@ -140,10 +140,13 @@ Core Teacher Workstation planning cleanup: docs/core-teacher-workstation-plannin
 ## Next Safe Build Priority
 
 ```text
-Next recommended PR: Teacher workflow output examples completion marker
+Next recommended PR: Lesson-planning template readiness polish
+Teacher workflow output examples completion marker: complete for now
 
-Scope: Mark the Teacher Workflow command detail and safe-output example stack complete for now, then document the next safe return point for lesson-planning template work. Preserve every existing command and status check. No checks removed, no command behavior changes, no lesson generation changes, no document scanning/indexing implementation, no student data, no live integrations, no network calls, and no automation.
+Scope: Return to lesson-planning template work by documenting safe template readiness, placeholder-only examples, and planning-only boundaries. Preserve every existing command and status check. No checks removed, no command behavior changes, no real lesson generation, no generated lesson briefs/drafts, no document scanning/indexing implementation, no student data, no live integrations, no network calls, and no automation.
 ```
+
+Related: Teacher Workflow output examples completion marker (`docs/teacher-workflow-output-examples-completion-marker.md`) marks the command detail and safe-output example stack complete for now.
 
 ## Lifecycle Guardrails Still Required
 

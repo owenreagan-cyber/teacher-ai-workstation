@@ -884,6 +884,29 @@ else
   warn "Teacher Workflow safe-output checker status script missing: scripts/teacher-workflow-safe-output-checker-status.sh"
 fi
 
+section "Teacher Workflow Output Examples Completion Marker"
+if [[ -f scripts/teacher-workflow-output-examples-completion-status.sh ]]; then
+  teacher_workflow_output_examples_completion_result=0
+  teacher_workflow_output_examples_completion_output="$(bash scripts/teacher-workflow-output-examples-completion-status.sh 2>&1)" || teacher_workflow_output_examples_completion_result=$?
+  teacher_workflow_output_examples_completion_pass="$(summary_count "${teacher_workflow_output_examples_completion_output}" "PASS")"
+  teacher_workflow_output_examples_completion_warn="$(summary_count "${teacher_workflow_output_examples_completion_output}" "WARN")"
+  teacher_workflow_output_examples_completion_fail="$(summary_count "${teacher_workflow_output_examples_completion_output}" "FAIL")"
+
+  if [[ "${teacher_workflow_output_examples_completion_result}" != "0" ]]; then
+    printf 'Teacher Workflow Output Examples Completion Marker: status command completed\n'
+    printf '%s\n' "${teacher_workflow_output_examples_completion_output}"
+    fail "Teacher Workflow output examples completion status failed"
+  elif [[ -n "${teacher_workflow_output_examples_completion_pass}" && -n "${teacher_workflow_output_examples_completion_warn}" && -n "${teacher_workflow_output_examples_completion_fail}" ]]; then
+    printf 'Teacher Workflow Output Examples Completion Marker: PASS %s / WARN %s / FAIL %s\n' "${teacher_workflow_output_examples_completion_pass}" "${teacher_workflow_output_examples_completion_warn}" "${teacher_workflow_output_examples_completion_fail}"
+    pass "Teacher Workflow output examples completion status completed"
+  else
+    printf 'Teacher Workflow Output Examples Completion Marker: status command completed\n'
+    pass "Teacher Workflow output examples completion status completed"
+  fi
+else
+  warn "Teacher Workflow output examples completion status script missing: scripts/teacher-workflow-output-examples-completion-status.sh"
+fi
+
 end_section_summary "Lesson Planning Status"
 
 group_banner "Future-Safety / Parked Work"

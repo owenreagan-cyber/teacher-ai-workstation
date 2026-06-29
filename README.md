@@ -309,7 +309,14 @@ Document Indexing command detail: docs/document-indexing-command-detail-polish.m
 Teacher Workflow command detail summary: docs/teacher-workflow-command-detail-summary.md
 Teacher Workflow safe-output examples: docs/teacher-workflow-safe-output-examples.md
 Teacher Workflow safe-output checker: docs/teacher-workflow-safe-output-checker.md
-Next recommended PR: Teacher workflow output examples completion marker
+Teacher Workflow output examples completion marker: docs/teacher-workflow-output-examples-completion-marker.md
+Next recommended PR: Lesson-planning template readiness polish
+```
+
+Teacher Workflow output examples completion marker:
+
+```bash
+bin/chief-of-staff --teacher-workflow-output-examples-completion-status
 ```
 
 Teacher Workflow safe-output checker:

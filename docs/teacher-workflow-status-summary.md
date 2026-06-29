@@ -22,6 +22,8 @@ Teacher Workflow command detail summary links all command detail docs. See `docs
 
 Teacher Workflow safe-output checker verifies example docs remain safe. See `docs/teacher-workflow-safe-output-checker.md`.
 
+Teacher Workflow output examples completion marker marks the command detail and safe-output stack complete for now. See `docs/teacher-workflow-output-examples-completion-marker.md`.
+
 ## Why This Status Summary Exists
 
 After teacher workflow quick-reference polish, safe commands and doc links were collected but there was no single summary of what is complete, planning-only, or future-only across the Teacher Workflow stack. This summary makes stack status visible without implying lesson generation, document indexing, or student data handling exists.

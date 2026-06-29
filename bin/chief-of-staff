@@ -45,6 +45,8 @@ Document and Review Workflows:
   --review-notes-workflow-status       Show review notes workflow polish status and exit.
   --review-notes-template-status       Show local review notes template status and exit.
   --document-indexing-plan-status      Show safe local document indexing plan status and exit.
+  --local-document-indexing-follow-up-status
+                                       Show local document indexing follow-up status and exit.
 
 Teacher Planning Command Organization (status only; safe sample: fractions-review; no lesson generation):
   --teacher-planning-command-status    Show teacher planning command organization status and exit.
@@ -175,6 +177,7 @@ Teacher review (safe local sample slug only; no student data):
   bin/chief-of-staff --lesson-review-view fractions-review
   bin/chief-of-staff --review-notes-template-status
   bin/chief-of-staff --document-indexing-plan-status
+  bin/chief-of-staff --local-document-indexing-follow-up-status
 
 Developer / Cursor verification:
   bin/chief-of-staff --cursor-workflow-status
@@ -236,6 +239,7 @@ All command examples:
   bin/chief-of-staff --teacher-planning-command-status
   bin/chief-of-staff --lesson-review-workflow-status
   bin/chief-of-staff --review-notes-workflow-status
+  bin/chief-of-staff --local-document-indexing-follow-up-status
   bin/chief-of-staff --command-launcher-status
   bin/chief-of-staff --cursor-workflow-status
   bin/chief-of-staff --developer-status
@@ -296,6 +300,7 @@ Local command: lesson review workflow status
 Local command: review notes workflow status
 Local command: review notes template status
 Local command: document indexing plan status
+Local command: local document indexing follow-up status
 
 Teacher Planning Command Organization (status only; safe sample: fractions-review; no lesson generation)
 Local command: teacher planning command status
@@ -1198,6 +1203,15 @@ while [[ $# -gt 0 ]]; do
         die "Document indexing plan status script is missing: scripts/document-indexing-plan-status.sh"
       fi
       bash "${document_indexing_plan_status_script}"
+      exit 0
+      ;;
+    --local-document-indexing-follow-up-status)
+      repo_root="$(resolve_repo_root)"
+      local_document_indexing_followup_status_script="${repo_root}/scripts/local-document-indexing-follow-up-status.sh"
+      if [[ ! -f "${local_document_indexing_followup_status_script}" ]]; then
+        die "Local document indexing follow-up status script is missing: scripts/local-document-indexing-follow-up-status.sh"
+      fi
+      bash "${local_document_indexing_followup_status_script}"
       exit 0
       ;;
     --wallpaper-photo-curator-plan-status)

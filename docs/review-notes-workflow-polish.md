@@ -9,8 +9,10 @@ This PR improves safe local review notes workflow guidance only. This pass is ab
 ## Current Status
 
 ```text
-Current status: review notes workflow polish in progress.
+Current status: review notes workflow polish complete.
 ```
+
+Local document indexing follow-up improves safe local document indexing plan/status visibility. See `docs/local-document-indexing-follow-up.md`.
 
 Review notes template guidance, safe sample slug rules, and teacher/Cursor workflows are documented for local status commands only.
 

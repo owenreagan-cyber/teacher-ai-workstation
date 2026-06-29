@@ -19,8 +19,8 @@ Track active projects, project status, next actions, blockers, and decisions.
 - Status: active
 - Category: operations / app-development
 - Goal: Prepare a MacBook-first Teacher AI Workstation with safe setup, assistant foundations, and future specialist support.
-- Current phase: Review notes workflow polish
-- Last known next action: Improve safe local review notes workflow guidance, status visibility, and template boundaries without lesson generation changes, generated lesson files, real review notes, or student data.
+- Current phase: Local document indexing follow-up
+- Last known next action: Improve safe local document indexing plan/status visibility without document scanning, file indexing, content parsing, OCR, embeddings, vector DB, network calls, automation, lesson generation, real review notes, or student data.
 - Blockers: none known
 - Source: repo roadmap and current implementation work
 - Last reviewed: 2026-06-26
@@ -31,8 +31,8 @@ Track active projects, project status, next actions, blockers, and decisions.
 - Status: active
 - Category: teaching / app-development
 - Goal: Build a teaching-first, permission-based assistant for planning, memory, writing, troubleshooting, and project support.
-- Current phase: Review notes workflow polish
-- Last known next action: Improve safe local review notes workflow guidance, status visibility, and template boundaries without lesson generation changes, generated lesson files, real review notes, or student data.
+- Current phase: Local document indexing follow-up
+- Last known next action: Improve safe local document indexing plan/status visibility without document scanning, file indexing, content parsing, OCR, embeddings, vector DB, network calls, automation, lesson generation, real review notes, or student data.
 - Blockers: approved real writing samples are not added yet; Gmail/Drive integrations require explicit future permission and safety review
 - Source: Phase 1A-1D docs, dashboard docs, lesson planning scaffold, and Developer Mode template work
 - Last reviewed: 2026-06-26
@@ -78,7 +78,7 @@ Track active projects, project status, next actions, blockers, and decisions.
 - Category: personal / operations
 - Goal: Future local Mac curator for wallpaper/photo candidate review, approve/dismiss, and rotation-folder storage.
 - Current phase: Paused after rotation handoff and safety audit (foundation stack complete for now; live curator not started).
-- Last known next action: Local document indexing follow-up.
+- Last known next action: Project memory cleanup.
 - Blockers: full curator not implemented; human approval gates required before automation
 - Source: docs/lesson-review-workflow-polish.md, docs/teacher-planning-command-organization.md, docs/dashboard-section-summary-polish.md, docs/chief-of-staff-workflow-quick-start-guide.md, docs/chief-of-staff-help-examples-polish.md, docs/chief-of-staff-command-map-cleanup.md, docs/chief-of-staff-dashboard-readability-pass.md, docs/return-to-chief-of-staff-core.md, docs/wallpaper-photo-rotation-handoff-safety-audit.md, assistant/appearance-vibe/wallpaper-photo-curator/, and build queue
 - Last reviewed: 2026-06-28

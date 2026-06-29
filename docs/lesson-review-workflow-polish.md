@@ -14,6 +14,8 @@ Current status: lesson review workflow polish complete.
 
 Review notes workflow polish improves safe local review notes guidance. See `docs/review-notes-workflow-polish.md`.
 
+Local document indexing follow-up improves safe local document indexing plan/status visibility. See `docs/local-document-indexing-follow-up.md`.
+
 Safe lesson review workflow steps, sample slug rules, and review notes guidance are documented for local status commands only.
 
 ## Why This Polish Exists

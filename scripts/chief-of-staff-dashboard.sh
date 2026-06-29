@@ -654,6 +654,29 @@ else
   warn "Teacher Planning command detail status script missing: scripts/teacher-planning-command-detail-status.sh"
 fi
 
+section "Lesson Review Command Detail Polish"
+if [[ -f scripts/lesson-review-command-detail-status.sh ]]; then
+  lesson_review_command_detail_result=0
+  lesson_review_command_detail_output="$(bash scripts/lesson-review-command-detail-status.sh 2>&1)" || lesson_review_command_detail_result=$?
+  lesson_review_command_detail_pass="$(summary_count "${lesson_review_command_detail_output}" "PASS")"
+  lesson_review_command_detail_warn="$(summary_count "${lesson_review_command_detail_output}" "WARN")"
+  lesson_review_command_detail_fail="$(summary_count "${lesson_review_command_detail_output}" "FAIL")"
+
+  if [[ "${lesson_review_command_detail_result}" != "0" ]]; then
+    printf 'Lesson Review Command Detail Polish: status command completed\n'
+    printf '%s\n' "${lesson_review_command_detail_output}"
+    fail "Lesson Review command detail polish status failed"
+  elif [[ -n "${lesson_review_command_detail_pass}" && -n "${lesson_review_command_detail_warn}" && -n "${lesson_review_command_detail_fail}" ]]; then
+    printf 'Lesson Review Command Detail Polish: PASS %s / WARN %s / FAIL %s\n' "${lesson_review_command_detail_pass}" "${lesson_review_command_detail_warn}" "${lesson_review_command_detail_fail}"
+    pass "Lesson Review command detail polish status completed"
+  else
+    printf 'Lesson Review Command Detail Polish: status command completed\n'
+    pass "Lesson Review command detail polish status completed"
+  fi
+else
+  warn "Lesson Review command detail status script missing: scripts/lesson-review-command-detail-status.sh"
+fi
+
 section "Lesson Review Workflow Polish"
 if [[ -f scripts/lesson-review-workflow-polish-status.sh ]]; then
   lesson_review_workflow_result=0

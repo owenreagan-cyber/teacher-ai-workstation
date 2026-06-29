@@ -12,7 +12,7 @@ This PR returns to core Teacher Workstation planning cleanup. This PR tightens p
 Current status: core Teacher Workstation planning cleanup complete.
 ```
 
-Teacher Planning command detail polish tightens safe Teacher Planning command references. See `docs/teacher-planning-command-detail-polish.md`.
+Lesson Review command detail polish tightens safe Lesson Review command references. See `docs/lesson-review-command-detail-polish.md`.
 
 ## Why This Cleanup Exists
 

@@ -62,6 +62,8 @@ Document and Review Workflows:
   --lesson-review-checklist-status     Show local lesson review checklist status and exit.
   --lesson-review-view <lesson-slug>   Show local single-slug lesson review view and exit.
   --lesson-review-workflow-status      Show lesson review workflow polish status and exit.
+  --lesson-review-command-detail-status
+                                       Show Lesson Review command detail polish status and exit.
   --review-notes-workflow-status       Show review notes workflow polish status and exit.
   --review-notes-template-status       Show local review notes template status and exit.
   --document-indexing-plan-status      Show safe local document indexing plan status and exit.
@@ -200,6 +202,7 @@ Before and after PR:
   bin/chief-of-staff --help-examples-status
 
 Teacher review (safe local sample slug only; no student data):
+  bin/chief-of-staff --lesson-review-command-detail-status
   bin/chief-of-staff --teacher-planning-command-detail-status
   bin/chief-of-staff --teacher-workflow-status-summary
   bin/chief-of-staff --teacher-workflow-quick-reference-status
@@ -290,6 +293,7 @@ All command examples:
   bin/chief-of-staff --teacher-workflow-status-summary
   bin/chief-of-staff --teacher-workflow-quick-reference-status
   bin/chief-of-staff --core-teacher-workstation-planning-cleanup-status
+  bin/chief-of-staff --lesson-review-command-detail-status
   bin/chief-of-staff --lesson-review-workflow-status
   bin/chief-of-staff --review-notes-workflow-status
   bin/chief-of-staff --local-document-indexing-follow-up-status
@@ -393,6 +397,7 @@ Local command: workflow quick-start status
 Local command: dashboard section summary status
 Local command: teacher planning command status
 Local command: teacher planning command detail status
+Local command: lesson review command detail status
 Local command: core teacher workstation planning cleanup status
 Local command: teacher workflow quick reference status
 Local command: teacher workflow status summary
@@ -1492,6 +1497,15 @@ while [[ $# -gt 0 ]]; do
         die "Teacher Planning command detail status script is missing: scripts/teacher-planning-command-detail-status.sh"
       fi
       bash "${teacher_planning_command_detail_status_script}"
+      exit 0
+      ;;
+    --lesson-review-command-detail-status)
+      repo_root="$(resolve_repo_root)"
+      lesson_review_command_detail_status_script="${repo_root}/scripts/lesson-review-command-detail-status.sh"
+      if [[ ! -f "${lesson_review_command_detail_status_script}" ]]; then
+        die "Lesson Review command detail status script is missing: scripts/lesson-review-command-detail-status.sh"
+      fi
+      bash "${lesson_review_command_detail_status_script}"
       exit 0
       ;;
     --wallpaper-photo-curator-plan-status)

@@ -14,6 +14,8 @@ Current status: core Teacher Workstation planning cleanup complete.
 
 Lesson Review command detail polish tightens safe Lesson Review command references. See `docs/lesson-review-command-detail-polish.md`.
 
+Review Notes command detail polish tightens safe Review Notes command references. See `docs/review-notes-command-detail-polish.md`.
+
 ## Why This Cleanup Exists
 
 After prompt pack stack completion marker, the reusable prompt pack documentation stack was complete for now but core Teacher Workstation planning references still needed a focused cleanup pass. This cleanup makes teacher workflow priorities, safe commands, and next build priorities easy to find without weakening lifecycle gates or final local-main proof.

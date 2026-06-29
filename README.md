@@ -272,7 +272,14 @@ Teacher Workflow quick-reference: docs/teacher-workflow-quick-reference-polish.m
 Teacher Workflow status summary: docs/teacher-workflow-status-summary.md
 Teacher Planning command detail: docs/teacher-planning-command-detail-polish.md
 Lesson Review command detail: docs/lesson-review-command-detail-polish.md
-Next recommended PR: Review notes command detail polish
+Review Notes command detail: docs/review-notes-command-detail-polish.md
+Next recommended PR: Document indexing command detail polish
+```
+
+Review Notes command detail polish:
+
+```bash
+bin/chief-of-staff --review-notes-command-detail-status
 ```
 
 Lesson Review command detail polish:
@@ -773,7 +780,15 @@ Lesson Review command detail polish status command:
 bin/chief-of-staff --lesson-review-command-detail-status
 ```
 
-See `docs/lesson-review-command-detail-polish.md`, `docs/teacher-planning-command-detail-polish.md`, `docs/teacher-workflow-status-summary.md`, and `docs/core-teacher-workstation-planning-cleanup.md`.
+See `docs/lesson-review-command-detail-polish.md`, `docs/review-notes-command-detail-polish.md`, `docs/teacher-planning-command-detail-polish.md`, `docs/teacher-workflow-status-summary.md`, and `docs/core-teacher-workstation-planning-cleanup.md`.
+
+Review notes command detail polish status command:
+
+```bash
+bin/chief-of-staff --review-notes-command-detail-status
+```
+
+See `docs/review-notes-command-detail-polish.md` and `docs/review-notes-workflow-polish.md`.
 
 Review notes workflow polish status command:
 

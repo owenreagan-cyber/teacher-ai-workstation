@@ -14,6 +14,8 @@ Current status: teacher workflow quick-reference polish complete.
 
 Lesson Review command detail polish tightens safe Lesson Review command references. See `docs/lesson-review-command-detail-polish.md`.
 
+Review Notes command detail polish tightens safe Review Notes command references. See `docs/review-notes-command-detail-polish.md`.
+
 ## Why This Quick Reference Exists
 
 After core Teacher Workstation planning cleanup, safe teacher workflow commands and docs were documented but still spread across multiple polish docs. This quick-reference collects the safe commands and doc links in one place without implying lesson generation, document indexing, or student data handling exists.

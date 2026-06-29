@@ -677,6 +677,29 @@ else
   warn "Lesson Review command detail status script missing: scripts/lesson-review-command-detail-status.sh"
 fi
 
+section "Review Notes Command Detail Polish"
+if [[ -f scripts/review-notes-command-detail-status.sh ]]; then
+  review_notes_command_detail_result=0
+  review_notes_command_detail_output="$(bash scripts/review-notes-command-detail-status.sh 2>&1)" || review_notes_command_detail_result=$?
+  review_notes_command_detail_pass="$(summary_count "${review_notes_command_detail_output}" "PASS")"
+  review_notes_command_detail_warn="$(summary_count "${review_notes_command_detail_output}" "WARN")"
+  review_notes_command_detail_fail="$(summary_count "${review_notes_command_detail_output}" "FAIL")"
+
+  if [[ "${review_notes_command_detail_result}" != "0" ]]; then
+    printf 'Review Notes Command Detail Polish: status command completed\n'
+    printf '%s\n' "${review_notes_command_detail_output}"
+    fail "Review Notes command detail polish status failed"
+  elif [[ -n "${review_notes_command_detail_pass}" && -n "${review_notes_command_detail_warn}" && -n "${review_notes_command_detail_fail}" ]]; then
+    printf 'Review Notes Command Detail Polish: PASS %s / WARN %s / FAIL %s\n' "${review_notes_command_detail_pass}" "${review_notes_command_detail_warn}" "${review_notes_command_detail_fail}"
+    pass "Review Notes command detail polish status completed"
+  else
+    printf 'Review Notes Command Detail Polish: status command completed\n'
+    pass "Review Notes command detail polish status completed"
+  fi
+else
+  warn "Review Notes command detail status script missing: scripts/review-notes-command-detail-status.sh"
+fi
+
 section "Lesson Review Workflow Polish"
 if [[ -f scripts/lesson-review-workflow-polish-status.sh ]]; then
   lesson_review_workflow_result=0

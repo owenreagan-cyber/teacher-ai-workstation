@@ -33,15 +33,16 @@
 - Teacher workflow quick-reference polish: complete
 - Teacher workflow status summary: complete
 - Teacher planning command detail polish: complete
+- Lesson review command detail polish: complete
 - Appearance & Vibe wallpaper/photo foundation stack: complete for now
 
 ### Now
 
-- Lesson review command detail polish (lesson-review-command-detail/status only)
+- Review notes command detail polish (review-notes-command-detail/status only)
 
 ### Next
 
-- Review notes command detail polish
+- Document indexing command detail polish
 
 ## Completed (earlier foundations)
 

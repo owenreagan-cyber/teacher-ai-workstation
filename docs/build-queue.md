@@ -59,22 +59,22 @@ Phase 1 Teacher Chief of Staff + safe local lesson workflows.
 
 ## Current PR
 
-Document indexing command detail polish.
+Teacher workflow command detail summary.
 
-Scope: Tighten the safe Document Indexing planning command reference with clearer command descriptions, output expectations, and planning-only boundaries. Preserve every existing command and status check. No checks removed, no command behavior changes, no lesson generation changes, no document scanning/indexing implementation, no student data, no live integrations, no network calls, and no automation.
+Scope: Add a compact command detail summary for the safe Teacher Workflow command set, linking Teacher Planning, Lesson Review, Review Notes, and Document Indexing planning command detail docs. Preserve every existing command and status check. No checks removed, no command behavior changes, no lesson generation changes, no document scanning/indexing implementation, no student data, no live integrations, no network calls, and no automation.
 
 Appearance & Vibe wallpaper/photo curator foundation stack: complete for now.
 Live curator implementation: not started.
 
 ## Next PR
 
-Teacher workflow command detail summary
+Teacher workflow safe-output examples
 
-Scope: Add a compact command detail summary for the safe Teacher Workflow command set, linking Teacher Planning, Lesson Review, Review Notes, and Document Indexing planning command detail docs. Preserve every existing command and status check. No checks removed, no command behavior changes, no lesson generation changes, no document scanning/indexing implementation, no student data, no live integrations, no network calls, and no automation.
+Scope: Add safe example outputs for Teacher Planning, Lesson Review, Review Notes, and Document Indexing planning status commands so expected output is easy to recognize. Preserve every existing command and status check. No checks removed, no command behavior changes, no lesson generation changes, no document scanning/indexing implementation, no student data, no live integrations, no network calls, and no automation.
 
 ## Next Recommended PRs
 
-1. Teacher workflow command detail summary.
+1. Teacher workflow safe-output examples.
 2. Later: permissioned Gmail/Drive integrations.
 3. Later: secrets/capability broker.
 

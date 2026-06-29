@@ -85,6 +85,8 @@ Teacher Planning Command Organization (status only; safe sample: fractions-revie
                                        Show Teacher Workflow quick-reference polish status and exit.
   --teacher-workflow-status-summary
                                        Show Teacher Workflow status summary and exit.
+  --teacher-workflow-command-detail-summary-status
+                                       Show Teacher Workflow command detail summary status and exit.
 
 Developer and Cursor Workflow:
   --cursor-workflow-status             Show local Cursor workflow status and exit.
@@ -206,6 +208,7 @@ Before and after PR:
   bin/chief-of-staff --help-examples-status
 
 Teacher review (safe local sample slug only; no student data):
+  bin/chief-of-staff --teacher-workflow-command-detail-summary-status
   bin/chief-of-staff --document-indexing-command-detail-status
   bin/chief-of-staff --review-notes-command-detail-status
   bin/chief-of-staff --lesson-review-command-detail-status
@@ -299,6 +302,7 @@ All command examples:
   bin/chief-of-staff --teacher-workflow-status-summary
   bin/chief-of-staff --teacher-workflow-quick-reference-status
   bin/chief-of-staff --core-teacher-workstation-planning-cleanup-status
+  bin/chief-of-staff --teacher-workflow-command-detail-summary-status
   bin/chief-of-staff --document-indexing-command-detail-status
   bin/chief-of-staff --review-notes-command-detail-status
   bin/chief-of-staff --lesson-review-command-detail-status
@@ -411,6 +415,7 @@ Local command: review notes command detail status
 Local command: core teacher workstation planning cleanup status
 Local command: teacher workflow quick reference status
 Local command: teacher workflow status summary
+Local command: teacher workflow command detail summary status
 Local command: testing checklist status
 Local command: command check bundle reference status
 Local command: checklist driven prompt template status
@@ -1498,6 +1503,15 @@ while [[ $# -gt 0 ]]; do
         die "Teacher Workflow status summary script is missing: scripts/teacher-workflow-status-summary.sh"
       fi
       bash "${teacher_workflow_status_summary_script}"
+      exit 0
+      ;;
+    --teacher-workflow-command-detail-summary-status)
+      repo_root="$(resolve_repo_root)"
+      teacher_workflow_command_detail_summary_status_script="${repo_root}/scripts/teacher-workflow-command-detail-summary-status.sh"
+      if [[ ! -f "${teacher_workflow_command_detail_summary_status_script}" ]]; then
+        die "Teacher Workflow command detail summary status script is missing: scripts/teacher-workflow-command-detail-summary-status.sh"
+      fi
+      bash "${teacher_workflow_command_detail_summary_status_script}"
       exit 0
       ;;
     --teacher-planning-command-detail-status)

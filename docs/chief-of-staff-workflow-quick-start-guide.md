@@ -20,6 +20,8 @@ Review Notes command detail polish tightens safe Review Notes command references
 
 Document Indexing command detail polish tightens safe Document Indexing planning command references. See `docs/document-indexing-command-detail-polish.md`.
 
+Teacher Workflow command detail summary links all command detail docs. See `docs/teacher-workflow-command-detail-summary.md`.
+
 Dashboard section summary polish adds high-level section summaries. See `docs/dashboard-section-summary-polish.md`.
 
 Teacher planning command organization improves lesson-planning command discoverability. See `docs/teacher-planning-command-organization.md`.

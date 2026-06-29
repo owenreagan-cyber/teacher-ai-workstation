@@ -9,10 +9,10 @@ This PR adds Document Indexing command detail polish only. This pass is about pr
 ## Current Status
 
 ```text
-Current status: document indexing command detail polish in progress.
+Current status: document indexing command detail polish complete.
 ```
 
-Command detail rules are documented for local status commands only.
+Teacher Workflow command detail summary links all command detail docs. See `docs/teacher-workflow-command-detail-summary.md`.
 
 ## Why Command Detail Matters
 

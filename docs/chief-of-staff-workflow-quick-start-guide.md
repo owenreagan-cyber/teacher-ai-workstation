@@ -12,6 +12,8 @@ This PR adds a quick-start guide only. This pass is about preserving all existin
 Current status: workflow quick-start guide complete.
 ```
 
+Core Teacher Workstation planning cleanup tightens teacher workflow planning references. See `docs/core-teacher-workstation-planning-cleanup.md`.
+
 Dashboard section summary polish adds high-level section summaries. See `docs/dashboard-section-summary-polish.md`.
 
 Teacher planning command organization improves lesson-planning command discoverability. See `docs/teacher-planning-command-organization.md`.

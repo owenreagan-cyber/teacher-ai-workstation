@@ -71,6 +71,8 @@ Document and Review Workflows:
 
 Teacher Planning Command Organization (status only; safe sample: fractions-review; no lesson generation):
   --teacher-planning-command-status    Show teacher planning command organization status and exit.
+  --core-teacher-workstation-planning-cleanup-status
+                                       Show core Teacher Workstation planning cleanup status and exit.
 
 Developer and Cursor Workflow:
   --cursor-workflow-status             Show local Cursor workflow status and exit.
@@ -192,9 +194,11 @@ Before and after PR:
   bin/chief-of-staff --help-examples-status
 
 Teacher review (safe local sample slug only; no student data):
+  bin/chief-of-staff --core-teacher-workstation-planning-cleanup-status
   bin/chief-of-staff --lesson-review-workflow-status
   bin/chief-of-staff --review-notes-workflow-status
   bin/chief-of-staff --teacher-planning-command-status
+  bin/chief-of-staff --prompt-pack-stack-completion-status
   bin/chief-of-staff --lesson-review-view fractions-review
   bin/chief-of-staff --review-notes-template-status
   bin/chief-of-staff --document-indexing-plan-status
@@ -273,6 +277,7 @@ All command examples:
   bin/chief-of-staff --workflow-quick-start-status
   bin/chief-of-staff --dashboard-section-summary-status
   bin/chief-of-staff --teacher-planning-command-status
+  bin/chief-of-staff --core-teacher-workstation-planning-cleanup-status
   bin/chief-of-staff --lesson-review-workflow-status
   bin/chief-of-staff --review-notes-workflow-status
   bin/chief-of-staff --local-document-indexing-follow-up-status
@@ -375,6 +380,7 @@ Local command: help examples status
 Local command: workflow quick-start status
 Local command: dashboard section summary status
 Local command: teacher planning command status
+Local command: core teacher workstation planning cleanup status
 Local command: testing checklist status
 Local command: command check bundle reference status
 Local command: checklist driven prompt template status
@@ -1435,6 +1441,15 @@ while [[ $# -gt 0 ]]; do
         die "Prompt pack stack completion status script is missing: scripts/prompt-pack-stack-completion-status.sh"
       fi
       bash "${prompt_pack_stack_completion_status_script}"
+      exit 0
+      ;;
+    --core-teacher-workstation-planning-cleanup-status)
+      repo_root="$(resolve_repo_root)"
+      core_teacher_workstation_planning_cleanup_status_script="${repo_root}/scripts/core-teacher-workstation-planning-cleanup-status.sh"
+      if [[ ! -f "${core_teacher_workstation_planning_cleanup_status_script}" ]]; then
+        die "Core Teacher Workstation planning cleanup status script is missing: scripts/core-teacher-workstation-planning-cleanup-status.sh"
+      fi
+      bash "${core_teacher_workstation_planning_cleanup_status_script}"
       exit 0
       ;;
     --wallpaper-photo-curator-plan-status)

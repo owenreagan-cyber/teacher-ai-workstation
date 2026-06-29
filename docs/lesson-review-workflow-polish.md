@@ -12,6 +12,8 @@ This PR improves safe local lesson review workflow guidance only. This pass is a
 Current status: lesson review workflow polish complete.
 ```
 
+Core Teacher Workstation planning cleanup tightens teacher workflow planning references. See `docs/core-teacher-workstation-planning-cleanup.md`.
+
 Review notes workflow polish improves safe local review notes guidance. See `docs/review-notes-workflow-polish.md`.
 
 Local document indexing follow-up improves safe local document indexing plan/status visibility. See `docs/local-document-indexing-follow-up.md`.

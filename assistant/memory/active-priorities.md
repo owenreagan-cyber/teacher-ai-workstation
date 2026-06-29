@@ -28,15 +28,16 @@
 - Prompt pack stale-reference audit: complete
 - Prompt pack freshness report polish: complete
 - Prompt pack handoff summary: complete
+- Prompt pack stack completion marker: complete
 - Appearance & Vibe wallpaper/photo foundation stack: complete for now
 
 ### Now
 
-- Prompt pack stack completion marker (prompt-pack-completion/status only)
+- Core Teacher Workstation planning cleanup (core-teacher-workstation-planning/status only)
 
 ### Next
 
-- Core Teacher Workstation planning cleanup
+- Teacher workflow quick-reference polish
 
 ## Completed (earlier foundations)
 

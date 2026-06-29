@@ -59,22 +59,22 @@ Phase 1 Teacher Chief of Staff + safe local lesson workflows.
 
 ## Current PR
 
-Prompt pack stack completion marker.
+Core Teacher Workstation planning cleanup.
 
-Scope: Mark the reusable prompt pack documentation stack complete for now and document the next safe return point for core Teacher Workstation work. Preserve every existing command and status check. No checks removed, no command behavior changes, no lesson generation changes, no document scanning/indexing implementation, no student data, no live integrations, no network calls, and no automation.
+Scope: Return to core Teacher Workstation planning docs after completing the reusable prompt pack stack. Tighten planning/status references for teacher workflows, current safe commands, and next build priorities. Preserve every existing command and status check. No checks removed, no command behavior changes, no lesson generation changes, no document scanning/indexing implementation, no student data, no live integrations, no network calls, and no automation.
 
 Appearance & Vibe wallpaper/photo curator foundation stack: complete for now.
 Live curator implementation: not started.
 
 ## Next PR
 
-Core Teacher Workstation planning cleanup
+Teacher workflow quick-reference polish
 
-Scope: Return to core Teacher Workstation planning docs after completing the reusable prompt pack stack. Tighten planning/status references for teacher workflows, current safe commands, and next build priorities. Preserve every existing command and status check. No checks removed, no command behavior changes, no lesson generation changes, no document scanning/indexing implementation, no student data, no live integrations, no network calls, and no automation.
+Scope: Add a compact quick-reference for safe Teacher Workstation workflow commands and docs. Preserve every existing command and status check. No checks removed, no command behavior changes, no lesson generation changes, no document scanning/indexing implementation, no student data, no live integrations, no network calls, and no automation.
 
 ## Next Recommended PRs
 
-1. Core Teacher Workstation planning cleanup.
+1. Teacher workflow quick-reference polish.
 2. Later: permissioned Gmail/Drive integrations.
 3. Later: secrets/capability broker.
 

@@ -16,6 +16,8 @@ Teacher Workflow command detail summary links all command detail docs. See `docs
 
 Teacher Workflow safe-output checker verifies example docs remain safe. See `docs/teacher-workflow-safe-output-checker.md`.
 
+Teacher Workflow output examples completion marker marks the command detail and safe-output stack complete for now. See `docs/teacher-workflow-output-examples-completion-marker.md`.
+
 ## Why Command Detail Matters
 
 After review notes command detail polish, safe Document Indexing planning commands were listed but command purpose, expected output, and planning-only boundaries still needed clearer detail. This polish makes the Document Indexing planning status commands easier to understand without implying document scanning, folder scanning, file indexing, content parsing, OCR, embeddings, vector database behavior, lesson generation, or student data handling exists.

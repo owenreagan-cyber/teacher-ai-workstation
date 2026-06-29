@@ -20,6 +20,8 @@ Teacher Workflow command detail summary links all command detail docs. See `docs
 
 Teacher Workflow safe-output checker verifies example docs remain safe. See `docs/teacher-workflow-safe-output-checker.md`.
 
+Teacher Workflow output examples completion marker marks the command detail and safe-output stack complete for now. See `docs/teacher-workflow-output-examples-completion-marker.md`.
+
 ## Why Command Detail Matters
 
 After teacher planning command detail polish, safe Lesson Review commands were listed but command purpose, expected output, and planning-only boundaries still needed clearer detail. This polish makes the Lesson Review status command easier to understand without implying real lesson review, lesson generation, document indexing, or student data handling exists.

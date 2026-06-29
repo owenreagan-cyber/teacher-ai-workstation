@@ -14,6 +14,8 @@ Current status: teacher workflow safe-output examples complete.
 
 Teacher Workflow safe-output checker verifies example docs remain safe. See `docs/teacher-workflow-safe-output-checker.md`.
 
+Teacher Workflow output examples completion marker marks the command detail and safe-output stack complete for now. See `docs/teacher-workflow-output-examples-completion-marker.md`.
+
 ## Why Safe Output Examples Exist
 
 After teacher workflow command detail summary, command detail docs explained purpose and boundaries but users still needed recognizable output shapes. These examples show what safe planning/status output should look like without implying real lesson generation, real review notes, document scanning, file indexing, or student data handling exists.

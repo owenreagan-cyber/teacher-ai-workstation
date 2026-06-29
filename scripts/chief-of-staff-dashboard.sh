@@ -774,6 +774,29 @@ else
   warn "testing checklist consolidation status script missing: scripts/testing-checklist-consolidation-status.sh"
 fi
 
+section "Command/Check Bundle Reference Polish"
+if [[ -f scripts/command-check-bundle-reference-status.sh ]]; then
+  command_check_bundle_reference_result=0
+  command_check_bundle_reference_output="$(bash scripts/command-check-bundle-reference-status.sh 2>&1)" || command_check_bundle_reference_result=$?
+  command_check_bundle_reference_pass="$(summary_count "${command_check_bundle_reference_output}" "PASS")"
+  command_check_bundle_reference_warn="$(summary_count "${command_check_bundle_reference_output}" "WARN")"
+  command_check_bundle_reference_fail="$(summary_count "${command_check_bundle_reference_output}" "FAIL")"
+
+  if [[ "${command_check_bundle_reference_result}" != "0" ]]; then
+    printf 'Command/Check Bundle Reference Polish: status command completed\n'
+    printf '%s\n' "${command_check_bundle_reference_output}"
+    fail "command check bundle reference polish status failed"
+  elif [[ -n "${command_check_bundle_reference_pass}" && -n "${command_check_bundle_reference_warn}" && -n "${command_check_bundle_reference_fail}" ]]; then
+    printf 'Command/Check Bundle Reference Polish: PASS %s / WARN %s / FAIL %s\n' "${command_check_bundle_reference_pass}" "${command_check_bundle_reference_warn}" "${command_check_bundle_reference_fail}"
+    pass "command check bundle reference polish status completed"
+  else
+    printf 'Command/Check Bundle Reference Polish: status command completed\n'
+    pass "command check bundle reference polish status completed"
+  fi
+else
+  warn "command check bundle reference status script missing: scripts/command-check-bundle-reference-status.sh"
+fi
+
 end_section_summary "Future-Safety / Parked Work"
 
 group_banner "Appearance & Vibe Foundation Status"

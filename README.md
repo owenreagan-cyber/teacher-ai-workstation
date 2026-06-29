@@ -246,6 +246,22 @@ bin/chief-of-staff --testing-checklist-status
 
 See `docs/testing-checklist-consolidation.md`.
 
+Command/check bundle reference status command:
+
+```bash
+bin/chief-of-staff --command-check-bundle-reference-status
+```
+
+See `docs/command-check-bundle-reference-polish.md` and `docs/testing-checklist-consolidation.md`.
+
+Command and check bundles (reference only):
+
+```bash
+bin/chief-of-staff --command-check-bundle-reference-status
+bin/chief-of-staff --testing-checklist-status
+bin/chief-of-staff --dashboard
+```
+
 Project memory and roadmap (status only):
 
 ```bash

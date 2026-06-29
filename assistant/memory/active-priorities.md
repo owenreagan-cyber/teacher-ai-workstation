@@ -15,15 +15,16 @@
 - Return to Chief of Staff / Teacher Workstation core: complete
 - Local document indexing follow-up: complete
 - Project memory cleanup: complete
+- Testing/checklist consolidation: complete
 - Appearance & Vibe wallpaper/photo foundation stack: complete for now
 
 ### Now
 
-- Testing/checklist consolidation (checklist-consolidation/status only)
+- Command/check bundle reference polish (reference-polish/status only)
 
 ### Next
 
-- Command/check bundle reference polish
+- Checklist-driven prompt template tightening
 
 ## Completed (earlier foundations)
 

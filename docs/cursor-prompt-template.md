@@ -260,8 +260,30 @@ Only call complete when local `main` has the merge and dashboard passes.
 
 ---
 
+## Reusable verification bundles
+
+Compact bundle picker: `docs/command-check-bundle-reference-polish.md`
+
+Full bundle commands: `docs/testing-checklist-consolidation.md`
+
+```bash
+bin/chief-of-staff --command-check-bundle-reference-status
+bin/chief-of-staff --testing-checklist-status
+```
+
+Bundle references may shorten future prompts but do **not** replace:
+
+- PR-specific checks
+- no-commit review
+- merge verification (`mergedAt` non-null after merge)
+- final local `main` with clean working tree and dashboard passing
+
+---
+
 See also:
 
 - `docs/cursor-workflow-operating-system.md`
 - `docs/cursor-pr-review-checklist.md`
+- `docs/testing-checklist-consolidation.md`
+- `docs/command-check-bundle-reference-polish.md`
 - `.cursor/rules/teacher-ai-workstation.mdc`

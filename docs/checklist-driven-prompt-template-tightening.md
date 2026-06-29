@@ -12,7 +12,7 @@ This PR tightens Cursor prompt template guidance only. This pass points to `docs
 Current status: checklist-driven prompt template tightening complete.
 ```
 
-PR lifecycle guardrail consolidation continues lifecycle guardrail rules. See `docs/pr-lifecycle-guardrail-consolidation.md`.
+PR lifecycle guardrail consolidation is complete. Branch hygiene and cleanup reference adds branch naming, remote deletion, and local cleanup guidance. See `docs/branch-hygiene-cleanup-reference.md`.
 
 Prompt template rules for bundle references, mandatory lifecycle sections, and safety boundaries are documented for local status commands only.
 

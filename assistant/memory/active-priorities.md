@@ -18,15 +18,16 @@
 - Testing/checklist consolidation: complete
 - Command/check bundle reference polish: complete
 - Checklist-driven prompt template tightening: complete
+- PR lifecycle guardrail consolidation: complete
 - Appearance & Vibe wallpaper/photo foundation stack: complete for now
 
 ### Now
 
-- PR lifecycle guardrail consolidation (lifecycle-guardrail/status only)
+- Branch hygiene and cleanup reference (branch-hygiene/status only)
 
 ### Next
 
-- Branch hygiene and cleanup reference
+- Local main proof report polish
 
 ## Completed (earlier foundations)
 

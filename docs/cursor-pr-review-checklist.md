@@ -95,6 +95,8 @@ bin/chief-of-staff --dashboard
 
 Lifecycle guardrails: `docs/pr-lifecycle-guardrail-consolidation.md`
 
+Branch hygiene: `docs/branch-hygiene-cleanup-reference.md`
+
 Template tightening: `docs/checklist-driven-prompt-template-tightening.md`
 
 Compact picker: `docs/command-check-bundle-reference-polish.md`
@@ -112,11 +114,20 @@ Named bundles:
 - Post-Merge Verification Bundle
 
 ```bash
+bin/chief-of-staff --branch-hygiene-cleanup-status
 bin/chief-of-staff --pr-lifecycle-guardrail-status
 bin/chief-of-staff --checklist-driven-prompt-template-status
 bin/chief-of-staff --command-check-bundle-reference-status
 bin/chief-of-staff --testing-checklist-status
 ```
+
+Every PR prompt must name the expected branch.
+Every PR prompt must verify the current branch before work and before commit.
+Every PR prompt must verify PR headRefName and baseRefName before merge.
+Every PR prompt must verify remote branch deletion after merge when available.
+Every PR prompt must return to local main after merge.
+Every PR prompt must end with clean working tree and dashboard passing.
+Branch cleanup guidance does not replace no-commit review or merge verification.
 
 Every PR prompt must verify preflight on main.
 Every PR prompt must verify the feature branch.

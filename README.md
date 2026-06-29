@@ -263,12 +263,28 @@ bin/chief-of-staff --checklist-driven-prompt-template-status
 bin/chief-of-staff --dashboard
 ```
 
-See `docs/checklist-driven-prompt-template-tightening.md`, `docs/command-check-bundle-reference-polish.md`, `docs/testing-checklist-consolidation.md`, and `docs/pr-lifecycle-guardrail-consolidation.md`.
+See `docs/checklist-driven-prompt-template-tightening.md`, `docs/command-check-bundle-reference-polish.md`, `docs/testing-checklist-consolidation.md`, `docs/pr-lifecycle-guardrail-consolidation.md`, and `docs/branch-hygiene-cleanup-reference.md`.
 
 PR lifecycle guardrails (every PR):
 
 ```bash
 bin/chief-of-staff --pr-lifecycle-guardrail-status
+```
+
+Branch hygiene and cleanup (every PR):
+
+```bash
+bin/chief-of-staff --branch-hygiene-cleanup-status
+```
+
+```text
+Every PR prompt must name the expected branch.
+Every PR prompt must verify the current branch before work and before commit.
+Every PR prompt must verify PR headRefName and baseRefName before merge.
+Every PR prompt must verify remote branch deletion after merge when available.
+Every PR prompt must return to local main after merge.
+Every PR prompt must end with clean working tree and dashboard passing.
+Branch cleanup guidance does not replace no-commit review or merge verification.
 ```
 
 ```text

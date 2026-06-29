@@ -838,6 +838,29 @@ else
   warn "Teacher Workflow command detail summary status script missing: scripts/teacher-workflow-command-detail-summary-status.sh"
 fi
 
+section "Teacher Workflow Safe-Output Examples"
+if [[ -f scripts/teacher-workflow-safe-output-examples-status.sh ]]; then
+  teacher_workflow_safe_output_examples_result=0
+  teacher_workflow_safe_output_examples_output="$(bash scripts/teacher-workflow-safe-output-examples-status.sh 2>&1)" || teacher_workflow_safe_output_examples_result=$?
+  teacher_workflow_safe_output_examples_pass="$(summary_count "${teacher_workflow_safe_output_examples_output}" "PASS")"
+  teacher_workflow_safe_output_examples_warn="$(summary_count "${teacher_workflow_safe_output_examples_output}" "WARN")"
+  teacher_workflow_safe_output_examples_fail="$(summary_count "${teacher_workflow_safe_output_examples_output}" "FAIL")"
+
+  if [[ "${teacher_workflow_safe_output_examples_result}" != "0" ]]; then
+    printf 'Teacher Workflow Safe-Output Examples: status command completed\n'
+    printf '%s\n' "${teacher_workflow_safe_output_examples_output}"
+    fail "Teacher Workflow safe-output examples status failed"
+  elif [[ -n "${teacher_workflow_safe_output_examples_pass}" && -n "${teacher_workflow_safe_output_examples_warn}" && -n "${teacher_workflow_safe_output_examples_fail}" ]]; then
+    printf 'Teacher Workflow Safe-Output Examples: PASS %s / WARN %s / FAIL %s\n' "${teacher_workflow_safe_output_examples_pass}" "${teacher_workflow_safe_output_examples_warn}" "${teacher_workflow_safe_output_examples_fail}"
+    pass "Teacher Workflow safe-output examples status completed"
+  else
+    printf 'Teacher Workflow Safe-Output Examples: status command completed\n'
+    pass "Teacher Workflow safe-output examples status completed"
+  fi
+else
+  warn "Teacher Workflow safe-output examples status script missing: scripts/teacher-workflow-safe-output-examples-status.sh"
+fi
+
 end_section_summary "Lesson Planning Status"
 
 group_banner "Future-Safety / Parked Work"

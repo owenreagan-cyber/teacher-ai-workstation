@@ -20,6 +20,8 @@ Document Indexing command detail polish tightens safe Document Indexing planning
 
 Teacher Workflow command detail summary links all command detail docs. See `docs/teacher-workflow-command-detail-summary.md`.
 
+Teacher Workflow safe-output examples document expected output shapes. See `docs/teacher-workflow-safe-output-examples.md`.
+
 ## Why This Status Summary Exists
 
 After teacher workflow quick-reference polish, safe commands and doc links were collected but there was no single summary of what is complete, planning-only, or future-only across the Teacher Workflow stack. This summary makes stack status visible without implying lesson generation, document indexing, or student data handling exists.

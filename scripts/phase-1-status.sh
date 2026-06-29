@@ -567,6 +567,13 @@ for path in \
   check_required_file "${path}"
 done
 
+section "Teacher Workflow Safe-Output Examples Files"
+for path in \
+  docs/teacher-workflow-safe-output-examples.md \
+  scripts/teacher-workflow-safe-output-examples-status.sh; do
+  check_required_file "${path}"
+done
+
 section "Teacher Planning Command Organization Files"
 for path in \
   docs/teacher-planning-command-organization.md \
@@ -737,6 +744,7 @@ check_bash_syntax "scripts/lesson-review-command-detail-status.sh"
 check_bash_syntax "scripts/review-notes-command-detail-status.sh"
 check_bash_syntax "scripts/document-indexing-command-detail-status.sh"
 check_bash_syntax "scripts/teacher-workflow-command-detail-summary-status.sh"
+check_bash_syntax "scripts/teacher-workflow-safe-output-examples-status.sh"
 check_bash_syntax "scripts/teacher-planning-command-organization-status.sh"
 check_bash_syntax "scripts/dashboard-section-summary-status.sh"
 check_bash_syntax "scripts/chief-of-staff-workflow-quick-start-status.sh"
@@ -770,7 +778,7 @@ section "Recommendation"
 if (( CRITICAL_BLOCKER > 0 )); then
   printf 'Fix critical Chief of Staff CLI, memory, intake, or script problems before the next build PR.\n'
 else
-  printf 'Next recommended PR: Teacher workflow safe-output examples.\n'
+  printf 'Next recommended PR: Teacher workflow safe-output checker.\n'
 fi
 
 if (( COMPARE_0E == 1 && CRITICAL_BLOCKER == 0 )); then

@@ -246,6 +246,14 @@ bin/chief-of-staff --teacher-workflow-command-detail-summary-status
 
 See `docs/teacher-workflow-command-detail-summary.md`.
 
+Teacher Workflow safe-output examples status command:
+
+```bash
+bin/chief-of-staff --teacher-workflow-safe-output-examples-status
+```
+
+See `docs/teacher-workflow-safe-output-examples.md`, `docs/teacher-workflow-command-detail-summary.md`, `docs/document-indexing-command-detail-polish.md`, `docs/review-notes-command-detail-polish.md`, `docs/lesson-review-command-detail-polish.md`, `docs/teacher-planning-command-detail-polish.md`, and `docs/teacher-workflow-status-summary.md`.
+
 Project memory cleanup status command:
 
 ```bash
@@ -291,7 +299,14 @@ Lesson Review command detail: docs/lesson-review-command-detail-polish.md
 Review Notes command detail: docs/review-notes-command-detail-polish.md
 Document Indexing command detail: docs/document-indexing-command-detail-polish.md
 Teacher Workflow command detail summary: docs/teacher-workflow-command-detail-summary.md
-Next recommended PR: Teacher workflow safe-output examples
+Teacher Workflow safe-output examples: docs/teacher-workflow-safe-output-examples.md
+Next recommended PR: Teacher workflow safe-output checker
+```
+
+Teacher Workflow safe-output examples:
+
+```bash
+bin/chief-of-staff --teacher-workflow-safe-output-examples-status
 ```
 
 Teacher Workflow command detail summary:

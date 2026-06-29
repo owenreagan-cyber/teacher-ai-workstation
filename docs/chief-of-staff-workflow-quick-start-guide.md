@@ -22,6 +22,8 @@ Document Indexing command detail polish tightens safe Document Indexing planning
 
 Teacher Workflow command detail summary links all command detail docs. See `docs/teacher-workflow-command-detail-summary.md`.
 
+Teacher Workflow safe-output examples document expected output shapes. See `docs/teacher-workflow-safe-output-examples.md`.
+
 Dashboard section summary polish adds high-level section summaries. See `docs/dashboard-section-summary-polish.md`.
 
 Teacher planning command organization improves lesson-planning command discoverability. See `docs/teacher-planning-command-organization.md`.

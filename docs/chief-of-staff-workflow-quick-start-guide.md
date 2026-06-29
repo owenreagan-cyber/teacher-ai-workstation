@@ -24,6 +24,8 @@ Local document indexing follow-up improves safe local document indexing plan/sta
 
 Project memory cleanup improves active priorities and project memory clarity. See `docs/project-memory-cleanup.md`.
 
+Testing/checklist consolidation documents reusable verification bundles. See `docs/testing-checklist-consolidation.md`.
+
 See also `docs/chief-of-staff-help-examples-polish.md` and `docs/chief-of-staff-command-map-cleanup.md` for example blocks and command grouping.
 
 ## First Command to Run
@@ -196,6 +198,7 @@ bin/chief-of-staff --lesson-review-workflow-status
 bin/chief-of-staff --review-notes-workflow-status
 bin/chief-of-staff --local-document-indexing-follow-up-status
 bin/chief-of-staff --project-memory-cleanup-status
+bin/chief-of-staff --testing-checklist-status
 bin/chief-of-staff --dashboard
 bin/chief-of-staff --help
 bin/chief-of-staff --list-workflows
@@ -206,4 +209,5 @@ bash scripts/lesson-review-workflow-polish-status.sh
 bash scripts/review-notes-workflow-polish-status.sh
 bash scripts/local-document-indexing-follow-up-status.sh
 bash scripts/project-memory-cleanup-status.sh
+bash scripts/testing-checklist-consolidation-status.sh
 ```

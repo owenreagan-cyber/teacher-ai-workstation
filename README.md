@@ -238,11 +238,20 @@ bin/chief-of-staff --project-memory-cleanup-status
 
 See `docs/project-memory-cleanup.md`.
 
+Testing/checklist consolidation status command:
+
+```bash
+bin/chief-of-staff --testing-checklist-status
+```
+
+See `docs/testing-checklist-consolidation.md`.
+
 Project memory and roadmap (status only):
 
 ```bash
 bin/chief-of-staff --dashboard
 bin/chief-of-staff --project-memory-cleanup-status
+bin/chief-of-staff --testing-checklist-status
 ```
 
 Document indexing status (planning only; no scanning or indexing):

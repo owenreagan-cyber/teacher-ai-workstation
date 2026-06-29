@@ -19,10 +19,10 @@ Track active projects, project status, next actions, blockers, and decisions.
 - Status: active
 - Category: operations / app-development
 - Goal: Prepare a MacBook-first Teacher AI Workstation with safe setup, assistant foundations, and future specialist support.
-- Current phase: Project memory cleanup
-- Last known next action: Tighten active priorities and project memory for a scannable roadmap; then Testing/checklist consolidation. No document scanning, file indexing, lesson generation, real review notes, or student data.
+- Current phase: Testing/checklist consolidation
+- Last known next action: Document reusable verification bundles; then Command/check bundle reference polish. No check removals, document scanning, file indexing, lesson generation, real review notes, or student data.
 - Blockers: none known
-- Source: repo roadmap, build queue, and `docs/project-memory-cleanup.md`
+- Source: repo roadmap, build queue, `docs/project-memory-cleanup.md`, and `docs/testing-checklist-consolidation.md`
 - Last reviewed: 2026-06-29
 - Notes: Phase 0E is complete. Teacher planning/review workflow polish sequence is complete through local document indexing follow-up. Keep Phase 1 local-first, inspectable, and beginner-friendly. Do not claim automatic lesson generation, LLM drafting by default, classroom-ready lesson production, real app generation, or deployment exists. Do not imply document indexing is implemented.
 
@@ -31,10 +31,10 @@ Track active projects, project status, next actions, blockers, and decisions.
 - Status: active
 - Category: teaching / app-development
 - Goal: Build a teaching-first, permission-based assistant for planning, memory, writing, troubleshooting, and project support.
-- Current phase: Project memory cleanup
-- Last known next action: Tighten active priorities and project memory for a scannable roadmap; then Testing/checklist consolidation. No document scanning, file indexing, lesson generation, real review notes, or student data.
+- Current phase: Testing/checklist consolidation
+- Last known next action: Document reusable verification bundles; then Command/check bundle reference polish. No check removals, document scanning, file indexing, lesson generation, real review notes, or student data.
 - Blockers: approved real writing samples are not added yet; Gmail/Drive integrations require explicit future permission and safety review
-- Source: Phase 1A-1D docs, dashboard docs, lesson planning scaffold, Developer Mode template work, and `docs/project-memory-cleanup.md`
+- Source: Phase 1A-1D docs, dashboard docs, lesson planning scaffold, Developer Mode template work, `docs/project-memory-cleanup.md`, and `docs/testing-checklist-consolidation.md`
 - Last reviewed: 2026-06-29
 - Notes: Teaching remains the primary focus. Do not claim the full Chief of Staff, automatic lesson generation, real app generation, or deployment is built yet. Do not imply lesson generation changed.
 
@@ -78,7 +78,7 @@ Track active projects, project status, next actions, blockers, and decisions.
 - Category: personal / operations
 - Goal: Future local Mac curator for wallpaper/photo candidate review, approve/dismiss, and rotation-folder storage.
 - Current phase: Paused after rotation handoff and safety audit
-- Last known next action: Testing/checklist consolidation after project memory cleanup.
+- Last known next action: Command/check bundle reference polish after testing/checklist consolidation.
 - Blockers: full curator not implemented; human approval gates required before automation
 - Source: `docs/project-memory-cleanup.md`, build queue, and Appearance & Vibe foundation docs
 - Last reviewed: 2026-06-29

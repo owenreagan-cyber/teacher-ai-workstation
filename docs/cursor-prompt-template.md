@@ -262,17 +262,29 @@ Only call complete when local `main` has the merge and dashboard passes.
 
 ## Reusable verification bundles
 
-Lifecycle guardrails: `docs/checklist-driven-prompt-template-tightening.md`
+Lifecycle guardrails: `docs/pr-lifecycle-guardrail-consolidation.md`
+
+Template tightening: `docs/checklist-driven-prompt-template-tightening.md`
 
 Compact bundle picker: `docs/command-check-bundle-reference-polish.md`
 
 Full bundle commands: `docs/testing-checklist-consolidation.md`
 
 ```bash
+bin/chief-of-staff --pr-lifecycle-guardrail-status
 bin/chief-of-staff --checklist-driven-prompt-template-status
 bin/chief-of-staff --command-check-bundle-reference-status
 bin/chief-of-staff --testing-checklist-status
 ```
+
+Every PR prompt must verify preflight on main.
+Every PR prompt must verify the feature branch.
+Every PR prompt must include no-commit review.
+Every PR prompt must verify PR state is OPEN and mergedAt is null before merge.
+Every PR prompt must verify merged state is MERGED and mergedAt is non-null after merge.
+Every PR prompt must verify local main is synced after merge.
+Every PR prompt must end with clean working tree and dashboard passing.
+Reusable bundles do not replace these lifecycle guardrails.
 
 Reusable verification bundles may shorten future prompts.
 
@@ -297,4 +309,5 @@ See also:
 - `docs/testing-checklist-consolidation.md`
 - `docs/command-check-bundle-reference-polish.md`
 - `docs/checklist-driven-prompt-template-tightening.md`
+- `docs/pr-lifecycle-guardrail-consolidation.md`
 - `.cursor/rules/teacher-ai-workstation.mdc`

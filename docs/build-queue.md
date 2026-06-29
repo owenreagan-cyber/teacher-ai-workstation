@@ -59,22 +59,22 @@ Phase 1 Teacher Chief of Staff + safe local lesson workflows.
 
 ## Current PR
 
-Checklist-driven prompt template tightening.
+PR lifecycle guardrail consolidation.
 
-Scope: Tighten Cursor prompt template guidance so future prompts can reference reusable verification bundles while still requiring PR-specific checks, no-commit review, merge verification, and final local-main dashboard proof. Preserve every existing command and status check. No checks removed, no command behavior changes, no lesson generation changes, no document scanning/indexing implementation, no student data, no live integrations, no network calls, and no automation.
+Scope: Consolidate PR lifecycle guardrails so future prompts consistently verify preflight, branch state, no-commit review, PR open/unmerged state, merge state with non-null mergedAt, branch deletion, local main sync, clean working tree, and dashboard proof. Preserve every existing command and status check. No checks removed, no command behavior changes, no lesson generation changes, no document scanning/indexing implementation, no student data, no live integrations, no network calls, and no automation.
 
 Appearance & Vibe wallpaper/photo curator foundation stack: complete for now.
 Live curator implementation: not started.
 
 ## Next PR
 
-PR lifecycle guardrail consolidation
+Branch hygiene and cleanup reference
 
-Scope: Consolidate PR lifecycle guardrails so future prompts consistently verify preflight, branch state, no-commit review, PR open/unmerged state, merge state with non-null mergedAt, branch deletion, local main sync, clean working tree, and dashboard proof. Preserve every existing command and status check. No checks removed, no command behavior changes, no lesson generation changes, no document scanning/indexing implementation, no student data, no live integrations, no network calls, and no automation.
+Scope: Add branch hygiene and cleanup guidance for feature branches, remote deletion checks, local branch cleanup, and clean working tree proof after merges. Preserve every existing command and status check. No checks removed, no command behavior changes, no lesson generation changes, no document scanning/indexing implementation, no student data, no live integrations, no network calls, and no automation.
 
 ## Next Recommended PRs
 
-1. PR lifecycle guardrail consolidation.
+1. Branch hygiene and cleanup reference.
 2. Later: permissioned Gmail/Drive integrations.
 3. Later: secrets/capability broker.
 

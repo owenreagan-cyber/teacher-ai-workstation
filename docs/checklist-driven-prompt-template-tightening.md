@@ -9,8 +9,10 @@ This PR tightens Cursor prompt template guidance only. This pass points to `docs
 ## Current Status
 
 ```text
-Current status: checklist-driven prompt template tightening in progress.
+Current status: checklist-driven prompt template tightening complete.
 ```
+
+PR lifecycle guardrail consolidation continues lifecycle guardrail rules. See `docs/pr-lifecycle-guardrail-consolidation.md`.
 
 Prompt template rules for bundle references, mandatory lifecycle sections, and safety boundaries are documented for local status commands only.
 

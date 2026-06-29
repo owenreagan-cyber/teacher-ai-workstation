@@ -12,7 +12,7 @@ This PR adds command/check bundle reference polish only. This pass points to the
 Current status: command/check bundle reference polish complete.
 ```
 
-Checklist-driven prompt template tightening adds lifecycle guardrail rules for bundle references. See `docs/checklist-driven-prompt-template-tightening.md`.
+Checklist-driven prompt template tightening is complete. PR lifecycle guardrail consolidation adds consolidated lifecycle guardrails. See `docs/pr-lifecycle-guardrail-consolidation.md`.
 
 Compact bundle picker and per-bundle references are documented for quick lookup without duplicating full check lists.
 

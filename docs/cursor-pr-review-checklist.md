@@ -93,7 +93,9 @@ bin/chief-of-staff --dashboard
 
 ## 13. Reusable Verification Bundles
 
-Lifecycle guardrails: `docs/checklist-driven-prompt-template-tightening.md`
+Lifecycle guardrails: `docs/pr-lifecycle-guardrail-consolidation.md`
+
+Template tightening: `docs/checklist-driven-prompt-template-tightening.md`
 
 Compact picker: `docs/command-check-bundle-reference-polish.md`
 
@@ -110,10 +112,20 @@ Named bundles:
 - Post-Merge Verification Bundle
 
 ```bash
+bin/chief-of-staff --pr-lifecycle-guardrail-status
 bin/chief-of-staff --checklist-driven-prompt-template-status
 bin/chief-of-staff --command-check-bundle-reference-status
 bin/chief-of-staff --testing-checklist-status
 ```
+
+Every PR prompt must verify preflight on main.
+Every PR prompt must verify the feature branch.
+Every PR prompt must include no-commit review.
+Every PR prompt must verify PR state is OPEN and mergedAt is null before merge.
+Every PR prompt must verify merged state is MERGED and mergedAt is non-null after merge.
+Every PR prompt must verify local main is synced after merge.
+Every PR prompt must end with clean working tree and dashboard passing.
+Reusable bundles do not replace these lifecycle guardrails.
 
 Reusable verification bundles may shorten future prompts.
 

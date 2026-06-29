@@ -820,6 +820,29 @@ else
   warn "checklist-driven prompt template status script missing: scripts/checklist-driven-prompt-template-status.sh"
 fi
 
+section "PR Lifecycle Guardrail Consolidation"
+if [[ -f scripts/pr-lifecycle-guardrail-status.sh ]]; then
+  pr_lifecycle_guardrail_result=0
+  pr_lifecycle_guardrail_output="$(bash scripts/pr-lifecycle-guardrail-status.sh 2>&1)" || pr_lifecycle_guardrail_result=$?
+  pr_lifecycle_guardrail_pass="$(summary_count "${pr_lifecycle_guardrail_output}" "PASS")"
+  pr_lifecycle_guardrail_warn="$(summary_count "${pr_lifecycle_guardrail_output}" "WARN")"
+  pr_lifecycle_guardrail_fail="$(summary_count "${pr_lifecycle_guardrail_output}" "FAIL")"
+
+  if [[ "${pr_lifecycle_guardrail_result}" != "0" ]]; then
+    printf 'PR Lifecycle Guardrail Consolidation: status command completed\n'
+    printf '%s\n' "${pr_lifecycle_guardrail_output}"
+    fail "PR lifecycle guardrail consolidation status failed"
+  elif [[ -n "${pr_lifecycle_guardrail_pass}" && -n "${pr_lifecycle_guardrail_warn}" && -n "${pr_lifecycle_guardrail_fail}" ]]; then
+    printf 'PR Lifecycle Guardrail Consolidation: PASS %s / WARN %s / FAIL %s\n' "${pr_lifecycle_guardrail_pass}" "${pr_lifecycle_guardrail_warn}" "${pr_lifecycle_guardrail_fail}"
+    pass "PR lifecycle guardrail consolidation status completed"
+  else
+    printf 'PR Lifecycle Guardrail Consolidation: status command completed\n'
+    pass "PR lifecycle guardrail consolidation status completed"
+  fi
+else
+  warn "PR lifecycle guardrail status script missing: scripts/pr-lifecycle-guardrail-status.sh"
+fi
+
 end_section_summary "Future-Safety / Parked Work"
 
 group_banner "Appearance & Vibe Foundation Status"

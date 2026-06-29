@@ -270,7 +270,14 @@ Prompt pack stack complete for now: docs/prompt-pack-stack-completion-marker.md
 Core Teacher Workstation planning: docs/core-teacher-workstation-planning-cleanup.md
 Teacher Workflow quick-reference: docs/teacher-workflow-quick-reference-polish.md
 Teacher Workflow status summary: docs/teacher-workflow-status-summary.md
-Next recommended PR: Teacher planning command detail polish
+Teacher Planning command detail: docs/teacher-planning-command-detail-polish.md
+Next recommended PR: Lesson review command detail polish
+```
+
+Teacher Planning command detail polish:
+
+```bash
+bin/chief-of-staff --teacher-planning-command-detail-status
 ```
 
 Teacher Workflow status summary:
@@ -712,6 +719,14 @@ bin/chief-of-staff --teacher-planning-command-status
 ```
 
 See `docs/teacher-planning-command-organization.md`.
+
+Teacher Planning command detail polish status command:
+
+```bash
+bin/chief-of-staff --teacher-planning-command-detail-status
+```
+
+See `docs/teacher-planning-command-detail-polish.md`, `docs/teacher-workflow-status-summary.md`, `docs/teacher-workflow-quick-reference-polish.md`, and `docs/core-teacher-workstation-planning-cleanup.md`.
 
 Core Teacher Workstation planning cleanup status command:
 

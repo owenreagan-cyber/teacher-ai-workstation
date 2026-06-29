@@ -631,6 +631,29 @@ else
   warn "teacher planning command organization status script missing: scripts/teacher-planning-command-organization-status.sh"
 fi
 
+section "Teacher Planning Command Detail Polish"
+if [[ -f scripts/teacher-planning-command-detail-status.sh ]]; then
+  teacher_planning_command_detail_result=0
+  teacher_planning_command_detail_output="$(bash scripts/teacher-planning-command-detail-status.sh 2>&1)" || teacher_planning_command_detail_result=$?
+  teacher_planning_command_detail_pass="$(summary_count "${teacher_planning_command_detail_output}" "PASS")"
+  teacher_planning_command_detail_warn="$(summary_count "${teacher_planning_command_detail_output}" "WARN")"
+  teacher_planning_command_detail_fail="$(summary_count "${teacher_planning_command_detail_output}" "FAIL")"
+
+  if [[ "${teacher_planning_command_detail_result}" != "0" ]]; then
+    printf 'Teacher Planning Command Detail Polish: status command completed\n'
+    printf '%s\n' "${teacher_planning_command_detail_output}"
+    fail "Teacher Planning command detail polish status failed"
+  elif [[ -n "${teacher_planning_command_detail_pass}" && -n "${teacher_planning_command_detail_warn}" && -n "${teacher_planning_command_detail_fail}" ]]; then
+    printf 'Teacher Planning Command Detail Polish: PASS %s / WARN %s / FAIL %s\n' "${teacher_planning_command_detail_pass}" "${teacher_planning_command_detail_warn}" "${teacher_planning_command_detail_fail}"
+    pass "Teacher Planning command detail polish status completed"
+  else
+    printf 'Teacher Planning Command Detail Polish: status command completed\n'
+    pass "Teacher Planning command detail polish status completed"
+  fi
+else
+  warn "Teacher Planning command detail status script missing: scripts/teacher-planning-command-detail-status.sh"
+fi
+
 section "Lesson Review Workflow Polish"
 if [[ -f scripts/lesson-review-workflow-polish-status.sh ]]; then
   lesson_review_workflow_result=0

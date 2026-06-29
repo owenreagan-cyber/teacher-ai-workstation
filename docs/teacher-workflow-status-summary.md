@@ -9,10 +9,10 @@ This PR adds a Teacher Workflow status summary only. This pass is about preservi
 ## Current Status
 
 ```text
-Current status: teacher workflow status summary in progress.
+Current status: teacher workflow status summary complete.
 ```
 
-Status summary rules are documented for local status commands only.
+Teacher Planning command detail polish tightens safe Teacher Planning command references. See `docs/teacher-planning-command-detail-polish.md`.
 
 ## Why This Status Summary Exists
 

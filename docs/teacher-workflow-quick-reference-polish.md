@@ -12,7 +12,7 @@ This PR adds a Teacher Workflow quick-reference only. This pass is about preserv
 Current status: teacher workflow quick-reference polish complete.
 ```
 
-Teacher Workflow status summary adds a compact stack status view. See `docs/teacher-workflow-status-summary.md`.
+Teacher Planning command detail polish tightens safe Teacher Planning command references. See `docs/teacher-planning-command-detail-polish.md`.
 
 ## Why This Quick Reference Exists
 

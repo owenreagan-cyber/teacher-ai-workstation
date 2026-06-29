@@ -59,22 +59,22 @@ Phase 1 Teacher Chief of Staff + safe local lesson workflows.
 
 ## Current PR
 
-Prompt pack freshness report polish.
+Prompt pack handoff summary.
 
-Scope: Add a compact freshness report for prompt pack docs that summarizes whether roadmap labels, dashboard counts, status command references, and reusable prompt guidance are current. Preserve every existing command and status check. No checks removed, no command behavior changes, no lesson generation changes, no document scanning/indexing implementation, no student data, no live integrations, no network calls, and no automation.
+Scope: Add a compact handoff summary for reusable prompt pack docs so future work can quickly identify the current prompt pack stack, freshness checks, maintenance checklist, reference index, and stale-reference audit. Preserve every existing command and status check. No checks removed, no command behavior changes, no lesson generation changes, no document scanning/indexing implementation, no student data, no live integrations, no network calls, and no automation.
 
 Appearance & Vibe wallpaper/photo curator foundation stack: complete for now.
 Live curator implementation: not started.
 
 ## Next PR
 
-Prompt pack handoff summary
+Prompt pack stack completion marker
 
-Scope: Add a compact handoff summary for reusable prompt pack docs so future work can quickly identify the current prompt pack stack, freshness checks, maintenance checklist, reference index, and stale-reference audit. Preserve every existing command and status check. No checks removed, no command behavior changes, no lesson generation changes, no document scanning/indexing implementation, no student data, no live integrations, no network calls, and no automation.
+Scope: Mark the reusable prompt pack documentation stack complete for now and document the next safe return point for core Teacher Workstation work. Preserve every existing command and status check. No checks removed, no command behavior changes, no lesson generation changes, no document scanning/indexing implementation, no student data, no live integrations, no network calls, and no automation.
 
 ## Next Recommended PRs
 
-1. Prompt pack handoff summary.
+1. Prompt pack stack completion marker.
 2. Later: permissioned Gmail/Drive integrations.
 3. Later: secrets/capability broker.
 

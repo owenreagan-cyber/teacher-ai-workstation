@@ -26,15 +26,16 @@
 - Prompt pack maintenance checklist: complete
 - Prompt pack reference index: complete
 - Prompt pack stale-reference audit: complete
+- Prompt pack freshness report polish: complete
 - Appearance & Vibe wallpaper/photo foundation stack: complete for now
 
 ### Now
 
-- Prompt pack freshness report polish (prompt-pack-freshness/status only)
+- Prompt pack handoff summary (prompt-pack-handoff/status only)
 
 ### Next
 
-- Prompt pack handoff summary
+- Prompt pack stack completion marker
 
 ## Completed (earlier foundations)
 

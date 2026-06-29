@@ -1027,6 +1027,29 @@ else
   warn "prompt pack freshness report status script missing: scripts/prompt-pack-freshness-report-status.sh"
 fi
 
+section "Prompt Pack Handoff Summary"
+if [[ -f scripts/prompt-pack-handoff-summary-status.sh ]]; then
+  prompt_pack_handoff_summary_result=0
+  prompt_pack_handoff_summary_output="$(bash scripts/prompt-pack-handoff-summary-status.sh 2>&1)" || prompt_pack_handoff_summary_result=$?
+  prompt_pack_handoff_summary_pass="$(summary_count "${prompt_pack_handoff_summary_output}" "PASS")"
+  prompt_pack_handoff_summary_warn="$(summary_count "${prompt_pack_handoff_summary_output}" "WARN")"
+  prompt_pack_handoff_summary_fail="$(summary_count "${prompt_pack_handoff_summary_output}" "FAIL")"
+
+  if [[ "${prompt_pack_handoff_summary_result}" != "0" ]]; then
+    printf 'Prompt Pack Handoff Summary: status command completed\n'
+    printf '%s\n' "${prompt_pack_handoff_summary_output}"
+    fail "prompt pack handoff summary status failed"
+  elif [[ -n "${prompt_pack_handoff_summary_pass}" && -n "${prompt_pack_handoff_summary_warn}" && -n "${prompt_pack_handoff_summary_fail}" ]]; then
+    printf 'Prompt Pack Handoff Summary: PASS %s / WARN %s / FAIL %s\n' "${prompt_pack_handoff_summary_pass}" "${prompt_pack_handoff_summary_warn}" "${prompt_pack_handoff_summary_fail}"
+    pass "prompt pack handoff summary status completed"
+  else
+    printf 'Prompt Pack Handoff Summary: status command completed\n'
+    pass "prompt pack handoff summary status completed"
+  fi
+else
+  warn "prompt pack handoff summary status script missing: scripts/prompt-pack-handoff-summary-status.sh"
+fi
+
 end_section_summary "Future-Safety / Parked Work"
 
 group_banner "Appearance & Vibe Foundation Status"

@@ -9,10 +9,10 @@ This PR adds prompt pack freshness report polish only. This pass is about preser
 ## Current Status
 
 ```text
-Current status: prompt pack freshness report polish in progress.
+Current status: prompt pack freshness report polish complete.
 ```
 
-Freshness report rules are documented for local status commands only.
+Prompt pack handoff summary continues reusable prompt stack handoff. See `docs/prompt-pack-handoff-summary.md`.
 
 ## Why Freshness Reports Exist
 
@@ -229,6 +229,7 @@ Related prompt docs:
 - `docs/prompt-pack-stale-reference-audit.md`
 - `docs/prompt-pack-reference-index.md`
 - `docs/prompt-pack-maintenance-checklist.md`
+- `docs/prompt-pack-handoff-summary.md`
 - `docs/testing-checklist-consolidation.md`
 - `docs/command-check-bundle-reference-polish.md`
 

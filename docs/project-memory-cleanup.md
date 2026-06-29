@@ -9,10 +9,12 @@ This PR improves project memory clarity only. This pass is about preserving all 
 ## Current Status
 
 ```text
-Current status: project memory cleanup in progress.
+Current status: project memory cleanup complete.
 ```
 
-Active priorities and project memory are being tightened so current work, completed work, parked work, and safety boundaries are easy to scan.
+Testing/checklist consolidation documents reusable verification bundles. See `docs/testing-checklist-consolidation.md`.
+
+Active priorities and project memory are tightened so current work, completed work, parked work, and safety boundaries are easy to scan.
 
 ## Why This Cleanup Exists
 

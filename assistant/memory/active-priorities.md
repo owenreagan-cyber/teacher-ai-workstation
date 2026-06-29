@@ -14,15 +14,16 @@
 - Dashboard readability pass: complete
 - Return to Chief of Staff / Teacher Workstation core: complete
 - Local document indexing follow-up: complete
+- Project memory cleanup: complete
 - Appearance & Vibe wallpaper/photo foundation stack: complete for now
 
 ### Now
 
-- Project memory cleanup (memory-cleanup/status only)
+- Testing/checklist consolidation (checklist-consolidation/status only)
 
 ### Next
 
-- Testing/checklist consolidation
+- Command/check bundle reference polish
 
 ## Completed (earlier foundations)
 

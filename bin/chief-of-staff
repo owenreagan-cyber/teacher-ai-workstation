@@ -22,6 +22,7 @@ Core Dashboard and Health:
   --workflow-quick-start-status        Show Chief of Staff workflow quick-start guide status and exit.
   --dashboard-section-summary-status   Show dashboard section summary polish status and exit.
   --teacher-planning-command-status    Show teacher planning command organization status and exit.
+  --testing-checklist-status            Show testing/checklist consolidation status and exit.
   --command-launcher-status            Show Chief of Staff command launcher status and exit.
 
 Return to Core / Roadmap:
@@ -180,6 +181,7 @@ Teacher review (safe local sample slug only; no student data):
   bin/chief-of-staff --document-indexing-plan-status
   bin/chief-of-staff --local-document-indexing-follow-up-status
   bin/chief-of-staff --project-memory-cleanup-status
+  bin/chief-of-staff --testing-checklist-status
 
 Developer / Cursor verification:
   bin/chief-of-staff --cursor-workflow-status
@@ -243,6 +245,7 @@ All command examples:
   bin/chief-of-staff --review-notes-workflow-status
   bin/chief-of-staff --local-document-indexing-follow-up-status
   bin/chief-of-staff --project-memory-cleanup-status
+  bin/chief-of-staff --testing-checklist-status
   bin/chief-of-staff --command-launcher-status
   bin/chief-of-staff --cursor-workflow-status
   bin/chief-of-staff --developer-status
@@ -327,6 +330,7 @@ Local command: help examples status
 Local command: workflow quick-start status
 Local command: dashboard section summary status
 Local command: teacher planning command status
+Local command: testing checklist status
 
 Appearance & Vibe Foundation (status only; live curator not started)
 Local command: wallpaper photo curator plan status
@@ -1225,6 +1229,15 @@ while [[ $# -gt 0 ]]; do
         die "Project memory cleanup status script is missing: scripts/project-memory-cleanup-status.sh"
       fi
       bash "${project_memory_cleanup_status_script}"
+      exit 0
+      ;;
+    --testing-checklist-status)
+      repo_root="$(resolve_repo_root)"
+      testing_checklist_status_script="${repo_root}/scripts/testing-checklist-consolidation-status.sh"
+      if [[ ! -f "${testing_checklist_status_script}" ]]; then
+        die "Testing checklist consolidation status script is missing: scripts/testing-checklist-consolidation-status.sh"
+      fi
+      bash "${testing_checklist_status_script}"
       exit 0
       ;;
     --wallpaper-photo-curator-plan-status)

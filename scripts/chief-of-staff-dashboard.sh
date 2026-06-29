@@ -751,6 +751,29 @@ else
   warn "project memory cleanup status script missing: scripts/project-memory-cleanup-status.sh"
 fi
 
+section "Testing/Checklist Consolidation"
+if [[ -f scripts/testing-checklist-consolidation-status.sh ]]; then
+  testing_checklist_result=0
+  testing_checklist_output="$(bash scripts/testing-checklist-consolidation-status.sh 2>&1)" || testing_checklist_result=$?
+  testing_checklist_pass="$(summary_count "${testing_checklist_output}" "PASS")"
+  testing_checklist_warn="$(summary_count "${testing_checklist_output}" "WARN")"
+  testing_checklist_fail="$(summary_count "${testing_checklist_output}" "FAIL")"
+
+  if [[ "${testing_checklist_result}" != "0" ]]; then
+    printf 'Testing/Checklist Consolidation: status command completed\n'
+    printf '%s\n' "${testing_checklist_output}"
+    fail "testing checklist consolidation status failed"
+  elif [[ -n "${testing_checklist_pass}" && -n "${testing_checklist_warn}" && -n "${testing_checklist_fail}" ]]; then
+    printf 'Testing/Checklist Consolidation: PASS %s / WARN %s / FAIL %s\n' "${testing_checklist_pass}" "${testing_checklist_warn}" "${testing_checklist_fail}"
+    pass "testing checklist consolidation status completed"
+  else
+    printf 'Testing/Checklist Consolidation: status command completed\n'
+    pass "testing checklist consolidation status completed"
+  fi
+else
+  warn "testing checklist consolidation status script missing: scripts/testing-checklist-consolidation-status.sh"
+fi
+
 end_section_summary "Future-Safety / Parked Work"
 
 group_banner "Appearance & Vibe Foundation Status"

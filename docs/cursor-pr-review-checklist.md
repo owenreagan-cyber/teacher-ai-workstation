@@ -77,13 +77,35 @@ non-null mergedAt means merged
 
 ## 12. Local Main Verification
 
-After merge (not before):
+After merge (not before), use the **Post-Merge Verification Bundle** from `docs/testing-checklist-consolidation.md`:
+
+```bash
+git switch main
+git pull --ff-only
+git log --oneline -5
+git status --short
+bin/chief-of-staff --dashboard
+```
 
 - [ ] Local `main` fast-forwarded from origin
 - [ ] `bin/chief-of-staff --dashboard` passes on local `main`
 - [ ] Phase checks pass on local `main`
 
-## 13. Approval Decision
+## 13. Reusable Verification Bundles
+
+See `docs/testing-checklist-consolidation.md` for named bundles:
+
+- Core Verification Bundle (every PR)
+- Documentation/Status PR Bundle
+- Teacher Planning and Review Bundle
+- Document Indexing Safety Bundle
+- Appearance & Vibe Safety Bundle
+- Pre-Commit Review Bundle
+- Post-Merge Verification Bundle
+
+Run `bin/chief-of-staff --testing-checklist-status` to verify bundle documentation is present.
+
+## 14. Approval Decision
 
 Choose one outcome:
 

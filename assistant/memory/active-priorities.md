@@ -20,15 +20,16 @@
 - Checklist-driven prompt template tightening: complete
 - PR lifecycle guardrail consolidation: complete
 - Branch hygiene and cleanup reference: complete
+- Local main proof report polish: complete
 - Appearance & Vibe wallpaper/photo foundation stack: complete for now
 
 ### Now
 
-- Local main proof report polish (final-report-polish/status only)
+- Workflow docs cross-link polish (cross-link-polish/status only)
 
 ### Next
 
-- Workflow docs cross-link polish
+- Workflow docs navigation status summary
 
 ## Completed (earlier foundations)
 

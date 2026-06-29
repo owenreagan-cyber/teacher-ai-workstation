@@ -12,7 +12,7 @@ This PR consolidates testing/checklist guidance only. This pass is about preserv
 Current status: testing/checklist consolidation complete.
 ```
 
-Command/check bundle reference polish adds a compact picker pointing here. See `docs/command-check-bundle-reference-polish.md`.
+Command/check bundle reference polish adds a compact picker pointing here. See `docs/command-check-bundle-reference-polish.md`. Workflow doc map: `docs/workflow-docs-cross-link-polish.md`.
 
 Checklist-driven prompt template tightening adds lifecycle guardrail rules for bundle use in Cursor prompts. See `docs/checklist-driven-prompt-template-tightening.md`.
 
@@ -203,6 +203,12 @@ no wallpaper/photo curator implementation
 - This PR does not add external integrations.
 - This PR does not add network calls.
 - This PR does not add automation.
+
+## Related workflow docs
+
+- Bundle reference: `docs/command-check-bundle-reference-polish.md`
+- Prompt template: `docs/cursor-prompt-template.md`
+- Workflow doc map: `docs/workflow-docs-cross-link-polish.md`
 
 ## Commands Reference
 

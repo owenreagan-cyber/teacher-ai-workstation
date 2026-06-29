@@ -214,4 +214,14 @@ Related docs:
 
 - `docs/cursor-prompt-template.md`
 - `docs/cursor-pr-review-checklist.md`
+- `docs/workflow-docs-cross-link-polish.md`
 - `.cursor/rules/teacher-ai-workstation.mdc`
+
+Use `docs/workflow-docs-cross-link-polish.md` as the map for workflow docs.
+
+Cross-links help navigation but do not replace PR-specific checks.
+Cross-links do not replace no-commit review.
+Cross-links do not replace PR open/unmerged verification.
+Cross-links do not replace mergedAt non-null verification.
+Cross-links do not replace branch deletion verification.
+Cross-links do not replace final local-main dashboard proof.

@@ -93,6 +93,8 @@ bin/chief-of-staff --dashboard
 
 ## 13. Reusable Verification Bundles
 
+Use `docs/workflow-docs-cross-link-polish.md` as the map for workflow docs.
+
 Lifecycle guardrails: `docs/pr-lifecycle-guardrail-consolidation.md`
 
 Branch hygiene: `docs/branch-hygiene-cleanup-reference.md`
@@ -131,6 +133,13 @@ Every PR completion must report next recommended PR.
 Every PR completion must report branch deletion status.
 Every PR completion must end with final status: on main, clean working tree, dashboard passing.
 Final report polish does not replace merge verification or branch hygiene checks.
+
+Cross-links help navigation but do not replace PR-specific checks.
+Cross-links do not replace no-commit review.
+Cross-links do not replace PR open/unmerged verification.
+Cross-links do not replace mergedAt non-null verification.
+Cross-links do not replace branch deletion verification.
+Cross-links do not replace final local-main dashboard proof.
 
 Every PR prompt must name the expected branch.
 Every PR prompt must verify the current branch before work and before commit.

@@ -47,25 +47,26 @@ Phase 1 Teacher Chief of Staff + safe local lesson workflows.
 - Chief of Staff dashboard readability pass.
 - Chief of Staff command map cleanup.
 - Chief of Staff help examples polish.
+- Chief of Staff workflow quick-start guide.
 
 ## Current PR
 
-Chief of Staff workflow quick-start guide.
+Dashboard section summary polish.
 
-Scope: Add a plain-English quick-start guide for common Chief of Staff / Teacher Workstation workflows: what to run daily, before a PR, after a merge, for lesson review, and for safe status checks. Preserve every existing command and status check. No new live integrations, no network calls, no wallpaper/photo curator implementation, no lesson generation changes, no student data, and no automation.
+Scope: Add clearer high-level summaries for major dashboard sections after the workflow quick-start guide. Preserve every existing command and status check. No new live integrations, no network calls, no wallpaper/photo curator implementation, no lesson generation changes, no student data, and no automation.
 
 Appearance & Vibe wallpaper/photo curator foundation stack: complete for now.
 Live curator implementation: not started.
 
 ## Next PR
 
-Dashboard section summary polish
+Teacher planning command organization
 
-Scope: Add clearer high-level summaries for major dashboard sections after the workflow quick-start guide. Preserve every existing command and status check. No new live integrations, no network calls, no wallpaper/photo curator implementation, no lesson generation changes, no student data, and no automation.
+Scope: Improve lesson-planning command organization and discoverability after dashboard section summary polish. Preserve every existing command and status check. No lesson generation changes, no live integrations, no network calls, no student data, and no automation.
 
 ## Next Recommended PRs
 
-1. Dashboard section summary polish.
+1. Teacher planning command organization.
 2. Later: permissioned Gmail/Drive integrations.
 3. Later: secrets/capability broker.
 

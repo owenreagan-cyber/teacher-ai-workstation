@@ -385,6 +385,13 @@ for path in \
   check_required_file "${path}"
 done
 
+section "Dashboard Section Summary Polish Files"
+for path in \
+  docs/dashboard-section-summary-polish.md \
+  scripts/dashboard-section-summary-status.sh; do
+  check_required_file "${path}"
+done
+
 section "Chief of Staff Workflow Quick-Start Guide Files"
 for path in \
   docs/chief-of-staff-workflow-quick-start-guide.md \
@@ -515,6 +522,7 @@ check_bash_syntax "scripts/wallpaper-photo-notification-foundation-status.sh"
 check_bash_syntax "scripts/wallpaper-photo-rotation-handoff-validator.sh"
 check_bash_syntax "scripts/wallpaper-photo-rotation-handoff-safety-status.sh"
 check_bash_syntax "scripts/return-to-chief-of-staff-core-status.sh"
+check_bash_syntax "scripts/dashboard-section-summary-status.sh"
 check_bash_syntax "scripts/chief-of-staff-workflow-quick-start-status.sh"
 check_bash_syntax "scripts/chief-of-staff-help-examples-status.sh"
 check_bash_syntax "scripts/chief-of-staff-command-map-status.sh"
@@ -546,7 +554,7 @@ section "Recommendation"
 if (( CRITICAL_BLOCKER > 0 )); then
   printf 'Fix critical Chief of Staff CLI, memory, intake, or script problems before the next build PR.\n'
 else
-  printf 'Next recommended PR: Dashboard section summary polish.\n'
+  printf 'Next recommended PR: Teacher planning command organization.\n'
 fi
 
 if (( COMPARE_0E == 1 && CRITICAL_BLOCKER == 0 )); then

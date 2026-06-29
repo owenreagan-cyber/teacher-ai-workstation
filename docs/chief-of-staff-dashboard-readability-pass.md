@@ -16,6 +16,8 @@ Command map cleanup improves `--help` and `--list-workflows` discoverability. Se
 
 Help examples polish adds common-workflow example blocks. See `docs/chief-of-staff-help-examples-polish.md`.
 
+Dashboard section summary polish adds high-level section summaries. See `docs/dashboard-section-summary-polish.md`.
+
 The dashboard groups core workstation, Chief of Staff workflow, lesson planning, developer/Cursor, Appearance & Vibe foundation, recommendation, and final health summary sections more clearly.
 
 ## Why This Pass Exists

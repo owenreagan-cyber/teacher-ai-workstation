@@ -173,10 +173,12 @@ no student data
 bin/chief-of-staff --command-map-status
 bin/chief-of-staff --help-examples-status
 bin/chief-of-staff --workflow-quick-start-status
+bin/chief-of-staff --dashboard-section-summary-status
 bin/chief-of-staff --help
 bin/chief-of-staff --list-workflows
 bin/chief-of-staff --dashboard
 bash scripts/chief-of-staff-command-map-status.sh
 bash scripts/chief-of-staff-help-examples-status.sh
 bash scripts/chief-of-staff-workflow-quick-start-status.sh
+bash scripts/dashboard-section-summary-status.sh
 ```

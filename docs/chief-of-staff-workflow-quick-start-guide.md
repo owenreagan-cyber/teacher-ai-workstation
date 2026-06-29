@@ -9,8 +9,10 @@ This PR adds a quick-start guide only. This pass is about preserving all existin
 ## Current Status
 
 ```text
-Current status: workflow quick-start guide in progress.
+Current status: workflow quick-start guide complete.
 ```
+
+Dashboard section summary polish adds high-level section summaries. See `docs/dashboard-section-summary-polish.md`.
 
 See also `docs/chief-of-staff-help-examples-polish.md` and `docs/chief-of-staff-command-map-cleanup.md` for example blocks and command grouping.
 
@@ -177,8 +179,10 @@ no student data
 
 ```bash
 bin/chief-of-staff --workflow-quick-start-status
+bin/chief-of-staff --dashboard-section-summary-status
 bin/chief-of-staff --dashboard
 bin/chief-of-staff --help
 bin/chief-of-staff --list-workflows
 bash scripts/chief-of-staff-workflow-quick-start-status.sh
+bash scripts/dashboard-section-summary-status.sh
 ```

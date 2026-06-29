@@ -9,8 +9,10 @@ This PR adds dashboard section summary polish only. This pass is about preservin
 ## Current Status
 
 ```text
-Current status: dashboard section summary polish in progress.
+Current status: dashboard section summary polish complete.
 ```
+
+Teacher planning command organization improves lesson-planning command discoverability. See `docs/teacher-planning-command-organization.md`.
 
 The dashboard prints `Section summary:` lines after major groups using in-group PASS/WARN/FAIL deltas.
 
@@ -121,7 +123,9 @@ no student data
 
 ```bash
 bin/chief-of-staff --dashboard-section-summary-status
+bin/chief-of-staff --teacher-planning-command-status
 bin/chief-of-staff --dashboard
 bin/chief-of-staff --workflow-quick-start-status
 bash scripts/dashboard-section-summary-status.sh
+bash scripts/teacher-planning-command-organization-status.sh
 ```

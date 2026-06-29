@@ -40,6 +40,8 @@ Core Dashboard and Health:
                                        Show prompt pack freshness report polish status and exit.
   --prompt-pack-handoff-summary-status
                                        Show prompt pack handoff summary status and exit.
+  --prompt-pack-stack-completion-status
+                                       Show prompt pack stack completion marker status and exit.
   --command-launcher-status            Show Chief of Staff command launcher status and exit.
 
 Return to Core / Roadmap:
@@ -211,6 +213,7 @@ Teacher review (safe local sample slug only; no student data):
   bin/chief-of-staff --prompt-pack-stale-reference-audit-status
   bin/chief-of-staff --prompt-pack-freshness-report-status
   bin/chief-of-staff --prompt-pack-handoff-summary-status
+  bin/chief-of-staff --prompt-pack-stack-completion-status
 
 Developer / Cursor verification:
   bin/chief-of-staff --cursor-workflow-status
@@ -287,6 +290,7 @@ All command examples:
   bin/chief-of-staff --prompt-pack-stale-reference-audit-status
   bin/chief-of-staff --prompt-pack-freshness-report-status
   bin/chief-of-staff --prompt-pack-handoff-summary-status
+  bin/chief-of-staff --prompt-pack-stack-completion-status
   bin/chief-of-staff --command-launcher-status
   bin/chief-of-staff --cursor-workflow-status
   bin/chief-of-staff --developer-status
@@ -404,6 +408,9 @@ Local command: prompt pack freshness report status
 
 Prompt Pack Handoff Summary
 Local command: prompt pack handoff summary status
+
+Prompt Pack Stack Completion
+Local command: prompt pack stack completion status
 
 Appearance & Vibe Foundation (status only; live curator not started)
 Local command: wallpaper photo curator plan status
@@ -1419,6 +1426,15 @@ while [[ $# -gt 0 ]]; do
         die "Prompt pack handoff summary status script is missing: scripts/prompt-pack-handoff-summary-status.sh"
       fi
       bash "${prompt_pack_handoff_summary_status_script}"
+      exit 0
+      ;;
+    --prompt-pack-stack-completion-status)
+      repo_root="$(resolve_repo_root)"
+      prompt_pack_stack_completion_status_script="${repo_root}/scripts/prompt-pack-stack-completion-status.sh"
+      if [[ ! -f "${prompt_pack_stack_completion_status_script}" ]]; then
+        die "Prompt pack stack completion status script is missing: scripts/prompt-pack-stack-completion-status.sh"
+      fi
+      bash "${prompt_pack_stack_completion_status_script}"
       exit 0
       ;;
     --wallpaper-photo-curator-plan-status)

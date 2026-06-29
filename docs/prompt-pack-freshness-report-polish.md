@@ -12,7 +12,7 @@ This PR adds prompt pack freshness report polish only. This pass is about preser
 Current status: prompt pack freshness report polish complete.
 ```
 
-Prompt pack handoff summary continues reusable prompt stack handoff. See `docs/prompt-pack-handoff-summary.md`.
+Prompt pack stack completion marker marks the reusable prompt pack stack complete for now. See `docs/prompt-pack-stack-completion-marker.md`.
 
 ## Why Freshness Reports Exist
 
@@ -230,6 +230,7 @@ Related prompt docs:
 - `docs/prompt-pack-reference-index.md`
 - `docs/prompt-pack-maintenance-checklist.md`
 - `docs/prompt-pack-handoff-summary.md`
+- `docs/prompt-pack-stack-completion-marker.md`
 - `docs/testing-checklist-consolidation.md`
 - `docs/command-check-bundle-reference-polish.md`
 

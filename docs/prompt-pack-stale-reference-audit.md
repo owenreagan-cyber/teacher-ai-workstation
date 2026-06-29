@@ -12,7 +12,7 @@ This PR adds prompt pack stale-reference audit guidance only. This pass is about
 Current status: prompt pack stale-reference audit complete.
 ```
 
-Prompt pack handoff summary continues reusable prompt stack handoff. See `docs/prompt-pack-handoff-summary.md`.
+Prompt pack stack completion marker marks the reusable prompt pack stack complete for now. See `docs/prompt-pack-stack-completion-marker.md`.
 
 ## Why Stale-Reference Audits Exist
 
@@ -213,6 +213,7 @@ no wallpaper/photo curator implementation
 
 - Prompt pack freshness report: `docs/prompt-pack-freshness-report-polish.md`
 - Prompt pack handoff summary: `docs/prompt-pack-handoff-summary.md`
+- Prompt pack stack completion marker: `docs/prompt-pack-stack-completion-marker.md`
 
 ## Commands Reference
 

@@ -723,6 +723,29 @@ else
   warn "Teacher Workflow quick-reference status script missing: scripts/teacher-workflow-quick-reference-status.sh"
 fi
 
+section "Teacher Workflow Status Summary"
+if [[ -f scripts/teacher-workflow-status-summary.sh ]]; then
+  teacher_workflow_status_summary_result=0
+  teacher_workflow_status_summary_output="$(bash scripts/teacher-workflow-status-summary.sh 2>&1)" || teacher_workflow_status_summary_result=$?
+  teacher_workflow_status_summary_pass="$(summary_count "${teacher_workflow_status_summary_output}" "PASS")"
+  teacher_workflow_status_summary_warn="$(summary_count "${teacher_workflow_status_summary_output}" "WARN")"
+  teacher_workflow_status_summary_fail="$(summary_count "${teacher_workflow_status_summary_output}" "FAIL")"
+
+  if [[ "${teacher_workflow_status_summary_result}" != "0" ]]; then
+    printf 'Teacher Workflow Status Summary: status command completed\n'
+    printf '%s\n' "${teacher_workflow_status_summary_output}"
+    fail "Teacher Workflow status summary failed"
+  elif [[ -n "${teacher_workflow_status_summary_pass}" && -n "${teacher_workflow_status_summary_warn}" && -n "${teacher_workflow_status_summary_fail}" ]]; then
+    printf 'Teacher Workflow Status Summary: PASS %s / WARN %s / FAIL %s\n' "${teacher_workflow_status_summary_pass}" "${teacher_workflow_status_summary_warn}" "${teacher_workflow_status_summary_fail}"
+    pass "Teacher Workflow status summary completed"
+  else
+    printf 'Teacher Workflow Status Summary: status command completed\n'
+    pass "Teacher Workflow status summary completed"
+  fi
+else
+  warn "Teacher Workflow status summary script missing: scripts/teacher-workflow-status-summary.sh"
+fi
+
 end_section_summary "Lesson Planning Status"
 
 group_banner "Future-Safety / Parked Work"

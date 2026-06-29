@@ -269,7 +269,14 @@ See `docs/checklist-driven-prompt-template-tightening.md`, `docs/command-check-b
 Prompt pack stack complete for now: docs/prompt-pack-stack-completion-marker.md
 Core Teacher Workstation planning: docs/core-teacher-workstation-planning-cleanup.md
 Teacher Workflow quick-reference: docs/teacher-workflow-quick-reference-polish.md
-Next recommended PR: Teacher workflow status summary
+Teacher Workflow status summary: docs/teacher-workflow-status-summary.md
+Next recommended PR: Teacher planning command detail polish
+```
+
+Teacher Workflow status summary:
+
+```bash
+bin/chief-of-staff --teacher-workflow-status-summary
 ```
 
 Teacher Workflow quick-reference polish:
@@ -712,7 +719,15 @@ Core Teacher Workstation planning cleanup status command:
 bin/chief-of-staff --core-teacher-workstation-planning-cleanup-status
 ```
 
-See `docs/core-teacher-workstation-planning-cleanup.md`, `docs/teacher-workflow-quick-reference-polish.md`, `docs/teacher-planning-command-organization.md`, `docs/lesson-review-workflow-polish.md`, `docs/review-notes-workflow-polish.md`, `docs/local-document-indexing-follow-up.md`, and `docs/prompt-pack-stack-completion-marker.md`.
+See `docs/teacher-workflow-status-summary.md`, `docs/teacher-workflow-quick-reference-polish.md`, `docs/core-teacher-workstation-planning-cleanup.md`, `docs/teacher-planning-command-organization.md`, `docs/lesson-review-workflow-polish.md`, `docs/review-notes-workflow-polish.md`, `docs/local-document-indexing-follow-up.md`, and `docs/prompt-pack-stack-completion-marker.md`.
+
+Teacher Workflow status summary command:
+
+```bash
+bin/chief-of-staff --teacher-workflow-status-summary
+```
+
+See `docs/teacher-workflow-status-summary.md`.
 
 Teacher Workflow quick-reference polish status command:
 

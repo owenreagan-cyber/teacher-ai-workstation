@@ -14,6 +14,8 @@ Current status: workflow quick-start guide complete.
 
 Dashboard section summary polish adds high-level section summaries. See `docs/dashboard-section-summary-polish.md`.
 
+Teacher planning command organization improves lesson-planning command discoverability. See `docs/teacher-planning-command-organization.md`.
+
 See also `docs/chief-of-staff-help-examples-polish.md` and `docs/chief-of-staff-command-map-cleanup.md` for example blocks and command grouping.
 
 ## First Command to Run
@@ -180,9 +182,11 @@ no student data
 ```bash
 bin/chief-of-staff --workflow-quick-start-status
 bin/chief-of-staff --dashboard-section-summary-status
+bin/chief-of-staff --teacher-planning-command-status
 bin/chief-of-staff --dashboard
 bin/chief-of-staff --help
 bin/chief-of-staff --list-workflows
 bash scripts/chief-of-staff-workflow-quick-start-status.sh
 bash scripts/dashboard-section-summary-status.sh
+bash scripts/teacher-planning-command-organization-status.sh
 ```

@@ -459,6 +459,22 @@ bin/chief-of-staff --dashboard-section-summary-status
 
 See `docs/dashboard-section-summary-polish.md`.
 
+Teacher planning command organization status command:
+
+```bash
+bin/chief-of-staff --teacher-planning-command-status
+```
+
+See `docs/teacher-planning-command-organization.md`.
+
+Teacher planning commands (safe sample slug only; no student data):
+
+```bash
+bin/chief-of-staff --lesson-review-view fractions-review
+bin/chief-of-staff --review-notes-template-status
+bin/chief-of-staff --document-indexing-plan-status
+```
+
 Quick start (start here):
 
 ```bash

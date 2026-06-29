@@ -608,6 +608,29 @@ else
   warn "review notes template status script missing: scripts/review-notes-template-status.sh"
 fi
 
+section "Teacher Planning Command Organization"
+if [[ -f scripts/teacher-planning-command-organization-status.sh ]]; then
+  teacher_planning_command_result=0
+  teacher_planning_command_output="$(bash scripts/teacher-planning-command-organization-status.sh 2>&1)" || teacher_planning_command_result=$?
+  teacher_planning_command_pass="$(summary_count "${teacher_planning_command_output}" "PASS")"
+  teacher_planning_command_warn="$(summary_count "${teacher_planning_command_output}" "WARN")"
+  teacher_planning_command_fail="$(summary_count "${teacher_planning_command_output}" "FAIL")"
+
+  if [[ "${teacher_planning_command_result}" != "0" ]]; then
+    printf 'Teacher Planning Command Organization: status command completed\n'
+    printf '%s\n' "${teacher_planning_command_output}"
+    fail "teacher planning command organization status failed"
+  elif [[ -n "${teacher_planning_command_pass}" && -n "${teacher_planning_command_warn}" && -n "${teacher_planning_command_fail}" ]]; then
+    printf 'Teacher Planning Command Organization: PASS %s / WARN %s / FAIL %s\n' "${teacher_planning_command_pass}" "${teacher_planning_command_warn}" "${teacher_planning_command_fail}"
+    pass "teacher planning command organization status completed"
+  else
+    printf 'Teacher Planning Command Organization: status command completed\n'
+    pass "teacher planning command organization status completed"
+  fi
+else
+  warn "teacher planning command organization status script missing: scripts/teacher-planning-command-organization-status.sh"
+fi
+
 end_section_summary "Lesson Planning Status"
 
 group_banner "Future-Safety / Parked Work"

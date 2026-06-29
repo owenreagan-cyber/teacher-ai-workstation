@@ -21,6 +21,7 @@ Core Dashboard and Health:
   --help-examples-status               Show Chief of Staff help examples polish status and exit.
   --workflow-quick-start-status        Show Chief of Staff workflow quick-start guide status and exit.
   --dashboard-section-summary-status   Show dashboard section summary polish status and exit.
+  --teacher-planning-command-status    Show teacher planning command organization status and exit.
   --command-launcher-status            Show Chief of Staff command launcher status and exit.
 
 Return to Core / Roadmap:
@@ -42,6 +43,9 @@ Document and Review Workflows:
   --lesson-review-view <lesson-slug>   Show local single-slug lesson review view and exit.
   --review-notes-template-status       Show local review notes template status and exit.
   --document-indexing-plan-status      Show safe local document indexing plan status and exit.
+
+Teacher Planning Command Organization (status only; safe sample: fractions-review; no lesson generation):
+  --teacher-planning-command-status    Show teacher planning command organization status and exit.
 
 Developer and Cursor Workflow:
   --cursor-workflow-status             Show local Cursor workflow status and exit.
@@ -163,6 +167,7 @@ Before and after PR:
   bin/chief-of-staff --help-examples-status
 
 Teacher review (safe local sample slug only; no student data):
+  bin/chief-of-staff --teacher-planning-command-status
   bin/chief-of-staff --lesson-review-view fractions-review
   bin/chief-of-staff --review-notes-template-status
   bin/chief-of-staff --document-indexing-plan-status
@@ -224,6 +229,7 @@ All command examples:
   bin/chief-of-staff --help-examples-status
   bin/chief-of-staff --workflow-quick-start-status
   bin/chief-of-staff --dashboard-section-summary-status
+  bin/chief-of-staff --teacher-planning-command-status
   bin/chief-of-staff --command-launcher-status
   bin/chief-of-staff --cursor-workflow-status
   bin/chief-of-staff --developer-status
@@ -283,6 +289,9 @@ Local command: single-slug lesson review view
 Local command: review notes template status
 Local command: document indexing plan status
 
+Teacher Planning Command Organization (status only; safe sample: fractions-review; no lesson generation)
+Local command: teacher planning command status
+
 Developer and Cursor Workflow
 3d-printing-coordination
 app-development-support
@@ -300,6 +309,7 @@ Local command: command map status
 Local command: help examples status
 Local command: workflow quick-start status
 Local command: dashboard section summary status
+Local command: teacher planning command status
 
 Appearance & Vibe Foundation (status only; live curator not started)
 Local command: wallpaper photo curator plan status
@@ -1486,6 +1496,15 @@ while [[ $# -gt 0 ]]; do
         die "Dashboard section summary status script is missing: scripts/dashboard-section-summary-status.sh"
       fi
       bash "${dashboard_section_summary_status_script}"
+      exit 0
+      ;;
+    --teacher-planning-command-status)
+      repo_root="$(resolve_repo_root)"
+      teacher_planning_command_status_script="${repo_root}/scripts/teacher-planning-command-organization-status.sh"
+      if [[ ! -f "${teacher_planning_command_status_script}" ]]; then
+        die "Teacher planning command organization status script is missing: scripts/teacher-planning-command-organization-status.sh"
+      fi
+      bash "${teacher_planning_command_status_script}"
       exit 0
       ;;
     --command-launcher-status)

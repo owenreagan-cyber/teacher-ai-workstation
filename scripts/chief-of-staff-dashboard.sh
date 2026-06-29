@@ -820,6 +820,29 @@ end_section_summary "Lesson Planning Status"
 group_banner "Future-Safety / Parked Work"
 begin_section_summary
 
+section "Document Indexing Command Detail Polish"
+if [[ -f scripts/document-indexing-command-detail-status.sh ]]; then
+  document_indexing_command_detail_result=0
+  document_indexing_command_detail_output="$(bash scripts/document-indexing-command-detail-status.sh 2>&1)" || document_indexing_command_detail_result=$?
+  document_indexing_command_detail_pass="$(summary_count "${document_indexing_command_detail_output}" "PASS")"
+  document_indexing_command_detail_warn="$(summary_count "${document_indexing_command_detail_output}" "WARN")"
+  document_indexing_command_detail_fail="$(summary_count "${document_indexing_command_detail_output}" "FAIL")"
+
+  if [[ "${document_indexing_command_detail_result}" != "0" ]]; then
+    printf 'Document Indexing Command Detail Polish: status command completed\n'
+    printf '%s\n' "${document_indexing_command_detail_output}"
+    fail "Document Indexing command detail polish status failed"
+  elif [[ -n "${document_indexing_command_detail_pass}" && -n "${document_indexing_command_detail_warn}" && -n "${document_indexing_command_detail_fail}" ]]; then
+    printf 'Document Indexing Command Detail Polish: PASS %s / WARN %s / FAIL %s\n' "${document_indexing_command_detail_pass}" "${document_indexing_command_detail_warn}" "${document_indexing_command_detail_fail}"
+    pass "Document Indexing command detail polish status completed"
+  else
+    printf 'Document Indexing Command Detail Polish: status command completed\n'
+    pass "Document Indexing command detail polish status completed"
+  fi
+else
+  warn "Document Indexing command detail status script missing: scripts/document-indexing-command-detail-status.sh"
+fi
+
 section "Safe Local Document Indexing Plan"
 if [[ -f scripts/document-indexing-plan-status.sh ]]; then
   document_indexing_result=0

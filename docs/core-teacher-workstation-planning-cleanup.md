@@ -16,6 +16,8 @@ Lesson Review command detail polish tightens safe Lesson Review command referenc
 
 Review Notes command detail polish tightens safe Review Notes command references. See `docs/review-notes-command-detail-polish.md`.
 
+Document Indexing command detail polish tightens safe Document Indexing planning command references. See `docs/document-indexing-command-detail-polish.md`.
+
 ## Why This Cleanup Exists
 
 After prompt pack stack completion marker, the reusable prompt pack documentation stack was complete for now but core Teacher Workstation planning references still needed a focused cleanup pass. This cleanup makes teacher workflow priorities, safe commands, and next build priorities easy to find without weakening lifecycle gates or final local-main proof.

@@ -59,22 +59,22 @@ Phase 1 Teacher Chief of Staff + safe local lesson workflows.
 
 ## Current PR
 
-Review notes command detail polish.
+Document indexing command detail polish.
 
-Scope: Tighten the safe Review Notes command reference with clearer command descriptions, output expectations, and planning-only boundaries. Preserve every existing command and status check. No checks removed, no command behavior changes, no lesson generation changes, no document scanning/indexing implementation, no student data, no live integrations, no network calls, and no automation.
+Scope: Tighten the safe Document Indexing planning command reference with clearer command descriptions, output expectations, and planning-only boundaries. Preserve every existing command and status check. No checks removed, no command behavior changes, no lesson generation changes, no document scanning/indexing implementation, no student data, no live integrations, no network calls, and no automation.
 
 Appearance & Vibe wallpaper/photo curator foundation stack: complete for now.
 Live curator implementation: not started.
 
 ## Next PR
 
-Document indexing command detail polish
+Teacher workflow command detail summary
 
-Scope: Tighten the safe Document Indexing planning command reference with clearer command descriptions, output expectations, and planning-only boundaries. Preserve every existing command and status check. No checks removed, no command behavior changes, no lesson generation changes, no document scanning/indexing implementation, no student data, no live integrations, no network calls, and no automation.
+Scope: Add a compact command detail summary for the safe Teacher Workflow command set, linking Teacher Planning, Lesson Review, Review Notes, and Document Indexing planning command detail docs. Preserve every existing command and status check. No checks removed, no command behavior changes, no lesson generation changes, no document scanning/indexing implementation, no student data, no live integrations, no network calls, and no automation.
 
 ## Next Recommended PRs
 
-1. Document indexing command detail polish.
+1. Teacher workflow command detail summary.
 2. Later: permissioned Gmail/Drive integrations.
 3. Later: secrets/capability broker.
 

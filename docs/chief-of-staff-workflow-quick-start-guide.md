@@ -18,6 +18,8 @@ Lesson Review command detail polish tightens safe Lesson Review command referenc
 
 Review Notes command detail polish tightens safe Review Notes command references. See `docs/review-notes-command-detail-polish.md`.
 
+Document Indexing command detail polish tightens safe Document Indexing planning command references. See `docs/document-indexing-command-detail-polish.md`.
+
 Dashboard section summary polish adds high-level section summaries. See `docs/dashboard-section-summary-polish.md`.
 
 Teacher planning command organization improves lesson-planning command discoverability. See `docs/teacher-planning-command-organization.md`.

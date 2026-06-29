@@ -16,6 +16,8 @@ Core Teacher Workstation planning cleanup tightens teacher workflow planning ref
 
 Teacher Workflow status summary adds a compact stack status view. See `docs/teacher-workflow-status-summary.md`.
 
+Document Indexing command detail polish tightens safe Document Indexing planning command references. See `docs/document-indexing-command-detail-polish.md`.
+
 Project memory cleanup improves active priorities and project memory clarity. See `docs/project-memory-cleanup.md`.
 
 Document indexing remains planning/status only. Safe boundaries, future approval gates, and relationships to lesson review and review notes are documented for local status commands only.

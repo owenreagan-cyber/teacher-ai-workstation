@@ -451,6 +451,14 @@ bin/chief-of-staff --workflow-quick-start-status
 
 See `docs/chief-of-staff-workflow-quick-start-guide.md`.
 
+Dashboard section summary polish status command:
+
+```bash
+bin/chief-of-staff --dashboard-section-summary-status
+```
+
+See `docs/dashboard-section-summary-polish.md`.
+
 Quick start (start here):
 
 ```bash

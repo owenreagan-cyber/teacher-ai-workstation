@@ -20,6 +20,7 @@ Core Dashboard and Health:
   --command-map-status                 Show Chief of Staff command map cleanup status and exit.
   --help-examples-status               Show Chief of Staff help examples polish status and exit.
   --workflow-quick-start-status        Show Chief of Staff workflow quick-start guide status and exit.
+  --dashboard-section-summary-status   Show dashboard section summary polish status and exit.
   --command-launcher-status            Show Chief of Staff command launcher status and exit.
 
 Return to Core / Roadmap:
@@ -144,6 +145,7 @@ Examples (common workflows):
 Quick start (start here):
   bin/chief-of-staff --dashboard
   bin/chief-of-staff --workflow-quick-start-status
+  bin/chief-of-staff --dashboard-section-summary-status
 
 Daily health check:
   bin/chief-of-staff --dashboard
@@ -221,6 +223,7 @@ All command examples:
   bin/chief-of-staff --command-map-status
   bin/chief-of-staff --help-examples-status
   bin/chief-of-staff --workflow-quick-start-status
+  bin/chief-of-staff --dashboard-section-summary-status
   bin/chief-of-staff --command-launcher-status
   bin/chief-of-staff --cursor-workflow-status
   bin/chief-of-staff --developer-status
@@ -296,6 +299,7 @@ Local command: dashboard readability status
 Local command: command map status
 Local command: help examples status
 Local command: workflow quick-start status
+Local command: dashboard section summary status
 
 Appearance & Vibe Foundation (status only; live curator not started)
 Local command: wallpaper photo curator plan status
@@ -1473,6 +1477,15 @@ while [[ $# -gt 0 ]]; do
         die "Chief of Staff workflow quick-start status script is missing: scripts/chief-of-staff-workflow-quick-start-status.sh"
       fi
       bash "${workflow_quick_start_status_script}"
+      exit 0
+      ;;
+    --dashboard-section-summary-status)
+      repo_root="$(resolve_repo_root)"
+      dashboard_section_summary_status_script="${repo_root}/scripts/dashboard-section-summary-status.sh"
+      if [[ ! -f "${dashboard_section_summary_status_script}" ]]; then
+        die "Dashboard section summary status script is missing: scripts/dashboard-section-summary-status.sh"
+      fi
+      bash "${dashboard_section_summary_status_script}"
       exit 0
       ;;
     --command-launcher-status)

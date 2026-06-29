@@ -37,6 +37,24 @@ group_banner() {
   printf '%s\n' '----------------------------------------'
 }
 
+SECTION_START_PASS=0
+SECTION_START_WARN=0
+SECTION_START_FAIL=0
+
+begin_section_summary() {
+  SECTION_START_PASS=${PASS_COUNT}
+  SECTION_START_WARN=${WARN_COUNT}
+  SECTION_START_FAIL=${FAIL_COUNT}
+}
+
+end_section_summary() {
+  local label="$1"
+  local pass_delta=$((PASS_COUNT - SECTION_START_PASS))
+  local warn_delta=$((WARN_COUNT - SECTION_START_WARN))
+  local fail_delta=$((FAIL_COUNT - SECTION_START_FAIL))
+  printf '\nSection summary: %s: PASS %s / WARN %s / FAIL %s\n' "${label}" "${pass_delta}" "${warn_delta}" "${fail_delta}"
+}
+
 capture_command() {
   local __output_var="$1"
   local __result_var="$2"
@@ -120,6 +138,7 @@ printf 'Dashboard scan order: Core Workstation -> Chief of Staff Workflow -> Les
 printf 'Health summary: see Final Health Summary at end (PASS/WARN/FAIL)\n'
 
 group_banner "Core Workstation Status"
+begin_section_summary
 
 section "Workstation Phase Status"
 if [[ -f scripts/verify-phase-0e.sh ]]; then
@@ -255,7 +274,37 @@ else
   warn "Chief of Staff workflow quick-start status script missing: scripts/chief-of-staff-workflow-quick-start-status.sh"
 fi
 
+section "Dashboard Section Summary Polish"
+if [[ -f scripts/dashboard-section-summary-status.sh ]]; then
+  if [[ "${COS_DASHBOARD_SKIP_SECTION_SUMMARY_STATUS:-}" == "1" ]]; then
+    warn "skipping dashboard section summary status during dashboard self-check"
+  else
+  dashboard_section_summary_result=0
+  dashboard_section_summary_output="$(COS_DASHBOARD_SKIP_SECTION_SUMMARY_STATUS=1 bash scripts/dashboard-section-summary-status.sh 2>&1)" || dashboard_section_summary_result=$?
+  dashboard_section_summary_pass="$(summary_count "${dashboard_section_summary_output}" "PASS")"
+  dashboard_section_summary_warn="$(summary_count "${dashboard_section_summary_output}" "WARN")"
+  dashboard_section_summary_fail="$(summary_count "${dashboard_section_summary_output}" "FAIL")"
+
+  if [[ "${dashboard_section_summary_result}" != "0" ]]; then
+    printf 'Dashboard Section Summary Polish: status command completed\n'
+    printf '%s\n' "${dashboard_section_summary_output}"
+    fail "dashboard section summary status failed"
+  elif [[ -n "${dashboard_section_summary_pass}" && -n "${dashboard_section_summary_warn}" && -n "${dashboard_section_summary_fail}" ]]; then
+    printf 'Dashboard Section Summary Polish: PASS %s / WARN %s / FAIL %s\n' "${dashboard_section_summary_pass}" "${dashboard_section_summary_warn}" "${dashboard_section_summary_fail}"
+    pass "dashboard section summary status completed"
+  else
+    printf 'Dashboard Section Summary Polish: status command completed\n'
+    pass "dashboard section summary status completed"
+  fi
+  fi
+else
+  warn "dashboard section summary status script missing: scripts/dashboard-section-summary-status.sh"
+fi
+
+end_section_summary "Core Workstation Status"
+
 group_banner "Chief of Staff Workflow Status"
+begin_section_summary
 
 section "Available Chief of Staff Workflows and Command Groups"
 if [[ ! -f bin/chief-of-staff ]]; then
@@ -358,7 +407,10 @@ else
   warn "skipping intake status because bin/chief-of-staff is not executable"
 fi
 
+end_section_summary "Chief of Staff Workflow Status"
+
 group_banner "Lesson Planning Status"
+begin_section_summary
 
 section "Lesson Planning Workspace"
 if [[ -f scripts/lesson-planning-status.sh ]]; then
@@ -556,7 +608,10 @@ else
   warn "review notes template status script missing: scripts/review-notes-template-status.sh"
 fi
 
+end_section_summary "Lesson Planning Status"
+
 group_banner "Future-Safety / Parked Work"
+begin_section_summary
 
 section "Safe Local Document Indexing Plan"
 if [[ -f scripts/document-indexing-plan-status.sh ]]; then
@@ -581,7 +636,10 @@ else
   warn "document indexing plan status script missing: scripts/document-indexing-plan-status.sh"
 fi
 
+end_section_summary "Future-Safety / Parked Work"
+
 group_banner "Appearance & Vibe Foundation Status"
+begin_section_summary
 printf 'Foundation stack complete for now. Live wallpaper/photo curator implementation not started.\n'
 
 section "Appearance & Vibe Wallpaper/Photo Curator Plan"
@@ -998,7 +1056,10 @@ else
   warn "wallpaper photo rotation handoff safety status script missing: scripts/wallpaper-photo-rotation-handoff-safety-status.sh"
 fi
 
+end_section_summary "Appearance & Vibe Foundation Status"
+
 group_banner "Developer / Cursor Workflow Status"
+begin_section_summary
 
 section "Cursor Workflow"
 if [[ -f scripts/cursor-workflow-status.sh ]]; then
@@ -1047,7 +1108,10 @@ else
   warn "Developer Mode status script missing: scripts/developer-mode-status.sh"
 fi
 
+end_section_summary "Developer / Cursor Workflow Status"
+
 group_banner "Recommendation"
+begin_section_summary
 
 section "Build Queue / Next Recommended Action"
 if [[ -f docs/build-queue.md ]]; then
@@ -1076,13 +1140,18 @@ cat <<'EOF'
 - Connected services require explicit future permission.
 EOF
 
+end_section_summary "Recommendation"
+
 group_banner "Final Health Summary"
+begin_section_summary
 
 section "Summary"
 printf 'PASS: %s\n' "${PASS_COUNT}"
 printf 'WARN: %s\n' "${WARN_COUNT}"
 printf 'FAIL: %s\n' "${FAIL_COUNT}"
 printf 'Health: %s/%s checks passing\n' "${PASS_COUNT}" "$((PASS_COUNT + WARN_COUNT + FAIL_COUNT))"
+
+end_section_summary "Final Health Summary"
 
 if (( CRITICAL_FAILURE > 0 )); then
   exit 1

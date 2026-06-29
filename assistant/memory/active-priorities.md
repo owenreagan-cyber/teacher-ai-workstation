@@ -50,14 +50,15 @@ Completed:
 - Chief of Staff dashboard readability pass
 - Chief of Staff command map cleanup
 - Chief of Staff help examples polish
+- Chief of Staff workflow quick-start guide
 
 Now:
 
-- Chief of Staff workflow quick-start guide (quick-start/status only)
+- Dashboard section summary polish (dashboard readability/status only)
 
 Next:
 
-- Dashboard section summary polish
+- Teacher planning command organization
 
 ## Parked Future
 

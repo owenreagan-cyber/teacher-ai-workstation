@@ -14,7 +14,7 @@ See also `docs/branch-hygiene-cleanup-reference.md` and `docs/pr-lifecycle-guard
 Current status: local main proof report polish complete.
 ```
 
-Workflow docs cross-link polish adds navigation among workflow docs. See `docs/workflow-docs-cross-link-polish.md`.
+Workflow docs cross-link polish and navigation status summary continue workflow documentation navigation. See `docs/workflow-docs-cross-link-polish.md` and `docs/workflow-docs-navigation-status-summary.md`.
 
 ## Why Local Main Proof Exists
 
@@ -208,6 +208,7 @@ no wallpaper/photo curator implementation
 - Branch hygiene: `docs/branch-hygiene-cleanup-reference.md`
 - PR lifecycle: `docs/pr-lifecycle-guardrail-consolidation.md`
 - Workflow doc map: `docs/workflow-docs-cross-link-polish.md`
+- Navigation status: `docs/workflow-docs-navigation-status-summary.md`
 
 ## Commands Reference
 

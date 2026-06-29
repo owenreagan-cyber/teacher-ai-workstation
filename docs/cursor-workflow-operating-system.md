@@ -215,9 +215,19 @@ Related docs:
 - `docs/cursor-prompt-template.md`
 - `docs/cursor-pr-review-checklist.md`
 - `docs/workflow-docs-cross-link-polish.md`
+- `docs/workflow-docs-navigation-status-summary.md`
 - `.cursor/rules/teacher-ai-workstation.mdc`
 
 Use `docs/workflow-docs-cross-link-polish.md` as the map for workflow docs.
+Use `docs/workflow-docs-navigation-status-summary.md` to verify the workflow doc map remains intact.
+
+Navigation summaries help people find the right process doc.
+Navigation summaries do not replace PR-specific checks.
+Navigation summaries do not replace no-commit review.
+Navigation summaries do not replace PR open/unmerged verification.
+Navigation summaries do not replace mergedAt non-null verification.
+Navigation summaries do not replace branch deletion verification.
+Navigation summaries do not replace final local-main dashboard proof.
 
 Cross-links help navigation but do not replace PR-specific checks.
 Cross-links do not replace no-commit review.

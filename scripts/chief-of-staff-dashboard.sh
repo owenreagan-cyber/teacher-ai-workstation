@@ -912,6 +912,29 @@ else
   warn "workflow docs cross-link status script missing: scripts/workflow-docs-cross-link-status.sh"
 fi
 
+section "Workflow Docs Navigation Status Summary"
+if [[ -f scripts/workflow-docs-navigation-status-summary.sh ]]; then
+  workflow_docs_navigation_result=0
+  workflow_docs_navigation_output="$(bash scripts/workflow-docs-navigation-status-summary.sh 2>&1)" || workflow_docs_navigation_result=$?
+  workflow_docs_navigation_pass="$(summary_count "${workflow_docs_navigation_output}" "PASS")"
+  workflow_docs_navigation_warn="$(summary_count "${workflow_docs_navigation_output}" "WARN")"
+  workflow_docs_navigation_fail="$(summary_count "${workflow_docs_navigation_output}" "FAIL")"
+
+  if [[ "${workflow_docs_navigation_result}" != "0" ]]; then
+    printf 'Workflow Docs Navigation Status Summary: status command completed\n'
+    printf '%s\n' "${workflow_docs_navigation_output}"
+    fail "workflow docs navigation status summary failed"
+  elif [[ -n "${workflow_docs_navigation_pass}" && -n "${workflow_docs_navigation_warn}" && -n "${workflow_docs_navigation_fail}" ]]; then
+    printf 'Workflow Docs Navigation Status Summary: PASS %s / WARN %s / FAIL %s\n' "${workflow_docs_navigation_pass}" "${workflow_docs_navigation_warn}" "${workflow_docs_navigation_fail}"
+    pass "workflow docs navigation status summary completed"
+  else
+    printf 'Workflow Docs Navigation Status Summary: status command completed\n'
+    pass "workflow docs navigation status summary completed"
+  fi
+else
+  warn "workflow docs navigation status script missing: scripts/workflow-docs-navigation-status-summary.sh"
+fi
+
 end_section_summary "Future-Safety / Parked Work"
 
 group_banner "Appearance & Vibe Foundation Status"

@@ -9,10 +9,10 @@ This PR adds workflow docs cross-link polish only. This pass is about preserving
 ## Current Status
 
 ```text
-Current status: workflow docs cross-link polish in progress.
+Current status: workflow docs cross-link polish complete.
 ```
 
-Workflow documentation cross-links are documented for local status commands only.
+Workflow docs navigation status summary verifies the navigation path. See `docs/workflow-docs-navigation-status-summary.md`.
 
 ## Why Cross-Links Exist
 
@@ -171,6 +171,12 @@ no wallpaper/photo curator implementation
 - This PR does not add external integrations.
 - This PR does not add network calls.
 - This PR does not add automation.
+
+## Related workflow docs
+
+- Navigation status: `docs/workflow-docs-navigation-status-summary.md`
+- Local main proof: `docs/local-main-proof-report-polish.md`
+- PR lifecycle: `docs/pr-lifecycle-guardrail-consolidation.md`
 
 ## Commands Reference
 

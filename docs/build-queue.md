@@ -59,22 +59,22 @@ Phase 1 Teacher Chief of Staff + safe local lesson workflows.
 
 ## Current PR
 
-Workflow docs cross-link polish.
+Workflow docs navigation status summary.
 
-Scope: Add cross-links among the workflow, checklist, branch hygiene, lifecycle guardrail, and local-main proof docs so future prompts can navigate the process quickly. Preserve every existing command and status check. No checks removed, no command behavior changes, no lesson generation changes, no document scanning/indexing implementation, no student data, no live integrations, no network calls, and no automation.
+Scope: Add a compact status summary that verifies the workflow documentation map, cross-links, and navigation path remain intact. Preserve every existing command and status check. No checks removed, no command behavior changes, no lesson generation changes, no document scanning/indexing implementation, no student data, no live integrations, no network calls, and no automation.
 
 Appearance & Vibe wallpaper/photo curator foundation stack: complete for now.
 Live curator implementation: not started.
 
 ## Next PR
 
-Workflow docs navigation status summary
+Prompt pack maintenance checklist
 
-Scope: Add a compact status summary that verifies the workflow documentation map, cross-links, and navigation path remain intact. Preserve every existing command and status check. No checks removed, no command behavior changes, no lesson generation changes, no document scanning/indexing implementation, no student data, no live integrations, no network calls, and no automation.
+Scope: Add a maintenance checklist for reusable Cursor prompt packs, including what must stay current, what must be verified after roadmap changes, and how reusable prompt references should be reviewed. Preserve every existing command and status check. No checks removed, no command behavior changes, no lesson generation changes, no document scanning/indexing implementation, no student data, no live integrations, no network calls, and no automation.
 
 ## Next Recommended PRs
 
-1. Workflow docs navigation status summary.
+1. Prompt pack maintenance checklist.
 2. Later: permissioned Gmail/Drive integrations.
 3. Later: secrets/capability broker.
 

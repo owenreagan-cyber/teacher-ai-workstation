@@ -815,6 +815,29 @@ else
   warn "Teacher Workflow status summary script missing: scripts/teacher-workflow-status-summary.sh"
 fi
 
+section "Teacher Workflow Command Detail Summary"
+if [[ -f scripts/teacher-workflow-command-detail-summary-status.sh ]]; then
+  teacher_workflow_command_detail_summary_result=0
+  teacher_workflow_command_detail_summary_output="$(bash scripts/teacher-workflow-command-detail-summary-status.sh 2>&1)" || teacher_workflow_command_detail_summary_result=$?
+  teacher_workflow_command_detail_summary_pass="$(summary_count "${teacher_workflow_command_detail_summary_output}" "PASS")"
+  teacher_workflow_command_detail_summary_warn="$(summary_count "${teacher_workflow_command_detail_summary_output}" "WARN")"
+  teacher_workflow_command_detail_summary_fail="$(summary_count "${teacher_workflow_command_detail_summary_output}" "FAIL")"
+
+  if [[ "${teacher_workflow_command_detail_summary_result}" != "0" ]]; then
+    printf 'Teacher Workflow Command Detail Summary: status command completed\n'
+    printf '%s\n' "${teacher_workflow_command_detail_summary_output}"
+    fail "Teacher Workflow command detail summary status failed"
+  elif [[ -n "${teacher_workflow_command_detail_summary_pass}" && -n "${teacher_workflow_command_detail_summary_warn}" && -n "${teacher_workflow_command_detail_summary_fail}" ]]; then
+    printf 'Teacher Workflow Command Detail Summary: PASS %s / WARN %s / FAIL %s\n' "${teacher_workflow_command_detail_summary_pass}" "${teacher_workflow_command_detail_summary_warn}" "${teacher_workflow_command_detail_summary_fail}"
+    pass "Teacher Workflow command detail summary status completed"
+  else
+    printf 'Teacher Workflow Command Detail Summary: status command completed\n'
+    pass "Teacher Workflow command detail summary status completed"
+  fi
+else
+  warn "Teacher Workflow command detail summary status script missing: scripts/teacher-workflow-command-detail-summary-status.sh"
+fi
+
 end_section_summary "Lesson Planning Status"
 
 group_banner "Future-Safety / Parked Work"

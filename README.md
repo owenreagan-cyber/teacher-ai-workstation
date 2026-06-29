@@ -236,7 +236,15 @@ Document Indexing command detail polish status command:
 bin/chief-of-staff --document-indexing-command-detail-status
 ```
 
-See `docs/document-indexing-command-detail-polish.md`, `docs/local-document-indexing-follow-up.md`, `docs/review-notes-command-detail-polish.md`, `docs/lesson-review-command-detail-polish.md`, `docs/teacher-planning-command-detail-polish.md`, `docs/teacher-workflow-status-summary.md`, `docs/teacher-workflow-quick-reference-polish.md`, and `docs/core-teacher-workstation-planning-cleanup.md`.
+See `docs/document-indexing-command-detail-polish.md`, `docs/local-document-indexing-follow-up.md`, `docs/review-notes-command-detail-polish.md`, `docs/lesson-review-command-detail-polish.md`, `docs/teacher-planning-command-detail-polish.md`, `docs/teacher-workflow-status-summary.md`, `docs/teacher-workflow-quick-reference-polish.md`, `docs/core-teacher-workstation-planning-cleanup.md`, and `docs/teacher-workflow-command-detail-summary.md`.
+
+Teacher Workflow command detail summary status command:
+
+```bash
+bin/chief-of-staff --teacher-workflow-command-detail-summary-status
+```
+
+See `docs/teacher-workflow-command-detail-summary.md`.
 
 Project memory cleanup status command:
 
@@ -282,7 +290,14 @@ Teacher Planning command detail: docs/teacher-planning-command-detail-polish.md
 Lesson Review command detail: docs/lesson-review-command-detail-polish.md
 Review Notes command detail: docs/review-notes-command-detail-polish.md
 Document Indexing command detail: docs/document-indexing-command-detail-polish.md
-Next recommended PR: Teacher workflow command detail summary
+Teacher Workflow command detail summary: docs/teacher-workflow-command-detail-summary.md
+Next recommended PR: Teacher workflow safe-output examples
+```
+
+Teacher Workflow command detail summary:
+
+```bash
+bin/chief-of-staff --teacher-workflow-command-detail-summary-status
 ```
 
 Document Indexing command detail polish:

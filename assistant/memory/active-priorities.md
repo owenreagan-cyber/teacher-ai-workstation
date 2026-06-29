@@ -35,15 +35,16 @@
 - Teacher planning command detail polish: complete
 - Lesson review command detail polish: complete
 - Review notes command detail polish: complete
+- Document indexing command detail polish: complete
 - Appearance & Vibe wallpaper/photo foundation stack: complete for now
 
 ### Now
 
-- Document indexing command detail polish (document-indexing-command-detail/status only)
+- Teacher workflow command detail summary (teacher-workflow-command-detail-summary/status only)
 
 ### Next
 
-- Teacher workflow command detail summary
+- Teacher workflow safe-output examples
 
 ## Completed (earlier foundations)
 

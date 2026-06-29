@@ -469,6 +469,13 @@ for path in \
   check_required_file "${path}"
 done
 
+section "Prompt Pack Maintenance Checklist Files"
+for path in \
+  docs/prompt-pack-maintenance-checklist.md \
+  scripts/prompt-pack-maintenance-status.sh; do
+  check_required_file "${path}"
+done
+
 section "Teacher Planning Command Organization Files"
 for path in \
   docs/teacher-planning-command-organization.md \
@@ -625,6 +632,7 @@ check_bash_syntax "scripts/branch-hygiene-cleanup-status.sh"
 check_bash_syntax "scripts/local-main-proof-report-status.sh"
 check_bash_syntax "scripts/workflow-docs-cross-link-status.sh"
 check_bash_syntax "scripts/workflow-docs-navigation-status-summary.sh"
+check_bash_syntax "scripts/prompt-pack-maintenance-status.sh"
 check_bash_syntax "scripts/teacher-planning-command-organization-status.sh"
 check_bash_syntax "scripts/dashboard-section-summary-status.sh"
 check_bash_syntax "scripts/chief-of-staff-workflow-quick-start-status.sh"
@@ -658,7 +666,7 @@ section "Recommendation"
 if (( CRITICAL_BLOCKER > 0 )); then
   printf 'Fix critical Chief of Staff CLI, memory, intake, or script problems before the next build PR.\n'
 else
-  printf 'Next recommended PR: Prompt pack maintenance checklist.\n'
+  printf 'Next recommended PR: Prompt pack reference index.\n'
 fi
 
 if (( COMPARE_0E == 1 && CRITICAL_BLOCKER == 0 )); then

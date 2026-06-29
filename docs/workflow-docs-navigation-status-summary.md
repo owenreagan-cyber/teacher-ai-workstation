@@ -9,10 +9,10 @@ This PR adds workflow docs navigation status summary only. This pass is about pr
 ## Current Status
 
 ```text
-Current status: workflow docs navigation status summary in progress.
+Current status: workflow docs navigation status summary complete.
 ```
 
-Workflow documentation navigation status is documented for local status commands only.
+Prompt pack maintenance checklist continues reusable prompt upkeep. See `docs/prompt-pack-maintenance-checklist.md`.
 
 ## Why This Summary Exists
 
@@ -172,6 +172,11 @@ no wallpaper/photo curator implementation
 - This PR does not add external integrations.
 - This PR does not add network calls.
 - This PR does not add automation.
+
+## Related workflow docs
+
+- Prompt pack maintenance: `docs/prompt-pack-maintenance-checklist.md`
+- Cross-link map: `docs/workflow-docs-cross-link-polish.md`
 
 ## Commands Reference
 

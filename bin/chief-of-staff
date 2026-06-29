@@ -32,6 +32,7 @@ Core Dashboard and Health:
   --local-main-proof-report-status     Show local main proof report polish status and exit.
   --workflow-docs-cross-link-status    Show workflow docs cross-link polish status and exit.
   --workflow-docs-navigation-status    Show workflow docs navigation status summary and exit.
+  --prompt-pack-maintenance-status     Show prompt pack maintenance checklist status and exit.
   --command-launcher-status            Show Chief of Staff command launcher status and exit.
 
 Return to Core / Roadmap:
@@ -198,6 +199,7 @@ Teacher review (safe local sample slug only; no student data):
   bin/chief-of-staff --local-main-proof-report-status
   bin/chief-of-staff --workflow-docs-cross-link-status
   bin/chief-of-staff --workflow-docs-navigation-status
+  bin/chief-of-staff --prompt-pack-maintenance-status
 
 Developer / Cursor verification:
   bin/chief-of-staff --cursor-workflow-status
@@ -269,6 +271,7 @@ All command examples:
   bin/chief-of-staff --local-main-proof-report-status
   bin/chief-of-staff --workflow-docs-cross-link-status
   bin/chief-of-staff --workflow-docs-navigation-status
+  bin/chief-of-staff --prompt-pack-maintenance-status
   bin/chief-of-staff --command-launcher-status
   bin/chief-of-staff --cursor-workflow-status
   bin/chief-of-staff --developer-status
@@ -371,6 +374,9 @@ Local command: workflow docs cross-link status
 
 Workflow Docs Navigation / Status
 Local command: workflow docs navigation status
+
+Prompt Pack Maintenance
+Local command: prompt pack maintenance status
 
 Appearance & Vibe Foundation (status only; live curator not started)
 Local command: wallpaper photo curator plan status
@@ -1341,6 +1347,15 @@ while [[ $# -gt 0 ]]; do
         die "Workflow docs navigation status script is missing: scripts/workflow-docs-navigation-status-summary.sh"
       fi
       bash "${workflow_docs_navigation_status_script}"
+      exit 0
+      ;;
+    --prompt-pack-maintenance-status)
+      repo_root="$(resolve_repo_root)"
+      prompt_pack_maintenance_status_script="${repo_root}/scripts/prompt-pack-maintenance-status.sh"
+      if [[ ! -f "${prompt_pack_maintenance_status_script}" ]]; then
+        die "Prompt pack maintenance status script is missing: scripts/prompt-pack-maintenance-status.sh"
+      fi
+      bash "${prompt_pack_maintenance_status_script}"
       exit 0
       ;;
     --wallpaper-photo-curator-plan-status)

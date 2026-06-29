@@ -216,10 +216,19 @@ Related docs:
 - `docs/cursor-pr-review-checklist.md`
 - `docs/workflow-docs-cross-link-polish.md`
 - `docs/workflow-docs-navigation-status-summary.md`
+- `docs/prompt-pack-maintenance-checklist.md`
 - `.cursor/rules/teacher-ai-workstation.mdc`
 
 Use `docs/workflow-docs-cross-link-polish.md` as the map for workflow docs.
 Use `docs/workflow-docs-navigation-status-summary.md` to verify the workflow doc map remains intact.
+Use `docs/prompt-pack-maintenance-checklist.md` before reusing or updating prompt packs.
+
+Prompt packs must be checked after roadmap changes.
+Prompt packs must be checked after dashboard count changes.
+Prompt packs must be checked after new status commands are added.
+Prompt packs do not replace PR-specific checks.
+Prompt packs do not replace no-commit review.
+Prompt packs do not replace final local-main dashboard proof.
 
 Navigation summaries help people find the right process doc.
 Navigation summaries do not replace PR-specific checks.

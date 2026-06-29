@@ -95,6 +95,14 @@ bin/chief-of-staff --dashboard
 
 Use `docs/workflow-docs-cross-link-polish.md` as the map for workflow docs.
 Use `docs/workflow-docs-navigation-status-summary.md` to verify the workflow doc map remains intact.
+Use `docs/prompt-pack-maintenance-checklist.md` before reusing or updating prompt packs.
+
+Prompt packs must be checked after roadmap changes.
+Prompt packs must be checked after dashboard count changes.
+Prompt packs must be checked after new status commands are added.
+Prompt packs do not replace PR-specific checks.
+Prompt packs do not replace no-commit review.
+Prompt packs do not replace final local-main dashboard proof.
 
 Lifecycle guardrails: `docs/pr-lifecycle-guardrail-consolidation.md`
 

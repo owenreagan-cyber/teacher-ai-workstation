@@ -22,15 +22,16 @@
 - Branch hygiene and cleanup reference: complete
 - Local main proof report polish: complete
 - Workflow docs cross-link polish: complete
+- Workflow docs navigation status summary: complete
 - Appearance & Vibe wallpaper/photo foundation stack: complete for now
 
 ### Now
 
-- Workflow docs navigation status summary (navigation-summary/status only)
+- Prompt pack maintenance checklist (prompt-pack-maintenance/status only)
 
 ### Next
 
-- Prompt pack maintenance checklist
+- Prompt pack reference index
 
 ## Completed (earlier foundations)
 

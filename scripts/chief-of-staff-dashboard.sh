@@ -935,6 +935,29 @@ else
   warn "workflow docs navigation status script missing: scripts/workflow-docs-navigation-status-summary.sh"
 fi
 
+section "Prompt Pack Maintenance Checklist"
+if [[ -f scripts/prompt-pack-maintenance-status.sh ]]; then
+  prompt_pack_maintenance_result=0
+  prompt_pack_maintenance_output="$(bash scripts/prompt-pack-maintenance-status.sh 2>&1)" || prompt_pack_maintenance_result=$?
+  prompt_pack_maintenance_pass="$(summary_count "${prompt_pack_maintenance_output}" "PASS")"
+  prompt_pack_maintenance_warn="$(summary_count "${prompt_pack_maintenance_output}" "WARN")"
+  prompt_pack_maintenance_fail="$(summary_count "${prompt_pack_maintenance_output}" "FAIL")"
+
+  if [[ "${prompt_pack_maintenance_result}" != "0" ]]; then
+    printf 'Prompt Pack Maintenance Checklist: status command completed\n'
+    printf '%s\n' "${prompt_pack_maintenance_output}"
+    fail "prompt pack maintenance checklist status failed"
+  elif [[ -n "${prompt_pack_maintenance_pass}" && -n "${prompt_pack_maintenance_warn}" && -n "${prompt_pack_maintenance_fail}" ]]; then
+    printf 'Prompt Pack Maintenance Checklist: PASS %s / WARN %s / FAIL %s\n' "${prompt_pack_maintenance_pass}" "${prompt_pack_maintenance_warn}" "${prompt_pack_maintenance_fail}"
+    pass "prompt pack maintenance checklist status completed"
+  else
+    printf 'Prompt Pack Maintenance Checklist: status command completed\n'
+    pass "prompt pack maintenance checklist status completed"
+  fi
+else
+  warn "prompt pack maintenance status script missing: scripts/prompt-pack-maintenance-status.sh"
+fi
+
 end_section_summary "Future-Safety / Parked Work"
 
 group_banner "Appearance & Vibe Foundation Status"

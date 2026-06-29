@@ -263,7 +263,13 @@ bin/chief-of-staff --checklist-driven-prompt-template-status
 bin/chief-of-staff --dashboard
 ```
 
-See `docs/checklist-driven-prompt-template-tightening.md`, `docs/command-check-bundle-reference-polish.md`, `docs/testing-checklist-consolidation.md`, `docs/pr-lifecycle-guardrail-consolidation.md`, `docs/branch-hygiene-cleanup-reference.md`, `docs/local-main-proof-report-polish.md`, and `docs/workflow-docs-cross-link-polish.md`.
+See `docs/checklist-driven-prompt-template-tightening.md`, `docs/command-check-bundle-reference-polish.md`, `docs/testing-checklist-consolidation.md`, `docs/pr-lifecycle-guardrail-consolidation.md`, `docs/branch-hygiene-cleanup-reference.md`, `docs/local-main-proof-report-polish.md`, `docs/workflow-docs-cross-link-polish.md`, and `docs/workflow-docs-navigation-status-summary.md`.
+
+Workflow docs navigation:
+
+```bash
+bin/chief-of-staff --workflow-docs-navigation-status
+```
 
 Workflow docs map:
 
@@ -300,12 +306,15 @@ bin/chief-of-staff --local-main-proof-report-status
 
 ```text
 Use docs/workflow-docs-cross-link-polish.md as the map for workflow docs.
+Use docs/workflow-docs-navigation-status-summary.md to verify the workflow doc map remains intact.
+Navigation summaries help people find the right process doc.
+Navigation summaries do not replace PR-specific checks.
+Navigation summaries do not replace no-commit review.
+Navigation summaries do not replace PR open/unmerged verification.
+Navigation summaries do not replace mergedAt non-null verification.
+Navigation summaries do not replace branch deletion verification.
+Navigation summaries do not replace final local-main dashboard proof.
 Cross-links help navigation but do not replace PR-specific checks.
-Cross-links do not replace no-commit review.
-Cross-links do not replace PR open/unmerged verification.
-Cross-links do not replace mergedAt non-null verification.
-Cross-links do not replace branch deletion verification.
-Cross-links do not replace final local-main dashboard proof.
 ```
 
 ```text

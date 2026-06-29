@@ -263,6 +263,7 @@ Only call complete when local `main` has the merge and dashboard passes.
 ## Reusable verification bundles
 
 Use `docs/workflow-docs-cross-link-polish.md` as the map for workflow docs.
+Use `docs/workflow-docs-navigation-status-summary.md` to verify the workflow doc map remains intact.
 
 Lifecycle guardrails: `docs/pr-lifecycle-guardrail-consolidation.md`
 
@@ -292,6 +293,14 @@ Every PR completion must report next recommended PR.
 Every PR completion must report branch deletion status.
 Every PR completion must end with final status: on main, clean working tree, dashboard passing.
 Final report polish does not replace merge verification or branch hygiene checks.
+
+Navigation summaries help people find the right process doc.
+Navigation summaries do not replace PR-specific checks.
+Navigation summaries do not replace no-commit review.
+Navigation summaries do not replace PR open/unmerged verification.
+Navigation summaries do not replace mergedAt non-null verification.
+Navigation summaries do not replace branch deletion verification.
+Navigation summaries do not replace final local-main dashboard proof.
 
 Cross-links help navigation but do not replace PR-specific checks.
 Cross-links do not replace no-commit review.

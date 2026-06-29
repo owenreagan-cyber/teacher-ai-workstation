@@ -199,6 +199,7 @@ no wallpaper/photo curator implementation
 - PR lifecycle: `docs/pr-lifecycle-guardrail-consolidation.md`
 - Local main proof: `docs/local-main-proof-report-polish.md`
 - Workflow doc map: `docs/workflow-docs-cross-link-polish.md`
+- Navigation status: `docs/workflow-docs-navigation-status-summary.md`
 
 ## Commands Reference
 

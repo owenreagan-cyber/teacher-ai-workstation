@@ -232,6 +232,7 @@ no wallpaper/photo curator implementation
 - Local main proof: `docs/local-main-proof-report-polish.md`
 - Verification bundles: `docs/testing-checklist-consolidation.md`
 - Workflow doc map: `docs/workflow-docs-cross-link-polish.md`
+- Navigation status: `docs/workflow-docs-navigation-status-summary.md`
 
 ## Commands Reference
 

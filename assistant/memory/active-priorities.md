@@ -21,15 +21,16 @@
 - PR lifecycle guardrail consolidation: complete
 - Branch hygiene and cleanup reference: complete
 - Local main proof report polish: complete
+- Workflow docs cross-link polish: complete
 - Appearance & Vibe wallpaper/photo foundation stack: complete for now
 
 ### Now
 
-- Workflow docs cross-link polish (cross-link-polish/status only)
+- Workflow docs navigation status summary (navigation-summary/status only)
 
 ### Next
 
-- Workflow docs navigation status summary
+- Prompt pack maintenance checklist
 
 ## Completed (earlier foundations)
 

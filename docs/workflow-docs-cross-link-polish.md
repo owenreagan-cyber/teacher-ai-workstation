@@ -12,7 +12,7 @@ This PR adds workflow docs cross-link polish only. This pass is about preserving
 Current status: workflow docs cross-link polish complete.
 ```
 
-Workflow docs navigation status summary verifies the navigation path. See `docs/workflow-docs-navigation-status-summary.md`. Prompt pack maintenance checklist keeps reusable prompts current. See `docs/prompt-pack-maintenance-checklist.md`.
+Workflow docs navigation status summary verifies the navigation path. See `docs/workflow-docs-navigation-status-summary.md`. Prompt pack maintenance checklist keeps reusable prompts current. See `docs/prompt-pack-maintenance-checklist.md`. Prompt pack reference index makes reusable prompt references easy to find. See `docs/prompt-pack-reference-index.md`.
 
 ## Why Cross-Links Exist
 
@@ -176,6 +176,7 @@ no wallpaper/photo curator implementation
 
 - Navigation status: `docs/workflow-docs-navigation-status-summary.md`
 - Prompt pack maintenance: `docs/prompt-pack-maintenance-checklist.md`
+- Prompt pack reference index: `docs/prompt-pack-reference-index.md`
 - Local main proof: `docs/local-main-proof-report-polish.md`
 - PR lifecycle: `docs/pr-lifecycle-guardrail-consolidation.md`
 

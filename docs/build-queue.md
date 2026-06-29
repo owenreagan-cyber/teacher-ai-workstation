@@ -59,22 +59,22 @@ Phase 1 Teacher Chief of Staff + safe local lesson workflows.
 
 ## Current PR
 
-Prompt pack maintenance checklist.
+Prompt pack reference index.
 
-Scope: Add a maintenance checklist for reusable Cursor prompt packs, including what must stay current, what must be verified after roadmap changes, and how reusable prompt references should be reviewed. Preserve every existing command and status check. No checks removed, no command behavior changes, no lesson generation changes, no document scanning/indexing implementation, no student data, no live integrations, no network calls, and no automation.
+Scope: Add a compact index of reusable prompt pack references, maintenance guidance, workflow navigation docs, and verification bundle docs. Preserve every existing command and status check. No checks removed, no command behavior changes, no lesson generation changes, no document scanning/indexing implementation, no student data, no live integrations, no network calls, and no automation.
 
 Appearance & Vibe wallpaper/photo curator foundation stack: complete for now.
 Live curator implementation: not started.
 
 ## Next PR
 
-Prompt pack reference index
+Prompt pack stale-reference audit
 
-Scope: Add a compact index of reusable prompt pack references, maintenance guidance, workflow navigation docs, and verification bundle docs. Preserve every existing command and status check. No checks removed, no command behavior changes, no lesson generation changes, no document scanning/indexing implementation, no student data, no live integrations, no network calls, and no automation.
+Scope: Add a read-only stale-reference audit for prompt pack docs, verifying roadmap labels, dashboard counts, status command names, branch naming examples, and next recommended PR references stay current. Preserve every existing command and status check. No checks removed, no command behavior changes, no lesson generation changes, no document scanning/indexing implementation, no student data, no live integrations, no network calls, and no automation.
 
 ## Next Recommended PRs
 
-1. Prompt pack reference index.
+1. Prompt pack stale-reference audit.
 2. Later: permissioned Gmail/Drive integrations.
 3. Later: secrets/capability broker.
 

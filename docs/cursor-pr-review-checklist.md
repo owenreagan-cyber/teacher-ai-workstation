@@ -95,14 +95,21 @@ bin/chief-of-staff --dashboard
 
 Use `docs/workflow-docs-cross-link-polish.md` as the map for workflow docs.
 Use `docs/workflow-docs-navigation-status-summary.md` to verify the workflow doc map remains intact.
+Use `docs/prompt-pack-reference-index.md` to find reusable prompt pack references.
 Use `docs/prompt-pack-maintenance-checklist.md` before reusing or updating prompt packs.
 
 Prompt packs must be checked after roadmap changes.
 Prompt packs must be checked after dashboard count changes.
 Prompt packs must be checked after new status commands are added.
-Prompt packs do not replace PR-specific checks.
-Prompt packs do not replace no-commit review.
-Prompt packs do not replace final local-main dashboard proof.
+Prompt pack references do not replace PR-specific checks.
+Prompt pack references do not replace no-commit review.
+Prompt pack references do not replace PR open/unmerged verification.
+Prompt pack references do not replace mergedAt non-null verification.
+Prompt pack references do not replace branch deletion verification.
+Prompt pack references do not replace final local-main dashboard proof.
+
+Use `docs/prompt-pack-reference-index.md` to find reusable prompt pack references.
+Use `docs/prompt-pack-maintenance-checklist.md` before reusing or updating prompt packs.
 
 Lifecycle guardrails: `docs/pr-lifecycle-guardrail-consolidation.md`
 

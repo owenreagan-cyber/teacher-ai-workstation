@@ -958,6 +958,29 @@ else
   warn "prompt pack maintenance status script missing: scripts/prompt-pack-maintenance-status.sh"
 fi
 
+section "Prompt Pack Reference Index"
+if [[ -f scripts/prompt-pack-reference-index-status.sh ]]; then
+  prompt_pack_reference_index_result=0
+  prompt_pack_reference_index_output="$(bash scripts/prompt-pack-reference-index-status.sh 2>&1)" || prompt_pack_reference_index_result=$?
+  prompt_pack_reference_index_pass="$(summary_count "${prompt_pack_reference_index_output}" "PASS")"
+  prompt_pack_reference_index_warn="$(summary_count "${prompt_pack_reference_index_output}" "WARN")"
+  prompt_pack_reference_index_fail="$(summary_count "${prompt_pack_reference_index_output}" "FAIL")"
+
+  if [[ "${prompt_pack_reference_index_result}" != "0" ]]; then
+    printf 'Prompt Pack Reference Index: status command completed\n'
+    printf '%s\n' "${prompt_pack_reference_index_output}"
+    fail "prompt pack reference index status failed"
+  elif [[ -n "${prompt_pack_reference_index_pass}" && -n "${prompt_pack_reference_index_warn}" && -n "${prompt_pack_reference_index_fail}" ]]; then
+    printf 'Prompt Pack Reference Index: PASS %s / WARN %s / FAIL %s\n' "${prompt_pack_reference_index_pass}" "${prompt_pack_reference_index_warn}" "${prompt_pack_reference_index_fail}"
+    pass "prompt pack reference index status completed"
+  else
+    printf 'Prompt Pack Reference Index: status command completed\n'
+    pass "prompt pack reference index status completed"
+  fi
+else
+  warn "prompt pack reference index status script missing: scripts/prompt-pack-reference-index-status.sh"
+fi
+
 end_section_summary "Future-Safety / Parked Work"
 
 group_banner "Appearance & Vibe Foundation Status"

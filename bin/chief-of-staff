@@ -36,6 +36,8 @@ Core Dashboard and Health:
   --prompt-pack-reference-index-status Show prompt pack reference index status and exit.
   --prompt-pack-stale-reference-audit-status
                                        Show prompt pack stale-reference audit status and exit.
+  --prompt-pack-freshness-report-status
+                                       Show prompt pack freshness report polish status and exit.
   --command-launcher-status            Show Chief of Staff command launcher status and exit.
 
 Return to Core / Roadmap:
@@ -205,6 +207,7 @@ Teacher review (safe local sample slug only; no student data):
   bin/chief-of-staff --prompt-pack-maintenance-status
   bin/chief-of-staff --prompt-pack-reference-index-status
   bin/chief-of-staff --prompt-pack-stale-reference-audit-status
+  bin/chief-of-staff --prompt-pack-freshness-report-status
 
 Developer / Cursor verification:
   bin/chief-of-staff --cursor-workflow-status
@@ -279,6 +282,7 @@ All command examples:
   bin/chief-of-staff --prompt-pack-maintenance-status
   bin/chief-of-staff --prompt-pack-reference-index-status
   bin/chief-of-staff --prompt-pack-stale-reference-audit-status
+  bin/chief-of-staff --prompt-pack-freshness-report-status
   bin/chief-of-staff --command-launcher-status
   bin/chief-of-staff --cursor-workflow-status
   bin/chief-of-staff --developer-status
@@ -390,6 +394,9 @@ Local command: prompt pack reference index status
 
 Prompt Pack Stale-Reference Audit
 Local command: prompt pack stale reference audit status
+
+Prompt Pack Freshness Report
+Local command: prompt pack freshness report status
 
 Appearance & Vibe Foundation (status only; live curator not started)
 Local command: wallpaper photo curator plan status
@@ -1387,6 +1394,15 @@ while [[ $# -gt 0 ]]; do
         die "Prompt pack stale-reference audit status script is missing: scripts/prompt-pack-stale-reference-audit-status.sh"
       fi
       bash "${prompt_pack_stale_reference_audit_status_script}"
+      exit 0
+      ;;
+    --prompt-pack-freshness-report-status)
+      repo_root="$(resolve_repo_root)"
+      prompt_pack_freshness_report_status_script="${repo_root}/scripts/prompt-pack-freshness-report-status.sh"
+      if [[ ! -f "${prompt_pack_freshness_report_status_script}" ]]; then
+        die "Prompt pack freshness report status script is missing: scripts/prompt-pack-freshness-report-status.sh"
+      fi
+      bash "${prompt_pack_freshness_report_status_script}"
       exit 0
       ;;
     --wallpaper-photo-curator-plan-status)

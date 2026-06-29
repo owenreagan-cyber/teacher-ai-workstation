@@ -228,6 +228,7 @@ no wallpaper/photo curator implementation
 
 - Prompt pack reference index: `docs/prompt-pack-reference-index.md`
 - Prompt pack stale-reference audit: `docs/prompt-pack-stale-reference-audit.md`
+- Prompt pack freshness report: `docs/prompt-pack-freshness-report-polish.md`
 
 ## Commands Reference
 

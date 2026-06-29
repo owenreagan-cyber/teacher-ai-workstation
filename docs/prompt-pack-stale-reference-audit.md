@@ -9,10 +9,10 @@ This PR adds prompt pack stale-reference audit guidance only. This pass is about
 ## Current Status
 
 ```text
-Current status: prompt pack stale-reference audit in progress.
+Current status: prompt pack stale-reference audit complete.
 ```
 
-Stale-reference audit rules are documented for local status commands only.
+Prompt pack freshness report polish continues reusable prompt freshness summaries. See `docs/prompt-pack-freshness-report-polish.md`.
 
 ## Why Stale-Reference Audits Exist
 
@@ -208,6 +208,10 @@ no wallpaper/photo curator implementation
 - This PR does not add external integrations.
 - This PR does not add network calls.
 - This PR does not add automation.
+
+## Related prompt docs
+
+- Prompt pack freshness report: `docs/prompt-pack-freshness-report-polish.md`
 
 ## Commands Reference
 

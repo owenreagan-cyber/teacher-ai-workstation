@@ -25,15 +25,16 @@
 - Workflow docs navigation status summary: complete
 - Prompt pack maintenance checklist: complete
 - Prompt pack reference index: complete
+- Prompt pack stale-reference audit: complete
 - Appearance & Vibe wallpaper/photo foundation stack: complete for now
 
 ### Now
 
-- Prompt pack stale-reference audit (prompt-pack-audit/status only)
+- Prompt pack freshness report polish (prompt-pack-freshness/status only)
 
 ### Next
 
-- Prompt pack freshness report polish
+- Prompt pack handoff summary
 
 ## Completed (earlier foundations)
 

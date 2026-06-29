@@ -12,7 +12,7 @@ This PR adds prompt pack reference index guidance only. This pass is about prese
 Current status: prompt pack reference index complete.
 ```
 
-Prompt pack stale-reference audit continues reusable prompt freshness checks. See `docs/prompt-pack-stale-reference-audit.md`.
+Prompt pack freshness report polish continues reusable prompt freshness summaries. See `docs/prompt-pack-freshness-report-polish.md`.
 
 ## Why This Index Exists
 
@@ -184,6 +184,7 @@ no wallpaper/photo curator implementation
 ## Related prompt docs
 
 - Prompt pack stale-reference audit: `docs/prompt-pack-stale-reference-audit.md`
+- Prompt pack freshness report: `docs/prompt-pack-freshness-report-polish.md`
 - Prompt pack maintenance: `docs/prompt-pack-maintenance-checklist.md`
 
 ## Commands Reference

@@ -12,7 +12,7 @@ This PR adds workflow docs navigation status summary only. This pass is about pr
 Current status: workflow docs navigation status summary complete.
 ```
 
-Prompt pack stale-reference audit continues reusable prompt freshness checks. See `docs/prompt-pack-stale-reference-audit.md`.
+Prompt pack freshness report polish continues reusable prompt freshness summaries. See `docs/prompt-pack-freshness-report-polish.md`.
 
 ## Why This Summary Exists
 
@@ -178,6 +178,7 @@ no wallpaper/photo curator implementation
 - Prompt pack maintenance: `docs/prompt-pack-maintenance-checklist.md`
 - Prompt pack reference index: `docs/prompt-pack-reference-index.md`
 - Prompt pack stale-reference audit: `docs/prompt-pack-stale-reference-audit.md`
+- Prompt pack freshness report: `docs/prompt-pack-freshness-report-polish.md`
 - Cross-link map: `docs/workflow-docs-cross-link-polish.md`
 
 ## Commands Reference

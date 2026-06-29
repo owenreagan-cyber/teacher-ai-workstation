@@ -1004,6 +1004,29 @@ else
   warn "prompt pack stale-reference audit status script missing: scripts/prompt-pack-stale-reference-audit-status.sh"
 fi
 
+section "Prompt Pack Freshness Report Polish"
+if [[ -f scripts/prompt-pack-freshness-report-status.sh ]]; then
+  prompt_pack_freshness_report_result=0
+  prompt_pack_freshness_report_output="$(bash scripts/prompt-pack-freshness-report-status.sh 2>&1)" || prompt_pack_freshness_report_result=$?
+  prompt_pack_freshness_report_pass="$(summary_count "${prompt_pack_freshness_report_output}" "PASS")"
+  prompt_pack_freshness_report_warn="$(summary_count "${prompt_pack_freshness_report_output}" "WARN")"
+  prompt_pack_freshness_report_fail="$(summary_count "${prompt_pack_freshness_report_output}" "FAIL")"
+
+  if [[ "${prompt_pack_freshness_report_result}" != "0" ]]; then
+    printf 'Prompt Pack Freshness Report Polish: status command completed\n'
+    printf '%s\n' "${prompt_pack_freshness_report_output}"
+    fail "prompt pack freshness report polish status failed"
+  elif [[ -n "${prompt_pack_freshness_report_pass}" && -n "${prompt_pack_freshness_report_warn}" && -n "${prompt_pack_freshness_report_fail}" ]]; then
+    printf 'Prompt Pack Freshness Report Polish: PASS %s / WARN %s / FAIL %s\n' "${prompt_pack_freshness_report_pass}" "${prompt_pack_freshness_report_warn}" "${prompt_pack_freshness_report_fail}"
+    pass "prompt pack freshness report polish status completed"
+  else
+    printf 'Prompt Pack Freshness Report Polish: status command completed\n'
+    pass "prompt pack freshness report polish status completed"
+  fi
+else
+  warn "prompt pack freshness report status script missing: scripts/prompt-pack-freshness-report-status.sh"
+fi
+
 end_section_summary "Future-Safety / Parked Work"
 
 group_banner "Appearance & Vibe Foundation Status"

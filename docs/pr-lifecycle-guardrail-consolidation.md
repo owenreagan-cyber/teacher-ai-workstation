@@ -12,7 +12,7 @@ This PR consolidates PR lifecycle guardrails only. This pass points to `docs/tes
 Current status: PR lifecycle guardrail consolidation complete.
 ```
 
-Branch hygiene and cleanup reference continues branch-state and cleanup rules. See `docs/branch-hygiene-cleanup-reference.md`.
+Branch hygiene and cleanup reference is complete. Local main proof report polish adds final report and dashboard count rules. See `docs/local-main-proof-report-polish.md`.
 
 ## Why This Consolidation Exists
 

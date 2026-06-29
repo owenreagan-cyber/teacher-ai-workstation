@@ -866,6 +866,29 @@ else
   warn "branch hygiene cleanup status script missing: scripts/branch-hygiene-cleanup-status.sh"
 fi
 
+section "Local Main Proof Report Polish"
+if [[ -f scripts/local-main-proof-report-status.sh ]]; then
+  local_main_proof_report_result=0
+  local_main_proof_report_output="$(bash scripts/local-main-proof-report-status.sh 2>&1)" || local_main_proof_report_result=$?
+  local_main_proof_report_pass="$(summary_count "${local_main_proof_report_output}" "PASS")"
+  local_main_proof_report_warn="$(summary_count "${local_main_proof_report_output}" "WARN")"
+  local_main_proof_report_fail="$(summary_count "${local_main_proof_report_output}" "FAIL")"
+
+  if [[ "${local_main_proof_report_result}" != "0" ]]; then
+    printf 'Local Main Proof Report Polish: status command completed\n'
+    printf '%s\n' "${local_main_proof_report_output}"
+    fail "local main proof report polish status failed"
+  elif [[ -n "${local_main_proof_report_pass}" && -n "${local_main_proof_report_warn}" && -n "${local_main_proof_report_fail}" ]]; then
+    printf 'Local Main Proof Report Polish: PASS %s / WARN %s / FAIL %s\n' "${local_main_proof_report_pass}" "${local_main_proof_report_warn}" "${local_main_proof_report_fail}"
+    pass "local main proof report polish status completed"
+  else
+    printf 'Local Main Proof Report Polish: status command completed\n'
+    pass "local main proof report polish status completed"
+  fi
+else
+  warn "local main proof report status script missing: scripts/local-main-proof-report-status.sh"
+fi
+
 end_section_summary "Future-Safety / Parked Work"
 
 group_banner "Appearance & Vibe Foundation Status"

@@ -17,15 +17,16 @@
 - Project memory cleanup: complete
 - Testing/checklist consolidation: complete
 - Command/check bundle reference polish: complete
+- Checklist-driven prompt template tightening: complete
 - Appearance & Vibe wallpaper/photo foundation stack: complete for now
 
 ### Now
 
-- Checklist-driven prompt template tightening (template-tightening/status only)
+- PR lifecycle guardrail consolidation (lifecycle-guardrail/status only)
 
 ### Next
 
-- PR lifecycle guardrail consolidation
+- Branch hygiene and cleanup reference
 
 ## Completed (earlier foundations)
 

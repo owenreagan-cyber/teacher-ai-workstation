@@ -263,7 +263,24 @@ bin/chief-of-staff --checklist-driven-prompt-template-status
 bin/chief-of-staff --dashboard
 ```
 
-See `docs/checklist-driven-prompt-template-tightening.md`, `docs/command-check-bundle-reference-polish.md`, and `docs/testing-checklist-consolidation.md`.
+See `docs/checklist-driven-prompt-template-tightening.md`, `docs/command-check-bundle-reference-polish.md`, `docs/testing-checklist-consolidation.md`, and `docs/pr-lifecycle-guardrail-consolidation.md`.
+
+PR lifecycle guardrails (every PR):
+
+```bash
+bin/chief-of-staff --pr-lifecycle-guardrail-status
+```
+
+```text
+Every PR prompt must verify preflight on main.
+Every PR prompt must verify the feature branch.
+Every PR prompt must include no-commit review.
+Every PR prompt must verify PR state is OPEN and mergedAt is null before merge.
+Every PR prompt must verify merged state is MERGED and mergedAt is non-null after merge.
+Every PR prompt must verify local main is synced after merge.
+Every PR prompt must end with clean working tree and dashboard passing.
+Reusable bundles do not replace these lifecycle guardrails.
+```
 
 Project memory and roadmap (status only):
 

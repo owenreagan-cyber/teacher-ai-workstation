@@ -26,6 +26,8 @@ Project memory cleanup improves active priorities and project memory clarity. Se
 
 Testing/checklist consolidation documents reusable verification bundles. See `docs/testing-checklist-consolidation.md`.
 
+Command/check bundle reference polish adds a compact bundle picker. See `docs/command-check-bundle-reference-polish.md`.
+
 See also `docs/chief-of-staff-help-examples-polish.md` and `docs/chief-of-staff-command-map-cleanup.md` for example blocks and command grouping.
 
 ## First Command to Run
@@ -199,6 +201,7 @@ bin/chief-of-staff --review-notes-workflow-status
 bin/chief-of-staff --local-document-indexing-follow-up-status
 bin/chief-of-staff --project-memory-cleanup-status
 bin/chief-of-staff --testing-checklist-status
+bin/chief-of-staff --command-check-bundle-reference-status
 bin/chief-of-staff --dashboard
 bin/chief-of-staff --help
 bin/chief-of-staff --list-workflows
@@ -210,4 +213,5 @@ bash scripts/review-notes-workflow-polish-status.sh
 bash scripts/local-document-indexing-follow-up-status.sh
 bash scripts/project-memory-cleanup-status.sh
 bash scripts/testing-checklist-consolidation-status.sh
+bash scripts/command-check-bundle-reference-status.sh
 ```

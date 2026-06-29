@@ -9,8 +9,10 @@ This PR consolidates testing/checklist guidance only. This pass is about preserv
 ## Current Status
 
 ```text
-Current status: testing/checklist consolidation in progress.
+Current status: testing/checklist consolidation complete.
 ```
+
+Command/check bundle reference polish adds a compact picker pointing here. See `docs/command-check-bundle-reference-polish.md`.
 
 Reusable verification bundles are documented for core, documentation/status, teacher planning/review, document indexing safety, Appearance & Vibe safety, pre-commit review, and post-merge verification.
 

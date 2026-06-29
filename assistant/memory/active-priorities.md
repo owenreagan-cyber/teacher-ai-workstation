@@ -31,15 +31,16 @@
 - Prompt pack stack completion marker: complete
 - Core Teacher Workstation planning cleanup: complete
 - Teacher workflow quick-reference polish: complete
+- Teacher workflow status summary: complete
 - Appearance & Vibe wallpaper/photo foundation stack: complete for now
 
 ### Now
 
-- Teacher workflow status summary (teacher-workflow-status-summary/status only)
+- Teacher planning command detail polish (teacher-planning-command-detail/status only)
 
 ### Next
 
-- Teacher planning command detail polish
+- Lesson review command detail polish
 
 ## Completed (earlier foundations)
 

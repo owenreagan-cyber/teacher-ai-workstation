@@ -14,6 +14,8 @@ Current status: teacher planning command detail polish complete.
 
 Lesson Review command detail polish tightens safe Lesson Review command references. See `docs/lesson-review-command-detail-polish.md`.
 
+Review Notes command detail polish tightens safe Review Notes command references. See `docs/review-notes-command-detail-polish.md`.
+
 ## Why Command Detail Matters
 
 After teacher workflow status summary, safe Teacher Planning commands were listed but command purpose, expected output, and planning-only boundaries still needed clearer detail. This polish makes the Teacher Planning status command easier to understand without implying lesson generation, document indexing, or student data handling exists.

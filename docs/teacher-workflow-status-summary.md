@@ -14,6 +14,8 @@ Current status: teacher workflow status summary complete.
 
 Lesson Review command detail polish tightens safe Lesson Review command references. See `docs/lesson-review-command-detail-polish.md`.
 
+Review Notes command detail polish tightens safe Review Notes command references. See `docs/review-notes-command-detail-polish.md`.
+
 ## Why This Status Summary Exists
 
 After teacher workflow quick-reference polish, safe commands and doc links were collected but there was no single summary of what is complete, planning-only, or future-only across the Teacher Workflow stack. This summary makes stack status visible without implying lesson generation, document indexing, or student data handling exists.

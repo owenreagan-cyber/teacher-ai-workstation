@@ -227,6 +227,7 @@ Related docs:
 - `docs/teacher-workflow-status-summary.md`
 - `docs/teacher-planning-command-detail-polish.md`
 - `docs/lesson-review-command-detail-polish.md`
+- `docs/review-notes-command-detail-polish.md`
 - `.cursor/rules/teacher-ai-workstation.mdc`
 
 Use `docs/workflow-docs-cross-link-polish.md` as the map for workflow docs.
@@ -237,7 +238,8 @@ Use `docs/teacher-workflow-quick-reference-polish.md` for a compact quick-refere
 Use `docs/teacher-workflow-status-summary.md` for a compact status summary of complete, planning-only, and future-only Teacher Workflow work.
 Use `docs/teacher-planning-command-detail-polish.md` for safe Teacher Planning command descriptions, output expectations, and planning-only boundaries.
 Use `docs/lesson-review-command-detail-polish.md` for safe Lesson Review command descriptions, output expectations, and planning-only boundaries.
-The next recommended PR is Review notes command detail polish.
+Use `docs/review-notes-command-detail-polish.md` for safe Review Notes command descriptions, output expectations, and planning-only boundaries.
+The next recommended PR is Document indexing command detail polish.
 Use `docs/prompt-pack-handoff-summary.md` to understand the current reusable prompt pack stack.
 The handoff summary points to maintenance, freshness, stale-reference audit, reference index, workflow navigation, verification bundles, and lifecycle guardrails.
 Use `docs/prompt-pack-reference-index.md` to find reusable prompt pack references.

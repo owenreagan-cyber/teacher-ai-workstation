@@ -1,32 +1,32 @@
-# Lesson Review Command Detail Polish
+# Review Notes Command Detail Polish
 
 ## Purpose
 
-This document tightens the safe Lesson Review command reference after teacher planning command detail polish. It adds clearer command descriptions, output expectations, and planning-only boundaries without changing behavior.
+This document tightens the safe Review Notes command reference after lesson review command detail polish. It adds clearer command descriptions, output expectations, and planning-only boundaries without changing behavior.
 
-This PR adds Lesson Review command detail polish only. This pass is about preserving all existing commands, preserving command behavior, and preserving PASS/WARN/FAIL semantics while enforcing no command removals, no command renames, and no check removals.
+This PR adds Review Notes command detail polish only. This pass is about preserving all existing commands, preserving command behavior, and preserving PASS/WARN/FAIL semantics while enforcing no command removals, no command renames, and no check removals.
 
 ## Current Status
 
 ```text
-Current status: lesson review command detail polish complete.
+Current status: review notes command detail polish in progress.
 ```
 
-Review Notes command detail polish tightens safe Review Notes command references. See `docs/review-notes-command-detail-polish.md`.
+Command detail rules are documented for local status commands only.
 
 ## Why Command Detail Matters
 
-After teacher planning command detail polish, safe Lesson Review commands were listed but command purpose, expected output, and planning-only boundaries still needed clearer detail. This polish makes the Lesson Review status command easier to understand without implying real lesson review, lesson generation, document indexing, or student data handling exists.
+After lesson review command detail polish, safe Review Notes commands were listed but command purpose, expected output, and planning-only boundaries still needed clearer detail. This polish makes the Review Notes status command easier to understand without implying real review notes, real lesson review, lesson generation, document indexing, or student data handling exists.
 
-## Lesson Review Command
+## Review Notes Command
 
 ```bash
-bin/chief-of-staff --lesson-review-workflow-status
+bin/chief-of-staff --review-notes-workflow-status
 ```
 
 ```text
 This command is a safe status/planning command.
-It verifies Lesson Review workflow organization and references.
+It verifies Review Notes workflow organization and references.
 It must not review real lessons.
 It must not generate lesson content.
 It must not create lesson briefs.
@@ -54,24 +54,25 @@ The command should not create, modify, or delete review notes.
 ## Planning-Only Boundaries
 
 ```text
-Lesson Review command detail remains documentation/status only.
-Lesson Review references do not review real lessons.
-Lesson Review references do not create lesson content.
-Lesson Review references do not create lesson briefs.
-Lesson Review references do not create lesson drafts.
-Lesson Review references do not create review notes.
-Lesson Review references do not read or write student data.
-Lesson Review references do not scan folders.
-Lesson Review references do not index documents.
-Lesson Review references do not call external services.
+Review Notes command detail remains documentation/status only.
+Review Notes references do not review real lessons.
+Review Notes references do not create lesson content.
+Review Notes references do not create lesson briefs.
+Review Notes references do not create lesson drafts.
+Review Notes references do not create review notes.
+Review Notes references do not read or write student data.
+Review Notes references do not scan folders.
+Review Notes references do not index documents.
+Review Notes references do not call external services.
 ```
 
 ## Related Safe Commands
 
 ```bash
+bin/chief-of-staff --review-notes-workflow-status
+bin/chief-of-staff --lesson-review-command-detail-status
 bin/chief-of-staff --lesson-review-workflow-status
 bin/chief-of-staff --teacher-planning-command-detail-status
-bin/chief-of-staff --teacher-planning-command-status
 bin/chief-of-staff --teacher-workflow-status-summary
 bin/chief-of-staff --teacher-workflow-quick-reference-status
 bin/chief-of-staff --core-teacher-workstation-planning-cleanup-status
@@ -81,7 +82,8 @@ bin/chief-of-staff --dashboard
 ## Related Teacher Workflow Docs
 
 ```text
-Lesson review workflow polish: docs/lesson-review-workflow-polish.md
+Review notes workflow polish: docs/review-notes-workflow-polish.md
+Lesson Review command detail polish: docs/lesson-review-command-detail-polish.md
 Teacher Planning command detail polish: docs/teacher-planning-command-detail-polish.md
 Teacher workflow status summary: docs/teacher-workflow-status-summary.md
 Teacher workflow quick-reference polish: docs/teacher-workflow-quick-reference-polish.md
@@ -92,11 +94,11 @@ Chief of Staff workflow quick-start guide: docs/chief-of-staff-workflow-quick-st
 ## Not Implemented
 
 ```text
+Real review notes are not implemented.
 Real lesson review is not implemented.
 Real lesson generation is not implemented.
 Lesson brief generation is not implemented.
 Lesson draft generation is not implemented.
-Real review notes are not implemented.
 Student data handling is not implemented.
 Document scanning is not implemented.
 File indexing is not implemented.
@@ -107,7 +109,7 @@ Automation is not implemented.
 ## Dashboard Status Summary
 
 ```text
-Lesson Review command detail should remain documentation/status only.
+Review Notes command detail should remain documentation/status only.
 Dashboard checks should remain additive and parseable.
 Dashboard health should show PASS/WARN/FAIL and total health.
 Warnings and failures must not be hidden.
@@ -117,9 +119,9 @@ PASS/WARN/FAIL semantics must remain unchanged.
 ## Next Safe Build Priority
 
 ```text
-Next recommended PR: Review notes command detail polish
+Next recommended PR: Document indexing command detail polish
 
-Scope: Tighten the safe Review Notes command reference with clearer command descriptions, output expectations, and planning-only boundaries. Preserve every existing command and status check. No checks removed, no command behavior changes, no lesson generation changes, no document scanning/indexing implementation, no student data, no live integrations, no network calls, and no automation.
+Scope: Tighten the safe Document Indexing planning command reference with clearer command descriptions, output expectations, and planning-only boundaries. Preserve every existing command and status check. No checks removed, no command behavior changes, no lesson generation changes, no document scanning/indexing implementation, no student data, no live integrations, no network calls, and no automation.
 ```
 
 ## Command Detail Rules
@@ -129,10 +131,10 @@ keep command purpose clear
 keep expected output clear
 keep planning-only boundaries clear
 keep related docs easy to find
+do not imply real review-note generation exists
 do not imply real lesson review exists
 do not imply real lesson generation exists
 do not imply document indexing exists
-do not imply review-note generation exists
 do not imply student data handling exists
 ```
 
@@ -213,12 +215,13 @@ This PR preserves all existing commands. This PR does not rename commands. This 
 ## Commands Reference
 
 ```bash
+bin/chief-of-staff --review-notes-command-detail-status
+bin/chief-of-staff --review-notes-workflow-status
 bin/chief-of-staff --lesson-review-command-detail-status
-bin/chief-of-staff --lesson-review-workflow-status
 bin/chief-of-staff --teacher-planning-command-detail-status
 bin/chief-of-staff --teacher-workflow-status-summary
 bin/chief-of-staff --teacher-workflow-quick-reference-status
 bin/chief-of-staff --core-teacher-workstation-planning-cleanup-status
 bin/chief-of-staff --dashboard
-bash scripts/lesson-review-command-detail-status.sh
+bash scripts/review-notes-command-detail-status.sh
 ```

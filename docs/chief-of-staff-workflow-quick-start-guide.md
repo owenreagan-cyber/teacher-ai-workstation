@@ -14,6 +14,8 @@ Current status: workflow quick-start guide complete.
 
 Core Teacher Workstation planning cleanup tightens teacher workflow planning references. See `docs/core-teacher-workstation-planning-cleanup.md`.
 
+Teacher Workflow quick-reference polish adds a compact safe command and doc reference. See `docs/teacher-workflow-quick-reference-polish.md`.
+
 Dashboard section summary polish adds high-level section summaries. See `docs/dashboard-section-summary-polish.md`.
 
 Teacher planning command organization improves lesson-planning command discoverability. See `docs/teacher-planning-command-organization.md`.

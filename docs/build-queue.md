@@ -59,22 +59,22 @@ Phase 1 Teacher Chief of Staff + safe local lesson workflows.
 
 ## Current PR
 
-Core Teacher Workstation planning cleanup.
+Teacher workflow quick-reference polish.
 
-Scope: Return to core Teacher Workstation planning docs after completing the reusable prompt pack stack. Tighten planning/status references for teacher workflows, current safe commands, and next build priorities. Preserve every existing command and status check. No checks removed, no command behavior changes, no lesson generation changes, no document scanning/indexing implementation, no student data, no live integrations, no network calls, and no automation.
+Scope: Add a compact quick-reference for safe Teacher Workstation workflow commands and docs. Preserve every existing command and status check. No checks removed, no command behavior changes, no lesson generation changes, no document scanning/indexing implementation, no student data, no live integrations, no network calls, and no automation.
 
 Appearance & Vibe wallpaper/photo curator foundation stack: complete for now.
 Live curator implementation: not started.
 
 ## Next PR
 
-Teacher workflow quick-reference polish
+Teacher workflow status summary
 
-Scope: Add a compact quick-reference for safe Teacher Workstation workflow commands and docs. Preserve every existing command and status check. No checks removed, no command behavior changes, no lesson generation changes, no document scanning/indexing implementation, no student data, no live integrations, no network calls, and no automation.
+Scope: Add a compact status summary for the core Teacher Workstation workflow stack, showing which teacher workflow docs and commands are complete, which remain planning-only, and which work remains future-only. Preserve every existing command and status check. No checks removed, no command behavior changes, no lesson generation changes, no document scanning/indexing implementation, no student data, no live integrations, no network calls, and no automation.
 
 ## Next Recommended PRs
 
-1. Teacher workflow quick-reference polish.
+1. Teacher workflow status summary.
 2. Later: permissioned Gmail/Drive integrations.
 3. Later: secrets/capability broker.
 

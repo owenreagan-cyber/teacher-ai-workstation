@@ -700,6 +700,29 @@ else
   warn "core Teacher Workstation planning cleanup status script missing: scripts/core-teacher-workstation-planning-cleanup-status.sh"
 fi
 
+section "Teacher Workflow Quick-Reference Polish"
+if [[ -f scripts/teacher-workflow-quick-reference-status.sh ]]; then
+  teacher_workflow_quick_reference_result=0
+  teacher_workflow_quick_reference_output="$(bash scripts/teacher-workflow-quick-reference-status.sh 2>&1)" || teacher_workflow_quick_reference_result=$?
+  teacher_workflow_quick_reference_pass="$(summary_count "${teacher_workflow_quick_reference_output}" "PASS")"
+  teacher_workflow_quick_reference_warn="$(summary_count "${teacher_workflow_quick_reference_output}" "WARN")"
+  teacher_workflow_quick_reference_fail="$(summary_count "${teacher_workflow_quick_reference_output}" "FAIL")"
+
+  if [[ "${teacher_workflow_quick_reference_result}" != "0" ]]; then
+    printf 'Teacher Workflow Quick-Reference Polish: status command completed\n'
+    printf '%s\n' "${teacher_workflow_quick_reference_output}"
+    fail "Teacher Workflow quick-reference polish status failed"
+  elif [[ -n "${teacher_workflow_quick_reference_pass}" && -n "${teacher_workflow_quick_reference_warn}" && -n "${teacher_workflow_quick_reference_fail}" ]]; then
+    printf 'Teacher Workflow Quick-Reference Polish: PASS %s / WARN %s / FAIL %s\n' "${teacher_workflow_quick_reference_pass}" "${teacher_workflow_quick_reference_warn}" "${teacher_workflow_quick_reference_fail}"
+    pass "Teacher Workflow quick-reference polish status completed"
+  else
+    printf 'Teacher Workflow Quick-Reference Polish: status command completed\n'
+    pass "Teacher Workflow quick-reference polish status completed"
+  fi
+else
+  warn "Teacher Workflow quick-reference status script missing: scripts/teacher-workflow-quick-reference-status.sh"
+fi
+
 end_section_summary "Lesson Planning Status"
 
 group_banner "Future-Safety / Parked Work"

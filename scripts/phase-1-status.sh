@@ -518,6 +518,13 @@ for path in \
   check_required_file "${path}"
 done
 
+section "Teacher Workflow Quick-Reference Polish Files"
+for path in \
+  docs/teacher-workflow-quick-reference-polish.md \
+  scripts/teacher-workflow-quick-reference-status.sh; do
+  check_required_file "${path}"
+done
+
 section "Teacher Planning Command Organization Files"
 for path in \
   docs/teacher-planning-command-organization.md \
@@ -681,6 +688,7 @@ check_bash_syntax "scripts/prompt-pack-freshness-report-status.sh"
 check_bash_syntax "scripts/prompt-pack-handoff-summary-status.sh"
 check_bash_syntax "scripts/prompt-pack-stack-completion-status.sh"
 check_bash_syntax "scripts/core-teacher-workstation-planning-cleanup-status.sh"
+check_bash_syntax "scripts/teacher-workflow-quick-reference-status.sh"
 check_bash_syntax "scripts/teacher-planning-command-organization-status.sh"
 check_bash_syntax "scripts/dashboard-section-summary-status.sh"
 check_bash_syntax "scripts/chief-of-staff-workflow-quick-start-status.sh"
@@ -714,7 +722,7 @@ section "Recommendation"
 if (( CRITICAL_BLOCKER > 0 )); then
   printf 'Fix critical Chief of Staff CLI, memory, intake, or script problems before the next build PR.\n'
 else
-  printf 'Next recommended PR: Teacher workflow quick-reference polish.\n'
+  printf 'Next recommended PR: Teacher workflow status summary.\n'
 fi
 
 if (( COMPARE_0E == 1 && CRITICAL_BLOCKER == 0 )); then

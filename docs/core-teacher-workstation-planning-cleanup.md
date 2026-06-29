@@ -9,10 +9,10 @@ This PR returns to core Teacher Workstation planning cleanup. This PR tightens p
 ## Current Status
 
 ```text
-Current status: core Teacher Workstation planning cleanup in progress.
+Current status: core Teacher Workstation planning cleanup complete.
 ```
 
-Planning cleanup rules are documented for local status commands only.
+Teacher Workflow quick-reference polish adds a compact safe command and doc reference. See `docs/teacher-workflow-quick-reference-polish.md`.
 
 ## Why This Cleanup Exists
 

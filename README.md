@@ -263,7 +263,13 @@ bin/chief-of-staff --checklist-driven-prompt-template-status
 bin/chief-of-staff --dashboard
 ```
 
-See `docs/checklist-driven-prompt-template-tightening.md`, `docs/command-check-bundle-reference-polish.md`, `docs/testing-checklist-consolidation.md`, `docs/pr-lifecycle-guardrail-consolidation.md`, `docs/branch-hygiene-cleanup-reference.md`, `docs/local-main-proof-report-polish.md`, `docs/workflow-docs-cross-link-polish.md`, `docs/workflow-docs-navigation-status-summary.md`, `docs/prompt-pack-maintenance-checklist.md`, and `docs/prompt-pack-reference-index.md`.
+See `docs/checklist-driven-prompt-template-tightening.md`, `docs/command-check-bundle-reference-polish.md`, `docs/testing-checklist-consolidation.md`, `docs/pr-lifecycle-guardrail-consolidation.md`, `docs/branch-hygiene-cleanup-reference.md`, `docs/local-main-proof-report-polish.md`, `docs/workflow-docs-cross-link-polish.md`, `docs/workflow-docs-navigation-status-summary.md`, `docs/prompt-pack-maintenance-checklist.md`, `docs/prompt-pack-reference-index.md`, and `docs/prompt-pack-stale-reference-audit.md`.
+
+Prompt pack stale-reference audit:
+
+```bash
+bin/chief-of-staff --prompt-pack-stale-reference-audit-status
+```
 
 Prompt pack reference index:
 
@@ -317,8 +323,15 @@ bin/chief-of-staff --local-main-proof-report-status
 ```
 
 ```text
+Use docs/prompt-pack-stale-reference-audit.md to review reusable prompt docs for stale roadmap labels, dashboard counts, status commands, branch examples, and next recommended PR references.
 Use docs/prompt-pack-reference-index.md to find reusable prompt pack references.
 Use docs/prompt-pack-maintenance-checklist.md before reusing or updating prompt packs.
+Stale-reference audits do not replace PR-specific checks.
+Stale-reference audits do not replace no-commit review.
+Stale-reference audits do not replace PR open/unmerged verification.
+Stale-reference audits do not replace mergedAt non-null verification.
+Stale-reference audits do not replace branch deletion verification.
+Stale-reference audits do not replace final local-main dashboard proof.
 Prompt packs must be checked after roadmap changes.
 Prompt packs must be checked after dashboard count changes.
 Prompt packs must be checked after new status commands are added.

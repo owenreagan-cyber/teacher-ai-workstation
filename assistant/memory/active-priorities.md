@@ -24,15 +24,16 @@
 - Workflow docs cross-link polish: complete
 - Workflow docs navigation status summary: complete
 - Prompt pack maintenance checklist: complete
+- Prompt pack reference index: complete
 - Appearance & Vibe wallpaper/photo foundation stack: complete for now
 
 ### Now
 
-- Prompt pack reference index (prompt-pack-index/status only)
+- Prompt pack stale-reference audit (prompt-pack-audit/status only)
 
 ### Next
 
-- Prompt pack stale-reference audit
+- Prompt pack freshness report polish
 
 ## Completed (earlier foundations)
 

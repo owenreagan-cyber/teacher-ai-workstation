@@ -276,6 +276,14 @@ Use `docs/workflow-docs-cross-link-polish.md` as the map for workflow docs.
 Use `docs/workflow-docs-navigation-status-summary.md` to verify the workflow doc map remains intact.
 Use `docs/prompt-pack-reference-index.md` to find reusable prompt pack references.
 Use `docs/prompt-pack-maintenance-checklist.md` before reusing or updating prompt packs.
+Use `docs/prompt-pack-stale-reference-audit.md` to review reusable prompt docs for stale roadmap labels, dashboard counts, status commands, branch examples, and next recommended PR references.
+
+Stale-reference audits do not replace PR-specific checks.
+Stale-reference audits do not replace no-commit review.
+Stale-reference audits do not replace PR open/unmerged verification.
+Stale-reference audits do not replace mergedAt non-null verification.
+Stale-reference audits do not replace branch deletion verification.
+Stale-reference audits do not replace final local-main dashboard proof.
 
 Lifecycle guardrails: `docs/pr-lifecycle-guardrail-consolidation.md`
 

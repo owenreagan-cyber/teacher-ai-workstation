@@ -981,6 +981,29 @@ else
   warn "prompt pack reference index status script missing: scripts/prompt-pack-reference-index-status.sh"
 fi
 
+section "Prompt Pack Stale-Reference Audit"
+if [[ -f scripts/prompt-pack-stale-reference-audit-status.sh ]]; then
+  prompt_pack_stale_reference_result=0
+  prompt_pack_stale_reference_output="$(bash scripts/prompt-pack-stale-reference-audit-status.sh 2>&1)" || prompt_pack_stale_reference_result=$?
+  prompt_pack_stale_reference_pass="$(summary_count "${prompt_pack_stale_reference_output}" "PASS")"
+  prompt_pack_stale_reference_warn="$(summary_count "${prompt_pack_stale_reference_output}" "WARN")"
+  prompt_pack_stale_reference_fail="$(summary_count "${prompt_pack_stale_reference_output}" "FAIL")"
+
+  if [[ "${prompt_pack_stale_reference_result}" != "0" ]]; then
+    printf 'Prompt Pack Stale-Reference Audit: status command completed\n'
+    printf '%s\n' "${prompt_pack_stale_reference_output}"
+    fail "prompt pack stale-reference audit status failed"
+  elif [[ -n "${prompt_pack_stale_reference_pass}" && -n "${prompt_pack_stale_reference_warn}" && -n "${prompt_pack_stale_reference_fail}" ]]; then
+    printf 'Prompt Pack Stale-Reference Audit: PASS %s / WARN %s / FAIL %s\n' "${prompt_pack_stale_reference_pass}" "${prompt_pack_stale_reference_warn}" "${prompt_pack_stale_reference_fail}"
+    pass "prompt pack stale-reference audit status completed"
+  else
+    printf 'Prompt Pack Stale-Reference Audit: status command completed\n'
+    pass "prompt pack stale-reference audit status completed"
+  fi
+else
+  warn "prompt pack stale-reference audit status script missing: scripts/prompt-pack-stale-reference-audit-status.sh"
+fi
+
 end_section_summary "Future-Safety / Parked Work"
 
 group_banner "Appearance & Vibe Foundation Status"

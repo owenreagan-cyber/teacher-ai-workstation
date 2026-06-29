@@ -34,6 +34,8 @@ Core Dashboard and Health:
   --workflow-docs-navigation-status    Show workflow docs navigation status summary and exit.
   --prompt-pack-maintenance-status     Show prompt pack maintenance checklist status and exit.
   --prompt-pack-reference-index-status Show prompt pack reference index status and exit.
+  --prompt-pack-stale-reference-audit-status
+                                       Show prompt pack stale-reference audit status and exit.
   --command-launcher-status            Show Chief of Staff command launcher status and exit.
 
 Return to Core / Roadmap:
@@ -202,6 +204,7 @@ Teacher review (safe local sample slug only; no student data):
   bin/chief-of-staff --workflow-docs-navigation-status
   bin/chief-of-staff --prompt-pack-maintenance-status
   bin/chief-of-staff --prompt-pack-reference-index-status
+  bin/chief-of-staff --prompt-pack-stale-reference-audit-status
 
 Developer / Cursor verification:
   bin/chief-of-staff --cursor-workflow-status
@@ -275,6 +278,7 @@ All command examples:
   bin/chief-of-staff --workflow-docs-navigation-status
   bin/chief-of-staff --prompt-pack-maintenance-status
   bin/chief-of-staff --prompt-pack-reference-index-status
+  bin/chief-of-staff --prompt-pack-stale-reference-audit-status
   bin/chief-of-staff --command-launcher-status
   bin/chief-of-staff --cursor-workflow-status
   bin/chief-of-staff --developer-status
@@ -383,6 +387,9 @@ Local command: prompt pack maintenance status
 
 Prompt Pack Reference Index
 Local command: prompt pack reference index status
+
+Prompt Pack Stale-Reference Audit
+Local command: prompt pack stale reference audit status
 
 Appearance & Vibe Foundation (status only; live curator not started)
 Local command: wallpaper photo curator plan status
@@ -1371,6 +1378,15 @@ while [[ $# -gt 0 ]]; do
         die "Prompt pack reference index status script is missing: scripts/prompt-pack-reference-index-status.sh"
       fi
       bash "${prompt_pack_reference_index_status_script}"
+      exit 0
+      ;;
+    --prompt-pack-stale-reference-audit-status)
+      repo_root="$(resolve_repo_root)"
+      prompt_pack_stale_reference_audit_status_script="${repo_root}/scripts/prompt-pack-stale-reference-audit-status.sh"
+      if [[ ! -f "${prompt_pack_stale_reference_audit_status_script}" ]]; then
+        die "Prompt pack stale-reference audit status script is missing: scripts/prompt-pack-stale-reference-audit-status.sh"
+      fi
+      bash "${prompt_pack_stale_reference_audit_status_script}"
       exit 0
       ;;
     --wallpaper-photo-curator-plan-status)

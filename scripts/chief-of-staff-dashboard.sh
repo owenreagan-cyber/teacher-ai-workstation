@@ -705,6 +705,29 @@ else
   warn "document indexing plan status script missing: scripts/document-indexing-plan-status.sh"
 fi
 
+section "Local Document Indexing Follow-Up"
+if [[ -f scripts/local-document-indexing-follow-up-status.sh ]]; then
+  local_document_indexing_followup_result=0
+  local_document_indexing_followup_output="$(bash scripts/local-document-indexing-follow-up-status.sh 2>&1)" || local_document_indexing_followup_result=$?
+  local_document_indexing_followup_pass="$(summary_count "${local_document_indexing_followup_output}" "PASS")"
+  local_document_indexing_followup_warn="$(summary_count "${local_document_indexing_followup_output}" "WARN")"
+  local_document_indexing_followup_fail="$(summary_count "${local_document_indexing_followup_output}" "FAIL")"
+
+  if [[ "${local_document_indexing_followup_result}" != "0" ]]; then
+    printf 'Local Document Indexing Follow-Up: status command completed\n'
+    printf '%s\n' "${local_document_indexing_followup_output}"
+    fail "local document indexing follow-up status failed"
+  elif [[ -n "${local_document_indexing_followup_pass}" && -n "${local_document_indexing_followup_warn}" && -n "${local_document_indexing_followup_fail}" ]]; then
+    printf 'Local Document Indexing Follow-Up: PASS %s / WARN %s / FAIL %s\n' "${local_document_indexing_followup_pass}" "${local_document_indexing_followup_warn}" "${local_document_indexing_followup_fail}"
+    pass "local document indexing follow-up status completed"
+  else
+    printf 'Local Document Indexing Follow-Up: status command completed\n'
+    pass "local document indexing follow-up status completed"
+  fi
+else
+  warn "local document indexing follow-up status script missing: scripts/local-document-indexing-follow-up-status.sh"
+fi
+
 end_section_summary "Future-Safety / Parked Work"
 
 group_banner "Appearance & Vibe Foundation Status"

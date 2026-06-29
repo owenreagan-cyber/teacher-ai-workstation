@@ -222,6 +222,22 @@ bin/chief-of-staff --document-indexing-plan-status
 
 See `docs/safe-local-document-indexing-plan.md`.
 
+Local document indexing follow-up status command:
+
+```bash
+bin/chief-of-staff --local-document-indexing-follow-up-status
+```
+
+See `docs/local-document-indexing-follow-up.md`.
+
+Document indexing status (planning only; no scanning or indexing):
+
+```bash
+bin/chief-of-staff --dashboard
+bin/chief-of-staff --document-indexing-plan-status
+bin/chief-of-staff --local-document-indexing-follow-up-status
+```
+
 Appearance & Vibe wallpaper/photo curator plan status command:
 
 ```bash

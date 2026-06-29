@@ -20,6 +20,8 @@ Lesson review workflow polish improves safe local review guidance. See `docs/les
 
 Review notes workflow polish improves safe local review notes guidance. See `docs/review-notes-workflow-polish.md`.
 
+Local document indexing follow-up improves safe local document indexing plan/status visibility. See `docs/local-document-indexing-follow-up.md`.
+
 See also `docs/chief-of-staff-help-examples-polish.md` and `docs/chief-of-staff-command-map-cleanup.md` for example blocks and command grouping.
 
 ## First Command to Run
@@ -101,6 +103,7 @@ bin/chief-of-staff --review-notes-template-status
 
 ```bash
 bin/chief-of-staff --document-indexing-plan-status
+bin/chief-of-staff --local-document-indexing-follow-up-status
 bin/chief-of-staff --review-notes-template-status
 bin/chief-of-staff --return-to-core-status
 ```
@@ -189,6 +192,7 @@ bin/chief-of-staff --dashboard-section-summary-status
 bin/chief-of-staff --teacher-planning-command-status
 bin/chief-of-staff --lesson-review-workflow-status
 bin/chief-of-staff --review-notes-workflow-status
+bin/chief-of-staff --local-document-indexing-follow-up-status
 bin/chief-of-staff --dashboard
 bin/chief-of-staff --help
 bin/chief-of-staff --list-workflows
@@ -197,4 +201,5 @@ bash scripts/dashboard-section-summary-status.sh
 bash scripts/teacher-planning-command-organization-status.sh
 bash scripts/lesson-review-workflow-polish-status.sh
 bash scripts/review-notes-workflow-polish-status.sh
+bash scripts/local-document-indexing-follow-up-status.sh
 ```

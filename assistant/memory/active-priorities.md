@@ -54,14 +54,15 @@ Completed:
 - Dashboard section summary polish
 - Teacher planning command organization
 - Lesson review workflow polish
+- Review notes workflow polish
 
 Now:
 
-- Review notes workflow polish (workflow-polish/status only)
+- Local document indexing follow-up (planning/status only)
 
 Next:
 
-- Local document indexing follow-up
+- Project memory cleanup
 
 ## Parked Future
 

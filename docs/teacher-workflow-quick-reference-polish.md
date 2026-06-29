@@ -12,7 +12,7 @@ This PR adds a Teacher Workflow quick-reference only. This pass is about preserv
 Current status: teacher workflow quick-reference polish complete.
 ```
 
-Teacher Planning command detail polish tightens safe Teacher Planning command references. See `docs/teacher-planning-command-detail-polish.md`.
+Lesson Review command detail polish tightens safe Lesson Review command references. See `docs/lesson-review-command-detail-polish.md`.
 
 ## Why This Quick Reference Exists
 

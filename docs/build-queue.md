@@ -59,22 +59,22 @@ Phase 1 Teacher Chief of Staff + safe local lesson workflows.
 
 ## Current PR
 
-Teacher planning command detail polish.
+Lesson review command detail polish.
 
-Scope: Tighten the safe Teacher Planning command reference with clearer command descriptions, output expectations, and planning-only boundaries. Preserve every existing command and status check. No checks removed, no command behavior changes, no lesson generation changes, no document scanning/indexing implementation, no student data, no live integrations, no network calls, and no automation.
+Scope: Tighten the safe Lesson Review command reference with clearer command descriptions, output expectations, and planning-only boundaries. Preserve every existing command and status check. No checks removed, no command behavior changes, no lesson generation changes, no document scanning/indexing implementation, no student data, no live integrations, no network calls, and no automation.
 
 Appearance & Vibe wallpaper/photo curator foundation stack: complete for now.
 Live curator implementation: not started.
 
 ## Next PR
 
-Lesson review command detail polish
+Review notes command detail polish
 
-Scope: Tighten the safe Lesson Review command reference with clearer command descriptions, output expectations, and planning-only boundaries. Preserve every existing command and status check. No checks removed, no command behavior changes, no lesson generation changes, no document scanning/indexing implementation, no student data, no live integrations, no network calls, and no automation.
+Scope: Tighten the safe Review Notes command reference with clearer command descriptions, output expectations, and planning-only boundaries. Preserve every existing command and status check. No checks removed, no command behavior changes, no lesson generation changes, no document scanning/indexing implementation, no student data, no live integrations, no network calls, and no automation.
 
 ## Next Recommended PRs
 
-1. Lesson review command detail polish.
+1. Review notes command detail polish.
 2. Later: permissioned Gmail/Drive integrations.
 3. Later: secrets/capability broker.
 

@@ -32,15 +32,16 @@
 - Core Teacher Workstation planning cleanup: complete
 - Teacher workflow quick-reference polish: complete
 - Teacher workflow status summary: complete
+- Teacher planning command detail polish: complete
 - Appearance & Vibe wallpaper/photo foundation stack: complete for now
 
 ### Now
 
-- Teacher planning command detail polish (teacher-planning-command-detail/status only)
+- Lesson review command detail polish (lesson-review-command-detail/status only)
 
 ### Next
 
-- Lesson review command detail polish
+- Review notes command detail polish
 
 ## Completed (earlier foundations)
 

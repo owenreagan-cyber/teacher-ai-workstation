@@ -631,6 +631,29 @@ else
   warn "teacher planning command organization status script missing: scripts/teacher-planning-command-organization-status.sh"
 fi
 
+section "Lesson Review Workflow Polish"
+if [[ -f scripts/lesson-review-workflow-polish-status.sh ]]; then
+  lesson_review_workflow_result=0
+  lesson_review_workflow_output="$(bash scripts/lesson-review-workflow-polish-status.sh 2>&1)" || lesson_review_workflow_result=$?
+  lesson_review_workflow_pass="$(summary_count "${lesson_review_workflow_output}" "PASS")"
+  lesson_review_workflow_warn="$(summary_count "${lesson_review_workflow_output}" "WARN")"
+  lesson_review_workflow_fail="$(summary_count "${lesson_review_workflow_output}" "FAIL")"
+
+  if [[ "${lesson_review_workflow_result}" != "0" ]]; then
+    printf 'Lesson Review Workflow Polish: status command completed\n'
+    printf '%s\n' "${lesson_review_workflow_output}"
+    fail "lesson review workflow polish status failed"
+  elif [[ -n "${lesson_review_workflow_pass}" && -n "${lesson_review_workflow_warn}" && -n "${lesson_review_workflow_fail}" ]]; then
+    printf 'Lesson Review Workflow Polish: PASS %s / WARN %s / FAIL %s\n' "${lesson_review_workflow_pass}" "${lesson_review_workflow_warn}" "${lesson_review_workflow_fail}"
+    pass "lesson review workflow polish status completed"
+  else
+    printf 'Lesson Review Workflow Polish: status command completed\n'
+    pass "lesson review workflow polish status completed"
+  fi
+else
+  warn "lesson review workflow polish status script missing: scripts/lesson-review-workflow-polish-status.sh"
+fi
+
 end_section_summary "Lesson Planning Status"
 
 group_banner "Future-Safety / Parked Work"

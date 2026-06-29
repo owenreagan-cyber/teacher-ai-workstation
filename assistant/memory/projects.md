@@ -78,9 +78,9 @@ Track active projects, project status, next actions, blockers, and decisions.
 - Category: personal / operations
 - Goal: Future local Mac curator for wallpaper/photo candidate review, approve/dismiss, and rotation-folder storage.
 - Current phase: Paused after rotation handoff and safety audit (foundation stack complete for now; live curator not started).
-- Last known next action: Lesson review workflow polish.
+- Last known next action: Review notes workflow polish.
 - Blockers: full curator not implemented; human approval gates required before automation
-- Source: docs/teacher-planning-command-organization.md, docs/dashboard-section-summary-polish.md, docs/chief-of-staff-workflow-quick-start-guide.md, docs/chief-of-staff-help-examples-polish.md, docs/chief-of-staff-command-map-cleanup.md, docs/chief-of-staff-dashboard-readability-pass.md, docs/return-to-chief-of-staff-core.md, docs/wallpaper-photo-rotation-handoff-safety-audit.md, assistant/appearance-vibe/wallpaper-photo-curator/, and build queue
+- Source: docs/lesson-review-workflow-polish.md, docs/teacher-planning-command-organization.md, docs/dashboard-section-summary-polish.md, docs/chief-of-staff-workflow-quick-start-guide.md, docs/chief-of-staff-help-examples-polish.md, docs/chief-of-staff-command-map-cleanup.md, docs/chief-of-staff-dashboard-readability-pass.md, docs/return-to-chief-of-staff-core.md, docs/wallpaper-photo-rotation-handoff-safety-audit.md, assistant/appearance-vibe/wallpaper-photo-curator/, and build queue
 - Last reviewed: 2026-06-28
 - Notes: Wallpaper/photo curator foundation stack is complete for now. Live curator implementation is not started. No fetcher, real image processing, scheduler, notifications, network calls, API clients, OAuth, secrets, Reddit integration, or Devvit integration exists yet. Reddit may be a future source only. Devvit may be a future Reddit-native companion only.
 

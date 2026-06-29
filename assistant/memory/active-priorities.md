@@ -52,14 +52,15 @@ Completed:
 - Chief of Staff help examples polish
 - Chief of Staff workflow quick-start guide
 - Dashboard section summary polish
+- Teacher planning command organization
 
 Now:
 
-- Teacher planning command organization (command-organization/status only)
+- Lesson review workflow polish (workflow-polish/status only)
 
 Next:
 
-- Lesson review workflow polish
+- Review notes workflow polish
 
 ## Parked Future
 

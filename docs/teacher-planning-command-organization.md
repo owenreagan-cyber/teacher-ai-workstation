@@ -9,8 +9,10 @@ This PR improves teacher planning command organization only. This pass is about 
 ## Current Status
 
 ```text
-Current status: teacher planning command organization in progress.
+Current status: teacher planning command organization complete.
 ```
+
+Lesson review workflow polish improves safe local review guidance. See `docs/lesson-review-workflow-polish.md`.
 
 Teacher planning commands are grouped for easier discovery. Safe sample slugs and review-only boundaries are documented clearly.
 
@@ -132,9 +134,11 @@ no wallpaper/photo curator implementation
 
 ```bash
 bin/chief-of-staff --teacher-planning-command-status
+bin/chief-of-staff --lesson-review-workflow-status
 bin/chief-of-staff --lesson-review-view fractions-review
 bin/chief-of-staff --review-notes-template-status
 bin/chief-of-staff --document-indexing-plan-status
 bin/chief-of-staff --dashboard
 bash scripts/teacher-planning-command-organization-status.sh
+bash scripts/lesson-review-workflow-polish-status.sh
 ```

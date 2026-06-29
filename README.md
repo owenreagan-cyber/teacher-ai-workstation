@@ -263,7 +263,13 @@ bin/chief-of-staff --checklist-driven-prompt-template-status
 bin/chief-of-staff --dashboard
 ```
 
-See `docs/checklist-driven-prompt-template-tightening.md`, `docs/command-check-bundle-reference-polish.md`, `docs/testing-checklist-consolidation.md`, `docs/pr-lifecycle-guardrail-consolidation.md`, `docs/branch-hygiene-cleanup-reference.md`, `docs/local-main-proof-report-polish.md`, `docs/workflow-docs-cross-link-polish.md`, `docs/workflow-docs-navigation-status-summary.md`, `docs/prompt-pack-maintenance-checklist.md`, `docs/prompt-pack-reference-index.md`, and `docs/prompt-pack-stale-reference-audit.md`.
+See `docs/checklist-driven-prompt-template-tightening.md`, `docs/command-check-bundle-reference-polish.md`, `docs/testing-checklist-consolidation.md`, `docs/pr-lifecycle-guardrail-consolidation.md`, `docs/branch-hygiene-cleanup-reference.md`, `docs/local-main-proof-report-polish.md`, `docs/workflow-docs-cross-link-polish.md`, `docs/workflow-docs-navigation-status-summary.md`, `docs/prompt-pack-maintenance-checklist.md`, `docs/prompt-pack-reference-index.md`, `docs/prompt-pack-stale-reference-audit.md`, and `docs/prompt-pack-freshness-report-polish.md`.
+
+Prompt pack freshness report:
+
+```bash
+bin/chief-of-staff --prompt-pack-freshness-report-status
+```
 
 Prompt pack stale-reference audit:
 
@@ -323,9 +329,17 @@ bin/chief-of-staff --local-main-proof-report-status
 ```
 
 ```text
+Use docs/prompt-pack-freshness-report-polish.md to summarize whether reusable prompt docs are current.
+Freshness reports should cover roadmap labels, dashboard counts, status commands, verification bundles, lifecycle guardrails, and safety boundaries.
 Use docs/prompt-pack-stale-reference-audit.md to review reusable prompt docs for stale roadmap labels, dashboard counts, status commands, branch examples, and next recommended PR references.
 Use docs/prompt-pack-reference-index.md to find reusable prompt pack references.
 Use docs/prompt-pack-maintenance-checklist.md before reusing or updating prompt packs.
+Freshness reports do not replace PR-specific checks.
+Freshness reports do not replace no-commit review.
+Freshness reports do not replace PR open/unmerged verification.
+Freshness reports do not replace mergedAt non-null verification.
+Freshness reports do not replace branch deletion verification.
+Freshness reports do not replace final local-main dashboard proof.
 Stale-reference audits do not replace PR-specific checks.
 Stale-reference audits do not replace no-commit review.
 Stale-reference audits do not replace PR open/unmerged verification.

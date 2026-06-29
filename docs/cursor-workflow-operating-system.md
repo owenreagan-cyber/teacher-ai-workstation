@@ -219,6 +219,7 @@ Related docs:
 - `docs/prompt-pack-maintenance-checklist.md`
 - `docs/prompt-pack-reference-index.md`
 - `docs/prompt-pack-stale-reference-audit.md`
+- `docs/prompt-pack-freshness-report-polish.md`
 - `.cursor/rules/teacher-ai-workstation.mdc`
 
 Use `docs/workflow-docs-cross-link-polish.md` as the map for workflow docs.
@@ -226,13 +227,15 @@ Use `docs/workflow-docs-navigation-status-summary.md` to verify the workflow doc
 Use `docs/prompt-pack-reference-index.md` to find reusable prompt pack references.
 Use `docs/prompt-pack-maintenance-checklist.md` before reusing or updating prompt packs.
 Use `docs/prompt-pack-stale-reference-audit.md` to review reusable prompt docs for stale roadmap labels, dashboard counts, status commands, branch examples, and next recommended PR references.
+Use `docs/prompt-pack-freshness-report-polish.md` to summarize whether reusable prompt docs are current.
 
-Stale-reference audits do not replace PR-specific checks.
-Stale-reference audits do not replace no-commit review.
-Stale-reference audits do not replace PR open/unmerged verification.
-Stale-reference audits do not replace mergedAt non-null verification.
-Stale-reference audits do not replace branch deletion verification.
-Stale-reference audits do not replace final local-main dashboard proof.
+Freshness reports should cover roadmap labels, dashboard counts, status commands, verification bundles, lifecycle guardrails, and safety boundaries.
+Freshness reports do not replace PR-specific checks.
+Freshness reports do not replace no-commit review.
+Freshness reports do not replace PR open/unmerged verification.
+Freshness reports do not replace mergedAt non-null verification.
+Freshness reports do not replace branch deletion verification.
+Freshness reports do not replace final local-main dashboard proof.
 
 Prompt packs must be checked after roadmap changes.
 Prompt packs must be checked after dashboard count changes.

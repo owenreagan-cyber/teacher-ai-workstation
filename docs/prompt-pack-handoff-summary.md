@@ -9,10 +9,10 @@ This PR adds prompt pack handoff summary guidance only. This pass is about prese
 ## Current Status
 
 ```text
-Current status: prompt pack handoff summary in progress.
+Current status: prompt pack handoff summary complete.
 ```
 
-Handoff summary rules are documented for local status commands only.
+Prompt pack stack completion marker marks the reusable prompt pack stack complete for now. See `docs/prompt-pack-stack-completion-marker.md`.
 
 ## Why This Handoff Exists
 

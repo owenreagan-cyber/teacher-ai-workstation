@@ -230,6 +230,7 @@ no wallpaper/photo curator implementation
 - Prompt pack stale-reference audit: `docs/prompt-pack-stale-reference-audit.md`
 - Prompt pack freshness report: `docs/prompt-pack-freshness-report-polish.md`
 - Prompt pack handoff summary: `docs/prompt-pack-handoff-summary.md`
+- Prompt pack stack completion marker: `docs/prompt-pack-stack-completion-marker.md`
 
 ## Commands Reference
 

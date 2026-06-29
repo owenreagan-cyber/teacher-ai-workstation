@@ -1050,6 +1050,29 @@ else
   warn "prompt pack handoff summary status script missing: scripts/prompt-pack-handoff-summary-status.sh"
 fi
 
+section "Prompt Pack Stack Completion Marker"
+if [[ -f scripts/prompt-pack-stack-completion-status.sh ]]; then
+  prompt_pack_stack_completion_result=0
+  prompt_pack_stack_completion_output="$(bash scripts/prompt-pack-stack-completion-status.sh 2>&1)" || prompt_pack_stack_completion_result=$?
+  prompt_pack_stack_completion_pass="$(summary_count "${prompt_pack_stack_completion_output}" "PASS")"
+  prompt_pack_stack_completion_warn="$(summary_count "${prompt_pack_stack_completion_output}" "WARN")"
+  prompt_pack_stack_completion_fail="$(summary_count "${prompt_pack_stack_completion_output}" "FAIL")"
+
+  if [[ "${prompt_pack_stack_completion_result}" != "0" ]]; then
+    printf 'Prompt Pack Stack Completion Marker: status command completed\n'
+    printf '%s\n' "${prompt_pack_stack_completion_output}"
+    fail "prompt pack stack completion marker status failed"
+  elif [[ -n "${prompt_pack_stack_completion_pass}" && -n "${prompt_pack_stack_completion_warn}" && -n "${prompt_pack_stack_completion_fail}" ]]; then
+    printf 'Prompt Pack Stack Completion Marker: PASS %s / WARN %s / FAIL %s\n' "${prompt_pack_stack_completion_pass}" "${prompt_pack_stack_completion_warn}" "${prompt_pack_stack_completion_fail}"
+    pass "prompt pack stack completion marker status completed"
+  else
+    printf 'Prompt Pack Stack Completion Marker: status command completed\n'
+    pass "prompt pack stack completion marker status completed"
+  fi
+else
+  warn "prompt pack stack completion status script missing: scripts/prompt-pack-stack-completion-status.sh"
+fi
+
 end_section_summary "Future-Safety / Parked Work"
 
 group_banner "Appearance & Vibe Foundation Status"

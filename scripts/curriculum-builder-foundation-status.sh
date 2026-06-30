@@ -86,6 +86,7 @@ storage_strategy_doc="docs/curriculum-source-storage-strategy.md"
 registry_plan_doc="docs/curriculum-resource-registry-plan.md"
 planning_stack_summary_doc="docs/curriculum-builder-planning-stack-summary.md"
 next_phase_decision_doc="docs/curriculum-builder-next-phase-decision.md"
+decision_intake_template_doc="docs/curriculum-builder-decision-intake-template.md"
 
 section "Curriculum Builder Local-First Foundation Plan"
 cat <<'EOF'
@@ -612,6 +613,34 @@ if [[ -f "${next_phase_decision_doc}" ]]; then
   check_doc_contains "${next_phase_decision_doc}" "no lesson generation" "no lesson generation boundary in next phase decision"
   check_doc_contains "${next_phase_decision_doc}" "no student data" "no student data boundary in next phase decision"
   check_doc_contains "${next_phase_decision_doc}" "no live integrations" "no live integrations boundary in next phase decision"
+fi
+
+section "Curriculum Builder Decision Intake Template Checks"
+
+check_file "${decision_intake_template_doc}"
+
+if [[ -f "${decision_intake_template_doc}" ]]; then
+  check_doc_contains "${decision_intake_template_doc}" "Curriculum Builder Decision Intake Template" "Curriculum Builder Decision Intake Template"
+  check_doc_contains "${decision_intake_template_doc}" "decision title" "decision title template field"
+  check_doc_contains "${decision_intake_template_doc}" "requested path" "requested path template field"
+  check_doc_contains "${decision_intake_template_doc}" "approval level" "approval level template field"
+  check_doc_contains "${decision_intake_template_doc}" "proposed next PR scope" "proposed next PR scope template field"
+  check_doc_contains "${decision_intake_template_doc}" "explicitly allowed work" "explicitly allowed work template field"
+  check_doc_contains "${decision_intake_template_doc}" "explicitly blocked work" "explicitly blocked work template field"
+  check_doc_contains "${decision_intake_template_doc}" "storage impact" "storage impact template field"
+  check_doc_contains "${decision_intake_template_doc}" "registry impact" "registry impact template field"
+  check_doc_contains "${decision_intake_template_doc}" "Teacher Workstation impact" "Teacher Workstation impact template field"
+  check_doc_contains "${decision_intake_template_doc}" "Chief of Staff impact" "Chief of Staff impact template field"
+  check_doc_contains "${decision_intake_template_doc}" "dashboard/status impact" "dashboard/status impact template field"
+  check_doc_contains "${decision_intake_template_doc}" "rollback plan" "rollback plan template field"
+  check_doc_contains "${decision_intake_template_doc}" "validation commands" "validation commands template field"
+  check_doc_contains "${decision_intake_template_doc}" "final approval checkbox" "final approval checkbox template field"
+  check_doc_contains "${decision_intake_template_doc}" "Non-Activation confirmation" "Non-Activation confirmation template field"
+  check_doc_contains "${decision_intake_template_doc}" "no scanning/indexing/OCR/embeddings" "no scanning/indexing/OCR/embeddings boundary"
+  check_doc_contains "${decision_intake_template_doc}" "no APIs/OAuth/network calls" "no APIs/OAuth/network calls boundary"
+  check_doc_contains "${decision_intake_template_doc}" "no lesson generation" "no lesson generation boundary in intake template"
+  check_doc_contains "${decision_intake_template_doc}" "no student data" "no student data boundary in intake template"
+  check_doc_contains "${decision_intake_template_doc}" "no raw curriculum file duplication" "no raw curriculum file duplication boundary"
 fi
 
 section "Command Wiring Checks"

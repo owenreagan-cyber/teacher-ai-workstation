@@ -1,6 +1,6 @@
 # Build Queue
 
-Last updated: 2026-06-28
+Last updated: 2026-06-29
 
 ## Current Completed Phase
 
@@ -58,17 +58,19 @@ Phase 1 Teacher Chief of Staff + safe local lesson workflows.
 - Command/check bundle reference polish.
 - Lesson-planning template readiness polish.
 - Lesson-planning placeholder template skeleton and placeholder template registry scaffold.
+- Lesson-planning placeholder readiness closeout (PR #125).
 - Curriculum Builder planning stack (PRs #107–#124): complete and parked for now.
 
 ## Current PR
 
-Lesson-planning placeholder readiness closeout.
+Parked — lesson-planning placeholder readiness and Curriculum Builder planning stack are complete for now.
 
-Scope: Align stale status surfaces, record placeholder readiness phase closeout, and prevent re-implementation of completed skeleton/registry work. Documentation/status only. No schema file, validator, active template loading, lesson generation, lesson briefs, lesson drafts, or review notes.
+Lesson-planning: placeholder skeleton and registry exist and pass readiness checks. Future follow-ons are documentation/status-only unless explicitly approved. Static template schema planning remains planning-only.
+
+Curriculum Builder: complete and parked for now (PR #124). Implementation requires approval gate and completed decision intake.
 
 Appearance & Vibe wallpaper/photo curator foundation stack: complete for now.
 Live curator implementation: not started.
-Curriculum Builder planning stack: complete and parked for now (PR #124).
 
 ## Next PR
 

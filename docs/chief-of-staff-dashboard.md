@@ -129,7 +129,7 @@ If the build queue next PR cannot be parsed, make sure `docs/build-queue.md` con
 ```markdown
 ## Next PR
 
-Lesson planning workspace scaffold
+Pause active lesson-planning implementation.
 ```
 
 If Phase 0E passes but Phase 1 has warnings for planned/future docs, treat those as planning signals unless the script reports critical failures.
@@ -166,6 +166,6 @@ This visibility note is documentation only. It does not change dashboard behavio
 
 ## Recommended Next PR
 
-Lesson planning workspace scaffold.
+Parked — lesson-planning placeholder readiness and Curriculum Builder planning stack are complete for now.
 
-Scope: local folders, docs, and templates for lesson planning workflows. No student data, no Gmail/Drive, and no external integrations.
+Future lesson-planning follow-ons are documentation/status-only unless explicitly approved. Curriculum Builder implementation requires approval gate and completed decision intake. Dashboard health behavior remains unchanged; existing status commands remain the source of truth.

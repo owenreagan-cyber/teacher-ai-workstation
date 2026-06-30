@@ -60,6 +60,43 @@ check_doc_contains() {
   fi
 }
 
+check_placeholder_registry_contract() {
+  local registry="$1"
+  local skeleton="$2"
+  local expected_row='| `lesson-planning-placeholder-template` | Lesson-planning placeholder template | placeholder-only | `assistant/lesson-planning/templates/lesson-planning-placeholder-skeleton.md` | false | false | false | false | false |'
+
+  if [[ ! -f "${registry}" ]]; then
+    fail "placeholder registry contract cannot be checked without ${registry}"
+    return
+  fi
+
+  if [[ ! -f "${skeleton}" ]]; then
+    fail "placeholder registry contract cannot be checked without ${skeleton}"
+    return
+  fi
+
+  if grep -Fq "${expected_row}" "${registry}" \
+    && grep -Fq "readiness scaffolding only" "${registry}" \
+    && grep -Fq "inert references" "${registry}" \
+    && grep -Fq "do not generate lesson plans" "${registry}" \
+    && grep -Fq "must not scan documents" "${registry}" \
+    && grep -Fq "index files" "${registry}" \
+    && grep -Fq "use student data" "${registry}" \
+    && grep -Fq "call networks or APIs" "${registry}" \
+    && grep -Fq "trigger automation" "${registry}" \
+    && grep -Fq "connect to live services" "${registry}" \
+    && grep -Fq "Status: placeholder-only" "${skeleton}" \
+    && grep -Fq "Safety: inert" "${skeleton}" \
+    && grep -Fq "Student data: prohibited" "${skeleton}" \
+    && grep -Fq "Network/API use: prohibited" "${skeleton}" \
+    && grep -Fq "Document scanning/indexing: prohibited" "${skeleton}" \
+    && grep -Fq "Output: none" "${skeleton}"; then
+    pass "placeholder registry safety contract is intact"
+  else
+    fail "placeholder registry safety contract must remain placeholder-only, inert, local-first, non-generative, and linked to the skeleton"
+  fi
+}
+
 check_help_contains() {
   local flag="$1"
   if bin/chief-of-staff --help | grep -F -- "${flag}" >/dev/null; then
@@ -243,6 +280,8 @@ if [[ -f "${placeholder_registry}" ]]; then
   check_doc_contains "${placeholder_registry}" "automation" "no automation marker"
   check_doc_contains "${placeholder_registry}" "live integrations" "no live integrations marker"
 fi
+
+check_placeholder_registry_contract "${placeholder_registry}" "${placeholder_skeleton}"
 
 check_bash_syntax 'bin/chief-of-staff'
 check_bash_syntax 'scripts/chief-of-staff-dashboard.sh'

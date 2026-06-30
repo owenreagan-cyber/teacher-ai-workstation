@@ -89,6 +89,8 @@ next_phase_decision_doc="docs/curriculum-builder-next-phase-decision.md"
 decision_intake_template_doc="docs/curriculum-builder-decision-intake-template.md"
 approval_gate_doc="docs/curriculum-builder-approval-gate.md"
 planning_closeout_doc="docs/curriculum-builder-planning-closeout.md"
+maintainer_handoff_doc="docs/curriculum-builder-maintainer-handoff.md"
+future_pr_checklist_doc="docs/curriculum-builder-future-pr-checklist.md"
 
 section "Curriculum Builder Local-First Foundation Plan"
 cat <<'EOF'
@@ -690,6 +692,68 @@ if [[ -f "${planning_closeout_doc}" ]]; then
   check_doc_contains "${planning_closeout_doc}" "no APIs/OAuth/network calls" "no APIs/OAuth/network calls boundary in closeout"
   check_doc_contains "${planning_closeout_doc}" "no lesson generation" "no lesson generation boundary in closeout"
   check_doc_contains "${planning_closeout_doc}" "no student data" "no student data boundary in closeout"
+fi
+
+section "Curriculum Builder Maintainer Handoff Checks"
+
+check_file "${maintainer_handoff_doc}"
+
+if [[ -f "${maintainer_handoff_doc}" ]]; then
+  check_doc_contains "${maintainer_handoff_doc}" "Curriculum Builder Maintainer Handoff" "Curriculum Builder Maintainer Handoff"
+  check_doc_contains "${maintainer_handoff_doc}" "current state summary" "current state summary in maintainer handoff"
+  check_doc_contains "${maintainer_handoff_doc}" "latest completed PR reference" "latest completed PR reference in maintainer handoff"
+  check_doc_contains "${maintainer_handoff_doc}" "planning stack status" "planning stack status in maintainer handoff"
+  check_doc_contains "${maintainer_handoff_doc}" "local-first storage model" "local-first storage model in maintainer handoff"
+  check_doc_contains "${maintainer_handoff_doc}" "metadata/reference-only registry direction" "metadata/reference-only registry direction in maintainer handoff"
+  check_doc_contains "${maintainer_handoff_doc}" "Teacher Workstation relationship" "Teacher Workstation relationship in maintainer handoff"
+  check_doc_contains "${maintainer_handoff_doc}" "Chief of Staff relationship" "Chief of Staff relationship in maintainer handoff"
+  check_doc_contains "${maintainer_handoff_doc}" "approval gate requirement" "approval gate requirement in maintainer handoff"
+  check_doc_contains "${maintainer_handoff_doc}" "decision intake requirement" "decision intake requirement in maintainer handoff"
+  check_doc_contains "${maintainer_handoff_doc}" "current status commands" "current status commands in maintainer handoff"
+  check_doc_contains "${maintainer_handoff_doc}" "required validation commands" "required validation commands in maintainer handoff"
+  check_doc_contains "${maintainer_handoff_doc}" "final local main proof requirements" "final local main proof requirements in maintainer handoff"
+  check_doc_contains "${maintainer_handoff_doc}" "safe next PR categories" "safe next PR categories in maintainer handoff"
+  check_doc_contains "${maintainer_handoff_doc}" "blocked PR categories" "blocked PR categories in maintainer handoff"
+  check_doc_contains "${maintainer_handoff_doc}" "Non-Activation confirmation" "Non-Activation confirmation in maintainer handoff"
+  check_doc_contains "${maintainer_handoff_doc}" "no scanning/indexing/OCR/embeddings" "no scanning/indexing/OCR/embeddings boundary in maintainer handoff"
+  check_doc_contains "${maintainer_handoff_doc}" "no APIs/OAuth/network calls" "no APIs/OAuth/network calls boundary in maintainer handoff"
+  check_doc_contains "${maintainer_handoff_doc}" "no automation/live integrations" "no automation/live integrations boundary in maintainer handoff"
+  check_doc_contains "${maintainer_handoff_doc}" "no lesson generation" "no lesson generation boundary in maintainer handoff"
+  check_doc_contains "${maintainer_handoff_doc}" "no student data" "no student data boundary in maintainer handoff"
+fi
+
+section "Curriculum Builder Future PR Checklist Checks"
+
+check_file "${future_pr_checklist_doc}"
+
+if [[ -f "${future_pr_checklist_doc}" ]]; then
+  check_doc_contains "${future_pr_checklist_doc}" "Curriculum Builder Future PR Checklist" "Curriculum Builder Future PR Checklist"
+  check_doc_contains "${future_pr_checklist_doc}" "PR title and type" "PR title and type checklist field"
+  check_doc_contains "${future_pr_checklist_doc}" "approval status" "approval status checklist field"
+  check_doc_contains "${future_pr_checklist_doc}" "decision intake link/status" "decision intake link/status checklist field"
+  check_doc_contains "${future_pr_checklist_doc}" "scope classification" "scope classification checklist field"
+  check_doc_contains "${future_pr_checklist_doc}" "files expected to change" "files expected to change checklist field"
+  check_doc_contains "${future_pr_checklist_doc}" "files that must not change" "files that must not change checklist field"
+  check_doc_contains "${future_pr_checklist_doc}" "commands that must remain unchanged" "commands that must remain unchanged checklist field"
+  check_doc_contains "${future_pr_checklist_doc}" "checks that must remain unchanged" "checks that must remain unchanged checklist field"
+  check_doc_contains "${future_pr_checklist_doc}" "PASS/WARN/FAIL preservation" "PASS/WARN/FAIL preservation checklist field"
+  check_doc_contains "${future_pr_checklist_doc}" "dashboard health preservation" "dashboard health preservation checklist field"
+  check_doc_contains "${future_pr_checklist_doc}" "storage impact" "storage impact checklist field"
+  check_doc_contains "${future_pr_checklist_doc}" "registry impact" "registry impact checklist field"
+  check_doc_contains "${future_pr_checklist_doc}" "Teacher Workstation impact" "Teacher Workstation impact checklist field"
+  check_doc_contains "${future_pr_checklist_doc}" "Chief of Staff impact" "Chief of Staff impact checklist field"
+  check_doc_contains "${future_pr_checklist_doc}" "validation commands" "validation commands checklist field"
+  check_doc_contains "${future_pr_checklist_doc}" "PR body requirements" "PR body requirements checklist field"
+  check_doc_contains "${future_pr_checklist_doc}" "merge requirements" "merge requirements checklist field"
+  check_doc_contains "${future_pr_checklist_doc}" "branch deletion verification" "branch deletion verification checklist field"
+  check_doc_contains "${future_pr_checklist_doc}" "final local main proof" "final local main proof checklist field"
+  check_doc_contains "${future_pr_checklist_doc}" "rollback notes" "rollback notes checklist field"
+  check_doc_contains "${future_pr_checklist_doc}" "Non-Activation confirmation" "Non-Activation confirmation in future PR checklist"
+  check_doc_contains "${future_pr_checklist_doc}" "no scanning/indexing/OCR/embeddings" "no scanning/indexing/OCR/embeddings boundary in future PR checklist"
+  check_doc_contains "${future_pr_checklist_doc}" "no APIs/OAuth/network calls" "no APIs/OAuth/network calls boundary in future PR checklist"
+  check_doc_contains "${future_pr_checklist_doc}" "no lesson generation" "no lesson generation boundary in future PR checklist"
+  check_doc_contains "${future_pr_checklist_doc}" "no student data" "no student data boundary in future PR checklist"
+  check_doc_contains "${future_pr_checklist_doc}" "no raw curriculum file duplication" "no raw curriculum file duplication boundary in future PR checklist"
 fi
 
 section "Command Wiring Checks"

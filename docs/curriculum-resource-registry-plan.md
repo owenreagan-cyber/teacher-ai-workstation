@@ -175,6 +175,85 @@ This note does not add:
 
 There is no active schema in this note. This note does not create database tables, registry data files, validators, importers, scanners, crawlers, parsers, file reads, or hashing.
 
+## Static Registry Safety and Status Values Note
+
+This section is planning documentation only. It does not create an active schema, database table, migration, validator, registry data file, importer, scanner, indexer, crawler, parser, review workflow, approval workflow, or generator.
+
+| Field | Planning values | Default future posture | Allowed future transitions | Safety rule | Current activation status |
+| --- | --- | --- | --- | --- | --- |
+| `teacher_only` | `true`, `false`, `unknown` | `unknown` until manually reviewed | `unknown` → `true` / `false` after review | Answer keys, assessments, restricted materials, and teacher guides should default toward teacher-only in future implementation. | planning only |
+| `student_facing` | `true`, `false`, `unknown` | `false` or `unknown` until explicitly reviewed | `unknown` → `false` → `true` only after review | Student-facing use should require explicit future approval. | planning only |
+| `answer_key` | `true`, `false`, `unknown` | `unknown` until manually reviewed | `unknown` → `true` should imply teacher-only | `answer_key` true should imply `teacher_only` true in future validation. | planning only |
+| `assessment_related` | `true`, `false`, `unknown` | `unknown` until manually reviewed | `unknown` → `true` should default teacher-only | `assessment_related` true should default toward `teacher_only` true unless explicitly reviewed. | planning only |
+| `contains_student_data` | `false`, `unknown`, `prohibited` | `false` | must remain `false` | Curriculum registry records must not contain student data. | planning only |
+| `external_sharing_allowed` | `true`, `false`, `unknown` | `false` or `unknown` until explicit review | `unknown` → `false` → `true` only after review | External sharing must default to false or unknown until explicit review. | planning only |
+| `review_status` | `not_reviewed`, `metadata_only`, `teacher_reviewed`, `needs_update`, `retired` | `not_reviewed` | toward `teacher_reviewed` after manual review | No automated review workflow in this phase. | planning only |
+| `approval_status` | `not_approved`, `approved_for_planning`, `approved_student_facing`, `restricted`, `retired` | `not_approved` | toward `approved_for_planning` or `approved_student_facing` after review | `approved_student_facing` requires explicit future policy. | planning only |
+| `usage_status` | `active`, `draft`, `archive`, `retired`, `do_not_use` | `draft` | toward `active` or `retired` after review | `do_not_use` blocks future lesson-planning use. | planning only |
+| `metadata_status` | `incomplete`, `partial`, `complete`, `needs_verification` | `incomplete` | toward `complete` after manual metadata entry | Metadata completeness is manual only. | planning only |
+| `safety_status` | `unchecked`, `safe_for_planning`, `teacher_only_restricted`, `student_facing_approved`, `restricted`, `blocked` | `unchecked` | toward reviewed states after manual review | `restricted` and `blocked` prevent future lesson-planning use. | planning only |
+| `activation_status` | `planning_only`, `inactive`, `proposed`, `approved_for_future_build`, `active_later_only` | `planning_only` | toward `approved_for_future_build` only after separate PR | `planning_only` means documentation only and must not activate runtime behavior. | planning only |
+
+### Safety Transition Rules
+
+- `student_facing` must not become true without explicit future human review.
+- `approved_student_facing` must not be used unless `student_facing` is true and review status is teacher-reviewed in a future implementation.
+- `answer_key` true should require `teacher_only` true in future validation.
+- `assessment_related` true should default to teacher-only in future validation.
+- `contains_student_data` must remain false for curriculum registry records.
+- `external_sharing_allowed` must default to false or unknown until explicit review.
+- `restricted`, `blocked`, `retired`, or `do_not_use` statuses must prevent future lesson-planning use.
+- `planning_only` means documentation only and must not activate runtime behavior.
+
+### Teacher-Only and Student-Facing Boundary
+
+- Teacher-only resources are not student-facing resources.
+- Assessments, answer keys, restricted materials, and teacher guides need conservative defaults.
+- Future planning can reference teacher-only materials for teacher preparation only.
+- No current lesson generation or student-facing output is activated.
+
+### Status Values Are Not Workflows
+
+- These values are planning vocabulary only.
+- This PR does not create an approval workflow.
+- This PR does not create real review notes.
+- This PR does not create a review UI.
+- This PR does not create an automated safety classifier.
+- This PR does not process curriculum files.
+- This PR does not process student data.
+
+### Explicit Non-Activation
+
+This safety/status values note does not add:
+
+- active schema
+- no database tables
+- no registry data files
+- no validators
+- no review workflows
+- no approval workflows
+- no real review notes
+- no automated safety classifiers
+- no importers
+- no scanners
+- no crawlers
+- no parsers
+- no file reads
+- no hashing
+- no OCR
+- no embeddings
+- no vector search
+- no APIs
+- no OAuth
+- no network calls
+- no automation
+- no background jobs
+- no generated lesson briefs
+- no generated lesson drafts
+- no student data
+
+There is no active schema in this safety/status values note.
+
 ## Source System Values
 
 Future `source_system` planning values:

@@ -21,6 +21,8 @@ It exists to prepare safe, structured teacher planning workflows before future l
 - `templates/activity-template.md`: starter structure for classroom activities.
 - `templates/assessment-template.md`: starter structure for checks for understanding.
 - `templates/materials-checklist-template.md`: starter structure for materials and prep.
+- `templates/lesson-planning-placeholder-skeleton.md`: placeholder-only skeleton for future lesson-planning templates.
+- `templates/placeholder-template-registry.md`: local-first registry of placeholder template skeletons.
 
 ## Lesson Brief Helper
 

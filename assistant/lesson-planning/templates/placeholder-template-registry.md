@@ -109,3 +109,11 @@ Possible future phases include:
 - deferred active lesson-planning behavior
 
 These are options only. This note does not approve, select, or activate any of them. Active lesson-planning behavior remains deferred until a separate PR explicitly approves it.
+
+## Selected Planning Direction: Static Template Schema
+
+After the placeholder readiness phase, the next safe planning direction is static template schema planning. This direction is documentation-only at this stage and does not create a schema file, add a validator, or activate lesson-planning behavior.
+
+A future separately approved PR may define the expected static shape for lesson-planning placeholder templates, including reserved fields, required placeholder-only markers, local-first safety flags, and validation expectations.
+
+This note does not approve lesson generation, document scanning, file indexing, student-data handling, network/API calls, automation, live integrations, generated briefs, generated drafts, or real review notes. Any schema file, validator, runtime behavior, or activation work requires a separate explicitly approved PR.

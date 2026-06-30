@@ -47,6 +47,11 @@ if grep -q "SOURCE: assistant/memory/memory-log.md" /tmp/chief-of-staff-memory.t
 fi
 bin/chief-of-staff --memory-status >/dev/null
 bin/chief-of-staff --validate-memory >/dev/null
+bash scripts/lesson-planning-template-readiness-status.sh > /tmp/chief-of-staff-lesson-template-readiness-script.txt
+grep -q "Placeholder Registry Checks" /tmp/chief-of-staff-lesson-template-readiness-script.txt
+grep -q "PASS: placeholder registry safety contract is intact" /tmp/chief-of-staff-lesson-template-readiness-script.txt
+grep -q '^WARN: 0$' /tmp/chief-of-staff-lesson-template-readiness-script.txt
+grep -q '^FAIL: 0$' /tmp/chief-of-staff-lesson-template-readiness-script.txt
 bin/chief-of-staff --lesson-planning-template-readiness-status > /tmp/chief-of-staff-lesson-template-readiness.txt
 grep -q "Placeholder Registry Checks" /tmp/chief-of-staff-lesson-template-readiness.txt
 grep -q "PASS: placeholder registry safety contract is intact" /tmp/chief-of-staff-lesson-template-readiness.txt

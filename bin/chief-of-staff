@@ -95,6 +95,8 @@ Teacher Planning Command Organization (status only; safe sample: fractions-revie
                                        Show Teacher Workflow output examples completion marker status and exit.
   --lesson-planning-template-readiness-status
                                        Show Lesson-planning template readiness polish status and exit.
+  --curriculum-builder-foundation-status
+                                       Show Curriculum Builder local-first foundation plan status and exit.
 
 Developer and Cursor Workflow:
   --cursor-workflow-status             Show local Cursor workflow status and exit.
@@ -392,6 +394,7 @@ Local command: create lesson activity, assessment, or materials draft
 Local command: lesson pack status
 Local command: lesson queue integration status
 Local command: lesson planning workflow status
+Local command: curriculum builder foundation status
 
 Document and Review Workflows
 Local command: lesson review checklist status
@@ -436,6 +439,7 @@ Local command: teacher workflow safe output examples status
 Local command: teacher workflow safe output checker status
 Local command: teacher workflow output examples completion status
 Local command: lesson planning template readiness status
+Local command: curriculum builder foundation status
 Local command: testing checklist status
 Local command: command check bundle reference status
 Local command: checklist driven prompt template status
@@ -1568,6 +1572,15 @@ while [[ $# -gt 0 ]]; do
         die "Lesson-planning template readiness status script is missing: scripts/lesson-planning-template-readiness-status.sh"
       fi
       bash "${lesson_planning_template_readiness_status_script}"
+      exit 0
+      ;;
+    --curriculum-builder-foundation-status)
+      repo_root="$(resolve_repo_root)"
+      curriculum_builder_foundation_status_script="${repo_root}/scripts/curriculum-builder-foundation-status.sh"
+      if [[ ! -f "${curriculum_builder_foundation_status_script}" ]]; then
+        die "Curriculum Builder foundation status script is missing: scripts/curriculum-builder-foundation-status.sh"
+      fi
+      bash "${curriculum_builder_foundation_status_script}"
       exit 0
       ;;
     --teacher-planning-command-detail-status)

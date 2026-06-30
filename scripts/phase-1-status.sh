@@ -597,6 +597,14 @@ for path in \
 done
 check_bash_syntax scripts/lesson-planning-template-readiness-status.sh
 
+section "Curriculum Builder Local-First Foundation Files"
+for path in \
+  docs/curriculum-builder-local-first-foundation-plan.md \
+  scripts/curriculum-builder-foundation-status.sh; do
+  check_required_file "${path}"
+done
+check_bash_syntax scripts/curriculum-builder-foundation-status.sh
+
 section "Teacher Planning Command Organization Files"
 for path in \
   docs/teacher-planning-command-organization.md \
@@ -771,6 +779,7 @@ check_bash_syntax "scripts/teacher-workflow-safe-output-examples-status.sh"
 check_bash_syntax "scripts/teacher-workflow-safe-output-checker-status.sh"
 check_bash_syntax "scripts/teacher-workflow-output-examples-completion-status.sh"
 check_bash_syntax "scripts/lesson-planning-template-readiness-status.sh"
+check_bash_syntax "scripts/curriculum-builder-foundation-status.sh"
 check_bash_syntax "scripts/teacher-planning-command-organization-status.sh"
 check_bash_syntax "scripts/dashboard-section-summary-status.sh"
 check_bash_syntax "scripts/chief-of-staff-workflow-quick-start-status.sh"

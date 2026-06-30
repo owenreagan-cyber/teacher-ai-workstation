@@ -930,6 +930,29 @@ else
   warn "Lesson-planning template readiness status script missing: scripts/lesson-planning-template-readiness-status.sh"
 fi
 
+section "Curriculum Builder Local-First Foundation Plan"
+if [[ -f scripts/curriculum-builder-foundation-status.sh ]]; then
+  curriculum_builder_foundation_result=0
+  curriculum_builder_foundation_output="$(bash scripts/curriculum-builder-foundation-status.sh 2>&1)" || curriculum_builder_foundation_result=$?
+  curriculum_builder_foundation_pass="$(summary_count "${curriculum_builder_foundation_output}" "PASS")"
+  curriculum_builder_foundation_warn="$(summary_count "${curriculum_builder_foundation_output}" "WARN")"
+  curriculum_builder_foundation_fail="$(summary_count "${curriculum_builder_foundation_output}" "FAIL")"
+
+  if [[ "${curriculum_builder_foundation_result}" != "0" ]]; then
+    printf 'Curriculum Builder Local-First Foundation Plan: status command completed\n'
+    printf '%s\n' "${curriculum_builder_foundation_output}"
+    fail "Curriculum Builder foundation status failed"
+  elif [[ -n "${curriculum_builder_foundation_pass}" && -n "${curriculum_builder_foundation_warn}" && -n "${curriculum_builder_foundation_fail}" ]]; then
+    printf 'Curriculum Builder Local-First Foundation Plan: PASS %s / WARN %s / FAIL %s\n' "${curriculum_builder_foundation_pass}" "${curriculum_builder_foundation_warn}" "${curriculum_builder_foundation_fail}"
+    pass "Curriculum Builder foundation status completed"
+  else
+    printf 'Curriculum Builder Local-First Foundation Plan: status command completed\n'
+    pass "Curriculum Builder foundation status completed"
+  fi
+else
+  warn "Curriculum Builder foundation status script missing: scripts/curriculum-builder-foundation-status.sh"
+fi
+
 end_section_summary "Lesson Planning Status"
 
 group_banner "Future-Safety / Parked Work"

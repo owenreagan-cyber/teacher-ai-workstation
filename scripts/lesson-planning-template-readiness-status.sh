@@ -107,6 +107,7 @@ command_detail_summary_doc="docs/teacher-workflow-command-detail-summary.md"
 workflow_status_doc="docs/teacher-workflow-status-summary.md"
 quick_ref_doc="docs/teacher-workflow-quick-reference-polish.md"
 planning_cleanup_doc="docs/core-teacher-workstation-planning-cleanup.md"
+placeholder_skeleton="assistant/lesson-planning/templates/lesson-planning-placeholder-skeleton.md"
 
 section 'Lesson-Planning Template Readiness Polish'
 cat <<'EOF'
@@ -118,6 +119,8 @@ Command removals: no
 Command renames: no
 PASS/WARN/FAIL semantics preserved: yes
 Template readiness documented: yes
+Placeholder skeleton present: yes
+Placeholder skeleton inert: yes
 Placeholder-only examples documented: yes
 Teacher Workflow guardrails preserved: yes
 Document scanning: no
@@ -182,6 +185,35 @@ check_file "${command_detail_summary_doc}"
 check_file "${workflow_status_doc}"
 check_file "${quick_ref_doc}"
 check_file "${planning_cleanup_doc}"
+
+section 'Placeholder Skeleton Checks'
+
+check_file "${placeholder_skeleton}"
+
+if [[ -f "${placeholder_skeleton}" ]]; then
+  check_doc_contains "${placeholder_skeleton}" "Lesson-Planning Placeholder Template Skeleton" "Lesson-Planning Placeholder Template Skeleton"
+  check_doc_contains "${placeholder_skeleton}" "Status: placeholder-only" "placeholder-only status marker"
+  check_doc_contains "${placeholder_skeleton}" "Safety: inert" "inert safety marker"
+  check_doc_contains "${placeholder_skeleton}" "Inputs: none" "no inputs marker"
+  check_doc_contains "${placeholder_skeleton}" "Student data: prohibited" "student data prohibited marker"
+  check_doc_contains "${placeholder_skeleton}" "Network/API use: prohibited" "network/API prohibited marker"
+  check_doc_contains "${placeholder_skeleton}" "Document scanning/indexing: prohibited" "document scanning/indexing prohibited marker"
+  check_doc_contains "${placeholder_skeleton}" "Output: none" "no output marker"
+  check_doc_contains "${placeholder_skeleton}" "Metadata" "metadata placeholder section"
+  check_doc_contains "${placeholder_skeleton}" "Learning Goals" "learning goals placeholder section"
+  check_doc_contains "${placeholder_skeleton}" "Materials" "materials placeholder section"
+  check_doc_contains "${placeholder_skeleton}" "Activity Sequence" "activity sequence placeholder section"
+  check_doc_contains "${placeholder_skeleton}" "Checks for Understanding" "checks for understanding placeholder section"
+  check_doc_contains "${placeholder_skeleton}" "Differentiation Notes" "differentiation notes placeholder section"
+  check_doc_contains "${placeholder_skeleton}" "Assessment Placeholder" "assessment placeholder section"
+  check_doc_contains "${placeholder_skeleton}" "Safety / Local-First Notes" "safety/local-first notes placeholder section"
+  check_doc_contains "${placeholder_skeleton}" "does not generate lessons" "no lesson generation marker"
+  check_doc_contains "${placeholder_skeleton}" "does not scan documents" "no document scanning marker"
+  check_doc_contains "${placeholder_skeleton}" "index files" "no file indexing marker"
+  check_doc_contains "${placeholder_skeleton}" "call APIs" "no API marker"
+  check_doc_contains "${placeholder_skeleton}" "run automation" "no automation marker"
+  check_doc_contains "${placeholder_skeleton}" "enable live integrations" "no live integrations marker"
+fi
 
 check_bash_syntax 'bin/chief-of-staff'
 check_bash_syntax 'scripts/chief-of-staff-dashboard.sh'

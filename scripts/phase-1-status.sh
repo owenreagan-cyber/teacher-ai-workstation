@@ -823,7 +823,7 @@ section "Recommendation"
 if (( CRITICAL_BLOCKER > 0 )); then
   printf 'Fix critical Chief of Staff CLI, memory, intake, or script problems before the next build PR.\n'
 else
-  printf 'Next recommended PR: Lesson-planning placeholder template skeleton.\n'
+  printf 'Next recommended posture: lesson-planning placeholder readiness is complete for now; follow-ons are documentation/status-only unless explicitly approved; static template schema planning remains planning-only and must not activate schema/validator behavior.\n'
 fi
 
 if (( COMPARE_0E == 1 && CRITICAL_BLOCKER == 0 )); then

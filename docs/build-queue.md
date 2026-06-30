@@ -56,25 +56,29 @@ Phase 1 Teacher Chief of Staff + safe local lesson workflows.
 - Project memory cleanup.
 - Testing/checklist consolidation.
 - Command/check bundle reference polish.
+- Lesson-planning template readiness polish.
+- Lesson-planning placeholder template skeleton and placeholder template registry scaffold.
+- Curriculum Builder planning stack (PRs #107–#124): complete and parked for now.
 
 ## Current PR
 
-Lesson-planning template readiness polish.
+Lesson-planning placeholder readiness closeout.
 
-Scope: Return to lesson-planning template work by documenting safe template readiness, placeholder-only examples, and planning-only boundaries. Preserve every existing command and status check. No checks removed, no command behavior changes, no real lesson generation, no generated lesson briefs/drafts, no document scanning/indexing implementation, no student data, no live integrations, no network calls, and no automation.
+Scope: Align stale status surfaces, record placeholder readiness phase closeout, and prevent re-implementation of completed skeleton/registry work. Documentation/status only. No schema file, validator, active template loading, lesson generation, lesson briefs, lesson drafts, or review notes.
 
 Appearance & Vibe wallpaper/photo curator foundation stack: complete for now.
 Live curator implementation: not started.
+Curriculum Builder planning stack: complete and parked for now (PR #124).
 
 ## Next PR
 
-Lesson-planning placeholder template skeleton
+Pause active lesson-planning implementation.
 
-Scope: Add a placeholder-only lesson-planning template skeleton for future safe lesson workflow work. Preserve every existing command and status check. No checks removed, no command behavior changes, no real lesson generation, no generated lesson briefs/drafts, no real review notes, no document scanning/indexing implementation, no student data, no live integrations, no network calls, and no automation.
+Future lesson-planning follow-ons are documentation/status-only unless explicitly approved. Static template schema planning remains planning-only and must not activate schema file, validator, or generation behavior.
 
 ## Next Recommended PRs
 
-1. Lesson-planning placeholder template skeleton.
+1. Pause lesson-planning implementation; optional documentation/status-only follow-ons only with explicit approval.
 2. Later: permissioned Gmail/Drive integrations.
 3. Later: secrets/capability broker.
 

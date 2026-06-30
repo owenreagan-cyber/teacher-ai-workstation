@@ -195,6 +195,34 @@ Unless explicitly approved through the approval gate and completed decision inta
 - no registry data
 - no schema activation
 
+## Lesson-Planning Placeholder Readiness Closeout
+
+Lesson-planning placeholder readiness is complete for now. The placeholder skeleton and placeholder template registry exist and pass readiness checks. No active implementation behavior exists.
+
+- Placeholder skeleton: `assistant/lesson-planning/templates/lesson-planning-placeholder-skeleton.md`
+- Placeholder template registry: `assistant/lesson-planning/templates/placeholder-template-registry.md`
+- Status command remains: `bash scripts/lesson-planning-template-readiness-status.sh`
+- Dashboard command remains: `bin/chief-of-staff --dashboard`
+- Future work requires documentation/status-only approval unless explicitly approved.
+- Static template schema planning remains planning-only and must not activate schema file, validator, or generation behavior.
+
+Unless explicitly approved, preserve:
+
+- no document scanning
+- no folder scanning
+- no file indexing
+- no OCR
+- no embeddings
+- no lesson generation
+- no generated lesson briefs/drafts
+- no real review notes
+- no student data
+- no network calls
+- no APIs
+- no OAuth
+- no automation
+- no live integrations
+
 ## Recommended First Three Phase 1 PRs
 
 1. Chief of Staff command launcher / status dashboard.

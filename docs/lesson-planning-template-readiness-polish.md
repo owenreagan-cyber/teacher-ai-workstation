@@ -9,7 +9,7 @@ This PR returns to lesson-planning template readiness work. This PR adds documen
 ## Current Status
 
 ```text
-Current status: lesson-planning template readiness polish in progress.
+Current status: lesson-planning template readiness polish complete for now.
 ```
 
 Template readiness rules are documented for local status commands only.
@@ -142,12 +142,26 @@ Future template work must not use student data.
 Future template work must not scan or index documents.
 ```
 
+## Lesson-Planning Placeholder Readiness Closeout
+
+Placeholder readiness phase is complete for now.
+
+- The placeholder skeleton exists at: `assistant/lesson-planning/templates/lesson-planning-placeholder-skeleton.md`
+- The placeholder template registry exists at: `assistant/lesson-planning/templates/placeholder-template-registry.md`
+- The registry/scaffold/static schema planning notes are planning-only.
+- The selected future direction is static template schema planning only.
+- static template schema planning is planning-only
+- no schema file or validator is active
+- no lesson generation, lesson briefs, lesson drafts, or review notes are active
+- Future follow-ons must remain documentation/status-only unless explicitly approved.
+- follow-ons require documentation/status-only approval
+
 ## Next Safe Build Priority
 
 ```text
-Next recommended PR: Lesson-planning placeholder template skeleton
+Next recommended posture: Lesson-planning placeholder readiness closeout complete; pause active lesson-planning work.
 
-Scope: Add a placeholder-only lesson-planning template skeleton for future safe lesson workflow work. Preserve every existing command and status check. No checks removed, no command behavior changes, no real lesson generation, no generated lesson briefs/drafts, no real review notes, no document scanning/indexing implementation, no student data, no live integrations, no network calls, and no automation.
+Future follow-ons are documentation/status-only unless explicitly approved. Static template schema planning remains planning-only and must not activate schema file, validator, generation behavior, active template loading, lesson brief generation, lesson draft generation, or review-note behavior.
 ```
 
 ## Lifecycle Guardrails Still Required

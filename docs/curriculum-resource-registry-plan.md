@@ -727,6 +727,194 @@ This validator planning note does not add:
 
 There is no active validator and no active schema in this note.
 
+## Placeholder Metadata Shape Note
+
+This section is planning documentation only. It uses fake placeholder examples only. It does not create an active schema, database table, migration, registry data file, seed data, real curriculum resource record, validator, entry form, importer, scanner, indexer, crawler, parser, file reader, hashing process, review workflow, approval workflow, automation, or generator.
+
+### Purpose
+
+This note shows the future shape of metadata-only registry records. Examples are fake placeholders only. Raw curriculum files remain in Google Drive, NAS, iCloud, or local folders. Teacher Workstation stores references and metadata only.
+
+Chief of Staff may later report readiness/status only. This PR does not create registry data or implementation behavior.
+
+### Placeholder Record Shape
+
+```json
+{
+  "id": "placeholder-resource-001",
+  "title": "Placeholder Resource Title",
+  "display_title": "Placeholder Display Title",
+  "description": "Fake placeholder description for planning only.",
+  "source_system": "manual_reference",
+  "source_label": "Placeholder Source Label",
+  "source_path_or_url": "placeholder://source/reference",
+  "source_reference_type": "placeholder_reference",
+  "source_owner": "placeholder_owner",
+  "source_scope": "planning_only",
+  "resource_type": "other",
+  "subject": "placeholder_subject",
+  "grade": "placeholder_grade",
+  "course": "placeholder_course",
+  "unit": "placeholder_unit",
+  "lesson": "placeholder_lesson",
+  "topic": "placeholder_topic",
+  "standard_refs": [],
+  "linked_pacing_item": null,
+  "linked_lesson_template": null,
+  "linked_canvas_item": null,
+  "related_resource_ids": [],
+  "prerequisite_resource_ids": [],
+  "teacher_only": "unknown",
+  "student_facing": "unknown",
+  "answer_key": "unknown",
+  "assessment_related": "unknown",
+  "contains_student_data": false,
+  "external_sharing_allowed": "unknown",
+  "review_status": "not_reviewed",
+  "approval_status": "not_approved",
+  "usage_status": "draft",
+  "metadata_status": "incomplete",
+  "safety_status": "unchecked",
+  "activation_status": "planning_only",
+  "content_hash": null,
+  "hash_algorithm": null,
+  "modified_at": null,
+  "last_verified_at": null,
+  "notes": "Fake placeholder metadata note.",
+  "safety_notes": "Fake placeholder safety note."
+}
+```
+
+- This is not a schema.
+- This is not a registry data file.
+- This is not seed data.
+- This is not a real curriculum resource.
+- This is not validated or consumed by any command.
+- This does not activate file reads, hashing, scanning, indexing, APIs, OAuth, automation, or generation.
+
+### Placeholder CSV Column Shape
+
+Placeholder column shape only (not an export format, not an import format, not a registry file):
+
+| Column | Planning purpose |
+| --- | --- |
+| id | Stable placeholder record id |
+| title | Placeholder title |
+| source_system | Placeholder source system |
+| source_label | Placeholder source label |
+| source_path_or_url | Placeholder source reference |
+| source_reference_type | Placeholder reference type |
+| resource_type | Placeholder resource type |
+| subject | Placeholder subject |
+| grade | Placeholder grade |
+| course | Placeholder course |
+| unit | Placeholder unit |
+| lesson | Placeholder lesson |
+| topic | Placeholder topic |
+| teacher_only | Placeholder teacher-only marker |
+| student_facing | Placeholder student-facing marker |
+| answer_key | Placeholder answer-key marker |
+| assessment_related | Placeholder assessment marker |
+| contains_student_data | Placeholder student-data marker |
+| review_status | Placeholder review status |
+| approval_status | Placeholder approval status |
+| usage_status | Placeholder usage status |
+| metadata_status | Placeholder metadata status |
+| safety_status | Placeholder safety status |
+| activation_status | Placeholder activation status |
+| notes | Placeholder notes |
+| safety_notes | Placeholder safety notes |
+
+### Placeholder Status Posture
+
+Default fake example posture:
+
+- `review_status`: not_reviewed
+- `approval_status`: not_approved
+- `usage_status`: draft
+- `metadata_status`: incomplete
+- `safety_status`: unchecked
+- `activation_status`: planning_only
+- `contains_student_data`: false
+- `teacher_only`: unknown
+- `student_facing`: unknown
+
+Placeholder status values should remain conservative. Placeholder records must not imply approval. Placeholder records must not imply student-facing use. Placeholder records must not imply lesson-planning activation.
+
+### Placeholder Safety Rules
+
+- Fake placeholder records must not contain student data.
+- Fake placeholder records must not include real file paths, real Drive links, real NAS paths, real iCloud paths, real Canvas IDs, or real curriculum resource names.
+- Fake placeholder records must not include generated lesson briefs, generated lesson drafts, or real review notes.
+- Placeholder examples are documentation examples only.
+- Placeholder examples must not be consumed by runtime code.
+
+### Future Implementation Guardrails
+
+- A future registry implementation must be approved in a later PR.
+- A future schema must be approved in a later PR.
+- A future data file must be approved in a later PR.
+- A future validator must be approved in a later PR.
+- A future export/import path must be approved in a later PR.
+- Any future sample records must use fake placeholder data unless explicitly approved.
+- Any future real registry record must avoid student data and preserve teacher-only/student-facing boundaries.
+
+### Relationship to Teacher Workstation
+
+Teacher Workstation may later use a metadata shape like this for local-first curriculum registry records. Future lesson-planning workflows may reference approved metadata later.
+
+This note does not generate lessons, lesson briefs, or lesson drafts.
+
+### Relationship to Chief of Staff
+
+Chief of Staff may eventually report whether placeholder metadata shape planning exists. Chief of Staff may eventually surface readiness for a future registry implementation if explicitly approved.
+
+Chief of Staff does not own raw curriculum files. Chief of Staff does not consume placeholder examples as data. Chief of Staff does not scan, index, call APIs, validate files, or generate content in this phase.
+
+### Explicit Non-Activation
+
+This placeholder metadata shape note does not add:
+
+- no active schema
+- database tables
+- migrations
+- no registry data files
+- no seed data
+- no real curriculum resource records
+- backup scripts
+- export scripts
+- archive bundles
+- file caches
+- raw file copying
+- Drive mirroring
+- NAS mirroring
+- iCloud mirroring
+- no active validators
+- entry forms
+- no new commands
+- review workflows
+- approval workflows
+- real review notes
+- automated safety classifiers
+- importers
+- scanners
+- crawlers
+- parsers
+- no file reads
+- no hashing
+- no OCR
+- no embeddings
+- no vector search
+- no APIs
+- no OAuth
+- no network calls
+- no automation
+- no background jobs
+- no generated lesson briefs
+- no generated lesson drafts
+- no student data
+- no live integrations
+
 ## Source System Values
 
 Future `source_system` planning values:

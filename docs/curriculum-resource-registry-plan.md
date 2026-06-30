@@ -915,6 +915,195 @@ This placeholder metadata shape note does not add:
 - no student data
 - no live integrations
 
+## Registry Implementation Approval Gate Note
+
+This section is planning documentation only. It defines the explicit approval gate required before any Curriculum Resource Registry implementation work may begin. It does not create an active schema, database table, migration, registry data file, seed data, sample record, real curriculum resource record, validator, entry form, command, importer, exporter, backup script, scanner, indexer, crawler, parser, file reader, hashing process, review workflow, approval workflow, automation, connector, API integration, or generator.
+
+### Purpose
+
+The current Curriculum Resource Registry work remains documentation/status-only. The planning stack defines future concepts, not active behavior.
+
+Any implementation step must be explicitly approved in a later PR. The approval gate protects local-first boundaries, raw-file ownership boundaries, student-data boundaries, and no-generation boundaries.
+
+### Implementation Requires Explicit Future Approval
+
+These future changes require a separate explicit approval PR before implementation:
+
+- active schema file
+- database table
+- migration
+- registry JSON/CSV/YAML data file
+- fake placeholder data file
+- real curriculum resource record
+- sample record
+- validator implementation
+- CLI command
+- dashboard section
+- entry form
+- import script
+- export script
+- backup script
+- archive bundle
+- file cache
+- file read
+- hashing process
+- scanner
+- crawler
+- parser
+- indexer
+- OCR
+- embeddings
+- vector search
+- Google Drive API
+- Canvas API
+- NAS crawler
+- iCloud crawler
+- OAuth
+- network call
+- automation
+- background job
+- scheduler
+- review workflow
+- approval workflow
+- generated review notes
+- lesson brief generation
+- lesson draft generation
+- lesson generation
+- student-facing output
+
+### Required Future PR Questions
+
+A future implementation PR must answer these questions before approval:
+
+1. What exact behavior is being activated?
+2. What files, commands, scripts, or data artifacts are being added?
+3. Does it read any curriculum files?
+4. Does it scan or index folders?
+5. Does it call any network service or API?
+6. Does it require OAuth?
+7. Does it create, copy, cache, export, or back up raw curriculum files?
+8. Does it create registry records?
+9. Are records fake placeholders or real curriculum resources?
+10. Does it process or store student data?
+11. Does it generate lesson briefs, lesson drafts, review notes, or student-facing content?
+12. How does it preserve teacher-only, answer-key, assessment, restricted, blocked, retired, and do_not_use boundaries?
+13. How does it preserve existing PASS/WARN/FAIL semantics?
+14. How will it be tested locally without network calls unless explicitly approved?
+15. What is the rollback path?
+
+### Approval Categories
+
+Planning-only approval categories (planning vocabulary only; they do not activate behavior):
+
+- `docs_only_approved`
+- `schema_planning_requested`
+- `schema_implementation_requested`
+- `metadata_file_requested`
+- `fake_placeholder_records_requested`
+- `real_registry_records_requested`
+- `validator_requested`
+- `command_requested`
+- `export_requested`
+- `backup_requested`
+- `connector_requested`
+- `lesson_planning_reference_requested`
+- `generation_requested`
+- `blocked_without_explicit_approval`
+
+### Default Decision Rules
+
+- Documentation-only additions are allowed within the current PR pattern.
+- Status-script marker checks are allowed only when read-only and repo-local.
+- Any schema/data/validator/command/runtime behavior is blocked without explicit approval.
+- Any file read, hashing, scanning, indexing, OCR, embeddings, API, OAuth, connector, automation, or generation behavior is blocked without explicit approval.
+- Real curriculum resource records are blocked without explicit approval.
+- Student data is blocked.
+- Raw file copying, Drive mirroring, NAS mirroring, iCloud mirroring, and hidden file caches are blocked.
+- Teacher Workstation may reference planning docs only in this phase.
+- Chief of Staff may report planning/status readiness only in this phase.
+
+### Future Readiness Checklist
+
+Planning-only checklist for future implementation readiness:
+
+- storage boundaries documented
+- metadata/reference model documented
+- registry field inventory documented
+- safety/status values documented
+- manual-entry workflow documented
+- metadata backup/export planning documented
+- validator planning documented
+- placeholder metadata shape documented
+- approval gate documented
+- no student data
+- no raw file ownership transfer
+- no generation behavior
+- no network/API/OAuth behavior unless explicitly approved
+- rollback path defined in the future PR
+- validation commands defined in the future PR
+
+### Relationship to Teacher Workstation
+
+Teacher Workstation may eventually use the registry only after an explicit implementation PR. Future lesson-planning reference behavior must be approved separately.
+
+Future lesson generation remains out of scope unless explicitly approved. Current behavior remains planning/status only.
+
+### Relationship to Chief of Staff
+
+Chief of Staff may continue to report planning/status readiness. Chief of Staff does not own raw curriculum files. Chief of Staff does not consume placeholder metadata examples as data.
+
+Chief of Staff does not validate real registry records in this phase. Chief of Staff does not scan, index, call APIs, back up files, or generate content in this phase.
+
+### Explicit Non-Activation
+
+This implementation approval gate note does not add:
+
+- no active schema
+- database tables
+- migrations
+- no registry data files
+- no fake registry data files
+- seed data
+- no sample records
+- no real curriculum resource records
+- backup scripts
+- export scripts
+- archive bundles
+- file caches
+- raw file copying
+- Drive mirroring
+- NAS mirroring
+- iCloud mirroring
+- no active validators
+- entry forms
+- no new commands
+- no dashboard sections
+- review workflows
+- approval workflows
+- real review notes
+- automated safety classifiers
+- importers
+- scanners
+- crawlers
+- parsers
+- indexers
+- no file reads
+- no hashing
+- no OCR
+- no embeddings
+- no vector search
+- no APIs
+- no OAuth
+- no network calls
+- no automation
+- no background jobs
+- no schedulers
+- no generated lesson briefs
+- no generated lesson drafts
+- no lesson generation
+- no student data
+- no live integrations
+
 ## Source System Values
 
 Future `source_system` planning values:

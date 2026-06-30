@@ -600,6 +600,7 @@ check_bash_syntax scripts/lesson-planning-template-readiness-status.sh
 section "Curriculum Builder Local-First Foundation Files"
 for path in \
   docs/curriculum-builder-local-first-foundation-plan.md \
+  docs/curriculum-source-storage-strategy.md \
   scripts/curriculum-builder-foundation-status.sh; do
   check_required_file "${path}"
 done

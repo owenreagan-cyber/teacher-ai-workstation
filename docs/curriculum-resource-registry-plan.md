@@ -254,6 +254,154 @@ This safety/status values note does not add:
 
 There is no active schema in this safety/status values note.
 
+## Manual-First Registry Entry Workflow Note
+
+This section is planning documentation only. It does not create an active schema, database table, migration, registry data file, validator, entry form, importer, scanner, indexer, crawler, parser, review workflow, approval workflow, automation, or generator.
+
+### Purpose
+
+Future curriculum registry entries should begin as manually recorded metadata references. The teacher identifies the resource and records its source reference. Teacher Workstation stores metadata and references only. Raw files remain in Google Drive, NAS, iCloud, or local folders.
+
+This workflow protects against accidental scanning, indexing, copying, or generated lesson behavior.
+
+### Manual Entry Stages
+
+1. **Identify Resource**
+   - Teacher identifies a curriculum resource.
+   - No scanning, no crawling, and no automatic discovery.
+
+2. **Record Source Reference**
+   - Teacher manually records `source_system`, `source_label`, and `source_path_or_url`.
+   - No API calls, no OAuth, no network calls, and no Drive/NAS/iCloud crawlers.
+
+3. **Add Classification Metadata**
+   - Teacher manually records title, subject, grade, course, unit, lesson, topic, and `resource_type`.
+   - No OCR, no parsing, no embeddings, and no file reads.
+
+4. **Mark Safety Boundaries**
+   - Teacher manually records `teacher_only`, `student_facing`, `answer_key`, `assessment_related`, `contains_student_data`, and `external_sharing_allowed` values.
+   - Conservative defaults should apply in future implementation.
+
+5. **Mark Review and Approval Status**
+   - Teacher manually records `review_status`, `approval_status`, `usage_status`, `metadata_status`, `safety_status`, and `activation_status`.
+   - no active review workflow, no active approval workflow, no real review notes, and no automated safety classifier.
+
+6. **Link Future Relationships**
+   - Teacher may later link pacing items, lesson templates, Canvas export references, or related resources if explicitly approved.
+   - No Canvas API activation and no live integrations.
+
+7. **Reference in Teacher Workstation Later**
+   - Future lesson-planning workflows may reference approved metadata.
+   - No generated lesson briefs, no generated lesson drafts, and no real lesson generation in this phase.
+
+8. **Report Readiness Through Chief of Staff**
+   - Chief of Staff may report planning/status readiness.
+   - Chief of Staff does not own raw curriculum files and does not scan, index, or generate content.
+
+### Manual Entry Field Order
+
+Recommended future manual entry order (ordering recommendation only, not a schema):
+
+1. `id`
+2. `title`
+3. `source_system`
+4. `source_label`
+5. `source_path_or_url`
+6. `source_reference_type`
+7. `resource_type`
+8. `subject`
+9. `grade`
+10. `course`
+11. `unit`
+12. `lesson`
+13. `topic`
+14. `teacher_only`
+15. `student_facing`
+16. `answer_key`
+17. `assessment_related`
+18. `contains_student_data`
+19. `review_status`
+20. `approval_status`
+21. `usage_status`
+22. `metadata_status`
+23. `safety_status`
+24. `activation_status`
+25. `notes`
+26. `safety_notes`
+
+### Conservative Defaults
+
+Planning-only future defaults:
+
+- `teacher_only`: unknown or true for sensitive resource types
+- `student_facing`: false or unknown until explicitly reviewed
+- `answer_key`: unknown unless manually marked
+- `assessment_related`: unknown unless manually marked
+- `contains_student_data`: false
+- `external_sharing_allowed`: false or unknown
+- `review_status`: not_reviewed
+- `approval_status`: not_approved
+- `usage_status`: draft or archive until manually approved
+- `metadata_status`: incomplete
+- `safety_status`: unchecked
+- `activation_status`: planning_only
+
+### Manual-First Rules
+
+- Manual entry is not scanning.
+- Manual entry is not indexing.
+- Manual entry is not OCR.
+- Manual entry is not embeddings.
+- Manual entry is not a connector.
+- Manual entry is not a file import.
+- Manual entry is not a lesson generator.
+- Manual entry is not a review workflow.
+- Manual entry is not a student-data workflow.
+- Manual entry must not require network calls, APIs, OAuth, background jobs, or live integrations.
+
+### Future Human Review Expectations
+
+- Student-facing approval should require explicit human review later.
+- Teacher-only material should remain teacher-only unless reviewed.
+- Answer keys and assessments should default toward restricted teacher-only use.
+- Restricted, blocked, retired, or do_not_use resources should not be available for future lesson-planning use.
+- Any future review notes must be explicitly approved in a later PR and must not contain student data.
+
+### Explicit Non-Activation
+
+This manual-entry workflow note does not add:
+
+- active schema
+- database tables
+- migrations
+- registry data files
+- sample real curriculum resources
+- validators
+- entry forms
+- new commands
+- review workflows
+- approval workflows
+- real review notes
+- automated safety classifiers
+- importers
+- scanners
+- crawlers
+- parsers
+- file reads
+- hashing
+- OCR
+- embeddings
+- vector search
+- APIs
+- OAuth
+- network calls
+- automation
+- background jobs
+- generated lesson briefs
+- generated lesson drafts
+- student data
+- live integrations
+
 ## Source System Values
 
 Future `source_system` planning values:

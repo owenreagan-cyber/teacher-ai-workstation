@@ -164,7 +164,7 @@ bash scripts/verify-phase-0e.sh
 
 ## Curriculum Builder Planning Stack Closeout
 
-Curriculum Builder planning stack is complete for now. PRs #107–#123 built, gated, indexed, and surfaced the planning stack. No implementation behavior is active.
+Curriculum Builder planning stack is complete for now. PRs #107–#124 built, gated, indexed, surfaced, and closed out the planning stack. No implementation behavior is active.
 
 - Canonical entry point: `docs/curriculum-builder-canonical-planning-index.md`
 - Dashboard docs now surface the planning index: `docs/chief-of-staff-dashboard.md` and `docs/dashboard-section-summary-polish.md`
@@ -223,7 +223,20 @@ Unless explicitly approved, preserve:
 - no automation
 - no live integrations
 
+## Build Queue and Status Pointer Consistency
+
+Lesson-planning placeholder readiness is complete for now (PR #125). Curriculum Builder planning stack is complete and parked (PR #124). Placeholder skeleton and registry already exist and are validated. Static template schema planning remains documentation/status-only unless explicitly approved.
+
+- Build queue: `docs/build-queue.md`
+- Lesson-planning status: `bash scripts/lesson-planning-template-readiness-status.sh`
+- Curriculum Builder status: `bin/chief-of-staff --curriculum-builder-foundation-status`
+- Dashboard: `bin/chief-of-staff --dashboard` (health behavior unchanged)
+
+Future follow-ons require documentation/status-only approval unless explicitly approved. No schema file, validator, active template behavior, lesson generation, lesson briefs, lesson drafts, or review notes are active.
+
 ## Recommended First Three Phase 1 PRs
+
+Historical audit baseline from 2026-06-26 (completed):
 
 1. Chief of Staff command launcher / status dashboard.
    Scope: one terminal command that shows Chief of Staff status, memory freshness, intake status, and next actions without external services.
@@ -234,9 +247,9 @@ Unless explicitly approved, preserve:
 
 ## Recommended Next PR
 
-Next recommended PR: Chief of Staff command launcher / status dashboard.
+Parked — lesson-planning placeholder readiness and Curriculum Builder planning stack are complete for now.
 
-This should stay local, read-only by default, and built on top of the existing CLI status, memory, intake, and preflight commands.
+Future lesson-planning follow-ons are documentation/status-only unless explicitly approved. Curriculum Builder implementation requires approval gate and completed decision intake. See the closeout sections below and `docs/build-queue.md` for current posture. Dashboard command remains `bin/chief-of-staff --dashboard`.
 
 ## Manual Checks For Owen
 
@@ -247,4 +260,4 @@ This should stay local, read-only by default, and built on top of the existing C
 - Confirm whether Photos widget setup is complete.
 - Confirm whether OpenSCAD should remain optional.
 - Confirm that Gmail, Drive, and email integrations remain permission-gated.
-- Choose whether the next PR should be the command dashboard before lesson templates.
+- Use `docs/build-queue.md` and the closeout sections below for current parked posture; do not restart completed skeleton, registry, or Curriculum Builder planning work.

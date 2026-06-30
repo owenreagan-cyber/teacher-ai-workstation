@@ -4,7 +4,7 @@ This document is the canonical entry point for Curriculum Builder / Curriculum R
 
 ## current state summary
 
-Curriculum Builder planning is complete through PR #121. The stack is documentation/status-only. Implementation is paused behind an explicit approval gate. Latest completed PR reference: PR #121 — Curriculum builder maintainer handoff and future PR checklist (`6e4d92e`).
+Curriculum Builder planning is complete through PR #124. The stack is documentation/status-only. Implementation is paused behind an explicit approval gate. Latest completed PR reference: PR #124 — Phase 1 curriculum builder status closeout note (`817480a`).
 
 ## planning stack purpose
 

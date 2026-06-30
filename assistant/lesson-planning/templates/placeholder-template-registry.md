@@ -23,3 +23,13 @@ Any future move from placeholder-only structure to active lesson-planning behavi
 - Registry entries do not activate generation hooks.
 - Registry entries do not permit student data.
 - Registry entries do not permit document scanning, file indexing, network/API use, automation, or live integrations.
+
+## Contributor Note
+
+When extending this placeholder registry, keep entries descriptive and inert unless a separate PR explicitly approves active lesson-planning behavior. New placeholder entries should include clear local-first safety markers and must not imply lesson generation, document scanning, file indexing, student-data handling, network/API use, automation, or live integrations.
+
+After editing the registry or placeholder skeletons, run:
+
+```bash
+bash scripts/lesson-planning-template-readiness-status.sh
+```

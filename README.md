@@ -320,6 +320,8 @@ Lesson-planning template readiness:
 bin/chief-of-staff --lesson-planning-template-readiness-status
 ```
 
+Placeholder lesson-planning templates are documented in `assistant/lesson-planning/templates/placeholder-template-registry.md`; their static readiness status can also be checked with `bash scripts/lesson-planning-template-readiness-status.sh`.
+
 Teacher Workflow output examples completion marker:
 
 ```bash

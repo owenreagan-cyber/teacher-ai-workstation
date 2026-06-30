@@ -205,6 +205,34 @@ if [[ -f "${registry_plan_doc}" ]]; then
   check_doc_contains "${registry_plan_doc}" "no automation" "no automation boundary"
 fi
 
+section "Curriculum Registry Static Field Inventory Checks"
+
+if [[ -f "${registry_plan_doc}" ]]; then
+  check_doc_contains "${registry_plan_doc}" "Static Registry Field Inventory Note" "Static Registry Field Inventory Note"
+  check_doc_contains "${registry_plan_doc}" "Field Group Rules" "Field Group Rules"
+  check_doc_contains "${registry_plan_doc}" "Future Validation Expectations" "Future Validation Expectations"
+  check_doc_contains "${registry_plan_doc}" "Explicit Non-Activation" "Explicit Non-Activation subsection"
+  check_doc_contains "${registry_plan_doc}" "planning only" "planning only activation status"
+  check_doc_contains "${registry_plan_doc}" "contains_student_data" "contains_student_data field"
+  check_doc_contains "${registry_plan_doc}" "safety_status" "safety_status field"
+  check_doc_contains "${registry_plan_doc}" "hash_algorithm" "hash_algorithm field"
+  check_doc_contains "${registry_plan_doc}" "display_title" "display_title field"
+  check_doc_contains "${registry_plan_doc}" "no database tables" "no database tables boundary"
+  check_doc_contains "${registry_plan_doc}" "no registry data files" "no registry data files boundary"
+  check_doc_contains "${registry_plan_doc}" "no validators" "no validators boundary"
+  check_doc_contains "${registry_plan_doc}" "no importers" "no importers boundary"
+  check_doc_contains "${registry_plan_doc}" "no scanners" "no scanners boundary"
+  check_doc_contains "${registry_plan_doc}" "no crawlers" "no crawlers boundary"
+  check_doc_contains "${registry_plan_doc}" "no file reads" "no file reads boundary"
+  check_doc_contains "${registry_plan_doc}" "no hashing" "no hashing boundary"
+  check_doc_contains "${registry_plan_doc}" "no vector search" "no vector search boundary"
+  check_doc_contains "${registry_plan_doc}" "answer_key" "answer_key field in static inventory"
+  check_doc_contains "${registry_plan_doc}" "assessment_related" "assessment_related field in static inventory"
+  check_doc_contains "${registry_plan_doc}" "linked_pacing_item" "linked_pacing_item field in static inventory"
+  check_doc_contains "${registry_plan_doc}" "linked_lesson_template" "linked_lesson_template field in static inventory"
+  check_doc_contains "${registry_plan_doc}" "linked_canvas_item" "linked_canvas_item field in static inventory"
+fi
+
 section "Command Wiring Checks"
 
 check_help_contains '--curriculum-builder-foundation-status'

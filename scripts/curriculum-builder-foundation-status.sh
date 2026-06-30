@@ -94,6 +94,7 @@ future_pr_checklist_doc="docs/curriculum-builder-future-pr-checklist.md"
 canonical_planning_index_doc="docs/curriculum-builder-canonical-planning-index.md"
 dashboard_doc="docs/chief-of-staff-dashboard.md"
 dashboard_section_summary_doc="docs/dashboard-section-summary-polish.md"
+phase_1_audit_doc="docs/phase-1-chief-of-staff-status-audit.md"
 
 section "Curriculum Builder Local-First Foundation Plan"
 cat <<'EOF'
@@ -807,6 +808,18 @@ fi
 if [[ -f "${dashboard_section_summary_doc}" ]]; then
   check_doc_contains "${dashboard_section_summary_doc}" "Lesson Planning Status Planning Index" "Lesson Planning Status Planning Index in dashboard section summary doc"
   check_doc_contains "${dashboard_section_summary_doc}" "docs/curriculum-builder-canonical-planning-index.md" "canonical planning index reference in dashboard section summary doc"
+fi
+
+section "Phase 1 Curriculum Builder Status Closeout Checks"
+
+if [[ -f "${phase_1_audit_doc}" ]]; then
+  check_doc_contains "${phase_1_audit_doc}" "Curriculum Builder Planning Stack Closeout" "Curriculum Builder Planning Stack Closeout in Phase 1 audit"
+  check_doc_contains "${phase_1_audit_doc}" "docs/curriculum-builder-canonical-planning-index.md" "canonical planning index in Phase 1 closeout"
+  check_doc_contains "${phase_1_audit_doc}" "approval gate" "approval gate in Phase 1 closeout"
+  check_doc_contains "${phase_1_audit_doc}" "decision intake" "decision intake in Phase 1 closeout"
+  check_doc_contains "${phase_1_audit_doc}" "curriculum-builder-foundation-status" "curriculum builder foundation status command in Phase 1 closeout"
+  check_doc_contains "${phase_1_audit_doc}" "chief-of-staff --dashboard" "dashboard command in Phase 1 closeout"
+  check_doc_contains "${phase_1_audit_doc}" "No implementation behavior is active" "no active implementation behavior in Phase 1 closeout"
 fi
 
 section "Command Wiring Checks"

@@ -162,6 +162,39 @@ bash scripts/verify-phase-0e.sh
 - Future indexing and connectors can become unsafe if they skip the intake and permission gates.
 - Developer Mode can sprawl unless it starts with small local templates and clear build boundaries.
 
+## Curriculum Builder Planning Stack Closeout
+
+Curriculum Builder planning stack is complete for now. PRs #107–#123 built, gated, indexed, and surfaced the planning stack. No implementation behavior is active.
+
+- Canonical entry point: `docs/curriculum-builder-canonical-planning-index.md`
+- Dashboard docs now surface the planning index: `docs/chief-of-staff-dashboard.md` and `docs/dashboard-section-summary-polish.md`
+- Future implementation requires the approval gate: `docs/curriculum-builder-approval-gate.md`
+- Future implementation requires a completed decision intake: `docs/curriculum-builder-decision-intake-template.md`
+- Current status command remains: `bin/chief-of-staff --curriculum-builder-foundation-status`
+- Dashboard command remains: `bin/chief-of-staff --dashboard`
+
+Unless explicitly approved through the approval gate and completed decision intake, preserve:
+
+- no document scanning
+- no folder scanning
+- no file indexing
+- no OCR
+- no embeddings
+- no vector database
+- no lesson generation
+- no generated lesson briefs/drafts
+- no real review notes
+- no student data
+- no network calls
+- no APIs
+- no OAuth
+- no automation
+- no live integrations
+- no storage migration
+- no raw curriculum file duplication
+- no registry data
+- no schema activation
+
 ## Recommended First Three Phase 1 PRs
 
 1. Chief of Staff command launcher / status dashboard.

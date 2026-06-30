@@ -95,3 +95,17 @@ As of PR #101, the lesson-planning placeholder readiness phase is complete. The 
 Future work should begin from a separately approved next-phase plan. Follow-on cleanup or polish PRs must not activate lesson generation, document scanning, file indexing, student-data handling, network/API calls, automation, live integrations, generated briefs, generated drafts, or real review notes.
 
 Any change that moves this area beyond placeholder-only scaffolding requires explicit approval in a separate PR.
+
+## Next-Phase Options
+
+The placeholder readiness phase is complete, but no active lesson-planning phase is approved by this note. Future work should choose one next phase explicitly in a separate approved PR.
+
+Possible future phases include:
+
+- static template schema planning
+- static local validation planning
+- non-generative UI placeholder planning
+- safety review checklist planning
+- deferred active lesson-planning behavior
+
+These are options only. This note does not approve, select, or activate any of them. Active lesson-planning behavior remains deferred until a separate PR explicitly approves it.

@@ -81,3 +81,9 @@ After editing the registry or placeholder skeletons, run:
 ```bash
 bash scripts/lesson-planning-template-readiness-status.sh
 ```
+
+## Readiness Milestone
+
+PRs #93–#100 established the lesson-planning placeholder readiness scaffold. The scaffold now includes an inert placeholder template skeleton, a placeholder registry entry, status and scope documentation, README discoverability, contributor guidance, registry entry shape notes, a placeholder skeleton section inventory, explicit negative scope, static readiness validation, and smoke coverage.
+
+This milestone remains placeholder-only. It does not activate lesson generation, document scanning, file indexing, student-data handling, network/API calls, automation, live integrations, generated briefs, generated drafts, or real review notes. Any future activation requires a separate explicitly approved PR.

@@ -138,3 +138,24 @@ A future separately approved PR may define a static placeholder schema for lesso
 | `activation_requires_approved_pr` | Marker that active behavior requires a separate approved PR. |
 
 This inventory is documentation-only. It does not create a schema file, add a validator, define runtime behavior, or approve active lesson-planning behavior.
+
+## Static Schema Safety Flag Planning
+
+A future separately approved static schema may include explicit safety flags for each placeholder template entry. For the current placeholder-only path, every safety flag must remain false or disabled.
+
+| Safety flag | Placeholder-only value | Planning purpose |
+| --- | --- | --- |
+| `generates_content` | `false` | Confirms the template does not generate lesson content. |
+| `uses_student_data` | `false` | Confirms the template does not use or request student data. |
+| `uses_document_scanning` | `false` | Confirms the template does not scan documents. |
+| `uses_file_indexing` | `false` | Confirms the template does not index files. |
+| `uses_network` | `false` | Confirms the template does not use network access. |
+| `uses_apis` | `false` | Confirms the template does not call APIs. |
+| `uses_automation` | `false` | Confirms the template does not trigger automation. |
+| `uses_live_integrations` | `false` | Confirms the template does not connect to live services. |
+| `creates_briefs` | `false` | Confirms the template does not create generated briefs. |
+| `creates_drafts` | `false` | Confirms the template does not create generated drafts. |
+| `creates_review_notes` | `false` | Confirms the template does not create real review notes. |
+| `student_facing_output` | `false` | Confirms the template does not produce student-facing output. |
+
+This table is planning documentation only. It does not create a schema file, add a validator, add a check, or activate lesson-planning behavior.

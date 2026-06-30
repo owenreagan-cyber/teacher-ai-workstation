@@ -72,6 +72,109 @@ A future registry record may combine identity, source reference, curriculum labe
 
 No machine-readable schema file is created by this PR.
 
+## Static Registry Field Inventory Note
+
+This section is planning documentation only. It does not create an active schema, database table, migration, validator, registry data file, importer, scanner, indexer, crawler, parser, or generator.
+
+| Field | Group | Purpose | Future required status | Example allowed values or shape | Safety notes | Current activation status |
+| --- | --- | --- | --- | --- | --- | --- |
+| `id` | Identity | Stable registry record identifier. | required later | `curriculum-resource-0001` | Must not embed student data. | planning only |
+| `title` | Identity | Primary human-readable title. | required later | `Unit 3 Fractions Practice` | Metadata label only. | planning only |
+| `display_title` | Identity | Optional display override. | optional later | `Fractions Practice Set` | Must not imply generated lesson content. | planning only |
+| `description` | Identity | Short metadata description. | optional later | free text | No student data. | planning only |
+| `source_system` | Source reference | Source storage system marker. | required later | `google_drive`, `nas`, `icloud`, `local_folder` | Must match approved planning list. | planning only |
+| `source_label` | Source reference | Human-readable source label. | required later | `7th Math Drive Folder` | Reference only. | planning only |
+| `source_path_or_url` | Source reference | Stable source location reference. | required later | path or URL string | Must not copy raw files. | planning only |
+| `source_reference_type` | Source reference | Reference style marker. | optional later | `manual_link`, `manual_path` | Manual-first only for now. | planning only |
+| `source_owner` | Source reference | Stewardship label. | optional later | `teacher`, `department` | No student identifiers. | planning only |
+| `source_scope` | Source reference | Active/archive/local scope. | optional later | `active`, `archive` | Planning label only. | planning only |
+| `source_last_seen_at` | Source reference | Last manual source check timestamp. | optional later | ISO date string | No automatic file reads now. | planning only |
+| `resource_type` | Classification | Curriculum resource category. | required later | `worksheet`, `assessment` | Planning value only. | planning only |
+| `subject` | Classification | Subject label. | optional later | `math` | No generated curriculum claims. | planning only |
+| `grade` | Classification | Grade or level label. | optional later | `7` | No student roster data. | planning only |
+| `course` | Classification | Course label. | optional later | `Math 7` | Metadata only. | planning only |
+| `unit` | Classification | Unit label. | optional later | `Unit 3` | Metadata only. | planning only |
+| `lesson` | Classification | Lesson label. | optional later | `Lesson 5` | Metadata only. | planning only |
+| `topic` | Classification | Topic label. | optional later | `fractions` | Metadata only. | planning only |
+| `standard_refs` | Classification | Standards reference labels. | optional later | `TEKS 7.3A` | No auto-standard claims. | planning only |
+| `linked_pacing_item` | Relationship | Pacing guide link reference. | optional later | pacing item id | Requires explicit approval later. | planning only |
+| `linked_lesson_template` | Relationship | Lesson-planning placeholder link. | optional later | template id | Placeholder reference only. | planning only |
+| `linked_canvas_item` | Relationship | Canvas export/item reference. | optional later | canvas item id | No Canvas API activation. | planning only |
+| `related_resource_ids` | Relationship | Related registry record ids. | optional later | id list | Metadata links only. | planning only |
+| `prerequisite_resource_ids` | Relationship | Prerequisite resource ids. | optional later | id list | Metadata links only. | planning only |
+| `teacher_only` | Safety and access | Teacher-only boundary marker. | required later | `true` / `false` | Must not be treated as student-facing when true. | planning only |
+| `student_facing` | Safety and access | Student-facing boundary marker. | required later | `true` / `false` | Requires explicit review later. | planning only |
+| `answer_key` | Safety and access | Answer-key marker. | conditional later | `true` / `false` | Should default teacher-only later. | planning only |
+| `assessment_related` | Safety and access | Assessment-related marker. | conditional later | `true` / `false` | Should default teacher-only later. | planning only |
+| `contains_student_data` | Safety and access | Student-data boundary marker. | required later | `false` by default | Must remain false by default. | planning only |
+| `external_sharing_allowed` | Safety and access | External sharing planning marker. | optional later | `true` / `false` | No live sharing integration now. | planning only |
+| `review_status` | Review/status | Human review state. | required later | `not_reviewed` | No real review workflow now. | planning only |
+| `approval_status` | Review/status | Approval planning state. | required later | `metadata_only` | No approval automation now. | planning only |
+| `usage_status` | Review/status | Usage planning state. | optional later | `active`, `retired` | Metadata only. | planning only |
+| `metadata_status` | Review/status | Metadata completeness marker. | optional later | `draft`, `complete` | Planning only. | planning only |
+| `safety_status` | Review/status | Safety review marker. | optional later | `unchecked`, `reviewed` | Human review only later. | planning only |
+| `last_verified_at` | Review/status | Last manual verification timestamp. | optional later | ISO date string | No automatic verification now. | planning only |
+| `content_hash` | Integrity/reference | Optional change-detection marker. | optional later | hash string | no hashing now | planning only |
+| `hash_algorithm` | Integrity/reference | Hash algorithm label for future use. | optional later | `sha256` | no hashing now | planning only |
+| `modified_at` | Integrity/reference | Last known modified timestamp. | optional later | ISO date string | Manual metadata only. | planning only |
+| `file_size_hint` | Integrity/reference | Optional size hint for planning. | optional later | byte count string | No file reads now. | planning only |
+| `version_label` | Integrity/reference | Version or edition label. | optional later | `2024-edition` | Metadata only. | planning only |
+| `notes` | Notes | Teacher metadata notes. | optional later | free text | No student data. | planning only |
+| `safety_notes` | Notes | Safety boundary reminders. | optional later | free text | No real review notes. | planning only |
+| `metadata_notes` | Notes | Metadata quality notes. | optional later | free text | Metadata only. | planning only |
+
+### Field Group Rules
+
+- **Identity fields** describe the registry record only.
+- **Source reference fields** point to existing storage and must not copy raw files.
+- **Classification fields** support future planning and discovery.
+- **Relationship fields** connect resources to pacing, templates, Canvas exports, or other resources only after explicit approval.
+- **Safety and access fields** protect teacher-only, assessment-related, answer-key, and student-facing boundaries.
+- **Review/status fields** support human-readable readiness and approval tracking.
+- **Integrity/reference fields** may support future manual verification, but do not activate hashing or file reads now.
+- **Notes fields** are metadata notes only and must not contain student data or real review notes in this phase.
+
+### Future Validation Expectations
+
+Future validation is planning-only. Expected rules for a later separately approved implementation:
+
+- future records should require `id`, `title`, `source_system`, `source_path_or_url`, `resource_type`, `teacher_only`, `student_facing`, `review_status`, and `approval_status`
+- `teacher_only` and `student_facing` should not both be true without explicit future policy
+- `answer_key` and `assessment_related` should default to teacher-only in a future implementation
+- `approved_student_facing` should require `student_facing` true and teacher review later
+- `contains_student_data` should remain false for curriculum registry records by default
+- `source_system` values should remain from the approved planning list unless expanded by a future PR
+- `content_hash` must not be generated unless hashing is explicitly approved later
+
+### Explicit Non-Activation
+
+This note does not add:
+
+- active schema
+- no database tables
+- no registry data files
+- no validators
+- no importers
+- no scanners
+- no crawlers
+- no parsers
+- no file reads
+- no hashing
+- no OCR
+- no embeddings
+- no vector search
+- no APIs
+- no OAuth
+- no network calls
+- no automation
+- no background jobs
+- no generated lesson briefs
+- no generated lesson drafts
+- no real review notes
+- no student data
+
+There is no active schema in this note. This note does not create database tables, registry data files, validators, importers, scanners, crawlers, parsers, file reads, or hashing.
+
 ## Source System Values
 
 Future `source_system` planning values:

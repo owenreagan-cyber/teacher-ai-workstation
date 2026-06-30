@@ -87,6 +87,8 @@ registry_plan_doc="docs/curriculum-resource-registry-plan.md"
 planning_stack_summary_doc="docs/curriculum-builder-planning-stack-summary.md"
 next_phase_decision_doc="docs/curriculum-builder-next-phase-decision.md"
 decision_intake_template_doc="docs/curriculum-builder-decision-intake-template.md"
+approval_gate_doc="docs/curriculum-builder-approval-gate.md"
+planning_closeout_doc="docs/curriculum-builder-planning-closeout.md"
 
 section "Curriculum Builder Local-First Foundation Plan"
 cat <<'EOF'
@@ -641,6 +643,53 @@ if [[ -f "${decision_intake_template_doc}" ]]; then
   check_doc_contains "${decision_intake_template_doc}" "no lesson generation" "no lesson generation boundary in intake template"
   check_doc_contains "${decision_intake_template_doc}" "no student data" "no student data boundary in intake template"
   check_doc_contains "${decision_intake_template_doc}" "no raw curriculum file duplication" "no raw curriculum file duplication boundary"
+fi
+
+section "Curriculum Builder Approval Gate Checks"
+
+check_file "${approval_gate_doc}"
+
+if [[ -f "${approval_gate_doc}" ]]; then
+  check_doc_contains "${approval_gate_doc}" "Curriculum Builder Approval Gate" "Curriculum Builder Approval Gate"
+  check_doc_contains "${approval_gate_doc}" "approval gate" "approval gate marker"
+  check_doc_contains "${approval_gate_doc}" "completed decision intake requirement" "completed decision intake requirement"
+  check_doc_contains "${approval_gate_doc}" "implementation blocked until approval" "implementation blocked until approval"
+  check_doc_contains "${approval_gate_doc}" "future implementation entry criteria" "future implementation entry criteria"
+  check_doc_contains "${approval_gate_doc}" "required validation" "required validation marker"
+  check_doc_contains "${approval_gate_doc}" "final local main proof" "final local main proof"
+  check_doc_contains "${approval_gate_doc}" "rollback expectations" "rollback expectations"
+  check_doc_contains "${approval_gate_doc}" "Teacher Workstation relationship" "Teacher Workstation relationship"
+  check_doc_contains "${approval_gate_doc}" "Chief of Staff relationship" "Chief of Staff relationship"
+  check_doc_contains "${approval_gate_doc}" "curriculum registry relationship" "curriculum registry relationship"
+  check_doc_contains "${approval_gate_doc}" "Non-Activation confirmation" "Non-Activation confirmation in approval gate"
+  check_doc_contains "${approval_gate_doc}" "no scanning/indexing/OCR/embeddings" "no scanning/indexing/OCR/embeddings boundary in approval gate"
+  check_doc_contains "${approval_gate_doc}" "no APIs/OAuth/network calls" "no APIs/OAuth/network calls boundary in approval gate"
+  check_doc_contains "${approval_gate_doc}" "no automation/live integrations" "no automation/live integrations boundary"
+  check_doc_contains "${approval_gate_doc}" "no lesson generation" "no lesson generation boundary in approval gate"
+  check_doc_contains "${approval_gate_doc}" "no student data" "no student data boundary in approval gate"
+  check_doc_contains "${approval_gate_doc}" "no storage migration/raw file duplication" "no storage migration/raw file duplication boundary"
+fi
+
+section "Curriculum Builder Planning Closeout Checks"
+
+check_file "${planning_closeout_doc}"
+
+if [[ -f "${planning_closeout_doc}" ]]; then
+  check_doc_contains "${planning_closeout_doc}" "Curriculum Builder Planning Closeout" "Curriculum Builder Planning Closeout"
+  check_doc_contains "${planning_closeout_doc}" "planning stack summary" "planning stack summary in closeout"
+  check_doc_contains "${planning_closeout_doc}" "local-first storage decision" "local-first storage decision in closeout"
+  check_doc_contains "${planning_closeout_doc}" "metadata/reference-only registry direction" "metadata/reference-only registry direction in closeout"
+  check_doc_contains "${planning_closeout_doc}" "completed planning artifacts" "completed planning artifacts in closeout"
+  check_doc_contains "${planning_closeout_doc}" "current status commands" "current status commands in closeout"
+  check_doc_contains "${planning_closeout_doc}" "safe next options" "safe next options in closeout"
+  check_doc_contains "${planning_closeout_doc}" "pause implementation recommendation" "pause implementation recommendation in closeout"
+  check_doc_contains "${planning_closeout_doc}" "Teacher Workstation role" "Teacher Workstation role in closeout"
+  check_doc_contains "${planning_closeout_doc}" "Chief of Staff role" "Chief of Staff role in closeout"
+  check_doc_contains "${planning_closeout_doc}" "Non-Activation list" "Non-Activation list in closeout"
+  check_doc_contains "${planning_closeout_doc}" "no scanning/indexing/OCR/embeddings" "no scanning/indexing/OCR/embeddings boundary in closeout"
+  check_doc_contains "${planning_closeout_doc}" "no APIs/OAuth/network calls" "no APIs/OAuth/network calls boundary in closeout"
+  check_doc_contains "${planning_closeout_doc}" "no lesson generation" "no lesson generation boundary in closeout"
+  check_doc_contains "${planning_closeout_doc}" "no student data" "no student data boundary in closeout"
 fi
 
 section "Command Wiring Checks"

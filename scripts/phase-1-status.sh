@@ -605,6 +605,8 @@ for path in \
   docs/curriculum-builder-planning-stack-summary.md \
   docs/curriculum-builder-next-phase-decision.md \
   docs/curriculum-builder-decision-intake-template.md \
+  docs/curriculum-builder-approval-gate.md \
+  docs/curriculum-builder-planning-closeout.md \
   scripts/curriculum-builder-foundation-status.sh; do
   check_required_file "${path}"
 done

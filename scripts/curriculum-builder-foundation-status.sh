@@ -82,6 +82,7 @@ fi
 cd "${repo_root}"
 
 plan_doc="docs/curriculum-builder-local-first-foundation-plan.md"
+storage_strategy_doc="docs/curriculum-source-storage-strategy.md"
 
 section "Curriculum Builder Local-First Foundation Plan"
 cat <<'EOF'
@@ -132,6 +133,36 @@ if [[ -f "${plan_doc}" ]]; then
   check_doc_contains "${plan_doc}" "does not own curriculum files" "Chief of Staff does not own curriculum files"
   check_doc_contains "${plan_doc}" "lesson-planning workflows may reference the registry" "lesson-planning registry reference planning"
   check_doc_contains "${plan_doc}" "not duplicate every raw curriculum file" "no paid duplicate raw file copies"
+fi
+
+section "Curriculum Source Storage Strategy Doc Checks"
+
+check_file "${storage_strategy_doc}"
+
+if [[ -f "${storage_strategy_doc}" ]]; then
+  check_doc_contains "${storage_strategy_doc}" "Curriculum Source Storage Strategy" "Curriculum Source Storage Strategy"
+  check_doc_contains "${storage_strategy_doc}" "Google Drive" "Google Drive storage source"
+  check_doc_contains "${storage_strategy_doc}" "NAS" "NAS storage source"
+  check_doc_contains "${storage_strategy_doc}" "iCloud" "iCloud storage source"
+  check_doc_contains "${storage_strategy_doc}" "local folders" "local folders storage source"
+  check_doc_contains "${storage_strategy_doc}" "metadata" "metadata storage model"
+  check_doc_contains "${storage_strategy_doc}" "references" "source references model"
+  check_doc_contains "${storage_strategy_doc}" "source-reference model" "source-reference model"
+  check_doc_contains "${storage_strategy_doc}" "Teacher Workstation" "Teacher Workstation role"
+  check_doc_contains "${storage_strategy_doc}" "Chief of Staff" "Chief of Staff role"
+  check_doc_contains "${storage_strategy_doc}" "does not own raw curriculum files" "Chief of Staff does not own raw curriculum files"
+  check_doc_contains "${storage_strategy_doc}" "no document scanning" "no document scanning boundary"
+  check_doc_contains "${storage_strategy_doc}" "no folder scanning" "no folder scanning boundary"
+  check_doc_contains "${storage_strategy_doc}" "no file indexing" "no file indexing boundary"
+  check_doc_contains "${storage_strategy_doc}" "no OCR" "no OCR boundary"
+  check_doc_contains "${storage_strategy_doc}" "no embeddings" "no embeddings boundary"
+  check_doc_contains "${storage_strategy_doc}" "no vector database" "no vector database boundary"
+  check_doc_contains "${storage_strategy_doc}" "no lesson generation" "no lesson generation boundary"
+  check_doc_contains "${storage_strategy_doc}" "no student data" "no student data boundary"
+  check_doc_contains "${storage_strategy_doc}" "no network calls" "no network calls boundary"
+  check_doc_contains "${storage_strategy_doc}" "no APIs" "no APIs boundary"
+  check_doc_contains "${storage_strategy_doc}" "no OAuth" "no OAuth boundary"
+  check_doc_contains "${storage_strategy_doc}" "no automation" "no automation boundary"
 fi
 
 section "Command Wiring Checks"

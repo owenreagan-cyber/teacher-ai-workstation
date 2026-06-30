@@ -546,6 +546,187 @@ This metadata backup/export planning note does not add:
 - no student data
 - no live integrations
 
+## Local Registry Validator Planning Note
+
+This section is planning documentation only. It does not create an active validator, schema, database table, migration, registry data file, CLI command, importer, scanner, indexer, crawler, parser, file reader, hashing process, review workflow, approval workflow, automation, or generator.
+
+### Purpose
+
+A future local validator may eventually check metadata-only registry records for completeness, safety boundaries, and planning readiness. The future validator should operate only on explicitly approved registry metadata records.
+
+The future validator must not scan folders, read curriculum files, crawl storage, call APIs, generate hashes, perform OCR, create embeddings, or generate lessons. This PR only documents future expectations. There is no active validator in this PR.
+
+### Future Validator Scope
+
+Planning-only future validator scope may include:
+
+- required metadata fields
+- `source_system` allowed values
+- `resource_type` allowed values
+- `teacher_only` and `student_facing` boundary consistency
+- `answer_key` and `assessment_related` safety defaults
+- `contains_student_data` prohibited/default false posture
+- `review_status` allowed values
+- `approval_status` allowed values
+- `usage_status` allowed values
+- `metadata_status` allowed values
+- `safety_status` allowed values
+- `activation_status` allowed values
+- linked reference shape checks
+- `notes` and `safety_notes` presence/absence expectations
+- metadata-only backup/export compatibility
+
+No validator is implemented in this PR.
+
+### Future Required Field Expectations
+
+Planning-only future required fields:
+
+- `id`
+- `title`
+- `source_system`
+- `source_path_or_url`
+- `source_reference_type`
+- `resource_type`
+- `teacher_only`
+- `student_facing`
+- `answer_key`
+- `assessment_related`
+- `contains_student_data`
+- `review_status`
+- `approval_status`
+- `usage_status`
+- `metadata_status`
+- `safety_status`
+- `activation_status`
+
+These are future validation expectations only. This PR does not create a schema. This PR does not create registry records. This PR does not validate files.
+
+### Future Allowed Value Checks
+
+A future validator may check allowed values for:
+
+- `source_system`
+- `resource_type`
+- `review_status`
+- `approval_status`
+- `usage_status`
+- `metadata_status`
+- `safety_status`
+- `activation_status`
+
+Expected values are already defined elsewhere in this registry plan.
+
+### Future Safety Consistency Checks
+
+Planning-only checks:
+
+- `contains_student_data` should be false for registry records.
+- `answer_key` true should require `teacher_only` true.
+- `assessment_related` true should default toward `teacher_only` true.
+- `approved_student_facing` should require `student_facing` true and human review in a future implementation.
+- `restricted`, `blocked`, `retired`, or `do_not_use` should prevent future lesson-planning use.
+- `external_sharing_allowed` should be false or unknown unless explicitly approved.
+- `activation_status` should remain `planning_only` until a future implementation is explicitly approved.
+
+### Future Reference Shape Checks
+
+Planning-only checks:
+
+- source references should point to existing source storage conceptually.
+- `source_path_or_url` should be treated as sensitive operational metadata.
+- `linked_pacing_item`, `linked_lesson_template`, `linked_canvas_item`, and `related_resource_ids` should remain metadata references only.
+- future validators must not dereference links, call APIs, scan folders, read files, or verify remote availability unless explicitly approved later.
+
+### Future PASS/WARN/FAIL Semantics
+
+Planning-only validator output semantics for a future local validator:
+
+- **PASS**: required metadata and safety boundaries are present and internally consistent.
+- **WARN**: metadata is incomplete, stale, unknown, or needs human review, but does not violate hard safety boundaries.
+- **FAIL**: metadata violates hard safety boundaries, includes prohibited student data, attempts raw file ownership, or implies active scanning/indexing/generation behavior.
+
+This does not alter existing PASS/WARN/FAIL behavior. This does not add a command. This does not add dashboard checks. There are no new command and no dashboard checks in this note.
+
+### Validator Non-Goals
+
+A future validator must not:
+
+- scan folders
+- index files
+- read curriculum files
+- hash files unless explicitly approved
+- perform OCR
+- create embeddings
+- call Google Drive APIs
+- call Canvas APIs
+- crawl NAS/iCloud/local folders
+- generate lesson briefs
+- generate lesson drafts
+- create review notes
+- process student data
+- perform network calls
+- run background jobs
+- run scheduled jobs
+- automate approval decisions
+
+### Relationship to Teacher Workstation
+
+Teacher Workstation may later use validator results to understand metadata readiness. Future lesson-planning workflows may only reference approved metadata if explicitly implemented later.
+
+No lesson generation is activated by this note.
+
+### Relationship to Chief of Staff
+
+Chief of Staff may eventually report future validator readiness. Chief of Staff may eventually surface PASS/WARN/FAIL status from a local validator if explicitly approved.
+
+Chief of Staff does not validate raw files, own files, scan folders, call APIs, or generate content in this phase.
+
+### Explicit Non-Activation
+
+This validator planning note does not add:
+
+- active validators
+- no active schema
+- database tables
+- migrations
+- no registry data file
+- sample real curriculum resources
+- backup scripts
+- export scripts
+- archive bundles
+- file caches
+- raw file copying
+- Drive mirroring
+- NAS mirroring
+- iCloud mirroring
+- entry forms
+- no new command
+- review workflows
+- approval workflows
+- real review notes
+- automated safety classifiers
+- importers
+- scanners
+- crawlers
+- parsers
+- no file reads
+- no hashing
+- no OCR
+- no embeddings
+- no vector search
+- no APIs
+- no OAuth
+- no network calls
+- no automation
+- no background jobs
+- no generated lesson briefs
+- no generated lesson drafts
+- no student data
+- no live integrations
+
+There is no active validator and no active schema in this note.
+
 ## Source System Values
 
 Future `source_system` planning values:

@@ -364,6 +364,44 @@ if [[ -f "${registry_plan_doc}" ]]; then
   check_doc_contains "${registry_plan_doc}" "no live integrations" "no live integrations boundary in backup note"
 fi
 
+section "Curriculum Registry Validator Planning Checks"
+
+if [[ -f "${registry_plan_doc}" ]]; then
+  check_doc_contains "${registry_plan_doc}" "Local Registry Validator Planning Note" "Local Registry Validator Planning Note"
+  check_doc_contains "${registry_plan_doc}" "Future Validator Scope" "Future Validator Scope"
+  check_doc_contains "${registry_plan_doc}" "Future Required Field Expectations" "Future Required Field Expectations"
+  check_doc_contains "${registry_plan_doc}" "Future Allowed Value Checks" "Future Allowed Value Checks"
+  check_doc_contains "${registry_plan_doc}" "Future Safety Consistency Checks" "Future Safety Consistency Checks"
+  check_doc_contains "${registry_plan_doc}" "Future Reference Shape Checks" "Future Reference Shape Checks"
+  check_doc_contains "${registry_plan_doc}" "Future PASS/WARN/FAIL Semantics" "Future PASS/WARN/FAIL Semantics"
+  check_doc_contains "${registry_plan_doc}" "Validator Non-Goals" "Validator Non-Goals"
+  check_doc_contains "${registry_plan_doc}" "required metadata fields" "required metadata fields validator scope"
+  check_doc_contains "${registry_plan_doc}" "no active validator" "no active validator boundary"
+  check_doc_contains "${registry_plan_doc}" "no registry data file" "no registry data file boundary in validator note"
+  check_doc_contains "${registry_plan_doc}" "no new command" "no new command boundary in validator note"
+  check_doc_contains "${registry_plan_doc}" "no dashboard checks" "no dashboard checks boundary in validator note"
+  check_doc_contains "${registry_plan_doc}" "**PASS**:" "future validator PASS semantics"
+  check_doc_contains "${registry_plan_doc}" "**WARN**:" "future validator WARN semantics"
+  check_doc_contains "${registry_plan_doc}" "**FAIL**:" "future validator FAIL semantics"
+  check_doc_contains "${registry_plan_doc}" "active validators" "active validators non-activation marker"
+  check_doc_contains "${registry_plan_doc}" "no active schema" "no active schema boundary in validator note"
+  check_doc_contains "${registry_plan_doc}" "Relationship to Teacher Workstation" "Relationship to Teacher Workstation in validator note"
+  check_doc_contains "${registry_plan_doc}" "Relationship to Chief of Staff" "Relationship to Chief of Staff in validator note"
+  check_doc_contains "${registry_plan_doc}" "source_path_or_url" "source_path_or_url validator field"
+  check_doc_contains "${registry_plan_doc}" "metadata_status" "metadata_status validator field"
+  check_doc_contains "${registry_plan_doc}" "no file reads" "no file reads boundary in validator note"
+  check_doc_contains "${registry_plan_doc}" "no hashing" "no hashing boundary in validator note"
+  check_doc_contains "${registry_plan_doc}" "no OCR" "no OCR boundary in validator note"
+  check_doc_contains "${registry_plan_doc}" "no embeddings" "no embeddings boundary in validator note"
+  check_doc_contains "${registry_plan_doc}" "no APIs" "no APIs boundary in validator note"
+  check_doc_contains "${registry_plan_doc}" "no OAuth" "no OAuth boundary in validator note"
+  check_doc_contains "${registry_plan_doc}" "no network calls" "no network calls boundary in validator note"
+  check_doc_contains "${registry_plan_doc}" "no automation" "no automation boundary in validator note"
+  check_doc_contains "${registry_plan_doc}" "no generated lesson briefs" "no generated lesson briefs boundary in validator note"
+  check_doc_contains "${registry_plan_doc}" "no generated lesson drafts" "no generated lesson drafts boundary in validator note"
+  check_doc_contains "${registry_plan_doc}" "no student data" "no student data boundary in validator note"
+fi
+
 section "Command Wiring Checks"
 
 check_help_contains '--curriculum-builder-foundation-status'

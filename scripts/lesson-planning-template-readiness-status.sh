@@ -108,6 +108,7 @@ workflow_status_doc="docs/teacher-workflow-status-summary.md"
 quick_ref_doc="docs/teacher-workflow-quick-reference-polish.md"
 planning_cleanup_doc="docs/core-teacher-workstation-planning-cleanup.md"
 placeholder_skeleton="assistant/lesson-planning/templates/lesson-planning-placeholder-skeleton.md"
+placeholder_registry="assistant/lesson-planning/templates/placeholder-template-registry.md"
 
 section 'Lesson-Planning Template Readiness Polish'
 cat <<'EOF'
@@ -121,6 +122,8 @@ PASS/WARN/FAIL semantics preserved: yes
 Template readiness documented: yes
 Placeholder skeleton present: yes
 Placeholder skeleton inert: yes
+Placeholder registry present: yes
+Placeholder registry inert: yes
 Placeholder-only examples documented: yes
 Teacher Workflow guardrails preserved: yes
 Document scanning: no
@@ -213,6 +216,32 @@ if [[ -f "${placeholder_skeleton}" ]]; then
   check_doc_contains "${placeholder_skeleton}" "call APIs" "no API marker"
   check_doc_contains "${placeholder_skeleton}" "run automation" "no automation marker"
   check_doc_contains "${placeholder_skeleton}" "enable live integrations" "no live integrations marker"
+fi
+
+section 'Placeholder Registry Checks'
+
+check_file "${placeholder_registry}"
+
+if [[ -f "${placeholder_registry}" ]]; then
+  check_doc_contains "${placeholder_registry}" "Lesson-Planning Placeholder Template Registry" "Lesson-Planning Placeholder Template Registry"
+  check_doc_contains "${placeholder_registry}" "lesson-planning-placeholder-template" "stable placeholder template id"
+  check_doc_contains "${placeholder_registry}" "Lesson-planning placeholder template" "human-readable placeholder template name"
+  check_doc_contains "${placeholder_registry}" "placeholder-only" "placeholder-only registry status"
+  check_doc_contains "${placeholder_registry}" "assistant/lesson-planning/templates/lesson-planning-placeholder-skeleton.md" "placeholder skeleton path"
+  check_doc_contains "${placeholder_registry}" "generates_content" "generates_content registry field"
+  check_doc_contains "${placeholder_registry}" "uses_student_data" "uses_student_data registry field"
+  check_doc_contains "${placeholder_registry}" "uses_network" "uses_network registry field"
+  check_doc_contains "${placeholder_registry}" "uses_document_scanning" "uses_document_scanning registry field"
+  check_doc_contains "${placeholder_registry}" "uses_file_indexing" "uses_file_indexing registry field"
+  check_doc_contains "${placeholder_registry}" "false | false | false | false | false" "all disabled registry safety flags"
+  check_doc_contains "${placeholder_registry}" "descriptive only" "descriptive-only registry marker"
+  check_doc_contains "${placeholder_registry}" "do not activate generation hooks" "no generation hooks marker"
+  check_doc_contains "${placeholder_registry}" "do not permit student data" "no student data marker"
+  check_doc_contains "${placeholder_registry}" "do not permit document scanning" "no document scanning marker"
+  check_doc_contains "${placeholder_registry}" "file indexing" "no file indexing marker"
+  check_doc_contains "${placeholder_registry}" "network/API use" "no network/API marker"
+  check_doc_contains "${placeholder_registry}" "automation" "no automation marker"
+  check_doc_contains "${placeholder_registry}" "live integrations" "no live integrations marker"
 fi
 
 check_bash_syntax 'bin/chief-of-staff'

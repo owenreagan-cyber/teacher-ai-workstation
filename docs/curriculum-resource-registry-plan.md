@@ -402,6 +402,150 @@ This manual-entry workflow note does not add:
 - student data
 - live integrations
 
+## Metadata-Only Backup and Export Planning Note
+
+This section is planning documentation only. It does not create an active schema, database table, migration, registry data file, backup script, export script, archive bundle, file cache, importer, scanner, indexer, crawler, parser, review workflow, approval workflow, automation, or generator.
+
+### Purpose
+
+Future backup/export work should protect curriculum registry metadata and source references. Metadata backups/exports should help portability, auditability, disaster recovery, and human review.
+
+Raw curriculum files should remain in Google Drive, NAS, iCloud, or local folders. Teacher Workstation should not create paid duplicate storage for every raw curriculum file.
+
+Chief of Staff may eventually report whether metadata backup/export planning exists, but it should not own raw files or perform backups now.
+
+### Metadata-Only Scope
+
+Future backup/export scope is metadata only. Planning fields may include:
+
+- `id`, `title`
+- `source_system`, `source_label`, `source_path_or_url`, `source_reference_type`
+- `resource_type`, `subject`, `grade`, `course`, `unit`, `lesson`, `topic`
+- `teacher_only`, `student_facing`, `answer_key`, `assessment_related`, `contains_student_data`
+- `review_status`, `approval_status`, `usage_status`, `metadata_status`, `safety_status`, `activation_status`
+- `linked_pacing_item`, `linked_lesson_template`, `linked_canvas_item`
+- `notes`, `safety_notes`
+
+This is not a data file and not an export format in this PR. Exports would preserve source references only, not raw file contents.
+
+### Explicitly Out of Scope
+
+Future metadata backup/export planning does not include:
+
+- copying raw curriculum files
+- uploading files to Supabase Storage
+- mirroring Google Drive
+- mirroring NAS folders
+- mirroring iCloud folders
+- creating hidden file caches
+- exporting student data
+- exporting generated lesson briefs
+- exporting generated lesson drafts
+- exporting real review notes
+- reading files
+- hashing files
+- scanning folders
+- indexing folders
+- OCR
+- embeddings
+- vector search
+- API pulls
+- OAuth flows
+- background jobs
+- scheduled sync
+
+### Future Export Shape Options
+
+Planning-only export shape options (metadata only, no raw files, no student data, requires explicit future approval before implementation):
+
+| Option | Planning status | Notes |
+| --- | --- | --- |
+| Markdown summary export | planning only | Human-readable metadata summary for review. |
+| CSV metadata export | planning only | Spreadsheet-friendly metadata backup. |
+| JSON metadata export | planning only | Structured metadata backup. |
+| SQLite metadata backup | planning only | Local-first metadata store option for later. |
+| ZIP bundle for metadata-only export artifacts | planning only | Metadata-only archive bundle planning; no raw files. |
+
+### Future Backup Destinations
+
+Planning-only backup destination options:
+
+- local folder backup for metadata only
+- NAS metadata backup folder
+- Google Drive metadata backup folder
+- iCloud metadata backup folder
+- repo-excluded local export folder
+
+Destination planning does not activate any file writes. Destination planning does not activate APIs, OAuth, network calls, sync, or automation. Raw curriculum files remain in their source storage.
+
+### Future Export Safety Rules
+
+- metadata exports must not contain student data.
+- metadata exports must not include raw curriculum file contents.
+- metadata exports must not include generated lesson briefs or lesson drafts.
+- metadata exports must not include real review notes unless explicitly approved later.
+- `source_path_or_url` values should be treated as sensitive operational metadata.
+- `teacher_only`, `answer_key`, `assessment_related`, `restricted`, `blocked`, `retired`, and `do_not_use` statuses must be preserved.
+- metadata exports should preserve safety/status fields.
+- future exports should be manually triggered only if explicitly approved.
+- no scheduled exports or background jobs are active now.
+
+### Relationship to Teacher Workstation
+
+Teacher Workstation may later use metadata backup/export for portability and auditability. Future lesson-planning workflows may reference registry metadata, but not from this PR.
+
+This PR does not create lesson briefs, lesson drafts, or generated lessons.
+
+### Relationship to Chief of Staff
+
+Chief of Staff may eventually report whether metadata backup/export planning is present. Chief of Staff may eventually verify that backup/export boundaries are documented.
+
+Chief of Staff does not back up raw curriculum files. Chief of Staff does not copy files, scan folders, index files, call APIs, or run scheduled exports.
+
+### Explicit Non-Activation
+
+This metadata backup/export planning note does not add:
+
+- active schema
+- database tables
+- migrations
+- registry data files
+- no backup scripts
+- no export scripts
+- no archive bundles
+- no file caches
+- no raw file copying
+- no Drive mirroring
+- no NAS mirroring
+- no iCloud mirroring
+- validators
+- entry forms
+- new commands
+- review workflows
+- approval workflows
+- real review notes
+- automated safety classifiers
+- importers
+- scanners
+- crawlers
+- parsers
+- no file reads
+- no hashing
+- no scanning
+- no indexing
+- no OCR
+- no embeddings
+- no vector search
+- no APIs
+- no OAuth
+- no network calls
+- no automation
+- no background jobs
+- no generated lesson briefs
+- no generated lesson drafts
+- no student data
+- no live integrations
+
 ## Source System Values
 
 Future `source_system` planning values:

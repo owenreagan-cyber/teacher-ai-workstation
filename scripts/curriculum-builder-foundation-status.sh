@@ -325,6 +325,45 @@ if [[ -f "${registry_plan_doc}" ]]; then
   check_doc_contains "${registry_plan_doc}" "no student data" "no student data boundary in manual workflow"
 fi
 
+section "Curriculum Registry Metadata Backup Export Checks"
+
+if [[ -f "${registry_plan_doc}" ]]; then
+  check_doc_contains "${registry_plan_doc}" "Metadata-Only Backup and Export Planning Note" "Metadata-Only Backup and Export Planning Note"
+  check_doc_contains "${registry_plan_doc}" "Metadata-Only Scope" "Metadata-Only Scope"
+  check_doc_contains "${registry_plan_doc}" "Explicitly Out of Scope" "Explicitly Out of Scope"
+  check_doc_contains "${registry_plan_doc}" "Future Export Shape Options" "Future Export Shape Options"
+  check_doc_contains "${registry_plan_doc}" "Future Backup Destinations" "Future Backup Destinations"
+  check_doc_contains "${registry_plan_doc}" "Future Export Safety Rules" "Future Export Safety Rules"
+  check_doc_contains "${registry_plan_doc}" "metadata only" "metadata only backup scope"
+  check_doc_contains "${registry_plan_doc}" "source references" "source references backup scope"
+  check_doc_contains "${registry_plan_doc}" "no raw files" "no raw files boundary"
+  check_doc_contains "${registry_plan_doc}" "no backup scripts" "no backup scripts boundary"
+  check_doc_contains "${registry_plan_doc}" "no export scripts" "no export scripts boundary"
+  check_doc_contains "${registry_plan_doc}" "no archive bundles" "no archive bundles boundary"
+  check_doc_contains "${registry_plan_doc}" "no file caches" "no file caches boundary"
+  check_doc_contains "${registry_plan_doc}" "no raw file copying" "no raw file copying boundary"
+  check_doc_contains "${registry_plan_doc}" "no Drive mirroring" "no Drive mirroring boundary"
+  check_doc_contains "${registry_plan_doc}" "no NAS mirroring" "no NAS mirroring boundary"
+  check_doc_contains "${registry_plan_doc}" "no iCloud mirroring" "no iCloud mirroring boundary"
+  check_doc_contains "${registry_plan_doc}" "no scanning" "no scanning boundary in backup note"
+  check_doc_contains "${registry_plan_doc}" "no indexing" "no indexing boundary in backup note"
+  check_doc_contains "${registry_plan_doc}" "Relationship to Teacher Workstation" "Relationship to Teacher Workstation in backup note"
+  check_doc_contains "${registry_plan_doc}" "Relationship to Chief of Staff" "Relationship to Chief of Staff in backup note"
+  check_doc_contains "${registry_plan_doc}" "Explicit Non-Activation" "Explicit Non-Activation in backup note"
+  check_doc_contains "${registry_plan_doc}" "Google Drive" "Google Drive in backup note"
+  check_doc_contains "${registry_plan_doc}" "NAS" "NAS in backup note"
+  check_doc_contains "${registry_plan_doc}" "iCloud" "iCloud in backup note"
+  check_doc_contains "${registry_plan_doc}" "local folders" "local folders in backup note"
+  check_doc_contains "${registry_plan_doc}" "no hashing" "no hashing boundary in backup note"
+  check_doc_contains "${registry_plan_doc}" "no APIs" "no APIs boundary in backup note"
+  check_doc_contains "${registry_plan_doc}" "no OAuth" "no OAuth boundary in backup note"
+  check_doc_contains "${registry_plan_doc}" "no automation" "no automation boundary in backup note"
+  check_doc_contains "${registry_plan_doc}" "no background jobs" "no background jobs boundary in backup note"
+  check_doc_contains "${registry_plan_doc}" "no generated lesson briefs" "no generated lesson briefs boundary in backup note"
+  check_doc_contains "${registry_plan_doc}" "no generated lesson drafts" "no generated lesson drafts boundary in backup note"
+  check_doc_contains "${registry_plan_doc}" "no live integrations" "no live integrations boundary in backup note"
+fi
+
 section "Command Wiring Checks"
 
 check_help_contains '--curriculum-builder-foundation-status'

@@ -92,6 +92,8 @@ planning_closeout_doc="docs/curriculum-builder-planning-closeout.md"
 maintainer_handoff_doc="docs/curriculum-builder-maintainer-handoff.md"
 future_pr_checklist_doc="docs/curriculum-builder-future-pr-checklist.md"
 canonical_planning_index_doc="docs/curriculum-builder-canonical-planning-index.md"
+dashboard_doc="docs/chief-of-staff-dashboard.md"
+dashboard_section_summary_doc="docs/dashboard-section-summary-polish.md"
 
 section "Curriculum Builder Local-First Foundation Plan"
 cat <<'EOF'
@@ -789,6 +791,22 @@ if [[ -f "${canonical_planning_index_doc}" ]]; then
   check_doc_contains "${canonical_planning_index_doc}" "no lesson generation" "no lesson generation boundary in canonical index"
   check_doc_contains "${canonical_planning_index_doc}" "no student data" "no student data boundary in canonical index"
   check_doc_contains "${canonical_planning_index_doc}" "no raw curriculum file duplication" "no raw curriculum file duplication boundary in canonical index"
+fi
+
+section "Dashboard Planning Index Visibility Checks"
+
+if [[ -f "${dashboard_doc}" ]]; then
+  check_doc_contains "${dashboard_doc}" "Curriculum Builder Planning Index Visibility" "Curriculum Builder Planning Index Visibility in dashboard doc"
+  check_doc_contains "${dashboard_doc}" "docs/curriculum-builder-canonical-planning-index.md" "canonical planning index reference in dashboard doc"
+  check_doc_contains "${dashboard_doc}" "Curriculum Builder planning index" "Curriculum Builder planning index label in dashboard doc"
+  check_doc_contains "${dashboard_doc}" "Approval gate required before implementation" "approval gate visibility in dashboard doc"
+  check_doc_contains "${dashboard_doc}" "curriculum-builder-foundation-status" "curriculum builder status command in dashboard doc"
+  check_doc_contains "${dashboard_doc}" "does not change dashboard behavior" "dashboard behavior preservation note"
+fi
+
+if [[ -f "${dashboard_section_summary_doc}" ]]; then
+  check_doc_contains "${dashboard_section_summary_doc}" "Lesson Planning Status Planning Index" "Lesson Planning Status Planning Index in dashboard section summary doc"
+  check_doc_contains "${dashboard_section_summary_doc}" "docs/curriculum-builder-canonical-planning-index.md" "canonical planning index reference in dashboard section summary doc"
 fi
 
 section "Command Wiring Checks"

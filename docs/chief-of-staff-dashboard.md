@@ -138,6 +138,24 @@ If Phase 0E passes but Phase 1 has warnings for planned/future docs, treat those
 
 `assistant/workflows/morning-brief.md` exists as an interactive workflow. Running the dashboard before the morning brief gives current system status and next-action context. The morning brief still uses only provided or approved sources and does not read calendars, notes, tasks, Gmail, or Drive in the background.
 
+## Curriculum Builder Planning Index Visibility
+
+The dashboard includes Curriculum Builder foundation status under Lesson Planning Status. For planning navigation beyond PASS/WARN/FAIL counts, use the canonical planning index.
+
+| Topic | Reference |
+| --- | --- |
+| Curriculum Builder planning index | `docs/curriculum-builder-canonical-planning-index.md` |
+| Approval gate required before implementation | `docs/curriculum-builder-approval-gate.md` |
+| Status command to verify readiness | `bin/chief-of-staff --curriculum-builder-foundation-status` |
+
+Additional verification:
+
+```bash
+bin/chief-of-staff --dashboard
+```
+
+This visibility note is documentation only. It does not change dashboard behavior, dashboard health count, or PASS/WARN/FAIL semantics.
+
 ## Future Ideas Not Implemented
 
 - `--json` output.

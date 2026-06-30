@@ -60,6 +60,16 @@ Final Health Summary
 
 Section summary lines use these stable group names.
 
+## Lesson Planning Status Planning Index
+
+The Lesson Planning Status dashboard group includes Curriculum Builder foundation status. For maintainer navigation:
+
+- Curriculum Builder planning index: `docs/curriculum-builder-canonical-planning-index.md`
+- Approval gate required before implementation: `docs/curriculum-builder-approval-gate.md`
+- Status command to verify readiness: `bin/chief-of-staff --curriculum-builder-foundation-status`
+
+See also `docs/chief-of-staff-dashboard.md` for dashboard planning index visibility.
+
 ## Failure and Warning Visibility Rules
 
 ```text

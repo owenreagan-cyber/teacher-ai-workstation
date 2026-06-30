@@ -16,6 +16,54 @@ Any future move from placeholder-only structure to active lesson-planning behavi
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | `lesson-planning-placeholder-template` | Lesson-planning placeholder template | placeholder-only | `assistant/lesson-planning/templates/lesson-planning-placeholder-skeleton.md` | false | false | false | false | false |
 
+## Placeholder Entry Shape
+
+Placeholder registry entries should stay descriptive and static. Each entry should identify:
+
+- a stable placeholder/template `id`
+- a human-readable `name`
+- `placeholder-only` status
+- the referenced skeleton `path`
+- `generates_content`: explicit non-generative status (must be `false`)
+- `uses_student_data`: explicit no-student-data status (must be `false`)
+- `uses_network`: explicit no-network/API status (must be `false`)
+- `uses_document_scanning`: explicit no-document-scanning status (must be `false`)
+- `uses_file_indexing`: explicit no-file-indexing status (must be `false`)
+
+New rows should follow the table format above and include the same local-first safety markers.
+
+## Placeholder Skeleton Section Inventory
+
+The registered skeleton at `assistant/lesson-planning/templates/lesson-planning-placeholder-skeleton.md` reserves the following inert placeholder sections. None of these sections collect inputs or produce output.
+
+| section | purpose |
+| --- | --- |
+| Metadata | Reserved structure only; no lesson metadata is collected or generated. |
+| Learning Goals | Reserved structure only; no objectives, standards, or curriculum claims are generated. |
+| Materials | Reserved structure only; no materials list is generated. |
+| Activity Sequence | Reserved structure only; no warm-up, instruction, practice, or activity steps are generated. |
+| Checks for Understanding | Reserved structure only; no assessment prompts, rubrics, or review notes are generated. |
+| Differentiation Notes | Reserved structure only; no student-sensitive details are accepted. |
+| Assessment Placeholder | Reserved structure only; no quiz, task, rubric, or grading guidance is generated. |
+| Safety / Local-First Notes | Static documentation boundary; no scanning, indexing, parsing, APIs, automation, or live integrations. |
+
+## Negative Scope
+
+The lesson-planning placeholder path is not active yet. It does not support:
+
+- lesson generation
+- document scanning
+- file indexing
+- generated briefs
+- generated drafts
+- real review notes
+- student data handling
+- network/API calls
+- automation
+- live integrations
+
+Any move from placeholder-only scaffolding to active lesson-planning behavior requires a separate explicitly approved PR.
+
 ## Safety Notes
 
 - Registry entries are descriptive only.

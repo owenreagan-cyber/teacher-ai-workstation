@@ -117,3 +117,24 @@ After the placeholder readiness phase, the next safe planning direction is stati
 A future separately approved PR may define the expected static shape for lesson-planning placeholder templates, including reserved fields, required placeholder-only markers, local-first safety flags, and validation expectations.
 
 This note does not approve lesson generation, document scanning, file indexing, student-data handling, network/API calls, automation, live integrations, generated briefs, generated drafts, or real review notes. Any schema file, validator, runtime behavior, or activation work requires a separate explicitly approved PR.
+
+## Static Schema Field Inventory
+
+A future separately approved PR may define a static placeholder schema for lesson-planning templates. At the planning level, the schema may include fields such as:
+
+| Field | Planning purpose |
+| --- | --- |
+| `id` | Stable identifier for the placeholder template. |
+| `name` | Human-readable placeholder template name. |
+| `status` | Explicit placeholder-only status. |
+| `version` | Static schema or placeholder version marker. |
+| `skeleton_path` | Path to the inert placeholder skeleton. |
+| `reserved_sections` | Static list of reserved placeholder sections. |
+| `required_placeholder_markers` | Markers that prove the template remains placeholder-only. |
+| `local_first_safety_flags` | Explicit false/disabled flags for non-local behavior. |
+| `prohibited_capabilities` | Static list of unsupported behaviors such as generation, scanning, indexing, student-data handling, APIs, automation, and live integrations. |
+| `validation_expectations` | Planning notes for future static validation, if separately approved. |
+| `activation_status` | Explicit inactive/not-approved status. |
+| `activation_requires_approved_pr` | Marker that active behavior requires a separate approved PR. |
+
+This inventory is documentation-only. It does not create a schema file, add a validator, define runtime behavior, or approve active lesson-planning behavior.

@@ -91,6 +91,7 @@ approval_gate_doc="docs/curriculum-builder-approval-gate.md"
 planning_closeout_doc="docs/curriculum-builder-planning-closeout.md"
 maintainer_handoff_doc="docs/curriculum-builder-maintainer-handoff.md"
 future_pr_checklist_doc="docs/curriculum-builder-future-pr-checklist.md"
+canonical_planning_index_doc="docs/curriculum-builder-canonical-planning-index.md"
 
 section "Curriculum Builder Local-First Foundation Plan"
 cat <<'EOF'
@@ -754,6 +755,40 @@ if [[ -f "${future_pr_checklist_doc}" ]]; then
   check_doc_contains "${future_pr_checklist_doc}" "no lesson generation" "no lesson generation boundary in future PR checklist"
   check_doc_contains "${future_pr_checklist_doc}" "no student data" "no student data boundary in future PR checklist"
   check_doc_contains "${future_pr_checklist_doc}" "no raw curriculum file duplication" "no raw curriculum file duplication boundary in future PR checklist"
+fi
+
+section "Curriculum Builder Canonical Planning Index Checks"
+
+check_file "${canonical_planning_index_doc}"
+
+if [[ -f "${canonical_planning_index_doc}" ]]; then
+  check_doc_contains "${canonical_planning_index_doc}" "Curriculum Builder Canonical Planning Index" "Curriculum Builder Canonical Planning Index"
+  check_doc_contains "${canonical_planning_index_doc}" "current state summary" "current state summary in canonical index"
+  check_doc_contains "${canonical_planning_index_doc}" "planning stack purpose" "planning stack purpose in canonical index"
+  check_doc_contains "${canonical_planning_index_doc}" "local-first architecture summary" "local-first architecture summary in canonical index"
+  check_doc_contains "${canonical_planning_index_doc}" "storage model summary" "storage model summary in canonical index"
+  check_doc_contains "${canonical_planning_index_doc}" "metadata/reference-only registry summary" "metadata/reference-only registry summary in canonical index"
+  check_doc_contains "${canonical_planning_index_doc}" "Teacher Workstation relationship" "Teacher Workstation relationship in canonical index"
+  check_doc_contains "${canonical_planning_index_doc}" "Chief of Staff relationship" "Chief of Staff relationship in canonical index"
+  check_doc_contains "${canonical_planning_index_doc}" "approval gate summary" "approval gate summary in canonical index"
+  check_doc_contains "${canonical_planning_index_doc}" "decision intake summary" "decision intake summary in canonical index"
+  check_doc_contains "${canonical_planning_index_doc}" "maintainer handoff summary" "maintainer handoff summary in canonical index"
+  check_doc_contains "${canonical_planning_index_doc}" "future PR checklist summary" "future PR checklist summary in canonical index"
+  check_doc_contains "${canonical_planning_index_doc}" "current status commands" "current status commands in canonical index"
+  check_doc_contains "${canonical_planning_index_doc}" "required validation commands" "required validation commands in canonical index"
+  check_doc_contains "${canonical_planning_index_doc}" "final local main proof requirements" "final local main proof requirements in canonical index"
+  check_doc_contains "${canonical_planning_index_doc}" "artifact map" "artifact map in canonical index"
+  check_doc_contains "${canonical_planning_index_doc}" "Start Here" "Start Here section in canonical index"
+  check_doc_contains "${canonical_planning_index_doc}" "Safe Next PR Routing" "Safe Next PR Routing section in canonical index"
+  check_doc_contains "${canonical_planning_index_doc}" "Do Not Start Here" "Do Not Start Here section in canonical index"
+  check_doc_contains "${canonical_planning_index_doc}" "blocked work summary" "blocked work summary in canonical index"
+  check_doc_contains "${canonical_planning_index_doc}" "Non-Activation confirmation" "Non-Activation confirmation in canonical index"
+  check_doc_contains "${canonical_planning_index_doc}" "no scanning/indexing/OCR/embeddings" "no scanning/indexing/OCR/embeddings boundary in canonical index"
+  check_doc_contains "${canonical_planning_index_doc}" "no APIs/OAuth/network calls" "no APIs/OAuth/network calls boundary in canonical index"
+  check_doc_contains "${canonical_planning_index_doc}" "no automation/live integrations" "no automation/live integrations boundary in canonical index"
+  check_doc_contains "${canonical_planning_index_doc}" "no lesson generation" "no lesson generation boundary in canonical index"
+  check_doc_contains "${canonical_planning_index_doc}" "no student data" "no student data boundary in canonical index"
+  check_doc_contains "${canonical_planning_index_doc}" "no raw curriculum file duplication" "no raw curriculum file duplication boundary in canonical index"
 fi
 
 section "Command Wiring Checks"

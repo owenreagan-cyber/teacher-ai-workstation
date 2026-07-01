@@ -49,6 +49,11 @@ Core Dashboard and Health:
 Return to Core / Roadmap:
   --return-to-core-status              Show read-only paused-tracks / return-to-core status proof and exit.
 
+Chief of Staff v1 Operating (read-only):
+  --next-action                        Show deterministic next recommended program and daily focus and exit.
+  --chief-of-staff-command-index-v1-status
+                                       Show Chief of Staff command index v1 status and exit.
+
 Lesson Planning:
   --lesson-status                      Show local lesson planning workspace status and exit.
   --lesson-brief-status                Show local lesson brief helper status and exit.
@@ -1972,6 +1977,24 @@ while [[ $# -gt 0 ]]; do
         die "Return to Chief of Staff core status script is missing: scripts/return-to-chief-of-staff-core-status.sh"
       fi
       bash "${return_to_core_status_script}"
+      exit 0
+      ;;
+    --next-action)
+      repo_root="$(resolve_repo_root)"
+      next_action_script="${repo_root}/scripts/chief-of-staff-next-action.sh"
+      if [[ ! -f "${next_action_script}" ]]; then
+        die "Chief of Staff next-action script is missing: scripts/chief-of-staff-next-action.sh"
+      fi
+      bash "${next_action_script}"
+      exit 0
+      ;;
+    --chief-of-staff-command-index-v1-status)
+      repo_root="$(resolve_repo_root)"
+      command_index_status_script="${repo_root}/scripts/chief-of-staff-command-index-v1-status.sh"
+      if [[ ! -f "${command_index_status_script}" ]]; then
+        die "Chief of Staff command index v1 status script is missing: scripts/chief-of-staff-command-index-v1-status.sh"
+      fi
+      bash "${command_index_status_script}"
       exit 0
       ;;
     --dashboard-readability-status)

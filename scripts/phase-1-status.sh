@@ -784,6 +784,7 @@ for path in \
   docs/cursor-prompt-template.md \
   docs/cursor-pr-review-checklist.md \
   docs/implementation-approval-gate.md \
+  docs/engineering-constitution.md \
   scripts/cursor-workflow-status.sh; do
   check_required_file "${path}"
 done

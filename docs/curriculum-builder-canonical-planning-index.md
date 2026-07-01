@@ -84,6 +84,7 @@ future PR checklist summary: `docs/curriculum-builder-future-pr-checklist.md` is
 | Output contract foundation | `docs/curriculum-builder-output-contract-foundation.md` | Future output contract planning placeholders (slide deck, worksheet, review game, teacher script, Canvas export/package) |
 | Static source registry plan | `docs/curriculum-builder-static-source-registry-plan.md` | Future static/manual source registry metadata/reference planning |
 | Section completion audit | `docs/curriculum-builder-section-completion-audit.md` | Final section-level planning foundation completion audit and closure |
+| Engineering constitution | `docs/engineering-constitution.md` | Canonical engineering authority for the repository |
 | Foundation status script | `scripts/curriculum-builder-foundation-status.sh` | Read-only PASS/WARN/FAIL status checks |
 
 ## Start Here

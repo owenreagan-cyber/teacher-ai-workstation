@@ -255,3 +255,7 @@ Teacher Script Contract Schema v0 promotes `teacher_script_contract` to a second
 ## Worksheet Contract Schema v0 Implementation Activation (Phase 2 Mission 5)
 
 Worksheet Contract Schema v0 promotes `worksheet_contract` to a third fully validated canonical contract. See `docs/curriculum-worksheet-contract-v0.md`. No worksheet generation, PDF output, or renderers.
+
+## Review Game Contract Schema v0 Implementation Activation (Phase 2 Mission 6)
+
+Review Game Contract Schema v0 promotes `review_game_contract` to a fourth fully validated canonical contract. See `docs/curriculum-review-game-contract-v0.md`. No game generation, interactive runtime, or renderers.

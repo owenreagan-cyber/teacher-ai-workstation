@@ -6,10 +6,10 @@
   "canonical_contracts": [
     "contracts/sample-di-slide-deck-001.json",
     "contracts/sample-teacher-script-001.json",
-    "contracts/sample-worksheet-001.json"
+    "contracts/sample-worksheet-001.json",
+    "contracts/sample-review-game-001.json"
   ],
   "placeholder_contracts": [
-    "placeholders/review-game-contract-placeholder.json",
     "placeholders/canvas-export-package-contract-placeholder.json"
   ]
 }

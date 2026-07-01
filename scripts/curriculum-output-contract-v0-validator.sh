@@ -146,6 +146,15 @@ WS_REQUIRED = {
     "metadata_extensions", "planning_notes", "created_by_manual_entry",
     "activation_status",
 }
+RG_REQUIRED = {
+    "contract_version", "contract_status", "metadata_only", "read_only",
+    "contract_id", "contract_type", "title", "subject", "grade_band", "course",
+    "unit", "lesson", "registry_references", "teacher_only", "student_facing_allowed",
+    "review_state", "approval_status", "game_context", "round_placeholders",
+    "local_first_safety_flags", "non_activation_flags", "pedagogy_extensions",
+    "metadata_extensions", "planning_notes", "created_by_manual_entry",
+    "activation_status",
+}
 REVIEW_STATES = {
     "not_reviewed", "metadata_only", "teacher_reviewed", "needs_update", "retired",
 }
@@ -167,6 +176,7 @@ REGISTRY_ID_PATTERN = re.compile(r"^sample-[a-z0-9-]+$")
 SLIDE_ID_PATTERN = re.compile(r"^slide-[0-9]{2}$")
 SECTION_ID_PATTERN = re.compile(r"^section-[0-9]{2}$")
 EXERCISE_ID_PATTERN = re.compile(r"^exercise-[0-9]{2}$")
+ROUND_ID_PATTERN = re.compile(r"^round-[0-9]{2}$")
 HTTP_PATTERN = re.compile(r"https?://", re.IGNORECASE)
 HTML_PATTERN = re.compile(r"<\s*/?\s*[a-zA-Z]", re.IGNORECASE)
 STUDENT_NAME_PATTERN = re.compile(
@@ -269,6 +279,7 @@ def validate_placeholder(label, data, registry_ids):
         "lesson_context", "script_sections", "non_activation_flags",
         "pedagogy_extensions", "metadata_extensions",
         "worksheet_context", "exercise_placeholders",
+        "game_context", "round_placeholders",
     }
     present = set(data.keys()) & blocked_type_fields
     if present:
@@ -531,6 +542,99 @@ def validate_worksheet_contract(label, data, registry_records):
                     warnings.append(f"{exercise_label} {text_key} should include placeholder wording")
 
 
+def validate_review_game_contract(label, data, registry_records):
+    for field in RG_REQUIRED:
+        if field not in data:
+            errors.append(f"{label} missing required field: {field}")
+
+    extra = set(data.keys()) - RG_REQUIRED
+    if extra:
+        errors.append(f"{label} unexpected fields: {sorted(extra)}")
+
+    validate_common_envelope(label, data, placeholder=False)
+
+    if data.get("contract_type") != "review_game_contract":
+        errors.append(f"{label} contract_type must be review_game_contract")
+
+    refs = data.get("registry_references", [])
+    validate_registry_refs(label, refs, set(registry_records.keys()))
+    if isinstance(refs, list) and len(refs) < 1:
+        errors.append(f"{label} canonical contract requires at least one registry reference")
+
+    teacher_only = data.get("teacher_only")
+    if not isinstance(teacher_only, bool):
+        errors.append(f"{label} teacher_only must be boolean")
+
+    student_facing = data.get("student_facing_allowed")
+    if student_facing not in STUDENT_FACING:
+        errors.append(f"{label} invalid student_facing_allowed: {student_facing!r}")
+
+    review_state = data.get("review_state")
+    if review_state not in REVIEW_STATES:
+        errors.append(f"{label} invalid review_state: {review_state!r}")
+
+    approval_status = data.get("approval_status")
+    if approval_status not in APPROVAL_STATUSES:
+        errors.append(f"{label} invalid approval_status: {approval_status!r}")
+
+    non_activation = data.get("non_activation_flags")
+    if not isinstance(non_activation, list) or not all(isinstance(item, str) for item in non_activation):
+        errors.append(f"{label} non_activation_flags must be string array")
+    elif len(non_activation) < 5:
+        errors.append(f"{label} non_activation_flags must include at least 5 entries")
+
+    for ext_field in ("pedagogy_extensions", "metadata_extensions"):
+        value = data.get(ext_field)
+        if not isinstance(value, dict):
+            errors.append(f"{label} {ext_field} must be an object")
+
+    game_context = data.get("game_context")
+    if not isinstance(game_context, dict):
+        errors.append(f"{label} game_context must be an object")
+    else:
+        for key in ("pacing_reference", "game_format", "focus_topic"):
+            if key not in game_context:
+                errors.append(f"{label} game_context missing {key}")
+        if game_context.get("game_format") != "review_game":
+            errors.append(f"{label} game_context game_format must be review_game")
+        focus_topic = game_context.get("focus_topic", "")
+        if not isinstance(focus_topic, str) or not focus_topic.strip():
+            errors.append(f"{label} game_context focus_topic must be non-empty string")
+        elif "placeholder" not in focus_topic.lower():
+            warnings.append(f"{label} game_context focus_topic should include placeholder wording")
+
+    rounds = data.get("round_placeholders")
+    if not isinstance(rounds, list) or not rounds:
+        errors.append(f"{label} round_placeholders must be non-empty array")
+    else:
+        seen_round_ids = set()
+        round_text_fields = (
+            "question_placeholder", "answer_placeholder",
+            "timing_hint_placeholder", "materials_note_placeholder",
+        )
+        for index, round_item in enumerate(rounds):
+            round_label = f"{label} round_placeholders[{index}]"
+            if not isinstance(round_item, dict):
+                errors.append(f"{round_label} must be an object")
+                continue
+            for key in ("round_id", *round_text_fields):
+                if key not in round_item:
+                    errors.append(f"{round_label} missing {key}")
+            round_id = round_item.get("round_id", "")
+            if not isinstance(round_id, str) or not ROUND_ID_PATTERN.match(round_id):
+                errors.append(f"{round_label} invalid round_id: {round_id!r}")
+            elif round_id in seen_round_ids:
+                errors.append(f"{round_label} duplicate round_id: {round_id}")
+            else:
+                seen_round_ids.add(round_id)
+            for text_key in round_text_fields:
+                value = round_item.get(text_key, "")
+                if not isinstance(value, str) or not value.strip():
+                    errors.append(f"{round_label} {text_key} must be non-empty string")
+                elif "placeholder" not in value.lower():
+                    warnings.append(f"{round_label} {text_key} should include placeholder wording")
+
+
 def get_canonical_contract_paths(manifest):
     canonical_contracts = manifest.get("canonical_contracts")
     if isinstance(canonical_contracts, list) and canonical_contracts:
@@ -575,10 +679,10 @@ else:
     manifest = load_json(manifest_path)
     canonical_rels = get_canonical_contract_paths(manifest)
     placeholder_rels = manifest.get("placeholder_contracts", [])
-    if not isinstance(canonical_rels, list) or len(canonical_rels) != 3:
-        errors.append("manifest must list exactly 3 canonical contracts")
-    if not isinstance(placeholder_rels, list) or len(placeholder_rels) != 2:
-        errors.append("manifest must list exactly 2 placeholder contracts")
+    if not isinstance(canonical_rels, list) or len(canonical_rels) != 4:
+        errors.append("manifest must list exactly 4 canonical contracts")
+    if not isinstance(placeholder_rels, list) or len(placeholder_rels) != 1:
+        errors.append("manifest must list exactly 1 placeholder contract")
 
     canonical_pass_messages = []
     for canonical_rel in canonical_rels:
@@ -598,6 +702,9 @@ else:
         elif contract_type == "worksheet_contract":
             validate_worksheet_contract(label, contract_data, registry_records)
             canonical_pass_messages.append("canonical worksheet contract valid")
+        elif contract_type == "review_game_contract":
+            validate_review_game_contract(label, contract_data, registry_records)
+            canonical_pass_messages.append("canonical review game contract valid")
         else:
             errors.append(f"{label} unsupported canonical contract_type: {contract_type!r}")
 

@@ -1942,7 +1942,18 @@ group_banner "Recommendation"
 begin_section_summary
 
 section "Build Queue / Next Recommended Action"
-if [[ -f docs/build-queue.md ]]; then
+if [[ -f scripts/chief-of-staff-next-action.sh ]]; then
+  next_action_result=0
+  next_action_output="$(bash scripts/chief-of-staff-next-action.sh 2>&1)" || next_action_result=$?
+  next_action_fail="$(printf '%s\n' "${next_action_output}" | awk '/^Summary$/{p=1; next} p && /^FAIL:/{v=$2} END{print v+0}')"
+  if [[ "${next_action_result}" != "0" || "${next_action_fail}" -gt 0 ]]; then
+    printf '%s\n' "${next_action_output}"
+    fail "next-action recommendation failed"
+  else
+    pass "next-action recommendation completed"
+    printf '%s\n' "${next_action_output}" | sed -n '/^Recommended Next Action$/,/^Summary$/p' | sed '/^Summary$/d'
+  fi
+elif [[ -f docs/build-queue.md ]]; then
   next_pr="$(awk '
     /^## Next PR[[:space:]]*$/ { in_next = 1; next }
     in_next && NF > 0 { print; exit }

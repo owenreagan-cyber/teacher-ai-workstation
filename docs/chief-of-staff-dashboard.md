@@ -136,7 +136,7 @@ If Phase 0E passes but Phase 1 has warnings for planned/future docs, treat those
 
 ## Relationship To Morning Brief
 
-`assistant/workflows/morning-brief.md` exists as an interactive workflow. Running the dashboard before the morning brief gives current system status and next-action context. The morning brief still uses only provided or approved sources and does not read calendars, notes, tasks, Gmail, or Drive in the background.
+`assistant/workflows/morning-brief.md` exists as an interactive workflow. Running the dashboard before the morning brief gives current system status and next-action context. Deterministic next-action output is shared with `bin/chief-of-staff --next-action` via `scripts/chief-of-staff-next-action.sh`. The morning brief still uses only provided or approved sources and does not read calendars, notes, tasks, Gmail, or Drive in the background.
 
 ## Curriculum Builder Planning Index Visibility
 
@@ -164,6 +164,7 @@ These commands are also read-only status proof surfaces unless explicitly named 
 
 - `bin/chief-of-staff --curriculum-builder-foundation-status` (Curriculum Builder parked; approval-gated)
 - `bin/chief-of-staff --teacher-app-designer-canvas-llm-status` (Teacher App Designer / Canvas LLM planning only; no live connectors)
+- `bin/chief-of-staff --next-action` (deterministic next recommended program; read-only)
 - `bin/chief-of-staff --return-to-core-status` (paused tracks / return-to-core proof)
 - `bin/chief-of-staff --prompt-pack-stale-reference-audit-status` (prompt-pack reference proof)
 - `bin/chief-of-staff --wallpaper-photo-rotation-handoff-safety-status` (Appearance & Vibe foundation parked; live curator not started)

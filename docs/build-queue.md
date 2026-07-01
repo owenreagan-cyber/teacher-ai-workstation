@@ -102,9 +102,9 @@ Curriculum Builder planning foundation is complete for now. Implementation/regis
 
 ## Current PR
 
-Curriculum Builder section completion audit and closure — documentation/status only. See `docs/curriculum-builder-section-completion-audit.md`.
-
 Previously parked — start from `docs/phase-1-chief-of-staff-status-audit.md` — Repo-Wide Parked Tracks and Active Status Map.
+
+Curriculum Builder section completion audit and closure is complete (PR #162). See `docs/curriculum-builder-section-completion-audit.md`. Planning foundation section-complete; implementation approval-gated.
 
 Canvas LLM section completion audit and closure is complete (PR #159). See `docs/canvas-llm-section-completion-audit.md`. Stop marker remains active.
 
@@ -114,7 +114,7 @@ Curriculum Builder output contract planning foundation is complete (PR #155). Se
 
 Lesson-planning: placeholder skeleton and registry exist and pass readiness checks. Future follow-ons are documentation/status-only unless explicitly approved. Static template schema planning remains planning-only.
 
-Curriculum Builder: planning foundation complete for now (PR #124–#157, section completion audit PR #162). Implementation requires approval gate and completed decision intake.
+Curriculum Builder: planning foundation section-complete (PR #162). Output contract planning foundation complete (PR #155). Static source registry plan complete (PR #157). Implementation requires approval gate and completed decision intake.
 
 Appearance & Vibe wallpaper/photo curator foundation stack: complete for now.
 Live curator implementation: not started.

@@ -73,7 +73,7 @@
 - Curriculum Builder output contract planning foundation: complete
 - Curriculum Builder static source registry plan: complete
 - Canvas LLM section completion audit and closure: complete
-- Curriculum Builder section completion audit and closure: in progress (PR #162)
+- Curriculum Builder section completion audit and closure: complete
 
 ### Now
 
@@ -93,7 +93,7 @@
 
 ### Next
 
-- Curriculum Builder section completion audit in progress (PR #162). Documentation/status only; planning foundation section complete; implementation remains approval-gated.
+- Curriculum Builder section completion audit complete (PR #162). Documentation/status only; planning foundation section-complete; implementation remains approval-gated.
 - Curriculum Builder static source registry plan complete (PR #157). Documentation/status only; metadata/reference-only; no scanning, folder crawling, file indexing, OCR, embeddings, vector database, or Drive/NAS/iCloud resolution.
 - Curriculum Builder output contract planning foundation complete (PR #155). Documentation/status only; no lesson generation, ingestion, RAG, or runtime behavior.
 - Canvas LLM is complete/frozen/stopped. final handoff snapshot is recorded. stop marker is active. Do not start Canvas LLM PRs by default.

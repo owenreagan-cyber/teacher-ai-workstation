@@ -93,6 +93,7 @@ Handoff and status clarity. Start from `docs/phase-1-chief-of-staff-status-audit
 - Curriculum Builder section completion audit and closure (PR #162).
 - Implementation approval gate and track intake foundation (PR #164).
 - Engineering Constitution Phase 2 transition (PR #166).
+- Curriculum Registry v0 manual metadata foundation (Phase 2 Mission 1).
 
 ## Engineering Constitution Status
 
@@ -106,9 +107,13 @@ Repo-wide implementation approval gate is active. No implementation is approved 
 
 Canvas LLM docs/status foundation is complete for now. Runtime/export/API/generation work is frozen unless separately and explicitly approved. final handoff snapshot recorded. stop marker active. section completion audit recorded. Recommended next focus: Curriculum Builder foundation.
 
+## Curriculum Registry v0 Status
+
+Curriculum Registry v0 is active (Phase 2 Mission 1). See `docs/curriculum-registry-v0.md`. Local-first read-only manual metadata registry with deterministic validation. Fictional placeholder records only. No scanning, ingestion, RAG, lesson generation, APIs, OAuth, or student data.
+
 ## Curriculum Builder Foundation Status
 
-Curriculum Builder planning foundation is complete for now. Implementation/registry/ingestion/generation work is approval-gated unless separately and explicitly approved. section completion audit recorded. Output contract planning foundation complete (PR #155). Static source registry plan complete (PR #157). Recommended next focus: approval-gated implementation only with explicit intake.
+Curriculum Builder planning foundation is complete for now. Registry v0 manual metadata foundation is active under Phase 2 Mission 1. Ingestion, live resolution, renderers, and generation work remain approval-gated unless separately and explicitly approved. section completion audit recorded. Output contract planning foundation complete (PR #155). Static source registry plan complete (PR #157). Recommended next focus: output contract schema activation or bounded validators with explicit intake.
 
 ## Current PR
 
@@ -118,7 +123,9 @@ Engineering Constitution Phase 2 transition is complete (PR #166). See `docs/eng
 
 Implementation approval gate and track intake foundation is complete (PR #164). See `docs/implementation-approval-gate.md`. Gate active; no implementation approved by default.
 
-Curriculum Builder section completion audit and closure is complete (PR #162). See `docs/curriculum-builder-section-completion-audit.md`. Planning foundation section-complete; implementation approval-gated.
+Curriculum Builder section completion audit and closure is complete (PR #162). See `docs/curriculum-builder-section-completion-audit.md`. Planning foundation section-complete; Registry v0 activation documented.
+
+Curriculum Registry v0 manual metadata foundation is active (Phase 2 Mission 1). See `docs/curriculum-registry-v0.md`. Read-only validation only; no ingestion or generation.
 
 Canvas LLM section completion audit and closure is complete (PR #159). See `docs/canvas-llm-section-completion-audit.md`. Stop marker remains active.
 

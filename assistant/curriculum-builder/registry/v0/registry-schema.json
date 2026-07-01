@@ -1,0 +1,143 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "teacher-ai-workstation/curriculum-registry/v0/registry-schema.json",
+  "title": "Curriculum Registry v0 Record Schema",
+  "description": "Manual metadata-only registry records for Curriculum Registry v0. Read-only, local-first, no ingestion.",
+  "type": "object",
+  "required": [
+    "registry_id",
+    "title",
+    "resource_type",
+    "source_system",
+    "source_reference",
+    "source_reference_type",
+    "subject",
+    "grade_band",
+    "course",
+    "unit",
+    "lesson",
+    "pacing_reference",
+    "teacher_only",
+    "student_facing_allowed",
+    "review_status",
+    "approval_status",
+    "local_first_safety_flags",
+    "notes",
+    "created_by_manual_entry",
+    "activation_status"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "registry_id": {
+      "type": "string",
+      "pattern": "^sample-[a-z0-9-]+$"
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1
+    },
+    "resource_type": {
+      "type": "string",
+      "enum": [
+        "textbook",
+        "worksheet",
+        "study_guide",
+        "slides",
+        "test",
+        "answer_key",
+        "pacing_link",
+        "canvas_export",
+        "folder_index"
+      ]
+    },
+    "source_system": {
+      "type": "string",
+      "enum": [
+        "google_drive",
+        "nas",
+        "icloud",
+        "local_folder",
+        "canvas_export"
+      ]
+    },
+    "source_reference": {
+      "type": "string",
+      "pattern": "^(gdrive|nas|local|icloud)://placeholder/"
+    },
+    "source_reference_type": {
+      "type": "string",
+      "enum": ["placeholder_uri"]
+    },
+    "subject": {
+      "type": "string",
+      "minLength": 1
+    },
+    "grade_band": {
+      "type": "string",
+      "minLength": 1
+    },
+    "course": {
+      "type": "string",
+      "minLength": 1
+    },
+    "unit": {
+      "type": "string",
+      "minLength": 1
+    },
+    "lesson": {
+      "type": "string",
+      "minLength": 1
+    },
+    "pacing_reference": {
+      "type": "string",
+      "minLength": 1
+    },
+    "teacher_only": {
+      "type": "boolean"
+    },
+    "student_facing_allowed": {
+      "type": "string",
+      "enum": ["true", "false", "unknown"]
+    },
+    "review_status": {
+      "type": "string",
+      "enum": [
+        "not_reviewed",
+        "metadata_only",
+        "teacher_reviewed",
+        "needs_update",
+        "needs_review",
+        "reviewed_placeholder",
+        "retired"
+      ]
+    },
+    "approval_status": {
+      "type": "string",
+      "enum": [
+        "not_approved",
+        "placeholder_approved",
+        "blocked_placeholder",
+        "approved",
+        "rejected"
+      ]
+    },
+    "local_first_safety_flags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "minItems": 7
+    },
+    "notes": {
+      "type": "string"
+    },
+    "created_by_manual_entry": {
+      "type": "boolean",
+      "const": true
+    },
+    "activation_status": {
+      "type": "string",
+      "enum": ["registry_v0"]
+    }
+  }
+}

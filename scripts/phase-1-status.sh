@@ -633,6 +633,21 @@ for path in \
 done
 check_bash_syntax scripts/curriculum-builder-foundation-status.sh
 
+section "Curriculum Registry v0 Foundation Files"
+for path in \
+  docs/curriculum-registry-v0.md \
+  assistant/curriculum-builder/registry/v0/registry.json \
+  assistant/curriculum-builder/registry/v0/registry-schema.json \
+  assistant/curriculum-builder/registry/v0/README.md \
+  scripts/curriculum-registry-v0-validator.sh \
+  scripts/curriculum-registry-v0-status.sh \
+  tests/curriculum-registry-v0-test.sh; do
+  check_required_file "${path}"
+done
+check_bash_syntax scripts/curriculum-registry-v0-validator.sh
+check_bash_syntax scripts/curriculum-registry-v0-status.sh
+check_bash_syntax tests/curriculum-registry-v0-test.sh
+
 section "Teacher App Designer / Canvas LLM Foundation Files"
 for path in \
   docs/teacher-app-designer-canvas-llm-plan.md \

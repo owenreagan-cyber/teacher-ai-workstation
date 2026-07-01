@@ -55,6 +55,9 @@ grep -q '^FAIL: 0$' /tmp/chief-of-staff-lesson-template-readiness-script.txt
 bin/chief-of-staff --lesson-planning-template-readiness-status > /tmp/chief-of-staff-lesson-template-readiness.txt
 grep -q "Placeholder Registry Checks" /tmp/chief-of-staff-lesson-template-readiness.txt
 grep -q "PASS: placeholder registry safety contract is intact" /tmp/chief-of-staff-lesson-template-readiness.txt
+bin/chief-of-staff --curriculum-registry-v0-status >/dev/null
+bin/chief-of-staff --curriculum-registry-v0-validate >/dev/null
+bash tests/curriculum-registry-v0-test.sh >/dev/null
 bin/chief-of-staff --intake-status >/dev/null
 bin/chief-of-staff --intake-summary >/dev/null
 bin/chief-of-staff --intake-diff >/dev/null

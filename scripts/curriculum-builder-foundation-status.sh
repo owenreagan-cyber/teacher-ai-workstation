@@ -141,6 +141,7 @@ markdown_csv_alignment_proof_doc="docs/curriculum-builder-markdown-csv-alignment
 output_contract_foundation_doc="docs/curriculum-builder-output-contract-foundation.md"
 static_source_registry_plan_doc="docs/curriculum-builder-static-source-registry-plan.md"
 section_completion_audit_doc="docs/curriculum-builder-section-completion-audit.md"
+registry_v0_doc="docs/curriculum-registry-v0.md"
 build_queue_doc="docs/build-queue.md"
 active_priorities_doc="assistant/memory/active-priorities.md"
 dashboard_doc="docs/chief-of-staff-dashboard.md"
@@ -1406,13 +1407,35 @@ check_doc_contains "${maintainer_handoff_doc}" "docs/curriculum-builder-section-
 check_doc_contains "${build_queue_doc}" "section completion audit" "build queue references section completion audit"
 check_doc_contains "${active_priorities_doc}" "section completion audit" "active priorities references section completion audit"
 
+section "Curriculum Registry v0 Foundation Checks"
+
+check_file "${registry_v0_doc}"
+check_file "assistant/curriculum-builder/registry/v0/registry.json"
+check_file "assistant/curriculum-builder/registry/v0/registry-schema.json"
+check_file "assistant/curriculum-builder/registry/v0/README.md"
+check_file "scripts/curriculum-registry-v0-validator.sh"
+check_file "scripts/curriculum-registry-v0-status.sh"
+check_doc_contains "${registry_v0_doc}" "metadata only" "registry v0 metadata only boundary"
+check_doc_contains "${registry_v0_doc}" "read-only operation" "registry v0 read-only boundary"
+check_doc_contains "${registry_v0_doc}" "manual metadata entries" "registry v0 manual entries boundary"
+check_doc_contains "${registry_v0_doc}" "registry_version" "registry v0 versioning documented"
+check_doc_contains "${registry_v0_doc}" "no scanning" "registry v0 no scanning boundary"
+check_doc_contains "${registry_v0_doc}" "no student data" "registry v0 no student data boundary"
+check_doc_contains "${section_completion_audit_doc}" "Registry v0 Implementation Activation" "section completion audit references registry v0 activation"
+check_doc_contains "${build_queue_doc}" "Curriculum Registry v0" "build queue references registry v0"
+check_doc_contains "${active_priorities_doc}" "Curriculum Registry v0" "active priorities references registry v0"
+
 section "Command Wiring Checks"
 
 check_help_contains '--curriculum-builder-foundation-status'
+check_help_contains '--curriculum-registry-v0-status'
+check_help_contains '--curriculum-registry-v0-validate'
 check_bash_syntax "bin/chief-of-staff"
 check_bash_syntax "scripts/chief-of-staff-dashboard.sh"
 check_bash_syntax "scripts/phase-1-status.sh"
 check_bash_syntax "scripts/curriculum-builder-foundation-status.sh"
+check_bash_syntax "scripts/curriculum-registry-v0-status.sh"
+check_bash_syntax "scripts/curriculum-registry-v0-validator.sh"
 
 pass "no write action attempted"
 pass "no folder scanning attempted"

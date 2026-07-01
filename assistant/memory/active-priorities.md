@@ -62,10 +62,12 @@
 - Teacher App Designer / Canvas LLM local-first foundation: complete
 - Canvas LLM placeholder schema and approval states: complete
 - Canvas LLM manual export package placeholder plan: complete
-- Canvas LLM manual export review checklist: in progress (PR #147)
+- Canvas LLM manual export review checklist: complete
+- Canvas LLM manual completion status placeholder plan: in progress (PR #148)
 
 ### Now
 
+- Canvas LLM manual completion status plan: documentation/status only (`docs/canvas-llm-manual-completion-status-placeholder-plan.md`). Markdown-only planning text; no completion tracker or APIs.
 - Canvas LLM manual export review checklist: documentation/status only (`docs/canvas-llm-manual-export-review-checklist.md`). Markdown-only planning text; no checklist runner, review engine, or APIs.
 - Canvas LLM manual export package plan: documentation/status only (`docs/canvas-llm-manual-export-package-plan.md`). Markdown-only planning text; no exporter, generated packages, or APIs.
 - Canvas LLM placeholder schema: documentation/status only (`docs/canvas-llm-placeholder-schema.md`). Markdown-only planning text; no runtime schema, parsers, or APIs.

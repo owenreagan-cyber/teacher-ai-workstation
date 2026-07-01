@@ -92,6 +92,8 @@ export_shapes_doc="docs/canvas-llm-manual-export-package-shapes.md"
 export_maintenance_doc="docs/canvas-llm-manual-export-package-maintenance.md"
 review_checklist_doc="docs/canvas-llm-manual-export-review-checklist.md"
 review_checklist_maintenance_doc="docs/canvas-llm-manual-export-review-checklist-maintenance.md"
+completion_plan_doc="docs/canvas-llm-manual-completion-status-placeholder-plan.md"
+completion_maintenance_doc="docs/canvas-llm-manual-completion-status-placeholder-maintenance.md"
 
 section 'Teacher App Designer / Canvas LLM Local-First Foundation'
 cat <<'EOF'
@@ -418,11 +420,69 @@ check_doc_contains "${review_checklist_maintenance_doc}" "must not generate pack
 check_doc_contains "${review_checklist_maintenance_doc}" "must not write files" "must not write files"
 check_doc_contains "${review_checklist_maintenance_doc}" "requires a future explicit PR and approval" "requires a future explicit PR and approval"
 
+section 'Manual Completion Status Doc Presence'
+
+check_file "${completion_plan_doc}"
+check_file "${completion_maintenance_doc}"
+
+section 'Manual Completion Status Plan Doc Checks'
+
+check_doc_contains "${completion_plan_doc}" "manual completion status" "manual completion status concept"
+check_doc_contains "${completion_plan_doc}" "not_copied" "status not_copied"
+check_doc_contains "${completion_plan_doc}" "copied_to_canvas_manually" "status copied_to_canvas_manually"
+check_doc_contains "${completion_plan_doc}" "teacher_verified_in_canvas" "status teacher_verified_in_canvas"
+check_doc_contains "${completion_plan_doc}" "needs_manual_revision" "status needs_manual_revision"
+check_doc_contains "${completion_plan_doc}" "skipped" "status skipped"
+check_doc_contains "${completion_plan_doc}" "blocked" "status blocked"
+check_doc_contains "${completion_plan_doc}" "rejected" "status rejected"
+check_doc_contains "${completion_plan_doc}" "package_id" "field package_id"
+check_doc_contains "${completion_plan_doc}" "canvas_destination_label" "field canvas_destination_label"
+check_doc_contains "${completion_plan_doc}" "completion_status" "field completion_status"
+check_doc_contains "${completion_plan_doc}" "copied_by" "field copied_by"
+check_doc_contains "${completion_plan_doc}" "copied_at" "field copied_at"
+check_doc_contains "${completion_plan_doc}" "verified_by" "field verified_by"
+check_doc_contains "${completion_plan_doc}" "verified_at" "field verified_at"
+check_doc_contains "${completion_plan_doc}" "revision_reason" "field revision_reason"
+check_doc_contains "${completion_plan_doc}" "blocked_or_rejected_reason" "field blocked_or_rejected_reason"
+check_doc_contains "${completion_plan_doc}" "source_review_checklist_reference" "field source_review_checklist_reference"
+check_doc_contains "${completion_plan_doc}" "Blocked and rejected carryover" "blocked/rejected carryover"
+check_doc_contains "${completion_plan_doc}" "No Canvas item is read, written, created, updated, deleted, or verified by software" "no Canvas item software access"
+check_doc_contains "${completion_plan_doc}" "Teacher verification is manual and external to the app" "teacher verification manual external"
+check_doc_contains "${completion_plan_doc}" "no Canvas verification is automated" "no Canvas verification automated"
+check_doc_contains "${completion_plan_doc}" "No Canvas API is called" "no Canvas API called"
+check_doc_contains "${completion_plan_doc}" "No completion tracker" "no completion tracker"
+check_doc_contains "${completion_plan_doc}" "No checklist runner" "no checklist runner"
+check_doc_contains "${completion_plan_doc}" "No review engine" "no review engine"
+check_doc_contains "${completion_plan_doc}" "No exporter" "no exporter"
+check_doc_contains "${completion_plan_doc}" "No generated package files" "no generated package files"
+check_doc_contains "${completion_plan_doc}" "No browser automation" "no browser automation"
+check_doc_contains "${completion_plan_doc}" "No student data" "no student data"
+check_doc_contains "${completion_plan_doc}" "separate approved PR" "separate approved PR for runtime tracker"
+check_doc_contains "${completion_plan_doc}" "Chief of Staff may eventually report" "Chief of Staff may eventually report"
+check_doc_contains "${completion_plan_doc}" "Chief of Staff must not do yet" "Chief of Staff must not do yet"
+
+section 'Manual Completion Status Maintenance Doc Checks'
+
+check_doc_contains "${completion_maintenance_doc}" "Do not add a completion tracker" "Do not add a completion tracker"
+check_doc_contains "${completion_maintenance_doc}" "separate approved PR" "separate approved PR"
+check_doc_contains "${completion_maintenance_doc}" "No Canvas item is read, written, created, updated, deleted, or verified by software" "maintenance no Canvas software access"
+check_doc_contains "${completion_maintenance_doc}" "Teacher verification is manual and external to the app" "maintenance teacher verification manual"
+check_doc_contains "${completion_maintenance_doc}" "no Canvas verification is automated" "maintenance no automated verification"
+check_doc_contains "${completion_maintenance_doc}" "not_copied" "maintenance status not_copied"
+check_doc_contains "${completion_maintenance_doc}" "copied_to_canvas_manually" "maintenance status copied_to_canvas_manually"
+check_doc_contains "${completion_maintenance_doc}" "teacher_verified_in_canvas" "maintenance status teacher_verified_in_canvas"
+check_doc_contains "${completion_maintenance_doc}" "needs_manual_revision" "maintenance status needs_manual_revision"
+check_doc_contains "${completion_maintenance_doc}" "skipped" "maintenance status skipped"
+check_doc_contains "${completion_maintenance_doc}" "blocked" "maintenance status blocked"
+check_doc_contains "${completion_maintenance_doc}" "rejected" "maintenance status rejected"
+check_doc_contains "${completion_maintenance_doc}" "blocked/rejected carryover" "maintenance blocked/rejected carryover"
+
 section 'Cross-Link Checks'
 
 check_doc_contains "${plan_doc}" "docs/canvas-llm-placeholder-schema.md" "plan references placeholder schema doc"
 check_doc_contains "${plan_doc}" "docs/canvas-llm-manual-export-package-plan.md" "plan references manual export package plan"
 check_doc_contains "${plan_doc}" "docs/canvas-llm-manual-export-review-checklist.md" "plan references manual export review checklist"
+check_doc_contains "${plan_doc}" "docs/canvas-llm-manual-completion-status-placeholder-plan.md" "plan references manual completion status plan"
 check_doc_contains "${safety_doc}" "docs/canvas-llm-approval-and-export-states.md" "safety contract references approval states doc"
 check_doc_contains "${safety_doc}" "docs/canvas-llm-manual-export-package-plan.md" "safety contract references manual export package plan"
 check_doc_contains "${safety_doc}" "docs/canvas-llm-manual-export-review-checklist.md" "safety contract references manual export review checklist"
@@ -431,9 +491,12 @@ check_doc_contains "${architecture_doc}" "docs/canvas-llm-manual-export-package-
 check_doc_contains "${placeholder_schema_doc}" "docs/canvas-llm-manual-export-package-plan.md" "placeholder schema references manual export package plan"
 check_doc_contains "${approval_states_doc}" "docs/canvas-llm-manual-export-package-plan.md" "approval states references manual export package plan"
 check_doc_contains "${approval_states_doc}" "docs/canvas-llm-manual-export-review-checklist.md" "approval states references manual export review checklist"
+check_doc_contains "${approval_states_doc}" "docs/canvas-llm-manual-completion-status-placeholder-plan.md" "approval states references manual completion status plan"
 check_doc_contains "${export_plan_doc}" "docs/canvas-llm-manual-export-review-checklist.md" "export plan references manual export review checklist"
 check_doc_contains "${export_shapes_doc}" "docs/canvas-llm-manual-export-review-checklist.md" "export shapes references manual export review checklist"
 check_doc_contains "${export_maintenance_doc}" "docs/canvas-llm-manual-export-review-checklist-maintenance.md" "export maintenance references review checklist maintenance"
+check_doc_contains "${review_checklist_doc}" "docs/canvas-llm-manual-completion-status-placeholder-plan.md" "review checklist references manual completion status plan"
+check_doc_contains "${review_checklist_maintenance_doc}" "docs/canvas-llm-manual-completion-status-placeholder-maintenance.md" "review checklist maintenance references completion maintenance"
 
 section 'Script and Command Wiring'
 

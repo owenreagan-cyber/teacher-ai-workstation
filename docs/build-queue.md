@@ -80,10 +80,11 @@ Handoff and status clarity. Start from `docs/phase-1-chief-of-staff-status-audit
 - Canvas LLM placeholder schema and approval states (PR #145).
 - Canvas LLM manual export package placeholder plan (PR #146).
 - Canvas LLM manual export review checklist (PR #147).
+- Canvas LLM manual completion status placeholder plan (PR #148).
 
 ## Current PR
 
-Canvas LLM manual export review checklist — documentation/status only. See `docs/canvas-llm-manual-export-review-checklist.md`.
+Canvas LLM manual completion status placeholder plan — documentation/status only. See `docs/canvas-llm-manual-completion-status-placeholder-plan.md`.
 
 Previously parked — start from `docs/phase-1-chief-of-staff-status-audit.md` — Repo-Wide Parked Tracks and Active Status Map.
 

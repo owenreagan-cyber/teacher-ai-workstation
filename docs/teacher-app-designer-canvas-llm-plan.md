@@ -94,6 +94,10 @@ Future manual copy/export package workflow is documented in `docs/canvas-llm-man
 
 Teacher review checklists for future manual export packages are documented in `docs/canvas-llm-manual-export-review-checklist.md`.
 
+## Manual Completion Status Plan
+
+Future manual completion status tracking after teacher copy is documented in `docs/canvas-llm-manual-completion-status-placeholder-plan.md`.
+
 ## Related Verification Commands
 
 ```bash

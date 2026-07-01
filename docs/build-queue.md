@@ -112,9 +112,9 @@ Curriculum Builder planning foundation is complete for now. Implementation/regis
 
 ## Current PR
 
-Engineering Constitution Phase 2 transition — documentation/status only. See `docs/engineering-constitution.md`.
-
 Previously parked — start from `docs/phase-1-chief-of-staff-status-audit.md` — Repo-Wide Parked Tracks and Active Status Map.
+
+Engineering Constitution Phase 2 transition is complete (PR #166). See `docs/engineering-constitution.md`. Canonical engineering authority active.
 
 Implementation approval gate and track intake foundation is complete (PR #164). See `docs/implementation-approval-gate.md`. Gate active; no implementation approved by default.
 

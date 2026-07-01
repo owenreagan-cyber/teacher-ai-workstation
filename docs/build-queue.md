@@ -66,6 +66,7 @@ Handoff and status clarity. Start from `docs/phase-1-chief-of-staff-status-audit
 - Chief of Staff command surface status alignment (PR #131).
 - Chief of Staff status command consistency audit (PR #132).
 - Curriculum Builder next-stage readiness audit (PR #133).
+- Curriculum Builder manual registry schema planning (PR #134).
 
 ## Current PR
 

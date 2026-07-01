@@ -93,6 +93,7 @@ maintainer_handoff_doc="docs/curriculum-builder-maintainer-handoff.md"
 future_pr_checklist_doc="docs/curriculum-builder-future-pr-checklist.md"
 canonical_planning_index_doc="docs/curriculum-builder-canonical-planning-index.md"
 next_stage_readiness_audit_doc="docs/curriculum-builder-next-stage-readiness-audit.md"
+manual_registry_schema_plan_doc="docs/curriculum-builder-manual-registry-schema-plan.md"
 dashboard_doc="docs/chief-of-staff-dashboard.md"
 dashboard_section_summary_doc="docs/dashboard-section-summary-polish.md"
 phase_1_audit_doc="docs/phase-1-chief-of-staff-status-audit.md"
@@ -819,6 +820,32 @@ if [[ -f "${next_stage_readiness_audit_doc}" ]]; then
   check_doc_contains "${next_stage_readiness_audit_doc}" "does not own raw curriculum files" "Chief of Staff does not own raw curriculum files in next-stage audit"
   check_doc_contains "${next_stage_readiness_audit_doc}" "docs/curriculum-builder-canonical-planning-index.md" "canonical planning index cross-link in next-stage audit"
   check_doc_contains "${next_stage_readiness_audit_doc}" "Non-Activation confirmation" "Non-Activation confirmation in next-stage audit"
+fi
+
+section "Curriculum Builder Manual Registry Schema Plan Checks"
+
+check_file "${manual_registry_schema_plan_doc}"
+
+if [[ -f "${manual_registry_schema_plan_doc}" ]]; then
+  check_doc_contains "${manual_registry_schema_plan_doc}" "Curriculum Builder Manual Registry Schema Plan" "Curriculum Builder Manual Registry Schema Plan title"
+  check_doc_contains "${manual_registry_schema_plan_doc}" "Non-Activation Statement" "Non-Activation Statement section"
+  check_doc_contains "${manual_registry_schema_plan_doc}" "Required Fields" "Required Fields section"
+  check_doc_contains "${manual_registry_schema_plan_doc}" "Optional Fields" "Optional Fields section"
+  check_doc_contains "${manual_registry_schema_plan_doc}" "Reserved Future Fields" "Reserved Future Fields section"
+  check_doc_contains "${manual_registry_schema_plan_doc}" "Example Placeholder Rows" "Example Placeholder Rows section"
+  check_doc_contains "${manual_registry_schema_plan_doc}" "Blocked Capabilities" "Blocked Capabilities section"
+  check_doc_contains "${manual_registry_schema_plan_doc}" "registry_id" "registry_id required field"
+  check_doc_contains "${manual_registry_schema_plan_doc}" "source_reference" "source_reference required field"
+  check_doc_contains "${manual_registry_schema_plan_doc}" "teacher_only" "teacher_only safety field"
+  check_doc_contains "${manual_registry_schema_plan_doc}" "gdrive://placeholder" "fictional placeholder source reference"
+  check_doc_contains "${manual_registry_schema_plan_doc}" "no document scanning" "no document scanning boundary in schema plan"
+  check_doc_contains "${manual_registry_schema_plan_doc}" "no student data" "no student data boundary in schema plan"
+  check_doc_contains "${manual_registry_schema_plan_doc}" "docs/curriculum-builder-canonical-planning-index.md" "canonical planning index cross-link in schema plan"
+  check_doc_contains "${manual_registry_schema_plan_doc}" "Non-Activation confirmation" "Non-Activation confirmation in schema plan"
+fi
+
+if [[ -f "${canonical_planning_index_doc}" ]]; then
+  check_doc_contains "${canonical_planning_index_doc}" "docs/curriculum-builder-manual-registry-schema-plan.md" "manual registry schema plan reference in canonical index"
 fi
 
 section "Dashboard Planning Index Visibility Checks"

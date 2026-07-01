@@ -40,6 +40,7 @@ Canonical entry point: `docs/curriculum-builder-canonical-planning-index.md`.
 The following planning foundations are in place and verified by read-only status checks:
 
 - Local-first foundation plan with source-reference model
+- Manual registry schema plan (`docs/curriculum-builder-manual-registry-schema-plan.md`)
 - Source storage strategy (Google Drive, NAS, iCloud, local folders)
 - Metadata-only Curriculum Resource Registry plan (field inventory, safety values, manual-first workflow, validator planning, placeholder shape, approval gate sections)
 - Planning stack summary and next-phase decision note
@@ -111,7 +112,7 @@ Unless a future PR crosses the approval gate with a completed approved decision 
 | Read-only status marker checks | Static doc-presence PASS checks in foundation status script | Behavior, folder scans, network |
 | Decision intake drafting | Blank or example intake prose in docs only | Implementation |
 | Approval gate review | Gate doc refinements | Implementation |
-| Manual registry planning only | Prose field/workflow refinements | Registry data files, validators |
+| Manual registry planning only | Prose field/workflow refinements per manual registry schema plan | Registry data files, validators |
 | Pause / return to other tracks | Handoff clarity only | Any Curriculum Builder runtime |
 
 Substantial next-stage PRs are allowed when they remain **local-first, metadata/reference-only, manual/static-first, and auditable**.
@@ -184,6 +185,7 @@ Copy into future PR descriptions:
 ## Readiness pointers
 - Start: docs/curriculum-builder-canonical-planning-index.md
 - Next-stage audit: docs/curriculum-builder-next-stage-readiness-audit.md
+- Manual registry schema plan: docs/curriculum-builder-manual-registry-schema-plan.md
 - Checklist: docs/curriculum-builder-future-pr-checklist.md
 
 ## Non-activation confirmation
@@ -216,6 +218,7 @@ Copy into future PR descriptions:
 - `docs/curriculum-builder-approval-gate.md`
 - `docs/curriculum-builder-future-pr-checklist.md`
 - `docs/curriculum-builder-local-first-foundation-plan.md`
+- `docs/curriculum-builder-manual-registry-schema-plan.md`
 - `docs/curriculum-resource-registry-plan.md`
 
 ## Non-Activation confirmation

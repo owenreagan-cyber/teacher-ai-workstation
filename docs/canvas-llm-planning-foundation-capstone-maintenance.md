@@ -115,6 +115,8 @@ Before merging capstone edits:
 
 - Closure audit: `docs/canvas-llm-planning-foundation-closure-audit.md`
 - Closure audit maintenance: `docs/canvas-llm-planning-foundation-closure-audit-maintenance.md`
+- Planning foundation index: `docs/canvas-llm-planning-foundation-index.md`
+- Planning foundation freeze: `docs/canvas-llm-planning-foundation-freeze.md`
 
 ## Disallowed Changes Without Separate Approved PR
 

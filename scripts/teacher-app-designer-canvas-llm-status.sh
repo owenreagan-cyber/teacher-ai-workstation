@@ -100,6 +100,8 @@ capstone_doc="docs/canvas-llm-planning-foundation-capstone.md"
 capstone_maintenance_doc="docs/canvas-llm-planning-foundation-capstone-maintenance.md"
 closure_audit_doc="docs/canvas-llm-planning-foundation-closure-audit.md"
 closure_audit_maintenance_doc="docs/canvas-llm-planning-foundation-closure-audit-maintenance.md"
+index_doc="docs/canvas-llm-planning-foundation-index.md"
+freeze_doc="docs/canvas-llm-planning-foundation-freeze.md"
 build_queue_doc="docs/build-queue.md"
 active_priorities_doc="assistant/memory/active-priorities.md"
 
@@ -650,6 +652,59 @@ check_doc_contains "${capstone_maintenance_doc}" "docs/canvas-llm-planning-found
 check_doc_contains "${build_queue_doc}" "Canvas LLM docs/status foundation is complete for now" "build queue complete for now"
 check_doc_contains "${active_priorities_doc}" "outside Canvas LLM runtime work" "active priorities outside Canvas LLM runtime"
 
+section 'Planning Foundation Index Doc Presence'
+
+check_file "${index_doc}"
+check_file "${freeze_doc}"
+
+section 'Planning Foundation Index Doc Checks'
+
+check_doc_contains "${index_doc}" "Canvas LLM foundation status: complete for now" "index foundation complete"
+check_doc_contains "${index_doc}" "Runtime status: not active" "index runtime not active"
+check_doc_contains "${index_doc}" "Implementation status: not started" "index implementation not started"
+check_doc_contains "${index_doc}" "Canonical Reading Order" "index canonical reading order"
+check_doc_contains "${index_doc}" "docs/canvas-llm-planning-foundation-capstone.md" "index references capstone"
+check_doc_contains "${index_doc}" "docs/canvas-llm-planning-foundation-closure-audit.md" "index references closure audit"
+check_doc_contains "${index_doc}" "docs/canvas-llm-planning-foundation-freeze.md" "index references freeze"
+check_doc_contains "${index_doc}" "scripts/teacher-app-designer-canvas-llm-status.sh" "index references status script"
+check_doc_contains "${index_doc}" "bin/chief-of-staff --teacher-app-designer-canvas-llm-status" "index references Chief of Staff command"
+check_doc_contains "${index_doc}" "no runtime behavior" "index no runtime behavior"
+check_doc_contains "${index_doc}" "Blocked unless separately explicitly approved" "index blocked runtime work"
+
+section 'Planning Foundation Freeze Doc Checks'
+
+check_doc_contains "${freeze_doc}" "Freeze status: frozen for runtime work" "freeze status frozen"
+check_doc_contains "${freeze_doc}" "Docs/status status: complete for now" "freeze docs complete"
+check_doc_contains "${freeze_doc}" "Runtime status: not active" "freeze runtime not active"
+check_doc_contains "${freeze_doc}" "Export status: not active" "freeze export not active"
+check_doc_contains "${freeze_doc}" "Canvas API status: not active" "freeze Canvas API not active"
+check_doc_contains "${freeze_doc}" "Google Drive API status: not active" "freeze Google Drive API not active"
+check_doc_contains "${freeze_doc}" "Generation status: not active" "freeze generation not active"
+check_doc_contains "${freeze_doc}" "Student data status: not active" "freeze student data not active"
+check_doc_contains "${freeze_doc}" "Approval Required To Unfreeze" "freeze approval required to unfreeze"
+check_doc_contains "${freeze_doc}" "no Canvas API" "freeze no Canvas API"
+check_doc_contains "${freeze_doc}" "no Google Drive API" "freeze no Google Drive API"
+check_doc_contains "${freeze_doc}" "no OAuth" "freeze no OAuth"
+check_doc_contains "${freeze_doc}" "no network calls" "freeze no network calls"
+check_doc_contains "${freeze_doc}" "no browser automation" "freeze no browser automation"
+check_doc_contains "${freeze_doc}" "no automation" "freeze no automation"
+check_doc_contains "${freeze_doc}" "no scheduler" "freeze no scheduler"
+check_doc_contains "${freeze_doc}" "no background jobs" "freeze no background jobs"
+check_doc_contains "${freeze_doc}" "no scanning/indexing/OCR/embeddings/vector database" "freeze no scanning/indexing/OCR/embeddings/vector database"
+check_doc_contains "${freeze_doc}" "no lesson generation" "freeze no lesson generation"
+check_doc_contains "${freeze_doc}" "no generated lesson drafts" "freeze no generated lesson drafts"
+check_doc_contains "${freeze_doc}" "no generated review notes" "freeze no generated review notes"
+check_doc_contains "${freeze_doc}" "no student data" "freeze no student data"
+
+section 'Index and Freeze Cross-Link and Tracking Checks'
+
+check_doc_contains "${capstone_doc}" "docs/canvas-llm-planning-foundation-index.md" "capstone links to index"
+check_doc_contains "${capstone_doc}" "docs/canvas-llm-planning-foundation-freeze.md" "capstone links to freeze"
+check_doc_contains "${closure_audit_doc}" "docs/canvas-llm-planning-foundation-index.md" "closure audit links to index"
+check_doc_contains "${closure_audit_doc}" "docs/canvas-llm-planning-foundation-freeze.md" "closure audit links to freeze"
+check_doc_contains "${build_queue_doc}" "frozen unless separately and explicitly approved" "build queue frozen complete-for-now"
+check_doc_contains "${active_priorities_doc}" "frozen for runtime work" "active priorities frozen complete-for-now"
+
 section 'Cross-Link Checks'
 
 check_doc_contains "${plan_doc}" "docs/canvas-llm-placeholder-schema.md" "plan references placeholder schema doc"
@@ -659,6 +714,8 @@ check_doc_contains "${plan_doc}" "docs/canvas-llm-manual-completion-status-place
 check_doc_contains "${plan_doc}" "docs/canvas-llm-weekly-export-bundle-placeholder-plan.md" "plan references weekly export bundle plan"
 check_doc_contains "${plan_doc}" "docs/canvas-llm-planning-foundation-capstone.md" "plan references planning foundation capstone"
 check_doc_contains "${plan_doc}" "docs/canvas-llm-planning-foundation-closure-audit.md" "plan references closure audit"
+check_doc_contains "${plan_doc}" "docs/canvas-llm-planning-foundation-index.md" "plan references index"
+check_doc_contains "${plan_doc}" "docs/canvas-llm-planning-foundation-freeze.md" "plan references freeze"
 check_doc_contains "${safety_doc}" "docs/canvas-llm-planning-foundation-capstone.md" "safety contract references planning foundation capstone"
 check_doc_contains "${safety_doc}" "docs/canvas-llm-planning-foundation-closure-audit.md" "safety contract references closure audit"
 check_doc_contains "${safety_doc}" "docs/canvas-llm-approval-and-export-states.md" "safety contract references approval states doc"

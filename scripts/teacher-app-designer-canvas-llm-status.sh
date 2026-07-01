@@ -104,6 +104,8 @@ index_doc="docs/canvas-llm-planning-foundation-index.md"
 freeze_doc="docs/canvas-llm-planning-foundation-freeze.md"
 snapshot_doc="docs/canvas-llm-frozen-foundation-handoff-snapshot.md"
 snapshot_maintenance_doc="docs/canvas-llm-frozen-foundation-handoff-snapshot-maintenance.md"
+stop_marker_doc="docs/canvas-llm-stop-marker-curriculum-builder-return.md"
+stop_marker_maintenance_doc="docs/canvas-llm-stop-marker-curriculum-builder-return-maintenance.md"
 build_queue_doc="docs/build-queue.md"
 active_priorities_doc="assistant/memory/active-priorities.md"
 
@@ -761,6 +763,56 @@ check_doc_contains "${freeze_doc}" "docs/canvas-llm-frozen-foundation-handoff-sn
 check_doc_contains "${build_queue_doc}" "final handoff snapshot recorded" "build queue handoff snapshot recorded"
 check_doc_contains "${active_priorities_doc}" "Curriculum Builder foundation" "active priorities Curriculum Builder focus"
 check_doc_contains "${active_priorities_doc}" "final handoff snapshot" "active priorities handoff snapshot"
+
+section 'Stop Marker Doc Presence'
+
+check_file "${stop_marker_doc}"
+check_file "${stop_marker_maintenance_doc}"
+
+section 'Stop Marker Doc Checks'
+
+check_doc_contains "${stop_marker_doc}" "Stop marker status: active" "stop marker status active"
+check_doc_contains "${stop_marker_doc}" "Canvas LLM foundation status: complete for now" "stop marker foundation complete"
+check_doc_contains "${stop_marker_doc}" "Canvas LLM runtime status: frozen" "stop marker runtime frozen"
+check_doc_contains "${stop_marker_doc}" "Default next Canvas LLM PR status: blocked" "stop marker default PR blocked"
+check_doc_contains "${stop_marker_doc}" "Recommended next project focus: Curriculum Builder foundation" "stop marker Curriculum Builder focus"
+check_doc_contains "${stop_marker_doc}" "Runtime/export/API/generation approval status: not approved" "stop marker runtime not approved"
+check_doc_contains "${stop_marker_doc}" "PR #153" "stop marker records PR #153 source state"
+check_doc_contains "${stop_marker_doc}" "PASS 562 / WARN 0 / FAIL 0" "stop marker records Canvas LLM PASS 562"
+check_doc_contains "${stop_marker_doc}" "PASS 310 / WARN 0 / FAIL 0" "stop marker records Phase 1 PASS 310"
+check_doc_contains "${stop_marker_doc}" "PASS 946 / WARN 0 / FAIL 0" "stop marker records Curriculum Builder PASS 946"
+check_doc_contains "${stop_marker_doc}" "no exporter is approved" "stop marker no exporter"
+check_doc_contains "${stop_marker_doc}" "no export command is approved" "stop marker no export command"
+check_doc_contains "${stop_marker_doc}" "no package generator is approved" "stop marker no package generator"
+check_doc_contains "${stop_marker_doc}" "no bundle assembler is approved" "stop marker no bundle assembler"
+check_doc_contains "${stop_marker_doc}" "no Canvas API is approved" "stop marker no Canvas API"
+check_doc_contains "${stop_marker_doc}" "no Google Drive API is approved" "stop marker no Google Drive API"
+check_doc_contains "${stop_marker_doc}" "no OAuth is approved" "stop marker no OAuth"
+check_doc_contains "${stop_marker_doc}" "no network calls are approved" "stop marker no network calls"
+check_doc_contains "${stop_marker_doc}" "no browser automation is approved" "stop marker no browser automation"
+check_doc_contains "${stop_marker_doc}" "no automation/scheduler/background jobs are approved" "stop marker no automation/scheduler/background jobs"
+check_doc_contains "${stop_marker_doc}" "no lesson generation is approved" "stop marker no lesson generation"
+check_doc_contains "${stop_marker_doc}" "no generated review notes are approved" "stop marker no generated review notes"
+check_doc_contains "${stop_marker_doc}" "no student data handling is approved" "stop marker no student data"
+check_doc_contains "${stop_marker_doc}" "Curriculum Builder Return Handoff" "stop marker Curriculum Builder return"
+check_doc_contains "${stop_marker_doc}" "Chief of Staff must not" "stop marker Chief of Staff boundary"
+check_doc_contains "${stop_marker_doc}" "Future Canvas LLM Reopen Requirements" "stop marker future reopen requirements"
+
+section 'Stop Marker Maintenance Doc Checks'
+
+check_doc_contains "${stop_marker_maintenance_doc}" "Stop marker status: active" "maintenance stop marker active"
+check_doc_contains "${stop_marker_maintenance_doc}" "Canvas LLM runtime status: frozen" "maintenance runtime frozen"
+check_doc_contains "${stop_marker_maintenance_doc}" "Default next Canvas LLM PR status: blocked" "maintenance default PR blocked"
+check_doc_contains "${stop_marker_maintenance_doc}" "Curriculum Builder foundation" "maintenance Curriculum Builder focus"
+
+section 'Stop Marker Cross-Link and Tracking Checks'
+
+check_doc_contains "${index_doc}" "docs/canvas-llm-stop-marker-curriculum-builder-return.md" "index links to stop marker"
+check_doc_contains "${freeze_doc}" "docs/canvas-llm-stop-marker-curriculum-builder-return.md" "freeze links to stop marker"
+check_doc_contains "${snapshot_doc}" "docs/canvas-llm-stop-marker-curriculum-builder-return.md" "snapshot links to stop marker"
+check_doc_contains "${build_queue_doc}" "stop marker active" "build queue stop marker active"
+check_doc_contains "${active_priorities_doc}" "stop marker is active" "active priorities stop marker active"
+check_doc_contains "${active_priorities_doc}" "do not start Canvas LLM PRs by default" "active priorities no default Canvas PRs"
 
 section 'Cross-Link Checks'
 

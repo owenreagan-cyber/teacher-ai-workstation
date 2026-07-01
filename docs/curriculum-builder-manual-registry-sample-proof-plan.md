@@ -296,7 +296,7 @@ Unless explicitly approved through `docs/curriculum-builder-approval-gate.md` an
 
 After the manual registry sample proof (`docs/curriculum-builder-manual-registry-sample-proof.md`) merges, the recommended next Curriculum Builder PR is:
 
-**Static sample validation planning** — refine read-only static proof checks against the sample artifact; still no app code, no live registry, no connectors.
+**Static sample validation plan** — document future validation rules (completed in PR #137). Next: **static sample validation checks** — extend read-only grep checks per the validation plan.
 
 Alternative safe paths:
 

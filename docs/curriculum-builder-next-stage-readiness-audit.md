@@ -43,6 +43,7 @@ The following planning foundations are in place and verified by read-only status
 - Manual registry schema plan (`docs/curriculum-builder-manual-registry-schema-plan.md`)
 - Manual registry sample proof plan (`docs/curriculum-builder-manual-registry-sample-proof-plan.md`)
 - Manual registry sample proof (`docs/curriculum-builder-manual-registry-sample-proof.md`)
+- Static sample validation plan (`docs/curriculum-builder-static-sample-validation-plan.md`)
 - Source storage strategy (Google Drive, NAS, iCloud, local folders)
 - Metadata-only Curriculum Resource Registry plan (field inventory, safety values, manual-first workflow, validator planning, placeholder shape, approval gate sections)
 - Planning stack summary and next-phase decision note

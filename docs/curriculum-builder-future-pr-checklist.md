@@ -10,6 +10,8 @@ For future fictional sample registry proof rules, see `docs/curriculum-builder-m
 
 For the static fictional sample artifact, see `docs/curriculum-builder-manual-registry-sample-proof.md`.
 
+For static sample validation planning, see `docs/curriculum-builder-static-sample-validation-plan.md`.
+
 ## PR title and type
 
 - [ ] PR title states docs/status vs implementation clearly

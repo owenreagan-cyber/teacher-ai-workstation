@@ -107,6 +107,12 @@ Teacher Planning Command Organization (status only; safe sample: fractions-revie
                                        Show read-only Curriculum Output Contract v0 foundation status and exit.
   --curriculum-output-contract-v0-validate
                                        Run read-only Curriculum Output Contract v0 validator and exit.
+  --curriculum-binding-v0-status
+                                       Show read-only Registry–Contract Binding v0 foundation status and exit.
+  --curriculum-binding-v0-validate
+                                       Run read-only Registry–Contract Binding v0 validator and exit.
+  --curriculum-binding-v0-lookup
+                                       Run read-only Registry–Contract Binding v0 lookup and exit.
   --teacher-app-designer-canvas-llm-status
                                        Show read-only Teacher App Designer / Canvas LLM foundation status proof and exit (planning only).
 
@@ -1631,6 +1637,35 @@ while [[ $# -gt 0 ]]; do
       fi
       shift
       bash "${curriculum_output_contract_v0_validator_script}" "$@"
+      exit 0
+      ;;
+    --curriculum-binding-v0-status)
+      repo_root="$(resolve_repo_root)"
+      curriculum_binding_v0_status_script="${repo_root}/scripts/curriculum-binding-v0-status.sh"
+      if [[ ! -f "${curriculum_binding_v0_status_script}" ]]; then
+        die "Curriculum Binding v0 status script is missing: scripts/curriculum-binding-v0-status.sh"
+      fi
+      bash "${curriculum_binding_v0_status_script}"
+      exit 0
+      ;;
+    --curriculum-binding-v0-validate)
+      repo_root="$(resolve_repo_root)"
+      curriculum_binding_v0_validator_script="${repo_root}/scripts/curriculum-binding-v0-validator.sh"
+      if [[ ! -f "${curriculum_binding_v0_validator_script}" ]]; then
+        die "Curriculum Binding v0 validator script is missing: scripts/curriculum-binding-v0-validator.sh"
+      fi
+      shift
+      bash "${curriculum_binding_v0_validator_script}" "$@"
+      exit 0
+      ;;
+    --curriculum-binding-v0-lookup)
+      repo_root="$(resolve_repo_root)"
+      curriculum_binding_v0_lookup_script="${repo_root}/scripts/curriculum-binding-v0-lookup.sh"
+      if [[ ! -f "${curriculum_binding_v0_lookup_script}" ]]; then
+        die "Curriculum Binding v0 lookup script is missing: scripts/curriculum-binding-v0-lookup.sh"
+      fi
+      shift
+      bash "${curriculum_binding_v0_lookup_script}" "$@"
       exit 0
       ;;
     --teacher-app-designer-canvas-llm-status)

@@ -78,9 +78,11 @@
 - Engineering Constitution Phase 2 transition: complete
 - Curriculum Registry v0 manual metadata foundation: complete
 - Curriculum Output Contract v0 bounded validator: complete
+- Registry–Contract Binding v0: complete
 
 ### Now
 
+- Registry–Contract Binding v0: read-only lookup and consistency validation active (`docs/curriculum-binding-v0.md`). Connects Registry v0 and Output Contract v0; optional alignment WARNs only; no lesson generation, renderers, ingestion, APIs, OAuth, network calls, or student data.
 - Curriculum Output Contract v0 bounded validator: read-only contract validation active (`docs/curriculum-output-contract-v0.md`). One canonical DI slide deck contract plus four placeholders; registry ID reference checks against Registry v0; no lesson generation, renderers, HTML/PDF, Canvas package building, ingestion, APIs, OAuth, network calls, or student data.
 - Curriculum Registry v0 manual metadata foundation: read-only local registry active (`docs/curriculum-registry-v0.md`). Metadata only; fictional placeholder records; deterministic validation; no scanning, ingestion, RAG, lesson generation, APIs, OAuth, network calls, or student data.
 - Engineering Constitution Phase 2 transition: documentation/status only (`docs/engineering-constitution.md`). Canonical engineering authority; no runtime activation beyond approved Registry v0 scope.
@@ -106,10 +108,11 @@
 - Curriculum Builder section completion audit complete (PR #162). Planning foundation section-complete; Registry v0 active under Phase 2 Mission 1.
 - Curriculum Registry v0 complete (Phase 2 Mission 1). Read-only manual metadata foundation; see `docs/curriculum-registry-v0.md`.
 - Curriculum Output Contract v0 complete (Phase 2 Mission 2). Bounded read-only validator; see `docs/curriculum-output-contract-v0.md`.
+- Registry–Contract Binding v0 complete (Phase 2 Mission 3). Read-only lookup and consistency validation; see `docs/curriculum-binding-v0.md`.
 - Curriculum Builder static source registry plan complete (PR #157). Documentation/status only; metadata/reference-only; no scanning, folder crawling, file indexing, OCR, embeddings, vector database, or Drive/NAS/iCloud resolution.
 - Curriculum Builder output contract planning foundation complete (PR #155). Output Contract Schema v0 bounded validator active; no lesson generation, ingestion, RAG, or runtime behavior beyond read-only validation.
 - Canvas LLM is complete/frozen/stopped. final handoff snapshot is recorded. stop marker is active. Do not start Canvas LLM PRs by default.
-- Recommended next focus: Curriculum Builder foundation contract-to-registry binding helpers or additional canonical contract schemas outside Canvas LLM runtime work with explicit approval only.
+- Recommended next focus: Curriculum Builder foundation additional canonical contract schemas or manual entry helpers outside Canvas LLM runtime work with explicit approval only.
 
 ## Completed (earlier foundations)
 

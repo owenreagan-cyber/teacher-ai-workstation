@@ -33,6 +33,9 @@ Key docs:
 - `docs/curriculum-builder-maintainer-handoff.md`
 - `docs/curriculum-builder-future-pr-checklist.md`
 - `docs/curriculum-builder-next-stage-readiness-audit.md`
+- `docs/curriculum-builder-output-contract-foundation.md`
+- `docs/curriculum-builder-static-source-registry-plan.md`
+- `docs/curriculum-builder-section-completion-audit.md`
 
 ## What Curriculum Builder is intended to become
 

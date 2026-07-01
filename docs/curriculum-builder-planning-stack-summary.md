@@ -40,6 +40,7 @@ It does not create active schema, data, registry records, validators, commands, 
 | Static sample validation plan | `docs/curriculum-builder-static-sample-validation-plan.md` | Future static validation rule set | planning only | no validator implementation |
 | Output contract foundation | `docs/curriculum-builder-output-contract-foundation.md` | Future output contract planning placeholders | planning only | no schema, validators, renderers, or generation |
 | Static source registry plan | `docs/curriculum-builder-static-source-registry-plan.md` | Future static/manual source registry metadata/reference planning | planning only | no scanning, indexing, or resolution |
+| Section completion audit | `docs/curriculum-builder-section-completion-audit.md` | Final planning foundation section completion audit | closure-only | no runtime behavior |
 
 ## Storage and Ownership Summary
 

@@ -83,11 +83,12 @@ future PR checklist summary: `docs/curriculum-builder-future-pr-checklist.md` is
 | Markdown/CSV alignment proof | `docs/curriculum-builder-markdown-csv-alignment-proof.md` | Static grep proof of shared placeholder concepts |
 | Output contract foundation | `docs/curriculum-builder-output-contract-foundation.md` | Future output contract planning placeholders (slide deck, worksheet, review game, teacher script, Canvas export/package) |
 | Static source registry plan | `docs/curriculum-builder-static-source-registry-plan.md` | Future static/manual source registry metadata/reference planning |
+| Section completion audit | `docs/curriculum-builder-section-completion-audit.md` | Final section-level planning foundation completion audit and closure |
 | Foundation status script | `scripts/curriculum-builder-foundation-status.sh` | Read-only PASS/WARN/FAIL status checks |
 
 ## Start Here
 
-- **For maintainers:** start with this canonical planning index, then `docs/curriculum-builder-maintainer-handoff.md` and `docs/curriculum-builder-next-stage-readiness-audit.md`.
+- **For maintainers:** start with this canonical planning index, then `docs/curriculum-builder-section-completion-audit.md`, `docs/curriculum-builder-maintainer-handoff.md`, and `docs/curriculum-builder-next-stage-readiness-audit.md`.
 - **For future ChatGPT/Cursor sessions:** start with `docs/curriculum-builder-next-stage-readiness-audit.md`, then `docs/curriculum-builder-maintainer-handoff.md` and `docs/curriculum-builder-future-pr-checklist.md`.
 - **For implementation requests:** start with `docs/curriculum-builder-approval-gate.md` and `docs/curriculum-builder-decision-intake-template.md`.
 - **For status verification:** run `bin/chief-of-staff --curriculum-builder-foundation-status` and `bin/chief-of-staff --dashboard`.
@@ -197,3 +198,5 @@ Unless explicitly approved through the approval gate and completed decision inta
 ## Non-Activation confirmation
 
 This canonical planning index does not add active schema, database tables, migrations, registry data files, validators, commands, connectors, APIs, automation, scanning, indexing, OCR, embeddings, lesson generation, student data, or live integrations.
+
+Section completion audit: `docs/curriculum-builder-section-completion-audit.md`.

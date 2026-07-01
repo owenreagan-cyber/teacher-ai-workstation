@@ -1,0 +1,64 @@
+{
+  "contract_version": "0.1.0",
+  "contract_status": "active_v0",
+  "metadata_only": true,
+  "read_only": true,
+  "contract_id": "sample-contract-review-game-001",
+  "contract_type": "review_game_contract",
+  "title": "SM5 Unit 03 Lesson 02 Review Game Contract Placeholder",
+  "subject": "science",
+  "grade_band": "SM5",
+  "course": "physical_science",
+  "unit": "unit_03",
+  "lesson": "lesson_02",
+  "registry_references": [
+    "sample-student-practice-001"
+  ],
+  "teacher_only": false,
+  "student_facing_allowed": "unknown",
+  "review_state": "not_reviewed",
+  "approval_status": "not_approved",
+  "game_context": {
+    "pacing_reference": "pacing-sm5-u03-l02",
+    "game_format": "review_game",
+    "focus_topic": "Placeholder review game focus for unit recap"
+  },
+  "round_placeholders": [
+    {
+      "round_id": "round-01",
+      "question_placeholder": "Review question placeholder only",
+      "answer_placeholder": "Review answer placeholder marker only",
+      "timing_hint_placeholder": "3 minutes placeholder per round",
+      "materials_note_placeholder": "Whiteboard placeholder materials only"
+    },
+    {
+      "round_id": "round-02",
+      "question_placeholder": "Second review question placeholder only",
+      "answer_placeholder": "Second answer placeholder marker only",
+      "timing_hint_placeholder": "5 minutes placeholder per round",
+      "materials_note_placeholder": "Index cards placeholder materials only"
+    }
+  ],
+  "local_first_safety_flags": [
+    "metadata_only",
+    "no_student_data",
+    "not_generated",
+    "not_rendered",
+    "manual_entry",
+    "placeholder_only",
+    "no_external_resolution",
+    "contract_v0_only"
+  ],
+  "non_activation_flags": [
+    "not_generated",
+    "not_rendered",
+    "no_runtime_execution",
+    "no_game_generation",
+    "no_interactive_runtime"
+  ],
+  "pedagogy_extensions": {},
+  "metadata_extensions": {},
+  "planning_notes": "Fictional review game contract metadata only; no game generation, interactive runtime, or rendering",
+  "created_by_manual_entry": true,
+  "activation_status": "contract_v0"
+}

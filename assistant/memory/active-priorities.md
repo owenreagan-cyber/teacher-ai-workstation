@@ -71,9 +71,11 @@
 - Canvas LLM frozen foundation handoff snapshot: complete
 - Canvas LLM stop marker and Curriculum Builder return handoff: complete
 - Curriculum Builder output contract planning foundation: complete
+- Curriculum Builder static source registry plan: in progress (PR #157)
 
 ### Now
 
+- Curriculum Builder static source registry plan: documentation/status only (`docs/curriculum-builder-static-source-registry-plan.md`). Metadata/reference-only planning; no scanning, indexing, or resolution.
 - Curriculum Builder output contract planning foundation: documentation/status only (`docs/curriculum-builder-output-contract-foundation.md`). Planning placeholders only; no schema, validators, renderers, or generation.
 - Canvas LLM docs/status foundation is complete for now, frozen for runtime work, and stopped. stop marker active. See `docs/canvas-llm-stop-marker-curriculum-builder-return.md`. do not start Canvas LLM PRs by default.
 - Canvas LLM weekly export bundle plan: documentation/status only (`docs/canvas-llm-weekly-export-bundle-placeholder-plan.md`). Markdown-only planning text; no bundle assembler or APIs.
@@ -87,6 +89,7 @@
 
 ### Next
 
+- Curriculum Builder static source registry plan in progress (PR #157). Documentation/status only; metadata/reference-only; no scanning, folder crawling, file indexing, OCR, embeddings, vector database, or Drive/NAS/iCloud resolution.
 - Curriculum Builder output contract planning foundation complete (PR #155). Documentation/status only; no lesson generation, ingestion, RAG, or runtime behavior.
 - Canvas LLM is complete/frozen/stopped. final handoff snapshot is recorded. stop marker is active. Do not start Canvas LLM PRs by default.
 - Recommended next focus remains Curriculum Builder foundation docs/status work outside Canvas LLM runtime work with explicit approval only.

@@ -10,7 +10,7 @@ For the canonical manual/static registry field schema and fictional placeholder 
 
 For rules governing a future fictional sample registry proof artifact, see `docs/curriculum-builder-manual-registry-sample-proof-plan.md`.
 
-For the static fictional seven-row sample proof, see `docs/curriculum-builder-manual-registry-sample-proof.md`.
+For the static fictional seven-row sample proof, see `docs/curriculum-builder-manual-registry-sample-proof.md`. For static validation checks, see `docs/curriculum-builder-static-sample-validation-checks.md`.
 
 For future static validation rules for the sample artifact, see `docs/curriculum-builder-static-sample-validation-plan.md`.
 

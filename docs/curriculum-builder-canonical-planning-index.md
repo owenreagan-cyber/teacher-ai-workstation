@@ -4,7 +4,7 @@ This document is the canonical entry point for Curriculum Builder / Curriculum R
 
 ## current state summary
 
-Curriculum Builder planning is complete through PR #124. Post-closeout alignment through PR #132 hardened Chief of Staff status-command wording. The stack is documentation/status-only. Implementation is paused behind an explicit approval gate. Latest completed PR reference: PR #124 — Phase 1 curriculum builder status closeout note (`817480a`). Next-stage transition note: `docs/curriculum-builder-next-stage-readiness-audit.md`. Manual registry schema plan: `docs/curriculum-builder-manual-registry-schema-plan.md`. Manual registry sample proof plan: `docs/curriculum-builder-manual-registry-sample-proof-plan.md`. Manual registry sample proof: `docs/curriculum-builder-manual-registry-sample-proof.md`. Static sample validation plan: `docs/curriculum-builder-static-sample-validation-plan.md`.
+Curriculum Builder planning is complete through PR #124. Post-closeout alignment through PR #132 hardened Chief of Staff status-command wording. The stack is documentation/status-only. Implementation is paused behind an explicit approval gate. Latest completed PR reference: PR #124 — Phase 1 curriculum builder status closeout note (`817480a`). Next-stage transition note: `docs/curriculum-builder-next-stage-readiness-audit.md`. Manual registry schema plan: `docs/curriculum-builder-manual-registry-schema-plan.md`. Manual registry sample proof plan: `docs/curriculum-builder-manual-registry-sample-proof-plan.md`. Manual registry sample proof: `docs/curriculum-builder-manual-registry-sample-proof.md`. Static sample validation plan: `docs/curriculum-builder-static-sample-validation-plan.md`. Static sample validation checks: `docs/curriculum-builder-static-sample-validation-checks.md`.
 
 ## planning stack purpose
 
@@ -73,7 +73,8 @@ future PR checklist summary: `docs/curriculum-builder-future-pr-checklist.md` is
 | Manual registry schema plan | `docs/curriculum-builder-manual-registry-schema-plan.md` | Planned manual/static registry field schema and fictional placeholder rows |
 | Manual registry sample proof plan | `docs/curriculum-builder-manual-registry-sample-proof-plan.md` | Plans future fictional sample registry artifact rules and validation |
 | Manual registry sample proof | `docs/curriculum-builder-manual-registry-sample-proof.md` | Static fictional seven-row sample demonstrating schema shape |
-| Static sample validation plan | `docs/curriculum-builder-static-sample-validation-plan.md` | Future static validation rule set for the sample artifact |
+| Static sample validation plan | `docs/curriculum-builder-static-sample-validation-plan.md` | Static validation rule set for the sample artifact |
+| Static sample validation checks | `docs/curriculum-builder-static-sample-validation-checks.md` | Repo-local text-only checks enforced against the sample proof |
 | Foundation status script | `scripts/curriculum-builder-foundation-status.sh` | Read-only PASS/WARN/FAIL status checks |
 
 ## Start Here

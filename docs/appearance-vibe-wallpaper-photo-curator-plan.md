@@ -9,12 +9,12 @@ This PR is planning-only. It does not fetch images, download images, process ima
 ## Current Status
 
 ```text
-Current status: Phase A planning only.
+Current status: foundation stack complete for now; live wallpaper/photo curator implementation not started.
 ```
 
-Phase B folder design is documented in `docs/wallpaper-photo-rotation-folder-design.md`. No curator folders are created yet.
+The Appearance & Vibe wallpaper/photo curator foundation stack is complete for now. Phase B folder design is documented in `docs/wallpaper-photo-rotation-folder-design.md`. This document remains planning/status-only.
 
-No curator runtime, fetcher, review UI, image worker, or rotation-folder automation exists yet.
+No curator runtime, fetcher, review UI, image worker, rotation-folder automation, scheduler, background job, or live wallpaper app exists yet.
 
 ## Why This Belongs in Appearance & Vibe
 

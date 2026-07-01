@@ -223,6 +223,38 @@ Unless explicitly approved, preserve:
 - no automation
 - no live integrations
 
+## Appearance & Vibe Wallpaper/Vibe Status Audit
+
+The wallpaper/vibe foundation is status/planning/scaffold only. Phase 0E vibe work is a script-first scaffold with optional manual install surfaces. Wallpaper/photo curator work is planning/status/foundation only. `setup/06-wallpapers.sh` is a one-time/manual setup script, not a daemon.
+
+- no live wallpaper app
+- no running wallpaper/photo curator daemon or background job
+- no implemented WidgetKit widget or per-vibe widget runtime
+- no automatic per-vibe shortcut runtime
+- appearance/vibe modes are conceptually present and script-scaffolded/manual where applicable, not automated
+- existing dashboard/status checks verify readiness and safety only
+- live wallpaper/photo curator implementation has not started
+
+Current canonical status surfaces:
+
+- `bin/chief-of-staff --dashboard`
+- `bin/chief-of-staff --wallpaper-photo-rotation-handoff-safety-status`
+- `bin/chief-of-staff --return-to-core-status`
+
+Future implementation requires explicit approval.
+
+Unless explicitly approved, preserve:
+
+- no macOS wallpaper changes
+- no widget creation
+- no shortcut installation
+- no scheduler
+- no automation
+- no API
+- no OAuth
+- no network call
+- no live integration is active
+
 ## Build Queue and Status Pointer Consistency
 
 Lesson-planning placeholder readiness is complete for now (PR #125). Curriculum Builder planning stack is complete and parked (PR #124). Placeholder skeleton and registry already exist and are validated. Static template schema planning remains documentation/status-only unless explicitly approved.

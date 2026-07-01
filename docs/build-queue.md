@@ -87,7 +87,7 @@ Future lesson-planning follow-ons are documentation/status-only unless explicitl
 ## Parked / Future
 
 - 3D Design Factory Agent: Parked until Chief of Staff and Teacher Workstation foundations are mature.
-- Appearance & Vibe: Automated Wallpaper and Photo Curator (foundation stack complete for now; live curator not started; paused while returning to Chief of Staff / Teacher Workstation core).
+- Appearance & Vibe: Automated Wallpaper and Photo Curator (foundation stack complete for now; live curator not started; paused while returning to Chief of Staff / Teacher Workstation core). Status audit: `docs/phase-1-chief-of-staff-status-audit.md` — Appearance & Vibe Wallpaper/Vibe Status Audit.
 
 ## Open Threads
 

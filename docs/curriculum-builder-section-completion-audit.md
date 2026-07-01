@@ -251,3 +251,7 @@ Registry–Contract Binding v0 activates read-only lookup and consistency valida
 ## Teacher Script Contract Schema v0 Implementation Activation (Phase 2 Mission 4)
 
 Teacher Script Contract Schema v0 promotes `teacher_script_contract` to a second fully validated canonical contract. See `docs/curriculum-teacher-script-contract-v0.md`. No script generation, renderers, or runtime execution.
+
+## Worksheet Contract Schema v0 Implementation Activation (Phase 2 Mission 5)
+
+Worksheet Contract Schema v0 promotes `worksheet_contract` to a third fully validated canonical contract. See `docs/curriculum-worksheet-contract-v0.md`. No worksheet generation, PDF output, or renderers.

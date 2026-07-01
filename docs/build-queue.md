@@ -99,10 +99,11 @@ Handoff and status clarity. Start from `docs/phase-1-chief-of-staff-status-audit
 - Curriculum Output Contract v0 bounded validator (Phase 2 Mission 2).
 - Registry–Contract Binding v0 (Phase 2 Mission 3).
 - Teacher Script Contract Schema v0 (Phase 2 Mission 4).
+- Worksheet Contract Schema v0 (Phase 2 Mission 5).
 
 ## Master Build Roadmap Status
 
-Canonical program roadmap is active (`docs/master-build-roadmap.md`). Documents current state, seven major programs, mission sequencing, v1.0 definition, and autonomous vs approval boundaries. Next recommended mission: Phase 2 Mission 5 — Worksheet Contract Schema v0. Roadmap does not auto-start implementation.
+Canonical program roadmap is active (`docs/master-build-roadmap.md`). Documents current state, seven major programs, mission sequencing, v1.0 definition, and autonomous vs approval boundaries. Next recommended mission: Review Game Contract Schema v0. Roadmap does not auto-start implementation.
 
 ## Engineering Constitution Status
 
@@ -115,6 +116,10 @@ Repo-wide implementation approval gate is active. No implementation is approved 
 ## Canvas LLM Foundation Status
 
 Canvas LLM docs/status foundation is complete for now. Runtime/export/API/generation work is frozen unless separately and explicitly approved. final handoff snapshot recorded. stop marker active. section completion audit recorded. Recommended next focus: Curriculum Builder foundation.
+
+## Worksheet Contract v0 Status
+
+Worksheet Contract Schema v0 is active (Phase 2 Mission 5). See `docs/curriculum-worksheet-contract-v0.md`. Third canonical output contract with fictional exercise placeholders; read-only validation only. No worksheet generation, PDF output, or renderers.
 
 ## Teacher Script Contract v0 Status
 

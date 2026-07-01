@@ -1,0 +1,64 @@
+{
+  "contract_version": "0.1.0",
+  "contract_status": "active_v0",
+  "metadata_only": true,
+  "read_only": true,
+  "contract_id": "sample-contract-worksheet-001",
+  "contract_type": "worksheet_contract",
+  "title": "SM5 Unit 02 Lesson 03 Worksheet Contract Placeholder",
+  "subject": "science",
+  "grade_band": "SM5",
+  "course": "physical_science",
+  "unit": "unit_02",
+  "lesson": "lesson_03",
+  "registry_references": [
+    "sample-sm5-worksheet-folder-001"
+  ],
+  "teacher_only": true,
+  "student_facing_allowed": "false",
+  "review_state": "not_reviewed",
+  "approval_status": "not_approved",
+  "worksheet_context": {
+    "pacing_reference": "pacing-sm5-u02-l03",
+    "worksheet_format": "practice_worksheet",
+    "focus_topic": "Placeholder worksheet focus for practice exercises"
+  },
+  "exercise_placeholders": [
+    {
+      "exercise_id": "exercise-01",
+      "prompt_placeholder": "Exercise prompt placeholder only",
+      "response_format_placeholder": "Short answer placeholder format only",
+      "answer_key_placeholder": "Answer key placeholder marker only",
+      "difficulty_hint_placeholder": "Foundational placeholder difficulty"
+    },
+    {
+      "exercise_id": "exercise-02",
+      "prompt_placeholder": "Second exercise prompt placeholder only",
+      "response_format_placeholder": "Multiple choice placeholder format only",
+      "answer_key_placeholder": "Second answer key placeholder marker only",
+      "difficulty_hint_placeholder": "Extension placeholder difficulty"
+    }
+  ],
+  "local_first_safety_flags": [
+    "metadata_only",
+    "no_student_data",
+    "not_generated",
+    "not_rendered",
+    "manual_entry",
+    "placeholder_only",
+    "no_external_resolution",
+    "contract_v0_only"
+  ],
+  "non_activation_flags": [
+    "not_generated",
+    "not_rendered",
+    "no_runtime_execution",
+    "no_pdf_output",
+    "no_worksheet_generation"
+  ],
+  "pedagogy_extensions": {},
+  "metadata_extensions": {},
+  "planning_notes": "Fictional worksheet contract metadata only; no worksheet generation, PDF output, or rendering",
+  "created_by_manual_entry": true,
+  "activation_status": "contract_v0"
+}

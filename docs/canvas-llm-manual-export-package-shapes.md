@@ -175,6 +175,8 @@ This shapes document does not add an exporter, generated package files, runtime 
 
 See `docs/canvas-llm-manual-export-review-checklist.md` for teacher review checklists before manual copy.
 
+Weekly bundle assembly is documented in `docs/canvas-llm-weekly-export-bundle-placeholder-plan.md`.
+
 ## Related Verification Commands
 
 ```bash

@@ -17,6 +17,7 @@ This guide explains how to maintain Canvas LLM manual export review checklist do
 - `docs/canvas-llm-approval-and-export-states.md`
 - `docs/canvas-llm-safety-and-approval-contract.md`
 - `docs/canvas-llm-manual-completion-status-placeholder-maintenance.md`
+- `docs/canvas-llm-weekly-export-bundle-placeholder-maintenance.md`
 
 ## 3. Editing Rules
 

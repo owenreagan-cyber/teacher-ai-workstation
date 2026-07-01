@@ -105,7 +105,7 @@ No future live Canvas publishing may occur unless a separate future connector ha
 
 ## 8. Relationship to Safety Contract
 
-See `docs/canvas-llm-safety-and-approval-contract.md` for foundation prohibitions, approval gates, and human approval principles. This document extends the safety contract with export-state vocabulary and transition rules. Manual export package planning is in `docs/canvas-llm-manual-export-package-plan.md`. Manual export review checklists are in `docs/canvas-llm-manual-export-review-checklist.md`. Manual completion status planning is in `docs/canvas-llm-manual-completion-status-placeholder-plan.md`.
+See `docs/canvas-llm-safety-and-approval-contract.md` for foundation prohibitions, approval gates, and human approval principles. This document extends the safety contract with export-state vocabulary and transition rules. Manual export package planning is in `docs/canvas-llm-manual-export-package-plan.md`. Manual export review checklists are in `docs/canvas-llm-manual-export-review-checklist.md`. Manual completion status planning is in `docs/canvas-llm-manual-completion-status-placeholder-plan.md`. Weekly export bundle planning is in `docs/canvas-llm-weekly-export-bundle-placeholder-plan.md`.
 
 ## 9. Non-Activation Boundary
 

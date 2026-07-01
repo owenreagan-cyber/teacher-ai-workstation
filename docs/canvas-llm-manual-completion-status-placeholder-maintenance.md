@@ -15,6 +15,7 @@ This guide explains how to maintain Canvas LLM manual completion status planning
 - `docs/canvas-llm-manual-export-package-plan.md`
 - `docs/canvas-llm-approval-and-export-states.md`
 - `docs/canvas-llm-safety-and-approval-contract.md`
+- `docs/canvas-llm-weekly-export-bundle-placeholder-plan.md`
 
 ## 3. Editing Rules
 

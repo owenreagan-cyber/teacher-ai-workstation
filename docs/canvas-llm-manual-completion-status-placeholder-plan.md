@@ -160,6 +160,8 @@ This plan does not add:
 
 Moving to a runtime completion tracker requires a separate approved PR.
 
+Weekly bundle planning is documented in `docs/canvas-llm-weekly-export-bundle-placeholder-plan.md`.
+
 ## Related Verification Commands
 
 ```bash

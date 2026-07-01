@@ -35,7 +35,7 @@ Teacher Workstation relationship: may reference approved planning docs later. No
 
 ## Chief of Staff relationship
 
-Chief of Staff relationship: reports planning/status readiness through `bin/chief-of-staff --curriculum-builder-foundation-status` and dashboard integration. Does not own raw curriculum files, scan folders, call APIs, or generate content.
+Chief of Staff relationship: reports planning/status readiness through read-only proof surfaces only — `bin/chief-of-staff --curriculum-builder-foundation-status` and `bin/chief-of-staff --dashboard`. These commands report PASS/WARN/FAIL only. They do not own raw curriculum files, scan folders, call APIs, activate implementation, or generate content.
 
 ## approval gate summary
 

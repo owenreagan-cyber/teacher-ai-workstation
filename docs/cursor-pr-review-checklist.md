@@ -109,7 +109,7 @@ Prompt pack references do not replace branch deletion verification.
 Prompt pack references do not replace final local-main dashboard proof.
 
 Use `docs/prompt-pack-stack-completion-marker.md` to confirm the reusable prompt pack documentation stack is complete for now.
-Start from `docs/phase-1-chief-of-staff-status-audit.md` — Repo-Wide Parked Tracks and Active Status Map and `docs/build-queue.md`. Dashboard and status commands are read-only proof surfaces.
+Start from `docs/phase-1-chief-of-staff-status-audit.md` — Repo-Wide Parked Tracks and Active Status Map and `docs/build-queue.md`. Dashboard and status commands are read-only proof surfaces; they report PASS/WARN/FAIL only and do not activate implementation.
 Use `docs/prompt-pack-handoff-summary.md` to understand the current reusable prompt pack stack.
 The handoff summary points to maintenance, freshness, stale-reference audit, reference index, workflow navigation, verification bundles, and lifecycle guardrails.
 Use `docs/prompt-pack-reference-index.md` to find reusable prompt pack references.

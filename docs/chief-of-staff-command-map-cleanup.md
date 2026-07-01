@@ -18,6 +18,8 @@ Workflow quick-start guide adds plain-English daily/PR/merge workflows. See `doc
 
 Help text and `--list-workflows` group related commands more clearly. Status commands, validators, and dry-run helpers are easier to distinguish.
 
+Status commands are read-only proof surfaces. They report PASS/WARN/FAIL only and do not activate implementation, parked tracks, or repository changes. Validators and dry-run helpers are planning/safety tools unless explicitly documented otherwise.
+
 ## Why This Cleanup Exists
 
 After the dashboard readability pass, the Chief of Staff CLI accumulated many status, validator, and dry-run commands across lesson planning, developer workflow, and Appearance & Vibe foundation work. A clearer command map makes discovery faster without changing behavior.

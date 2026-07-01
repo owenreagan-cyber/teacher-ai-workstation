@@ -109,6 +109,8 @@ no student data
 
 ## Commands Reference
 
+Status commands below are read-only proof surfaces. They report repository readiness and documentation status (PASS/WARN/FAIL) only. They do not activate parked tracks, implementation, wallpaper runtime, or repository changes.
+
 ```bash
 bin/chief-of-staff --return-to-core-status
 bin/chief-of-staff --dashboard

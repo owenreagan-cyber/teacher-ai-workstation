@@ -6,6 +6,8 @@ This document is a plain-English quick-start guide for common Chief of Staff / T
 
 This PR adds a quick-start guide only. This pass is about preserving all existing commands, preserving command behavior, and preserving PASS/WARN/FAIL semantics while enforcing no command removals and no command renames.
 
+Chief of Staff status commands are read-only proof surfaces. They report repository readiness and documentation status (PASS/WARN/FAIL) only. They do not execute workflows, orchestrate systems, activate features, or modify repository state.
+
 ## Current Status
 
 ```text

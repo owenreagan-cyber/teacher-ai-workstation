@@ -70,7 +70,7 @@ No real lesson generation is activated by this foundation. Generated lesson brie
 
 Chief of Staff may eventually check whether curriculum registry docs, source references, safety boundaries, and readiness status exist.
 
-Chief of Staff remains a status/orchestration/reference layer. Chief of Staff does not own curriculum files and does not store raw curriculum copies.
+Chief of Staff remains a status/orchestration/reference layer. In current practice, Chief of Staff status commands are read-only proof surfaces that report PASS/WARN/FAIL only; they do not orchestrate implementation, activate features, or modify repository state. Chief of Staff does not own curriculum files and does not store raw curriculum copies.
 
 ## Safety Boundaries
 
@@ -164,6 +164,7 @@ This PR is complete when:
 - the plan names Google Drive, NAS, iCloud, and local folders as storage sources
 - the plan states that metadata and references are stored, not paid duplicate copies of all raw files
 - the plan states Chief of Staff is a status/orchestration/reference layer and does not own curriculum files
+- the plan clarifies Chief of Staff status commands are read-only proof surfaces that report PASS/WARN/FAIL only and do not orchestrate implementation
 - the plan states future lesson-planning workflows may reference the registry without activating generation
 - the plan lists prohibited capabilities including no document scanning, no folder scanning, no file indexing, no OCR, no embeddings, no vector database, no lesson generation, no student data, and no network calls
 - `scripts/curriculum-builder-foundation-status.sh` provides read-only PASS/WARN/FAIL verification of the plan doc

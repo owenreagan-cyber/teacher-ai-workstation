@@ -18,7 +18,7 @@ Teacher Workstation role: Teacher Workstation may reference approved planning do
 
 ## Chief of Staff role
 
-Chief of Staff role: Chief of Staff reports planning/status readiness through existing read-only status checks. Chief of Staff does not scan, index, validate real registry records, call APIs, back up files, or generate content.
+Chief of Staff role: Chief of Staff reports planning/status readiness through existing read-only proof surfaces (PASS/WARN/FAIL status commands only). Chief of Staff does not scan, index, validate real registry records, call APIs, back up files, or generate content.
 
 ## completed planning artifacts
 

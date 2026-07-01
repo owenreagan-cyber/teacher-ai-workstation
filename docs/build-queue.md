@@ -63,6 +63,8 @@ Handoff and status clarity. Start from `docs/phase-1-chief-of-staff-status-audit
 - Repo-wide parked tracks and active status map (PR #128).
 - Active priorities and build queue handoff alignment (PR #129).
 - Prompt pack post-parked-tracks stale-reference alignment (PR #130).
+- Chief of Staff command surface status alignment (PR #131).
+- Chief of Staff status command consistency audit (PR #132).
 
 ## Current PR
 

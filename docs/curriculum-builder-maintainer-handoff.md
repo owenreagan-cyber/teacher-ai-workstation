@@ -62,7 +62,7 @@ Teacher Workstation relationship: may reference approved planning docs later. No
 
 ## Chief of Staff relationship
 
-Chief of Staff relationship: reports planning/status readiness through existing read-only checks. Does not own raw curriculum files, scan folders, call APIs, validate real registry records, back up files, or generate content.
+Chief of Staff relationship: reports planning/status readiness through existing read-only proof surfaces only. Status commands report PASS/WARN/FAIL and do not activate implementation. Does not own raw curriculum files, scan folders, call APIs, validate real registry records, back up files, or generate content.
 
 ## approval gate requirement
 

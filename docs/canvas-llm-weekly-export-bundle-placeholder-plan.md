@@ -327,7 +327,7 @@ Any future active weekly bundle tool requires a separate approved PR and must de
 
 Documentation/status only. Weekly export bundle placeholder plan is Markdown-only planning text. No runtime behavior, generated package files, weekly bundle files, Canvas API, Google Drive API, OAuth, network calls, automation, browser automation, generation, student data, or Canvas publishing.
 
-Planning foundation capstone is in `docs/canvas-llm-planning-foundation-capstone.md`.
+Planning foundation capstone is in `docs/canvas-llm-planning-foundation-capstone.md`. Closure audit: `docs/canvas-llm-planning-foundation-closure-audit.md`.
 
 ## Related Verification Commands
 

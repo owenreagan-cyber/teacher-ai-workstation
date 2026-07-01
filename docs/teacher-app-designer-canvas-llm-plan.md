@@ -104,7 +104,7 @@ Future weekly bundle assembly concepts are documented in `docs/canvas-llm-weekly
 
 ## Planning Foundation Capstone
 
-The Canvas LLM planning foundation complete-for-now marker is in `docs/canvas-llm-planning-foundation-capstone.md`.
+The Canvas LLM planning foundation complete-for-now marker is in `docs/canvas-llm-planning-foundation-capstone.md`. Closure audit: `docs/canvas-llm-planning-foundation-closure-audit.md`.
 
 ## Related Verification Commands
 

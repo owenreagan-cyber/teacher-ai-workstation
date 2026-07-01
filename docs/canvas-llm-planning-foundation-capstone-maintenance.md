@@ -111,6 +111,11 @@ Before merging capstone edits:
 - [ ] Separate approved PR gate preserved
 - [ ] Static status checks updated if new required strings added
 
+## Related Docs
+
+- Closure audit: `docs/canvas-llm-planning-foundation-closure-audit.md`
+- Closure audit maintenance: `docs/canvas-llm-planning-foundation-closure-audit-maintenance.md`
+
 ## Disallowed Changes Without Separate Approved PR
 
 Do not:

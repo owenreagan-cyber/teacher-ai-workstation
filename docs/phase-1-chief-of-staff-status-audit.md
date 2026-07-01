@@ -263,13 +263,14 @@ Compact map for maintainers, Cursor sessions, and ChatGPT sessions. Tracks below
 | Track | Current state | Verification command | Active behavior? | Next allowed work | Blocked without approval |
 | --- | --- | --- | --- | --- | --- |
 | Curriculum Builder | Parked after planning closeout and canonical index | `bash scripts/curriculum-builder-foundation-status.sh`; `bin/chief-of-staff --curriculum-builder-foundation-status` | No | Approval-gated decision intake or docs/status-only cleanup | Implementation, registry data, scanning, indexing, APIs, lesson generation |
+| Teacher App Designer / Canvas LLM | Planning/status foundation only | `bash scripts/teacher-app-designer-canvas-llm-status.sh`; `bin/chief-of-staff --teacher-app-designer-canvas-llm-status` | No | Docs/status-only planning unless explicitly approved | Canvas API, Drive API, OAuth, network calls, publishing, lesson generation, student data |
 | Lesson-planning placeholder readiness | Parked after placeholder readiness closeout | `bash scripts/lesson-planning-template-readiness-status.sh` | No generation behavior | Docs/status-only planning unless explicitly approved | Schema activation, validators, active template loading, generated lesson briefs/drafts, real review notes |
 | Appearance & Vibe wallpaper/photo foundation | Foundation complete for now; live curator not started | `bash scripts/wallpaper-photo-rotation-handoff-safety-status.sh`; `bin/chief-of-staff --return-to-core-status` | No live app/runtime | Docs/status-only planning unless explicitly approved | Wallpaper app, scheduler, widgets, shortcuts, OS-level changes, automation, APIs, network calls |
 | Dashboard / Chief of Staff status | Active only as status/dashboard command surface | `bin/chief-of-staff --dashboard` | Read-only status output | Docs/status clarity or read-only checks | Behavior changes, command removals/renames, dashboard health count drift without explicit reason |
 
 ### Chief of Staff command surfaces are read-only proof surfaces
 
-`bin/chief-of-staff --dashboard`, `bin/chief-of-staff --curriculum-builder-foundation-status`, `bin/chief-of-staff --return-to-core-status`, and `bin/chief-of-staff --prompt-pack-stale-reference-audit-status` report PASS/WARN/FAIL status only. They do not activate parked tracks, implementation, wallpaper runtime, lesson generation, schema activation, or dashboard behavior changes. Wallpaper/photo status commands are read-only proof surfaces unless explicitly named as dry-run validators.
+`bin/chief-of-staff --dashboard`, `bin/chief-of-staff --curriculum-builder-foundation-status`, `bin/chief-of-staff --teacher-app-designer-canvas-llm-status`, `bin/chief-of-staff --return-to-core-status`, and `bin/chief-of-staff --prompt-pack-stale-reference-audit-status` report PASS/WARN/FAIL status only. They do not activate parked tracks, implementation, wallpaper runtime, lesson generation, schema activation, or dashboard behavior changes. Wallpaper/photo status commands are read-only proof surfaces unless explicitly named as dry-run validators.
 
 ### Do not restart parked work
 
@@ -284,6 +285,7 @@ Compact map for maintainers, Cursor sessions, and ChatGPT sessions. Tracks below
 ```bash
 bash scripts/lesson-planning-template-readiness-status.sh
 bash scripts/curriculum-builder-foundation-status.sh
+bash scripts/teacher-app-designer-canvas-llm-status.sh
 bash scripts/wallpaper-photo-rotation-handoff-safety-status.sh
 bin/chief-of-staff --return-to-core-status
 bash scripts/phase-1-status.sh

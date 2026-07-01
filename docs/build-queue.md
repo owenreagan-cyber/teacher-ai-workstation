@@ -1,6 +1,6 @@
 # Build Queue
 
-Last updated: 2026-06-29
+Last updated: 2026-07-01
 
 ## Current Completed Phase
 
@@ -76,10 +76,13 @@ Handoff and status clarity. Start from `docs/phase-1-chief-of-staff-status-audit
 - Curriculum Builder CSV placeholder sample artifact (PR #141).
 - Curriculum Builder CSV static validation maintenance (PR #142).
 - Curriculum Builder Markdown/CSV alignment proof (PR #143).
+- Teacher App Designer / Canvas LLM local-first foundation (PR #144).
 
 ## Current PR
 
-Parked — start from `docs/phase-1-chief-of-staff-status-audit.md` — Repo-Wide Parked Tracks and Active Status Map.
+Teacher App Designer / Canvas LLM local-first foundation — documentation/status only. See `docs/teacher-app-designer-canvas-llm-plan.md`.
+
+Previously parked — start from `docs/phase-1-chief-of-staff-status-audit.md` — Repo-Wide Parked Tracks and Active Status Map.
 
 Lesson-planning: placeholder skeleton and registry exist and pass readiness checks. Future follow-ons are documentation/status-only unless explicitly approved. Static template schema planning remains planning-only.
 

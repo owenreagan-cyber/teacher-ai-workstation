@@ -630,6 +630,16 @@ for path in \
 done
 check_bash_syntax scripts/curriculum-builder-foundation-status.sh
 
+section "Teacher App Designer / Canvas LLM Foundation Files"
+for path in \
+  docs/teacher-app-designer-canvas-llm-plan.md \
+  docs/canvas-llm-safety-and-approval-contract.md \
+  docs/canvas-llm-local-first-drive-first-architecture.md \
+  scripts/teacher-app-designer-canvas-llm-status.sh; do
+  check_required_file "${path}"
+done
+check_bash_syntax scripts/teacher-app-designer-canvas-llm-status.sh
+
 section "Teacher Planning Command Organization Files"
 for path in \
   docs/teacher-planning-command-organization.md \
@@ -805,6 +815,7 @@ check_bash_syntax "scripts/teacher-workflow-safe-output-checker-status.sh"
 check_bash_syntax "scripts/teacher-workflow-output-examples-completion-status.sh"
 check_bash_syntax "scripts/lesson-planning-template-readiness-status.sh"
 check_bash_syntax "scripts/curriculum-builder-foundation-status.sh"
+check_bash_syntax "scripts/teacher-app-designer-canvas-llm-status.sh"
 check_bash_syntax "scripts/teacher-planning-command-organization-status.sh"
 check_bash_syntax "scripts/dashboard-section-summary-status.sh"
 check_bash_syntax "scripts/chief-of-staff-workflow-quick-start-status.sh"

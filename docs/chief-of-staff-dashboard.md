@@ -163,6 +163,7 @@ This visibility note is documentation only. It does not change dashboard behavio
 These commands are also read-only status proof surfaces unless explicitly named as dry-run validators:
 
 - `bin/chief-of-staff --curriculum-builder-foundation-status` (Curriculum Builder parked; approval-gated)
+- `bin/chief-of-staff --teacher-app-designer-canvas-llm-status` (Teacher App Designer / Canvas LLM planning only; no live connectors)
 - `bin/chief-of-staff --return-to-core-status` (paused tracks / return-to-core proof)
 - `bin/chief-of-staff --prompt-pack-stale-reference-audit-status` (prompt-pack reference proof)
 - `bin/chief-of-staff --wallpaper-photo-rotation-handoff-safety-status` (Appearance & Vibe foundation parked; live curator not started)

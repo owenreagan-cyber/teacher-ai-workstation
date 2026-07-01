@@ -59,9 +59,11 @@
 - Curriculum Builder CSV placeholder sample artifact: complete
 - Curriculum Builder CSV static validation maintenance: complete
 - Curriculum Builder Markdown/CSV alignment proof: complete
+- Teacher App Designer / Canvas LLM local-first foundation: in progress (PR #144)
 
 ### Now
 
+- Teacher App Designer / Canvas LLM planning track: documentation/status only (`docs/teacher-app-designer-canvas-llm-plan.md`). No Canvas API, Drive API, OAuth, or runtime behavior.
 - Handoff and status clarity only. Start from `docs/phase-1-chief-of-staff-status-audit.md` — Repo-Wide Parked Tracks and Active Status Map and `docs/build-queue.md`.
 - Dashboard and Chief of Staff status commands remain read-only proof surfaces; they report PASS/WARN/FAIL only and do not activate implementation (`bin/chief-of-staff --dashboard`).
 

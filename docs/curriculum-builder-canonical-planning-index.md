@@ -81,6 +81,7 @@ future PR checklist summary: `docs/curriculum-builder-future-pr-checklist.md` is
 | CSV placeholder sample artifact doc | `docs/curriculum-builder-csv-placeholder-sample-artifact.md` | Describes CSV artifact boundaries and validation |
 | CSV static validation maintenance | `docs/curriculum-builder-csv-static-validation-maintenance.md` | Markdown/CSV alignment and edit checklist |
 | Markdown/CSV alignment proof | `docs/curriculum-builder-markdown-csv-alignment-proof.md` | Static grep proof of shared placeholder concepts |
+| Output contract foundation | `docs/curriculum-builder-output-contract-foundation.md` | Future output contract planning placeholders (slide deck, worksheet, review game, teacher script, Canvas export/package) |
 | Foundation status script | `scripts/curriculum-builder-foundation-status.sh` | Read-only PASS/WARN/FAIL status checks |
 
 ## Start Here

@@ -625,6 +625,7 @@ for path in \
   docs/curriculum-builder-maintainer-handoff.md \
   docs/curriculum-builder-future-pr-checklist.md \
   docs/curriculum-builder-canonical-planning-index.md \
+  docs/curriculum-builder-output-contract-foundation.md \
   scripts/curriculum-builder-foundation-status.sh; do
   check_required_file "${path}"
 done

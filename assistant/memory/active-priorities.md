@@ -69,11 +69,13 @@
 - Canvas LLM planning foundation closure audit: complete
 - Canvas LLM planning foundation index and freeze: complete
 - Canvas LLM frozen foundation handoff snapshot: complete
-- Canvas LLM stop marker and Curriculum Builder return handoff: in progress (PR #154)
+- Canvas LLM stop marker and Curriculum Builder return handoff: complete
+- Curriculum Builder output contract planning foundation: in progress (PR #155)
 
 ### Now
 
-- Canvas LLM docs/status foundation is complete for now, frozen for runtime work, and stopped. stop marker in progress (PR #154). See `docs/canvas-llm-stop-marker-curriculum-builder-return.md`. do not start Canvas LLM PRs by default.
+- Curriculum Builder output contract planning foundation: documentation/status only (`docs/curriculum-builder-output-contract-foundation.md`). Planning placeholders only; no schema, validators, renderers, or generation.
+- Canvas LLM docs/status foundation is complete for now, frozen for runtime work, and stopped. stop marker active. See `docs/canvas-llm-stop-marker-curriculum-builder-return.md`. do not start Canvas LLM PRs by default.
 - Canvas LLM weekly export bundle plan: documentation/status only (`docs/canvas-llm-weekly-export-bundle-placeholder-plan.md`). Markdown-only planning text; no bundle assembler or APIs.
 - Canvas LLM manual completion status plan: documentation/status only (`docs/canvas-llm-manual-completion-status-placeholder-plan.md`). Markdown-only planning text; no completion tracker or APIs.
 - Canvas LLM manual export review checklist: documentation/status only (`docs/canvas-llm-manual-export-review-checklist.md`). Markdown-only planning text; no checklist runner, review engine, or APIs.
@@ -85,9 +87,9 @@
 
 ### Next
 
-- Canvas LLM is complete/frozen/stopped after PR #154 merges. Canvas LLM docs/status foundation is complete for now. final handoff snapshot is recorded. stop marker is active. Do not start Canvas LLM PRs by default. Do not start Canvas LLM runtime/export/API/generation work without explicit approval.
-- Recommended next focus is Curriculum Builder foundation. Recommended next focus is outside Canvas LLM runtime work. Docs/status-only Canvas maintenance is allowed only if explicitly needed.
-- Optional documentation/status-only follow-ons only with explicit approval. Do not restart parked tracks without approval.
+- Curriculum Builder output contract planning foundation in progress (PR #155). Documentation/status only; no lesson generation, ingestion, RAG, or runtime behavior.
+- Canvas LLM is complete/frozen/stopped. final handoff snapshot is recorded. stop marker is active. Do not start Canvas LLM PRs by default.
+- Recommended next focus remains Curriculum Builder foundation docs/status work outside Canvas LLM runtime work with explicit approval only.
 
 ## Completed (earlier foundations)
 

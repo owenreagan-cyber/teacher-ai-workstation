@@ -1,0 +1,108 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "teacher-ai-workstation/curriculum-output-contract/v0/contract-envelope-schema.json",
+  "title": "Curriculum Output Contract v0 Envelope Schema",
+  "description": "Shared envelope for Curriculum Output Contract v0. Metadata only; read-only; no generation.",
+  "type": "object",
+  "required": [
+    "contract_version",
+    "contract_status",
+    "metadata_only",
+    "read_only",
+    "contract_id",
+    "contract_type",
+    "title",
+    "created_by_manual_entry",
+    "activation_status",
+    "local_first_safety_flags",
+    "planning_notes"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "contract_version": {
+      "type": "string",
+      "const": "0.1.0"
+    },
+    "contract_status": {
+      "type": "string",
+      "enum": ["active_v0", "placeholder_v0"]
+    },
+    "metadata_only": {
+      "type": "boolean",
+      "const": true
+    },
+    "read_only": {
+      "type": "boolean",
+      "const": true
+    },
+    "contract_id": {
+      "type": "string",
+      "pattern": "^sample-contract-[a-z0-9-]+$"
+    },
+    "contract_type": {
+      "type": "string",
+      "enum": [
+        "direct_instruction_slide_deck_contract",
+        "worksheet_contract",
+        "review_game_contract",
+        "teacher_script_contract",
+        "canvas_export_package_contract"
+      ]
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1
+    },
+    "subject": {
+      "type": "string"
+    },
+    "grade_band": {
+      "type": "string"
+    },
+    "course": {
+      "type": "string"
+    },
+    "unit": {
+      "type": "string"
+    },
+    "lesson": {
+      "type": "string"
+    },
+    "registry_references": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^sample-[a-z0-9-]+$"
+      }
+    },
+    "teacher_only": {
+      "type": "boolean"
+    },
+    "student_facing_allowed": {
+      "type": "string",
+      "enum": ["true", "false", "unknown"]
+    },
+    "placeholder_status": {
+      "type": "string",
+      "enum": ["planning_only"]
+    },
+    "local_first_safety_flags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "minItems": 8
+    },
+    "planning_notes": {
+      "type": "string"
+    },
+    "created_by_manual_entry": {
+      "type": "boolean",
+      "const": true
+    },
+    "activation_status": {
+      "type": "string",
+      "enum": ["contract_v0", "contract_v0_placeholder"]
+    }
+  }
+}

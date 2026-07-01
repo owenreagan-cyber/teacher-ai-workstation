@@ -1,0 +1,79 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "teacher-ai-workstation/curriculum-output-contract/v0/direct-instruction-slide-deck-schema.json",
+  "title": "Direct Instruction Slide Deck Output Contract v0",
+  "description": "Canonical v0 contract schema for direct instruction slide deck planning metadata only.",
+  "allOf": [
+    {
+      "$ref": "contract-envelope-schema.json"
+    }
+  ],
+  "required": [
+    "contract_version",
+    "contract_status",
+    "metadata_only",
+    "read_only",
+    "contract_id",
+    "contract_type",
+    "title",
+    "subject",
+    "grade_band",
+    "course",
+    "unit",
+    "lesson",
+    "registry_references",
+    "teacher_only",
+    "student_facing_allowed",
+    "delivery_mode",
+    "slide_count",
+    "slide_outline_placeholders",
+    "local_first_safety_flags",
+    "planning_notes",
+    "created_by_manual_entry",
+    "activation_status"
+  ],
+  "properties": {
+    "contract_type": {
+      "const": "direct_instruction_slide_deck_contract"
+    },
+    "contract_status": {
+      "const": "active_v0"
+    },
+    "activation_status": {
+      "const": "contract_v0"
+    },
+    "delivery_mode": {
+      "type": "string",
+      "const": "direct_instruction"
+    },
+    "slide_count": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 20
+    },
+    "slide_outline_placeholders": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 20,
+      "items": {
+        "type": "object",
+        "required": ["slide_id", "title_placeholder", "notes_placeholder"],
+        "additionalProperties": false,
+        "properties": {
+          "slide_id": {
+            "type": "string",
+            "pattern": "^slide-[0-9]{2}$"
+          },
+          "title_placeholder": {
+            "type": "string",
+            "minLength": 1
+          },
+          "notes_placeholder": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    }
+  }
+}

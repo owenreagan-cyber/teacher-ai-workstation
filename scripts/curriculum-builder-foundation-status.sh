@@ -142,6 +142,7 @@ output_contract_foundation_doc="docs/curriculum-builder-output-contract-foundati
 static_source_registry_plan_doc="docs/curriculum-builder-static-source-registry-plan.md"
 section_completion_audit_doc="docs/curriculum-builder-section-completion-audit.md"
 registry_v0_doc="docs/curriculum-registry-v0.md"
+output_contract_v0_doc="docs/curriculum-output-contract-v0.md"
 build_queue_doc="docs/build-queue.md"
 active_priorities_doc="assistant/memory/active-priorities.md"
 dashboard_doc="docs/chief-of-staff-dashboard.md"
@@ -1425,17 +1426,41 @@ check_doc_contains "${section_completion_audit_doc}" "Registry v0 Implementation
 check_doc_contains "${build_queue_doc}" "Curriculum Registry v0" "build queue references registry v0"
 check_doc_contains "${active_priorities_doc}" "Curriculum Registry v0" "active priorities references registry v0"
 
+section "Curriculum Output Contract v0 Foundation Checks"
+
+check_file "${output_contract_v0_doc}"
+check_file "assistant/curriculum-builder/output-contract/v0/contract-envelope-schema.json"
+check_file "assistant/curriculum-builder/output-contract/v0/direct-instruction-slide-deck-schema.json"
+check_file "assistant/curriculum-builder/output-contract/v0/contracts/sample-di-slide-deck-001.json"
+check_file "assistant/curriculum-builder/output-contract/v0/placeholder-manifest.json"
+check_file "scripts/curriculum-output-contract-v0-validator.sh"
+check_file "scripts/curriculum-output-contract-v0-status.sh"
+check_doc_contains "${output_contract_v0_doc}" "metadata only" "output contract v0 metadata only boundary"
+check_doc_contains "${output_contract_v0_doc}" "read-only" "output contract v0 read-only boundary"
+check_doc_contains "${output_contract_v0_doc}" "direct_instruction_slide_deck_contract" "output contract v0 DI contract documented"
+check_doc_contains "${output_contract_v0_doc}" "no lesson generation" "output contract v0 no lesson generation boundary"
+check_doc_contains "${output_contract_v0_doc}" "no renderers" "output contract v0 no renderers boundary"
+check_doc_contains "${output_contract_v0_doc}" "registry_references" "output contract v0 registry references documented"
+check_doc_contains "${output_contract_v0_doc}" "no student data" "output contract v0 no student data boundary"
+check_doc_contains "${output_contract_foundation_doc}" "Output Contract Schema v0 Implementation Activation" "output contract foundation references v0 activation"
+check_doc_contains "${build_queue_doc}" "Curriculum Output Contract v0" "build queue references output contract v0"
+check_doc_contains "${active_priorities_doc}" "Curriculum Output Contract v0" "active priorities references output contract v0"
+
 section "Command Wiring Checks"
 
 check_help_contains '--curriculum-builder-foundation-status'
 check_help_contains '--curriculum-registry-v0-status'
 check_help_contains '--curriculum-registry-v0-validate'
+check_help_contains '--curriculum-output-contract-v0-status'
+check_help_contains '--curriculum-output-contract-v0-validate'
 check_bash_syntax "bin/chief-of-staff"
 check_bash_syntax "scripts/chief-of-staff-dashboard.sh"
 check_bash_syntax "scripts/phase-1-status.sh"
 check_bash_syntax "scripts/curriculum-builder-foundation-status.sh"
 check_bash_syntax "scripts/curriculum-registry-v0-status.sh"
 check_bash_syntax "scripts/curriculum-registry-v0-validator.sh"
+check_bash_syntax "scripts/curriculum-output-contract-v0-status.sh"
+check_bash_syntax "scripts/curriculum-output-contract-v0-validator.sh"
 
 pass "no write action attempted"
 pass "no folder scanning attempted"

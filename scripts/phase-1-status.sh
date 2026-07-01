@@ -648,6 +648,23 @@ check_bash_syntax scripts/curriculum-registry-v0-validator.sh
 check_bash_syntax scripts/curriculum-registry-v0-status.sh
 check_bash_syntax tests/curriculum-registry-v0-test.sh
 
+section "Curriculum Output Contract v0 Foundation Files"
+for path in \
+  docs/curriculum-output-contract-v0.md \
+  assistant/curriculum-builder/output-contract/v0/contract-envelope-schema.json \
+  assistant/curriculum-builder/output-contract/v0/direct-instruction-slide-deck-schema.json \
+  assistant/curriculum-builder/output-contract/v0/contracts/sample-di-slide-deck-001.json \
+  assistant/curriculum-builder/output-contract/v0/placeholder-manifest.json \
+  assistant/curriculum-builder/output-contract/v0/README.md \
+  scripts/curriculum-output-contract-v0-validator.sh \
+  scripts/curriculum-output-contract-v0-status.sh \
+  tests/curriculum-output-contract-v0-test.sh; do
+  check_required_file "${path}"
+done
+check_bash_syntax scripts/curriculum-output-contract-v0-validator.sh
+check_bash_syntax scripts/curriculum-output-contract-v0-status.sh
+check_bash_syntax tests/curriculum-output-contract-v0-test.sh
+
 section "Teacher App Designer / Canvas LLM Foundation Files"
 for path in \
   docs/teacher-app-designer-canvas-llm-plan.md \

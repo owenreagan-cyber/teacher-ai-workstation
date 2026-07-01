@@ -1,0 +1,52 @@
+{
+  "contract_version": "0.1.0",
+  "contract_status": "active_v0",
+  "metadata_only": true,
+  "read_only": true,
+  "contract_id": "sample-contract-di-slide-deck-001",
+  "contract_type": "direct_instruction_slide_deck_contract",
+  "title": "SM5 Unit 01 Lesson 01 DI Slide Deck Contract Placeholder",
+  "subject": "science",
+  "grade_band": "SM5",
+  "course": "physical_science",
+  "unit": "unit_01",
+  "lesson": "lesson_01",
+  "registry_references": [
+    "sample-sm5-textbook-001",
+    "sample-history-slides-001"
+  ],
+  "teacher_only": false,
+  "student_facing_allowed": "unknown",
+  "delivery_mode": "direct_instruction",
+  "slide_count": 3,
+  "slide_outline_placeholders": [
+    {
+      "slide_id": "slide-01",
+      "title_placeholder": "Lesson opener placeholder",
+      "notes_placeholder": "Teacher notes placeholder only"
+    },
+    {
+      "slide_id": "slide-02",
+      "title_placeholder": "Core concept placeholder",
+      "notes_placeholder": "Direct instruction talking points placeholder"
+    },
+    {
+      "slide_id": "slide-03",
+      "title_placeholder": "Check for understanding placeholder",
+      "notes_placeholder": "Exit prompt placeholder only"
+    }
+  ],
+  "local_first_safety_flags": [
+    "metadata_only",
+    "no_student_data",
+    "not_generated",
+    "not_rendered",
+    "manual_entry",
+    "placeholder_only",
+    "no_external_resolution",
+    "contract_v0_only"
+  ],
+  "planning_notes": "Fictional direct instruction slide deck contract metadata only; no slide HTML, PDF, or generation",
+  "created_by_manual_entry": true,
+  "activation_status": "contract_v0"
+}

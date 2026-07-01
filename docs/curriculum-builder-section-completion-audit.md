@@ -239,3 +239,7 @@ Registry v0 boundaries remain strict:
 - no lesson generation, Canvas API, Drive API, OAuth, network calls, or student data
 
 The planning-closure statements above remain the historical planning-phase snapshot. Registry v0 does not approve ingestion, live resolution, renderers, or generation.
+
+## Output Contract Schema v0 Implementation Activation (Phase 2 Mission 2)
+
+Output Contract Schema v0 activates bounded read-only contract validation. See `docs/curriculum-output-contract-v0.md` and `docs/curriculum-builder-output-contract-foundation.md` — Output Contract Schema v0 Implementation Activation. No lesson generation, renderers, or Canvas package building.

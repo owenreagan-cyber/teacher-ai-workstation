@@ -75,7 +75,7 @@
 - Canvas LLM section completion audit and closure: complete
 - Curriculum Builder section completion audit and closure: complete
 - Implementation approval gate and track intake foundation: complete
-- Engineering Constitution Phase 2 transition: in progress (PR #166)
+- Engineering Constitution Phase 2 transition: complete
 
 ### Now
 
@@ -97,7 +97,7 @@
 
 ### Next
 
-- Engineering Constitution Phase 2 transition in progress (PR #166). Documentation/status only; canonical engineering governance; implementation remains approval-gated.
+- Engineering Constitution Phase 2 transition complete (PR #166). Canonical engineering authority active; implementation remains approval-gated.
 - Implementation approval gate complete (PR #164). Gate active; no implementation approved without explicit intake.
 - Curriculum Builder section completion audit complete (PR #162). Planning foundation section-complete; implementation remains approval-gated.
 - Curriculum Builder static source registry plan complete (PR #157). Documentation/status only; metadata/reference-only; no scanning, folder crawling, file indexing, OCR, embeddings, vector database, or Drive/NAS/iCloud resolution.

@@ -106,6 +106,7 @@ snapshot_doc="docs/canvas-llm-frozen-foundation-handoff-snapshot.md"
 snapshot_maintenance_doc="docs/canvas-llm-frozen-foundation-handoff-snapshot-maintenance.md"
 stop_marker_doc="docs/canvas-llm-stop-marker-curriculum-builder-return.md"
 stop_marker_maintenance_doc="docs/canvas-llm-stop-marker-curriculum-builder-return-maintenance.md"
+section_completion_audit_doc="docs/canvas-llm-section-completion-audit.md"
 build_queue_doc="docs/build-queue.md"
 active_priorities_doc="assistant/memory/active-priorities.md"
 
@@ -813,6 +814,44 @@ check_doc_contains "${snapshot_doc}" "docs/canvas-llm-stop-marker-curriculum-bui
 check_doc_contains "${build_queue_doc}" "stop marker active" "build queue stop marker active"
 check_doc_contains "${active_priorities_doc}" "stop marker is active" "active priorities stop marker active"
 check_doc_contains "${active_priorities_doc}" "do not start Canvas LLM PRs by default" "active priorities no default Canvas PRs"
+
+section 'Section Completion Audit Doc Presence'
+
+check_file "${section_completion_audit_doc}"
+
+section 'Section Completion Audit Doc Checks'
+
+check_doc_contains "${section_completion_audit_doc}" "documentation/status only" "section completion documentation/status only"
+check_doc_contains "${section_completion_audit_doc}" "Section completion status: complete" "section completion status complete"
+check_doc_contains "${section_completion_audit_doc}" "Canvas LLM foundation status: complete for now" "section completion foundation complete"
+check_doc_contains "${section_completion_audit_doc}" "Canvas LLM runtime status: frozen" "section completion runtime frozen"
+check_doc_contains "${section_completion_audit_doc}" "Stop marker status: active" "section completion stop marker active"
+check_doc_contains "${section_completion_audit_doc}" "Default next Canvas LLM PR status: blocked" "section completion default PR blocked"
+check_doc_contains "${section_completion_audit_doc}" "Recommended next project focus: Curriculum Builder foundation" "section completion Curriculum Builder focus"
+check_doc_contains "${section_completion_audit_doc}" "no exporter" "section completion no exporter"
+check_doc_contains "${section_completion_audit_doc}" "no export command" "section completion no export command"
+check_doc_contains "${section_completion_audit_doc}" "no package generator" "section completion no package generator"
+check_doc_contains "${section_completion_audit_doc}" "no bundle assembler" "section completion no bundle assembler"
+check_doc_contains "${section_completion_audit_doc}" "no Canvas API" "section completion no Canvas API"
+check_doc_contains "${section_completion_audit_doc}" "no Google Drive API" "section completion no Google Drive API"
+check_doc_contains "${section_completion_audit_doc}" "no OAuth" "section completion no OAuth"
+check_doc_contains "${section_completion_audit_doc}" "no network calls" "section completion no network calls"
+check_doc_contains "${section_completion_audit_doc}" "no browser automation" "section completion no browser automation"
+check_doc_contains "${section_completion_audit_doc}" "no lesson generation" "section completion no lesson generation"
+check_doc_contains "${section_completion_audit_doc}" "no student data" "section completion no student data"
+check_doc_contains "${section_completion_audit_doc}" "scripts/teacher-app-designer-canvas-llm-status.sh" "section completion references status script"
+check_doc_contains "${section_completion_audit_doc}" "bin/chief-of-staff --teacher-app-designer-canvas-llm-status" "section completion references Chief of Staff command"
+check_doc_contains "${section_completion_audit_doc}" "Curriculum Builder Return Handoff" "section completion Curriculum Builder handoff"
+check_doc_contains "${section_completion_audit_doc}" "Why Canvas LLM Should Not Continue By Default" "section completion why not continue by default"
+check_doc_contains "${section_completion_audit_doc}" "How a Future Approved Canvas Restart Should Begin" "section completion future restart guidance"
+
+section 'Section Completion Audit Cross-Link Checks'
+
+check_doc_contains "${index_doc}" "docs/canvas-llm-section-completion-audit.md" "index links to section completion audit"
+check_doc_contains "${freeze_doc}" "docs/canvas-llm-section-completion-audit.md" "freeze links to section completion audit"
+check_doc_contains "${stop_marker_doc}" "docs/canvas-llm-section-completion-audit.md" "stop marker links to section completion audit"
+check_doc_contains "${build_queue_doc}" "section completion audit" "build queue references section completion audit"
+check_doc_contains "${active_priorities_doc}" "section completion audit" "active priorities references section completion audit"
 
 section 'Cross-Link Checks'
 

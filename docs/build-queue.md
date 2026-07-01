@@ -89,12 +89,15 @@ Handoff and status clarity. Start from `docs/phase-1-chief-of-staff-status-audit
 - Canvas LLM stop marker and Curriculum Builder return handoff (PR #154).
 - Curriculum Builder output contract planning foundation (PR #155).
 - Curriculum Builder static source registry plan (PR #157).
+- Canvas LLM section completion audit and closure (PR #159).
 
 ## Canvas LLM Foundation Status
 
-Canvas LLM docs/status foundation is complete for now. Runtime/export/API/generation work is frozen unless separately and explicitly approved. final handoff snapshot recorded. stop marker active. Recommended next focus: Curriculum Builder foundation.
+Canvas LLM docs/status foundation is complete for now. Runtime/export/API/generation work is frozen unless separately and explicitly approved. final handoff snapshot recorded. stop marker active. section completion audit recorded. Recommended next focus: Curriculum Builder foundation.
 
 ## Current PR
+
+Canvas LLM section completion audit and closure — documentation/status only. See `docs/canvas-llm-section-completion-audit.md`.
 
 Previously parked — start from `docs/phase-1-chief-of-staff-status-audit.md` — Repo-Wide Parked Tracks and Active Status Map.
 

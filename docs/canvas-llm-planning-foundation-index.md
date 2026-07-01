@@ -40,6 +40,9 @@ This index is the canonical navigation map for the completed Canvas LLM docs/sta
 16. `docs/canvas-llm-planning-foundation-closure-audit-maintenance.md`
 17. `docs/canvas-llm-planning-foundation-index.md`
 18. `docs/canvas-llm-planning-foundation-freeze.md`
+19. `docs/canvas-llm-frozen-foundation-handoff-snapshot.md`
+20. `docs/canvas-llm-stop-marker-curriculum-builder-return.md`
+21. `docs/canvas-llm-section-completion-audit.md`
 
 ## Documentation Map
 
@@ -63,6 +66,9 @@ This index is the canonical navigation map for the completed Canvas LLM docs/sta
 | `docs/canvas-llm-planning-foundation-closure-audit-maintenance.md` | Closure audit maintenance | maintenance-only | no runtime behavior |
 | `docs/canvas-llm-planning-foundation-index.md` | Navigation index | index-only | no runtime behavior |
 | `docs/canvas-llm-planning-foundation-freeze.md` | Runtime freeze | freeze-only | no runtime behavior |
+| `docs/canvas-llm-frozen-foundation-handoff-snapshot.md` | Frozen handoff snapshot | snapshot-only | no runtime behavior |
+| `docs/canvas-llm-stop-marker-curriculum-builder-return.md` | Stop marker and Curriculum Builder return | stop-marker-only | no runtime behavior |
+| `docs/canvas-llm-section-completion-audit.md` | Section completion audit and closure | closure-only | no runtime behavior |
 
 ## Foundation Layers
 
@@ -172,6 +178,8 @@ Safe references may:
 - cite `docs/canvas-llm-planning-foundation-capstone.md`
 - cite `docs/canvas-llm-planning-foundation-closure-audit.md`
 - cite `docs/canvas-llm-planning-foundation-freeze.md`
+- cite `docs/canvas-llm-stop-marker-curriculum-builder-return.md`
+- cite `docs/canvas-llm-section-completion-audit.md`
 - state Canvas LLM is complete for now
 - state runtime work is parked/blocked
 
@@ -203,7 +211,7 @@ Safe references may:
 
 Documentation/status only. Canvas LLM planning foundation index is Markdown-only planning/status text. No runtime behavior, app code, UI components, generated package files, weekly bundle files, exporter, export command, bundle assembler, package builder, package generator, checklist runner, review engine, completion tracker, parser/importer/loader/runtime validator, live schema/database/registry activation, Canvas API, Google Drive API, OAuth, network calls, browser automation, automation/scheduler/background jobs, scanning, indexing, OCR, embeddings, vector database, lesson generation, generated lesson drafts, generated review notes, student data, file upload behavior, Canvas publishing behavior, Drive resolution behavior, or new dependencies. Canvas LLM docs/status foundation is complete for now. Runtime/export/API/generation work is frozen unless separately and explicitly approved.
 
-Frozen handoff snapshot: `docs/canvas-llm-frozen-foundation-handoff-snapshot.md`. Stop marker: `docs/canvas-llm-stop-marker-curriculum-builder-return.md`.
+Frozen handoff snapshot: `docs/canvas-llm-frozen-foundation-handoff-snapshot.md`. Stop marker: `docs/canvas-llm-stop-marker-curriculum-builder-return.md`. Section completion audit: `docs/canvas-llm-section-completion-audit.md`.
 
 ## Related Verification Commands
 

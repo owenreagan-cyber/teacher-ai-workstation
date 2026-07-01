@@ -41,6 +41,7 @@ The following planning foundations are in place and verified by read-only status
 
 - Local-first foundation plan with source-reference model
 - Manual registry schema plan (`docs/curriculum-builder-manual-registry-schema-plan.md`)
+- Manual registry sample proof plan (`docs/curriculum-builder-manual-registry-sample-proof-plan.md`)
 - Source storage strategy (Google Drive, NAS, iCloud, local folders)
 - Metadata-only Curriculum Resource Registry plan (field inventory, safety values, manual-first workflow, validator planning, placeholder shape, approval gate sections)
 - Planning stack summary and next-phase decision note
@@ -186,6 +187,7 @@ Copy into future PR descriptions:
 - Start: docs/curriculum-builder-canonical-planning-index.md
 - Next-stage audit: docs/curriculum-builder-next-stage-readiness-audit.md
 - Manual registry schema plan: docs/curriculum-builder-manual-registry-schema-plan.md
+- Manual registry sample proof plan: docs/curriculum-builder-manual-registry-sample-proof-plan.md
 - Checklist: docs/curriculum-builder-future-pr-checklist.md
 
 ## Non-activation confirmation
@@ -219,6 +221,7 @@ Copy into future PR descriptions:
 - `docs/curriculum-builder-future-pr-checklist.md`
 - `docs/curriculum-builder-local-first-foundation-plan.md`
 - `docs/curriculum-builder-manual-registry-schema-plan.md`
+- `docs/curriculum-builder-manual-registry-sample-proof-plan.md`
 - `docs/curriculum-resource-registry-plan.md`
 
 ## Non-Activation confirmation

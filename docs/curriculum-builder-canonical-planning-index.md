@@ -4,7 +4,7 @@ This document is the canonical entry point for Curriculum Builder / Curriculum R
 
 ## current state summary
 
-Curriculum Builder planning is complete through PR #124. Post-closeout alignment through PR #132 hardened Chief of Staff status-command wording. The stack is documentation/status-only. Implementation is paused behind an explicit approval gate. Latest completed PR reference: PR #124 — Phase 1 curriculum builder status closeout note (`817480a`). Next-stage transition note: `docs/curriculum-builder-next-stage-readiness-audit.md`. Manual registry schema plan: `docs/curriculum-builder-manual-registry-schema-plan.md`.
+Curriculum Builder planning is complete through PR #124. Post-closeout alignment through PR #132 hardened Chief of Staff status-command wording. The stack is documentation/status-only. Implementation is paused behind an explicit approval gate. Latest completed PR reference: PR #124 — Phase 1 curriculum builder status closeout note (`817480a`). Next-stage transition note: `docs/curriculum-builder-next-stage-readiness-audit.md`. Manual registry schema plan: `docs/curriculum-builder-manual-registry-schema-plan.md`. Manual registry sample proof plan: `docs/curriculum-builder-manual-registry-sample-proof-plan.md`.
 
 ## planning stack purpose
 
@@ -71,6 +71,7 @@ future PR checklist summary: `docs/curriculum-builder-future-pr-checklist.md` is
 | Canonical planning index | `docs/curriculum-builder-canonical-planning-index.md` | This document: where to start and how to route next work |
 | Next-stage readiness audit | `docs/curriculum-builder-next-stage-readiness-audit.md` | Canonical transition note for bounded next-stage planning work |
 | Manual registry schema plan | `docs/curriculum-builder-manual-registry-schema-plan.md` | Planned manual/static registry field schema and fictional placeholder rows |
+| Manual registry sample proof plan | `docs/curriculum-builder-manual-registry-sample-proof-plan.md` | Plans future fictional sample registry artifact rules and validation |
 | Foundation status script | `scripts/curriculum-builder-foundation-status.sh` | Read-only PASS/WARN/FAIL status checks |
 
 ## Start Here
@@ -87,7 +88,7 @@ future PR checklist summary: `docs/curriculum-builder-future-pr-checklist.md` is
 | Documentation/status-only cleanup | Continue docs/status PRs using current pattern, future PR checklist, and next-stage readiness audit |
 | Decision intake drafting | Use decision intake template only; do not create registry data |
 | Approval gate review | Review or refine approval gate docs only |
-| Manual registry planning only | Extend registry planning sections per `docs/curriculum-builder-manual-registry-schema-plan.md` without schema/data activation |
+| Manual registry planning only | Extend registry planning per schema plan and sample proof plan without schema/data activation |
 | Implementation, blocked until approved | Requires completed approved decision intake and approval gate crossing |
 | Connector/API/scanning/indexing/generation work, blocked until approved | Blocked until explicit approval through gate and intake |
 

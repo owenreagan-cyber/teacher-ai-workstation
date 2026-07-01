@@ -14,7 +14,8 @@ Planning path:
 canonical planning index
 → next-stage readiness audit
 → manual registry schema plan (this document)
-→ future manual registry sample/proof PR
+→ manual registry sample proof plan
+→ future manual registry sample proof
 ```
 
 ## 2. Non-Activation Statement
@@ -293,8 +294,9 @@ bin/chief-of-staff --curriculum-builder-foundation-status
 
 | Stage | PR type | May add | Blocked |
 | --- | --- | --- | --- |
-| 1 | Schema plan (this PR) | Prose schema, field tables, fictional examples | Live registry file, DB, parser |
-| 2 | Manual registry sample/proof | Doc-only sample rows file or expanded examples | File reads, scanning, APIs |
+| 1 | Schema plan | Prose schema, field tables, fictional examples | Live registry file, DB, parser |
+| 2 | Sample proof plan | Rules for future fictional sample artifact | Sample file, file reads, scanning, APIs |
+| 3 | Manual registry sample/proof | Doc-only sample rows file or expanded examples | File reads, scanning, APIs |
 | 3 | Static validator planning refinement | Validator expectation docs | Active validator |
 | 4 | Implementation (gate + intake) | Approved registry file format, manual entry UI | Automation, connectors |
 | 5 | Connector planning (separate approval) | Connector boundary docs | Live OAuth/API |

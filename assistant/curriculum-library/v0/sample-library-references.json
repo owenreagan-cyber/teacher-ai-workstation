@@ -1,0 +1,71 @@
+{
+  "library_version": "0.1.0",
+  "library_status": "active_v0",
+  "metadata_only": true,
+  "read_only": true,
+  "references": [
+    {
+      "reference_id": "sample-library-ref-001",
+      "title": "Placeholder Drive Fractions Worksheet Reference",
+      "source_system": "google_drive",
+      "source_reference": "gdrive://placeholder/math/fractions-worksheet",
+      "source_reference_type": "placeholder_uri",
+      "resource_type": "worksheet",
+      "storage_scope": "active",
+      "review_status": "metadata_only",
+      "metadata_only": true,
+      "local_first_safety_flags": [
+        "metadata_only",
+        "no_student_data",
+        "not_indexed",
+        "not_scanned",
+        "placeholder_only",
+        "no_external_resolution"
+      ],
+      "notes": "Fictional Google Drive reference for Curriculum Library v0 validation only.",
+      "activation_status": "curriculum_library_v0"
+    },
+    {
+      "reference_id": "sample-library-ref-002",
+      "title": "Placeholder NAS Archive Textbook Reference",
+      "source_system": "nas",
+      "source_reference": "nas://placeholder/archive/sm5-textbook",
+      "source_reference_type": "placeholder_uri",
+      "resource_type": "textbook",
+      "storage_scope": "archive",
+      "review_status": "metadata_only",
+      "metadata_only": true,
+      "local_first_safety_flags": [
+        "metadata_only",
+        "no_student_data",
+        "not_indexed",
+        "not_scanned",
+        "placeholder_only",
+        "no_external_resolution"
+      ],
+      "notes": "Fictional NAS archive reference for Curriculum Library v0 validation only.",
+      "activation_status": "curriculum_library_v0"
+    },
+    {
+      "reference_id": "sample-library-ref-003",
+      "title": "Placeholder Local Folder Pacing Link Reference",
+      "source_system": "local_folder",
+      "source_reference": "local://placeholder/pacing/unit-3",
+      "source_reference_type": "placeholder_uri",
+      "resource_type": "pacing_link",
+      "storage_scope": "local",
+      "review_status": "metadata_only",
+      "metadata_only": true,
+      "local_first_safety_flags": [
+        "metadata_only",
+        "no_student_data",
+        "not_indexed",
+        "not_scanned",
+        "placeholder_only",
+        "no_external_resolution"
+      ],
+      "notes": "Fictional local folder reference for Curriculum Library v0 validation only.",
+      "activation_status": "curriculum_library_v0"
+    }
+  ]
+}

@@ -109,6 +109,10 @@ Teacher Planning Command Organization (status only; safe sample: fractions-revie
                                        Show read-only lesson-planning placeholder readiness status proof and exit (parked).
   --curriculum-builder-foundation-status
                                        Show read-only Curriculum Builder foundation status proof and exit (parked; approval-gated).
+  --curriculum-library-foundation-status
+                                       Show read-only Curriculum Library v1 foundation status and exit.
+  --curriculum-library-reference-v0-validate
+                                       Run read-only Curriculum Library reference v0 validator and exit.
   --curriculum-registry-v0-status
                                        Show read-only Curriculum Registry v0 foundation status and exit.
   --curriculum-registry-v0-validate
@@ -1623,6 +1627,25 @@ while [[ $# -gt 0 ]]; do
         die "Lesson-planning template readiness status script is missing: scripts/lesson-planning-template-readiness-status.sh"
       fi
       bash "${lesson_planning_template_readiness_status_script}"
+      exit 0
+      ;;
+    --curriculum-library-foundation-status)
+      repo_root="$(resolve_repo_root)"
+      curriculum_library_foundation_status_script="${repo_root}/scripts/curriculum-library-foundation-status.sh"
+      if [[ ! -f "${curriculum_library_foundation_status_script}" ]]; then
+        die "Curriculum Library foundation status script is missing: scripts/curriculum-library-foundation-status.sh"
+      fi
+      bash "${curriculum_library_foundation_status_script}"
+      exit 0
+      ;;
+    --curriculum-library-reference-v0-validate)
+      repo_root="$(resolve_repo_root)"
+      curriculum_library_reference_v0_validator_script="${repo_root}/scripts/curriculum-library-reference-v0-validator.sh"
+      if [[ ! -f "${curriculum_library_reference_v0_validator_script}" ]]; then
+        die "Curriculum Library reference v0 validator script is missing: scripts/curriculum-library-reference-v0-validator.sh"
+      fi
+      shift
+      bash "${curriculum_library_reference_v0_validator_script}" "$@"
       exit 0
       ;;
     --curriculum-builder-foundation-status)

@@ -4,7 +4,7 @@ This document is the canonical entry point for Curriculum Builder / Curriculum R
 
 ## current state summary
 
-Curriculum Builder planning is complete through PR #124. Post-closeout alignment through PR #132 hardened Chief of Staff status-command wording. The stack is documentation/status-only. Implementation is paused behind an explicit approval gate. Latest completed PR reference: PR #124 — Phase 1 curriculum builder status closeout note (`817480a`). Next-stage transition note: `docs/curriculum-builder-next-stage-readiness-audit.md`. Manual registry schema plan: `docs/curriculum-builder-manual-registry-schema-plan.md`. Manual registry sample proof plan: `docs/curriculum-builder-manual-registry-sample-proof-plan.md`. Manual registry sample proof: `docs/curriculum-builder-manual-registry-sample-proof.md`. Static sample validation plan: `docs/curriculum-builder-static-sample-validation-plan.md`. Static sample validation checks: `docs/curriculum-builder-static-sample-validation-checks.md`. Sample format decision: `docs/curriculum-builder-sample-format-decision.md`. CSV placeholder sample plan: `docs/curriculum-builder-csv-placeholder-sample-plan.md`.
+Curriculum Builder planning is complete through PR #124. Post-closeout alignment through PR #132 hardened Chief of Staff status-command wording. The stack is documentation/status-only. Implementation is paused behind an explicit approval gate. Latest completed PR reference: PR #124 — Phase 1 curriculum builder status closeout note (`817480a`). Next-stage transition note: `docs/curriculum-builder-next-stage-readiness-audit.md`. Manual registry schema plan: `docs/curriculum-builder-manual-registry-schema-plan.md`. Manual registry sample proof plan: `docs/curriculum-builder-manual-registry-sample-proof-plan.md`. Manual registry sample proof: `docs/curriculum-builder-manual-registry-sample-proof.md`. Static sample validation plan: `docs/curriculum-builder-static-sample-validation-plan.md`. Static sample validation checks: `docs/curriculum-builder-static-sample-validation-checks.md`. Sample format decision: `docs/curriculum-builder-sample-format-decision.md`. CSV placeholder sample plan: `docs/curriculum-builder-csv-placeholder-sample-plan.md`. CSV placeholder sample artifact: `docs/curriculum-builder-csv-placeholder-sample-artifact.md` and `docs/examples/curriculum-builder-manual-registry-sample.csv` (secondary static placeholder; Markdown remains canonical).
 
 ## planning stack purpose
 
@@ -77,6 +77,8 @@ future PR checklist summary: `docs/curriculum-builder-future-pr-checklist.md` is
 | Static sample validation checks | `docs/curriculum-builder-static-sample-validation-checks.md` | Repo-local text-only checks enforced against the sample proof |
 | Sample format decision | `docs/curriculum-builder-sample-format-decision.md` | Markdown-only decision and future secondary format policy |
 | CSV placeholder sample plan | `docs/curriculum-builder-csv-placeholder-sample-plan.md` | Future CSV artifact safety rules and static-check expectations |
+| CSV placeholder sample artifact | `docs/examples/curriculum-builder-manual-registry-sample.csv` | Secondary static seven-row CSV mirror (Markdown canonical) |
+| CSV placeholder sample artifact doc | `docs/curriculum-builder-csv-placeholder-sample-artifact.md` | Describes CSV artifact boundaries and validation |
 | Foundation status script | `scripts/curriculum-builder-foundation-status.sh` | Read-only PASS/WARN/FAIL status checks |
 
 ## Start Here

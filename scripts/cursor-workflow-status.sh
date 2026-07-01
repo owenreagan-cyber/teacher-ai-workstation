@@ -73,6 +73,7 @@ fi
 cd "${repo_root}"
 
 rule_file=".cursor/rules/teacher-ai-workstation.mdc"
+senior_engineer_rule_file=".cursor/rules/teacher-ai-workstation-senior-engineer.mdc"
 workflow_guide="docs/cursor-workflow-operating-system.md"
 prompt_template="docs/cursor-prompt-template.md"
 pr_checklist="docs/cursor-pr-review-checklist.md"
@@ -92,6 +93,7 @@ EOF
 section "Workflow Checks"
 
 check_file "${rule_file}"
+check_file "${senior_engineer_rule_file}"
 check_file "${workflow_guide}"
 check_file "${prompt_template}"
 check_file "${pr_checklist}"
@@ -109,6 +111,12 @@ check_text "${workflow_guide}" "mergedAt" "workflow guide mentions mergedAt"
 check_text "${rule_file}" "Never commit directly to \`main\`|Never commit directly to main|commit directly to \`main\`|commit directly to main" "cursor rule mentions not committing to main"
 check_text "${rule_file}" "student-sensitive data" "cursor rule mentions no student-sensitive data"
 check_text "${rule_file}" "Gmail.*Drive.*Calendar|Gmail, Google Drive, Google Calendar" "cursor rule mentions no Gmail/Drive/Calendar/API/OAuth/secrets without approval"
+
+check_text "${senior_engineer_rule_file}" "Escalation Conditions" "senior engineer rule defines escalation conditions"
+check_text "${senior_engineer_rule_file}" "Permanent Hard Boundaries" "senior engineer rule defines hard boundaries"
+check_text "${senior_engineer_rule_file}" "Completion Report Format" "senior engineer rule defines completion report format"
+check_text "${senior_engineer_rule_file}" "branch deletion verification" "senior engineer rule requires branch deletion verification"
+check_text "${senior_engineer_rule_file}" "PASS/WARN/FAIL" "senior engineer rule preserves PASS/WARN/FAIL semantics"
 
 check_text "${prompt_template}" "no-commit review|NO-COMMIT REVIEW" "cursor prompt template includes no-commit review"
 check_text "${pr_checklist}" "APPROVE TO COMMIT|REQUEST CHANGES|BLOCKED" "cursor PR checklist includes approve/request changes/block decisions"

@@ -51,6 +51,8 @@ Return to Core / Roadmap:
 
 Chief of Staff v1 Operating (read-only):
   --next-action                        Show deterministic next recommended program and daily focus and exit.
+  --validate-all                       Run read-only validation orchestration across core subsystems and exit.
+  --proof-run                          Run local pre-merge proof runner and exit.
   --chief-of-staff-command-index-v1-status
                                        Show Chief of Staff command index v1 status and exit.
 
@@ -1995,6 +1997,24 @@ while [[ $# -gt 0 ]]; do
         die "Chief of Staff command index v1 status script is missing: scripts/chief-of-staff-command-index-v1-status.sh"
       fi
       bash "${command_index_status_script}"
+      exit 0
+      ;;
+    --validate-all)
+      repo_root="$(resolve_repo_root)"
+      validate_all_script="${repo_root}/scripts/chief-of-staff-validate-all.sh"
+      if [[ ! -f "${validate_all_script}" ]]; then
+        die "Chief of Staff validate-all script is missing: scripts/chief-of-staff-validate-all.sh"
+      fi
+      bash "${validate_all_script}"
+      exit 0
+      ;;
+    --proof-run)
+      repo_root="$(resolve_repo_root)"
+      proof_script="${repo_root}/scripts/run-workstation-proof.sh"
+      if [[ ! -f "${proof_script}" ]]; then
+        die "Workstation proof runner script is missing: scripts/run-workstation-proof.sh"
+      fi
+      bash "${proof_script}"
       exit 0
       ;;
     --dashboard-readability-status)

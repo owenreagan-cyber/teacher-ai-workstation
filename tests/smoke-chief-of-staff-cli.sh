@@ -1,5 +1,14 @@
 #!/usr/bin/env bash
+# CLI smoke tests. Must never call proof-run, validate-all, or operating tests.
+#
+# COS_SMOKE_ALREADY_RUNNING: set internally; nested smoke fails immediately.
 set -euo pipefail
+
+if [[ -n "${COS_SMOKE_ALREADY_RUNNING:-}" ]]; then
+  echo "FAIL: recursive smoke-chief-of-staff-cli.sh detected"
+  exit 1
+fi
+export COS_SMOKE_ALREADY_RUNNING=1
 
 echo "Running Chief of Staff CLI smoke tests..."
 
@@ -70,6 +79,8 @@ bash tests/curriculum-worksheet-contract-v0-test.sh >/dev/null
 bash tests/curriculum-review-game-contract-v0-test.sh >/dev/null
 bash tests/curriculum-canvas-package-contract-v0-test.sh >/dev/null
 bash tests/curriculum-contract-suite-v0-test.sh >/dev/null
+bash tests/chief-of-staff-next-action-test.sh >/dev/null
+bin/chief-of-staff --chief-of-staff-command-index-v1-status >/dev/null
 bin/chief-of-staff --intake-status >/dev/null
 bin/chief-of-staff --intake-summary >/dev/null
 bin/chief-of-staff --intake-diff >/dev/null

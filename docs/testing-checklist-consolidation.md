@@ -108,6 +108,27 @@ bin/chief-of-staff --wallpaper-photo-image-processor-foundation-status
 
 Appearance & Vibe foundation remains complete for now. Live wallpaper/photo curator implementation is not started.
 
+## Chief of Staff Validation/Proof Bundle
+
+Run for validation/proof infrastructure changes. Dashboard is canonical via `bin/chief-of-staff --dashboard` (not a separate `scripts/dashboard.sh`).
+
+```bash
+bash -n tests/chief-of-staff-v1-operating-test.sh
+bash -n tests/smoke-chief-of-staff-cli.sh
+bash -n scripts/chief-of-staff-validate-all.sh
+bash -n scripts/run-workstation-proof.sh
+bash -n bin/chief-of-staff
+
+bash tests/chief-of-staff-v1-operating-test.sh
+bash scripts/chief-of-staff-validate-all.sh
+COS_VALIDATE_INCLUDE_SMOKE=1 bash scripts/chief-of-staff-validate-all.sh
+bash scripts/run-workstation-proof.sh
+bash tests/smoke-chief-of-staff-cli.sh
+bin/chief-of-staff --dashboard
+```
+
+Execution model: `validate-all` is fast by default (no smoke). `proof-run` runs validate-all without smoke, then smoke once, then dashboard tail. These paths must never recurse into each other.
+
 ## Pre-Commit Review Bundle
 
 Print before every commit:

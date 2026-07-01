@@ -167,11 +167,12 @@ Canvas LLM docs may reference Curriculum Builder planning only. Canvas LLM must 
 If Owen explicitly approves restarting Canvas LLM work:
 
 1. Read `docs/canvas-llm-stop-marker-curriculum-builder-return.md` and this section completion audit.
-2. Read `docs/canvas-llm-planning-foundation-freeze.md` for unfreeze requirements.
-3. Confirm separate explicit approval for the proposed runtime/export/API/generation scope.
-4. Create a named PR with explicit scope and dry-run plan if runtime is involved.
-5. Do not assume Canvas is the default track — approval must be explicit.
-6. Re-run `bash scripts/teacher-app-designer-canvas-llm-status.sh` and `bin/chief-of-staff --dashboard` after changes.
+2. Read `docs/implementation-approval-gate.md` for repo-wide intake requirements.
+3. Read `docs/canvas-llm-planning-foundation-freeze.md` for unfreeze requirements.
+4. Confirm separate explicit approval for the proposed runtime/export/API/generation scope.
+5. Create a named PR with explicit scope and dry-run plan if runtime is involved.
+6. Do not assume Canvas is the default track — approval must be explicit.
+7. Re-run `bash scripts/teacher-app-designer-canvas-llm-status.sh` and `bin/chief-of-staff --dashboard` after changes.
 
 Do not begin with exporter, export command, package generator, bundle assembler, Canvas API, Drive API, OAuth, or generation without named approval.
 

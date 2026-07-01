@@ -156,17 +156,19 @@ Curriculum Builder planning foundation is the active strategic focus for **docum
 3. `docs/curriculum-builder-maintainer-handoff.md`
 4. `docs/curriculum-builder-next-stage-readiness-audit.md`
 5. `docs/curriculum-builder-approval-gate.md`
+6. `docs/implementation-approval-gate.md` (repo-wide gate)
 
 ## How a Future Approved Implementation Restart Should Begin
 
 If Owen explicitly approves Curriculum Builder implementation:
 
 1. Read this section completion audit and the approval gate.
-2. Complete and approve the decision intake template.
-3. Confirm explicit scope: schema only, sample validator only, manual registry file only, or broader runtime — each requires separate approval.
-4. Create a named PR with explicit scope and dry-run plan.
-5. Do not assume scanning, ingestion, RAG, APIs, or lesson generation are approved by default.
-6. Re-run `bash scripts/curriculum-builder-foundation-status.sh` and `bin/chief-of-staff --dashboard` after changes.
+2. Read `docs/implementation-approval-gate.md` for repo-wide intake requirements.
+3. Complete and approve the decision intake template.
+4. Confirm explicit scope: schema only, sample validator only, manual registry file only, or broader runtime — each requires separate approval.
+5. Create a named PR with explicit scope and dry-run plan.
+6. Do not assume scanning, ingestion, RAG, APIs, or lesson generation are approved by default.
+7. Re-run `bash scripts/curriculum-builder-foundation-status.sh` and `bin/chief-of-staff --dashboard` after changes.
 
 ## Chief of Staff Boundary
 

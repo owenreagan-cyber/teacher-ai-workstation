@@ -30,6 +30,7 @@ Chief of Staff role: Chief of Staff reports planning/status readiness through ex
 - `docs/curriculum-builder-decision-intake-template.md`
 - `docs/curriculum-builder-approval-gate.md`
 - `docs/curriculum-builder-planning-closeout.md`
+- `docs/curriculum-builder-next-stage-readiness-audit.md`
 
 ## Planning stack summary
 

@@ -72,6 +72,8 @@ Chief of Staff may eventually check whether curriculum registry docs, source ref
 
 Chief of Staff remains a status/orchestration/reference layer. In current practice, Chief of Staff status commands are read-only proof surfaces that report PASS/WARN/FAIL only; they do not orchestrate implementation, activate features, or modify repository state. Chief of Staff does not own curriculum files and does not store raw curriculum copies.
 
+Future registry records may track source references, optional content hashes (planning only), review status, planning status, and relationships between resources.
+
 ## Safety Boundaries
 
 Prohibited current capabilities:
@@ -108,6 +110,8 @@ Each phase must remain small, local-first, and auditable. Later phases require s
 May add planning docs and read-only status checks.
 
 Must not activate scanning, indexing, OCR, embeddings, APIs, generation, jobs, sync, or integrations.
+
+Future registry work must start manual/static (human-authored planning records and doc-only samples) before any automation or connectors.
 
 ### Phase 1 — Static source storage strategy docs
 

@@ -28,6 +28,7 @@ It does not create active schema, data, registry records, validators, commands, 
 | Local validator planning | `docs/curriculum-resource-registry-plan.md#local-registry-validator-planning-note` — Local Registry Validator Planning Note | Documents future local validator scope and PASS/WARN/FAIL semantics | planning only | no active validators |
 | Placeholder metadata shape | `docs/curriculum-resource-registry-plan.md#placeholder-metadata-shape-note` — Placeholder Metadata Shape Note | Documents fake placeholder metadata record shape | fake placeholder examples only | no fake registry data files, no real registry records |
 | Implementation approval gate | `docs/curriculum-resource-registry-plan.md#registry-implementation-approval-gate-note` — Registry Implementation Approval Gate Note | Defines explicit future approval gate before implementation | explicit future approval required | no new commands, no dashboard sections |
+| Next-stage readiness audit | `docs/curriculum-builder-next-stage-readiness-audit.md` | Canonical transition note for bounded next-stage planning | documentation/status only | no schema, data, scanning, APIs, or generation |
 
 ## Storage and Ownership Summary
 

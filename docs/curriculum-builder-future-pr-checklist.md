@@ -2,6 +2,8 @@
 
 Reusable checklist for every future Curriculum Builder PR. Complete before opening the PR. This checklist is documentation only and does not activate implementation.
 
+Start from `docs/curriculum-builder-next-stage-readiness-audit.md` for next-stage scope class, blocked work, and validation expectations.
+
 ## PR title and type
 
 - [ ] PR title states docs/status vs implementation clearly

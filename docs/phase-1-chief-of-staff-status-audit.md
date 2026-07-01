@@ -167,6 +167,7 @@ bash scripts/verify-phase-0e.sh
 Curriculum Builder planning stack is complete for now. PRs #107–#124 built, gated, indexed, surfaced, and closed out the planning stack. No implementation behavior is active.
 
 - Canonical entry point: `docs/curriculum-builder-canonical-planning-index.md`
+- Next-stage readiness audit: `docs/curriculum-builder-next-stage-readiness-audit.md`
 - Dashboard docs now surface the planning index: `docs/chief-of-staff-dashboard.md` and `docs/dashboard-section-summary-polish.md`
 - Future implementation requires the approval gate: `docs/curriculum-builder-approval-gate.md`
 - Future implementation requires a completed decision intake: `docs/curriculum-builder-decision-intake-template.md`

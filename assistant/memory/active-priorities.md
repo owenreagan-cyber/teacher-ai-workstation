@@ -83,11 +83,13 @@
 - Worksheet Contract Schema v0: complete
 - Review Game Contract Schema v0: complete
 - Canvas Export Package Contract Schema v0: complete
+- Curriculum Builder v1 foundation: complete
 
 ### Now
 
-- Master Build Roadmap program readiness audit complete (`docs/master-build-roadmap.md`). Canonical mission sequencing for Curriculum Builder Complete, Chief of Staff v1, Canvas LLM restart, Local LLM, Mac experience, widgets, and integrations. Implementation does not proceed automatically from the roadmap.
-- Canvas Export Package Contract Schema v0: fifth canonical output contract active (`docs/curriculum-canvas-package-contract-v0.md`). Fictional module placeholders and registry references; read-only validation; no Canvas API, package building, or publishing.
+- Curriculum Builder v1 foundation complete (`docs/curriculum-builder-v1-foundation.md`). Registry v0, five canonical output contract types, binding v0, contract suite validation, and Chief of Staff integration active. Renderers, generation, real records, and integrations remain approval-gated.
+- Master Build Roadmap program readiness audit complete (`docs/master-build-roadmap.md`). Recommended next major program: Chief of Staff v1.
+- Canvas Export Package Contract Schema v0: fifth canonical output contract active (`docs/curriculum-canvas-package-contract-v0.md`). Canvas Package Contract metadata only; read-only validation; no Canvas API, package building, or publishing.
 - Review Game Contract Schema v0: fourth canonical output contract active (`docs/curriculum-review-game-contract-v0.md`). Fictional round placeholders and registry references; read-only validation; no game generation or interactive runtime.
 - Worksheet Contract Schema v0: third canonical output contract active (`docs/curriculum-worksheet-contract-v0.md`). Fictional exercise placeholders and registry references; read-only validation; no worksheet generation, PDF output, or renderers.
 - Teacher Script Contract Schema v0: second canonical output contract active (`docs/curriculum-teacher-script-contract-v0.md`). Fictional teacher script sections and registry references; read-only validation; no script generation, renderers, dynamic variables, or student data.
@@ -121,12 +123,13 @@
 - Teacher Script Contract Schema v0 complete (Phase 2 Mission 4). Second canonical contract; see `docs/curriculum-teacher-script-contract-v0.md`.
 - Worksheet Contract Schema v0 complete (Phase 2 Mission 5). Third canonical contract; see `docs/curriculum-worksheet-contract-v0.md`.
 - Review Game Contract Schema v0 complete (Phase 2 Mission 6). Fourth canonical contract; see `docs/curriculum-review-game-contract-v0.md`.
-- Canvas Export Package Contract Schema v0 complete (Phase 2 Mission 7). Fifth canonical contract; all v0 contract types canonical. See `docs/curriculum-canvas-package-contract-v0.md`.
-- Master Build Roadmap program readiness audit complete. See `docs/master-build-roadmap.md`. Next: contract suite cohesion and Curriculum Builder v1 foundation closure.
+- Canvas Export Package Contract Schema v0 complete (Phase 2 Mission 7). Fifth canonical contract; see `docs/curriculum-canvas-package-contract-v0.md`.
+- Curriculum Builder v1 foundation complete. See `docs/curriculum-builder-v1-foundation.md`. All five contract types canonical; validation suite active.
+- Master Build Roadmap program readiness audit complete. See `docs/master-build-roadmap.md`. Recommended next major program: Chief of Staff v1.
 - Curriculum Builder static source registry plan complete (PR #157). Documentation/status only; metadata/reference-only; no scanning, folder crawling, file indexing, OCR, embeddings, vector database, or Drive/NAS/iCloud resolution.
 - Curriculum Builder output contract planning foundation complete (PR #155). Output Contract Schema v0 and Teacher Script Contract v0 active; no lesson generation, ingestion, RAG, or runtime behavior beyond read-only validation.
 - Canvas LLM is complete/frozen/stopped. final handoff snapshot is recorded. stop marker is active. Do not start Canvas LLM PRs by default.
-- Recommended next focus: Curriculum Builder contract suite cohesion and v1 foundation closure outside Canvas LLM runtime work with explicit approval only.
+- Recommended next focus: Chief of Staff v1 command surface and daily operating system outside Canvas LLM runtime work with explicit approval only. Curriculum Builder foundation v1 phase complete for approved scope.
 
 ## Completed (earlier foundations)
 

@@ -4,6 +4,8 @@ This document is the canonical entry point for Curriculum Builder / Curriculum R
 
 Program-wide mission sequencing and v1.0 definition: `docs/master-build-roadmap.md`.
 
+Curriculum Builder v1 foundation closure: `docs/curriculum-builder-v1-foundation.md`.
+
 ## current state summary
 
 Curriculum Builder planning is complete through PR #124. Post-closeout alignment through PR #132 hardened Chief of Staff status-command wording. The stack is documentation/status-only. Implementation is paused behind an explicit approval gate. Latest completed PR reference: PR #124 — Phase 1 curriculum builder status closeout note (`817480a`). Next-stage transition note: `docs/curriculum-builder-next-stage-readiness-audit.md`. Manual registry schema plan: `docs/curriculum-builder-manual-registry-schema-plan.md`. Manual registry sample proof plan: `docs/curriculum-builder-manual-registry-sample-proof-plan.md`. Manual registry sample proof: `docs/curriculum-builder-manual-registry-sample-proof.md`. Static sample validation plan: `docs/curriculum-builder-static-sample-validation-plan.md`. Static sample validation checks: `docs/curriculum-builder-static-sample-validation-checks.md`. Sample format decision: `docs/curriculum-builder-sample-format-decision.md`. CSV placeholder sample plan: `docs/curriculum-builder-csv-placeholder-sample-plan.md`. CSV placeholder sample artifact: `docs/curriculum-builder-csv-placeholder-sample-artifact.md` and `docs/examples/curriculum-builder-manual-registry-sample.csv` (secondary static placeholder; Markdown remains canonical). CSV static validation maintenance: `docs/curriculum-builder-csv-static-validation-maintenance.md`. Markdown/CSV alignment proof: `docs/curriculum-builder-markdown-csv-alignment-proof.md`.

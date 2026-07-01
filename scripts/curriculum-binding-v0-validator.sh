@@ -103,6 +103,13 @@ manifest_file = sys.argv[2]
 REGISTRY_ID_PATTERN = re.compile(r"^sample-[a-z0-9-]+$")
 HTTP_PATTERN = re.compile(r"https?://", re.IGNORECASE)
 ALIGNMENT_FIELDS = ("subject", "grade_band", "unit", "lesson")
+EXPECTED_CANONICAL_CONTRACT_TYPES = {
+    "direct_instruction_slide_deck_contract",
+    "worksheet_contract",
+    "review_game_contract",
+    "teacher_script_contract",
+    "canvas_export_package_contract",
+}
 
 errors = []
 warnings = []
@@ -183,6 +190,24 @@ for index, record in enumerate(registry_data.get("records", [])):
     registry_records[registry_id] = record
 
 contracts = load_contracts(contract_root_rel, contract_manifest) if contract_root_rel else []
+
+canonical_types = {
+    contract.get("contract_type")
+    for _, contract in contracts
+    if contract.get("contract_status") == "active_v0"
+}
+missing_canonical_types = EXPECTED_CANONICAL_CONTRACT_TYPES - canonical_types
+if missing_canonical_types:
+    errors.append(
+        f"missing canonical contract types in binding manifest: {sorted(missing_canonical_types)}"
+    )
+if len([c for _, c in contracts if c.get("contract_status") == "active_v0"]) != len(
+    EXPECTED_CANONICAL_CONTRACT_TYPES
+):
+    errors.append(
+        f"expected {len(EXPECTED_CANONICAL_CONTRACT_TYPES)} active_v0 canonical contracts, "
+        f"found {len([c for _, c in contracts if c.get('contract_status') == 'active_v0'])}"
+    )
 
 reverse_index = {registry_id: [] for registry_id in registry_records}
 referenced_registry_ids = set()

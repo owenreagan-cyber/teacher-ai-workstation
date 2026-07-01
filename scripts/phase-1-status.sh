@@ -705,6 +705,11 @@ for path in \
 done
 check_bash_syntax tests/curriculum-canvas-package-contract-v0-test.sh
 
+section "Curriculum Builder v1 Foundation Files"
+check_required_file docs/curriculum-builder-v1-foundation.md
+check_required_file tests/curriculum-contract-suite-v0-test.sh
+check_bash_syntax tests/curriculum-contract-suite-v0-test.sh
+
 section "Master Build Roadmap Files"
 check_required_file docs/master-build-roadmap.md
 

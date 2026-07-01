@@ -148,6 +148,7 @@ worksheet_v0_doc="docs/curriculum-worksheet-contract-v0.md"
 review_game_v0_doc="docs/curriculum-review-game-contract-v0.md"
 canvas_package_v0_doc="docs/curriculum-canvas-package-contract-v0.md"
 master_build_roadmap_doc="docs/master-build-roadmap.md"
+v1_foundation_doc="docs/curriculum-builder-v1-foundation.md"
 binding_v0_doc="docs/curriculum-binding-v0.md"
 build_queue_doc="docs/build-queue.md"
 active_priorities_doc="assistant/memory/active-priorities.md"
@@ -1520,6 +1521,19 @@ check_doc_contains "${master_build_roadmap_doc}" "documentation/status only" "ma
 check_doc_contains "${master_build_roadmap_doc}" "Implementation does not proceed automatically" "master roadmap no auto implementation"
 check_doc_contains "${build_queue_doc}" "master-build-roadmap" "build queue references master roadmap"
 check_doc_contains "${active_priorities_doc}" "Master Build Roadmap" "active priorities references master roadmap"
+
+section "Curriculum Builder v1 Foundation Checks"
+
+check_file "${v1_foundation_doc}"
+check_doc_contains "${v1_foundation_doc}" "documentation/status only" "v1 foundation documentation/status only"
+check_doc_contains "${v1_foundation_doc}" "Foundation status: active_v1" "v1 foundation status active"
+check_doc_contains "${v1_foundation_doc}" "five canonical contract types" "v1 foundation five contract types"
+check_doc_contains "${v1_foundation_doc}" "no lesson generation" "v1 foundation no lesson generation boundary"
+check_doc_contains "${v1_foundation_doc}" "Future Approval Gates" "v1 foundation future gates documented"
+check_doc_contains "${canonical_planning_index_doc}" "curriculum-builder-v1-foundation" "planning index links v1 foundation"
+check_doc_contains "${build_queue_doc}" "Curriculum Builder v1 Foundation" "build queue references v1 foundation"
+check_doc_contains "${active_priorities_doc}" "Curriculum Builder v1 foundation" "active priorities references v1 foundation"
+check_doc_contains "${section_completion_audit_doc}" "Curriculum Builder v1 Foundation" "section completion audit references v1 foundation"
 
 section "Curriculum Registry–Contract Binding v0 Foundation Checks"
 

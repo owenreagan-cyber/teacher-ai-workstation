@@ -69,6 +69,7 @@ bash tests/curriculum-teacher-script-contract-v0-test.sh >/dev/null
 bash tests/curriculum-worksheet-contract-v0-test.sh >/dev/null
 bash tests/curriculum-review-game-contract-v0-test.sh >/dev/null
 bash tests/curriculum-canvas-package-contract-v0-test.sh >/dev/null
+bash tests/curriculum-contract-suite-v0-test.sh >/dev/null
 bin/chief-of-staff --intake-status >/dev/null
 bin/chief-of-staff --intake-summary >/dev/null
 bin/chief-of-staff --intake-diff >/dev/null

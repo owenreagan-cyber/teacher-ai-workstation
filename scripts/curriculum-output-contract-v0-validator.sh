@@ -104,6 +104,7 @@ CONTRACT_TYPES = {
     "teacher_script_contract",
     "canvas_export_package_contract",
 }
+EXPECTED_CANONICAL_COUNT = len(CONTRACT_TYPES)
 STUDENT_FACING = {"true", "false", "unknown"}
 REQUIRED_SAFETY_FLAGS = {
     "metadata_only",
@@ -794,10 +795,14 @@ else:
     manifest = load_json(manifest_path)
     canonical_rels = get_canonical_contract_paths(manifest)
     placeholder_rels = manifest.get("placeholder_contracts", [])
-    if not isinstance(canonical_rels, list) or len(canonical_rels) != 5:
-        errors.append("manifest must list exactly 5 canonical contracts")
+    if not isinstance(canonical_rels, list) or len(canonical_rels) != EXPECTED_CANONICAL_COUNT:
+        errors.append(
+            f"manifest must list exactly {EXPECTED_CANONICAL_COUNT} canonical contracts"
+        )
     if not isinstance(placeholder_rels, list) or len(placeholder_rels) != 0:
         errors.append("manifest must list exactly 0 placeholder contracts")
+
+    seen_canonical_types = set()
 
     canonical_pass_messages = []
     for canonical_rel in canonical_rels:
@@ -808,6 +813,8 @@ else:
             continue
         contract_data = load_json(canonical_path)
         contract_type = contract_data.get("contract_type")
+        if contract_type in CONTRACT_TYPES:
+            seen_canonical_types.add(contract_type)
         if contract_type == "direct_instruction_slide_deck_contract":
             validate_di_contract(label, contract_data, registry_ids)
             canonical_pass_messages.append("canonical direct instruction slide deck contract valid")
@@ -825,6 +832,12 @@ else:
             canonical_pass_messages.append("canonical canvas export package contract valid")
         else:
             errors.append(f"{label} unsupported canonical contract_type: {contract_type!r}")
+
+    missing_types = CONTRACT_TYPES - seen_canonical_types
+    if missing_types:
+        errors.append(
+            f"manifest missing canonical contract types: {sorted(missing_types)}"
+        )
 
     if isinstance(placeholder_rels, list):
         for rel in placeholder_rels:

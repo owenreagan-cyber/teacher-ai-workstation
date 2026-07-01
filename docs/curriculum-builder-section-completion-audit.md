@@ -263,3 +263,7 @@ Review Game Contract Schema v0 promotes `review_game_contract` to a fourth fully
 ## Canvas Export Package Contract Schema v0 Implementation Activation (Phase 2 Mission 7)
 
 Canvas Export Package Contract Schema v0 promotes `canvas_export_package_contract` to the fifth fully validated canonical contract. See `docs/curriculum-canvas-package-contract-v0.md`. No Canvas API, package building, or publishing.
+
+## Curriculum Builder v1 Foundation (Phase 2 Program Closure)
+
+Curriculum Builder v1 foundation is complete for the approved Phase 2 scope. See `docs/curriculum-builder-v1-foundation.md`. Registry v0, all five canonical output contracts, binding v0, contract suite tests, and Chief of Staff integration are active. Renderers, generation, real registry records, and integrations remain approval-gated.

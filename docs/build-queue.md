@@ -103,9 +103,13 @@ Handoff and status clarity. Start from `docs/phase-1-chief-of-staff-status-audit
 - Review Game Contract Schema v0 (Phase 2 Mission 6).
 - Canvas Export Package Contract Schema v0 (Phase 2 Mission 7).
 
+## Curriculum Builder v1 Foundation Status
+
+Curriculum Builder v1 foundation is complete for the approved Phase 2 scope. See `docs/curriculum-builder-v1-foundation.md`. All five output contract types are canonical; registry, binding, validation, tests, and Chief of Staff integration are active. Renderers, generation, real registry records, and integrations remain approval-gated.
+
 ## Master Build Roadmap Status
 
-Canonical program roadmap is active (`docs/master-build-roadmap.md`). All five output contract types are now canonical. Next: contract suite cohesion and v1 foundation closure.
+Canonical program roadmap is active (`docs/master-build-roadmap.md`). Curriculum Builder v1 foundation complete for approved scope. Recommended next major program: Chief of Staff v1.
 
 ## Engineering Constitution Status
 

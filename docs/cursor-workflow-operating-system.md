@@ -2,7 +2,7 @@
 
 ## Purpose
 
-This document defines how Owen, ChatGPT, Cursor, GitHub, and the local dashboard work together in the Teacher AI Workstation repo. It makes future Cursor workflow faster, smoother, more coordinated, and more verifiable without changing lesson-generation behavior.
+This document defines how Owen, ChatGPT, Cursor, GitHub, and the local dashboard work together in the Teacher AI Workstation repo. Canonical engineering authority: `docs/engineering-constitution.md`.
 
 ## Roles
 

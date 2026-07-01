@@ -39,6 +39,7 @@ This repository is Owen Reagan's Teacher AI Workstation.
 
 ## References
 
+- Engineering constitution: `docs/engineering-constitution.md`
 - Senior engineer workflow: `.cursor/rules/teacher-ai-workstation-senior-engineer.mdc`
 - Workflow guide: `docs/cursor-workflow-operating-system.md`
 - Prompt template: `docs/cursor-prompt-template.md`

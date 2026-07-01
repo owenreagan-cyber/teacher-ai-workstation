@@ -201,6 +201,7 @@ Planning templates only. Checking a box here does **not** approve implementation
 
 | Track | Track-specific gate |
 | --- | --- |
+| Engineering authority | `docs/engineering-constitution.md` |
 | Curriculum Builder | `docs/curriculum-builder-approval-gate.md` |
 | Curriculum Builder intake | `docs/curriculum-builder-decision-intake-template.md` |
 | Canvas LLM | `docs/canvas-llm-planning-foundation-freeze.md`, stop marker |

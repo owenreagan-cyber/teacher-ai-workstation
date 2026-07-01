@@ -153,6 +153,7 @@ Every completion report for an approved full-lifecycle task must include:
 
 - Base rules: `.cursor/rules/teacher-ai-workstation.mdc`
 - Implementation gate: `docs/implementation-approval-gate.md`
+- Engineering constitution: `docs/engineering-constitution.md`
 - Workflow guide: `docs/cursor-workflow-operating-system.md`
 - Prompt template: `docs/cursor-prompt-template.md`
 - PR checklist: `docs/cursor-pr-review-checklist.md`

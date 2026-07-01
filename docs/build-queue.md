@@ -92,6 +92,11 @@ Handoff and status clarity. Start from `docs/phase-1-chief-of-staff-status-audit
 - Canvas LLM section completion audit and closure (PR #159).
 - Curriculum Builder section completion audit and closure (PR #162).
 - Implementation approval gate and track intake foundation (PR #164).
+- Engineering Constitution Phase 2 transition (PR #166).
+
+## Engineering Constitution Status
+
+Canonical engineering authority: `docs/engineering-constitution.md`. Phase 2 transition — engineering governance active; implementation approval-gated by default.
 
 ## Implementation Approval Gate Status
 
@@ -106,6 +111,8 @@ Canvas LLM docs/status foundation is complete for now. Runtime/export/API/genera
 Curriculum Builder planning foundation is complete for now. Implementation/registry/ingestion/generation work is approval-gated unless separately and explicitly approved. section completion audit recorded. Output contract planning foundation complete (PR #155). Static source registry plan complete (PR #157). Recommended next focus: approval-gated implementation only with explicit intake.
 
 ## Current PR
+
+Engineering Constitution Phase 2 transition — documentation/status only. See `docs/engineering-constitution.md`.
 
 Previously parked — start from `docs/phase-1-chief-of-staff-status-audit.md` — Repo-Wide Parked Tracks and Active Status Map.
 

@@ -70,7 +70,7 @@
 - Canvas LLM planning foundation index and freeze: complete
 - Canvas LLM frozen foundation handoff snapshot: complete
 - Canvas LLM stop marker and Curriculum Builder return handoff: complete
-- Curriculum Builder output contract planning foundation: in progress (PR #155)
+- Curriculum Builder output contract planning foundation: complete
 
 ### Now
 
@@ -87,7 +87,7 @@
 
 ### Next
 
-- Curriculum Builder output contract planning foundation in progress (PR #155). Documentation/status only; no lesson generation, ingestion, RAG, or runtime behavior.
+- Curriculum Builder output contract planning foundation complete (PR #155). Documentation/status only; no lesson generation, ingestion, RAG, or runtime behavior.
 - Canvas LLM is complete/frozen/stopped. final handoff snapshot is recorded. stop marker is active. Do not start Canvas LLM PRs by default.
 - Recommended next focus remains Curriculum Builder foundation docs/status work outside Canvas LLM runtime work with explicit approval only.
 

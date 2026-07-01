@@ -95,13 +95,13 @@ Canvas LLM docs/status foundation is complete for now. Runtime/export/API/genera
 
 ## Current PR
 
-Curriculum Builder output contract planning foundation — documentation/status only. See `docs/curriculum-builder-output-contract-foundation.md`.
-
 Previously parked — start from `docs/phase-1-chief-of-staff-status-audit.md` — Repo-Wide Parked Tracks and Active Status Map.
+
+Curriculum Builder output contract planning foundation is complete (PR #155). See `docs/curriculum-builder-output-contract-foundation.md`.
 
 Lesson-planning: placeholder skeleton and registry exist and pass readiness checks. Future follow-ons are documentation/status-only unless explicitly approved. Static template schema planning remains planning-only.
 
-Curriculum Builder: complete and parked for now (PR #124). Output contract planning foundation in progress (PR #155). Implementation requires approval gate and completed decision intake.
+Curriculum Builder: complete and parked for now (PR #124). Output contract planning foundation complete (PR #155). Implementation requires approval gate and completed decision intake.
 
 Appearance & Vibe wallpaper/photo curator foundation stack: complete for now.
 Live curator implementation: not started.

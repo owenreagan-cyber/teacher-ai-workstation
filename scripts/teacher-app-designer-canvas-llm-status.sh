@@ -96,6 +96,8 @@ completion_plan_doc="docs/canvas-llm-manual-completion-status-placeholder-plan.m
 completion_maintenance_doc="docs/canvas-llm-manual-completion-status-placeholder-maintenance.md"
 weekly_bundle_plan_doc="docs/canvas-llm-weekly-export-bundle-placeholder-plan.md"
 weekly_bundle_maintenance_doc="docs/canvas-llm-weekly-export-bundle-placeholder-maintenance.md"
+capstone_doc="docs/canvas-llm-planning-foundation-capstone.md"
+capstone_maintenance_doc="docs/canvas-llm-planning-foundation-capstone-maintenance.md"
 
 section 'Teacher App Designer / Canvas LLM Local-First Foundation'
 cat <<'EOF'
@@ -551,6 +553,54 @@ check_doc_contains "${weekly_bundle_maintenance_doc}" "no generated package file
 check_doc_contains "${weekly_bundle_maintenance_doc}" "separate approved PR" "maintenance separate approved PR"
 check_doc_contains "${weekly_bundle_maintenance_doc}" "Do not imply Canvas state is software-verified" "maintenance no software-verified Canvas"
 
+section 'Planning Foundation Capstone Doc Presence'
+
+check_file "${capstone_doc}"
+check_file "${capstone_maintenance_doc}"
+
+section 'Planning Foundation Capstone Doc Checks'
+
+check_doc_contains "${capstone_doc}" "planning foundation complete for now" "capstone planning foundation complete"
+check_doc_contains "${capstone_doc}" "Activation status: not active" "capstone activation not active"
+check_doc_contains "${capstone_doc}" "Completed Planning Stack" "capstone completed planning stack"
+check_doc_contains "${capstone_doc}" "docs/canvas-llm-weekly-export-bundle-placeholder-plan.md" "capstone references weekly bundle plan"
+check_doc_contains "${capstone_doc}" "docs/canvas-llm-manual-completion-status-placeholder-plan.md" "capstone references completion status plan"
+check_doc_contains "${capstone_doc}" "docs/canvas-llm-manual-export-review-checklist.md" "capstone references manual export review checklist"
+check_doc_contains "${capstone_doc}" "docs/canvas-llm-manual-export-package-shapes.md" "capstone references manual export package shapes"
+check_doc_contains "${capstone_doc}" "docs/canvas-llm-safety-and-approval-contract.md" "capstone references safety and approval contract"
+check_doc_contains "${capstone_doc}" "runtime exporter" "capstone no runtime exporter"
+check_doc_contains "${capstone_doc}" "export command" "capstone no export command"
+check_doc_contains "${capstone_doc}" "bundle assembler" "capstone no bundle assembler"
+check_doc_contains "${capstone_doc}" "package builder" "capstone no package builder"
+check_doc_contains "${capstone_doc}" "no Canvas API" "capstone no Canvas API"
+check_doc_contains "${capstone_doc}" "no Google Drive API" "capstone no Google Drive API"
+check_doc_contains "${capstone_doc}" "no OAuth" "capstone no OAuth"
+check_doc_contains "${capstone_doc}" "no network calls" "capstone no network calls"
+check_doc_contains "${capstone_doc}" "no browser automation" "capstone no browser automation"
+check_doc_contains "${capstone_doc}" "no scheduler" "capstone no scheduler"
+check_doc_contains "${capstone_doc}" "no automation" "capstone no automation"
+check_doc_contains "${capstone_doc}" "no scanning" "capstone no scanning"
+check_doc_contains "${capstone_doc}" "no file indexing" "capstone no file indexing"
+check_doc_contains "${capstone_doc}" "no OCR" "capstone no OCR"
+check_doc_contains "${capstone_doc}" "no embeddings" "capstone no embeddings"
+check_doc_contains "${capstone_doc}" "no vector database" "capstone no vector database"
+check_doc_contains "${capstone_doc}" "no generated lesson drafts" "capstone no generated lesson drafts"
+check_doc_contains "${capstone_doc}" "no generated review notes" "capstone no generated review notes"
+check_doc_contains "${capstone_doc}" "no student data" "capstone no student data"
+check_doc_contains "${capstone_doc}" "Software does not verify Canvas state" "capstone manual teacher verification"
+check_doc_contains "${capstone_doc}" "Software does not inspect Canvas" "capstone software does not inspect Canvas"
+check_doc_contains "${capstone_doc}" "Chief of Staff must not currently" "capstone Chief of Staff status-only boundary"
+check_doc_contains "${capstone_doc}" "separate approved PR" "capstone separate approved PR gate"
+
+section 'Planning Foundation Capstone Maintenance Doc Checks'
+
+check_doc_contains "${capstone_maintenance_doc}" "planning foundation complete for now" "maintenance planning foundation complete"
+check_doc_contains "${capstone_maintenance_doc}" "Activation status: not active" "maintenance activation not active"
+check_doc_contains "${capstone_maintenance_doc}" "Editing Rules" "maintenance editing rules"
+check_doc_contains "${capstone_maintenance_doc}" "Do not imply Canvas state is software-verified" "maintenance no software-verified Canvas"
+check_doc_contains "${capstone_maintenance_doc}" "separate approved PR" "maintenance separate approved PR"
+check_doc_contains "${capstone_maintenance_doc}" "Chief of Staff must not" "maintenance Chief of Staff boundary"
+
 section 'Cross-Link Checks'
 
 check_doc_contains "${plan_doc}" "docs/canvas-llm-placeholder-schema.md" "plan references placeholder schema doc"
@@ -558,6 +608,8 @@ check_doc_contains "${plan_doc}" "docs/canvas-llm-manual-export-package-plan.md"
 check_doc_contains "${plan_doc}" "docs/canvas-llm-manual-export-review-checklist.md" "plan references manual export review checklist"
 check_doc_contains "${plan_doc}" "docs/canvas-llm-manual-completion-status-placeholder-plan.md" "plan references manual completion status plan"
 check_doc_contains "${plan_doc}" "docs/canvas-llm-weekly-export-bundle-placeholder-plan.md" "plan references weekly export bundle plan"
+check_doc_contains "${plan_doc}" "docs/canvas-llm-planning-foundation-capstone.md" "plan references planning foundation capstone"
+check_doc_contains "${safety_doc}" "docs/canvas-llm-planning-foundation-capstone.md" "safety contract references planning foundation capstone"
 check_doc_contains "${safety_doc}" "docs/canvas-llm-approval-and-export-states.md" "safety contract references approval states doc"
 check_doc_contains "${safety_doc}" "docs/canvas-llm-manual-export-package-plan.md" "safety contract references manual export package plan"
 check_doc_contains "${safety_doc}" "docs/canvas-llm-manual-export-review-checklist.md" "safety contract references manual export review checklist"
@@ -568,8 +620,13 @@ check_doc_contains "${approval_states_doc}" "docs/canvas-llm-manual-export-packa
 check_doc_contains "${approval_states_doc}" "docs/canvas-llm-manual-export-review-checklist.md" "approval states references manual export review checklist"
 check_doc_contains "${approval_states_doc}" "docs/canvas-llm-manual-completion-status-placeholder-plan.md" "approval states references manual completion status plan"
 check_doc_contains "${approval_states_doc}" "docs/canvas-llm-weekly-export-bundle-placeholder-plan.md" "approval states references weekly export bundle plan"
+check_doc_contains "${approval_states_doc}" "docs/canvas-llm-planning-foundation-capstone.md" "approval states references planning foundation capstone"
 check_doc_contains "${export_plan_doc}" "docs/canvas-llm-manual-export-review-checklist.md" "export plan references manual export review checklist"
 check_doc_contains "${export_plan_doc}" "docs/canvas-llm-weekly-export-bundle-placeholder-plan.md" "export plan references weekly export bundle plan"
+check_doc_contains "${export_plan_doc}" "docs/canvas-llm-planning-foundation-capstone.md" "export plan references planning foundation capstone"
+check_doc_contains "${review_checklist_doc}" "docs/canvas-llm-planning-foundation-capstone.md" "review checklist references planning foundation capstone"
+check_doc_contains "${completion_plan_doc}" "docs/canvas-llm-planning-foundation-capstone.md" "completion plan references planning foundation capstone"
+check_doc_contains "${weekly_bundle_plan_doc}" "docs/canvas-llm-planning-foundation-capstone.md" "weekly bundle plan references planning foundation capstone"
 check_doc_contains "${export_shapes_doc}" "docs/canvas-llm-manual-export-review-checklist.md" "export shapes references manual export review checklist"
 check_doc_contains "${export_shapes_doc}" "docs/canvas-llm-weekly-export-bundle-placeholder-plan.md" "export shapes references weekly export bundle plan"
 check_doc_contains "${export_maintenance_doc}" "docs/canvas-llm-manual-export-review-checklist-maintenance.md" "export maintenance references review checklist maintenance"

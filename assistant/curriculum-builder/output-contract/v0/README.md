@@ -9,9 +9,11 @@ Local-first, read-only output contract validation for Teacher AI Workstation.
 | `contract-envelope-schema.json` | Shared v0 envelope schema |
 | `direct-instruction-slide-deck-schema.json` | Canonical DI slide deck contract schema |
 | `teacher-script-contract-schema.json` | Canonical teacher script contract schema |
+| `worksheet-contract-schema.json` | Canonical worksheet contract schema |
 | `contracts/sample-di-slide-deck-001.json` | Fully validated DI fictional contract |
 | `contracts/sample-teacher-script-001.json` | Fully validated teacher script fictional contract |
-| `placeholders/` | Planning-only placeholder contracts (worksheet, review game, Canvas package) |
+| `contracts/sample-worksheet-001.json` | Fully validated worksheet fictional contract |
+| `placeholders/` | Planning-only placeholder contracts (review game, Canvas package) |
 | `placeholder-manifest.json` | Canonical and placeholder contract index |
 
 ## Boundaries

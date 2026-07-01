@@ -144,6 +144,7 @@ section_completion_audit_doc="docs/curriculum-builder-section-completion-audit.m
 registry_v0_doc="docs/curriculum-registry-v0.md"
 output_contract_v0_doc="docs/curriculum-output-contract-v0.md"
 teacher_script_v0_doc="docs/curriculum-teacher-script-contract-v0.md"
+worksheet_v0_doc="docs/curriculum-worksheet-contract-v0.md"
 master_build_roadmap_doc="docs/master-build-roadmap.md"
 binding_v0_doc="docs/curriculum-binding-v0.md"
 build_queue_doc="docs/build-queue.md"
@@ -1463,6 +1464,21 @@ check_doc_contains "${output_contract_v0_doc}" "teacher_script_contract" "output
 check_doc_contains "${section_completion_audit_doc}" "Teacher Script Contract Schema v0" "section completion audit references teacher script v0"
 check_doc_contains "${build_queue_doc}" "Teacher Script Contract" "build queue references teacher script v0"
 check_doc_contains "${active_priorities_doc}" "Teacher Script Contract" "active priorities references teacher script v0"
+
+section "Worksheet Contract v0 Foundation Checks"
+
+check_file "${worksheet_v0_doc}"
+check_file "assistant/curriculum-builder/output-contract/v0/worksheet-contract-schema.json"
+check_file "assistant/curriculum-builder/output-contract/v0/contracts/sample-worksheet-001.json"
+check_doc_contains "${worksheet_v0_doc}" "worksheet_contract" "worksheet v0 contract type documented"
+check_doc_contains "${worksheet_v0_doc}" "exercise_placeholders" "worksheet v0 exercise_placeholders documented"
+check_doc_contains "${worksheet_v0_doc}" "no lesson generation" "worksheet v0 no lesson generation boundary"
+check_doc_contains "${worksheet_v0_doc}" "no renderers" "worksheet v0 no renderers boundary"
+check_doc_contains "${worksheet_v0_doc}" "no student data" "worksheet v0 no student data boundary"
+check_doc_contains "${output_contract_v0_doc}" "worksheet_contract" "output contract v0 documents worksheet canonical"
+check_doc_contains "${section_completion_audit_doc}" "Worksheet Contract Schema v0" "section completion audit references worksheet v0"
+check_doc_contains "${build_queue_doc}" "Worksheet Contract" "build queue references worksheet v0"
+check_doc_contains "${active_priorities_doc}" "Worksheet Contract" "active priorities references worksheet v0"
 
 section "Master Build Roadmap Checks"
 

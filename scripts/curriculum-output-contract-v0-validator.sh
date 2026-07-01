@@ -137,6 +137,15 @@ TS_REQUIRED = {
     "metadata_extensions", "planning_notes", "created_by_manual_entry",
     "activation_status",
 }
+WS_REQUIRED = {
+    "contract_version", "contract_status", "metadata_only", "read_only",
+    "contract_id", "contract_type", "title", "subject", "grade_band", "course",
+    "unit", "lesson", "registry_references", "teacher_only", "student_facing_allowed",
+    "review_state", "approval_status", "worksheet_context", "exercise_placeholders",
+    "local_first_safety_flags", "non_activation_flags", "pedagogy_extensions",
+    "metadata_extensions", "planning_notes", "created_by_manual_entry",
+    "activation_status",
+}
 REVIEW_STATES = {
     "not_reviewed", "metadata_only", "teacher_reviewed", "needs_update", "retired",
 }
@@ -157,6 +166,7 @@ ID_PATTERN = re.compile(r"^sample-contract-[a-z0-9-]+$")
 REGISTRY_ID_PATTERN = re.compile(r"^sample-[a-z0-9-]+$")
 SLIDE_ID_PATTERN = re.compile(r"^slide-[0-9]{2}$")
 SECTION_ID_PATTERN = re.compile(r"^section-[0-9]{2}$")
+EXERCISE_ID_PATTERN = re.compile(r"^exercise-[0-9]{2}$")
 HTTP_PATTERN = re.compile(r"https?://", re.IGNORECASE)
 HTML_PATTERN = re.compile(r"<\s*/?\s*[a-zA-Z]", re.IGNORECASE)
 STUDENT_NAME_PATTERN = re.compile(
@@ -258,6 +268,7 @@ def validate_placeholder(label, data, registry_ids):
         "teacher_only", "student_facing_allowed", "review_state", "approval_status",
         "lesson_context", "script_sections", "non_activation_flags",
         "pedagogy_extensions", "metadata_extensions",
+        "worksheet_context", "exercise_placeholders",
     }
     present = set(data.keys()) & blocked_type_fields
     if present:
@@ -427,6 +438,99 @@ def validate_teacher_script_contract(label, data, registry_records):
                     warnings.append(f"{section_label} {text_key} should include placeholder wording")
 
 
+def validate_worksheet_contract(label, data, registry_records):
+    for field in WS_REQUIRED:
+        if field not in data:
+            errors.append(f"{label} missing required field: {field}")
+
+    extra = set(data.keys()) - WS_REQUIRED
+    if extra:
+        errors.append(f"{label} unexpected fields: {sorted(extra)}")
+
+    validate_common_envelope(label, data, placeholder=False)
+
+    if data.get("contract_type") != "worksheet_contract":
+        errors.append(f"{label} contract_type must be worksheet_contract")
+
+    refs = data.get("registry_references", [])
+    validate_registry_refs(label, refs, set(registry_records.keys()))
+    if isinstance(refs, list) and len(refs) < 1:
+        errors.append(f"{label} canonical contract requires at least one registry reference")
+
+    teacher_only = data.get("teacher_only")
+    if not isinstance(teacher_only, bool):
+        errors.append(f"{label} teacher_only must be boolean")
+
+    student_facing = data.get("student_facing_allowed")
+    if student_facing not in STUDENT_FACING:
+        errors.append(f"{label} invalid student_facing_allowed: {student_facing!r}")
+
+    review_state = data.get("review_state")
+    if review_state not in REVIEW_STATES:
+        errors.append(f"{label} invalid review_state: {review_state!r}")
+
+    approval_status = data.get("approval_status")
+    if approval_status not in APPROVAL_STATUSES:
+        errors.append(f"{label} invalid approval_status: {approval_status!r}")
+
+    non_activation = data.get("non_activation_flags")
+    if not isinstance(non_activation, list) or not all(isinstance(item, str) for item in non_activation):
+        errors.append(f"{label} non_activation_flags must be string array")
+    elif len(non_activation) < 5:
+        errors.append(f"{label} non_activation_flags must include at least 5 entries")
+
+    for ext_field in ("pedagogy_extensions", "metadata_extensions"):
+        value = data.get(ext_field)
+        if not isinstance(value, dict):
+            errors.append(f"{label} {ext_field} must be an object")
+
+    worksheet_context = data.get("worksheet_context")
+    if not isinstance(worksheet_context, dict):
+        errors.append(f"{label} worksheet_context must be an object")
+    else:
+        for key in ("pacing_reference", "worksheet_format", "focus_topic"):
+            if key not in worksheet_context:
+                errors.append(f"{label} worksheet_context missing {key}")
+        if worksheet_context.get("worksheet_format") != "practice_worksheet":
+            errors.append(f"{label} worksheet_context worksheet_format must be practice_worksheet")
+        focus_topic = worksheet_context.get("focus_topic", "")
+        if not isinstance(focus_topic, str) or not focus_topic.strip():
+            errors.append(f"{label} worksheet_context focus_topic must be non-empty string")
+        elif "placeholder" not in focus_topic.lower():
+            warnings.append(f"{label} worksheet_context focus_topic should include placeholder wording")
+
+    exercises = data.get("exercise_placeholders")
+    if not isinstance(exercises, list) or not exercises:
+        errors.append(f"{label} exercise_placeholders must be non-empty array")
+    else:
+        seen_exercise_ids = set()
+        exercise_text_fields = (
+            "prompt_placeholder", "response_format_placeholder",
+            "answer_key_placeholder", "difficulty_hint_placeholder",
+        )
+        for index, exercise in enumerate(exercises):
+            exercise_label = f"{label} exercise_placeholders[{index}]"
+            if not isinstance(exercise, dict):
+                errors.append(f"{exercise_label} must be an object")
+                continue
+            for key in ("exercise_id", *exercise_text_fields):
+                if key not in exercise:
+                    errors.append(f"{exercise_label} missing {key}")
+            exercise_id = exercise.get("exercise_id", "")
+            if not isinstance(exercise_id, str) or not EXERCISE_ID_PATTERN.match(exercise_id):
+                errors.append(f"{exercise_label} invalid exercise_id: {exercise_id!r}")
+            elif exercise_id in seen_exercise_ids:
+                errors.append(f"{exercise_label} duplicate exercise_id: {exercise_id}")
+            else:
+                seen_exercise_ids.add(exercise_id)
+            for text_key in exercise_text_fields:
+                value = exercise.get(text_key, "")
+                if not isinstance(value, str) or not value.strip():
+                    errors.append(f"{exercise_label} {text_key} must be non-empty string")
+                elif "placeholder" not in value.lower():
+                    warnings.append(f"{exercise_label} {text_key} should include placeholder wording")
+
+
 def get_canonical_contract_paths(manifest):
     canonical_contracts = manifest.get("canonical_contracts")
     if isinstance(canonical_contracts, list) and canonical_contracts:
@@ -463,17 +567,20 @@ registry_records = {
 }
 
 manifest_path = os.path.join(contract_root, "placeholder-manifest.json")
+canonical_pass_messages = []
+placeholder_rels = []
 if not os.path.isfile(manifest_path):
     errors.append(f"manifest missing: {manifest_path}")
 else:
     manifest = load_json(manifest_path)
     canonical_rels = get_canonical_contract_paths(manifest)
     placeholder_rels = manifest.get("placeholder_contracts", [])
-    if not isinstance(canonical_rels, list) or len(canonical_rels) != 2:
-        errors.append("manifest must list exactly 2 canonical contracts")
-    if not isinstance(placeholder_rels, list) or len(placeholder_rels) != 3:
-        errors.append("manifest must list exactly 3 placeholder contracts")
+    if not isinstance(canonical_rels, list) or len(canonical_rels) != 3:
+        errors.append("manifest must list exactly 3 canonical contracts")
+    if not isinstance(placeholder_rels, list) or len(placeholder_rels) != 2:
+        errors.append("manifest must list exactly 2 placeholder contracts")
 
+    canonical_pass_messages = []
     for canonical_rel in canonical_rels:
         canonical_path = os.path.join(contract_root, canonical_rel)
         label = f"canonical:{canonical_rel}"
@@ -484,8 +591,13 @@ else:
         contract_type = contract_data.get("contract_type")
         if contract_type == "direct_instruction_slide_deck_contract":
             validate_di_contract(label, contract_data, registry_ids)
+            canonical_pass_messages.append("canonical direct instruction slide deck contract valid")
         elif contract_type == "teacher_script_contract":
             validate_teacher_script_contract(label, contract_data, registry_records)
+            canonical_pass_messages.append("canonical teacher script contract valid")
+        elif contract_type == "worksheet_contract":
+            validate_worksheet_contract(label, contract_data, registry_records)
+            canonical_pass_messages.append("canonical worksheet contract valid")
         else:
             errors.append(f"{label} unsupported canonical contract_type: {contract_type!r}")
 
@@ -507,8 +619,8 @@ for error in errors:
 
 if not errors:
     print("PASS: output contract v0 manifest valid")
-    print("PASS: canonical direct instruction slide deck contract valid")
-    print("PASS: canonical teacher script contract valid")
+    for message in canonical_pass_messages:
+        print(f"PASS: {message}")
     print(f"PASS: validated {len(placeholder_rels) if isinstance(placeholder_rels, list) else 0} placeholder contracts")
     print("PASS: registry reference checks completed against Registry v0")
 PY

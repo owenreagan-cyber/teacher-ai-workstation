@@ -57,7 +57,13 @@ docs/build-queue.md should show the current and next PR
 README should not contradict build queue or memory
 prompt pack docs should not mark completed work as active
 next recommended PR should be consistent across memory and build queue
+parked tracks should point to docs/phase-1-chief-of-staff-status-audit.md — Repo-Wide Parked Tracks and Active Status Map
+do not restart parked tracks without explicit approval
 ```
+
+## Post-Parked-Tracks Freshness Note
+
+PR #130 aligned prompt/workflow docs with the repo-wide parked tracks map. Future freshness checks should confirm prompt docs do not resurrect skeleton creation, Curriculum Builder expansion, lesson-planning activation, or Appearance & Vibe runtime work as active next steps.
 
 ## Dashboard Count Freshness
 

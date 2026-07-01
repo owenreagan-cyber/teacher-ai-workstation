@@ -468,7 +468,7 @@ bin/chief-of-staff --local-main-proof-report-status
 
 ```text
 Use docs/prompt-pack-stack-completion-marker.md to confirm the reusable prompt pack documentation stack is complete for now.
-The next safe return point is Core Teacher Workstation planning cleanup.
+Start from docs/phase-1-chief-of-staff-status-audit.md — Repo-Wide Parked Tracks and Active Status Map and docs/build-queue.md.
 Use docs/prompt-pack-handoff-summary.md to understand the current reusable prompt pack stack.
 The handoff summary points to maintenance, freshness, stale-reference audit, reference index, workflow navigation, verification bundles, and lifecycle guardrails.
 Use docs/prompt-pack-freshness-report-polish.md to summarize whether reusable prompt docs are current.

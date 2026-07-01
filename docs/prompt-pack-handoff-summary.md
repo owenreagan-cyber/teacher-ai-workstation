@@ -53,11 +53,13 @@ Local main proof report polish: docs/local-main-proof-report-polish.md
 
 ```text
 1. Start with docs/prompt-pack-handoff-summary.md for the current stack.
-2. Use docs/prompt-pack-reference-index.md to find reusable prompt docs.
-3. Use docs/prompt-pack-maintenance-checklist.md before reusing or updating prompt packs.
-4. Use docs/prompt-pack-freshness-report-polish.md to summarize whether prompt docs are current.
-5. Use docs/prompt-pack-stale-reference-audit.md to catch stale roadmap, dashboard, command, branch, and next-PR references.
-6. Use docs/workflow-docs-navigation-status-summary.md for the wider workflow doc map.
+2. Start from docs/phase-1-chief-of-staff-status-audit.md — Repo-Wide Parked Tracks and Active Status Map for parked vs active tracks.
+3. Use docs/build-queue.md for current handoff posture.
+4. Use docs/prompt-pack-reference-index.md to find reusable prompt docs.
+5. Use docs/prompt-pack-maintenance-checklist.md before reusing or updating prompt packs.
+6. Use docs/prompt-pack-freshness-report-polish.md to summarize whether prompt docs are current.
+7. Use docs/prompt-pack-stale-reference-audit.md to catch stale roadmap, dashboard, command, branch, and next-PR references.
+8. Use docs/workflow-docs-navigation-status-summary.md for the wider workflow doc map.
 ```
 
 ## Maintenance and Freshness Path

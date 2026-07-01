@@ -181,6 +181,33 @@ fi
 if [[ -f "${prompt_doc}" ]]; then
   check_doc_contains "${prompt_doc}" "docs/prompt-pack-stale-reference-audit.md" "docs/prompt-pack-stale-reference-audit.md in cursor prompt template"
 fi
+if [[ -f "${checklist_doc}" ]]; then
+  check_doc_contains "${checklist_doc}" "docs/prompt-pack-stale-reference-audit.md" "docs/prompt-pack-stale-reference-audit.md in cursor PR review checklist"
+  check_doc_contains "${checklist_doc}" "Repo-Wide Parked Tracks and Active Status Map" "repo-wide parked tracks map in cursor PR review checklist"
+fi
+
+section 'Post-Parked-Tracks Reference Checks'
+
+if [[ -f "${audit_doc}" ]]; then
+  check_doc_contains "${audit_doc}" "Post-Parked-Tracks Stale-Reference Pass" "Post-Parked-Tracks Stale-Reference Pass"
+  check_doc_contains "${audit_doc}" "do not restart parked work without explicit approval" "do not restart parked work without explicit approval"
+  check_doc_contains "${audit_doc}" "Curriculum Builder parked and approval-gated" "Curriculum Builder parked and approval-gated"
+  check_doc_contains "${audit_doc}" "lesson-planning placeholder readiness parked" "lesson-planning placeholder readiness parked"
+  check_doc_contains "${audit_doc}" "live curator not started" "Appearance & Vibe live curator not started"
+fi
+
+if [[ -f "${os_doc}" ]]; then
+  if grep -Fq "Lesson-planning placeholder template skeleton" "${os_doc}"; then
+    fail "cursor workflow OS must not reference skeleton as next PR"
+  else
+    pass "cursor workflow OS does not reference skeleton as next PR"
+  fi
+  check_doc_contains "${os_doc}" "Repo-Wide Parked Tracks and Active Status Map" "repo-wide parked tracks map in cursor workflow OS"
+fi
+
+if [[ -f "${prompt_doc}" ]]; then
+  check_doc_contains "${prompt_doc}" "Repo-Wide Parked Tracks and Active Status Map" "repo-wide parked tracks map in cursor prompt template"
+fi
 
 check_bash_syntax 'bin/chief-of-staff'
 check_bash_syntax 'scripts/chief-of-staff-dashboard.sh'

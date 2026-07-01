@@ -155,6 +155,15 @@ RG_REQUIRED = {
     "metadata_extensions", "planning_notes", "created_by_manual_entry",
     "activation_status",
 }
+CP_REQUIRED = {
+    "contract_version", "contract_status", "metadata_only", "read_only",
+    "contract_id", "contract_type", "title", "subject", "grade_band", "course",
+    "unit", "lesson", "registry_references", "teacher_only", "student_facing_allowed",
+    "review_state", "approval_status", "package_context", "module_placeholders",
+    "local_first_safety_flags", "canvas_non_activation_flags", "non_activation_flags",
+    "pedagogy_extensions", "metadata_extensions", "planning_notes",
+    "created_by_manual_entry", "activation_status",
+}
 REVIEW_STATES = {
     "not_reviewed", "metadata_only", "teacher_reviewed", "needs_update", "retired",
 }
@@ -164,6 +173,10 @@ APPROVAL_STATUSES = {
 REQUIRED_NON_ACTIVATION_FLAGS = {
     "not_generated", "not_rendered", "no_runtime_execution",
     "no_dynamic_variables", "no_student_name_injection",
+}
+REQUIRED_CANVAS_NON_ACTIVATION_FLAGS = {
+    "no_canvas_api", "no_package_build", "no_publish",
+    "no_canvas_integration", "no_export_command",
 }
 BLOCKED_FIELDS = {
     "html_content", "slide_html", "generated_content", "generated_slides",
@@ -177,6 +190,7 @@ SLIDE_ID_PATTERN = re.compile(r"^slide-[0-9]{2}$")
 SECTION_ID_PATTERN = re.compile(r"^section-[0-9]{2}$")
 EXERCISE_ID_PATTERN = re.compile(r"^exercise-[0-9]{2}$")
 ROUND_ID_PATTERN = re.compile(r"^round-[0-9]{2}$")
+MODULE_ID_PATTERN = re.compile(r"^module-[0-9]{2}$")
 HTTP_PATTERN = re.compile(r"https?://", re.IGNORECASE)
 HTML_PATTERN = re.compile(r"<\s*/?\s*[a-zA-Z]", re.IGNORECASE)
 STUDENT_NAME_PATTERN = re.compile(
@@ -280,6 +294,7 @@ def validate_placeholder(label, data, registry_ids):
         "pedagogy_extensions", "metadata_extensions",
         "worksheet_context", "exercise_placeholders",
         "game_context", "round_placeholders",
+        "package_context", "module_placeholders", "canvas_non_activation_flags",
     }
     present = set(data.keys()) & blocked_type_fields
     if present:
@@ -635,6 +650,106 @@ def validate_review_game_contract(label, data, registry_records):
                     warnings.append(f"{round_label} {text_key} should include placeholder wording")
 
 
+def validate_canvas_export_package_contract(label, data, registry_records):
+    for field in CP_REQUIRED:
+        if field not in data:
+            errors.append(f"{label} missing required field: {field}")
+
+    extra = set(data.keys()) - CP_REQUIRED
+    if extra:
+        errors.append(f"{label} unexpected fields: {sorted(extra)}")
+
+    validate_common_envelope(label, data, placeholder=False)
+
+    if data.get("contract_type") != "canvas_export_package_contract":
+        errors.append(f"{label} contract_type must be canvas_export_package_contract")
+
+    refs = data.get("registry_references", [])
+    validate_registry_refs(label, refs, set(registry_records.keys()))
+    if isinstance(refs, list) and len(refs) < 1:
+        errors.append(f"{label} canonical contract requires at least one registry reference")
+
+    teacher_only = data.get("teacher_only")
+    if teacher_only is not True:
+        errors.append(f"{label} teacher_only must be true for canvas export package contracts")
+
+    student_facing = data.get("student_facing_allowed")
+    if student_facing not in STUDENT_FACING:
+        errors.append(f"{label} invalid student_facing_allowed: {student_facing!r}")
+
+    review_state = data.get("review_state")
+    if review_state not in REVIEW_STATES:
+        errors.append(f"{label} invalid review_state: {review_state!r}")
+
+    approval_status = data.get("approval_status")
+    if approval_status not in APPROVAL_STATUSES:
+        errors.append(f"{label} invalid approval_status: {approval_status!r}")
+
+    canvas_flags = data.get("canvas_non_activation_flags")
+    if not isinstance(canvas_flags, list) or not all(isinstance(item, str) for item in canvas_flags):
+        errors.append(f"{label} canvas_non_activation_flags must be string array")
+    else:
+        missing = REQUIRED_CANVAS_NON_ACTIVATION_FLAGS - set(canvas_flags)
+        if missing:
+            errors.append(f"{label} missing required canvas_non_activation_flags: {sorted(missing)}")
+
+    non_activation = data.get("non_activation_flags")
+    if not isinstance(non_activation, list) or not all(isinstance(item, str) for item in non_activation):
+        errors.append(f"{label} non_activation_flags must be string array")
+    elif len(non_activation) < 5:
+        errors.append(f"{label} non_activation_flags must include at least 5 entries")
+
+    for ext_field in ("pedagogy_extensions", "metadata_extensions"):
+        value = data.get(ext_field)
+        if not isinstance(value, dict):
+            errors.append(f"{label} {ext_field} must be an object")
+
+    package_context = data.get("package_context")
+    if not isinstance(package_context, dict):
+        errors.append(f"{label} package_context must be an object")
+    else:
+        for key in ("pacing_reference", "export_mode", "focus_topic"):
+            if key not in package_context:
+                errors.append(f"{label} package_context missing {key}")
+        if package_context.get("export_mode") != "metadata_only":
+            errors.append(f"{label} package_context export_mode must be metadata_only")
+        focus_topic = package_context.get("focus_topic", "")
+        if not isinstance(focus_topic, str) or not focus_topic.strip():
+            errors.append(f"{label} package_context focus_topic must be non-empty string")
+        elif "placeholder" not in focus_topic.lower():
+            warnings.append(f"{label} package_context focus_topic should include placeholder wording")
+
+    modules = data.get("module_placeholders")
+    if not isinstance(modules, list) or not modules:
+        errors.append(f"{label} module_placeholders must be non-empty array")
+    else:
+        seen_module_ids = set()
+        module_text_fields = (
+            "title_placeholder", "content_type_placeholder", "planning_note_placeholder",
+        )
+        for index, module in enumerate(modules):
+            module_label = f"{label} module_placeholders[{index}]"
+            if not isinstance(module, dict):
+                errors.append(f"{module_label} must be an object")
+                continue
+            for key in ("module_id", *module_text_fields):
+                if key not in module:
+                    errors.append(f"{module_label} missing {key}")
+            module_id = module.get("module_id", "")
+            if not isinstance(module_id, str) or not MODULE_ID_PATTERN.match(module_id):
+                errors.append(f"{module_label} invalid module_id: {module_id!r}")
+            elif module_id in seen_module_ids:
+                errors.append(f"{module_label} duplicate module_id: {module_id}")
+            else:
+                seen_module_ids.add(module_id)
+            for text_key in module_text_fields:
+                value = module.get(text_key, "")
+                if not isinstance(value, str) or not value.strip():
+                    errors.append(f"{module_label} {text_key} must be non-empty string")
+                elif "placeholder" not in value.lower():
+                    warnings.append(f"{module_label} {text_key} should include placeholder wording")
+
+
 def get_canonical_contract_paths(manifest):
     canonical_contracts = manifest.get("canonical_contracts")
     if isinstance(canonical_contracts, list) and canonical_contracts:
@@ -679,10 +794,10 @@ else:
     manifest = load_json(manifest_path)
     canonical_rels = get_canonical_contract_paths(manifest)
     placeholder_rels = manifest.get("placeholder_contracts", [])
-    if not isinstance(canonical_rels, list) or len(canonical_rels) != 4:
-        errors.append("manifest must list exactly 4 canonical contracts")
-    if not isinstance(placeholder_rels, list) or len(placeholder_rels) != 1:
-        errors.append("manifest must list exactly 1 placeholder contract")
+    if not isinstance(canonical_rels, list) or len(canonical_rels) != 5:
+        errors.append("manifest must list exactly 5 canonical contracts")
+    if not isinstance(placeholder_rels, list) or len(placeholder_rels) != 0:
+        errors.append("manifest must list exactly 0 placeholder contracts")
 
     canonical_pass_messages = []
     for canonical_rel in canonical_rels:
@@ -705,6 +820,9 @@ else:
         elif contract_type == "review_game_contract":
             validate_review_game_contract(label, contract_data, registry_records)
             canonical_pass_messages.append("canonical review game contract valid")
+        elif contract_type == "canvas_export_package_contract":
+            validate_canvas_export_package_contract(label, contract_data, registry_records)
+            canonical_pass_messages.append("canonical canvas export package contract valid")
         else:
             errors.append(f"{label} unsupported canonical contract_type: {contract_type!r}")
 

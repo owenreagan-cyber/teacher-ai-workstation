@@ -11,12 +11,9 @@ Local-first, read-only output contract validation for Teacher AI Workstation.
 | `teacher-script-contract-schema.json` | Canonical teacher script contract schema |
 | `worksheet-contract-schema.json` | Canonical worksheet contract schema |
 | `review-game-contract-schema.json` | Canonical review game contract schema |
-| `contracts/sample-di-slide-deck-001.json` | Fully validated DI fictional contract |
-| `contracts/sample-teacher-script-001.json` | Fully validated teacher script fictional contract |
-| `contracts/sample-worksheet-001.json` | Fully validated worksheet fictional contract |
-| `contracts/sample-review-game-001.json` | Fully validated review game fictional contract |
-| `placeholders/` | Planning-only placeholder contract (Canvas package) |
-| `placeholder-manifest.json` | Canonical and placeholder contract index |
+| `canvas-export-package-contract-schema.json` | Canonical Canvas export package contract schema |
+| `contracts/` | Five fully validated fictional canonical contracts |
+| `placeholder-manifest.json` | Canonical contract index (`placeholder_contracts` empty in v0.1.0) |
 
 ## Boundaries
 

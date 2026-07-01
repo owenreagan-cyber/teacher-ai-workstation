@@ -101,10 +101,11 @@ Handoff and status clarity. Start from `docs/phase-1-chief-of-staff-status-audit
 - Teacher Script Contract Schema v0 (Phase 2 Mission 4).
 - Worksheet Contract Schema v0 (Phase 2 Mission 5).
 - Review Game Contract Schema v0 (Phase 2 Mission 6).
+- Canvas Export Package Contract Schema v0 (Phase 2 Mission 7).
 
 ## Master Build Roadmap Status
 
-Canonical program roadmap is active (`docs/master-build-roadmap.md`). Next recommended mission: Canvas Package Contract Schema v0. Roadmap does not auto-start implementation.
+Canonical program roadmap is active (`docs/master-build-roadmap.md`). All five output contract types are now canonical. Next: contract suite cohesion and v1 foundation closure.
 
 ## Engineering Constitution Status
 
@@ -117,6 +118,10 @@ Repo-wide implementation approval gate is active. No implementation is approved 
 ## Canvas LLM Foundation Status
 
 Canvas LLM docs/status foundation is complete for now. Runtime/export/API/generation work is frozen unless separately and explicitly approved. final handoff snapshot recorded. stop marker active. section completion audit recorded. Recommended next focus: Curriculum Builder foundation.
+
+## Canvas Package Contract v0 Status
+
+Canvas Export Package Contract Schema v0 is active (Phase 2 Mission 7). See `docs/curriculum-canvas-package-contract-v0.md`. Fifth canonical output contract with fictional module placeholders; read-only validation only. No Canvas API, package building, or publishing.
 
 ## Review Game Contract v0 Status
 

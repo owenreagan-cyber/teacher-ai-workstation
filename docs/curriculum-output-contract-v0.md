@@ -38,6 +38,7 @@ Output Contract v0 does **not** support:
 | Teacher script schema | `assistant/curriculum-builder/output-contract/v0/teacher-script-contract-schema.json` |
 | Worksheet schema | `assistant/curriculum-builder/output-contract/v0/worksheet-contract-schema.json` |
 | Review game schema | `assistant/curriculum-builder/output-contract/v0/review-game-contract-schema.json` |
+| Canvas package schema | `assistant/curriculum-builder/output-contract/v0/canvas-export-package-contract-schema.json` |
 | Canonical DI contract | `assistant/curriculum-builder/output-contract/v0/contracts/sample-di-slide-deck-001.json` |
 | Canonical teacher script | `assistant/curriculum-builder/output-contract/v0/contracts/sample-teacher-script-001.json` |
 | Placeholder manifest | `assistant/curriculum-builder/output-contract/v0/placeholder-manifest.json` |
@@ -57,7 +58,7 @@ Planning vocabulary alignment:
 | `teacher_script_contract` | **Canonical** — fully validated fictional sample (see `docs/curriculum-teacher-script-contract-v0.md`) |
 | `worksheet_contract` | **Canonical** — fully validated fictional sample (see `docs/curriculum-worksheet-contract-v0.md`) |
 | `review_game_contract` | **Canonical** — fully validated fictional sample (see `docs/curriculum-review-game-contract-v0.md`) |
-| `canvas_export_package_contract` | Placeholder only |
+| `canvas_export_package_contract` | **Canonical** — fully validated fictional sample (see `docs/curriculum-canvas-package-contract-v0.md`) |
 
 ## Canonical Contract Format
 
@@ -108,10 +109,10 @@ bash tests/curriculum-output-contract-v0-test.sh
 
 | Version | Status |
 | --- | --- |
-| v0.1.0 | Active — four canonical contracts + one placeholder, read-only validation |
+| v0.1.0 | Active — five canonical contracts, read-only validation; placeholder contracts retired |
 | v0.2+ | Not started — requires separate approved mission |
 
-Future versions may add: full schema for Canvas package contract, renderers, and generation hooks — each approval-gated.
+Future versions may add: renderers and generation hooks — each approval-gated.
 
 ## Related Governance
 

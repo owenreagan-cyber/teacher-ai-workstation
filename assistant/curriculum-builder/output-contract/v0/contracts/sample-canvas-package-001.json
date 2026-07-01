@@ -1,0 +1,69 @@
+{
+  "contract_version": "0.1.0",
+  "contract_status": "active_v0",
+  "metadata_only": true,
+  "read_only": true,
+  "contract_id": "sample-contract-canvas-package-001",
+  "contract_type": "canvas_export_package_contract",
+  "title": "SM5 Unit 01 Lesson 02 Canvas Package Contract Placeholder",
+  "subject": "science",
+  "grade_band": "SM5",
+  "course": "physical_science",
+  "unit": "unit_01",
+  "lesson": "lesson_02",
+  "registry_references": [
+    "sample-canvas-export-folder-001"
+  ],
+  "teacher_only": true,
+  "student_facing_allowed": "false",
+  "review_state": "not_reviewed",
+  "approval_status": "not_approved",
+  "package_context": {
+    "pacing_reference": "pacing-sm5-u01-l02",
+    "export_mode": "metadata_only",
+    "focus_topic": "Placeholder Canvas package focus for export planning"
+  },
+  "module_placeholders": [
+    {
+      "module_id": "module-01",
+      "title_placeholder": "Module title placeholder only",
+      "content_type_placeholder": "Page placeholder content type only",
+      "planning_note_placeholder": "Module planning note placeholder only"
+    },
+    {
+      "module_id": "module-02",
+      "title_placeholder": "Second module title placeholder only",
+      "content_type_placeholder": "Assignment placeholder content type only",
+      "planning_note_placeholder": "Second module planning note placeholder only"
+    }
+  ],
+  "local_first_safety_flags": [
+    "metadata_only",
+    "no_student_data",
+    "not_generated",
+    "not_rendered",
+    "manual_entry",
+    "placeholder_only",
+    "no_external_resolution",
+    "contract_v0_only"
+  ],
+  "canvas_non_activation_flags": [
+    "no_canvas_api",
+    "no_package_build",
+    "no_publish",
+    "no_canvas_integration",
+    "no_export_command"
+  ],
+  "non_activation_flags": [
+    "not_generated",
+    "not_rendered",
+    "no_runtime_execution",
+    "no_canvas_api",
+    "no_package_build"
+  ],
+  "pedagogy_extensions": {},
+  "metadata_extensions": {},
+  "planning_notes": "Fictional Canvas export package contract metadata only; no Canvas API, package building, or publishing",
+  "created_by_manual_entry": true,
+  "activation_status": "contract_v0"
+}

@@ -259,3 +259,7 @@ Worksheet Contract Schema v0 promotes `worksheet_contract` to a third fully vali
 ## Review Game Contract Schema v0 Implementation Activation (Phase 2 Mission 6)
 
 Review Game Contract Schema v0 promotes `review_game_contract` to a fourth fully validated canonical contract. See `docs/curriculum-review-game-contract-v0.md`. No game generation, interactive runtime, or renderers.
+
+## Canvas Export Package Contract Schema v0 Implementation Activation (Phase 2 Mission 7)
+
+Canvas Export Package Contract Schema v0 promotes `canvas_export_package_contract` to the fifth fully validated canonical contract. See `docs/curriculum-canvas-package-contract-v0.md`. No Canvas API, package building, or publishing.

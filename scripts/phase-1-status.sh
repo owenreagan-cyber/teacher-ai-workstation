@@ -695,6 +695,16 @@ for path in \
 done
 check_bash_syntax tests/curriculum-review-game-contract-v0-test.sh
 
+section "Canvas Package Contract v0 Foundation Files"
+for path in \
+  docs/curriculum-canvas-package-contract-v0.md \
+  assistant/curriculum-builder/output-contract/v0/canvas-export-package-contract-schema.json \
+  assistant/curriculum-builder/output-contract/v0/contracts/sample-canvas-package-001.json \
+  tests/curriculum-canvas-package-contract-v0-test.sh; do
+  check_required_file "${path}"
+done
+check_bash_syntax tests/curriculum-canvas-package-contract-v0-test.sh
+
 section "Master Build Roadmap Files"
 check_required_file docs/master-build-roadmap.md
 

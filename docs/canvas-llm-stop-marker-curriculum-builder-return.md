@@ -70,6 +70,7 @@ Latest dashboard: Health 88/88 checks passing
 - `docs/canvas-llm-planning-foundation-closure-audit.md`
 - `docs/canvas-llm-frozen-foundation-handoff-snapshot.md`
 - `docs/canvas-llm-stop-marker-curriculum-builder-return.md`
+- `docs/canvas-llm-section-completion-audit.md`
 
 ## Runtime Work Remains Blocked
 

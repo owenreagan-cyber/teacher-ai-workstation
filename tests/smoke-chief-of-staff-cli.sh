@@ -58,6 +58,9 @@ grep -q "PASS: placeholder registry safety contract is intact" /tmp/chief-of-sta
 bin/chief-of-staff --curriculum-registry-v0-status >/dev/null
 bin/chief-of-staff --curriculum-registry-v0-validate >/dev/null
 bash tests/curriculum-registry-v0-test.sh >/dev/null
+bin/chief-of-staff --curriculum-output-contract-v0-status >/dev/null
+bin/chief-of-staff --curriculum-output-contract-v0-validate >/dev/null
+bash tests/curriculum-output-contract-v0-test.sh >/dev/null
 bin/chief-of-staff --intake-status >/dev/null
 bin/chief-of-staff --intake-summary >/dev/null
 bin/chief-of-staff --intake-diff >/dev/null

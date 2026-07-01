@@ -132,3 +132,28 @@ bin/chief-of-staff --curriculum-builder-foundation-status
 ## Non-Activation Confirmation
 
 Documentation/status only. Curriculum Builder output contract planning foundation is Markdown-only planning text. No schema files, validators, renderers, lesson generation, generated drafts, parsing, curriculum file ingestion, RAG, vector database, embeddings, OCR, scanning, indexing, APIs, network calls, OAuth, automation, student data, Canvas API, Google Drive API, package builders, export commands, or runtime behavior. Output contracts are planning placeholders only.
+
+## Output Contract Schema v0 Implementation Activation (Phase 2 Mission 2)
+
+Output Contract Schema v0 is the second approved Phase 2 implementation subsystem. It activates a **narrow, read-only contract-validation layer** only:
+
+- documentation: `docs/curriculum-output-contract-v0.md`
+- contract root: `assistant/curriculum-builder/output-contract/v0/`
+- envelope schema: `assistant/curriculum-builder/output-contract/v0/contract-envelope-schema.json`
+- canonical DI schema: `assistant/curriculum-builder/output-contract/v0/direct-instruction-slide-deck-schema.json`
+- canonical sample: `assistant/curriculum-builder/output-contract/v0/contracts/sample-di-slide-deck-001.json`
+- placeholder contracts: `assistant/curriculum-builder/output-contract/v0/placeholders/`
+- read-only validator: `scripts/curriculum-output-contract-v0-validator.sh`
+- status proof: `scripts/curriculum-output-contract-v0-status.sh`
+- Chief of Staff: `bin/chief-of-staff --curriculum-output-contract-v0-status`, `bin/chief-of-staff --curriculum-output-contract-v0-validate`
+
+Output Contract v0 boundaries remain strict:
+
+- contract metadata only; no generated lesson content
+- read-only validation; no contract writes from CLI or automation
+- one canonical fully validated contract (`direct_instruction_slide_deck_contract`)
+- four placeholder contracts for future categories (not fully validated)
+- registry ID references validated against Registry v0 when present
+- no lesson generation, renderers, HTML/PDF, Canvas package building, ingestion, scanning, RAG, APIs, OAuth, network calls, or student data
+
+The planning-closure statements above remain the historical planning-phase snapshot. Output Contract v0 does not approve generation, rendering, ingestion, or Canvas integration.

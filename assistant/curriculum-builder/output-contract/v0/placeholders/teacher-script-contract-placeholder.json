@@ -1,0 +1,24 @@
+{
+  "contract_version": "0.1.0",
+  "contract_status": "placeholder_v0",
+  "metadata_only": true,
+  "read_only": true,
+  "contract_id": "sample-contract-teacher-script-placeholder-001",
+  "contract_type": "teacher_script_contract",
+  "title": "Teacher Script Contract Placeholder",
+  "placeholder_status": "planning_only",
+  "registry_references": [],
+  "local_first_safety_flags": [
+    "metadata_only",
+    "no_student_data",
+    "not_generated",
+    "not_rendered",
+    "manual_entry",
+    "placeholder_only",
+    "no_external_resolution",
+    "contract_v0_placeholder"
+  ],
+  "planning_notes": "Teacher script contract placeholder only; full schema not active in v0",
+  "created_by_manual_entry": true,
+  "activation_status": "contract_v0_placeholder"
+}

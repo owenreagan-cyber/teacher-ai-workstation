@@ -1,0 +1,13 @@
+{
+  "manifest_version": "0.1.0",
+  "manifest_status": "active_v0",
+  "metadata_only": true,
+  "read_only": true,
+  "canonical_contract": "contracts/sample-di-slide-deck-001.json",
+  "placeholder_contracts": [
+    "placeholders/worksheet-contract-placeholder.json",
+    "placeholders/review-game-contract-placeholder.json",
+    "placeholders/teacher-script-contract-placeholder.json",
+    "placeholders/canvas-export-package-contract-placeholder.json"
+  ]
+}

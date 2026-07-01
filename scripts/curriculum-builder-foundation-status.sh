@@ -136,6 +136,7 @@ sample_format_decision_doc="docs/curriculum-builder-sample-format-decision.md"
 csv_placeholder_sample_plan_doc="docs/curriculum-builder-csv-placeholder-sample-plan.md"
 csv_placeholder_sample_artifact_doc="docs/curriculum-builder-csv-placeholder-sample-artifact.md"
 csv_placeholder_sample_csv="docs/examples/curriculum-builder-manual-registry-sample.csv"
+csv_static_validation_maintenance_doc="docs/curriculum-builder-csv-static-validation-maintenance.md"
 dashboard_doc="docs/chief-of-staff-dashboard.md"
 dashboard_section_summary_doc="docs/dashboard-section-summary-polish.md"
 phase_1_audit_doc="docs/phase-1-chief-of-staff-status-audit.md"
@@ -1191,6 +1192,30 @@ if [[ -f "${csv_placeholder_sample_artifact_doc}" ]]; then
   check_doc_contains "${csv_placeholder_sample_artifact_doc}" "Blocked Capabilities" "Blocked Capabilities section in CSV artifact doc"
   check_doc_contains "${csv_placeholder_sample_artifact_doc}" "Future Maintenance Rules" "Future Maintenance Rules section in CSV artifact doc"
   check_doc_contains "${csv_placeholder_sample_artifact_doc}" "docs/curriculum-builder-canonical-planning-index.md" "canonical planning index cross-link in CSV artifact doc"
+fi
+
+section "Curriculum Builder CSV Static Validation Maintenance Documentation"
+
+check_file "${csv_static_validation_maintenance_doc}"
+
+if [[ -f "${csv_static_validation_maintenance_doc}" ]]; then
+  check_doc_contains "${csv_static_validation_maintenance_doc}" "Curriculum Builder CSV Static Validation Maintenance" "Curriculum Builder CSV Static Validation Maintenance title"
+  check_doc_contains "${csv_static_validation_maintenance_doc}" "Non-Activation Statement" "Non-Activation Statement section in CSV maintenance doc"
+  check_doc_contains "${csv_static_validation_maintenance_doc}" "Current Sample Artifacts" "Current Sample Artifacts section in CSV maintenance doc"
+  check_doc_contains "${csv_static_validation_maintenance_doc}" "Canonical vs Secondary Rule" "Canonical vs Secondary Rule section in CSV maintenance doc"
+  check_doc_contains "${csv_static_validation_maintenance_doc}" "Markdown/CSV Alignment Expectations" "Markdown/CSV Alignment Expectations section in CSV maintenance doc"
+  check_doc_contains "${csv_static_validation_maintenance_doc}" "Required Shared Row Concepts" "Required Shared Row Concepts section in CSV maintenance doc"
+  check_doc_contains "${csv_static_validation_maintenance_doc}" "Required Shared Registry IDs" "Required Shared Registry IDs section in CSV maintenance doc"
+  check_doc_contains "${csv_static_validation_maintenance_doc}" "Required Shared Placeholder References" "Required Shared Placeholder References section in CSV maintenance doc"
+  check_doc_contains "${csv_static_validation_maintenance_doc}" "Field and Column Alignment Rules" "Field and Column Alignment Rules section in CSV maintenance doc"
+  check_doc_contains "${csv_static_validation_maintenance_doc}" "Future Edit Checklist" "Future Edit Checklist section in CSV maintenance doc"
+  check_doc_contains "${csv_static_validation_maintenance_doc}" "Blocked Capabilities" "Blocked Capabilities section in CSV maintenance doc"
+  check_doc_contains "${csv_static_validation_maintenance_doc}" "Recommended Next PR" "Recommended Next PR section in CSV maintenance doc"
+  check_doc_contains "${csv_static_validation_maintenance_doc}" "docs/curriculum-builder-canonical-planning-index.md" "canonical planning index cross-link in CSV maintenance doc"
+fi
+
+if [[ -f "${canonical_planning_index_doc}" ]]; then
+  check_doc_contains "${canonical_planning_index_doc}" "docs/curriculum-builder-csv-static-validation-maintenance.md" "CSV static validation maintenance reference in canonical index"
 fi
 
 section "Dashboard Planning Index Visibility Checks"

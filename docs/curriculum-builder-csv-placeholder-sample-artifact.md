@@ -21,7 +21,8 @@ canonical planning index
 → sample format decision
 → CSV placeholder sample plan
 → CSV placeholder sample artifact (this document)
-→ future CSV static validation maintenance
+→ CSV static validation maintenance
+→ future Markdown/CSV alignment proof
 ```
 
 ## 2. Non-Activation Statement
@@ -144,6 +145,8 @@ Unless explicitly approved through `docs/curriculum-builder-approval-gate.md` an
 
 ## 13. Future Maintenance Rules
 
+See `docs/curriculum-builder-csv-static-validation-maintenance.md` for the full Markdown/CSV alignment and edit checklist.
+
 When editing the CSV or Markdown sample:
 
 - keep Markdown canonical; update CSV only as a deliberate secondary mirror
@@ -154,13 +157,7 @@ When editing the CSV or Markdown sample:
 
 ## 14. Recommended Next PR
 
-**PR #142 — Curriculum Builder CSV Static Validation Maintenance**
-
-Scope:
-
-- documentation/status-only checklist for keeping Markdown and CSV samples aligned
-- optional expanded static checks if field drift is detected
-- no parser, importer, loader, or runtime validator
+**PR #142 — Curriculum Builder CSV Static Validation Maintenance** (completed). Next: **PR #143 — Curriculum Builder Markdown/CSV Alignment Proof**.
 
 ## 15. PR Handoff Checklist
 

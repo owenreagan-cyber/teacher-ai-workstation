@@ -36,6 +36,7 @@ It does not create active schema, data, registry records, validators, commands, 
 | Sample format decision | `docs/curriculum-builder-sample-format-decision.md` | Markdown-only format decision | documentation only | no CSV/JSON/YAML artifact |
 | CSV placeholder sample plan | `docs/curriculum-builder-csv-placeholder-sample-plan.md` | Future CSV safety rules | planning only | no CSV file yet |
 | CSV placeholder sample artifact | `docs/examples/curriculum-builder-manual-registry-sample.csv` | Secondary static CSV mirror | documentation only | Markdown canonical |
+| CSV static validation maintenance | `docs/curriculum-builder-csv-static-validation-maintenance.md` | Markdown/CSV alignment checklist | documentation only | no parser |
 | Static sample validation plan | `docs/curriculum-builder-static-sample-validation-plan.md` | Future static validation rule set | planning only | no validator implementation |
 
 ## Storage and Ownership Summary

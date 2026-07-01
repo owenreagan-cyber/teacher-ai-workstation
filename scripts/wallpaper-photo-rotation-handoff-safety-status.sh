@@ -49,6 +49,21 @@ check_bash_syntax() {
   fi
 }
 
+check_doc_contains() {
+  local file="$1"
+  local phrase="$2"
+  local label="$3"
+  if [[ ! -f "${file}" ]]; then
+    fail "cannot check missing doc: ${file}"
+    return
+  fi
+  if grep -Fq "${phrase}" "${file}"; then
+    pass "doc mentions ${label}"
+  else
+    fail "${file} must mention ${label}"
+  fi
+}
+
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
 repo_root="$(git rev-parse --show-toplevel 2>/dev/null || true)"
 if [[ -z "${repo_root}" ]]; then
@@ -57,6 +72,8 @@ fi
 cd "${repo_root}"
 
 audit_doc="docs/wallpaper-photo-rotation-handoff-safety-audit.md"
+phase_1_audit_doc="docs/phase-1-chief-of-staff-status-audit.md"
+curator_plan_doc="docs/appearance-vibe-wallpaper-photo-curator-plan.md"
 sample_report="assistant/appearance-vibe/wallpaper-photo-curator/sample-rotation-handoff-readiness-report.json"
 report_validator="scripts/wallpaper-photo-rotation-handoff-validator.sh"
 sample_notification="assistant/appearance-vibe/wallpaper-photo-curator/sample-notification-plan.json"
@@ -195,6 +212,18 @@ PY
   fi
 else
   warn 'python3 not available for JSON parse checks'
+fi
+
+section 'Appearance & Vibe Status Audit Closeout Checks'
+
+check_doc_contains "${phase_1_audit_doc}" "Appearance & Vibe Wallpaper/Vibe Status Audit" "Appearance & Vibe Wallpaper/Vibe Status Audit section"
+check_doc_contains "${phase_1_audit_doc}" "no live wallpaper app" "no live wallpaper app"
+check_doc_contains "${phase_1_audit_doc}" "live wallpaper/photo curator implementation has not started" "live wallpaper/photo curator implementation has not started"
+check_doc_contains "${phase_1_audit_doc}" "script-scaffolded/manual where applicable, not automated" "widgets/shortcuts/appearance modes remain manual or scaffolded"
+check_doc_contains "${phase_1_audit_doc}" "no live integration is active" "no live integration is active"
+
+if [[ -f "${curator_plan_doc}" ]]; then
+  check_doc_contains "${curator_plan_doc}" "foundation stack complete for now; live wallpaper/photo curator implementation not started" "curator plan foundation-stack closeout posture"
 fi
 
 check_bash_syntax 'bin/chief-of-staff'

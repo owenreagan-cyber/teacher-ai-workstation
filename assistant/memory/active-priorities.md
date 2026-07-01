@@ -74,7 +74,7 @@
 - Curriculum Builder static source registry plan: complete
 - Canvas LLM section completion audit and closure: complete
 - Curriculum Builder section completion audit and closure: complete
-- Implementation approval gate and track intake foundation: in progress (PR #164)
+- Implementation approval gate and track intake foundation: complete
 
 ### Now
 
@@ -95,7 +95,7 @@
 
 ### Next
 
-- Implementation approval gate and track intake foundation in progress (PR #164). Documentation/status only; gate active; no runtime activation without explicit intake approval.
+- Implementation approval gate and track intake foundation complete (PR #164). Gate active; no implementation approved without explicit intake.
 - Curriculum Builder section completion audit complete (PR #162). Planning foundation section-complete; implementation remains approval-gated.
 - Curriculum Builder static source registry plan complete (PR #157). Documentation/status only; metadata/reference-only; no scanning, folder crawling, file indexing, OCR, embeddings, vector database, or Drive/NAS/iCloud resolution.
 - Curriculum Builder output contract planning foundation complete (PR #155). Documentation/status only; no lesson generation, ingestion, RAG, or runtime behavior.

@@ -179,8 +179,10 @@ if [[ -f "${binding_lookup}" ]]; then
   elif [[ "${lookup_summary_fail}" -gt 0 ]]; then
     printf '%s\n' "${lookup_output}"
     fail "binding v0 lookup reported failures"
-  elif ! printf '%s\n' "${lookup_output}" | grep -Fq 'referenced by contract sample-contract-di-slide-deck-001'; then
-    fail "binding v0 lookup missing expected canonical contract reference"
+  elif ! printf '%s\n' "${lookup_output}" | grep -Fq 'sample-contract-di-slide-deck-001'; then
+    fail "binding v0 lookup missing expected DI slide deck contract reference"
+  elif ! printf '%s\n' "${lookup_output}" | grep -Fq 'sample-contract-teacher-script-001'; then
+    fail "binding v0 lookup missing expected teacher script contract reference"
   else
     pass "binding v0 lookup sample-sm5-textbook-001 succeeded"
   fi

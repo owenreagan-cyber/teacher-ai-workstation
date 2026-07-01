@@ -665,6 +665,16 @@ check_bash_syntax scripts/curriculum-output-contract-v0-validator.sh
 check_bash_syntax scripts/curriculum-output-contract-v0-status.sh
 check_bash_syntax tests/curriculum-output-contract-v0-test.sh
 
+section "Teacher Script Contract v0 Foundation Files"
+for path in \
+  docs/curriculum-teacher-script-contract-v0.md \
+  assistant/curriculum-builder/output-contract/v0/teacher-script-contract-schema.json \
+  assistant/curriculum-builder/output-contract/v0/contracts/sample-teacher-script-001.json \
+  tests/curriculum-teacher-script-contract-v0-test.sh; do
+  check_required_file "${path}"
+done
+check_bash_syntax tests/curriculum-teacher-script-contract-v0-test.sh
+
 section "Curriculum Registry–Contract Binding v0 Foundation Files"
 for path in \
   docs/curriculum-binding-v0.md \

@@ -89,9 +89,13 @@ def load_json(path):
 def load_contracts(contract_root, manifest):
     contracts = []
     paths = []
-    canonical = manifest.get("canonical_contract")
-    if isinstance(canonical, str):
-        paths.append(canonical)
+    canonical_contracts = manifest.get("canonical_contracts")
+    if isinstance(canonical_contracts, list) and canonical_contracts:
+        paths.extend(canonical_contracts)
+    else:
+        canonical = manifest.get("canonical_contract")
+        if isinstance(canonical, str):
+            paths.append(canonical)
     for rel in manifest.get("placeholder_contracts", []) or []:
         paths.append(rel)
     for rel in paths:

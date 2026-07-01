@@ -1,0 +1,82 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "teacher-ai-workstation/curriculum-library/v0/library-reference-schema.json",
+  "title": "Curriculum Library Reference v0 Schema",
+  "description": "Placeholder-only curriculum library reference records. Read-only, metadata-only, no resolution.",
+  "type": "object",
+  "required": [
+    "reference_id",
+    "title",
+    "source_system",
+    "source_reference",
+    "source_reference_type",
+    "resource_type",
+    "storage_scope",
+    "review_status",
+    "metadata_only",
+    "local_first_safety_flags",
+    "notes",
+    "activation_status"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "reference_id": {
+      "type": "string",
+      "pattern": "^sample-library-ref-[a-z0-9-]+$"
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1
+    },
+    "source_system": {
+      "type": "string",
+      "enum": ["google_drive", "nas", "icloud", "local_folder"]
+    },
+    "source_reference": {
+      "type": "string",
+      "pattern": "^(gdrive|nas|local|icloud)://placeholder/"
+    },
+    "source_reference_type": {
+      "type": "string",
+      "enum": ["placeholder_uri"]
+    },
+    "resource_type": {
+      "type": "string",
+      "enum": [
+        "worksheet",
+        "study_guide",
+        "slides",
+        "test",
+        "textbook",
+        "folder_index",
+        "pacing_link"
+      ]
+    },
+    "storage_scope": {
+      "type": "string",
+      "enum": ["active", "archive", "local"]
+    },
+    "review_status": {
+      "type": "string",
+      "enum": ["not_reviewed", "metadata_only", "teacher_reviewed", "needs_review"]
+    },
+    "metadata_only": {
+      "type": "boolean",
+      "const": true
+    },
+    "local_first_safety_flags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "minItems": 6
+    },
+    "notes": {
+      "type": "string"
+    },
+    "activation_status": {
+      "type": "string",
+      "enum": ["curriculum_library_v0"]
+    }
+  }
+}

@@ -953,6 +953,29 @@ else
   warn "Lesson Planning foundation status script missing: scripts/lesson-planning-foundation-status.sh"
 fi
 
+section "Curriculum Library v1 Foundation"
+if [[ -f scripts/curriculum-library-foundation-status.sh ]]; then
+  curriculum_library_foundation_result=0
+  curriculum_library_foundation_output="$(bash scripts/curriculum-library-foundation-status.sh 2>&1)" || curriculum_library_foundation_result=$?
+  curriculum_library_foundation_pass="$(summary_count "${curriculum_library_foundation_output}" "PASS")"
+  curriculum_library_foundation_warn="$(summary_count "${curriculum_library_foundation_output}" "WARN")"
+  curriculum_library_foundation_fail="$(summary_count "${curriculum_library_foundation_output}" "FAIL")"
+
+  if [[ "${curriculum_library_foundation_result}" != "0" ]]; then
+    printf 'Curriculum Library v1 Foundation: status command completed\n'
+    printf '%s\n' "${curriculum_library_foundation_output}"
+    fail "Curriculum Library foundation status failed"
+  elif [[ -n "${curriculum_library_foundation_pass}" && -n "${curriculum_library_foundation_warn}" && -n "${curriculum_library_foundation_fail}" ]]; then
+    printf 'Curriculum Library v1 Foundation: PASS %s / WARN %s / FAIL %s\n' "${curriculum_library_foundation_pass}" "${curriculum_library_foundation_warn}" "${curriculum_library_foundation_fail}"
+    pass "Curriculum Library foundation status completed"
+  else
+    printf 'Curriculum Library v1 Foundation: status command completed\n'
+    pass "Curriculum Library foundation status completed"
+  fi
+else
+  warn "Curriculum Library foundation status script missing: scripts/curriculum-library-foundation-status.sh"
+fi
+
 section "Curriculum Builder Local-First Foundation Plan"
 if [[ -f scripts/curriculum-builder-foundation-status.sh ]]; then
   curriculum_builder_foundation_result=0

@@ -107,9 +107,9 @@ Curriculum Builder planning foundation is complete for now. Implementation/regis
 
 ## Current PR
 
-Implementation approval gate and track intake foundation — documentation/status only. See `docs/implementation-approval-gate.md`.
-
 Previously parked — start from `docs/phase-1-chief-of-staff-status-audit.md` — Repo-Wide Parked Tracks and Active Status Map.
+
+Implementation approval gate and track intake foundation is complete (PR #164). See `docs/implementation-approval-gate.md`. Gate active; no implementation approved by default.
 
 Curriculum Builder section completion audit and closure is complete (PR #162). See `docs/curriculum-builder-section-completion-audit.md`. Planning foundation section-complete; implementation approval-gated.
 

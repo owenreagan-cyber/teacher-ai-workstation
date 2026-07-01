@@ -73,9 +73,11 @@
 - Curriculum Builder output contract planning foundation: complete
 - Curriculum Builder static source registry plan: complete
 - Canvas LLM section completion audit and closure: complete
+- Curriculum Builder section completion audit and closure: in progress (PR #162)
 
 ### Now
 
+- Curriculum Builder section completion audit and closure: documentation/status only (`docs/curriculum-builder-section-completion-audit.md`). Planning foundation section complete; implementation approval-gated.
 - Canvas LLM section completion audit and closure: documentation/status only (`docs/canvas-llm-section-completion-audit.md`). Section complete/frozen/stopped; stop marker remains active.
 - Curriculum Builder static source registry plan: documentation/status only (`docs/curriculum-builder-static-source-registry-plan.md`). Metadata/reference-only planning; no scanning, indexing, or resolution.
 - Curriculum Builder output contract planning foundation: documentation/status only (`docs/curriculum-builder-output-contract-foundation.md`). Planning placeholders only; no schema, validators, renderers, or generation.
@@ -91,7 +93,7 @@
 
 ### Next
 
-- Canvas LLM section completion audit complete (PR #159). Documentation/status only; Canvas remains frozen/stopped; stop marker remains active; do not start Canvas LLM PRs by default.
+- Curriculum Builder section completion audit in progress (PR #162). Documentation/status only; planning foundation section complete; implementation remains approval-gated.
 - Curriculum Builder static source registry plan complete (PR #157). Documentation/status only; metadata/reference-only; no scanning, folder crawling, file indexing, OCR, embeddings, vector database, or Drive/NAS/iCloud resolution.
 - Curriculum Builder output contract planning foundation complete (PR #155). Documentation/status only; no lesson generation, ingestion, RAG, or runtime behavior.
 - Canvas LLM is complete/frozen/stopped. final handoff snapshot is recorded. stop marker is active. Do not start Canvas LLM PRs by default.

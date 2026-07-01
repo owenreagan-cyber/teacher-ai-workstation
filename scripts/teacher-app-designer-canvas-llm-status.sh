@@ -102,6 +102,8 @@ closure_audit_doc="docs/canvas-llm-planning-foundation-closure-audit.md"
 closure_audit_maintenance_doc="docs/canvas-llm-planning-foundation-closure-audit-maintenance.md"
 index_doc="docs/canvas-llm-planning-foundation-index.md"
 freeze_doc="docs/canvas-llm-planning-foundation-freeze.md"
+snapshot_doc="docs/canvas-llm-frozen-foundation-handoff-snapshot.md"
+snapshot_maintenance_doc="docs/canvas-llm-frozen-foundation-handoff-snapshot-maintenance.md"
 build_queue_doc="docs/build-queue.md"
 active_priorities_doc="assistant/memory/active-priorities.md"
 
@@ -704,6 +706,61 @@ check_doc_contains "${closure_audit_doc}" "docs/canvas-llm-planning-foundation-i
 check_doc_contains "${closure_audit_doc}" "docs/canvas-llm-planning-foundation-freeze.md" "closure audit links to freeze"
 check_doc_contains "${build_queue_doc}" "frozen unless separately and explicitly approved" "build queue frozen complete-for-now"
 check_doc_contains "${active_priorities_doc}" "frozen for runtime work" "active priorities frozen complete-for-now"
+
+section 'Frozen Foundation Handoff Snapshot Doc Presence'
+
+check_file "${snapshot_doc}"
+check_file "${snapshot_maintenance_doc}"
+
+section 'Frozen Foundation Handoff Snapshot Doc Checks'
+
+check_doc_contains "${snapshot_doc}" "Snapshot status: recorded" "snapshot status recorded"
+check_doc_contains "${snapshot_doc}" "Canvas LLM foundation status: complete for now" "snapshot foundation complete"
+check_doc_contains "${snapshot_doc}" "Freeze status: frozen for runtime work" "snapshot freeze frozen"
+check_doc_contains "${snapshot_doc}" "Runtime status: not active" "snapshot runtime not active"
+check_doc_contains "${snapshot_doc}" "Implementation status: not started" "snapshot implementation not started"
+check_doc_contains "${snapshot_doc}" "Export status: not active" "snapshot export not active"
+check_doc_contains "${snapshot_doc}" "Canvas API status: not active" "snapshot Canvas API not active"
+check_doc_contains "${snapshot_doc}" "Google Drive API status: not active" "snapshot Google Drive API not active"
+check_doc_contains "${snapshot_doc}" "Generation status: not active" "snapshot generation not active"
+check_doc_contains "${snapshot_doc}" "Student data status: not active" "snapshot student data not active"
+check_doc_contains "${snapshot_doc}" "PR #152" "snapshot records PR #152 source state"
+check_doc_contains "${snapshot_doc}" "PASS 519 / WARN 0 / FAIL 0" "snapshot records Canvas LLM PASS 519"
+check_doc_contains "${snapshot_doc}" "PASS 308 / WARN 0 / FAIL 0" "snapshot records Phase 1 PASS 308"
+check_doc_contains "${snapshot_doc}" "PASS 946 / WARN 0 / FAIL 0" "snapshot records Curriculum Builder PASS 946"
+check_doc_contains "${snapshot_doc}" "no exporter is approved" "snapshot no exporter"
+check_doc_contains "${snapshot_doc}" "no export command is approved" "snapshot no export command"
+check_doc_contains "${snapshot_doc}" "no package generator is approved" "snapshot no package generator"
+check_doc_contains "${snapshot_doc}" "no bundle assembler is approved" "snapshot no bundle assembler"
+check_doc_contains "${snapshot_doc}" "no Canvas API is approved" "snapshot no Canvas API"
+check_doc_contains "${snapshot_doc}" "no Google Drive API is approved" "snapshot no Google Drive API"
+check_doc_contains "${snapshot_doc}" "no OAuth is approved" "snapshot no OAuth"
+check_doc_contains "${snapshot_doc}" "no network calls are approved" "snapshot no network calls"
+check_doc_contains "${snapshot_doc}" "no browser automation is approved" "snapshot no browser automation"
+check_doc_contains "${snapshot_doc}" "no automation/scheduler/background jobs is approved" "snapshot no automation/scheduler/background jobs"
+check_doc_contains "${snapshot_doc}" "no lesson generation is approved" "snapshot no lesson generation"
+check_doc_contains "${snapshot_doc}" "no student data handling is approved" "snapshot no student data"
+check_doc_contains "${snapshot_doc}" "Chief of Staff must not" "snapshot Chief of Staff boundary"
+check_doc_contains "${snapshot_doc}" "Future Unfreeze Requirements" "snapshot future unfreeze requirements"
+check_doc_contains "${snapshot_doc}" "separate explicit approval" "snapshot separate explicit approval"
+
+section 'Frozen Foundation Handoff Snapshot Maintenance Doc Checks'
+
+check_doc_contains "${snapshot_maintenance_doc}" "Canvas LLM foundation complete for now" "maintenance Canvas LLM foundation complete"
+check_doc_contains "${snapshot_maintenance_doc}" "Freeze status: frozen for runtime work" "maintenance freeze frozen"
+check_doc_contains "${snapshot_maintenance_doc}" "Runtime status: not active" "maintenance runtime not active"
+check_doc_contains "${snapshot_maintenance_doc}" "PR #152" "maintenance PR #152 source"
+check_doc_contains "${snapshot_maintenance_doc}" "1c3aa2b654b47ac3d14fc67e9f7beba299b37ff1" "maintenance source commit"
+check_doc_contains "${snapshot_maintenance_doc}" "Chief of Staff must not" "maintenance Chief of Staff boundary"
+check_doc_contains "${snapshot_maintenance_doc}" "Curriculum Builder foundation" "maintenance Curriculum Builder focus"
+
+section 'Handoff Snapshot Cross-Link and Tracking Checks'
+
+check_doc_contains "${index_doc}" "docs/canvas-llm-frozen-foundation-handoff-snapshot.md" "index links to snapshot"
+check_doc_contains "${freeze_doc}" "docs/canvas-llm-frozen-foundation-handoff-snapshot.md" "freeze links to snapshot"
+check_doc_contains "${build_queue_doc}" "final handoff snapshot recorded" "build queue handoff snapshot recorded"
+check_doc_contains "${active_priorities_doc}" "Curriculum Builder foundation" "active priorities Curriculum Builder focus"
+check_doc_contains "${active_priorities_doc}" "final handoff snapshot" "active priorities handoff snapshot"
 
 section 'Cross-Link Checks'
 

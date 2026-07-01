@@ -260,7 +260,7 @@ Closure audit verifying the capstone endpoint and stale-reference hygiene: `docs
 
 ## Planning Foundation Index and Freeze
 
-Navigation index: `docs/canvas-llm-planning-foundation-index.md`. Runtime freeze: `docs/canvas-llm-planning-foundation-freeze.md`. Index is the navigation map; freeze parks runtime work.
+Navigation index: `docs/canvas-llm-planning-foundation-index.md`. Runtime freeze: `docs/canvas-llm-planning-foundation-freeze.md`. Index is the navigation map; freeze parks runtime work. Handoff snapshot: `docs/canvas-llm-frozen-foundation-handoff-snapshot.md`.
 
 ## Validation Expectations
 

@@ -224,6 +224,8 @@ Chief of Staff must not:
 
 Documentation/status only. Canvas LLM planning foundation closure audit is Markdown-only planning/status text. No runtime behavior, app code, UI components, generated package files, weekly bundle files, exporter, export command, bundle assembler, package builder, package generator, checklist runner, review engine, completion tracker, parser/importer/loader/runtime validator, live schema/database/registry activation, Canvas API, Google Drive API, OAuth, network calls, browser automation, automation/scheduler/background jobs, scanning, indexing, OCR, embeddings, vector database, lesson generation, generated lesson drafts, generated review notes, student data, file upload behavior, Canvas publishing behavior, Drive resolution behavior, or new dependencies. Canvas LLM docs/status foundation is complete for now. Runtime/export/API/generation work remains blocked unless separately and explicitly approved.
 
+Planning foundation index: `docs/canvas-llm-planning-foundation-index.md`. Runtime freeze: `docs/canvas-llm-planning-foundation-freeze.md`.
+
 ## Related Verification Commands
 
 ```bash

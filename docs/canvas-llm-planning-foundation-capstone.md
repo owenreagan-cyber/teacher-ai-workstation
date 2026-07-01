@@ -258,6 +258,10 @@ See `docs/canvas-llm-planning-foundation-capstone-maintenance.md` for editing ru
 
 Closure audit verifying the capstone endpoint and stale-reference hygiene: `docs/canvas-llm-planning-foundation-closure-audit.md`. Maintenance: `docs/canvas-llm-planning-foundation-closure-audit-maintenance.md`. The capstone remains the canonical endpoint; the closure audit does not supersede it and does not activate runtime behavior.
 
+## Planning Foundation Index and Freeze
+
+Navigation index: `docs/canvas-llm-planning-foundation-index.md`. Runtime freeze: `docs/canvas-llm-planning-foundation-freeze.md`. Index is the navigation map; freeze parks runtime work.
+
 ## Validation Expectations
 
 Expected validation surfaces:

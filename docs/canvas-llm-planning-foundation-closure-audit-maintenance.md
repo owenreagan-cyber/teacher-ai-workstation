@@ -107,3 +107,8 @@ Do not:
 - remove capstone from canonical endpoint role
 - add runtime code, exporters, APIs, OAuth, network calls, or automation
 - weaken `scripts/teacher-app-designer-canvas-llm-status.sh` checks
+
+## Related Docs
+
+- Planning foundation index: `docs/canvas-llm-planning-foundation-index.md`
+- Planning foundation freeze: `docs/canvas-llm-planning-foundation-freeze.md`

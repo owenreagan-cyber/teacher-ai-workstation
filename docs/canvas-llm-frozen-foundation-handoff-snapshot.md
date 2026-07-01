@@ -211,6 +211,8 @@ Future unfreeze requires:
 
 Documentation/status only. Canvas LLM frozen foundation handoff snapshot is Markdown-only planning/status text. No runtime behavior, app code, UI components, generated package files, weekly bundle files, exporter, export command, bundle assembler, package builder, package generator, checklist runner, review engine, completion tracker, parser/importer/loader/runtime validator, live schema/database/registry activation, Canvas API, Google Drive API, OAuth, network calls, browser automation, automation/scheduler/background jobs, scanning, indexing, OCR, embeddings, vector database, lesson generation, generated lesson drafts, generated review notes, student data, file upload behavior, Canvas publishing behavior, Drive resolution behavior, or new dependencies. Canvas LLM docs/status foundation is complete for now and frozen for runtime/export/API/generation work. Do not continue Canvas LLM PRs unless explicitly approved.
 
+Stop marker: `docs/canvas-llm-stop-marker-curriculum-builder-return.md`.
+
 ## Related Verification Commands
 
 ```bash

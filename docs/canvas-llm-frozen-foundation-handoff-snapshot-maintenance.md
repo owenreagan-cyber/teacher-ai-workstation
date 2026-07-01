@@ -113,3 +113,8 @@ Do not:
 - recommend runtime Canvas LLM work as the next default track
 - weaken `scripts/teacher-app-designer-canvas-llm-status.sh` checks
 - add runtime code, exporters, APIs, OAuth, network calls, or automation
+
+## Related Docs
+
+- Stop marker: `docs/canvas-llm-stop-marker-curriculum-builder-return.md`
+- Stop marker maintenance: `docs/canvas-llm-stop-marker-curriculum-builder-return-maintenance.md`

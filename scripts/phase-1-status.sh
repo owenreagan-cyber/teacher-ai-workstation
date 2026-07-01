@@ -655,6 +655,8 @@ for path in \
   docs/canvas-llm-planning-foundation-freeze.md \
   docs/canvas-llm-frozen-foundation-handoff-snapshot.md \
   docs/canvas-llm-frozen-foundation-handoff-snapshot-maintenance.md \
+  docs/canvas-llm-stop-marker-curriculum-builder-return.md \
+  docs/canvas-llm-stop-marker-curriculum-builder-return-maintenance.md \
   scripts/teacher-app-designer-canvas-llm-status.sh; do
   check_required_file "${path}"
 done

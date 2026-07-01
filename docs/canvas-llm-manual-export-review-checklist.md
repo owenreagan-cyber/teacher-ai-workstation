@@ -229,6 +229,8 @@ This checklist does not add:
 - No parser/importer/loader/validator
 - No database/schema activation
 
+See `docs/canvas-llm-manual-completion-status-placeholder-plan.md` for manual completion status planning after teacher copy.
+
 ## Related Verification Commands
 
 ```bash

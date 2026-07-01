@@ -98,6 +98,10 @@ weekly_bundle_plan_doc="docs/canvas-llm-weekly-export-bundle-placeholder-plan.md
 weekly_bundle_maintenance_doc="docs/canvas-llm-weekly-export-bundle-placeholder-maintenance.md"
 capstone_doc="docs/canvas-llm-planning-foundation-capstone.md"
 capstone_maintenance_doc="docs/canvas-llm-planning-foundation-capstone-maintenance.md"
+closure_audit_doc="docs/canvas-llm-planning-foundation-closure-audit.md"
+closure_audit_maintenance_doc="docs/canvas-llm-planning-foundation-closure-audit-maintenance.md"
+build_queue_doc="docs/build-queue.md"
+active_priorities_doc="assistant/memory/active-priorities.md"
 
 section 'Teacher App Designer / Canvas LLM Local-First Foundation'
 cat <<'EOF'
@@ -601,6 +605,51 @@ check_doc_contains "${capstone_maintenance_doc}" "Do not imply Canvas state is s
 check_doc_contains "${capstone_maintenance_doc}" "separate approved PR" "maintenance separate approved PR"
 check_doc_contains "${capstone_maintenance_doc}" "Chief of Staff must not" "maintenance Chief of Staff boundary"
 
+section 'Planning Foundation Closure Audit Doc Presence'
+
+check_file "${closure_audit_doc}"
+check_file "${closure_audit_maintenance_doc}"
+
+section 'Planning Foundation Closure Audit Doc Checks'
+
+check_doc_contains "${closure_audit_doc}" "Audit status: complete" "closure audit status complete"
+check_doc_contains "${closure_audit_doc}" "Canvas LLM foundation status: complete for now" "closure audit foundation complete"
+check_doc_contains "${closure_audit_doc}" "Runtime status: not active" "closure audit runtime not active"
+check_doc_contains "${closure_audit_doc}" "Implementation status: not started" "closure audit implementation not started"
+check_doc_contains "${closure_audit_doc}" "canonical endpoint" "closure audit canonical endpoint"
+check_doc_contains "${closure_audit_doc}" "docs/canvas-llm-planning-foundation-capstone.md" "closure audit references capstone"
+check_doc_contains "${closure_audit_doc}" "separate explicit approval" "closure audit separate explicit approval"
+check_doc_contains "${closure_audit_doc}" "no Canvas API" "closure audit no Canvas API"
+check_doc_contains "${closure_audit_doc}" "no Google Drive API" "closure audit no Google Drive API"
+check_doc_contains "${closure_audit_doc}" "no OAuth" "closure audit no OAuth"
+check_doc_contains "${closure_audit_doc}" "no network calls" "closure audit no network calls"
+check_doc_contains "${closure_audit_doc}" "no browser automation" "closure audit no browser automation"
+check_doc_contains "${closure_audit_doc}" "no automation" "closure audit no automation"
+check_doc_contains "${closure_audit_doc}" "no scheduler" "closure audit no scheduler"
+check_doc_contains "${closure_audit_doc}" "no background jobs" "closure audit no background jobs"
+check_doc_contains "${closure_audit_doc}" "no scanning/indexing/OCR/embeddings/vector database" "closure audit no scanning/indexing/OCR/embeddings/vector database"
+check_doc_contains "${closure_audit_doc}" "no lesson generation" "closure audit no lesson generation"
+check_doc_contains "${closure_audit_doc}" "no generated lesson drafts" "closure audit no generated lesson drafts"
+check_doc_contains "${closure_audit_doc}" "no generated review notes" "closure audit no generated review notes"
+check_doc_contains "${closure_audit_doc}" "no student data" "closure audit no student data"
+check_doc_contains "${closure_audit_doc}" "Chief of Staff must not" "closure audit Chief of Staff boundary"
+check_doc_contains "${closure_audit_doc}" "static fixed-string/file-presence checks only" "closure audit static checks only"
+
+section 'Planning Foundation Closure Audit Maintenance Doc Checks'
+
+check_doc_contains "${closure_audit_maintenance_doc}" "Canvas LLM foundation complete for now" "maintenance Canvas LLM foundation complete"
+check_doc_contains "${closure_audit_maintenance_doc}" "canonical endpoint" "maintenance canonical endpoint"
+check_doc_contains "${closure_audit_maintenance_doc}" "separate explicitly approved PR" "maintenance separate approved PR"
+check_doc_contains "${closure_audit_maintenance_doc}" "Chief of Staff must not" "maintenance Chief of Staff boundary"
+check_doc_contains "${closure_audit_maintenance_doc}" "Do not recommend runtime Canvas LLM work" "maintenance no runtime default track"
+
+section 'Closure Audit Cross-Link and Tracking Checks'
+
+check_doc_contains "${capstone_doc}" "docs/canvas-llm-planning-foundation-closure-audit.md" "capstone links to closure audit"
+check_doc_contains "${capstone_maintenance_doc}" "docs/canvas-llm-planning-foundation-closure-audit.md" "capstone maintenance links to closure audit"
+check_doc_contains "${build_queue_doc}" "Canvas LLM docs/status foundation is complete for now" "build queue complete for now"
+check_doc_contains "${active_priorities_doc}" "outside Canvas LLM runtime work" "active priorities outside Canvas LLM runtime"
+
 section 'Cross-Link Checks'
 
 check_doc_contains "${plan_doc}" "docs/canvas-llm-placeholder-schema.md" "plan references placeholder schema doc"
@@ -609,7 +658,9 @@ check_doc_contains "${plan_doc}" "docs/canvas-llm-manual-export-review-checklist
 check_doc_contains "${plan_doc}" "docs/canvas-llm-manual-completion-status-placeholder-plan.md" "plan references manual completion status plan"
 check_doc_contains "${plan_doc}" "docs/canvas-llm-weekly-export-bundle-placeholder-plan.md" "plan references weekly export bundle plan"
 check_doc_contains "${plan_doc}" "docs/canvas-llm-planning-foundation-capstone.md" "plan references planning foundation capstone"
+check_doc_contains "${plan_doc}" "docs/canvas-llm-planning-foundation-closure-audit.md" "plan references closure audit"
 check_doc_contains "${safety_doc}" "docs/canvas-llm-planning-foundation-capstone.md" "safety contract references planning foundation capstone"
+check_doc_contains "${safety_doc}" "docs/canvas-llm-planning-foundation-closure-audit.md" "safety contract references closure audit"
 check_doc_contains "${safety_doc}" "docs/canvas-llm-approval-and-export-states.md" "safety contract references approval states doc"
 check_doc_contains "${safety_doc}" "docs/canvas-llm-manual-export-package-plan.md" "safety contract references manual export package plan"
 check_doc_contains "${safety_doc}" "docs/canvas-llm-manual-export-review-checklist.md" "safety contract references manual export review checklist"

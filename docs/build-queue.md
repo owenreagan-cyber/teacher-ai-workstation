@@ -83,12 +83,15 @@ Handoff and status clarity. Start from `docs/phase-1-chief-of-staff-status-audit
 - Canvas LLM manual completion status placeholder plan (PR #148).
 - Canvas LLM weekly export bundle placeholder plan (PR #149).
 - Canvas LLM planning foundation capstone (PR #150).
+- Canvas LLM planning foundation closure audit (PR #151).
+
+## Canvas LLM Foundation Status
+
+Canvas LLM docs/status foundation is complete for now. Canonical endpoint: `docs/canvas-llm-planning-foundation-capstone.md`. Closure audit: `docs/canvas-llm-planning-foundation-closure-audit.md`. Runtime/export/API/generation work requires separate explicit approval. Recommended next focus is outside Canvas LLM runtime work.
 
 ## Current PR
 
-Canvas LLM planning foundation capstone — documentation/status only. See `docs/canvas-llm-planning-foundation-capstone.md`. Marks Canvas LLM docs/status foundation complete for now.
-
-After PR #150 merges: Canvas LLM docs/status foundation is complete for now. Do not start runtime/export/API/generation work without separate explicit approval.
+Canvas LLM planning foundation closure audit — documentation/status only. See `docs/canvas-llm-planning-foundation-closure-audit.md`.
 
 Previously parked — start from `docs/phase-1-chief-of-staff-status-audit.md` — Repo-Wide Parked Tracks and Active Status Map.
 

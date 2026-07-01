@@ -254,6 +254,10 @@ Blocked until separate approved PR:
 
 See `docs/canvas-llm-planning-foundation-capstone-maintenance.md` for editing rules.
 
+## Planning Foundation Closure Audit
+
+Closure audit verifying the capstone endpoint and stale-reference hygiene: `docs/canvas-llm-planning-foundation-closure-audit.md`. Maintenance: `docs/canvas-llm-planning-foundation-closure-audit-maintenance.md`. The capstone remains the canonical endpoint; the closure audit does not supersede it and does not activate runtime behavior.
+
 ## Validation Expectations
 
 Expected validation surfaces:

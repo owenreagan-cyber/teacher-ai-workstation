@@ -65,11 +65,12 @@
 - Canvas LLM manual export review checklist: complete
 - Canvas LLM manual completion status placeholder plan: complete
 - Canvas LLM weekly export bundle placeholder plan: complete
-- Canvas LLM planning foundation capstone: in progress (PR #150)
+- Canvas LLM planning foundation capstone: complete
+- Canvas LLM planning foundation closure audit: in progress (PR #151)
 
 ### Now
 
-- Canvas LLM planning foundation capstone: documentation/status only (`docs/canvas-llm-planning-foundation-capstone.md`). Marks docs/status foundation complete for now; no runtime activation.
+- Canvas LLM docs/status foundation is complete for now (`docs/canvas-llm-planning-foundation-capstone.md`). Closure audit in progress (PR #151). Do not start runtime/export/API work without explicit approval.
 - Canvas LLM weekly export bundle plan: documentation/status only (`docs/canvas-llm-weekly-export-bundle-placeholder-plan.md`). Markdown-only planning text; no bundle assembler or APIs.
 - Canvas LLM manual completion status plan: documentation/status only (`docs/canvas-llm-manual-completion-status-placeholder-plan.md`). Markdown-only planning text; no completion tracker or APIs.
 - Canvas LLM manual export review checklist: documentation/status only (`docs/canvas-llm-manual-export-review-checklist.md`). Markdown-only planning text; no checklist runner, review engine, or APIs.
@@ -81,8 +82,8 @@
 
 ### Next
 
-- After PR #150 merges: Canvas LLM planning foundation is complete for now. Do not start Canvas LLM runtime/export/API work without explicit approval.
-- Recommended focus: pause Canvas LLM and return to Curriculum Builder foundation, or a small docs/status stale-reference audit only.
+- Canvas LLM foundation is complete for now after PR #151 merges. Do not start Canvas LLM runtime/export/API/generation work without explicit approval. Canvas LLM runtime is parked/blocked unless explicitly approved.
+- Recommended focus: return to Curriculum Builder foundation, or another docs/status-only audit. Recommended next focus is outside Canvas LLM runtime work.
 - Optional documentation/status-only follow-ons only with explicit approval. Do not restart parked tracks without approval.
 
 ## Completed (earlier foundations)

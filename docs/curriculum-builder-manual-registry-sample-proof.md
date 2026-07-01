@@ -6,7 +6,7 @@ Last verified: 2026-06-30
 
 This document is a **static fictional manual registry sample proof** for Curriculum Builder. It demonstrates the planned schema shape from `docs/curriculum-builder-manual-registry-schema-plan.md` using seven placeholder rows only.
 
-The sample is documentation proof only. It is not loaded by app code, CLI, or background jobs.
+The sample is **static documentation proof only**. It is not loaded by app code, CLI, or background jobs.
 
 Planning path:
 
@@ -17,24 +17,26 @@ canonical planning index
 → manual registry sample proof plan
 → manual registry sample proof (this document)
 → static sample validation plan
-→ future static sample validation checks
+→ static sample validation checks
+→ future sample format decision
 ```
 
 ## 2. Non-Activation Statement
 
 This sample proof does **not**:
 
-- create a live registry
-- load into runtime app code
-- create a database, SQLite file, Postgres schema, or Supabase schema
-- create a schema implementation or parser input
-- serve as an ingestion source
-- scan files or index folders
+- create or act as a live registry; this is **not a live registry**
+- load into runtime app code; it is **not loaded by app code**
+- create a database, SQLite file, Postgres schema, or Supabase schema; it is **not a database**
+- create a schema implementation; it is **not a schema implementation**
+- serve as parser input; it is **not a parser input**
+- serve as an ingestion source; it is **not an ingestion source**
+- **does not scan files** or **does not index folders**
 - read curriculum documents
-- call APIs or use OAuth
+- **does not call APIs** or use OAuth
 - activate Google Drive, NAS, iCloud, Canvas, or any other integration
 - generate lesson briefs, lesson drafts, or review notes
-- use student data
+- **does not use student data**
 - use real private curriculum paths or live URLs
 - copy raw curriculum files into the repo or app-owned storage
 
@@ -56,7 +58,7 @@ Field names follow the manual registry schema plan. Status values in this sample
 - All titles include the word **Placeholder**.
 - All `source_reference` values use placeholder URI schemes only.
 - No real student or staff names appear in any field.
-- No `http://` or `https://` URLs appear in source references.
+- No live HTTP or HTTPS URL schemes appear in source references.
 - No absolute user home paths appear in any field.
 - `created_by_manual_entry` is `true` on every row.
 - `activation_status` is `planning_only` or `inactive_placeholder` on every row.
@@ -80,13 +82,13 @@ Fictional placeholder rows only. **Not a live registry.**
 
 | registry_id | title | resource_type | source_system | source_reference | source_reference_type | subject | grade_band | course | unit | lesson | pacing_reference | teacher_only | student_facing_allowed | review_status | approval_status | local_first_safety_flags | notes | created_by_manual_entry | activation_status |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| sample-sm5-textbook-001 | SM5 Textbook Placeholder | textbook | google_drive | gdrive://placeholder/sm5/textbook | placeholder_uri | science | SM5 | physical_science | unit_01 | lesson_01 | pacing-sm5-u01-l01 | false | unknown | not_reviewed | not_approved | metadata_only,no_student_data,not_indexed,not_scanned,manual_entry,planning_only | Fictional textbook metadata only | true | planning_only |
-| sample-sm5-worksheet-folder-001 | SM5 Worksheet Folder Placeholder | folder_index | google_drive | gdrive://placeholder/sm5/worksheet-folder | placeholder_uri | science | SM5 | physical_science | unit_02 | lesson_03 | pacing-sm5-u02-l03 | true | false | needs_review | not_approved | metadata_only,no_student_data,not_indexed,not_scanned,manual_entry,planning_only | Teacher-only folder index placeholder | true | inactive_placeholder |
-| sample-history-slides-001 | History Unit Slides Placeholder | slides | nas | nas://placeholder/archive/history-slides | placeholder_uri | history | grade_7 | world_history | unit_04 | lesson_02 | pacing-history-u04-l02 | false | unknown | not_reviewed | placeholder_approved | metadata_only,no_student_data,not_indexed,not_scanned,manual_entry,planning_only | Archive slides placeholder | true | planning_only |
-| sample-science-study-guide-001 | Science Study Guide Placeholder | study_guide | nas | nas://placeholder/archive/science-study-guides | placeholder_uri | science | SM5 | physical_science | unit_03 | lesson_01 | none | false | unknown | reviewed_placeholder | placeholder_approved | metadata_only,no_student_data,not_indexed,not_scanned,manual_entry,planning_only | Study guide placeholder | true | inactive_placeholder |
-| sample-canvas-export-folder-001 | Canvas Export Folder Placeholder | canvas_export | canvas_export | local://placeholder/canvas-export | placeholder_uri | science | SM5 | physical_science | unit_01 | lesson_02 | pacing-sm5-u01-l02 | true | false | needs_review | blocked_placeholder | metadata_only,no_student_data,not_indexed,not_scanned,manual_entry,planning_only | Canvas export folder placeholder; not a live Canvas URL | true | planning_only |
-| sample-teacher-assessment-001 | Teacher-Only Assessment Placeholder | test | local_folder | local://placeholder/teacher-only-assessment | placeholder_uri | science | SM5 | physical_science | unit_02 | lesson_04 | none | true | false | reviewed_placeholder | blocked_placeholder | metadata_only,no_student_data,not_indexed,not_scanned,manual_entry,planning_only,teacher_only_default | Assessment placeholder; teacher-only | true | inactive_placeholder |
-| sample-student-practice-001 | Student-Facing Practice Placeholder | worksheet | icloud | icloud://placeholder/student-facing-practice | placeholder_uri | science | SM5 | physical_science | unit_03 | lesson_02 | pacing-sm5-u03-l02 | false | unknown | not_reviewed | not_approved | metadata_only,no_student_data,not_indexed,not_scanned,manual_entry,planning_only | Practice worksheet placeholder; not student-facing until reviewed | true | planning_only |
+| sample-sm5-textbook-001 | SM5 Textbook Placeholder | textbook | google_drive | gdrive://placeholder/sm5/textbook | placeholder_uri | science | SM5 | physical_science | unit_01 | lesson_01 | pacing-sm5-u01-l01 | false | unknown | not_reviewed | not_approved | metadata_only,no_student_data,not_indexed,not_scanned,manual_entry,placeholder_only,no_external_resolution,planning_only | Fictional textbook metadata only | true | planning_only |
+| sample-sm5-worksheet-folder-001 | SM5 Worksheet Folder Placeholder | folder_index | google_drive | gdrive://placeholder/sm5/worksheet-folder | placeholder_uri | science | SM5 | physical_science | unit_02 | lesson_03 | pacing-sm5-u02-l03 | true | false | needs_review | not_approved | metadata_only,no_student_data,not_indexed,not_scanned,manual_entry,placeholder_only,no_external_resolution,planning_only | Teacher-only folder index placeholder | true | inactive_placeholder |
+| sample-history-slides-001 | History Unit Slides Placeholder | slides | nas | nas://placeholder/archive/history-slides | placeholder_uri | history | grade_7 | world_history | unit_04 | lesson_02 | pacing-history-u04-l02 | false | unknown | not_reviewed | placeholder_approved | metadata_only,no_student_data,not_indexed,not_scanned,manual_entry,placeholder_only,no_external_resolution,planning_only | Archive slides placeholder | true | planning_only |
+| sample-science-study-guide-001 | Science Study Guide Placeholder | study_guide | nas | nas://placeholder/archive/science-study-guides | placeholder_uri | science | SM5 | physical_science | unit_03 | lesson_01 | none | false | unknown | reviewed_placeholder | placeholder_approved | metadata_only,no_student_data,not_indexed,not_scanned,manual_entry,placeholder_only,no_external_resolution,planning_only | Study guide placeholder | true | inactive_placeholder |
+| sample-canvas-export-folder-001 | Canvas Export Folder Placeholder | canvas_export | canvas_export | local://placeholder/canvas-export | placeholder_uri | science | SM5 | physical_science | unit_01 | lesson_02 | pacing-sm5-u01-l02 | true | false | needs_review | blocked_placeholder | metadata_only,no_student_data,not_indexed,not_scanned,manual_entry,placeholder_only,no_external_resolution,planning_only | Canvas export folder placeholder; not a live Canvas URL | true | planning_only |
+| sample-teacher-assessment-001 | Teacher-Only Assessment Placeholder | test | local_folder | local://placeholder/teacher-only-assessment | placeholder_uri | science | SM5 | physical_science | unit_02 | lesson_04 | none | true | false | reviewed_placeholder | blocked_placeholder | metadata_only,no_student_data,not_indexed,not_scanned,manual_entry,placeholder_only,no_external_resolution,planning_only,teacher_only_default | Assessment placeholder; teacher-only | true | inactive_placeholder |
+| sample-student-practice-001 | Student-Facing Practice Placeholder | worksheet | icloud | icloud://placeholder/student-facing-practice | placeholder_uri | science | SM5 | physical_science | unit_03 | lesson_02 | pacing-sm5-u03-l02 | false | unknown | not_reviewed | not_approved | metadata_only,no_student_data,not_indexed,not_scanned,manual_entry,placeholder_only,no_external_resolution,planning_only | Practice worksheet placeholder; not student-facing until reviewed | true | planning_only |
 
 ## 7. Field Coverage Notes
 
@@ -123,7 +125,7 @@ This sample does **not** prove data quality, curriculum correctness, legal/copyr
 
 ## 10. Future Validation Path
 
-A future PR may add read-only static checks against this document. See `docs/curriculum-builder-static-sample-validation-plan.md` for the validation rule set.
+Read-only static checks against this document are implemented in `docs/curriculum-builder-static-sample-validation-checks.md` and enforced by `scripts/curriculum-builder-foundation-status.sh`. See `docs/curriculum-builder-static-sample-validation-plan.md` for the validation rule set.
 
 Current verification:
 

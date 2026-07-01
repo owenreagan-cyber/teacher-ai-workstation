@@ -17,7 +17,8 @@ canonical planning index
 → manual registry sample proof plan
 → manual registry sample proof
 → static sample validation plan
-→ future static sample validation checks
+→ static sample validation checks
+→ future sample format decision
 ```
 
 ## 2. Non-Activation Statement

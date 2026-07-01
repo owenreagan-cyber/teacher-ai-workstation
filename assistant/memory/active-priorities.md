@@ -53,6 +53,7 @@
 - Curriculum Builder manual registry sample proof plan: complete
 - Curriculum Builder manual registry sample proof: complete
 - Curriculum Builder static sample validation plan: complete
+- Curriculum Builder static sample validation checks: complete
 
 ### Now
 

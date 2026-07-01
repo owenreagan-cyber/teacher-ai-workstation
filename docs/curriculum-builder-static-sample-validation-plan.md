@@ -16,8 +16,9 @@ canonical planning index
 → manual registry schema plan
 → manual registry sample proof plan
 → manual registry sample proof
-→ static sample validation plan (this document)
-→ future static sample validation checks
+→ static sample validation plan
+→ static sample validation checks
+→ future sample format decision
 ```
 
 ## 2. Non-Activation Statement
@@ -45,14 +46,15 @@ Chief of Staff remains a read-only proof/status/reference surface. It does not o
 | Artifact | Role |
 | --- | --- |
 | `docs/curriculum-builder-manual-registry-sample-proof.md` | Static seven-row fictional sample (PR #136) |
-| `scripts/curriculum-builder-foundation-status.sh` | Current read-only doc-presence and negative-reference guards on the sample doc |
+| `scripts/curriculum-builder-foundation-status.sh` | Current read-only doc-presence, static sample text checks, and negative-reference guards on the sample doc |
+| `docs/curriculum-builder-static-sample-validation-checks.md` | Describes static validation checks implemented against the sample proof |
 | This document | Future validation rule set and expansion path |
 
 Validation applies to **repo-local Markdown text only**. It does not validate curriculum correctness, instructional quality, or external file existence.
 
 ## 4. Current Static Proof Checks
 
-PR #136 added read-only checks in `scripts/curriculum-builder-foundation-status.sh` against the sample proof document only:
+PR #136 added initial read-only checks in `scripts/curriculum-builder-foundation-status.sh` against the sample proof document only. PR #138 extended those checks per `docs/curriculum-builder-static-sample-validation-checks.md`.
 
 - sample proof doc exists
 - Non-Activation Statement and Manual Registry Sample Table sections exist

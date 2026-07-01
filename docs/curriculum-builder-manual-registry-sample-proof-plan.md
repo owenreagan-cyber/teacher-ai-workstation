@@ -16,7 +16,9 @@ canonical planning index
 → manual registry schema plan
 → manual registry sample proof plan
 → manual registry sample proof (`docs/curriculum-builder-manual-registry-sample-proof.md`)
-→ future static sample validation planning
+→ static sample validation plan
+→ static sample validation checks
+→ future sample format decision
 ```
 
 ## 2. Non-Activation Statement
@@ -296,7 +298,7 @@ Unless explicitly approved through `docs/curriculum-builder-approval-gate.md` an
 
 After the manual registry sample proof (`docs/curriculum-builder-manual-registry-sample-proof.md`) merges, the recommended next Curriculum Builder PR is:
 
-**Static sample validation plan** — document future validation rules (completed in PR #137). Next: **static sample validation checks** — extend read-only grep checks per the validation plan.
+**Static sample validation plan** — document future validation rules (completed in PR #137). **Static sample validation checks** — repo-local text-only grep checks against the sample proof (PR #138). Next: **future sample format decision**.
 
 Alternative safe paths:
 

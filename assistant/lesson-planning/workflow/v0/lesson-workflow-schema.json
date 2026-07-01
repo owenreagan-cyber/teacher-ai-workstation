@@ -1,0 +1,92 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "teacher-ai-workstation/lesson-planning/workflow/v0/lesson-workflow-schema.json",
+  "title": "Lesson Planning Workflow v0 Schema",
+  "description": "Placeholder-only lesson planning workflow records. Read-only, local-first, no generation.",
+  "type": "object",
+  "required": [
+    "workflow_id",
+    "title",
+    "lesson_slug",
+    "planning_status",
+    "review_status",
+    "human_review_required",
+    "generation_enabled",
+    "workflow_steps",
+    "local_first_safety_flags",
+    "notes",
+    "activation_status"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "workflow_id": {
+      "type": "string",
+      "pattern": "^sample-lesson-workflow-[a-z0-9-]+$"
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1
+    },
+    "lesson_slug": {
+      "type": "string",
+      "pattern": "^[a-z0-9-]+$"
+    },
+    "planning_status": {
+      "type": "string",
+      "enum": ["idea", "drafted", "reviewed", "ready", "archived"]
+    },
+    "review_status": {
+      "type": "string",
+      "enum": ["not_reviewed", "metadata_only", "teacher_reviewed", "needs_review"]
+    },
+    "human_review_required": {
+      "type": "boolean",
+      "const": true
+    },
+    "generation_enabled": {
+      "type": "boolean",
+      "const": false
+    },
+    "workflow_steps": {
+      "type": "array",
+      "minItems": 6,
+      "items": {
+        "type": "object",
+        "required": ["step_id", "label", "chief_of_staff_command", "read_only"],
+        "additionalProperties": false,
+        "properties": {
+          "step_id": {
+            "type": "string",
+            "pattern": "^step-[0-9]{2}$"
+          },
+          "label": {
+            "type": "string",
+            "minLength": 1
+          },
+          "chief_of_staff_command": {
+            "type": "string",
+            "minLength": 1
+          },
+          "read_only": {
+            "type": "boolean",
+            "const": true
+          }
+        }
+      }
+    },
+    "local_first_safety_flags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "minItems": 6
+    },
+    "notes": {
+      "type": "string"
+    },
+    "activation_status": {
+      "type": "string",
+      "enum": ["lesson_planning_v0"]
+    }
+  }
+}

@@ -60,6 +60,8 @@ Cross-references:
 | --- | --- |
 | `bin/chief-of-staff --lesson-status` | Lesson planning workspace status |
 | `bin/chief-of-staff --lesson-workflow-status` | Lesson workflow status |
+| `bin/chief-of-staff --lesson-planning-foundation-status` | Lesson Planning v1 foundation status |
+| `bin/chief-of-staff --lesson-planning-workflow-v0-validate` | Lesson Planning workflow v0 validator |
 | `bin/chief-of-staff --lesson-planning-template-readiness-status` | Template readiness (parked) |
 
 ## Canvas LLM (Frozen / Planning Only)

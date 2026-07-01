@@ -930,6 +930,29 @@ else
   warn "Lesson-planning template readiness status script missing: scripts/lesson-planning-template-readiness-status.sh"
 fi
 
+section "Lesson Planning v1 Foundation"
+if [[ -f scripts/lesson-planning-foundation-status.sh ]]; then
+  lesson_planning_foundation_result=0
+  lesson_planning_foundation_output="$(bash scripts/lesson-planning-foundation-status.sh 2>&1)" || lesson_planning_foundation_result=$?
+  lesson_planning_foundation_pass="$(summary_count "${lesson_planning_foundation_output}" "PASS")"
+  lesson_planning_foundation_warn="$(summary_count "${lesson_planning_foundation_output}" "WARN")"
+  lesson_planning_foundation_fail="$(summary_count "${lesson_planning_foundation_output}" "FAIL")"
+
+  if [[ "${lesson_planning_foundation_result}" != "0" ]]; then
+    printf 'Lesson Planning v1 Foundation: status command completed\n'
+    printf '%s\n' "${lesson_planning_foundation_output}"
+    fail "Lesson Planning foundation status failed"
+  elif [[ -n "${lesson_planning_foundation_pass}" && -n "${lesson_planning_foundation_warn}" && -n "${lesson_planning_foundation_fail}" ]]; then
+    printf 'Lesson Planning v1 Foundation: PASS %s / WARN %s / FAIL %s\n' "${lesson_planning_foundation_pass}" "${lesson_planning_foundation_warn}" "${lesson_planning_foundation_fail}"
+    pass "Lesson Planning foundation status completed"
+  else
+    printf 'Lesson Planning v1 Foundation: status command completed\n'
+    pass "Lesson Planning foundation status completed"
+  fi
+else
+  warn "Lesson Planning foundation status script missing: scripts/lesson-planning-foundation-status.sh"
+fi
+
 section "Curriculum Builder Local-First Foundation Plan"
 if [[ -f scripts/curriculum-builder-foundation-status.sh ]]; then
   curriculum_builder_foundation_result=0

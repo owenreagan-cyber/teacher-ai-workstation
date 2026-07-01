@@ -91,6 +91,11 @@ Handoff and status clarity. Start from `docs/phase-1-chief-of-staff-status-audit
 - Curriculum Builder static source registry plan (PR #157).
 - Canvas LLM section completion audit and closure (PR #159).
 - Curriculum Builder section completion audit and closure (PR #162).
+- Implementation approval gate and track intake foundation (PR #164).
+
+## Implementation Approval Gate Status
+
+Repo-wide implementation approval gate is active. No implementation is approved by default. See `docs/implementation-approval-gate.md`. Track-specific gates remain required (Curriculum Builder, Canvas LLM freeze/stop marker).
 
 ## Canvas LLM Foundation Status
 
@@ -101,6 +106,8 @@ Canvas LLM docs/status foundation is complete for now. Runtime/export/API/genera
 Curriculum Builder planning foundation is complete for now. Implementation/registry/ingestion/generation work is approval-gated unless separately and explicitly approved. section completion audit recorded. Output contract planning foundation complete (PR #155). Static source registry plan complete (PR #157). Recommended next focus: approval-gated implementation only with explicit intake.
 
 ## Current PR
+
+Implementation approval gate and track intake foundation — documentation/status only. See `docs/implementation-approval-gate.md`.
 
 Previously parked — start from `docs/phase-1-chief-of-staff-status-audit.md` — Repo-Wide Parked Tracks and Active Status Map.
 

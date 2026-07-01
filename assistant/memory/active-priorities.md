@@ -74,9 +74,11 @@
 - Curriculum Builder static source registry plan: complete
 - Canvas LLM section completion audit and closure: complete
 - Curriculum Builder section completion audit and closure: complete
+- Implementation approval gate and track intake foundation: in progress (PR #164)
 
 ### Now
 
+- Implementation approval gate and track intake foundation: documentation/status only (`docs/implementation-approval-gate.md`). Gate active; no implementation approved by default.
 - Curriculum Builder section completion audit and closure: documentation/status only (`docs/curriculum-builder-section-completion-audit.md`). Planning foundation section complete; implementation approval-gated.
 - Canvas LLM section completion audit and closure: documentation/status only (`docs/canvas-llm-section-completion-audit.md`). Section complete/frozen/stopped; stop marker remains active.
 - Curriculum Builder static source registry plan: documentation/status only (`docs/curriculum-builder-static-source-registry-plan.md`). Metadata/reference-only planning; no scanning, indexing, or resolution.
@@ -93,7 +95,8 @@
 
 ### Next
 
-- Curriculum Builder section completion audit complete (PR #162). Documentation/status only; planning foundation section-complete; implementation remains approval-gated.
+- Implementation approval gate and track intake foundation in progress (PR #164). Documentation/status only; gate active; no runtime activation without explicit intake approval.
+- Curriculum Builder section completion audit complete (PR #162). Planning foundation section-complete; implementation remains approval-gated.
 - Curriculum Builder static source registry plan complete (PR #157). Documentation/status only; metadata/reference-only; no scanning, folder crawling, file indexing, OCR, embeddings, vector database, or Drive/NAS/iCloud resolution.
 - Curriculum Builder output contract planning foundation complete (PR #155). Documentation/status only; no lesson generation, ingestion, RAG, or runtime behavior.
 - Canvas LLM is complete/frozen/stopped. final handoff snapshot is recorded. stop marker is active. Do not start Canvas LLM PRs by default.

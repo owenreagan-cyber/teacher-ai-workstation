@@ -8,6 +8,8 @@ This is a planning/status document only. It does not create an active schema, da
 
 For the canonical manual/static registry field schema and fictional placeholder rows, see `docs/curriculum-builder-manual-registry-schema-plan.md`.
 
+For rules governing a future fictional sample registry proof artifact, see `docs/curriculum-builder-manual-registry-sample-proof-plan.md`.
+
 ## Core Decision
 
 The registry will track metadata, references, statuses, and relationships. Raw curriculum files remain in Google Drive, NAS, iCloud, or local folders.

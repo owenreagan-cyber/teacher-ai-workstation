@@ -50,6 +50,7 @@
 - Chief of Staff status command consistency audit: complete
 - Curriculum Builder next-stage readiness audit: complete
 - Curriculum Builder manual registry schema planning: complete
+- Curriculum Builder manual registry sample proof plan: complete
 
 ### Now
 

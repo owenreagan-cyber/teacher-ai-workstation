@@ -94,6 +94,7 @@ future_pr_checklist_doc="docs/curriculum-builder-future-pr-checklist.md"
 canonical_planning_index_doc="docs/curriculum-builder-canonical-planning-index.md"
 next_stage_readiness_audit_doc="docs/curriculum-builder-next-stage-readiness-audit.md"
 manual_registry_schema_plan_doc="docs/curriculum-builder-manual-registry-schema-plan.md"
+manual_registry_sample_proof_plan_doc="docs/curriculum-builder-manual-registry-sample-proof-plan.md"
 dashboard_doc="docs/chief-of-staff-dashboard.md"
 dashboard_section_summary_doc="docs/dashboard-section-summary-polish.md"
 phase_1_audit_doc="docs/phase-1-chief-of-staff-status-audit.md"
@@ -846,6 +847,28 @@ fi
 
 if [[ -f "${canonical_planning_index_doc}" ]]; then
   check_doc_contains "${canonical_planning_index_doc}" "docs/curriculum-builder-manual-registry-schema-plan.md" "manual registry schema plan reference in canonical index"
+  check_doc_contains "${canonical_planning_index_doc}" "docs/curriculum-builder-manual-registry-sample-proof-plan.md" "manual registry sample proof plan reference in canonical index"
+fi
+
+section "Curriculum Builder Manual Registry Sample Proof Plan Checks"
+
+check_file "${manual_registry_sample_proof_plan_doc}"
+
+if [[ -f "${manual_registry_sample_proof_plan_doc}" ]]; then
+  check_doc_contains "${manual_registry_sample_proof_plan_doc}" "Curriculum Builder Manual Registry Sample Proof Plan" "Curriculum Builder Manual Registry Sample Proof Plan title"
+  check_doc_contains "${manual_registry_sample_proof_plan_doc}" "Non-Activation Statement" "Non-Activation Statement section in sample proof plan"
+  check_doc_contains "${manual_registry_sample_proof_plan_doc}" "Fictional Data Rules" "Fictional Data Rules section"
+  check_doc_contains "${manual_registry_sample_proof_plan_doc}" "Placeholder Source Reference Rules" "Placeholder Source Reference Rules section"
+  check_doc_contains "${manual_registry_sample_proof_plan_doc}" "Required Sample Row Coverage" "Required Sample Row Coverage section"
+  check_doc_contains "${manual_registry_sample_proof_plan_doc}" "Future File Shape Options" "Future File Shape Options section"
+  check_doc_contains "${manual_registry_sample_proof_plan_doc}" "Future Static Proof Checks" "Future Static Proof Checks section"
+  check_doc_contains "${manual_registry_sample_proof_plan_doc}" "Blocked Capabilities" "Blocked Capabilities section in sample proof plan"
+  check_doc_contains "${manual_registry_sample_proof_plan_doc}" "gdrive://placeholder/sm5/textbook" "fictional placeholder source reference in sample proof plan"
+  check_doc_contains "${manual_registry_sample_proof_plan_doc}" "no document scanning" "no document scanning boundary in sample proof plan"
+  check_doc_contains "${manual_registry_sample_proof_plan_doc}" "no student data" "no student data boundary in sample proof plan"
+  check_doc_contains "${manual_registry_sample_proof_plan_doc}" "docs/curriculum-builder-canonical-planning-index.md" "canonical planning index cross-link in sample proof plan"
+  check_doc_contains "${manual_registry_sample_proof_plan_doc}" "docs/curriculum-builder-manual-registry-schema-plan.md" "manual registry schema plan cross-link in sample proof plan"
+  check_doc_contains "${manual_registry_sample_proof_plan_doc}" "Non-Activation confirmation" "Non-Activation confirmation in sample proof plan"
 fi
 
 section "Dashboard Planning Index Visibility Checks"

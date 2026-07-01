@@ -18,7 +18,8 @@ canonical planning index
 → manual registry sample proof
 → static sample validation plan
 → static sample validation checks
-→ future sample format decision
+→ sample format decision
+→ future CSV placeholder sample plan or Markdown sample maintenance checklist
 ```
 
 ## 2. Non-Activation Statement

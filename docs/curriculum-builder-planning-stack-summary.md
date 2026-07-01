@@ -33,6 +33,7 @@ It does not create active schema, data, registry records, validators, commands, 
 | Manual registry sample proof plan | `docs/curriculum-builder-manual-registry-sample-proof-plan.md` | Plans future fictional sample artifact rules | planning only | no sample file consumed by app |
 | Manual registry sample proof | `docs/curriculum-builder-manual-registry-sample-proof.md` | Static fictional seven-row sample | documentation proof only | no live registry, no app loader |
 | Static sample validation checks | `docs/curriculum-builder-static-sample-validation-checks.md` | Repo-local text-only checks on sample proof | documentation/status only | no runtime validator |
+| Sample format decision | `docs/curriculum-builder-sample-format-decision.md` | Markdown-only format decision | documentation only | no CSV/JSON/YAML artifact |
 | Static sample validation plan | `docs/curriculum-builder-static-sample-validation-plan.md` | Future static validation rule set | planning only | no validator implementation |
 
 ## Storage and Ownership Summary

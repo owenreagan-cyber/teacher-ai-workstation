@@ -114,6 +114,7 @@ manual_registry_sample_proof_plan_doc="docs/curriculum-builder-manual-registry-s
 manual_registry_sample_proof_doc="docs/curriculum-builder-manual-registry-sample-proof.md"
 static_sample_validation_plan_doc="docs/curriculum-builder-static-sample-validation-plan.md"
 static_sample_validation_checks_doc="docs/curriculum-builder-static-sample-validation-checks.md"
+sample_format_decision_doc="docs/curriculum-builder-sample-format-decision.md"
 dashboard_doc="docs/chief-of-staff-dashboard.md"
 dashboard_section_summary_doc="docs/dashboard-section-summary-polish.md"
 phase_1_audit_doc="docs/phase-1-chief-of-staff-status-audit.md"
@@ -1027,6 +1028,25 @@ fi
 
 if [[ -f "${canonical_planning_index_doc}" ]]; then
   check_doc_contains "${canonical_planning_index_doc}" "docs/curriculum-builder-static-sample-validation-checks.md" "static sample validation checks reference in canonical index"
+  check_doc_contains "${canonical_planning_index_doc}" "docs/curriculum-builder-sample-format-decision.md" "sample format decision reference in canonical index"
+fi
+
+section "Curriculum Builder Sample Format Decision Documentation"
+
+check_file "${sample_format_decision_doc}"
+
+if [[ -f "${sample_format_decision_doc}" ]]; then
+  check_doc_contains "${sample_format_decision_doc}" "Curriculum Builder Sample Format Decision" "Curriculum Builder Sample Format Decision title"
+  check_doc_contains "${sample_format_decision_doc}" "Non-Activation Statement" "Non-Activation Statement section in sample format decision"
+  check_doc_contains "${sample_format_decision_doc}" "Current Sample Format" "Current Sample Format section in sample format decision"
+  check_doc_contains "${sample_format_decision_doc}" "Decision Summary" "Decision Summary section in sample format decision"
+  check_doc_contains "${sample_format_decision_doc}" "Options Considered" "Options Considered section in sample format decision"
+  check_doc_contains "${sample_format_decision_doc}" "Recommended Path" "Recommended Path section in sample format decision"
+  check_doc_contains "${sample_format_decision_doc}" "Criteria for Adding a Future Secondary Format" "Criteria for Adding a Future Secondary Format section in sample format decision"
+  check_doc_contains "${sample_format_decision_doc}" "Validation Expectations" "Validation Expectations section in sample format decision"
+  check_doc_contains "${sample_format_decision_doc}" "Blocked Capabilities" "Blocked Capabilities section in sample format decision"
+  check_doc_contains "${sample_format_decision_doc}" "Recommended Next PR" "Recommended Next PR section in sample format decision"
+  check_doc_contains "${sample_format_decision_doc}" "docs/curriculum-builder-canonical-planning-index.md" "canonical planning index cross-link in sample format decision"
 fi
 
 section "Dashboard Planning Index Visibility Checks"

@@ -71,6 +71,7 @@ Handoff and status clarity. Start from `docs/phase-1-chief-of-staff-status-audit
 - Curriculum Builder manual registry sample proof (PR #136).
 - Curriculum Builder static sample validation plan (PR #137).
 - Curriculum Builder static sample validation checks (PR #138).
+- Curriculum Builder sample format decision (PR #139).
 
 ## Current PR
 

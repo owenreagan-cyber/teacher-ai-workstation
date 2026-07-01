@@ -4,17 +4,17 @@ This document is maintainer-facing documentation only. It helps a future develop
 
 ## current state summary
 
-Curriculum Builder planning is complete through PR #120. The stack is documentation/status-only. Implementation is paused behind an explicit approval gate.
+Curriculum Builder planning is complete through PR #124. Post-closeout status alignment through PR #132 is complete. The stack is documentation/status-only. Implementation is paused behind an explicit approval gate.
 
 ## latest completed PR reference
 
 Latest completed PR reference:
 
-- PR #120 — Curriculum builder approval gate and planning closeout
-- Merge commit: `535f7be62e788a8c359a6aca891ac743d4821d8c`
-- Local main short commit: `535f7be`
+- PR #124 — Curriculum Builder planning stack closeout (canonical index and status closeout)
+- PR #132 — Chief of Staff status command consistency audit (cross-track wording alignment)
+- Next-stage transition note: `docs/curriculum-builder-next-stage-readiness-audit.md` (PR #133)
 
-Prior stack PRs: #107–#120 built local-first foundation, registry boundaries, planning summaries, next-phase decision guidance, decision intake template, approval gate, and planning closeout.
+Prior stack PRs: #107–#124 built local-first foundation, registry boundaries, planning summaries, next-phase decision guidance, decision intake template, approval gate, and planning closeout.
 
 ## planning stack status
 
@@ -32,6 +32,7 @@ Key docs:
 - `docs/curriculum-builder-planning-closeout.md`
 - `docs/curriculum-builder-maintainer-handoff.md`
 - `docs/curriculum-builder-future-pr-checklist.md`
+- `docs/curriculum-builder-next-stage-readiness-audit.md`
 
 ## What Curriculum Builder is intended to become
 
@@ -179,7 +180,7 @@ This maintainer handoff does not add active schema, database tables, migrations,
 
 Hand-off note for future ChatGPT/Cursor sessions:
 
-1. Read `docs/curriculum-builder-planning-closeout.md` and `docs/curriculum-builder-approval-gate.md` first.
+1. Read `docs/curriculum-builder-next-stage-readiness-audit.md`, `docs/curriculum-builder-planning-closeout.md`, and `docs/curriculum-builder-approval-gate.md` first.
 2. Use `docs/curriculum-builder-future-pr-checklist.md` for every new Curriculum Builder PR.
 3. Default to documentation/status-only work.
 4. Do not implement schema, data, validators, commands, connectors, or generation without a completed approved decision intake.

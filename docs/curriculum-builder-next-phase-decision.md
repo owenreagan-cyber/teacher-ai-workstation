@@ -106,6 +106,8 @@ If no explicit next implementation path is approved, keep Curriculum Builder par
 
 Return to lesson-planning readiness, Chief of Staff status hardening, dashboard documentation, or another small local-first docs/status PR. Do not create schema/data/runtime behavior by implication.
 
+For next-stage routing after PR #132, start from `docs/curriculum-builder-next-stage-readiness-audit.md`.
+
 ## Relationship to Teacher Workstation
 
 Teacher Workstation may use the Curriculum Builder planning stack later. No Teacher Workstation runtime behavior changes in this PR.
@@ -114,7 +116,7 @@ No lesson-planning registry reference is activated. No lesson generation is acti
 
 ## Relationship to Chief of Staff
 
-Chief of Staff continues to report existing planning/status readiness. Chief of Staff does not own raw curriculum files.
+Chief of Staff continues to report existing planning/status readiness through read-only proof surfaces only. Chief of Staff does not own raw curriculum files.
 
 Chief of Staff does not scan, index, validate real registry records, call APIs, back up files, or generate content. Any future Chief of Staff behavior beyond status reporting requires explicit approval.
 

@@ -92,6 +92,7 @@ planning_closeout_doc="docs/curriculum-builder-planning-closeout.md"
 maintainer_handoff_doc="docs/curriculum-builder-maintainer-handoff.md"
 future_pr_checklist_doc="docs/curriculum-builder-future-pr-checklist.md"
 canonical_planning_index_doc="docs/curriculum-builder-canonical-planning-index.md"
+next_stage_readiness_audit_doc="docs/curriculum-builder-next-stage-readiness-audit.md"
 dashboard_doc="docs/chief-of-staff-dashboard.md"
 dashboard_section_summary_doc="docs/dashboard-section-summary-polish.md"
 phase_1_audit_doc="docs/phase-1-chief-of-staff-status-audit.md"
@@ -792,6 +793,32 @@ if [[ -f "${canonical_planning_index_doc}" ]]; then
   check_doc_contains "${canonical_planning_index_doc}" "no lesson generation" "no lesson generation boundary in canonical index"
   check_doc_contains "${canonical_planning_index_doc}" "no student data" "no student data boundary in canonical index"
   check_doc_contains "${canonical_planning_index_doc}" "no raw curriculum file duplication" "no raw curriculum file duplication boundary in canonical index"
+  check_doc_contains "${canonical_planning_index_doc}" "docs/curriculum-builder-next-stage-readiness-audit.md" "next-stage readiness audit reference in canonical index"
+fi
+
+section "Curriculum Builder Next-Stage Readiness Audit Checks"
+
+check_file "${next_stage_readiness_audit_doc}"
+
+if [[ -f "${next_stage_readiness_audit_doc}" ]]; then
+  check_doc_contains "${next_stage_readiness_audit_doc}" "Curriculum Builder Next-Stage Readiness Audit" "Curriculum Builder Next-Stage Readiness Audit title"
+  check_doc_contains "${next_stage_readiness_audit_doc}" "Current status baseline" "current status baseline section"
+  check_doc_contains "${next_stage_readiness_audit_doc}" "What is already ready" "what is already ready section"
+  check_doc_contains "${next_stage_readiness_audit_doc}" "What is still planning-only" "what is still planning-only section"
+  check_doc_contains "${next_stage_readiness_audit_doc}" "What is explicitly not active" "what is explicitly not active section"
+  check_doc_contains "${next_stage_readiness_audit_doc}" "Safe next PR categories" "safe next PR categories section"
+  check_doc_contains "${next_stage_readiness_audit_doc}" "What must remain blocked" "what must remain blocked section"
+  check_doc_contains "${next_stage_readiness_audit_doc}" "Cursor self-check expectations" "Cursor self-check expectations section"
+  check_doc_contains "${next_stage_readiness_audit_doc}" "Required validation commands" "required validation commands section"
+  check_doc_contains "${next_stage_readiness_audit_doc}" "PR handoff template" "PR handoff template section"
+  check_doc_contains "${next_stage_readiness_audit_doc}" "read-only proof surfaces" "read-only proof surfaces boundary"
+  check_doc_contains "${next_stage_readiness_audit_doc}" "metadata/reference-only" "metadata/reference-only boundary"
+  check_doc_contains "${next_stage_readiness_audit_doc}" "manual and static" "manual/static-first boundary"
+  check_doc_contains "${next_stage_readiness_audit_doc}" "no document scanning" "no document scanning boundary in next-stage audit"
+  check_doc_contains "${next_stage_readiness_audit_doc}" "no raw curriculum file duplication" "no raw curriculum file duplication boundary in next-stage audit"
+  check_doc_contains "${next_stage_readiness_audit_doc}" "does not own raw curriculum files" "Chief of Staff does not own raw curriculum files in next-stage audit"
+  check_doc_contains "${next_stage_readiness_audit_doc}" "docs/curriculum-builder-canonical-planning-index.md" "canonical planning index cross-link in next-stage audit"
+  check_doc_contains "${next_stage_readiness_audit_doc}" "Non-Activation confirmation" "Non-Activation confirmation in next-stage audit"
 fi
 
 section "Dashboard Planning Index Visibility Checks"

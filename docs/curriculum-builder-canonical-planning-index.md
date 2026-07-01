@@ -4,7 +4,7 @@ This document is the canonical entry point for Curriculum Builder / Curriculum R
 
 ## current state summary
 
-Curriculum Builder planning is complete through PR #124. The stack is documentation/status-only. Implementation is paused behind an explicit approval gate. Latest completed PR reference: PR #124 — Phase 1 curriculum builder status closeout note (`817480a`).
+Curriculum Builder planning is complete through PR #124. Post-closeout alignment through PR #132 hardened Chief of Staff status-command wording. The stack is documentation/status-only. Implementation is paused behind an explicit approval gate. Latest completed PR reference: PR #124 — Phase 1 curriculum builder status closeout note (`817480a`). Next-stage transition note: `docs/curriculum-builder-next-stage-readiness-audit.md`.
 
 ## planning stack purpose
 
@@ -69,12 +69,13 @@ future PR checklist summary: `docs/curriculum-builder-future-pr-checklist.md` is
 | Maintainer handoff | `docs/curriculum-builder-maintainer-handoff.md` | Maintainer and AI session handoff |
 | Future PR checklist | `docs/curriculum-builder-future-pr-checklist.md` | Reusable future PR checklist |
 | Canonical planning index | `docs/curriculum-builder-canonical-planning-index.md` | This document: where to start and how to route next work |
+| Next-stage readiness audit | `docs/curriculum-builder-next-stage-readiness-audit.md` | Canonical transition note for bounded next-stage planning work |
 | Foundation status script | `scripts/curriculum-builder-foundation-status.sh` | Read-only PASS/WARN/FAIL status checks |
 
 ## Start Here
 
-- **For maintainers:** start with this canonical planning index, then `docs/curriculum-builder-maintainer-handoff.md`.
-- **For future ChatGPT/Cursor sessions:** start with `docs/curriculum-builder-maintainer-handoff.md` and `docs/curriculum-builder-future-pr-checklist.md`.
+- **For maintainers:** start with this canonical planning index, then `docs/curriculum-builder-maintainer-handoff.md` and `docs/curriculum-builder-next-stage-readiness-audit.md`.
+- **For future ChatGPT/Cursor sessions:** start with `docs/curriculum-builder-next-stage-readiness-audit.md`, then `docs/curriculum-builder-maintainer-handoff.md` and `docs/curriculum-builder-future-pr-checklist.md`.
 - **For implementation requests:** start with `docs/curriculum-builder-approval-gate.md` and `docs/curriculum-builder-decision-intake-template.md`.
 - **For status verification:** run `bin/chief-of-staff --curriculum-builder-foundation-status` and `bin/chief-of-staff --dashboard`.
 
@@ -82,7 +83,7 @@ future PR checklist summary: `docs/curriculum-builder-future-pr-checklist.md` is
 
 | Category | Route |
 | --- | --- |
-| Documentation/status-only cleanup | Continue docs/status PRs using current pattern and future PR checklist |
+| Documentation/status-only cleanup | Continue docs/status PRs using current pattern, future PR checklist, and next-stage readiness audit |
 | Decision intake drafting | Use decision intake template only; do not create registry data |
 | Approval gate review | Review or refine approval gate docs only |
 | Manual registry planning only | Extend registry planning sections without schema/data activation |

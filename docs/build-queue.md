@@ -65,6 +65,7 @@ Handoff and status clarity. Start from `docs/phase-1-chief-of-staff-status-audit
 - Prompt pack post-parked-tracks stale-reference alignment (PR #130).
 - Chief of Staff command surface status alignment (PR #131).
 - Chief of Staff status command consistency audit (PR #132).
+- Curriculum Builder next-stage readiness audit (PR #133).
 
 ## Current PR
 

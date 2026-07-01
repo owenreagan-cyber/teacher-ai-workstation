@@ -19,7 +19,8 @@ canonical planning index
 → static sample validation plan
 → static sample validation checks
 → sample format decision (this document)
-→ future CSV placeholder sample plan or Markdown sample maintenance checklist
+→ CSV placeholder sample plan
+→ future CSV placeholder sample artifact
 ```
 
 ## 2. Non-Activation Statement
@@ -107,7 +108,7 @@ YAML is deferred for the same reasons as JSON. Config-style formats increase the
 
 1. **Now:** keep `docs/curriculum-builder-manual-registry-sample-proof.md` as the only canonical sample artifact.
 2. **Maintain:** extend static validation through documentation/status PRs only.
-3. **Next approved PR:** plan a future CSV placeholder sample (`docs/curriculum-builder-csv-placeholder-sample-plan.md` or equivalent) without creating the CSV file.
+3. **Next approved PR:** CSV placeholder sample plan (`docs/curriculum-builder-csv-placeholder-sample-plan.md`) without creating the CSV file (completed in PR #140).
 4. **Later:** only after CSV plan approval, a separate PR may add a static fictional CSV artifact plus matching static checks — still no parser, importer, loader, or app consumption.
 
 ## 11. Why Not Add Another Format Yet
@@ -201,18 +202,7 @@ Unless explicitly approved through `docs/curriculum-builder-approval-gate.md` an
 
 ## 17. Recommended Next PR
 
-**PR #140 — Curriculum Builder CSV Placeholder Sample Plan**
-
-Scope:
-
-- documentation/status-only
-- plan a future CSV placeholder sample aligned with the seven Markdown rows
-- compare CSV safety rules against the Markdown sample
-- define CSV-specific non-activation and static-check expectations
-- no CSV file yet
-- no parser, importer, loader, or runtime validation
-
-**Why this over a Markdown maintenance checklist:** Markdown static validation is now implemented (PR #138) and the format decision is recorded here. The next highest-value bounded step is CSV-specific safety planning before any CSV artifact exists. A Markdown maintenance checklist remains a valid alternative if CSV planning is deferred by maintainer choice.
+**PR #140 — Curriculum Builder CSV Placeholder Sample Plan** (completed). Next: **PR #141 — Curriculum Builder CSV Placeholder Sample Artifact** (create static CSV file + static checks only; no parser/importer/loader).
 
 ## 18. PR Handoff Checklist
 

@@ -115,6 +115,7 @@ manual_registry_sample_proof_doc="docs/curriculum-builder-manual-registry-sample
 static_sample_validation_plan_doc="docs/curriculum-builder-static-sample-validation-plan.md"
 static_sample_validation_checks_doc="docs/curriculum-builder-static-sample-validation-checks.md"
 sample_format_decision_doc="docs/curriculum-builder-sample-format-decision.md"
+csv_placeholder_sample_plan_doc="docs/curriculum-builder-csv-placeholder-sample-plan.md"
 dashboard_doc="docs/chief-of-staff-dashboard.md"
 dashboard_section_summary_doc="docs/dashboard-section-summary-polish.md"
 phase_1_audit_doc="docs/phase-1-chief-of-staff-status-audit.md"
@@ -1047,6 +1048,31 @@ if [[ -f "${sample_format_decision_doc}" ]]; then
   check_doc_contains "${sample_format_decision_doc}" "Blocked Capabilities" "Blocked Capabilities section in sample format decision"
   check_doc_contains "${sample_format_decision_doc}" "Recommended Next PR" "Recommended Next PR section in sample format decision"
   check_doc_contains "${sample_format_decision_doc}" "docs/curriculum-builder-canonical-planning-index.md" "canonical planning index cross-link in sample format decision"
+fi
+
+section "Curriculum Builder CSV Placeholder Sample Plan Documentation"
+
+check_file "${csv_placeholder_sample_plan_doc}"
+
+if [[ -f "${csv_placeholder_sample_plan_doc}" ]]; then
+  check_doc_contains "${csv_placeholder_sample_plan_doc}" "Curriculum Builder CSV Placeholder Sample Plan" "Curriculum Builder CSV Placeholder Sample Plan title"
+  check_doc_contains "${csv_placeholder_sample_plan_doc}" "Non-Activation Statement" "Non-Activation Statement section in CSV placeholder sample plan"
+  check_doc_contains "${csv_placeholder_sample_plan_doc}" "Current Canonical Sample" "Current Canonical Sample section in CSV placeholder sample plan"
+  check_doc_contains "${csv_placeholder_sample_plan_doc}" "Why No CSV File Is Added Yet" "Why No CSV File Is Added Yet section in CSV placeholder sample plan"
+  check_doc_contains "${csv_placeholder_sample_plan_doc}" "Future CSV Artifact Scope" "Future CSV Artifact Scope section in CSV placeholder sample plan"
+  check_doc_contains "${csv_placeholder_sample_plan_doc}" "Required CSV Columns" "Required CSV Columns section in CSV placeholder sample plan"
+  check_doc_contains "${csv_placeholder_sample_plan_doc}" "Future CSV Row Coverage" "Future CSV Row Coverage section in CSV placeholder sample plan"
+  check_doc_contains "${csv_placeholder_sample_plan_doc}" "Placeholder URI Rules" "Placeholder URI Rules section in CSV placeholder sample plan"
+  check_doc_contains "${csv_placeholder_sample_plan_doc}" "Prohibited Reference Rules" "Prohibited Reference Rules section in CSV placeholder sample plan"
+  check_doc_contains "${csv_placeholder_sample_plan_doc}" "CSV-Specific Safety Rules" "CSV-Specific Safety Rules section in CSV placeholder sample plan"
+  check_doc_contains "${csv_placeholder_sample_plan_doc}" "Static Validation Expectations" "Static Validation Expectations section in CSV placeholder sample plan"
+  check_doc_contains "${csv_placeholder_sample_plan_doc}" "Blocked Capabilities" "Blocked Capabilities section in CSV placeholder sample plan"
+  check_doc_contains "${csv_placeholder_sample_plan_doc}" "Recommended Next PR" "Recommended Next PR section in CSV placeholder sample plan"
+  check_doc_contains "${csv_placeholder_sample_plan_doc}" "docs/curriculum-builder-canonical-planning-index.md" "canonical planning index cross-link in CSV placeholder sample plan"
+fi
+
+if [[ -f "${canonical_planning_index_doc}" ]]; then
+  check_doc_contains "${canonical_planning_index_doc}" "docs/curriculum-builder-csv-placeholder-sample-plan.md" "CSV placeholder sample plan reference in canonical index"
 fi
 
 section "Dashboard Planning Index Visibility Checks"

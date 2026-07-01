@@ -19,7 +19,8 @@ canonical planning index
 → static sample validation plan
 → static sample validation checks
 → sample format decision
-→ future CSV placeholder sample plan or Markdown sample maintenance checklist
+→ CSV placeholder sample plan
+→ future CSV placeholder sample artifact
 ```
 
 ## 2. Non-Activation Statement
@@ -299,7 +300,7 @@ Unless explicitly approved through `docs/curriculum-builder-approval-gate.md` an
 
 After the manual registry sample proof (`docs/curriculum-builder-manual-registry-sample-proof.md`) merges, the recommended next Curriculum Builder PR is:
 
-**Static sample validation plan** — document future validation rules (completed in PR #137). **Static sample validation checks** — repo-local text-only grep checks against the sample proof (PR #138). **Sample format decision** — Markdown-only canonical format; CSV deferred (PR #139). Next: **CSV placeholder sample plan** (PR #140) or Markdown sample maintenance checklist.
+**Sample format decision** — Markdown-only canonical format; CSV deferred (PR #139). **CSV placeholder sample plan** — CSV safety rules and future artifact expectations (PR #140). Next: **CSV placeholder sample artifact** (PR #141).
 
 Alternative safe paths:
 

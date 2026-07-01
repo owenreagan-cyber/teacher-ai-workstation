@@ -19,7 +19,8 @@ canonical planning index
 → static sample validation plan
 → static sample validation checks
 → sample format decision
-→ future CSV placeholder sample plan or Markdown sample maintenance checklist
+→ CSV placeholder sample plan
+→ future CSV placeholder sample artifact
 ```
 
 ## 2. Non-Activation Statement

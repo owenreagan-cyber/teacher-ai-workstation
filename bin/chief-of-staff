@@ -99,6 +99,10 @@ Teacher Planning Command Organization (status only; safe sample: fractions-revie
                                        Show read-only lesson-planning placeholder readiness status proof and exit (parked).
   --curriculum-builder-foundation-status
                                        Show read-only Curriculum Builder foundation status proof and exit (parked; approval-gated).
+  --curriculum-registry-v0-status
+                                       Show read-only Curriculum Registry v0 foundation status and exit.
+  --curriculum-registry-v0-validate
+                                       Run read-only Curriculum Registry v0 validator and exit.
   --teacher-app-designer-canvas-llm-status
                                        Show read-only Teacher App Designer / Canvas LLM foundation status proof and exit (planning only).
 
@@ -1585,6 +1589,25 @@ while [[ $# -gt 0 ]]; do
         die "Curriculum Builder foundation status script is missing: scripts/curriculum-builder-foundation-status.sh"
       fi
       bash "${curriculum_builder_foundation_status_script}"
+      exit 0
+      ;;
+    --curriculum-registry-v0-status)
+      repo_root="$(resolve_repo_root)"
+      curriculum_registry_v0_status_script="${repo_root}/scripts/curriculum-registry-v0-status.sh"
+      if [[ ! -f "${curriculum_registry_v0_status_script}" ]]; then
+        die "Curriculum Registry v0 status script is missing: scripts/curriculum-registry-v0-status.sh"
+      fi
+      bash "${curriculum_registry_v0_status_script}"
+      exit 0
+      ;;
+    --curriculum-registry-v0-validate)
+      repo_root="$(resolve_repo_root)"
+      curriculum_registry_v0_validator_script="${repo_root}/scripts/curriculum-registry-v0-validator.sh"
+      if [[ ! -f "${curriculum_registry_v0_validator_script}" ]]; then
+        die "Curriculum Registry v0 validator script is missing: scripts/curriculum-registry-v0-validator.sh"
+      fi
+      shift
+      bash "${curriculum_registry_v0_validator_script}" "$@"
       exit 0
       ;;
     --teacher-app-designer-canvas-llm-status)

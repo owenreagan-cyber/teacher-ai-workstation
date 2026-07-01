@@ -6,7 +6,7 @@ Last verified: 2026-06-30
 
 This document is a **static fictional manual registry sample proof** for Curriculum Builder. It demonstrates the planned schema shape from `docs/curriculum-builder-manual-registry-schema-plan.md` using seven placeholder rows only.
 
-The sample is **static documentation proof only**. It is not loaded by app code, CLI, or background jobs.
+The sample is **static documentation proof only** aligned with Registry v0 fictional data. Canonical v0 records live in `assistant/curriculum-builder/registry/v0/registry.json` (read-only validation via CLI; **not loaded by app code** for generation, ingestion, or background jobs).
 
 Planning path:
 

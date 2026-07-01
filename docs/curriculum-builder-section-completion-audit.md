@@ -218,3 +218,24 @@ These are not missing planning gaps; they are blocked implementation tracks.
 ## Non-Activation Confirmation
 
 Documentation/status only. Curriculum Builder section completion audit is Markdown-only planning/status text. No schema files, validators, renderers, live registry, registry data activation, parsers, importers, crawlers, document scanning, folder scanning, folder crawling, file indexing, OCR, embeddings, vector database, RAG, Drive/NAS/iCloud resolution, APIs, network calls, OAuth, automation, background jobs, lesson generation, generated lesson drafts, generated review notes, student data, storage migration, raw curriculum file duplication, or new dependencies. Planning foundation is complete for now. Implementation approval status: not approved.
+
+## Registry v0 Implementation Activation (Phase 2 Mission 1)
+
+Curriculum Registry v0 is the first approved implementation subsystem under Phase 2 Mission 1. It activates a **narrow, read-only, manual metadata foundation** only:
+
+- canonical store: `assistant/curriculum-builder/registry/v0/registry.json`
+- record schema: `assistant/curriculum-builder/registry/v0/registry-schema.json`
+- read-only validator: `scripts/curriculum-registry-v0-validator.sh`
+- status proof: `scripts/curriculum-registry-v0-status.sh`
+- documentation: `docs/curriculum-registry-v0.md`
+- Chief of Staff: `bin/chief-of-staff --curriculum-registry-v0-status`, `bin/chief-of-staff --curriculum-registry-v0-validate`
+
+Registry v0 boundaries remain strict:
+
+- metadata only; no curriculum file contents
+- read-only operation; no registry writes from CLI or automation
+- manual metadata entries with fictional placeholder references only
+- no scanning, crawling, indexing, OCR, embeddings, vector database, or RAG
+- no lesson generation, Canvas API, Drive API, OAuth, network calls, or student data
+
+The planning-closure statements above remain the historical planning-phase snapshot. Registry v0 does not approve ingestion, live resolution, renderers, or generation.

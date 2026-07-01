@@ -97,9 +97,9 @@ Canvas LLM docs/status foundation is complete for now. Runtime/export/API/genera
 
 ## Current PR
 
-Canvas LLM section completion audit and closure — documentation/status only. See `docs/canvas-llm-section-completion-audit.md`.
-
 Previously parked — start from `docs/phase-1-chief-of-staff-status-audit.md` — Repo-Wide Parked Tracks and Active Status Map.
+
+Canvas LLM section completion audit and closure is complete (PR #159). See `docs/canvas-llm-section-completion-audit.md`. Stop marker remains active.
 
 Curriculum Builder static source registry plan is complete (PR #157). See `docs/curriculum-builder-static-source-registry-plan.md`.
 

@@ -86,6 +86,10 @@ Preferred data flow is documented in `docs/canvas-llm-local-first-drive-first-ar
 
 Object vocabulary and placeholder field shapes are documented in `docs/canvas-llm-placeholder-schema.md`. Approval and export state vocabulary is in `docs/canvas-llm-approval-and-export-states.md`.
 
+## Manual Export Package Plan
+
+Future manual copy/export package workflow is documented in `docs/canvas-llm-manual-export-package-plan.md`.
+
 ## Related Verification Commands
 
 ```bash

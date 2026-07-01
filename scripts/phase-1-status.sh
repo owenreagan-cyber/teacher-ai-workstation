@@ -638,6 +638,9 @@ for path in \
   docs/canvas-llm-placeholder-schema.md \
   docs/canvas-llm-approval-and-export-states.md \
   docs/canvas-llm-placeholder-schema-maintenance.md \
+  docs/canvas-llm-manual-export-package-plan.md \
+  docs/canvas-llm-manual-export-package-shapes.md \
+  docs/canvas-llm-manual-export-package-maintenance.md \
   scripts/teacher-app-designer-canvas-llm-status.sh; do
   check_required_file "${path}"
 done

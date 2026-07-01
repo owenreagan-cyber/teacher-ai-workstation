@@ -21,6 +21,7 @@ This document builds on the PR #144 foundation by defining object vocabulary onl
 | `docs/canvas-llm-local-first-drive-first-architecture.md` | Local-first / Drive-first architecture |
 | `docs/canvas-llm-approval-and-export-states.md` | Approval and export state vocabulary |
 | `docs/canvas-llm-placeholder-schema-maintenance.md` | Maintenance rules for this schema layer |
+| `docs/canvas-llm-manual-export-package-plan.md` | Manual copy/export package workflow plan |
 
 ## 3. Design Principles
 

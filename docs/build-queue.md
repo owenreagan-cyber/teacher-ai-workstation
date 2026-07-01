@@ -78,10 +78,11 @@ Handoff and status clarity. Start from `docs/phase-1-chief-of-staff-status-audit
 - Curriculum Builder Markdown/CSV alignment proof (PR #143).
 - Teacher App Designer / Canvas LLM local-first foundation (PR #144).
 - Canvas LLM placeholder schema and approval states (PR #145).
+- Canvas LLM manual export package placeholder plan (PR #146).
 
 ## Current PR
 
-Canvas LLM placeholder schema and approval states — documentation/status only. See `docs/canvas-llm-placeholder-schema.md`.
+Canvas LLM manual export package placeholder plan — documentation/status only. See `docs/canvas-llm-manual-export-package-plan.md`.
 
 Previously parked — start from `docs/phase-1-chief-of-staff-status-audit.md` — Repo-Wide Parked Tracks and Active Status Map.
 

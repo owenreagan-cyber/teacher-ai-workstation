@@ -15,7 +15,8 @@ canonical planning index
 → next-stage readiness audit
 → manual registry schema plan (this document)
 → manual registry sample proof plan
-→ future manual registry sample proof
+→ manual registry sample proof
+→ future static sample validation planning
 ```
 
 ## 2. Non-Activation Statement

@@ -67,6 +67,7 @@ Publishing to Canvas (if ever approved) requires a state beyond `exported` and a
 - Approval and export states: `docs/canvas-llm-approval-and-export-states.md`
 - Placeholder schema: `docs/canvas-llm-placeholder-schema.md`
 - Manual export package plan: `docs/canvas-llm-manual-export-package-plan.md`
+- Manual export review checklist: `docs/canvas-llm-manual-export-review-checklist.md`
 - Curriculum references: `docs/curriculum-builder-canonical-planning-index.md`
 
 ## Related Verification Commands

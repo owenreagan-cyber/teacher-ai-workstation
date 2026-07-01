@@ -90,6 +90,10 @@ Object vocabulary and placeholder field shapes are documented in `docs/canvas-ll
 
 Future manual copy/export package workflow is documented in `docs/canvas-llm-manual-export-package-plan.md`.
 
+## Manual Export Review Checklist
+
+Teacher review checklists for future manual export packages are documented in `docs/canvas-llm-manual-export-review-checklist.md`.
+
 ## Related Verification Commands
 
 ```bash

@@ -79,10 +79,11 @@ Handoff and status clarity. Start from `docs/phase-1-chief-of-staff-status-audit
 - Teacher App Designer / Canvas LLM local-first foundation (PR #144).
 - Canvas LLM placeholder schema and approval states (PR #145).
 - Canvas LLM manual export package placeholder plan (PR #146).
+- Canvas LLM manual export review checklist (PR #147).
 
 ## Current PR
 
-Canvas LLM manual export package placeholder plan — documentation/status only. See `docs/canvas-llm-manual-export-package-plan.md`.
+Canvas LLM manual export review checklist — documentation/status only. See `docs/canvas-llm-manual-export-review-checklist.md`.
 
 Previously parked — start from `docs/phase-1-chief-of-staff-status-audit.md` — Repo-Wide Parked Tracks and Active Status Map.
 

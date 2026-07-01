@@ -999,6 +999,29 @@ else
   warn "Curriculum Output Contract v0 status script missing: scripts/curriculum-output-contract-v0-status.sh"
 fi
 
+section "Curriculum Registry–Contract Binding v0 Foundation"
+if [[ -f scripts/curriculum-binding-v0-status.sh ]]; then
+  curriculum_binding_v0_result=0
+  curriculum_binding_v0_output="$(bash scripts/curriculum-binding-v0-status.sh 2>&1)" || curriculum_binding_v0_result=$?
+  curriculum_binding_v0_pass="$(summary_count "${curriculum_binding_v0_output}" "PASS")"
+  curriculum_binding_v0_warn="$(summary_count "${curriculum_binding_v0_output}" "WARN")"
+  curriculum_binding_v0_fail="$(summary_count "${curriculum_binding_v0_output}" "FAIL")"
+
+  if [[ "${curriculum_binding_v0_result}" != "0" ]]; then
+    printf 'Curriculum Registry–Contract Binding v0 Foundation: status command completed\n'
+    printf '%s\n' "${curriculum_binding_v0_output}"
+    fail "Curriculum Binding v0 status failed"
+  elif [[ -n "${curriculum_binding_v0_pass}" && -n "${curriculum_binding_v0_warn}" && -n "${curriculum_binding_v0_fail}" ]]; then
+    printf 'Curriculum Registry–Contract Binding v0 Foundation: PASS %s / WARN %s / FAIL %s\n' "${curriculum_binding_v0_pass}" "${curriculum_binding_v0_warn}" "${curriculum_binding_v0_fail}"
+    pass "Curriculum Binding v0 status completed"
+  else
+    printf 'Curriculum Registry–Contract Binding v0 Foundation: status command completed\n'
+    pass "Curriculum Binding v0 status completed"
+  fi
+else
+  warn "Curriculum Binding v0 status script missing: scripts/curriculum-binding-v0-status.sh"
+fi
+
 section "Teacher App Designer / Canvas LLM Local-First Foundation"
 if [[ -f scripts/teacher-app-designer-canvas-llm-status.sh ]]; then
   teacher_app_designer_canvas_llm_result=0

@@ -1,0 +1,9 @@
+{
+  "binding_version": "0.1.0",
+  "binding_status": "active_v0",
+  "metadata_only": true,
+  "read_only": true,
+  "registry_source": "assistant/curriculum-builder/registry/v0/registry.json",
+  "contract_root": "assistant/curriculum-builder/output-contract/v0",
+  "contract_manifest": "assistant/curriculum-builder/output-contract/v0/placeholder-manifest.json"
+}

@@ -95,6 +95,7 @@ Handoff and status clarity. Start from `docs/phase-1-chief-of-staff-status-audit
 - Engineering Constitution Phase 2 transition (PR #166).
 - Curriculum Registry v0 manual metadata foundation (Phase 2 Mission 1).
 - Curriculum Output Contract v0 bounded validator (Phase 2 Mission 2).
+- Registry–Contract Binding v0 (Phase 2 Mission 3).
 
 ## Engineering Constitution Status
 
@@ -108,6 +109,10 @@ Repo-wide implementation approval gate is active. No implementation is approved 
 
 Canvas LLM docs/status foundation is complete for now. Runtime/export/API/generation work is frozen unless separately and explicitly approved. final handoff snapshot recorded. stop marker active. section completion audit recorded. Recommended next focus: Curriculum Builder foundation.
 
+## Registry–Contract Binding v0 Status
+
+Registry–Contract Binding v0 is active (Phase 2 Mission 3). See `docs/curriculum-binding-v0.md`. Read-only lookup and consistency validation between Registry v0 and Output Contract v0. Optional alignment WARNs only. No lesson generation, renderers, ingestion, APIs, OAuth, network calls, or student data.
+
 ## Curriculum Output Contract v0 Status
 
 Curriculum Output Contract v0 is active (Phase 2 Mission 2). See `docs/curriculum-output-contract-v0.md`. Bounded read-only contract validation with one canonical Direct Instruction slide deck contract and four placeholder contracts. Registry ID references validated against Registry v0. No lesson generation, renderers, HTML/PDF, Canvas package building, ingestion, APIs, OAuth, or student data.
@@ -118,7 +123,7 @@ Curriculum Registry v0 is active (Phase 2 Mission 1). See `docs/curriculum-regis
 
 ## Curriculum Builder Foundation Status
 
-Curriculum Builder planning foundation is complete for now. Registry v0 manual metadata foundation is active under Phase 2 Mission 1. Output Contract Schema v0 bounded validator is active under Phase 2 Mission 2. Ingestion, live resolution, renderers, and generation work remain approval-gated unless separately and explicitly approved. section completion audit recorded. Output contract planning foundation complete (PR #155). Static source registry plan complete (PR #157). Recommended next focus: contract-to-registry binding helpers or additional canonical contract schemas with explicit intake.
+Curriculum Builder planning foundation is complete for now. Registry v0, Output Contract Schema v0, and Registry–Contract Binding v0 are active under Phase 2 Missions 1–3. Ingestion, live resolution, renderers, and generation work remain approval-gated unless separately and explicitly approved. section completion audit recorded. Recommended next focus: additional canonical contract schemas or manual entry helpers with explicit intake.
 
 ## Current PR
 
@@ -133,6 +138,8 @@ Curriculum Builder section completion audit and closure is complete (PR #162). S
 Curriculum Registry v0 manual metadata foundation is active (Phase 2 Mission 1). See `docs/curriculum-registry-v0.md`. Read-only validation only; no ingestion or generation.
 
 Curriculum Output Contract v0 bounded validator is active (Phase 2 Mission 2). See `docs/curriculum-output-contract-v0.md`. Read-only contract validation only; no generation or rendering.
+
+Registry–Contract Binding v0 is active (Phase 2 Mission 3). See `docs/curriculum-binding-v0.md`. Read-only lookup and consistency validation only.
 
 Canvas LLM section completion audit and closure is complete (PR #159). See `docs/canvas-llm-section-completion-audit.md`. Stop marker remains active.
 

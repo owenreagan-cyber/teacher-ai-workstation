@@ -72,6 +72,8 @@ The canonical Direct Instruction slide deck contract is metadata only:
 }
 ```
 
+Registry references are validated against Registry v0 and cross-linked by Registry–Contract Binding v0. See `docs/curriculum-binding-v0.md`.
+
 - `registry_references` must reference existing Registry v0 `registry_id` values
 - `slide_outline_placeholders` contain title/notes placeholders only — no slide HTML or generated content
 - `slide_count` must match the number of slide outline placeholders

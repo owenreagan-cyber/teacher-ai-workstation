@@ -143,6 +143,7 @@ static_source_registry_plan_doc="docs/curriculum-builder-static-source-registry-
 section_completion_audit_doc="docs/curriculum-builder-section-completion-audit.md"
 registry_v0_doc="docs/curriculum-registry-v0.md"
 output_contract_v0_doc="docs/curriculum-output-contract-v0.md"
+binding_v0_doc="docs/curriculum-binding-v0.md"
 build_queue_doc="docs/build-queue.md"
 active_priorities_doc="assistant/memory/active-priorities.md"
 dashboard_doc="docs/chief-of-staff-dashboard.md"
@@ -1446,6 +1447,25 @@ check_doc_contains "${output_contract_foundation_doc}" "Output Contract Schema v
 check_doc_contains "${build_queue_doc}" "Curriculum Output Contract v0" "build queue references output contract v0"
 check_doc_contains "${active_priorities_doc}" "Curriculum Output Contract v0" "active priorities references output contract v0"
 
+section "Curriculum Registry–Contract Binding v0 Foundation Checks"
+
+check_file "${binding_v0_doc}"
+check_file "assistant/curriculum-builder/binding/v0/binding-manifest.json"
+check_file "scripts/curriculum-binding-v0-validator.sh"
+check_file "scripts/curriculum-binding-v0-lookup.sh"
+check_file "scripts/curriculum-binding-v0-status.sh"
+check_doc_contains "${binding_v0_doc}" "read-only" "binding v0 read-only boundary"
+check_doc_contains "${binding_v0_doc}" "registry_id" "binding v0 registry_id lookup documented"
+check_doc_contains "${binding_v0_doc}" "no lesson generation" "binding v0 no lesson generation boundary"
+check_doc_contains "${binding_v0_doc}" "no renderers" "binding v0 no renderers boundary"
+check_doc_contains "${binding_v0_doc}" "no network calls" "binding v0 no network calls boundary"
+check_doc_contains "${binding_v0_doc}" "no student data" "binding v0 no student data boundary"
+check_doc_contains "${binding_v0_doc}" "Registry v0" "binding v0 registry relationship documented"
+check_doc_contains "${binding_v0_doc}" "Output Contract v0" "binding v0 contract relationship documented"
+check_doc_contains "${section_completion_audit_doc}" "Registry–Contract Binding v0" "section completion audit references binding v0"
+check_doc_contains "${build_queue_doc}" "Registry–Contract Binding v0" "build queue references binding v0"
+check_doc_contains "${active_priorities_doc}" "Registry–Contract Binding v0" "active priorities references binding v0"
+
 section "Command Wiring Checks"
 
 check_help_contains '--curriculum-builder-foundation-status'
@@ -1453,6 +1473,9 @@ check_help_contains '--curriculum-registry-v0-status'
 check_help_contains '--curriculum-registry-v0-validate'
 check_help_contains '--curriculum-output-contract-v0-status'
 check_help_contains '--curriculum-output-contract-v0-validate'
+check_help_contains '--curriculum-binding-v0-status'
+check_help_contains '--curriculum-binding-v0-validate'
+check_help_contains '--curriculum-binding-v0-lookup'
 check_bash_syntax "bin/chief-of-staff"
 check_bash_syntax "scripts/chief-of-staff-dashboard.sh"
 check_bash_syntax "scripts/phase-1-status.sh"
@@ -1461,6 +1484,9 @@ check_bash_syntax "scripts/curriculum-registry-v0-status.sh"
 check_bash_syntax "scripts/curriculum-registry-v0-validator.sh"
 check_bash_syntax "scripts/curriculum-output-contract-v0-status.sh"
 check_bash_syntax "scripts/curriculum-output-contract-v0-validator.sh"
+check_bash_syntax "scripts/curriculum-binding-v0-status.sh"
+check_bash_syntax "scripts/curriculum-binding-v0-validator.sh"
+check_bash_syntax "scripts/curriculum-binding-v0-lookup.sh"
 
 pass "no write action attempted"
 pass "no folder scanning attempted"

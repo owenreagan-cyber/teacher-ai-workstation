@@ -665,6 +665,22 @@ check_bash_syntax scripts/curriculum-output-contract-v0-validator.sh
 check_bash_syntax scripts/curriculum-output-contract-v0-status.sh
 check_bash_syntax tests/curriculum-output-contract-v0-test.sh
 
+section "Curriculum Registry–Contract Binding v0 Foundation Files"
+for path in \
+  docs/curriculum-binding-v0.md \
+  assistant/curriculum-builder/binding/v0/README.md \
+  assistant/curriculum-builder/binding/v0/binding-manifest.json \
+  scripts/curriculum-binding-v0-validator.sh \
+  scripts/curriculum-binding-v0-lookup.sh \
+  scripts/curriculum-binding-v0-status.sh \
+  tests/curriculum-binding-v0-test.sh; do
+  check_required_file "${path}"
+done
+check_bash_syntax scripts/curriculum-binding-v0-validator.sh
+check_bash_syntax scripts/curriculum-binding-v0-lookup.sh
+check_bash_syntax scripts/curriculum-binding-v0-status.sh
+check_bash_syntax tests/curriculum-binding-v0-test.sh
+
 section "Teacher App Designer / Canvas LLM Foundation Files"
 for path in \
   docs/teacher-app-designer-canvas-llm-plan.md \

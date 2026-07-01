@@ -113,7 +113,7 @@ bash scripts/curriculum-registry-v0-validator.sh path/to/registry.json
 | v0.1.0 | Active — manual metadata, fictional samples, read-only validation |
 | v0.2+ | Not started — requires separate approved mission |
 
-Future versions may add: output contract binding, renderers, retrieval indexes, Canvas packaging hooks, and bounded ingestion — each approval-gated.
+Binding v0 is designed as a foundation for future renderers, Canvas packaging, retrieval indexes, output contract consumers, and generation pipelines. See `docs/curriculum-binding-v0.md`.
 
 ## Related Governance
 

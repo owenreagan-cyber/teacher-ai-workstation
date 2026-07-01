@@ -243,3 +243,7 @@ The planning-closure statements above remain the historical planning-phase snaps
 ## Output Contract Schema v0 Implementation Activation (Phase 2 Mission 2)
 
 Output Contract Schema v0 activates bounded read-only contract validation. See `docs/curriculum-output-contract-v0.md` and `docs/curriculum-builder-output-contract-foundation.md` — Output Contract Schema v0 Implementation Activation. No lesson generation, renderers, or Canvas package building.
+
+## Registry–Contract Binding v0 Implementation Activation (Phase 2 Mission 3)
+
+Registry–Contract Binding v0 activates read-only lookup and consistency validation between Registry v0 and Output Contract v0. See `docs/curriculum-binding-v0.md`. No lesson generation, renderers, ingestion, or external resolution.

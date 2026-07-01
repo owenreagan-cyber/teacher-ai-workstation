@@ -98,6 +98,10 @@ Teacher review checklists for future manual export packages are documented in `d
 
 Future manual completion status tracking after teacher copy is documented in `docs/canvas-llm-manual-completion-status-placeholder-plan.md`.
 
+## Weekly Export Bundle Plan
+
+Future weekly bundle assembly concepts are documented in `docs/canvas-llm-weekly-export-bundle-placeholder-plan.md`.
+
 ## Related Verification Commands
 
 ```bash

@@ -231,6 +231,8 @@ This checklist does not add:
 
 See `docs/canvas-llm-manual-completion-status-placeholder-plan.md` for manual completion status planning after teacher copy.
 
+Weekly bundle planning is in `docs/canvas-llm-weekly-export-bundle-placeholder-plan.md`.
+
 ## Related Verification Commands
 
 ```bash

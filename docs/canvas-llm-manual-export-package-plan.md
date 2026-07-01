@@ -193,6 +193,10 @@ This plan does not add:
 
 Teacher review checklists for future packages are documented in `docs/canvas-llm-manual-export-review-checklist.md`.
 
+## Weekly Export Bundle Plan
+
+Weekly bundle assembly concepts are documented in `docs/canvas-llm-weekly-export-bundle-placeholder-plan.md`.
+
 ## Related Verification Commands
 
 ```bash

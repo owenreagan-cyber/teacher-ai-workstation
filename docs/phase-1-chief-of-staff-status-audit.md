@@ -266,6 +266,10 @@ Compact map for maintainers, Cursor sessions, and ChatGPT sessions. Tracks below
 | Appearance & Vibe wallpaper/photo foundation | Foundation complete for now; live curator not started | `bash scripts/wallpaper-photo-rotation-handoff-safety-status.sh`; `bin/chief-of-staff --return-to-core-status` | No live app/runtime | Docs/status-only planning unless explicitly approved | Wallpaper app, scheduler, widgets, shortcuts, OS-level changes, automation, APIs, network calls |
 | Dashboard / Chief of Staff status | Active only as status/dashboard command surface | `bin/chief-of-staff --dashboard` | Read-only status output | Docs/status clarity or read-only checks | Behavior changes, command removals/renames, dashboard health count drift without explicit reason |
 
+### Chief of Staff command surfaces are read-only proof surfaces
+
+`bin/chief-of-staff --dashboard`, `bin/chief-of-staff --curriculum-builder-foundation-status`, `bin/chief-of-staff --return-to-core-status`, and `bin/chief-of-staff --prompt-pack-stale-reference-audit-status` report PASS/WARN/FAIL status only. They do not activate parked tracks, implementation, wallpaper runtime, lesson generation, schema activation, or dashboard behavior changes. Wallpaper/photo status commands are read-only proof surfaces unless explicitly named as dry-run validators.
+
 ### Do not restart parked work
 
 - Do not recreate the placeholder skeleton.

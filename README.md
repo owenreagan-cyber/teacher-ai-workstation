@@ -147,7 +147,7 @@ Phase 0 prepares the Mac. Phase 1 builds the assistant foundation.
 
 The Teacher AI Chief of Staff is the primary post-Phase-0 product. It starts as an interactive, permission-based assistant, not an autonomous system.
 
-For current parked vs active tracks, start from `docs/phase-1-chief-of-staff-status-audit.md` — Repo-Wide Parked Tracks and Active Status Map and `docs/build-queue.md`. Dashboard and Chief of Staff status commands are the read-only status surface.
+For current parked vs active tracks, start from `docs/phase-1-chief-of-staff-status-audit.md` — Repo-Wide Parked Tracks and Active Status Map and `docs/build-queue.md`. Dashboard and Chief of Staff status commands are read-only proof surfaces; they report PASS/WARN/FAIL only and do not activate implementation.
 
 Teaching is the primary focus: lesson support, project memory, writing style, planning, and guided troubleshooting. App development and technical debugging support are secondary. 3D printing will become a future specialist agent, with the Chief of Staff coordinating notes and handoffs later.
 
@@ -568,7 +568,7 @@ bin/chief-of-staff --document-indexing-plan-status
 bin/chief-of-staff --local-document-indexing-follow-up-status
 ```
 
-Appearance & Vibe wallpaper/photo curator plan status command:
+Appearance & Vibe wallpaper/photo curator plan status command (read-only status proof; live curator not started):
 
 ```bash
 bin/chief-of-staff --wallpaper-photo-curator-plan-status

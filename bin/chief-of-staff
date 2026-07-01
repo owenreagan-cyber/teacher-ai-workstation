@@ -12,10 +12,12 @@ Teacher AI Chief of Staff CLI
 Usage:
   bin/chief-of-staff --workflow <name> --question <text> [options]
 
+Read-only status proof surfaces report PASS/WARN/FAIL only. They do not activate parked tracks, implementation, wallpaper runtime, lesson generation, schema activation, or dashboard behavior changes.
+
 Meta commands (grouped command map):
 
 Core Dashboard and Health:
-  --dashboard                          Show local Chief of Staff dashboard and exit.
+  --dashboard                          Show local read-only Chief of Staff dashboard status proof and exit.
   --dashboard-readability-status       Show Chief of Staff dashboard readability pass status and exit.
   --command-map-status                 Show Chief of Staff command map cleanup status and exit.
   --help-examples-status               Show Chief of Staff help examples polish status and exit.
@@ -35,7 +37,7 @@ Core Dashboard and Health:
   --prompt-pack-maintenance-status     Show prompt pack maintenance checklist status and exit.
   --prompt-pack-reference-index-status Show prompt pack reference index status and exit.
   --prompt-pack-stale-reference-audit-status
-                                       Show prompt pack stale-reference audit status and exit.
+                                       Show read-only prompt pack stale-reference audit status proof and exit.
   --prompt-pack-freshness-report-status
                                        Show prompt pack freshness report polish status and exit.
   --prompt-pack-handoff-summary-status
@@ -45,7 +47,7 @@ Core Dashboard and Health:
   --command-launcher-status            Show Chief of Staff command launcher status and exit.
 
 Return to Core / Roadmap:
-  --return-to-core-status              Show return to Chief of Staff core planning status and exit.
+  --return-to-core-status              Show read-only paused-tracks / return-to-core status proof and exit.
 
 Lesson Planning:
   --lesson-status                      Show local lesson planning workspace status and exit.
@@ -94,9 +96,9 @@ Teacher Planning Command Organization (status only; safe sample: fractions-revie
   --teacher-workflow-output-examples-completion-status
                                        Show Teacher Workflow output examples completion marker status and exit.
   --lesson-planning-template-readiness-status
-                                       Show Lesson-planning template readiness polish status and exit.
+                                       Show read-only lesson-planning placeholder readiness status proof and exit (parked).
   --curriculum-builder-foundation-status
-                                       Show Curriculum Builder local-first foundation plan status and exit.
+                                       Show read-only Curriculum Builder foundation status proof and exit (parked; approval-gated).
 
 Developer and Cursor Workflow:
   --cursor-workflow-status             Show local Cursor workflow status and exit.
@@ -104,7 +106,7 @@ Developer and Cursor Workflow:
   --create-developer-project <template> <slug>
                                        Copy a Developer Mode template into local projects.
 
-Appearance & Vibe Foundation (status only; live curator not started):
+Appearance & Vibe Foundation (read-only status proof only; live curator not started):
   --wallpaper-photo-curator-plan-status
                                        Show Appearance & Vibe wallpaper/photo curator plan status and exit.
   --wallpaper-photo-folder-design-status

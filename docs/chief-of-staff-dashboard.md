@@ -97,7 +97,7 @@ If Phase 1 status fails, run:
 bash scripts/phase-1-status.sh
 ```
 
-Review the failing Chief of Staff, memory, intake, or script checks before building the next Phase 1 utility.
+Review the failing Chief of Staff, memory, intake, or script checks before starting implementation work from a parked track.
 
 If `bin/chief-of-staff` is not executable, run:
 
@@ -155,6 +155,19 @@ bin/chief-of-staff --dashboard
 ```
 
 This visibility note is documentation only. It does not change dashboard behavior, dashboard health count, or PASS/WARN/FAIL semantics.
+
+## Chief of Staff Command Surfaces
+
+`bin/chief-of-staff --dashboard` is the main read-only dashboard proof surface. It reports PASS/WARN/FAIL status only and does not change repo or app state.
+
+These commands are also read-only status proof surfaces unless explicitly named as dry-run validators:
+
+- `bin/chief-of-staff --curriculum-builder-foundation-status` (Curriculum Builder parked; approval-gated)
+- `bin/chief-of-staff --return-to-core-status` (paused tracks / return-to-core proof)
+- `bin/chief-of-staff --prompt-pack-stale-reference-audit-status` (prompt-pack reference proof)
+- `bin/chief-of-staff --wallpaper-photo-rotation-handoff-safety-status` (Appearance & Vibe foundation parked; live curator not started)
+
+Status command output is not implementation activation. For parked vs active tracks, see `docs/phase-1-chief-of-staff-status-audit.md` — Repo-Wide Parked Tracks and Active Status Map.
 
 ## Future Ideas Not Implemented
 

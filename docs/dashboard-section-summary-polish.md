@@ -70,6 +70,10 @@ The Lesson Planning Status dashboard group includes Curriculum Builder foundatio
 
 See also `docs/chief-of-staff-dashboard.md` for dashboard planning index visibility.
 
+## Chief of Staff Command Surfaces
+
+Dashboard and grouped status commands are read-only proof surfaces. They report PASS/WARN/FAIL only and do not activate parked tracks, implementation, wallpaper runtime, lesson generation, or dashboard behavior changes.
+
 ## Failure and Warning Visibility Rules
 
 ```text

@@ -62,6 +62,7 @@ Handoff and status clarity. Start from `docs/phase-1-chief-of-staff-status-audit
 - Curriculum Builder planning stack (PRs #107–#124): complete and parked for now.
 - Repo-wide parked tracks and active status map (PR #128).
 - Active priorities and build queue handoff alignment (PR #129).
+- Prompt pack post-parked-tracks stale-reference alignment (PR #130).
 
 ## Current PR
 

@@ -89,6 +89,7 @@ This architecture is not:
 - Safety contract: `docs/canvas-llm-safety-and-approval-contract.md`
 - Placeholder schema: `docs/canvas-llm-placeholder-schema.md`
 - Approval and export states: `docs/canvas-llm-approval-and-export-states.md`
+- Manual export package plan: `docs/canvas-llm-manual-export-package-plan.md`
 - Curriculum Builder index: `docs/curriculum-builder-canonical-planning-index.md`
 
 ## Related Verification Commands

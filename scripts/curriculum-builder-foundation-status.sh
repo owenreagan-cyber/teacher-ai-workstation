@@ -144,6 +144,7 @@ section_completion_audit_doc="docs/curriculum-builder-section-completion-audit.m
 registry_v0_doc="docs/curriculum-registry-v0.md"
 output_contract_v0_doc="docs/curriculum-output-contract-v0.md"
 teacher_script_v0_doc="docs/curriculum-teacher-script-contract-v0.md"
+master_build_roadmap_doc="docs/master-build-roadmap.md"
 binding_v0_doc="docs/curriculum-binding-v0.md"
 build_queue_doc="docs/build-queue.md"
 active_priorities_doc="assistant/memory/active-priorities.md"
@@ -1462,6 +1463,14 @@ check_doc_contains "${output_contract_v0_doc}" "teacher_script_contract" "output
 check_doc_contains "${section_completion_audit_doc}" "Teacher Script Contract Schema v0" "section completion audit references teacher script v0"
 check_doc_contains "${build_queue_doc}" "Teacher Script Contract" "build queue references teacher script v0"
 check_doc_contains "${active_priorities_doc}" "Teacher Script Contract" "active priorities references teacher script v0"
+
+section "Master Build Roadmap Checks"
+
+check_file "${master_build_roadmap_doc}"
+check_doc_contains "${master_build_roadmap_doc}" "documentation/status only" "master roadmap documentation/status only"
+check_doc_contains "${master_build_roadmap_doc}" "Implementation does not proceed automatically" "master roadmap no auto implementation"
+check_doc_contains "${build_queue_doc}" "master-build-roadmap" "build queue references master roadmap"
+check_doc_contains "${active_priorities_doc}" "Master Build Roadmap" "active priorities references master roadmap"
 
 section "Curriculum Registry–Contract Binding v0 Foundation Checks"
 

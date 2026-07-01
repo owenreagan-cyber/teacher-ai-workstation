@@ -675,6 +675,9 @@ for path in \
 done
 check_bash_syntax tests/curriculum-teacher-script-contract-v0-test.sh
 
+section "Master Build Roadmap Files"
+check_required_file docs/master-build-roadmap.md
+
 section "Curriculum Registry–Contract Binding v0 Foundation Files"
 for path in \
   docs/curriculum-binding-v0.md \

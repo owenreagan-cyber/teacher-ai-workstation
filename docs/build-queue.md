@@ -8,6 +8,8 @@ Phase 0E Vibe Engine.
 
 ## Current Focus
 
+Master program roadmap: `docs/master-build-roadmap.md` — Program Readiness Audit and mission sequencing for v1.0. Implementation does not proceed automatically from the roadmap.
+
 Handoff and status clarity. Start from `docs/phase-1-chief-of-staff-status-audit.md` — Repo-Wide Parked Tracks and Active Status Map and `docs/build-queue.md`.
 
 ## Recently Completed
@@ -97,6 +99,10 @@ Handoff and status clarity. Start from `docs/phase-1-chief-of-staff-status-audit
 - Curriculum Output Contract v0 bounded validator (Phase 2 Mission 2).
 - Registry–Contract Binding v0 (Phase 2 Mission 3).
 - Teacher Script Contract Schema v0 (Phase 2 Mission 4).
+
+## Master Build Roadmap Status
+
+Canonical program roadmap is active (`docs/master-build-roadmap.md`). Documents current state, seven major programs, mission sequencing, v1.0 definition, and autonomous vs approval boundaries. Next recommended mission: Phase 2 Mission 5 — Worksheet Contract Schema v0. Roadmap does not auto-start implementation.
 
 ## Engineering Constitution Status
 

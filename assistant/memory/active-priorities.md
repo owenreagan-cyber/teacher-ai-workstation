@@ -83,6 +83,7 @@
 
 ### Now
 
+- Master Build Roadmap program readiness audit complete (`docs/master-build-roadmap.md`). Canonical mission sequencing for Curriculum Builder Complete, Chief of Staff v1, Canvas LLM restart, Local LLM, Mac experience, widgets, and integrations. Implementation does not proceed automatically from the roadmap.
 - Teacher Script Contract Schema v0: second canonical output contract active (`docs/curriculum-teacher-script-contract-v0.md`). Fictional teacher script sections and registry references; read-only validation; no script generation, renderers, dynamic variables, or student data.
 - Registry–Contract Binding v0: read-only lookup and consistency validation active (`docs/curriculum-binding-v0.md`). Connects Registry v0 and Output Contract v0; optional alignment WARNs only; no lesson generation, renderers, ingestion, APIs, OAuth, network calls, or student data.
 - Curriculum Output Contract v0 bounded validator: read-only contract validation active (`docs/curriculum-output-contract-v0.md`). One canonical DI slide deck contract plus four placeholders; registry ID reference checks against Registry v0; no lesson generation, renderers, HTML/PDF, Canvas package building, ingestion, APIs, OAuth, network calls, or student data.
@@ -112,6 +113,7 @@
 - Curriculum Output Contract v0 complete (Phase 2 Mission 2). Bounded read-only validator; see `docs/curriculum-output-contract-v0.md`.
 - Registry–Contract Binding v0 complete (Phase 2 Mission 3). Read-only lookup and consistency validation; see `docs/curriculum-binding-v0.md`.
 - Teacher Script Contract Schema v0 complete (Phase 2 Mission 4). Second canonical contract; see `docs/curriculum-teacher-script-contract-v0.md`.
+- Master Build Roadmap program readiness audit complete. See `docs/master-build-roadmap.md`. Next recommended mission: Phase 2 Mission 5 — Worksheet Contract Schema v0.
 - Curriculum Builder static source registry plan complete (PR #157). Documentation/status only; metadata/reference-only; no scanning, folder crawling, file indexing, OCR, embeddings, vector database, or Drive/NAS/iCloud resolution.
 - Curriculum Builder output contract planning foundation complete (PR #155). Output Contract Schema v0 and Teacher Script Contract v0 active; no lesson generation, ingestion, RAG, or runtime behavior beyond read-only validation.
 - Canvas LLM is complete/frozen/stopped. final handoff snapshot is recorded. stop marker is active. Do not start Canvas LLM PRs by default.

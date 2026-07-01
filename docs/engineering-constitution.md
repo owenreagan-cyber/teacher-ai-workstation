@@ -297,7 +297,8 @@ Future work proceeds as **implementation tracks**, not ad hoc PRs.
 Each track:
 
 1. Starts from section completion audit and this constitution.
-2. Completes track intake (`docs/implementation-approval-gate.md`).
+2. Consults the canonical program roadmap (`docs/master-build-roadmap.md`).
+3. Completes track intake (`docs/implementation-approval-gate.md`).
 3. Crosses track-specific approval gate when applicable.
 4. Lands in small, validated PRs with preserved invariants.
 5. Ends with section or track completion audit and dashboard proof.

@@ -80,6 +80,7 @@ curriculum_builder_section_completion_audit_doc="docs/curriculum-builder-section
 canvas_section_completion_audit_doc="docs/canvas-llm-section-completion-audit.md"
 build_queue_doc="docs/build-queue.md"
 active_priorities_doc="assistant/memory/active-priorities.md"
+master_build_roadmap_doc="docs/master-build-roadmap.md"
 workflow_guide="docs/cursor-workflow-operating-system.md"
 prompt_template="docs/cursor-prompt-template.md"
 pr_checklist="docs/cursor-pr-review-checklist.md"
@@ -177,6 +178,22 @@ check_text "${workflow_guide}" "docs/engineering-constitution.md" "cursor workfl
 check_text "${curriculum_builder_section_completion_audit_doc}" "docs/engineering-constitution.md" "curriculum builder section audit links engineering constitution"
 check_text "${build_queue_doc}" "engineering constitution" "build queue references engineering constitution"
 check_text "${active_priorities_doc}" "engineering constitution" "active priorities references engineering constitution"
+
+section "Master Build Roadmap Checks"
+
+check_file "${master_build_roadmap_doc}"
+check_text "${master_build_roadmap_doc}" "documentation/status only" "master roadmap documentation/status only"
+check_text "${master_build_roadmap_doc}" "Roadmap status: active" "master roadmap status active"
+check_text "${master_build_roadmap_doc}" "Implementation does not proceed automatically" "master roadmap no auto implementation"
+check_text "${master_build_roadmap_doc}" "Curriculum Builder Complete" "master roadmap curriculum builder program"
+check_text "${master_build_roadmap_doc}" "Chief of Staff v1" "master roadmap chief of staff program"
+check_text "${master_build_roadmap_doc}" "Canvas LLM Restart" "master roadmap canvas program"
+check_text "${master_build_roadmap_doc}" "Local LLM Workstation Setup" "master roadmap local llm program"
+check_text "${master_build_roadmap_doc}" "Version 1.0 Definition" "master roadmap v1 definition"
+check_text "${master_build_roadmap_doc}" "Phase 2 Mission 5" "master roadmap immediate next mission"
+check_text "${build_queue_doc}" "master-build-roadmap" "build queue references master roadmap"
+check_text "${active_priorities_doc}" "Master Build Roadmap" "active priorities references master roadmap"
+check_text "${engineering_constitution_doc}" "master-build-roadmap.md" "engineering constitution links master roadmap"
 
 branch="$(git branch --show-current 2>/dev/null || true)"
 if [[ "${branch}" == "main" ]] && [[ -n "$(git status --short 2>/dev/null || true)" ]]; then

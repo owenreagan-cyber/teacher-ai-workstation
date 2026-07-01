@@ -19,7 +19,8 @@ canonical planning index
 → static sample validation plan
 → static sample validation checks
 → sample format decision
-→ future CSV placeholder sample plan or Markdown sample maintenance checklist
+→ CSV placeholder sample plan
+→ future CSV placeholder sample artifact
 ```
 
 ## 2. Non-Activation Statement
@@ -126,7 +127,7 @@ This sample does **not** prove data quality, curriculum correctness, legal/copyr
 
 ## 10. Future Validation Path
 
-Read-only static checks against this document are implemented in `docs/curriculum-builder-static-sample-validation-checks.md` and enforced by `scripts/curriculum-builder-foundation-status.sh`. See `docs/curriculum-builder-static-sample-validation-plan.md` for the validation rule set. Sample format policy: `docs/curriculum-builder-sample-format-decision.md` (Markdown-only canonical format).
+Read-only static checks against this document are implemented in `docs/curriculum-builder-static-sample-validation-checks.md` and enforced by `scripts/curriculum-builder-foundation-status.sh`. See `docs/curriculum-builder-static-sample-validation-plan.md` for the validation rule set. Sample format policy: `docs/curriculum-builder-sample-format-decision.md` (Markdown-only canonical format). CSV plan: `docs/curriculum-builder-csv-placeholder-sample-plan.md` (future secondary format; no CSV file yet).
 
 Current verification:
 

@@ -85,14 +85,15 @@ Handoff and status clarity. Start from `docs/phase-1-chief-of-staff-status-audit
 - Canvas LLM planning foundation capstone (PR #150).
 - Canvas LLM planning foundation closure audit (PR #151).
 - Canvas LLM planning foundation index and freeze (PR #152).
+- Canvas LLM frozen foundation handoff snapshot (PR #153).
 
 ## Canvas LLM Foundation Status
 
-Canvas LLM docs/status foundation is complete for now. Canonical endpoint: `docs/canvas-llm-planning-foundation-capstone.md`. Index: `docs/canvas-llm-planning-foundation-index.md`. Freeze: `docs/canvas-llm-planning-foundation-freeze.md`. Runtime/export/API/generation work is frozen unless separately and explicitly approved. Recommended next focus: Curriculum Builder foundation.
+Canvas LLM docs/status foundation is complete for now. Runtime/export/API/generation work is frozen unless separately and explicitly approved. final handoff snapshot recorded: `docs/canvas-llm-frozen-foundation-handoff-snapshot.md`. Recommended next focus: Curriculum Builder foundation.
 
 ## Current PR
 
-Canvas LLM planning foundation index and freeze — documentation/status only. See `docs/canvas-llm-planning-foundation-index.md` and `docs/canvas-llm-planning-foundation-freeze.md`.
+Canvas LLM frozen foundation handoff snapshot — documentation/status only. See `docs/canvas-llm-frozen-foundation-handoff-snapshot.md`.
 
 Previously parked — start from `docs/phase-1-chief-of-staff-status-audit.md` — Repo-Wide Parked Tracks and Active Status Map.
 

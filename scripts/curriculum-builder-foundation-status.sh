@@ -51,6 +51,22 @@ check_doc_contains() {
   fi
 }
 
+check_doc_not_contains() {
+  local file="$1"
+  local phrase="$2"
+  local label="$3"
+  if [[ ! -f "${file}" ]]; then
+    fail "${file} must not contain ${label}"
+    return
+  fi
+
+  if grep -Fq "${phrase}" "${file}"; then
+    fail "${file} must not contain ${label}"
+  else
+    pass "doc does not contain ${label}"
+  fi
+}
+
 check_bash_syntax() {
   local path="$1"
   if [[ ! -f "${path}" ]]; then
@@ -95,6 +111,7 @@ canonical_planning_index_doc="docs/curriculum-builder-canonical-planning-index.m
 next_stage_readiness_audit_doc="docs/curriculum-builder-next-stage-readiness-audit.md"
 manual_registry_schema_plan_doc="docs/curriculum-builder-manual-registry-schema-plan.md"
 manual_registry_sample_proof_plan_doc="docs/curriculum-builder-manual-registry-sample-proof-plan.md"
+manual_registry_sample_proof_doc="docs/curriculum-builder-manual-registry-sample-proof.md"
 dashboard_doc="docs/chief-of-staff-dashboard.md"
 dashboard_section_summary_doc="docs/dashboard-section-summary-polish.md"
 phase_1_audit_doc="docs/phase-1-chief-of-staff-status-audit.md"
@@ -869,6 +886,35 @@ if [[ -f "${manual_registry_sample_proof_plan_doc}" ]]; then
   check_doc_contains "${manual_registry_sample_proof_plan_doc}" "docs/curriculum-builder-canonical-planning-index.md" "canonical planning index cross-link in sample proof plan"
   check_doc_contains "${manual_registry_sample_proof_plan_doc}" "docs/curriculum-builder-manual-registry-schema-plan.md" "manual registry schema plan cross-link in sample proof plan"
   check_doc_contains "${manual_registry_sample_proof_plan_doc}" "Non-Activation confirmation" "Non-Activation confirmation in sample proof plan"
+fi
+
+section "Curriculum Builder Manual Registry Sample Proof Checks"
+
+check_file "${manual_registry_sample_proof_doc}"
+
+if [[ -f "${manual_registry_sample_proof_doc}" ]]; then
+  check_doc_contains "${manual_registry_sample_proof_doc}" "Curriculum Builder Manual Registry Sample Proof" "Curriculum Builder Manual Registry Sample Proof title"
+  check_doc_contains "${manual_registry_sample_proof_doc}" "Non-Activation Statement" "Non-Activation Statement section in sample proof"
+  check_doc_contains "${manual_registry_sample_proof_doc}" "Manual Registry Sample Table" "Manual Registry Sample Table section"
+  check_doc_contains "${manual_registry_sample_proof_doc}" "sample-sm5-textbook-001" "sample-sm5-textbook-001 fictional registry ID"
+  check_doc_contains "${manual_registry_sample_proof_doc}" "sample-student-practice-001" "sample-student-practice-001 fictional registry ID"
+  check_doc_contains "${manual_registry_sample_proof_doc}" "gdrive://placeholder/sm5/textbook" "gdrive placeholder URI in sample proof"
+  check_doc_contains "${manual_registry_sample_proof_doc}" "icloud://placeholder/student-facing-practice" "icloud placeholder URI in sample proof"
+  check_doc_not_contains "${manual_registry_sample_proof_doc}" "https://drive.google.com" "live Google Drive URL in sample proof"
+  check_doc_not_contains "${manual_registry_sample_proof_doc}" "canvas.instructure.com" "live Canvas URL in sample proof"
+  check_doc_not_contains "${manual_registry_sample_proof_doc}" "/Users/" "absolute local user path in sample proof"
+  check_doc_contains "${manual_registry_sample_proof_doc}" "teacher_only" "teacher_only field in sample proof"
+  check_doc_contains "${manual_registry_sample_proof_doc}" "student_facing_allowed" "student_facing_allowed field in sample proof"
+  check_doc_contains "${manual_registry_sample_proof_doc}" "planning_only" "planning_only activation status in sample proof"
+  check_doc_contains "${manual_registry_sample_proof_doc}" "inactive_placeholder" "inactive_placeholder activation status in sample proof"
+  check_doc_contains "${manual_registry_sample_proof_doc}" "Blocked Capabilities" "Blocked Capabilities section in sample proof"
+  check_doc_contains "${manual_registry_sample_proof_doc}" "no document scanning" "no document scanning boundary in sample proof"
+  check_doc_contains "${manual_registry_sample_proof_doc}" "docs/curriculum-builder-canonical-planning-index.md" "canonical planning index cross-link in sample proof"
+  check_doc_contains "${manual_registry_sample_proof_doc}" "Non-Activation confirmation" "Non-Activation confirmation in sample proof"
+fi
+
+if [[ -f "${canonical_planning_index_doc}" ]]; then
+  check_doc_contains "${canonical_planning_index_doc}" "docs/curriculum-builder-manual-registry-sample-proof.md" "manual registry sample proof reference in canonical index"
 fi
 
 section "Dashboard Planning Index Visibility Checks"

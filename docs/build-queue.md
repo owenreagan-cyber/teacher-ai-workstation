@@ -68,6 +68,7 @@ Handoff and status clarity. Start from `docs/phase-1-chief-of-staff-status-audit
 - Curriculum Builder next-stage readiness audit (PR #133).
 - Curriculum Builder manual registry schema planning (PR #134).
 - Curriculum Builder manual registry sample proof plan (PR #135).
+- Curriculum Builder manual registry sample proof (PR #136).
 
 ## Current PR
 

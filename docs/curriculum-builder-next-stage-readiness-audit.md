@@ -42,6 +42,7 @@ The following planning foundations are in place and verified by read-only status
 - Local-first foundation plan with source-reference model
 - Manual registry schema plan (`docs/curriculum-builder-manual-registry-schema-plan.md`)
 - Manual registry sample proof plan (`docs/curriculum-builder-manual-registry-sample-proof-plan.md`)
+- Manual registry sample proof (`docs/curriculum-builder-manual-registry-sample-proof.md`)
 - Source storage strategy (Google Drive, NAS, iCloud, local folders)
 - Metadata-only Curriculum Resource Registry plan (field inventory, safety values, manual-first workflow, validator planning, placeholder shape, approval gate sections)
 - Planning stack summary and next-phase decision note

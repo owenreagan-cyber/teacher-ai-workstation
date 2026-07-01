@@ -14,8 +14,9 @@ Planning path:
 canonical planning index
 → next-stage readiness audit
 → manual registry schema plan
-→ manual registry sample proof plan (this document)
-→ future manual registry sample proof
+→ manual registry sample proof plan
+→ manual registry sample proof (`docs/curriculum-builder-manual-registry-sample-proof.md`)
+→ future static sample validation planning
 ```
 
 ## 2. Non-Activation Statement
@@ -293,9 +294,9 @@ Unless explicitly approved through `docs/curriculum-builder-approval-gate.md` an
 
 ## 17. Recommended Next PR After This Plan
 
-After this plan merges, the recommended next Curriculum Builder PR is:
+After the manual registry sample proof (`docs/curriculum-builder-manual-registry-sample-proof.md`) merges, the recommended next Curriculum Builder PR is:
 
-**Manual registry sample proof** — create `docs/curriculum-builder-manual-registry-sample-proof.md` (or approved CSV under `docs/examples/`) with 5–8 fictional rows per this plan and the manual registry schema plan. Add read-only static proof checks for the artifact. No app code, no live registry, no connectors.
+**Static sample validation planning** — refine read-only static proof checks against the sample artifact; still no app code, no live registry, no connectors.
 
 Alternative safe paths:
 

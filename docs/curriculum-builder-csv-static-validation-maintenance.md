@@ -22,7 +22,7 @@ canonical planning index
 → CSV placeholder sample plan
 → CSV placeholder sample artifact
 → CSV static validation maintenance (this document)
-→ future Markdown/CSV alignment proof
+→ Markdown/CSV alignment proof
 ```
 
 ## 2. Non-Activation Statement
@@ -52,6 +52,7 @@ Chief of Staff remains a read-only proof/status/reference surface.
 | CSV artifact doc | `docs/curriculum-builder-csv-placeholder-sample-artifact.md` | CSV boundaries and validation |
 | CSV plan | `docs/curriculum-builder-csv-placeholder-sample-plan.md` | CSV safety rules |
 | Status script | `scripts/curriculum-builder-foundation-status.sh` | Repo-local PASS/WARN/FAIL checks |
+| Markdown/CSV alignment proof | `docs/curriculum-builder-markdown-csv-alignment-proof.md` | Static grep proof of shared placeholder concepts |
 
 ## 4. Canonical vs Secondary Rule
 
@@ -263,14 +264,7 @@ Unless explicitly approved through `docs/curriculum-builder-approval-gate.md` an
 
 ## 18. Recommended Next PR
 
-**PR #143 — Curriculum Builder Markdown/CSV Alignment Proof**
-
-Scope:
-
-- documentation/status-only proof that Markdown and CSV samples remain aligned on shared IDs and placeholder URIs
-- optional additional static grep checks cross-referencing both artifact paths (text-only; no parser)
-- no sample row edits unless a documented static proof bug is found
-- no parser, importer, loader, or runtime validator
+**PR #143 — Curriculum Builder Markdown/CSV Alignment Proof** (static grep checks on shared IDs and URIs; completed in this track). Future sample edits should follow this maintenance doc and re-run alignment checks.
 
 ## 19. PR Handoff Checklist
 

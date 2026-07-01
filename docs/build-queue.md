@@ -75,6 +75,7 @@ Handoff and status clarity. Start from `docs/phase-1-chief-of-staff-status-audit
 - Curriculum Builder CSV placeholder sample plan (PR #140).
 - Curriculum Builder CSV placeholder sample artifact (PR #141).
 - Curriculum Builder CSV static validation maintenance (PR #142).
+- Curriculum Builder Markdown/CSV alignment proof (PR #143).
 
 ## Current PR
 

@@ -137,6 +137,7 @@ csv_placeholder_sample_plan_doc="docs/curriculum-builder-csv-placeholder-sample-
 csv_placeholder_sample_artifact_doc="docs/curriculum-builder-csv-placeholder-sample-artifact.md"
 csv_placeholder_sample_csv="docs/examples/curriculum-builder-manual-registry-sample.csv"
 csv_static_validation_maintenance_doc="docs/curriculum-builder-csv-static-validation-maintenance.md"
+markdown_csv_alignment_proof_doc="docs/curriculum-builder-markdown-csv-alignment-proof.md"
 dashboard_doc="docs/chief-of-staff-dashboard.md"
 dashboard_section_summary_doc="docs/dashboard-section-summary-polish.md"
 phase_1_audit_doc="docs/phase-1-chief-of-staff-status-audit.md"
@@ -1212,10 +1213,72 @@ if [[ -f "${csv_static_validation_maintenance_doc}" ]]; then
   check_doc_contains "${csv_static_validation_maintenance_doc}" "Blocked Capabilities" "Blocked Capabilities section in CSV maintenance doc"
   check_doc_contains "${csv_static_validation_maintenance_doc}" "Recommended Next PR" "Recommended Next PR section in CSV maintenance doc"
   check_doc_contains "${csv_static_validation_maintenance_doc}" "docs/curriculum-builder-canonical-planning-index.md" "canonical planning index cross-link in CSV maintenance doc"
+  check_doc_contains "${csv_static_validation_maintenance_doc}" "docs/curriculum-builder-markdown-csv-alignment-proof.md" "Markdown/CSV alignment proof cross-link in CSV maintenance doc"
 fi
 
 if [[ -f "${canonical_planning_index_doc}" ]]; then
   check_doc_contains "${canonical_planning_index_doc}" "docs/curriculum-builder-csv-static-validation-maintenance.md" "CSV static validation maintenance reference in canonical index"
+  check_doc_contains "${canonical_planning_index_doc}" "docs/curriculum-builder-markdown-csv-alignment-proof.md" "Markdown/CSV alignment proof reference in canonical index"
+fi
+
+section "Curriculum Builder Markdown/CSV Alignment Proof Documentation"
+
+check_file "${markdown_csv_alignment_proof_doc}"
+
+if [[ -f "${markdown_csv_alignment_proof_doc}" ]]; then
+  check_doc_contains "${markdown_csv_alignment_proof_doc}" "Curriculum Builder Markdown/CSV Alignment Proof" "Curriculum Builder Markdown/CSV Alignment Proof title"
+  check_doc_contains "${markdown_csv_alignment_proof_doc}" "Non-Activation Statement" "Non-Activation Statement section in alignment proof doc"
+  check_doc_contains "${markdown_csv_alignment_proof_doc}" "Canonical Markdown Artifact" "Canonical Markdown Artifact section in alignment proof doc"
+  check_doc_contains "${markdown_csv_alignment_proof_doc}" "Secondary CSV Artifact" "Secondary CSV Artifact section in alignment proof doc"
+  check_doc_contains "${markdown_csv_alignment_proof_doc}" "Maintenance Reference" "Maintenance Reference section in alignment proof doc"
+  check_doc_contains "${markdown_csv_alignment_proof_doc}" "Static Alignment Proof Method" "Static Alignment Proof Method section in alignment proof doc"
+  check_doc_contains "${markdown_csv_alignment_proof_doc}" "Shared Placeholder Concepts" "Shared Placeholder Concepts section in alignment proof doc"
+  check_doc_contains "${markdown_csv_alignment_proof_doc}" "What This Alignment Proof Proves" "What This Alignment Proof Proves section in alignment proof doc"
+  check_doc_contains "${markdown_csv_alignment_proof_doc}" "What This Alignment Proof Does Not Prove" "What This Alignment Proof Does Not Prove section in alignment proof doc"
+  check_doc_contains "${markdown_csv_alignment_proof_doc}" "Blocked Capabilities" "Blocked Capabilities section in alignment proof doc"
+  check_doc_contains "${markdown_csv_alignment_proof_doc}" "${manual_registry_sample_proof_doc}" "canonical Markdown sample path in alignment proof doc"
+  check_doc_contains "${markdown_csv_alignment_proof_doc}" "${csv_placeholder_sample_csv}" "secondary CSV sample path in alignment proof doc"
+  check_doc_contains "${markdown_csv_alignment_proof_doc}" "${csv_static_validation_maintenance_doc}" "CSV maintenance doc path in alignment proof doc"
+  check_doc_contains "${markdown_csv_alignment_proof_doc}" "docs/curriculum-builder-canonical-planning-index.md" "canonical planning index cross-link in alignment proof doc"
+fi
+
+section "Curriculum Builder Markdown/CSV Shared Concept Alignment Checks"
+
+if [[ -f "${manual_registry_sample_proof_doc}" && -f "${csv_placeholder_sample_csv}" ]]; then
+  check_doc_contains "${manual_registry_sample_proof_doc}" "sample-sm5-textbook-001" "sample-sm5-textbook-001 in Markdown sample for alignment"
+  check_doc_contains "${csv_placeholder_sample_csv}" "sample-sm5-textbook-001" "sample-sm5-textbook-001 in CSV sample for alignment"
+  check_doc_contains "${manual_registry_sample_proof_doc}" "sample-sm5-worksheet-folder-001" "sample-sm5-worksheet-folder-001 in Markdown sample for alignment"
+  check_doc_contains "${csv_placeholder_sample_csv}" "sample-sm5-worksheet-folder-001" "sample-sm5-worksheet-folder-001 in CSV sample for alignment"
+  check_doc_contains "${manual_registry_sample_proof_doc}" "sample-history-slides-001" "sample-history-slides-001 in Markdown sample for alignment"
+  check_doc_contains "${csv_placeholder_sample_csv}" "sample-history-slides-001" "sample-history-slides-001 in CSV sample for alignment"
+  check_doc_contains "${manual_registry_sample_proof_doc}" "sample-science-study-guide-001" "sample-science-study-guide-001 in Markdown sample for alignment"
+  check_doc_contains "${csv_placeholder_sample_csv}" "sample-science-study-guide-001" "sample-science-study-guide-001 in CSV sample for alignment"
+  check_doc_contains "${manual_registry_sample_proof_doc}" "sample-canvas-export-folder-001" "sample-canvas-export-folder-001 in Markdown sample for alignment"
+  check_doc_contains "${csv_placeholder_sample_csv}" "sample-canvas-export-folder-001" "sample-canvas-export-folder-001 in CSV sample for alignment"
+  check_doc_contains "${manual_registry_sample_proof_doc}" "sample-teacher-assessment-001" "sample-teacher-assessment-001 in Markdown sample for alignment"
+  check_doc_contains "${csv_placeholder_sample_csv}" "sample-teacher-assessment-001" "sample-teacher-assessment-001 in CSV sample for alignment"
+  check_doc_contains "${manual_registry_sample_proof_doc}" "sample-student-practice-001" "sample-student-practice-001 in Markdown sample for alignment"
+  check_doc_contains "${csv_placeholder_sample_csv}" "sample-student-practice-001" "sample-student-practice-001 in CSV sample for alignment"
+  check_doc_contains "${manual_registry_sample_proof_doc}" "gdrive://placeholder/sm5/textbook" "gdrive placeholder URI in Markdown sample for alignment"
+  check_doc_contains "${csv_placeholder_sample_csv}" "gdrive://placeholder/sm5/textbook" "gdrive placeholder URI in CSV sample for alignment"
+  check_doc_contains "${manual_registry_sample_proof_doc}" "gdrive://placeholder/sm5/worksheet-folder" "gdrive worksheet folder URI in Markdown sample for alignment"
+  check_doc_contains "${csv_placeholder_sample_csv}" "gdrive://placeholder/sm5/worksheet-folder" "gdrive worksheet folder URI in CSV sample for alignment"
+  check_doc_contains "${manual_registry_sample_proof_doc}" "nas://placeholder/archive/history-slides" "nas history slides URI in Markdown sample for alignment"
+  check_doc_contains "${csv_placeholder_sample_csv}" "nas://placeholder/archive/history-slides" "nas history slides URI in CSV sample for alignment"
+  check_doc_contains "${manual_registry_sample_proof_doc}" "nas://placeholder/archive/science-study-guides" "nas science study guides URI in Markdown sample for alignment"
+  check_doc_contains "${csv_placeholder_sample_csv}" "nas://placeholder/archive/science-study-guides" "nas science study guides URI in CSV sample for alignment"
+  check_doc_contains "${manual_registry_sample_proof_doc}" "local://placeholder/canvas-export" "local canvas export URI in Markdown sample for alignment"
+  check_doc_contains "${csv_placeholder_sample_csv}" "local://placeholder/canvas-export" "local canvas export URI in CSV sample for alignment"
+  check_doc_contains "${manual_registry_sample_proof_doc}" "local://placeholder/teacher-only-assessment" "local teacher-only assessment URI in Markdown sample for alignment"
+  check_doc_contains "${csv_placeholder_sample_csv}" "local://placeholder/teacher-only-assessment" "local teacher-only assessment URI in CSV sample for alignment"
+  check_doc_contains "${manual_registry_sample_proof_doc}" "icloud://placeholder/student-facing-practice" "icloud student-facing practice URI in Markdown sample for alignment"
+  check_doc_contains "${csv_placeholder_sample_csv}" "icloud://placeholder/student-facing-practice" "icloud student-facing practice URI in CSV sample for alignment"
+  check_doc_contains "${manual_registry_sample_proof_doc}" "placeholder_only" "placeholder_only safety flag in Markdown sample for alignment"
+  check_doc_contains "${csv_placeholder_sample_csv}" "placeholder_only" "placeholder_only safety flag in CSV sample for alignment"
+  check_doc_contains "${manual_registry_sample_proof_doc}" "no_external_resolution" "no_external_resolution safety flag in Markdown sample for alignment"
+  check_doc_contains "${csv_placeholder_sample_csv}" "no_external_resolution" "no_external_resolution safety flag in CSV sample for alignment"
+  check_doc_contains "${manual_registry_sample_proof_doc}" "manual_entry" "manual_entry safety flag in Markdown sample for alignment"
+  check_doc_contains "${csv_placeholder_sample_csv}" "manual_static_entry" "manual_static_entry safety flag in CSV sample for alignment"
 fi
 
 section "Dashboard Planning Index Visibility Checks"

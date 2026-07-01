@@ -16,7 +16,8 @@ canonical planning index
 → manual registry schema plan
 → manual registry sample proof plan
 → manual registry sample proof (this document)
-→ future static sample validation planning
+→ static sample validation plan
+→ future static sample validation checks
 ```
 
 ## 2. Non-Activation Statement
@@ -122,13 +123,7 @@ This sample does **not** prove data quality, curriculum correctness, legal/copyr
 
 ## 10. Future Validation Path
 
-A future PR may add read-only static checks against this document (or a derived CSV/JSON artifact) to verify:
-
-- row count and required fields
-- placeholder URI scheme compliance
-- absence of live URLs and absolute user paths
-- teacher-only and student-facing coverage
-- activation status remains planning-only or inactive placeholder
+A future PR may add read-only static checks against this document. See `docs/curriculum-builder-static-sample-validation-plan.md` for the validation rule set.
 
 Current verification:
 

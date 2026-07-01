@@ -112,6 +112,7 @@ next_stage_readiness_audit_doc="docs/curriculum-builder-next-stage-readiness-aud
 manual_registry_schema_plan_doc="docs/curriculum-builder-manual-registry-schema-plan.md"
 manual_registry_sample_proof_plan_doc="docs/curriculum-builder-manual-registry-sample-proof-plan.md"
 manual_registry_sample_proof_doc="docs/curriculum-builder-manual-registry-sample-proof.md"
+static_sample_validation_plan_doc="docs/curriculum-builder-static-sample-validation-plan.md"
 dashboard_doc="docs/chief-of-staff-dashboard.md"
 dashboard_section_summary_doc="docs/dashboard-section-summary-polish.md"
 phase_1_audit_doc="docs/phase-1-chief-of-staff-status-audit.md"
@@ -915,6 +916,27 @@ fi
 
 if [[ -f "${canonical_planning_index_doc}" ]]; then
   check_doc_contains "${canonical_planning_index_doc}" "docs/curriculum-builder-manual-registry-sample-proof.md" "manual registry sample proof reference in canonical index"
+  check_doc_contains "${canonical_planning_index_doc}" "docs/curriculum-builder-static-sample-validation-plan.md" "static sample validation plan reference in canonical index"
+fi
+
+section "Curriculum Builder Static Sample Validation Plan Checks"
+
+check_file "${static_sample_validation_plan_doc}"
+
+if [[ -f "${static_sample_validation_plan_doc}" ]]; then
+  check_doc_contains "${static_sample_validation_plan_doc}" "Curriculum Builder Static Sample Validation Plan" "Curriculum Builder Static Sample Validation Plan title"
+  check_doc_contains "${static_sample_validation_plan_doc}" "Non-Activation Statement" "Non-Activation Statement section in validation plan"
+  check_doc_contains "${static_sample_validation_plan_doc}" "Required Field Presence Rules" "Required Field Presence Rules section"
+  check_doc_contains "${static_sample_validation_plan_doc}" "Placeholder URI Rules" "Placeholder URI Rules section"
+  check_doc_contains "${static_sample_validation_plan_doc}" "Prohibited Reference Rules" "Prohibited Reference Rules section"
+  check_doc_contains "${static_sample_validation_plan_doc}" "Fictional Data Rules" "Fictional Data Rules section"
+  check_doc_contains "${static_sample_validation_plan_doc}" "Activation Status Rules" "Activation Status Rules section"
+  check_doc_contains "${static_sample_validation_plan_doc}" "Future Static Check Expansion Path" "Future Static Check Expansion Path section"
+  check_doc_contains "${static_sample_validation_plan_doc}" "Blocked Capabilities" "Blocked Capabilities section in validation plan"
+  check_doc_contains "${static_sample_validation_plan_doc}" "no document scanning" "no document scanning boundary in validation plan"
+  check_doc_contains "${static_sample_validation_plan_doc}" "docs/curriculum-builder-canonical-planning-index.md" "canonical planning index cross-link in validation plan"
+  check_doc_contains "${static_sample_validation_plan_doc}" "docs/curriculum-builder-manual-registry-sample-proof.md" "manual registry sample proof cross-link in validation plan"
+  check_doc_contains "${static_sample_validation_plan_doc}" "Non-Activation confirmation" "Non-Activation confirmation in validation plan"
 fi
 
 section "Dashboard Planning Index Visibility Checks"

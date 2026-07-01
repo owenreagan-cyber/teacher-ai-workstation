@@ -96,6 +96,7 @@ Handoff and status clarity. Start from `docs/phase-1-chief-of-staff-status-audit
 - Curriculum Registry v0 manual metadata foundation (Phase 2 Mission 1).
 - Curriculum Output Contract v0 bounded validator (Phase 2 Mission 2).
 - Registry–Contract Binding v0 (Phase 2 Mission 3).
+- Teacher Script Contract Schema v0 (Phase 2 Mission 4).
 
 ## Engineering Constitution Status
 
@@ -108,6 +109,10 @@ Repo-wide implementation approval gate is active. No implementation is approved 
 ## Canvas LLM Foundation Status
 
 Canvas LLM docs/status foundation is complete for now. Runtime/export/API/generation work is frozen unless separately and explicitly approved. final handoff snapshot recorded. stop marker active. section completion audit recorded. Recommended next focus: Curriculum Builder foundation.
+
+## Teacher Script Contract v0 Status
+
+Teacher Script Contract Schema v0 is active (Phase 2 Mission 4). See `docs/curriculum-teacher-script-contract-v0.md`. Second canonical output contract with fictional teacher script sections; read-only validation only. No script generation, renderers, or runtime execution.
 
 ## Registry–Contract Binding v0 Status
 
@@ -123,7 +128,7 @@ Curriculum Registry v0 is active (Phase 2 Mission 1). See `docs/curriculum-regis
 
 ## Curriculum Builder Foundation Status
 
-Curriculum Builder planning foundation is complete for now. Registry v0, Output Contract Schema v0, and Registry–Contract Binding v0 are active under Phase 2 Missions 1–3. Ingestion, live resolution, renderers, and generation work remain approval-gated unless separately and explicitly approved. section completion audit recorded. Recommended next focus: additional canonical contract schemas or manual entry helpers with explicit intake.
+Curriculum Builder planning foundation is complete for now. Registry v0, Output Contract Schema v0, Registry–Contract Binding v0, and Teacher Script Contract Schema v0 are active under Phase 2 Missions 1–4. Ingestion, live resolution, renderers, and generation work remain approval-gated unless separately and explicitly approved. section completion audit recorded. Recommended next focus: additional canonical contract schemas with explicit intake.
 
 ## Current PR
 

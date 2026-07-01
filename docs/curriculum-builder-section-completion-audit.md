@@ -247,3 +247,7 @@ Output Contract Schema v0 activates bounded read-only contract validation. See `
 ## Registry–Contract Binding v0 Implementation Activation (Phase 2 Mission 3)
 
 Registry–Contract Binding v0 activates read-only lookup and consistency validation between Registry v0 and Output Contract v0. See `docs/curriculum-binding-v0.md`. No lesson generation, renderers, ingestion, or external resolution.
+
+## Teacher Script Contract Schema v0 Implementation Activation (Phase 2 Mission 4)
+
+Teacher Script Contract Schema v0 promotes `teacher_script_contract` to a second fully validated canonical contract. See `docs/curriculum-teacher-script-contract-v0.md`. No script generation, renderers, or runtime execution.

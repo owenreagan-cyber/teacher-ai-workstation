@@ -65,6 +65,7 @@ bin/chief-of-staff --curriculum-binding-v0-status >/dev/null
 bin/chief-of-staff --curriculum-binding-v0-validate >/dev/null
 bin/chief-of-staff --curriculum-binding-v0-lookup sample-sm5-textbook-001 >/dev/null
 bash tests/curriculum-binding-v0-test.sh >/dev/null
+bash tests/curriculum-teacher-script-contract-v0-test.sh >/dev/null
 bin/chief-of-staff --intake-status >/dev/null
 bin/chief-of-staff --intake-summary >/dev/null
 bin/chief-of-staff --intake-diff >/dev/null

@@ -128,14 +128,35 @@ DI_REQUIRED = {
     "local_first_safety_flags", "planning_notes", "created_by_manual_entry",
     "activation_status",
 }
+TS_REQUIRED = {
+    "contract_version", "contract_status", "metadata_only", "read_only",
+    "contract_id", "contract_type", "title", "subject", "grade_band", "course",
+    "unit", "lesson", "registry_references", "teacher_only", "student_facing_allowed",
+    "review_state", "approval_status", "lesson_context", "script_sections",
+    "local_first_safety_flags", "non_activation_flags", "pedagogy_extensions",
+    "metadata_extensions", "planning_notes", "created_by_manual_entry",
+    "activation_status",
+}
+REVIEW_STATES = {
+    "not_reviewed", "metadata_only", "teacher_reviewed", "needs_update", "retired",
+}
+APPROVAL_STATUSES = {
+    "not_approved", "placeholder_approved", "blocked_placeholder", "approved", "rejected",
+}
+REQUIRED_NON_ACTIVATION_FLAGS = {
+    "not_generated", "not_rendered", "no_runtime_execution",
+    "no_dynamic_variables", "no_student_name_injection",
+}
 BLOCKED_FIELDS = {
     "html_content", "slide_html", "generated_content", "generated_slides",
     "pdf_path", "canvas_package_uri", "rendered_output", "lesson_draft",
-    "embedding_status", "ocr_status", "parsed_text",
+    "embedding_status", "ocr_status", "parsed_text", "generated_script",
+    "dynamic_variables", "student_name_injection", "personalized_content",
 }
 ID_PATTERN = re.compile(r"^sample-contract-[a-z0-9-]+$")
 REGISTRY_ID_PATTERN = re.compile(r"^sample-[a-z0-9-]+$")
 SLIDE_ID_PATTERN = re.compile(r"^slide-[0-9]{2}$")
+SECTION_ID_PATTERN = re.compile(r"^section-[0-9]{2}$")
 HTTP_PATTERN = re.compile(r"https?://", re.IGNORECASE)
 HTML_PATTERN = re.compile(r"<\s*/?\s*[a-zA-Z]", re.IGNORECASE)
 STUDENT_NAME_PATTERN = re.compile(
@@ -234,7 +255,9 @@ def validate_placeholder(label, data, registry_ids):
     blocked_type_fields = {
         "delivery_mode", "slide_count", "slide_outline_placeholders",
         "subject", "grade_band", "course", "unit", "lesson",
-        "teacher_only", "student_facing_allowed",
+        "teacher_only", "student_facing_allowed", "review_state", "approval_status",
+        "lesson_context", "script_sections", "non_activation_flags",
+        "pedagogy_extensions", "metadata_extensions",
     }
     present = set(data.keys()) & blocked_type_fields
     if present:
@@ -306,6 +329,122 @@ def validate_di_contract(label, data, registry_ids):
                     warnings.append(f"{slide_label} {text_key} should include placeholder wording")
 
 
+def validate_teacher_script_contract(label, data, registry_records):
+    for field in TS_REQUIRED:
+        if field not in data:
+            errors.append(f"{label} missing required field: {field}")
+
+    extra = set(data.keys()) - TS_REQUIRED
+    if extra:
+        errors.append(f"{label} unexpected fields: {sorted(extra)}")
+
+    validate_common_envelope(label, data, placeholder=False)
+
+    if data.get("contract_type") != "teacher_script_contract":
+        errors.append(f"{label} contract_type must be teacher_script_contract")
+
+    refs = data.get("registry_references", [])
+    validate_registry_refs(label, refs, set(registry_records.keys()))
+    if isinstance(refs, list) and len(refs) < 1:
+        errors.append(f"{label} canonical contract requires at least one registry reference")
+
+    teacher_only = data.get("teacher_only")
+    if teacher_only is not True:
+        errors.append(f"{label} teacher_only must be true for teacher script contracts")
+
+    student_facing = data.get("student_facing_allowed")
+    if student_facing not in STUDENT_FACING:
+        errors.append(f"{label} invalid student_facing_allowed: {student_facing!r}")
+    if student_facing == "true":
+        errors.append(f"{label} teacher script contract must not be student_facing_allowed true")
+
+    review_state = data.get("review_state")
+    if review_state not in REVIEW_STATES:
+        errors.append(f"{label} invalid review_state: {review_state!r}")
+
+    approval_status = data.get("approval_status")
+    if approval_status not in APPROVAL_STATUSES:
+        errors.append(f"{label} invalid approval_status: {approval_status!r}")
+
+    non_activation = data.get("non_activation_flags")
+    if not isinstance(non_activation, list) or not all(isinstance(item, str) for item in non_activation):
+        errors.append(f"{label} non_activation_flags must be string array")
+    else:
+        missing = REQUIRED_NON_ACTIVATION_FLAGS - set(non_activation)
+        if missing:
+            errors.append(f"{label} missing required non_activation_flags: {sorted(missing)}")
+
+    for ext_field in ("pedagogy_extensions", "metadata_extensions"):
+        value = data.get(ext_field)
+        if not isinstance(value, dict):
+            errors.append(f"{label} {ext_field} must be an object")
+
+    lesson_context = data.get("lesson_context")
+    if not isinstance(lesson_context, dict):
+        errors.append(f"{label} lesson_context must be an object")
+    else:
+        for key in ("pacing_reference", "delivery_mode", "focus_topic"):
+            if key not in lesson_context:
+                errors.append(f"{label} lesson_context missing {key}")
+        if lesson_context.get("delivery_mode") != "direct_instruction":
+            errors.append(f"{label} lesson_context delivery_mode must be direct_instruction")
+        focus_topic = lesson_context.get("focus_topic", "")
+        if not isinstance(focus_topic, str) or not focus_topic.strip():
+            errors.append(f"{label} lesson_context focus_topic must be non-empty string")
+        elif "placeholder" not in focus_topic.lower():
+            warnings.append(f"{label} lesson_context focus_topic should include placeholder wording")
+
+    sections = data.get("script_sections")
+    if not isinstance(sections, list) or not sections:
+        errors.append(f"{label} script_sections must be non-empty array")
+    else:
+        seen_section_ids = set()
+        section_text_fields = (
+            "section_label", "teacher_script", "teacher_prompt",
+            "student_response_expectation", "check_for_understanding",
+            "timing_or_pacing_hint", "materials_or_prep_note",
+        )
+        for index, section in enumerate(sections):
+            section_label = f"{label} script_sections[{index}]"
+            if not isinstance(section, dict):
+                errors.append(f"{section_label} must be an object")
+                continue
+            for key in ("section_id", *section_text_fields):
+                if key not in section:
+                    errors.append(f"{section_label} missing {key}")
+            section_id = section.get("section_id", "")
+            if not isinstance(section_id, str) or not SECTION_ID_PATTERN.match(section_id):
+                errors.append(f"{section_label} invalid section_id: {section_id!r}")
+            elif section_id in seen_section_ids:
+                errors.append(f"{section_label} duplicate section_id: {section_id}")
+            else:
+                seen_section_ids.add(section_id)
+            for text_key in section_text_fields:
+                value = section.get(text_key, "")
+                if not isinstance(value, str) or not value.strip():
+                    errors.append(f"{section_label} {text_key} must be non-empty string")
+                elif "placeholder" not in value.lower():
+                    warnings.append(f"{section_label} {text_key} should include placeholder wording")
+
+
+def get_canonical_contract_paths(manifest):
+    canonical_contracts = manifest.get("canonical_contracts")
+    if isinstance(canonical_contracts, list) and canonical_contracts:
+        return canonical_contracts
+    canonical_contract = manifest.get("canonical_contract")
+    if isinstance(canonical_contract, str):
+        return [canonical_contract]
+    return []
+
+
+def load_all_contract_paths(manifest):
+    paths = get_canonical_contract_paths(manifest)
+    placeholders = manifest.get("placeholder_contracts", [])
+    if isinstance(placeholders, list):
+        paths.extend(placeholders)
+    return paths
+
+
 try:
     registry_data = load_json(registry_file)
 except json.JSONDecodeError as exc:
@@ -317,26 +456,38 @@ registry_ids = {
     for record in registry_data.get("records", [])
     if isinstance(record, dict) and isinstance(record.get("registry_id"), str)
 }
+registry_records = {
+    record.get("registry_id"): record
+    for record in registry_data.get("records", [])
+    if isinstance(record, dict) and isinstance(record.get("registry_id"), str)
+}
 
 manifest_path = os.path.join(contract_root, "placeholder-manifest.json")
 if not os.path.isfile(manifest_path):
     errors.append(f"manifest missing: {manifest_path}")
 else:
     manifest = load_json(manifest_path)
-    canonical_rel = manifest.get("canonical_contract")
+    canonical_rels = get_canonical_contract_paths(manifest)
     placeholder_rels = manifest.get("placeholder_contracts", [])
-    if not isinstance(canonical_rel, str):
-        errors.append("manifest canonical_contract must be a string")
-    if not isinstance(placeholder_rels, list) or len(placeholder_rels) != 4:
-        errors.append("manifest must list exactly 4 placeholder contracts")
+    if not isinstance(canonical_rels, list) or len(canonical_rels) != 2:
+        errors.append("manifest must list exactly 2 canonical contracts")
+    if not isinstance(placeholder_rels, list) or len(placeholder_rels) != 3:
+        errors.append("manifest must list exactly 3 placeholder contracts")
 
-    if isinstance(canonical_rel, str):
+    for canonical_rel in canonical_rels:
         canonical_path = os.path.join(contract_root, canonical_rel)
+        label = f"canonical:{canonical_rel}"
         if not os.path.isfile(canonical_path):
             errors.append(f"canonical contract file missing: {canonical_rel}")
+            continue
+        contract_data = load_json(canonical_path)
+        contract_type = contract_data.get("contract_type")
+        if contract_type == "direct_instruction_slide_deck_contract":
+            validate_di_contract(label, contract_data, registry_ids)
+        elif contract_type == "teacher_script_contract":
+            validate_teacher_script_contract(label, contract_data, registry_records)
         else:
-            di_data = load_json(canonical_path)
-            validate_di_contract(f"canonical:{canonical_rel}", di_data, registry_ids)
+            errors.append(f"{label} unsupported canonical contract_type: {contract_type!r}")
 
     if isinstance(placeholder_rels, list):
         for rel in placeholder_rels:
@@ -357,6 +508,7 @@ for error in errors:
 if not errors:
     print("PASS: output contract v0 manifest valid")
     print("PASS: canonical direct instruction slide deck contract valid")
+    print("PASS: canonical teacher script contract valid")
     print(f"PASS: validated {len(placeholder_rels) if isinstance(placeholder_rels, list) else 0} placeholder contracts")
     print("PASS: registry reference checks completed against Registry v0")
 PY

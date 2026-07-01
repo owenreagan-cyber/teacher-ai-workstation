@@ -1,0 +1,70 @@
+{
+  "contract_version": "0.1.0",
+  "contract_status": "active_v0",
+  "metadata_only": true,
+  "read_only": true,
+  "contract_id": "sample-contract-teacher-script-001",
+  "contract_type": "teacher_script_contract",
+  "title": "SM5 Unit 01 Lesson 01 Teacher Script Contract Placeholder",
+  "subject": "science",
+  "grade_band": "SM5",
+  "course": "physical_science",
+  "unit": "unit_01",
+  "lesson": "lesson_01",
+  "registry_references": [
+    "sample-sm5-textbook-001"
+  ],
+  "teacher_only": true,
+  "student_facing_allowed": "false",
+  "review_state": "not_reviewed",
+  "approval_status": "not_approved",
+  "lesson_context": {
+    "pacing_reference": "pacing-sm5-u01-l01",
+    "delivery_mode": "direct_instruction",
+    "focus_topic": "Placeholder lesson focus for direct instruction"
+  },
+  "script_sections": [
+    {
+      "section_id": "section-01",
+      "section_label": "Lesson opener placeholder",
+      "teacher_script": "Teacher script placeholder text only for lesson opener",
+      "teacher_prompt": "Teacher prompt placeholder only",
+      "student_response_expectation": "Students respond with placeholder expectation only",
+      "check_for_understanding": "CFU placeholder marker only",
+      "timing_or_pacing_hint": "5 minutes placeholder",
+      "materials_or_prep_note": "Materials prep placeholder only"
+    },
+    {
+      "section_id": "section-02",
+      "section_label": "Core instruction placeholder",
+      "teacher_script": "Teacher script placeholder text only for core instruction",
+      "teacher_prompt": "Teacher modeling prompt placeholder only",
+      "student_response_expectation": "Students demonstrate placeholder understanding only",
+      "check_for_understanding": "Exit CFU placeholder marker only",
+      "timing_or_pacing_hint": "15 minutes placeholder",
+      "materials_or_prep_note": "Textbook reference placeholder only"
+    }
+  ],
+  "local_first_safety_flags": [
+    "metadata_only",
+    "no_student_data",
+    "not_generated",
+    "not_rendered",
+    "manual_entry",
+    "placeholder_only",
+    "no_external_resolution",
+    "contract_v0_only"
+  ],
+  "non_activation_flags": [
+    "not_generated",
+    "not_rendered",
+    "no_runtime_execution",
+    "no_dynamic_variables",
+    "no_student_name_injection"
+  ],
+  "pedagogy_extensions": {},
+  "metadata_extensions": {},
+  "planning_notes": "Fictional teacher script contract metadata only; no script generation, rendering, or runtime execution",
+  "created_by_manual_entry": true,
+  "activation_status": "contract_v0"
+}

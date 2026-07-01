@@ -143,6 +143,7 @@ static_source_registry_plan_doc="docs/curriculum-builder-static-source-registry-
 section_completion_audit_doc="docs/curriculum-builder-section-completion-audit.md"
 registry_v0_doc="docs/curriculum-registry-v0.md"
 output_contract_v0_doc="docs/curriculum-output-contract-v0.md"
+teacher_script_v0_doc="docs/curriculum-teacher-script-contract-v0.md"
 binding_v0_doc="docs/curriculum-binding-v0.md"
 build_queue_doc="docs/build-queue.md"
 active_priorities_doc="assistant/memory/active-priorities.md"
@@ -1446,6 +1447,21 @@ check_doc_contains "${output_contract_v0_doc}" "no student data" "output contrac
 check_doc_contains "${output_contract_foundation_doc}" "Output Contract Schema v0 Implementation Activation" "output contract foundation references v0 activation"
 check_doc_contains "${build_queue_doc}" "Curriculum Output Contract v0" "build queue references output contract v0"
 check_doc_contains "${active_priorities_doc}" "Curriculum Output Contract v0" "active priorities references output contract v0"
+
+section "Teacher Script Contract v0 Foundation Checks"
+
+check_file "${teacher_script_v0_doc}"
+check_file "assistant/curriculum-builder/output-contract/v0/teacher-script-contract-schema.json"
+check_file "assistant/curriculum-builder/output-contract/v0/contracts/sample-teacher-script-001.json"
+check_doc_contains "${teacher_script_v0_doc}" "teacher_script_contract" "teacher script v0 contract type documented"
+check_doc_contains "${teacher_script_v0_doc}" "script_sections" "teacher script v0 script_sections documented"
+check_doc_contains "${teacher_script_v0_doc}" "no lesson generation" "teacher script v0 no lesson generation boundary"
+check_doc_contains "${teacher_script_v0_doc}" "no renderers" "teacher script v0 no renderers boundary"
+check_doc_contains "${teacher_script_v0_doc}" "no student data" "teacher script v0 no student data boundary"
+check_doc_contains "${output_contract_v0_doc}" "teacher_script_contract" "output contract v0 documents teacher script canonical"
+check_doc_contains "${section_completion_audit_doc}" "Teacher Script Contract Schema v0" "section completion audit references teacher script v0"
+check_doc_contains "${build_queue_doc}" "Teacher Script Contract" "build queue references teacher script v0"
+check_doc_contains "${active_priorities_doc}" "Teacher Script Contract" "active priorities references teacher script v0"
 
 section "Curriculum Registry–Contract Binding v0 Foundation Checks"
 

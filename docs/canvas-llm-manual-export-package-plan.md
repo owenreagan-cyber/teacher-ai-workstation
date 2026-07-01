@@ -189,6 +189,10 @@ This plan does not add:
 - No parser/importer/loader/validator
 - No database/schema activation
 
+## Manual Export Review Checklist
+
+Teacher review checklists for future packages are documented in `docs/canvas-llm-manual-export-review-checklist.md`.
+
 ## Related Verification Commands
 
 ```bash

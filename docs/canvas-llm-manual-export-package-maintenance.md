@@ -15,6 +15,7 @@ This guide explains how to maintain Canvas LLM manual export package planning do
 - `docs/canvas-llm-placeholder-schema.md`
 - `docs/canvas-llm-approval-and-export-states.md`
 - `docs/canvas-llm-safety-and-approval-contract.md`
+- `docs/canvas-llm-manual-export-review-checklist-maintenance.md`
 
 ## 3. Editing Rules
 

@@ -173,6 +173,8 @@ These are teacher checklist labels only. This workflow does not automate a brows
 
 This shapes document does not add an exporter, generated package files, runtime behavior, Canvas API, Drive API, OAuth, network calls, automation, generation, student data, parser/importer/loader/validator, or database/schema activation.
 
+See `docs/canvas-llm-manual-export-review-checklist.md` for teacher review checklists before manual copy.
+
 ## Related Verification Commands
 
 ```bash

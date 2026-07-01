@@ -162,6 +162,8 @@ Moving to a runtime completion tracker requires a separate approved PR.
 
 Weekly bundle planning is documented in `docs/canvas-llm-weekly-export-bundle-placeholder-plan.md`.
 
+Planning foundation capstone is in `docs/canvas-llm-planning-foundation-capstone.md`.
+
 ## Related Verification Commands
 
 ```bash

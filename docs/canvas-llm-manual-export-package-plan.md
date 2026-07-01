@@ -197,6 +197,10 @@ Teacher review checklists for future packages are documented in `docs/canvas-llm
 
 Weekly bundle assembly concepts are documented in `docs/canvas-llm-weekly-export-bundle-placeholder-plan.md`.
 
+## Planning Foundation Capstone
+
+Canvas LLM planning foundation handoff is in `docs/canvas-llm-planning-foundation-capstone.md`.
+
 ## Related Verification Commands
 
 ```bash

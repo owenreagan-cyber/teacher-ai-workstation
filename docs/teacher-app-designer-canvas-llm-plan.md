@@ -102,6 +102,10 @@ Future manual completion status tracking after teacher copy is documented in `do
 
 Future weekly bundle assembly concepts are documented in `docs/canvas-llm-weekly-export-bundle-placeholder-plan.md`.
 
+## Planning Foundation Capstone
+
+The Canvas LLM planning foundation complete-for-now marker is in `docs/canvas-llm-planning-foundation-capstone.md`.
+
 ## Related Verification Commands
 
 ```bash

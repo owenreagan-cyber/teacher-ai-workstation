@@ -233,6 +233,8 @@ See `docs/canvas-llm-manual-completion-status-placeholder-plan.md` for manual co
 
 Weekly bundle planning is in `docs/canvas-llm-weekly-export-bundle-placeholder-plan.md`.
 
+Planning foundation capstone is in `docs/canvas-llm-planning-foundation-capstone.md`.
+
 ## Related Verification Commands
 
 ```bash

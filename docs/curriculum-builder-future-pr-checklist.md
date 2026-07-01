@@ -4,6 +4,8 @@ Reusable checklist for every future Curriculum Builder PR. Complete before openi
 
 Start from `docs/curriculum-builder-next-stage-readiness-audit.md` for next-stage scope class, blocked work, and validation expectations.
 
+For manual/static registry field schema planning, see `docs/curriculum-builder-manual-registry-schema-plan.md`.
+
 ## PR title and type
 
 - [ ] PR title states docs/status vs implementation clearly

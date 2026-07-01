@@ -6,6 +6,8 @@ This document defines the future metadata-only Curriculum Resource Registry for 
 
 This is a planning/status document only. It does not create an active schema, database, migration, importer, scanner, indexer, parser, crawler, or generator.
 
+For the canonical manual/static registry field schema and fictional placeholder rows, see `docs/curriculum-builder-manual-registry-schema-plan.md`.
+
 ## Core Decision
 
 The registry will track metadata, references, statuses, and relationships. Raw curriculum files remain in Google Drive, NAS, iCloud, or local folders.

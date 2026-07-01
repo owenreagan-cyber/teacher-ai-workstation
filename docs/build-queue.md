@@ -88,6 +88,7 @@ Handoff and status clarity. Start from `docs/phase-1-chief-of-staff-status-audit
 - Canvas LLM frozen foundation handoff snapshot (PR #153).
 - Canvas LLM stop marker and Curriculum Builder return handoff (PR #154).
 - Curriculum Builder output contract planning foundation (PR #155).
+- Curriculum Builder static source registry plan (PR #157).
 
 ## Canvas LLM Foundation Status
 
@@ -95,13 +96,15 @@ Canvas LLM docs/status foundation is complete for now. Runtime/export/API/genera
 
 ## Current PR
 
+Curriculum Builder static source registry plan — documentation/status only. See `docs/curriculum-builder-static-source-registry-plan.md`.
+
 Previously parked — start from `docs/phase-1-chief-of-staff-status-audit.md` — Repo-Wide Parked Tracks and Active Status Map.
 
 Curriculum Builder output contract planning foundation is complete (PR #155). See `docs/curriculum-builder-output-contract-foundation.md`.
 
 Lesson-planning: placeholder skeleton and registry exist and pass readiness checks. Future follow-ons are documentation/status-only unless explicitly approved. Static template schema planning remains planning-only.
 
-Curriculum Builder: complete and parked for now (PR #124). Output contract planning foundation complete (PR #155). Implementation requires approval gate and completed decision intake.
+Curriculum Builder: complete and parked for now (PR #124). Output contract planning foundation complete (PR #155). Static source registry plan in progress (PR #157). Implementation requires approval gate and completed decision intake.
 
 Appearance & Vibe wallpaper/photo curator foundation stack: complete for now.
 Live curator implementation: not started.

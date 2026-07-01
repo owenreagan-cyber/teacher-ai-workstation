@@ -67,6 +67,24 @@ check_doc_not_contains() {
   fi
 }
 
+check_file_line_count() {
+  local file="$1"
+  local expected="$2"
+  local label="$3"
+  if [[ ! -f "${file}" ]]; then
+    fail "${file} must have ${label}"
+    return
+  fi
+
+  local count
+  count=$(wc -l < "${file}" | tr -d ' ')
+  if [[ "${count}" -eq "${expected}" ]]; then
+    pass "${file} has ${label}"
+  else
+    fail "${file} must have ${label} (found ${count} lines)"
+  fi
+}
+
 check_bash_syntax() {
   local path="$1"
   if [[ ! -f "${path}" ]]; then
@@ -116,6 +134,8 @@ static_sample_validation_plan_doc="docs/curriculum-builder-static-sample-validat
 static_sample_validation_checks_doc="docs/curriculum-builder-static-sample-validation-checks.md"
 sample_format_decision_doc="docs/curriculum-builder-sample-format-decision.md"
 csv_placeholder_sample_plan_doc="docs/curriculum-builder-csv-placeholder-sample-plan.md"
+csv_placeholder_sample_artifact_doc="docs/curriculum-builder-csv-placeholder-sample-artifact.md"
+csv_placeholder_sample_csv="docs/examples/curriculum-builder-manual-registry-sample.csv"
 dashboard_doc="docs/chief-of-staff-dashboard.md"
 dashboard_section_summary_doc="docs/dashboard-section-summary-polish.md"
 phase_1_audit_doc="docs/phase-1-chief-of-staff-status-audit.md"
@@ -1073,6 +1093,104 @@ fi
 
 if [[ -f "${canonical_planning_index_doc}" ]]; then
   check_doc_contains "${canonical_planning_index_doc}" "docs/curriculum-builder-csv-placeholder-sample-plan.md" "CSV placeholder sample plan reference in canonical index"
+  check_doc_contains "${canonical_planning_index_doc}" "docs/curriculum-builder-csv-placeholder-sample-artifact.md" "CSV placeholder sample artifact reference in canonical index"
+fi
+
+section "Curriculum Builder CSV Placeholder Sample Artifact Checks"
+
+check_file "${csv_placeholder_sample_csv}"
+
+if [[ -f "${csv_placeholder_sample_csv}" ]]; then
+  check_doc_contains "${csv_placeholder_sample_csv}" "registry_id,title,resource_type,source_system,source_reference,source_reference_type,subject,grade_band,course,unit,lesson,pacing_reference,teacher_only,student_facing_allowed,review_status,approval_status,local_first_safety_flags,notes,created_by_manual_entry,activation_status" "CSV full header line"
+  check_doc_contains "${csv_placeholder_sample_csv}" "registry_id" "registry_id column in CSV sample"
+  check_doc_contains "${csv_placeholder_sample_csv}" "title" "title column in CSV sample"
+  check_doc_contains "${csv_placeholder_sample_csv}" "resource_type" "resource_type column in CSV sample"
+  check_doc_contains "${csv_placeholder_sample_csv}" "source_system" "source_system column in CSV sample"
+  check_doc_contains "${csv_placeholder_sample_csv}" "source_reference" "source_reference column in CSV sample"
+  check_doc_contains "${csv_placeholder_sample_csv}" "source_reference_type" "source_reference_type column in CSV sample"
+  check_doc_contains "${csv_placeholder_sample_csv}" "subject" "subject column in CSV sample"
+  check_doc_contains "${csv_placeholder_sample_csv}" "grade_band" "grade_band column in CSV sample"
+  check_doc_contains "${csv_placeholder_sample_csv}" "course" "course column in CSV sample"
+  check_doc_contains "${csv_placeholder_sample_csv}" "unit" "unit column in CSV sample"
+  check_doc_contains "${csv_placeholder_sample_csv}" "lesson" "lesson column in CSV sample"
+  check_doc_contains "${csv_placeholder_sample_csv}" "pacing_reference" "pacing_reference column in CSV sample"
+  check_doc_contains "${csv_placeholder_sample_csv}" "teacher_only" "teacher_only column in CSV sample"
+  check_doc_contains "${csv_placeholder_sample_csv}" "student_facing_allowed" "student_facing_allowed column in CSV sample"
+  check_doc_contains "${csv_placeholder_sample_csv}" "review_status" "review_status column in CSV sample"
+  check_doc_contains "${csv_placeholder_sample_csv}" "approval_status" "approval_status column in CSV sample"
+  check_doc_contains "${csv_placeholder_sample_csv}" "local_first_safety_flags" "local_first_safety_flags column in CSV sample"
+  check_doc_contains "${csv_placeholder_sample_csv}" "notes" "notes column in CSV sample"
+  check_doc_contains "${csv_placeholder_sample_csv}" "created_by_manual_entry" "created_by_manual_entry column in CSV sample"
+  check_doc_contains "${csv_placeholder_sample_csv}" "activation_status" "activation_status column in CSV sample"
+  check_doc_contains "${csv_placeholder_sample_csv}" "sample-sm5-textbook-001" "sample-sm5-textbook-001 in CSV sample"
+  check_doc_contains "${csv_placeholder_sample_csv}" "sample-sm5-worksheet-folder-001" "sample-sm5-worksheet-folder-001 in CSV sample"
+  check_doc_contains "${csv_placeholder_sample_csv}" "sample-history-slides-001" "sample-history-slides-001 in CSV sample"
+  check_doc_contains "${csv_placeholder_sample_csv}" "sample-science-study-guide-001" "sample-science-study-guide-001 in CSV sample"
+  check_doc_contains "${csv_placeholder_sample_csv}" "sample-canvas-export-folder-001" "sample-canvas-export-folder-001 in CSV sample"
+  check_doc_contains "${csv_placeholder_sample_csv}" "sample-teacher-assessment-001" "sample-teacher-assessment-001 in CSV sample"
+  check_doc_contains "${csv_placeholder_sample_csv}" "sample-student-practice-001" "sample-student-practice-001 in CSV sample"
+  check_doc_contains "${csv_placeholder_sample_csv}" "gdrive://placeholder/sm5/textbook" "gdrive placeholder URI sm5 textbook in CSV sample"
+  check_doc_contains "${csv_placeholder_sample_csv}" "gdrive://placeholder/sm5/worksheet-folder" "gdrive placeholder URI sm5 worksheet folder in CSV sample"
+  check_doc_contains "${csv_placeholder_sample_csv}" "nas://placeholder/archive/history-slides" "nas placeholder URI history slides in CSV sample"
+  check_doc_contains "${csv_placeholder_sample_csv}" "nas://placeholder/archive/science-study-guides" "nas placeholder URI science study guides in CSV sample"
+  check_doc_contains "${csv_placeholder_sample_csv}" "local://placeholder/canvas-export" "local placeholder URI canvas export in CSV sample"
+  check_doc_contains "${csv_placeholder_sample_csv}" "local://placeholder/teacher-only-assessment" "local placeholder URI teacher-only assessment in CSV sample"
+  check_doc_contains "${csv_placeholder_sample_csv}" "icloud://placeholder/student-facing-practice" "icloud placeholder URI student-facing practice in CSV sample"
+  check_doc_contains "${csv_placeholder_sample_csv}" "gdrive://placeholder/" "gdrive placeholder URI scheme prefix in CSV sample"
+  check_doc_contains "${csv_placeholder_sample_csv}" "nas://placeholder/" "nas placeholder URI scheme prefix in CSV sample"
+  check_doc_contains "${csv_placeholder_sample_csv}" "local://placeholder/" "local placeholder URI scheme prefix in CSV sample"
+  check_doc_contains "${csv_placeholder_sample_csv}" "icloud://placeholder/" "icloud placeholder URI scheme prefix in CSV sample"
+  check_doc_not_contains "${csv_placeholder_sample_csv}" "https://drive.google.com" "live Google Drive URL in CSV sample"
+  check_doc_not_contains "${csv_placeholder_sample_csv}" "canvas.instructure.com" "live Canvas URL in CSV sample"
+  check_doc_not_contains "${csv_placeholder_sample_csv}" "file:///Users/" "file URL user home path in CSV sample"
+  check_doc_not_contains "${csv_placeholder_sample_csv}" "/Users/" "absolute local user path in CSV sample"
+  check_doc_not_contains "${csv_placeholder_sample_csv}" 'C:\Users\' "Windows user home path in CSV sample"
+  check_doc_not_contains "${csv_placeholder_sample_csv}" "http://" "live http URL scheme in CSV sample"
+  check_doc_not_contains "${csv_placeholder_sample_csv}" "https://" "live https URL scheme in CSV sample"
+  check_doc_contains "${csv_placeholder_sample_csv}" "google_drive" "google_drive source system in CSV sample"
+  check_doc_contains "${csv_placeholder_sample_csv}" "nas" "nas source system in CSV sample"
+  check_doc_contains "${csv_placeholder_sample_csv}" "local_folder" "local_folder source system in CSV sample"
+  check_doc_contains "${csv_placeholder_sample_csv}" "icloud" "icloud source system in CSV sample"
+  check_doc_contains "${csv_placeholder_sample_csv}" "canvas_export" "canvas_export source system in CSV sample"
+  check_doc_contains "${csv_placeholder_sample_csv}" "placeholder_uri" "placeholder_uri source reference type in CSV sample"
+  check_doc_contains "${csv_placeholder_sample_csv}" "true" "true boolean value in CSV sample"
+  check_doc_contains "${csv_placeholder_sample_csv}" "false" "false boolean value in CSV sample"
+  check_doc_contains "${csv_placeholder_sample_csv}" "not_reviewed" "not_reviewed review status in CSV sample"
+  check_doc_contains "${csv_placeholder_sample_csv}" "needs_review" "needs_review review status in CSV sample"
+  check_doc_contains "${csv_placeholder_sample_csv}" "reviewed_placeholder" "reviewed_placeholder review status in CSV sample"
+  check_doc_contains "${csv_placeholder_sample_csv}" "not_approved" "not_approved approval status in CSV sample"
+  check_doc_contains "${csv_placeholder_sample_csv}" "placeholder_approved" "placeholder_approved approval status in CSV sample"
+  check_doc_contains "${csv_placeholder_sample_csv}" "blocked_placeholder" "blocked_placeholder approval status in CSV sample"
+  check_doc_contains "${csv_placeholder_sample_csv}" "planning_only" "planning_only activation status in CSV sample"
+  check_doc_contains "${csv_placeholder_sample_csv}" "inactive_placeholder" "inactive_placeholder activation status in CSV sample"
+  check_doc_not_contains "${csv_placeholder_sample_csv}" "active_registry" "active_registry activation wording in CSV sample"
+  check_doc_not_contains "${csv_placeholder_sample_csv}" "runtime_enabled" "runtime_enabled activation wording in CSV sample"
+  check_doc_not_contains "${csv_placeholder_sample_csv}" "live_registry" "live_registry activation wording in CSV sample"
+  check_doc_not_contains "${csv_placeholder_sample_csv}" "production_enabled" "production_enabled activation wording in CSV sample"
+  check_doc_contains "${csv_placeholder_sample_csv}" "manual_static_entry" "manual_static_entry safety flag in CSV sample"
+  check_doc_contains "${csv_placeholder_sample_csv}" "placeholder_only" "placeholder_only safety flag in CSV sample"
+  check_doc_contains "${csv_placeholder_sample_csv}" "no_external_resolution" "no_external_resolution safety flag in CSV sample"
+  check_file_line_count "${csv_placeholder_sample_csv}" 8 "eight lines (one header and seven data rows)"
+fi
+
+section "Curriculum Builder CSV Placeholder Sample Artifact Documentation"
+
+check_file "${csv_placeholder_sample_artifact_doc}"
+
+if [[ -f "${csv_placeholder_sample_artifact_doc}" ]]; then
+  check_doc_contains "${csv_placeholder_sample_artifact_doc}" "Curriculum Builder CSV Placeholder Sample Artifact" "Curriculum Builder CSV Placeholder Sample Artifact title"
+  check_doc_contains "${csv_placeholder_sample_artifact_doc}" "Non-Activation Statement" "Non-Activation Statement section in CSV artifact doc"
+  check_doc_contains "${csv_placeholder_sample_artifact_doc}" "Relationship to Markdown Canonical Sample" "Relationship to Markdown Canonical Sample section in CSV artifact doc"
+  check_doc_contains "${csv_placeholder_sample_artifact_doc}" "CSV Artifact Path" "CSV Artifact Path section in CSV artifact doc"
+  check_doc_contains "${csv_placeholder_sample_artifact_doc}" "CSV Header" "CSV Header section in CSV artifact doc"
+  check_doc_contains "${csv_placeholder_sample_artifact_doc}" "CSV Row Coverage" "CSV Row Coverage section in CSV artifact doc"
+  check_doc_contains "${csv_placeholder_sample_artifact_doc}" "Prohibited Reference Rules" "Prohibited Reference Rules section in CSV artifact doc"
+  check_doc_contains "${csv_placeholder_sample_artifact_doc}" "Static Validation Expectations" "Static Validation Expectations section in CSV artifact doc"
+  check_doc_contains "${csv_placeholder_sample_artifact_doc}" "What This CSV Proves" "What This CSV Proves section in CSV artifact doc"
+  check_doc_contains "${csv_placeholder_sample_artifact_doc}" "What This CSV Does Not Prove" "What This CSV Does Not Prove section in CSV artifact doc"
+  check_doc_contains "${csv_placeholder_sample_artifact_doc}" "Blocked Capabilities" "Blocked Capabilities section in CSV artifact doc"
+  check_doc_contains "${csv_placeholder_sample_artifact_doc}" "Future Maintenance Rules" "Future Maintenance Rules section in CSV artifact doc"
+  check_doc_contains "${csv_placeholder_sample_artifact_doc}" "docs/curriculum-builder-canonical-planning-index.md" "canonical planning index cross-link in CSV artifact doc"
 fi
 
 section "Dashboard Planning Index Visibility Checks"

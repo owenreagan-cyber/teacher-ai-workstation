@@ -20,7 +20,8 @@ canonical planning index
 → static sample validation checks (this document)
 → sample format decision
 → CSV placeholder sample plan
-→ future CSV placeholder sample artifact
+→ CSV placeholder sample artifact
+→ future CSV static validation maintenance
 ```
 
 ## 2. Non-Activation Statement
@@ -156,8 +157,8 @@ Future approved PRs may add:
 - row-count verification for exactly seven data rows
 - structured field-value pairing checks per row type
 - cross-doc consistency checks between sample proof, schema plan, and validation plan
-- future CSV placeholder sample plan in `docs/curriculum-builder-csv-placeholder-sample-plan.md`
-- future CSV placeholder sample artifact after CSV plan approval
+- future CSV placeholder sample artifact in `docs/examples/curriculum-builder-manual-registry-sample.csv` (secondary; Markdown canonical)
+- future CSV static validation maintenance checklist
 
 See `docs/curriculum-builder-static-sample-validation-plan.md` for the full rule catalog.
 

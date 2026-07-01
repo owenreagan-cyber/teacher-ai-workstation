@@ -20,7 +20,8 @@ canonical planning index
 → static sample validation checks
 → sample format decision
 → CSV placeholder sample plan (this document)
-→ future CSV placeholder sample artifact
+→ CSV placeholder sample artifact
+→ future CSV static validation maintenance
 ```
 
 ## 2. Non-Activation Statement
@@ -343,16 +344,7 @@ Unless explicitly approved through `docs/curriculum-builder-approval-gate.md` an
 
 ## 21. Recommended Next PR
 
-**PR #141 — Curriculum Builder CSV Placeholder Sample Artifact**
-
-Scope:
-
-- create `docs/examples/curriculum-builder-manual-registry-sample.csv` with seven fictional placeholder rows
-- add repo-local static text checks against the CSV file (grep/header/negative guards only)
-- cross-link from canonical planning index and this plan doc
-- no parser, importer, loader, or runtime validator
-- no app code consumption of the CSV
-- Markdown sample remains canonical
+**PR #141 — Curriculum Builder CSV Placeholder Sample Artifact** (create static CSV file + static checks; Markdown remains canonical). Next: **PR #142 — Curriculum Builder CSV Static Validation Maintenance**.
 
 ## 22. PR Handoff Checklist
 

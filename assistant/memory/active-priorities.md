@@ -56,6 +56,7 @@
 - Curriculum Builder static sample validation checks: complete
 - Curriculum Builder sample format decision: complete
 - Curriculum Builder CSV placeholder sample plan: complete
+- Curriculum Builder CSV placeholder sample artifact: complete
 
 ### Now
 

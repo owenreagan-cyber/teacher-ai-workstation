@@ -778,6 +778,7 @@ done
 section "Cursor Workflow Files"
 for path in \
   .cursor/rules/teacher-ai-workstation.mdc \
+  .cursor/rules/teacher-ai-workstation-senior-engineer.mdc \
   docs/cursor-workflow-operating-system.md \
   docs/cursor-prompt-template.md \
   docs/cursor-pr-review-checklist.md \

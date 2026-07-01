@@ -147,6 +147,8 @@ Phase 0 prepares the Mac. Phase 1 builds the assistant foundation.
 
 The Teacher AI Chief of Staff is the primary post-Phase-0 product. It starts as an interactive, permission-based assistant, not an autonomous system.
 
+For current parked vs active tracks, start from `docs/phase-1-chief-of-staff-status-audit.md` — Repo-Wide Parked Tracks and Active Status Map and `docs/build-queue.md`. Dashboard and Chief of Staff status commands are the read-only status surface.
+
 Teaching is the primary focus: lesson support, project memory, writing style, planning, and guided troubleshooting. App development and technical debugging support are secondary. 3D printing will become a future specialist agent, with the Chief of Staff coordinating notes and handoffs later.
 
 Phase 1A adds safety, training, permissions, memory, sensitivity, source, workflow, and evaluation docs before any app implementation.
@@ -311,7 +313,8 @@ Teacher Workflow safe-output examples: docs/teacher-workflow-safe-output-example
 Teacher Workflow safe-output checker: docs/teacher-workflow-safe-output-checker.md
 Teacher Workflow output examples completion marker: docs/teacher-workflow-output-examples-completion-marker.md
 Lesson-planning template readiness: docs/lesson-planning-template-readiness-polish.md
-Next recommended PR: Lesson-planning placeholder template skeleton
+Parked tracks handoff: docs/phase-1-chief-of-staff-status-audit.md — Repo-Wide Parked Tracks and Active Status Map
+Build queue: docs/build-queue.md
 ```
 
 Lesson-planning template readiness:
@@ -1070,7 +1073,7 @@ Phase 0E adds the visual/vibe/image-safety layer for the Teacher AI Workstation.
 * [Phase 0E Completion Handoff](docs/phase-0e-completion-handoff.md)
 * [Phase 0E Quick Commands](docs/phase-0e-quick-commands.md)
 * [Phase 1 Readiness Checklist](docs/phase-1-readiness-checklist.md)
-* [Phase 1 Chief of Staff Status Audit](docs/phase-1-chief-of-staff-status-audit.md)
+* [Phase 1 Chief of Staff Status Audit](docs/phase-1-chief-of-staff-status-audit.md) — includes Repo-Wide Parked Tracks and Active Status Map
 * [Developer Mode Readiness](docs/developer-mode-readiness.md)
 * [Build Queue](docs/build-queue.md)
 * [Open Threads](docs/open-threads.md)

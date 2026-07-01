@@ -41,14 +41,19 @@
 - Teacher Workflow command detail and safe-output example stack: complete for now
 - Teacher workflow output examples completion marker: complete
 - Appearance & Vibe wallpaper/photo foundation stack: complete for now
+- Lesson-planning placeholder readiness closeout: complete for now
+- Curriculum Builder planning stack closeout: complete and parked for now
+- Appearance & Vibe wallpaper/vibe status audit closeout: complete
+- Repo-wide parked tracks and active status map: complete
 
 ### Now
 
-- Lesson-planning template readiness polish (lesson-planning-template-readiness/status only)
+- Handoff and status clarity only. Start from `docs/phase-1-chief-of-staff-status-audit.md` — Repo-Wide Parked Tracks and Active Status Map and `docs/build-queue.md`.
+- Dashboard and Chief of Staff status commands remain the active read-only status surface (`bin/chief-of-staff --dashboard`).
 
 ### Next
 
-- Lesson-planning placeholder template skeleton
+- Optional documentation/status-only follow-ons only with explicit approval. Do not restart parked tracks without approval.
 
 ## Completed (earlier foundations)
 
@@ -89,9 +94,11 @@ See `docs/project-memory-cleanup.md` for the full recent workflow polish summary
 
 ## Phase 1 Boundary
 
-Phase 0E Vibe Engine is complete and verified. Phase 1 is beginning with audit/readiness work.
+Phase 0E Vibe Engine is complete and verified. Phase 1 Chief of Staff foundations are in place. Major planning tracks (Curriculum Builder, lesson-planning placeholder readiness, Appearance & Vibe wallpaper/photo foundation) are parked unless explicitly approved.
 
 Do not claim automatic lesson generation, LLM drafting by default, classroom-ready lesson production, real app generation, or deployment exists. The current system has a CLI, dashboard, memory files, workflows, intake review queue, lesson planning scaffold, lesson brief helper, lesson draft helper, lesson pack status view, and Developer Mode template work, but not lesson generation, production apps, local indexing, or Gmail/Drive integrations.
+
+For parked vs active tracks, see `docs/phase-1-chief-of-staff-status-audit.md` — Repo-Wide Parked Tracks and Active Status Map.
 
 ## Open New MacBook Pro Placement
 

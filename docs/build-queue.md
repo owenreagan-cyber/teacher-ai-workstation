@@ -60,10 +60,11 @@ Phase 1 Teacher Chief of Staff + safe local lesson workflows.
 - Lesson-planning placeholder template skeleton and placeholder template registry scaffold.
 - Lesson-planning placeholder readiness closeout (PR #125).
 - Curriculum Builder planning stack (PRs #107–#124): complete and parked for now.
+- Repo-wide parked tracks and active status map (PR #128).
 
 ## Current PR
 
-Parked — lesson-planning placeholder readiness and Curriculum Builder planning stack are complete for now.
+Parked — start from `docs/phase-1-chief-of-staff-status-audit.md` — Repo-Wide Parked Tracks and Active Status Map.
 
 Lesson-planning: placeholder skeleton and registry exist and pass readiness checks. Future follow-ons are documentation/status-only unless explicitly approved. Static template schema planning remains planning-only.
 

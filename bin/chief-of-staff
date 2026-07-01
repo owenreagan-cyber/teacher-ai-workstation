@@ -66,6 +66,9 @@ Lesson Planning:
   --lesson-pack-status                 Show local lesson pack status and exit.
   --lesson-queue-status                Show local lesson queue integration status and exit.
   --lesson-workflow-status             Show local lesson planning workflow status and exit.
+  --lesson-planning-foundation-status  Show read-only Lesson Planning v1 foundation status and exit.
+  --lesson-planning-workflow-v0-validate
+                                       Run read-only Lesson Planning workflow v0 validator and exit.
 
 Document and Review Workflows:
   --lesson-review-checklist-status     Show local lesson review checklist status and exit.
@@ -298,6 +301,8 @@ All command examples:
   bin/chief-of-staff --lesson-pack-status
   bin/chief-of-staff --lesson-queue-status
   bin/chief-of-staff --lesson-workflow-status
+  bin/chief-of-staff --lesson-planning-foundation-status
+  bin/chief-of-staff --lesson-planning-workflow-v0-validate
   bin/chief-of-staff --lesson-review-checklist-status
   bin/chief-of-staff --lesson-review-view fractions-review
   bin/chief-of-staff --review-notes-template-status
@@ -419,6 +424,8 @@ Local command: create lesson activity, assessment, or materials draft
 Local command: lesson pack status
 Local command: lesson queue integration status
 Local command: lesson planning workflow status
+Local command: lesson planning foundation status
+Local command: lesson planning workflow v0 validate
 Local command: curriculum builder foundation status
 
 Document and Review Workflows
@@ -1341,6 +1348,25 @@ while [[ $# -gt 0 ]]; do
         die "Lesson workflow status script is missing: scripts/lesson-workflow-status.sh"
       fi
       bash "${lesson_workflow_status_script}"
+      exit 0
+      ;;
+    --lesson-planning-foundation-status)
+      repo_root="$(resolve_repo_root)"
+      lesson_planning_foundation_status_script="${repo_root}/scripts/lesson-planning-foundation-status.sh"
+      if [[ ! -f "${lesson_planning_foundation_status_script}" ]]; then
+        die "Lesson Planning foundation status script is missing: scripts/lesson-planning-foundation-status.sh"
+      fi
+      bash "${lesson_planning_foundation_status_script}"
+      exit 0
+      ;;
+    --lesson-planning-workflow-v0-validate)
+      repo_root="$(resolve_repo_root)"
+      lesson_planning_workflow_v0_validator_script="${repo_root}/scripts/lesson-planning-workflow-v0-validator.sh"
+      if [[ ! -f "${lesson_planning_workflow_v0_validator_script}" ]]; then
+        die "Lesson Planning workflow v0 validator script is missing: scripts/lesson-planning-workflow-v0-validator.sh"
+      fi
+      shift
+      bash "${lesson_planning_workflow_v0_validator_script}" "$@"
       exit 0
       ;;
     --lesson-review-checklist-status)

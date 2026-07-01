@@ -1,0 +1,67 @@
+{
+  "workflow_version": "0.1.0",
+  "workflow_status": "active_v0",
+  "metadata_only": true,
+  "read_only": true,
+  "human_review_required": true,
+  "generation_enabled": false,
+  "workflows": [
+    {
+      "workflow_id": "sample-lesson-workflow-001",
+      "title": "Placeholder Fractions Review Planning Workflow",
+      "lesson_slug": "placeholder-fractions-review",
+      "planning_status": "idea",
+      "review_status": "metadata_only",
+      "human_review_required": true,
+      "generation_enabled": false,
+      "workflow_steps": [
+        {
+          "step_id": "step-01",
+          "label": "Review planning queue row",
+          "chief_of_staff_command": "bin/chief-of-staff --lesson-status",
+          "read_only": true
+        },
+        {
+          "step_id": "step-02",
+          "label": "Confirm safe lesson slug",
+          "chief_of_staff_command": "bin/chief-of-staff --lesson-queue-status",
+          "read_only": true
+        },
+        {
+          "step_id": "step-03",
+          "label": "Inspect lesson brief placeholder context",
+          "chief_of_staff_command": "bin/chief-of-staff --lesson-brief-status",
+          "read_only": true
+        },
+        {
+          "step_id": "step-04",
+          "label": "Inspect supporting draft placeholders",
+          "chief_of_staff_command": "bin/chief-of-staff --lesson-draft-status",
+          "read_only": true
+        },
+        {
+          "step_id": "step-05",
+          "label": "Review lesson pack completeness",
+          "chief_of_staff_command": "bin/chief-of-staff --lesson-pack-status",
+          "read_only": true
+        },
+        {
+          "step_id": "step-06",
+          "label": "Complete human review checklist",
+          "chief_of_staff_command": "bin/chief-of-staff --lesson-review-checklist-status",
+          "read_only": true
+        }
+      ],
+      "local_first_safety_flags": [
+        "metadata_only",
+        "no_student_data",
+        "placeholder_only",
+        "human_review_required",
+        "no_generation",
+        "no_llm_calls"
+      ],
+      "notes": "Fictional placeholder workflow for Lesson Planning v1 foundation validation only.",
+      "activation_status": "lesson_planning_v0"
+    }
+  ]
+}

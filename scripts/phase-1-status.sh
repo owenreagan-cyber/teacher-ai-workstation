@@ -635,6 +635,9 @@ for path in \
   docs/teacher-app-designer-canvas-llm-plan.md \
   docs/canvas-llm-safety-and-approval-contract.md \
   docs/canvas-llm-local-first-drive-first-architecture.md \
+  docs/canvas-llm-placeholder-schema.md \
+  docs/canvas-llm-approval-and-export-states.md \
+  docs/canvas-llm-placeholder-schema-maintenance.md \
   scripts/teacher-app-designer-canvas-llm-status.sh; do
   check_required_file "${path}"
 done

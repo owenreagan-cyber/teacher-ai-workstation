@@ -82,6 +82,10 @@ See `docs/canvas-llm-safety-and-approval-contract.md` for the full safety and ap
 
 Preferred data flow is documented in `docs/canvas-llm-local-first-drive-first-architecture.md`.
 
+## Placeholder Schema
+
+Object vocabulary and placeholder field shapes are documented in `docs/canvas-llm-placeholder-schema.md`. Approval and export state vocabulary is in `docs/canvas-llm-approval-and-export-states.md`.
+
 ## Related Verification Commands
 
 ```bash

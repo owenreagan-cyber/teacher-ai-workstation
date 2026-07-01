@@ -112,6 +112,21 @@ check_text() {
   fi
 }
 
+check_doc_contains() {
+  local file="$1"
+  local phrase="$2"
+  local label="$3"
+  if [[ ! -f "${file}" ]]; then
+    fail "cannot check missing doc: ${file}"
+    return
+  fi
+  if grep -Fq "${phrase}" "${file}"; then
+    pass "doc mentions ${label}"
+  else
+    fail "${file} must mention ${label}"
+  fi
+}
+
 check_bash_syntax() {
   local path="$1"
   if [[ ! -f "${path}" ]]; then
@@ -813,6 +828,18 @@ check_bash_syntax "scripts/verify-phase-0e.sh"
 check_bash_syntax "scripts/phase-0e-summary.sh"
 check_python_syntax_optional "scripts/image-review-status.py"
 check_json_syntax_optional "configs/spotify-vibe-playlists.json"
+
+phase_1_audit_doc="docs/phase-1-chief-of-staff-status-audit.md"
+
+section "Repo-Wide Parked Tracks Status Map Checks"
+
+check_doc_contains "${phase_1_audit_doc}" "Repo-Wide Parked Tracks and Active Status Map" "Repo-Wide Parked Tracks and Active Status Map section"
+check_doc_contains "${phase_1_audit_doc}" "Curriculum Builder parked" "Curriculum Builder parked"
+check_doc_contains "${phase_1_audit_doc}" "Lesson-planning placeholder readiness parked" "Lesson-planning placeholder readiness parked"
+check_doc_contains "${phase_1_audit_doc}" "foundation complete for now; live curator not started" "Appearance & Vibe foundation complete; live curator not started"
+check_doc_contains "${phase_1_audit_doc}" "Dashboard remains a read-only status surface" "dashboard read-only status surface"
+check_doc_contains "${phase_1_audit_doc}" "Current source-of-truth commands" "current source-of-truth commands"
+check_doc_contains "${phase_1_audit_doc}" "Do not restart parked work" "do not restart parked work"
 
 section "Summary"
 printf 'PASS: %s\n' "${PASS_COUNT}"

@@ -255,6 +255,38 @@ Unless explicitly approved, preserve:
 - no network call
 - no live integration is active
 
+## Repo-Wide Parked Tracks and Active Status Map
+
+Compact map for maintainers, Cursor sessions, and ChatGPT sessions. Tracks below are the current source of truth for what is parked, what is active as status-only, and what must not be restarted without explicit approval.
+
+| Track | Current state | Verification command | Active behavior? | Next allowed work | Blocked without approval |
+| --- | --- | --- | --- | --- | --- |
+| Curriculum Builder | Parked after planning closeout and canonical index | `bash scripts/curriculum-builder-foundation-status.sh`; `bin/chief-of-staff --curriculum-builder-foundation-status` | No | Approval-gated decision intake or docs/status-only cleanup | Implementation, registry data, scanning, indexing, APIs, lesson generation |
+| Lesson-planning placeholder readiness | Parked after placeholder readiness closeout | `bash scripts/lesson-planning-template-readiness-status.sh` | No generation behavior | Docs/status-only planning unless explicitly approved | Schema activation, validators, active template loading, generated lesson briefs/drafts, real review notes |
+| Appearance & Vibe wallpaper/photo foundation | Foundation complete for now; live curator not started | `bash scripts/wallpaper-photo-rotation-handoff-safety-status.sh`; `bin/chief-of-staff --return-to-core-status` | No live app/runtime | Docs/status-only planning unless explicitly approved | Wallpaper app, scheduler, widgets, shortcuts, OS-level changes, automation, APIs, network calls |
+| Dashboard / Chief of Staff status | Active only as status/dashboard command surface | `bin/chief-of-staff --dashboard` | Read-only status output | Docs/status clarity or read-only checks | Behavior changes, command removals/renames, dashboard health count drift without explicit reason |
+
+### Do not restart parked work
+
+- Do not recreate the placeholder skeleton.
+- Do not recreate the placeholder registry.
+- Do not expand Curriculum Builder planning docs without a clear reason.
+- Do not treat Appearance/Vibe status scaffolding as a live app.
+- Do not start implementation from any parked track without explicit approval.
+
+### Current source-of-truth commands
+
+```bash
+bash scripts/lesson-planning-template-readiness-status.sh
+bash scripts/curriculum-builder-foundation-status.sh
+bash scripts/wallpaper-photo-rotation-handoff-safety-status.sh
+bin/chief-of-staff --return-to-core-status
+bash scripts/phase-1-status.sh
+bin/chief-of-staff --dashboard
+```
+
+Curriculum Builder parked. Lesson-planning placeholder readiness parked. Appearance & Vibe foundation complete for now; live curator not started. Dashboard remains a read-only status surface.
+
 ## Build Queue and Status Pointer Consistency
 
 Lesson-planning placeholder readiness is complete for now (PR #125). Curriculum Builder planning stack is complete and parked (PR #124). Placeholder skeleton and registry already exist and are validated. Static template schema planning remains documentation/status-only unless explicitly approved.

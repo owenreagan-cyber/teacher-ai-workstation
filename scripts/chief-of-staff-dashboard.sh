@@ -953,6 +953,29 @@ else
   warn "Curriculum Builder foundation status script missing: scripts/curriculum-builder-foundation-status.sh"
 fi
 
+section "Teacher App Designer / Canvas LLM Local-First Foundation"
+if [[ -f scripts/teacher-app-designer-canvas-llm-status.sh ]]; then
+  teacher_app_designer_canvas_llm_result=0
+  teacher_app_designer_canvas_llm_output="$(bash scripts/teacher-app-designer-canvas-llm-status.sh 2>&1)" || teacher_app_designer_canvas_llm_result=$?
+  teacher_app_designer_canvas_llm_pass="$(summary_count "${teacher_app_designer_canvas_llm_output}" "PASS")"
+  teacher_app_designer_canvas_llm_warn="$(summary_count "${teacher_app_designer_canvas_llm_output}" "WARN")"
+  teacher_app_designer_canvas_llm_fail="$(summary_count "${teacher_app_designer_canvas_llm_output}" "FAIL")"
+
+  if [[ "${teacher_app_designer_canvas_llm_result}" != "0" ]]; then
+    printf 'Teacher App Designer / Canvas LLM Local-First Foundation: status command completed\n'
+    printf '%s\n' "${teacher_app_designer_canvas_llm_output}"
+    fail "Teacher App Designer / Canvas LLM foundation status failed"
+  elif [[ -n "${teacher_app_designer_canvas_llm_pass}" && -n "${teacher_app_designer_canvas_llm_warn}" && -n "${teacher_app_designer_canvas_llm_fail}" ]]; then
+    printf 'Teacher App Designer / Canvas LLM Local-First Foundation: PASS %s / WARN %s / FAIL %s\n' "${teacher_app_designer_canvas_llm_pass}" "${teacher_app_designer_canvas_llm_warn}" "${teacher_app_designer_canvas_llm_fail}"
+    pass "Teacher App Designer / Canvas LLM foundation status completed"
+  else
+    printf 'Teacher App Designer / Canvas LLM Local-First Foundation: status command completed\n'
+    pass "Teacher App Designer / Canvas LLM foundation status completed"
+  fi
+else
+  warn "Teacher App Designer / Canvas LLM status script missing: scripts/teacher-app-designer-canvas-llm-status.sh"
+fi
+
 end_section_summary "Lesson Planning Status"
 
 group_banner "Future-Safety / Parked Work"

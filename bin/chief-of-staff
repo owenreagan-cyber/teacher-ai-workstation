@@ -99,6 +99,8 @@ Teacher Planning Command Organization (status only; safe sample: fractions-revie
                                        Show read-only lesson-planning placeholder readiness status proof and exit (parked).
   --curriculum-builder-foundation-status
                                        Show read-only Curriculum Builder foundation status proof and exit (parked; approval-gated).
+  --teacher-app-designer-canvas-llm-status
+                                       Show read-only Teacher App Designer / Canvas LLM foundation status proof and exit (planning only).
 
 Developer and Cursor Workflow:
   --cursor-workflow-status             Show local Cursor workflow status and exit.
@@ -1583,6 +1585,15 @@ while [[ $# -gt 0 ]]; do
         die "Curriculum Builder foundation status script is missing: scripts/curriculum-builder-foundation-status.sh"
       fi
       bash "${curriculum_builder_foundation_status_script}"
+      exit 0
+      ;;
+    --teacher-app-designer-canvas-llm-status)
+      repo_root="$(resolve_repo_root)"
+      teacher_app_designer_canvas_llm_status_script="${repo_root}/scripts/teacher-app-designer-canvas-llm-status.sh"
+      if [[ ! -f "${teacher_app_designer_canvas_llm_status_script}" ]]; then
+        die "Teacher App Designer / Canvas LLM status script is missing: scripts/teacher-app-designer-canvas-llm-status.sh"
+      fi
+      bash "${teacher_app_designer_canvas_llm_status_script}"
       exit 0
       ;;
     --teacher-planning-command-detail-status)

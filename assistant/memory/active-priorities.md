@@ -46,11 +46,13 @@
 - Appearance & Vibe wallpaper/vibe status audit closeout: complete
 - Repo-wide parked tracks and active status map: complete
 - Active priorities and build queue handoff alignment: complete
+- Chief of Staff command surface status alignment: complete
+- Chief of Staff status command consistency audit: complete
 
 ### Now
 
 - Handoff and status clarity only. Start from `docs/phase-1-chief-of-staff-status-audit.md` — Repo-Wide Parked Tracks and Active Status Map and `docs/build-queue.md`.
-- Dashboard and Chief of Staff status commands remain the active read-only status surface (`bin/chief-of-staff --dashboard`).
+- Dashboard and Chief of Staff status commands remain read-only proof surfaces; they report PASS/WARN/FAIL only and do not activate implementation (`bin/chief-of-staff --dashboard`).
 
 ### Next
 

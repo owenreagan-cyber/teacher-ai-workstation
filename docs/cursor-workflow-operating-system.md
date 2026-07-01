@@ -134,6 +134,8 @@ bin/chief-of-staff --dashboard
 
 Local `main` dashboard is the final source of truth. Only call the work complete when local `main` has the merge and dashboard passes.
 
+Dashboard and Chief of Staff status commands are read-only proof surfaces. They report PASS/WARN/FAIL only and do not activate implementation or modify repository state.
+
 ## Handling Unexpected Changes
 
 If `git status --short` or `git diff --name-only` shows files outside the required add/update list:

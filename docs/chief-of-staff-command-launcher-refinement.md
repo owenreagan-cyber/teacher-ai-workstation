@@ -99,10 +99,11 @@ These are planning-only helpers. They do not index documents, scan folders, or c
 
 `bin/chief-of-staff --dashboard` is the local final health check for repo workflows.
 
+The dashboard is a read-only proof surface. It reports PASS/WARN/FAIL status only and does not activate parked tracks, implementation, or repository changes.
+
 The dashboard:
 
-- runs read-only status helpers
-- prints compact PASS/WARN/FAIL summaries
+- invokes read-only status helpers and reports their PASS/WARN/FAIL summaries
 - shows the next recommended PR from `docs/build-queue.md`
 - does not call Gmail, Drive, Calendar, APIs, OAuth, secrets, or school systems
 - does not prove classroom readiness of lesson content by itself

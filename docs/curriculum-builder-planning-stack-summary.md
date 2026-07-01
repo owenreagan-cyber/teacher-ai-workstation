@@ -10,7 +10,7 @@ It does not create active schema, data, registry records, validators, commands, 
 
 - **Google Drive**, **NAS**, **iCloud**, and **local folders** remain source storage.
 - Teacher Workstation stores **metadata/status/reference records only**.
-- Chief of Staff reports planning/status readiness only.
+- Chief of Staff reports planning/status readiness through read-only proof surfaces only (PASS/WARN/FAIL status commands).
 - Raw curriculum files are not copied into app-owned storage.
 - No scanning, indexing, OCR, embeddings, APIs, OAuth, automation, or generation are active.
 
@@ -115,7 +115,7 @@ No lesson planning, lesson generation, lesson brief generation, or lesson draft 
 
 ## Relationship to Chief of Staff
 
-Chief of Staff may report planning/status readiness through existing read-only status checks. Chief of Staff must not own curriculum files.
+Chief of Staff may report planning/status readiness through existing read-only proof surfaces (PASS/WARN/FAIL status commands only). Chief of Staff must not own curriculum files.
 
 Chief of Staff must not scan folders, index files, call APIs, validate real registry records, back up raw files, or generate content in this phase.
 

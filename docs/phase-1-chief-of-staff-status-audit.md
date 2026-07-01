@@ -289,7 +289,7 @@ bash scripts/phase-1-status.sh
 bin/chief-of-staff --dashboard
 ```
 
-Curriculum Builder parked. Lesson-planning placeholder readiness parked. Appearance & Vibe foundation complete for now; live curator not started. Dashboard remains a read-only status surface.
+Curriculum Builder parked. Lesson-planning placeholder readiness parked. Appearance & Vibe foundation complete for now; live curator not started. Dashboard remains a read-only status surface and read-only proof surface.
 
 ## Build Queue and Status Pointer Consistency
 

@@ -96,9 +96,10 @@ lesson-planning placeholder readiness parked
 Appearance & Vibe foundation complete for now; live curator not started
 do not restart parked work without explicit approval
 dashboard and status commands remain read-only proof surfaces
+status commands report PASS/WARN/FAIL only and do not activate implementation
 ```
 
-Last pass: PR #130 — Prompt pack post-parked-tracks stale-reference alignment.
+Last pass: PR #131 — Chief of Staff command surface status alignment.
 
 ## Prompt Pack Cross-Link Audit
 

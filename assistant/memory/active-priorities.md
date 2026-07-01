@@ -71,7 +71,7 @@
 - Canvas LLM frozen foundation handoff snapshot: complete
 - Canvas LLM stop marker and Curriculum Builder return handoff: complete
 - Curriculum Builder output contract planning foundation: complete
-- Curriculum Builder static source registry plan: in progress (PR #157)
+- Curriculum Builder static source registry plan: complete
 
 ### Now
 
@@ -89,7 +89,7 @@
 
 ### Next
 
-- Curriculum Builder static source registry plan in progress (PR #157). Documentation/status only; metadata/reference-only; no scanning, folder crawling, file indexing, OCR, embeddings, vector database, or Drive/NAS/iCloud resolution.
+- Curriculum Builder static source registry plan complete (PR #157). Documentation/status only; metadata/reference-only; no scanning, folder crawling, file indexing, OCR, embeddings, vector database, or Drive/NAS/iCloud resolution.
 - Curriculum Builder output contract planning foundation complete (PR #155). Documentation/status only; no lesson generation, ingestion, RAG, or runtime behavior.
 - Canvas LLM is complete/frozen/stopped. final handoff snapshot is recorded. stop marker is active. Do not start Canvas LLM PRs by default.
 - Recommended next focus remains Curriculum Builder foundation docs/status work outside Canvas LLM runtime work with explicit approval only.

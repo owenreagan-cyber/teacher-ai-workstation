@@ -45,6 +45,7 @@
 - Curriculum Builder planning stack closeout: complete and parked for now
 - Appearance & Vibe wallpaper/vibe status audit closeout: complete
 - Repo-wide parked tracks and active status map: complete
+- Active priorities and build queue handoff alignment: complete
 
 ### Now
 

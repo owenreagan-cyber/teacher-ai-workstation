@@ -80,7 +80,25 @@ next recommended PR should match docs/build-queue.md
 next recommended PR should match memory files
 next recommended PR should match dashboard recommendation when displayed
 stale next recommended PR references should be updated during each PR
+parked tracks should not be restarted without explicit approval
+start from docs/phase-1-chief-of-staff-status-audit.md — Repo-Wide Parked Tracks and Active Status Map when tracks are parked
 ```
+
+## Post-Parked-Tracks Stale-Reference Pass
+
+After PRs #128–#129, reusable prompt/workflow docs were aligned so they no longer point at pre-closeout skeleton creation, active lesson-planning activation, Curriculum Builder expansion, or Appearance & Vibe runtime work.
+
+```text
+start from docs/phase-1-chief-of-staff-status-audit.md — Repo-Wide Parked Tracks and Active Status Map
+start from docs/build-queue.md for current parked posture
+Curriculum Builder parked and approval-gated
+lesson-planning placeholder readiness parked
+Appearance & Vibe foundation complete for now; live curator not started
+do not restart parked work without explicit approval
+dashboard and status commands remain read-only proof surfaces
+```
+
+Last pass: PR #130 — Prompt pack post-parked-tracks stale-reference alignment.
 
 ## Prompt Pack Cross-Link Audit
 

@@ -275,7 +275,7 @@ Prompt pack references do not replace final local-main dashboard proof.
 Use `docs/workflow-docs-cross-link-polish.md` as the map for workflow docs.
 Use `docs/workflow-docs-navigation-status-summary.md` to verify the workflow doc map remains intact.
 Use `docs/prompt-pack-stack-completion-marker.md` to confirm the reusable prompt pack documentation stack is complete for now.
-The next safe return point is Core Teacher Workstation planning cleanup.
+Start from `docs/phase-1-chief-of-staff-status-audit.md` — Repo-Wide Parked Tracks and Active Status Map and `docs/build-queue.md`. Dashboard and status commands are read-only proof surfaces.
 Use `docs/prompt-pack-handoff-summary.md` to understand the current reusable prompt pack stack.
 The handoff summary points to maintenance, freshness, stale-reference audit, reference index, workflow navigation, verification bundles, and lifecycle guardrails.
 Use `docs/prompt-pack-reference-index.md` to find reusable prompt pack references.

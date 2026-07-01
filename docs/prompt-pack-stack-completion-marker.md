@@ -60,8 +60,9 @@ bin/chief-of-staff --dashboard
 ## Safe Return Point
 
 ```text
-Next safe return point: Core Teacher Workstation planning cleanup.
-This return point should focus on core teacher workflow docs/status quality after the prompt pack stack is complete for now.
+Next safe return point: docs/phase-1-chief-of-staff-status-audit.md — Repo-Wide Parked Tracks and Active Status Map and docs/build-queue.md.
+Parked tracks: Curriculum Builder, lesson-planning placeholder readiness, Appearance & Vibe wallpaper/photo foundation. Future implementation requires explicit approval.
+This return point should focus on handoff/status clarity and read-only verification after the prompt pack stack is complete for now.
 It must preserve every existing command and status check.
 It must not add lesson generation changes.
 It must not add document scanning or indexing.

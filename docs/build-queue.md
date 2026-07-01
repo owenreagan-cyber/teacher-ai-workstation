@@ -8,7 +8,7 @@ Phase 0E Vibe Engine.
 
 ## Current Focus
 
-Phase 1 Teacher Chief of Staff + safe local lesson workflows.
+Handoff and status clarity. Start from `docs/phase-1-chief-of-staff-status-audit.md` — Repo-Wide Parked Tracks and Active Status Map and `docs/build-queue.md`.
 
 ## Recently Completed
 
@@ -61,6 +61,7 @@ Phase 1 Teacher Chief of Staff + safe local lesson workflows.
 - Lesson-planning placeholder readiness closeout (PR #125).
 - Curriculum Builder planning stack (PRs #107–#124): complete and parked for now.
 - Repo-wide parked tracks and active status map (PR #128).
+- Active priorities and build queue handoff alignment (PR #129).
 
 ## Current PR
 

@@ -40,7 +40,7 @@ Cross-references:
 | Phase 3 foundations | **Complete (v0)** | Lesson Planning, Curriculum Library, Renderer, Local Retrieval, Integration Planning |
 | Curriculum Builder | **v1 foundation complete** | Registry, 5 contracts, binding, validation — no renderers, real records, or generation |
 | Canvas LLM | **Frozen/stopped** | Planning stack complete; stop marker active; no runtime |
-| Local LLM | **Setup only** | Ollama installer/verify; routing matrix doc-only; no downloads |
+| Local LLM | **Active (D1 read-only)** | Program D1 status foundation; no installs/downloads/inference |
 | Mac workstation experience | **Scaffold/plan** | Wallpaper foundation stack; teacher modes planned; no live curator/widget |
 | Health Monitor / System Updater | **Active** | Read-only foundations complete (Programs H and I) |
 | 3D Builder Workshop Agent | **Planned** | `3d-agent/` readiness parked; no CAD/slicing/printing |
@@ -123,7 +123,7 @@ Closure: `docs/teacher-workstation-foundation-v0.md`
 | **Teacher Workstation System Updater** | Read-only update checks → guided plans → approved maintenance | **Complete** — Program I read-only foundation |
 | **AI Tool Routing Matrix** | Documented roles for cloud/local/builder tools | **Active** — read-only operational surface; routing inactive |
 | **Curriculum Builder Complete** | Registry + contracts + renderers + teacher-reviewed outputs | v1 foundation done; renderers/generation gated |
-| **Local LLM / Ollama Workstation** | Local model policy, inventory, health checks | Installer baseline only |
+| **Local LLM / Ollama Workstation** | Local model policy, inventory, health checks | **Active** — Program D1 read-only foundation |
 | **Mac Workstation Experience** | Teacher modes, wallpaper, visible transformation | Plans exceed implementation |
 | **Widget and Shortcut Builder** | Catalogs for approved surfaces | Roadmap only |
 | **Lovable Classroom App Builder** | Future approval-gated app-builder routing | Planning only — Program G1 |
@@ -452,20 +452,25 @@ Unconfirmed model variant names remain tentative until locally verified.
 #### D1 — Local LLM Status Foundation
 
 ```text
-Mission: Local LLM workstation status proof
+Mission: Local LLM workstation read-only status foundation (Program D1)
 
 Scope:
-- docs/local-llm-workstation-v1.md
+- docs/local-llm-workstation-status-foundation.md
+- docs/local-llm-non-activation-boundaries.md
+- docs/local-llm-ollama-readiness-plan.md
 - scripts/local-llm-workstation-status.sh
 - chief-of-staff --local-llm-workstation-status
-- checks: ollama binary, service reachability (local), llm CLI, model-routing doc
+- checks: repo-local docs, manifest, CLI registration, negative non-activation assertions
 
 Out of scope:
+- Ollama install/execution/ping
 - model downloads
+- model inference
+- localhost/port probes
 - API key setup
-- cloud routing
+- cloud routing activation
 
-Autonomous: yes (read-only probes only)
+Autonomous: yes (read-only repo-local status only)
 ```
 
 #### D2 — Secrets/Capability Broker (approval-gated)
@@ -752,6 +757,7 @@ Per `docs/engineering-constitution.md` §10, v1.0 means these systems exist as *
 | Health Monitor | Read-only workstation health report | **Active** — Program H foundation |
 | System Updater | Read-only update planning | **Active** — Program I foundation |
 | AI tool routing | Documented matrix; inactive routing | **Active** — read-only operational surface |
+| Local LLM / Ollama | Read-only planning/status foundation | **Active** — Program D1 read-only |
 | Curriculum Registry | Approved manual registry with metadata references | **Partial** — v1 fictional foundation |
 | Output Contracts | Active contracts wired to registry and review | **Foundation complete** — 5/5 canonical v0 |
 | Renderers | ≥1 renderer per primary contract type | **Not started** — interface foundation only |
@@ -770,11 +776,9 @@ Per `docs/engineering-constitution.md` §10, v1.0 means these systems exist as *
 
 ## 10. Immediate Next Recommended Mission
 
-**Local LLM / Ollama Workstation — Read-Only Status Foundation (Program D1)**
+**Mac Workstation Experience — Read-Only Planning Foundation (Program E1)**
 
-AI Tool Routing operational surface is complete (`docs/ai-tool-routing-foundation.md`). `--model-routing-status` provides read-only routing lane visibility only. Recommended next: Local LLM/Ollama read-only status foundation — no installs, downloads, or inference.
-
-Alternate tracks remain approval-gated per `docs/implementation-approval-gate.md`.
+Program D1 Local LLM/Ollama read-only status foundation is complete (`docs/local-llm-workstation-status-foundation.md`). `--local-llm-workstation-status` provides planning visibility only. Recommended next: Mac teacher modes and workstation experience planning/status without Mac system changes.
 
 Alternate tracks remain approval-gated per `docs/implementation-approval-gate.md`.
 
@@ -791,10 +795,11 @@ COMPLETE:
   H0 Health Monitor read-only foundation
   I0 System Updater read-only checks
   R0 AI Tool Routing operational surface (read-only)
+  D1 Local LLM read-only status foundation
 
 NOW (autonomous pattern when authorized):
-  B1–B5 Chief of Staff v1 Agent Core
-  D1 Local LLM status (read-only)
+  B1–B5 Chief of Staff v1 Agent Core (remaining planned surfaces)
+  E1 Mac Workstation Experience read-only planning
 
 THEN (mixed approval):
   A4–A7 Curriculum Builder Complete subtracks

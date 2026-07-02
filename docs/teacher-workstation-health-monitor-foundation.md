@@ -57,9 +57,9 @@ bin/chief-of-staff --dashboard
 
 ## Recommended Next Mission
 
-**Local LLM / Ollama Workstation — Read-Only Status Foundation (Program D1)**
+**Mac Workstation Experience — Read-Only Planning Foundation (Program E1)**
 
-Health Monitor observes; System Updater plans updates read-only; AI Tool Routing reports lane visibility read-only. Next: local LLM/Ollama status without install or inference.
+Health Monitor observes; System Updater plans updates read-only; AI Tool Routing and Local LLM report planning boundaries read-only. Next: Mac workstation experience planning without Mac system changes.
 
 ## Non-Activation
 

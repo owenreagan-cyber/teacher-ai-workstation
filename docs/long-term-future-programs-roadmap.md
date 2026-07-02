@@ -154,7 +154,7 @@ Read-only operational surface complete (`docs/ai-tool-routing-foundation.md`). `
 
 ## Local LLM / Ollama Workstation
 
-**Classification:** Future / Approval-Gated / Planning Only
+**Classification:** Read-only foundation complete — runtime activation remains Future / Approval-Gated
 
 ### Purpose
 
@@ -171,7 +171,7 @@ Future local AI execution for privacy-first, offline-capable workflows.
 
 ### Current status
 
-Planning only. Installer baseline exists (`setup/08-local-ai.sh`); no runtime support active.
+Read-only status foundation complete (`docs/local-llm-workstation-status-foundation.md`). `--local-llm-workstation-status` reports planning boundaries only. No Ollama execution, downloads, or inference.
 
 ### Blocked capabilities
 

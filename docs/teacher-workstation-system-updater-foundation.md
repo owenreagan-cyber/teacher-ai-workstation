@@ -59,9 +59,9 @@ bin/chief-of-staff --dashboard
 
 ## Recommended Next Mission
 
-**Local LLM / Ollama Workstation — Read-Only Status Foundation (Program D1)**
+**Mac Workstation Experience — Read-Only Planning Foundation (Program E1)**
 
-Chief of Staff, Health Monitor, System Updater, and AI Tool Routing foundations are read-only. Next: local LLM/Ollama status without install, download, or inference.
+Chief of Staff, Health Monitor, System Updater, AI Tool Routing, and Local LLM foundations are read-only. Next: Mac teacher modes and workstation experience planning without Mac system changes.
 
 ## Non-Activation
 

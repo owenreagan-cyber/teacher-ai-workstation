@@ -76,6 +76,9 @@ System Updater (read-only planning; no apply/install):
 AI Tool Routing (read-only; no live routing):
   --model-routing-status               Show read-only AI tool routing operational status and exit.
 
+Local LLM / Ollama (read-only; no install/inference):
+  --local-llm-workstation-status       Show read-only Local LLM/Ollama workstation status and exit.
+
 Lesson Planning:
   --lesson-status                      Show local lesson planning workspace status and exit.
   --lesson-brief-status                Show local lesson brief helper status and exit.
@@ -2246,6 +2249,15 @@ while [[ $# -gt 0 ]]; do
         die "AI tool routing status script is missing: scripts/ai-tool-routing-status.sh"
       fi
       bash "${routing_status_script}"
+      exit 0
+      ;;
+    --local-llm-workstation-status)
+      repo_root="$(resolve_repo_root)"
+      local_llm_status_script="${repo_root}/scripts/local-llm-workstation-status.sh"
+      if [[ ! -f "${local_llm_status_script}" ]]; then
+        die "Local LLM workstation status script is missing: scripts/local-llm-workstation-status.sh"
+      fi
+      bash "${local_llm_status_script}"
       exit 0
       ;;
     --validate-all)

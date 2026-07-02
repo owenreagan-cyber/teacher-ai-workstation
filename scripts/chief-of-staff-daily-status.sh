@@ -51,7 +51,7 @@ roadmap_mission="$(awk '
 ' docs/master-build-roadmap.md)"
 printf 'Roadmap immediate mission: %s\n' "${roadmap_mission:-(see docs/master-build-roadmap.md)}"
 
-if grep -Fq 'not approved by default' docs/implementation-approval-gate.md; then
+if grep -Fq 'Implementation approval status: not approved' docs/implementation-approval-gate.md; then
   pass 'implementation gate boundary present'
   printf 'Implementation gate: not approved by default\n'
 else

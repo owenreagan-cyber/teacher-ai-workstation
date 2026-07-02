@@ -42,7 +42,6 @@ Canonical closure index for the full **Program B** section: command surface (B1)
 | --- | --- | --- |
 | `--daily-briefing` | B2+ | AI summarization — approval-gated |
 | `--prove-main` | Proof | Broad git workflow — separate design |
-| `--model-routing-status` | B5 roadmap | Future Health/Routing track |
 | `--system-health` | H | implemented (Program H) |
 | `--system-update-check` | I | implemented (Program I) |
 | `--system-update-plan` | I | implemented (Program I) |

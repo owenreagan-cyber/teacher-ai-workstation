@@ -45,7 +45,7 @@ Cross-references:
 | Approval / blocker queues | **implemented read-only** | `--approval-queue`, `--blocker-queue` (Program B4) |
 | Mode awareness (conceptual) | **implemented read-only** | `--mode-status` (Program B5); no Mac changes |
 | Daily briefing (AI) | planned | Approval-gated |
-| Tool routing surface | planned | `--model-routing-status`; matrix at `docs/ai-tool-routing-matrix.md` |
+| Tool routing surface | implemented read-only | `--model-routing-status`; matrix at `docs/ai-tool-routing-matrix.md` |
 | Health summary | planned | Aggregated report via Program H |
 
 **Architecture rule:** Chief of Staff is the central agent/control plane. It coordinates, validates, routes, tracks, and reports. It does not become external builders (Lovable, renderers, 3D tools, Canvas runtime).
@@ -70,7 +70,7 @@ Cross-references:
 
 | Capability | Status | Notes |
 | --- | --- | --- |
-| AI Tool Routing Matrix | foundation complete | `docs/ai-tool-routing-matrix.md` |
+| AI Tool Routing Matrix | foundation complete | `docs/ai-tool-routing-foundation.md` |
 | Model routing policy | foundation complete | `assistant/model-routing.md` |
 | Local LLM / Ollama workstation | planned | Installer baseline only; no downloads |
 | Cloud API routing (OpenAI/Anthropic/Google) | planned | Blocked until explicit approval |

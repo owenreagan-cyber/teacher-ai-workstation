@@ -836,6 +836,24 @@ else
   fail "chief-of-staff missing --system-update-plan"
 fi
 
+section "AI Tool Routing Matrix (Operational Surface) Files"
+for path in \
+  docs/ai-tool-routing-operational-surface.md \
+  docs/ai-tool-routing-foundation.md \
+  scripts/ai-tool-routing-status.sh \
+  tests/ai-tool-routing-status-test.sh; do
+  check_required_file "${path}"
+done
+check_bash_syntax scripts/ai-tool-routing-status.sh
+check_bash_syntax tests/ai-tool-routing-status-test.sh
+check_doc_contains docs/ai-tool-routing-foundation.md "complete_v1_r" "ai tool routing closure status"
+check_doc_contains docs/ai-tool-routing-operational-surface.md "read-only routing visibility" "routing read-only boundary"
+if grep -Fq -- '--model-routing-status' bin/chief-of-staff; then
+  pass "chief-of-staff exposes --model-routing-status"
+else
+  fail "chief-of-staff missing --model-routing-status"
+fi
+
 section "Curriculum Registry–Contract Binding v0 Foundation Files"
 for path in \
   docs/curriculum-binding-v0.md \

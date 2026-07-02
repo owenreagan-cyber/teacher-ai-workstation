@@ -59,9 +59,9 @@ bin/chief-of-staff --dashboard
 
 ## Recommended Next Mission
 
-**AI Tool Routing Matrix — Operational Routing Surface**
+**Local LLM / Ollama Workstation — Read-Only Status Foundation (Program D1)**
 
-Chief of Staff, Health Monitor, and System Updater foundations are read-only. Next: operational routing status without activating cloud APIs or automated routing.
+Chief of Staff, Health Monitor, System Updater, and AI Tool Routing foundations are read-only. Next: local LLM/Ollama status without install, download, or inference.
 
 ## Non-Activation
 

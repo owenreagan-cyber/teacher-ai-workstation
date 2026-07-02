@@ -137,7 +137,7 @@ See `docs/master-build-roadmap.md` Program G1 and `assistant/model-routing.md`. 
 
 ## Master Build Roadmap Status
 
-Canonical program roadmap is active (`docs/master-build-roadmap.md`). Phase 3 foundations complete. Chief of Staff Program B, Health Monitor Program H, and System Updater Program I foundations complete. Recommended next major program: AI Tool Routing Matrix — Operational Routing Surface.
+Canonical program roadmap is active (`docs/master-build-roadmap.md`). Phase 3 foundations complete. Chief of Staff Program B, Health Monitor Program H, System Updater Program I, and AI Tool Routing operational surface complete. Recommended next major program: Local LLM / Ollama Workstation — Read-Only Status Foundation (Program D1).
 
 Companion docs: `docs/teacher-workstation-capability-map.md`, `docs/ai-tool-routing-matrix.md`, `docs/3d-builder-workshop-agent-roadmap.md`.
 

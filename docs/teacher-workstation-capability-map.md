@@ -92,7 +92,7 @@ Cross-references:
 
 | Capability | Status | Notes |
 | --- | --- | --- |
-| Lovable classroom app builder | planned | Future / approval-gated; Program G1 |
+| Lovable classroom app builder | implemented read-only | `--lovable-status`; Program G1 foundation |
 | Canvas LLM manual export | foundation complete | Frozen/stopped; Program C |
 | Google Drive / Gmail / Canvas API | planned | Last-stage integrations; Program G |
 | OAuth / secrets broker | planned | Phase 0F; blocked |

@@ -97,11 +97,13 @@ bin/chief-of-staff --local-llm-workstation-status >/dev/null
 bin/chief-of-staff --mac-workstation-status >/dev/null
 bin/chief-of-staff --widget-shortcut-status >/dev/null
 bin/chief-of-staff --classroom-app-lab-status >/dev/null
+bin/chief-of-staff --lovable-status >/dev/null
 bash tests/ai-tool-routing-status-test.sh >/dev/null
 bash tests/local-llm-workstation-status-test.sh >/dev/null
 bash tests/mac-workstation-experience-status-test.sh >/dev/null
 bash tests/widget-shortcut-builder-status-test.sh >/dev/null
 bash tests/classroom-app-lab-status-test.sh >/dev/null
+bash tests/lovable-classroom-app-builder-status-test.sh >/dev/null
 bash tests/teacher-workstation-system-updater-test.sh >/dev/null
 bash tests/teacher-workstation-health-monitor-test.sh >/dev/null
 bash tests/chief-of-staff-daily-operations-test.sh >/dev/null

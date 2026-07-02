@@ -296,7 +296,7 @@ Chief of Staff must **not** become Lovable. Lovable builds classroom-support app
 
 ### Current status
 
-Planning only. Not connected.
+Read-only planning surface complete (`docs/lovable-classroom-app-builder-foundation.md`). `--lovable-status` reports planning boundaries only. Not connected. No Lovable API, OAuth, network calls, or live app generation.
 
 ### Blocked capabilities
 

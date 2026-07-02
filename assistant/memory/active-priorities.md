@@ -87,6 +87,7 @@
 
 ### Now
 
+- Curriculum Builder Registry v0.2 local foundation lane CB-IMPL-2 through CB-IMPL-4 complete (`docs/curriculum-builder-registry-v0-2-lane-closure.md`). Fake fixture records, metadata preview renderer, and local retrieval hooks; `--curriculum-registry-records-status`, `--curriculum-registry-renderer-status`, `--curriculum-registry-retrieval-status`. No production writes, no real curriculum, no generation.
 - Curriculum Builder Registry v0.2 manual entry dry-run CB-IMPL-1 complete (`docs/curriculum-builder-registry-v0-2-manual-entry-dry-run.md`). `--curriculum-registry-dry-run-status` fake-data-only dry-run validation; no registry writes, no active write flag, no ingestion or generation.
 - Three-Level Discovery Governance complete (`docs/cursor-operating-modes-and-approval-gates.md` § Three-Level Discovery Governance). Level 1/2/3 rules, unified proposal ledger, lane templates, `lane_status` in roadmap. Proposal-only — no discovery scans run in governance mission.
 - Curriculum Builder metadata contract schemas Programs A4–A7 complete (`docs/curriculum-builder-canonical-contract-schemas.md`). `--curriculum-contracts-status` read-only metadata contract visibility only. No validators, ingestion, scanning, or generation.

@@ -88,6 +88,9 @@ These flags exist in `bin/chief-of-staff` and work as read-only local status sur
 | `bin/chief-of-staff --curriculum-builder-foundation-status` | Curriculum Builder v1 |
 | `bin/chief-of-staff --curriculum-contracts-status` | Metadata contract schemas A4–A7 (read-only) |
 | `bin/chief-of-staff --curriculum-registry-dry-run-status` | Registry v0.2 manual entry dry-run (CB-IMPL-1; no writes) |
+| `bin/chief-of-staff --curriculum-registry-records-status` | Registry v0.2 local fake records (CB-IMPL-2; fixture only) |
+| `bin/chief-of-staff --curriculum-registry-renderer-status` | Registry v0.2 fake-record renderer preview (CB-IMPL-3) |
+| `bin/chief-of-staff --curriculum-registry-retrieval-status` | Registry v0.2 fake-record retrieval hooks (CB-IMPL-4) |
 | `bin/chief-of-staff --curriculum-library-foundation-status` | Curriculum Library v1 |
 | `bin/chief-of-staff --lesson-planning-foundation-status` | Lesson Planning v1 |
 | `bin/chief-of-staff --renderer-foundation-status` | Renderer Foundation v1 |

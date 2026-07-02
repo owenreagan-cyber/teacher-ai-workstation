@@ -58,6 +58,10 @@ Cross-references:
 | Curriculum Builder v1 | foundation complete | Registry, 5 output contracts, binding, validation |
 | Curriculum Builder metadata contracts A4–A7 | implemented read-only | `--curriculum-contracts-status`; inactive planning schemas |
 | Curriculum Builder Registry v0.2 dry-run (CB-IMPL-1) | implemented read-only | `--curriculum-registry-dry-run-status`; fake candidates only; no writes |
+| Curriculum Builder Registry v0.2 local records (CB-IMPL-2) | implemented read-only | `--curriculum-registry-records-status`; fake fixture registry only |
+| Curriculum Builder Registry v0.2 renderer preview (CB-IMPL-3) | implemented read-only | `--curriculum-registry-renderer-status`; metadata preview only |
+| Curriculum Builder Registry v0.2 retrieval hooks (CB-IMPL-4) | implemented read-only | `--curriculum-registry-retrieval-status`; fake lookup only |
+| Production registry writes / real records | planned | Approval-gated — separate mission |
 | Lesson Planning Foundation | foundation complete | Phase 3 Workstream A |
 | Curriculum Library Foundation | foundation complete | Phase 3 Workstream B |
 | Renderer Foundation v1 | foundation complete | Interface/status only; no renderers |

@@ -30,9 +30,9 @@ First safe implementation step after metadata contract schemas A4–A7. Provides
 
 | Capability | Status |
 | --- | --- |
-| Persistent registry writes | blocked — CB-IMPL-2+ |
+| Persistent registry writes | blocked — separate approval mission |
 | Active `--write` flag | blocked — separate approval mission |
-| Real registry records | blocked — CB-IMPL-2 |
+| Real registry records / production intake | blocked — separate approval mission |
 | File ingestion / scanning / crawling | blocked |
 | Lesson generation | blocked |
 | Canvas / Drive / NAS / iCloud APIs | blocked |
@@ -57,7 +57,7 @@ bin/chief-of-staff --dashboard
 
 ## Recommended Next Mission
 
-**CB-IMPL-2 — Real Registry Records** (approval-gated; requires explicit intake and no-student-data confirmation). Dry-run foundation does not authorize writes.
+**Production Registry Workflow** (approval-gated; requires explicit intake). Local foundation lane CB-IMPL-2–4 complete — see `docs/curriculum-builder-registry-v0-2-lane-closure.md`.
 
 ## Non-Activation
 

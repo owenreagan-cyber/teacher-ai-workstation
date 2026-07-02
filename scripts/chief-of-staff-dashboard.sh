@@ -1356,6 +1356,69 @@ else
   warn "Curriculum Builder Registry v0.2 dry-run status script missing: scripts/curriculum-builder-registry-v0-2-status.sh"
 fi
 
+section "Curriculum Builder Registry v0.2 Local Fake Records (CB-IMPL-2)"
+if [[ -f scripts/curriculum-builder-registry-v0-2-local-records-status.sh ]]; then
+  curriculum_registry_records_result=0
+  curriculum_registry_records_output="$(bash scripts/curriculum-builder-registry-v0-2-local-records-status.sh 2>&1)" || curriculum_registry_records_result=$?
+  curriculum_registry_records_pass="$(summary_count "${curriculum_registry_records_output}" "PASS")"
+  curriculum_registry_records_warn="$(summary_count "${curriculum_registry_records_output}" "WARN")"
+  curriculum_registry_records_fail="$(summary_count "${curriculum_registry_records_output}" "FAIL")"
+
+  if [[ "${curriculum_registry_records_result}" != "0" ]]; then
+    printf '%s\n' "${curriculum_registry_records_output}"
+    fail "Curriculum Builder Registry v0.2 local records status failed"
+  elif [[ -n "${curriculum_registry_records_pass}" && -n "${curriculum_registry_records_warn}" && -n "${curriculum_registry_records_fail}" ]]; then
+    printf 'Curriculum Builder Registry v0.2 Local Records: PASS %s / WARN %s / FAIL %s\n' "${curriculum_registry_records_pass}" "${curriculum_registry_records_warn}" "${curriculum_registry_records_fail}"
+    pass "Curriculum Builder Registry v0.2 local records status completed"
+  else
+    pass "Curriculum Builder Registry v0.2 local records status completed"
+  fi
+else
+  warn "Curriculum Builder Registry v0.2 local records status script missing: scripts/curriculum-builder-registry-v0-2-local-records-status.sh"
+fi
+
+section "Curriculum Builder Registry v0.2 Renderer Foundation (CB-IMPL-3)"
+if [[ -f scripts/curriculum-builder-registry-v0-2-renderer-status.sh ]]; then
+  curriculum_registry_renderer_result=0
+  curriculum_registry_renderer_output="$(bash scripts/curriculum-builder-registry-v0-2-renderer-status.sh 2>&1)" || curriculum_registry_renderer_result=$?
+  curriculum_registry_renderer_pass="$(summary_count "${curriculum_registry_renderer_output}" "PASS")"
+  curriculum_registry_renderer_warn="$(summary_count "${curriculum_registry_renderer_output}" "WARN")"
+  curriculum_registry_renderer_fail="$(summary_count "${curriculum_registry_renderer_output}" "FAIL")"
+
+  if [[ "${curriculum_registry_renderer_result}" != "0" ]]; then
+    printf '%s\n' "${curriculum_registry_renderer_output}"
+    fail "Curriculum Builder Registry v0.2 renderer status failed"
+  elif [[ -n "${curriculum_registry_renderer_pass}" && -n "${curriculum_registry_renderer_warn}" && -n "${curriculum_registry_renderer_fail}" ]]; then
+    printf 'Curriculum Builder Registry v0.2 Renderer: PASS %s / WARN %s / FAIL %s\n' "${curriculum_registry_renderer_pass}" "${curriculum_registry_renderer_warn}" "${curriculum_registry_renderer_fail}"
+    pass "Curriculum Builder Registry v0.2 renderer status completed"
+  else
+    pass "Curriculum Builder Registry v0.2 renderer status completed"
+  fi
+else
+  warn "Curriculum Builder Registry v0.2 renderer status script missing: scripts/curriculum-builder-registry-v0-2-renderer-status.sh"
+fi
+
+section "Curriculum Builder Registry v0.2 Retrieval Hooks (CB-IMPL-4)"
+if [[ -f scripts/curriculum-builder-registry-v0-2-retrieval-status.sh ]]; then
+  curriculum_registry_retrieval_result=0
+  curriculum_registry_retrieval_output="$(bash scripts/curriculum-builder-registry-v0-2-retrieval-status.sh 2>&1)" || curriculum_registry_retrieval_result=$?
+  curriculum_registry_retrieval_pass="$(summary_count "${curriculum_registry_retrieval_output}" "PASS")"
+  curriculum_registry_retrieval_warn="$(summary_count "${curriculum_registry_retrieval_output}" "WARN")"
+  curriculum_registry_retrieval_fail="$(summary_count "${curriculum_registry_retrieval_output}" "FAIL")"
+
+  if [[ "${curriculum_registry_retrieval_result}" != "0" ]]; then
+    printf '%s\n' "${curriculum_registry_retrieval_output}"
+    fail "Curriculum Builder Registry v0.2 retrieval status failed"
+  elif [[ -n "${curriculum_registry_retrieval_pass}" && -n "${curriculum_registry_retrieval_warn}" && -n "${curriculum_registry_retrieval_fail}" ]]; then
+    printf 'Curriculum Builder Registry v0.2 Retrieval: PASS %s / WARN %s / FAIL %s\n' "${curriculum_registry_retrieval_pass}" "${curriculum_registry_retrieval_warn}" "${curriculum_registry_retrieval_fail}"
+    pass "Curriculum Builder Registry v0.2 retrieval status completed"
+  else
+    pass "Curriculum Builder Registry v0.2 retrieval status completed"
+  fi
+else
+  warn "Curriculum Builder Registry v0.2 retrieval status script missing: scripts/curriculum-builder-registry-v0-2-retrieval-status.sh"
+fi
+
 section "Curriculum Registry v0 Manual Metadata Foundation"
 if [[ -f scripts/curriculum-registry-v0-status.sh ]]; then
   curriculum_registry_v0_result=0

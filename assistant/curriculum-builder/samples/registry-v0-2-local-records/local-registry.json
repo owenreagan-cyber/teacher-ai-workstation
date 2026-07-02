@@ -1,0 +1,78 @@
+{
+  "local_registry_version": "0.2.0",
+  "local_registry_mode": "fake_fixture_only",
+  "metadata_only": true,
+  "read_only": true,
+  "no_production_write": true,
+  "fixture_only": true,
+  "records": [
+    {
+      "resource_id": "example-resource-001",
+      "title": "Sample Worksheet",
+      "resource_type": "worksheet",
+      "subject": "Example Math Course",
+      "grade_band": "Example Grade 5",
+      "course": "Example Math Course",
+      "unit": "Example Unit 1",
+      "lesson": "Example Lesson 1",
+      "topic": "Example Topic Placeholder",
+      "source_reference_id": "example-source-001",
+      "source_reference": "placeholder://source/example-drive-reference",
+      "source_system": "google_drive",
+      "teacher_only": false,
+      "student_facing_allowed": true,
+      "review_status": "approved_placeholder",
+      "lesson_link_id": "example-lesson-link-001",
+      "notes": "Fictional local fixture record only — no production registry write."
+    },
+    {
+      "resource_id": "example-resource-002",
+      "title": "Example Resource",
+      "resource_type": "study_guide",
+      "subject": "Example ELA Course",
+      "grade_band": "Example Grade 6",
+      "course": "Example ELA Course",
+      "unit": "Example Unit 1",
+      "lesson": "Example Lesson 1",
+      "topic": "Example Reading Placeholder",
+      "source_reference_id": "example-source-002",
+      "source_reference": "placeholder://source/example-nas-reference",
+      "source_system": "nas",
+      "teacher_only": true,
+      "student_facing_allowed": false,
+      "review_status": "in_review",
+      "lesson_link_id": "example-lesson-link-001",
+      "notes": "Second fictional local fixture record for validator coverage."
+    }
+  ],
+  "source_references": [
+    {
+      "source_reference_id": "example-source-001",
+      "source_system": "google_drive",
+      "source_label": "example-drive-reference",
+      "path_or_url_reference": "placeholder://source/example-drive-reference",
+      "not_scanned": true,
+      "not_ingested": true
+    },
+    {
+      "source_reference_id": "example-source-002",
+      "source_system": "nas",
+      "source_label": "example-nas-reference",
+      "path_or_url_reference": "placeholder://source/example-nas-reference",
+      "not_scanned": true,
+      "not_ingested": true
+    }
+  ],
+  "lesson_links": [
+    {
+      "lesson_link_id": "example-lesson-link-001",
+      "course": "Example ELA Course",
+      "unit": "Example Unit 1",
+      "lesson": "Example Lesson 1",
+      "pacing_reference": "placeholder://registry/example-record",
+      "canvas_reference_future": "placeholder://canvas/example-future-reference",
+      "resource_ids": ["example-resource-001", "example-resource-002"],
+      "generation_blocked": true
+    }
+  ]
+}

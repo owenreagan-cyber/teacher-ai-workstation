@@ -1,6 +1,6 @@
 # Build Queue
 
-Last updated: 2026-07-01
+Last updated: 2026-07-02
 
 ## Current Completed Phase
 
@@ -113,6 +113,14 @@ Curriculum Builder v1 foundation is complete for the approved Phase 2 scope. See
 
 Renderer Foundation v1 is complete for the approved Phase 3 interface/status scope. See `docs/renderer-v1-foundation.md` and `docs/renderer-input-readiness-v0.md`. Interface manifests, input readiness manifest, validators, and Chief of Staff/dashboard integration are active. No renderer implementation, HTML/PDF generation, or exported artifacts exist.
 
+## Lovable Classroom App Builder Integration Status
+
+**Classification:** Future / Approval-Gated
+
+Planning only — not connected. Chief of Staff may eventually route approved classroom-app ideas into Lovable for teacher tools, mini-apps, review games, dashboards, and workflow helpers. Chief of Staff must not become Lovable; it decides, validates, routes, tracks, and provides status only.
+
+See `docs/master-build-roadmap.md` Program G1 and `assistant/model-routing.md`. No Lovable API, OAuth, credentials, network calls, app generation, deployment, automation, or student-facing app generation is active.
+
 ## Master Build Roadmap Status
 
 Canonical program roadmap is active (`docs/master-build-roadmap.md`). Curriculum Builder v1 foundation complete for approved scope. Recommended next major program: Chief of Staff v1.
@@ -200,7 +208,8 @@ Future lesson-planning follow-ons are documentation/status-only unless explicitl
 
 1. Pause lesson-planning implementation; optional documentation/status-only follow-ons only with explicit approval.
 2. Later: permissioned Gmail/Drive integrations.
-3. Later: secrets/capability broker.
+3. Later: Lovable Classroom App Builder Integration (approval-gated; Chief of Staff routing concept only until explicit mission).
+4. Later: secrets/capability broker.
 
 ## Parked / Future
 
@@ -216,6 +225,7 @@ Future lesson-planning follow-ons are documentation/status-only unless explicitl
 - Spotify automation pending.
 - Vibe Panel pending.
 - Gmail/Drive/email integrations permission-gated.
+- Lovable Classroom App Builder Integration: planning only — future / approval-gated; see `docs/master-build-roadmap.md` Program G1. Not connected.
 - Secrets/capability broker reserved for a later phase.
 - OpenSCAD optional warning may remain unless Owen chooses to install it.
 

@@ -120,7 +120,7 @@ Approved renderer outputs may eventually feed other teacher-facing tools. **No c
 | Canvas LLM manual export | May later package metadata-only contract outputs when unfreezed | frozen |
 | Local printable/export paths | May later render teacher-reviewed artifacts locally | not started |
 
-Lovable is documented in `assistant/model-routing.md` as a future Chief of Staff tool integration for classroom app ideas. Chief of Staff does not route to Lovable, and renderers do not call Lovable APIs in v1.
+Lovable is documented in `assistant/model-routing.md` and `docs/master-build-roadmap.md` Program G1 as a future Chief of Staff tool integration for classroom app ideas. Chief of Staff does not route to Lovable, and renderers do not call Lovable APIs in v1. Chief of Staff must not become Lovable — it decides, validates, routes, tracks, and provides status only.
 
 No Lovable API calls, app generation, deployment, OAuth, credentials, or automation.
 

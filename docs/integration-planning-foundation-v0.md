@@ -42,7 +42,17 @@ Cross-references:
 
 ## Future Tool Integrations (Inactive)
 
-External AI and app-builder tools are documented in `assistant/model-routing.md` as part of the broader tool ecosystem (ChatGPT, Claude, Gemini, Cursor, Codex, Lovable). **Lovable** is a future classroom app-builder surface Chief of Staff may eventually route approved ideas into. No Lovable API, OAuth, app generation, deployment, or automation is active.
+External AI and app-builder tools are documented in `assistant/model-routing.md` as part of the broader tool ecosystem (ChatGPT, Claude, Gemini, Cursor, Codex, Lovable).
+
+### Lovable Classroom App Builder Integration — Future / Approval-Gated
+
+Chief of Staff may eventually route approved classroom-app ideas into Lovable. **Current status: planning only — not connected.**
+
+Architecture rule: Chief of Staff must not become Lovable. Chief of Staff decides, validates, routes, tracks, and provides status. Lovable remains an external app-builder tool.
+
+Blocked until explicit future approval: Lovable API, OAuth, credentials, network calls, live app generation, classroom app deployment, automation, student data, generated student-facing apps, and any live integration.
+
+See `docs/master-build-roadmap.md` Program G1.
 
 ## Validation Suite
 

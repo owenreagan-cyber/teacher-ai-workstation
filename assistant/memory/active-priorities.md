@@ -89,6 +89,7 @@
 
 - Curriculum Builder v1 foundation complete (`docs/curriculum-builder-v1-foundation.md`). Registry v0, five canonical output contract types, binding v0, contract suite validation, and Chief of Staff integration active. Renderers, generation, real records, and integrations remain approval-gated.
 - Renderer Foundation v1 complete (`docs/renderer-v1-foundation.md`). Interface/status foundation with input readiness manifest and fail-safe rules; no renderer implementation, HTML/PDF generation, or exported artifacts.
+- Lovable Classroom App Builder Integration: planning only — future / approval-gated (`docs/master-build-roadmap.md` Program G1, `assistant/model-routing.md`). Chief of Staff may eventually route approved classroom-app ideas into Lovable; not connected. No API, OAuth, app generation, deployment, or automation.
 - Master Build Roadmap program readiness audit complete (`docs/master-build-roadmap.md`). Recommended next major program: Chief of Staff v1.
 - Canvas Export Package Contract Schema v0: fifth canonical output contract active (`docs/curriculum-canvas-package-contract-v0.md`). Canvas Package Contract metadata only; read-only validation; no Canvas API, package building, or publishing.
 - Review Game Contract Schema v0: fourth canonical output contract active (`docs/curriculum-review-game-contract-v0.md`). Fictional round placeholders and registry references; read-only validation; no game generation or interactive runtime.

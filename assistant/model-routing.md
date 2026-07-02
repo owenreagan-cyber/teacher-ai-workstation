@@ -26,7 +26,11 @@ Chief of Staff may eventually route approved work to these surfaces. **All remai
 
 ### Lovable (future / inactive)
 
-Lovable is a **future app-builder integration** for classroom-app ideas. Chief of Staff may eventually route **approved** classroom-app concepts into Lovable after explicit implementation approval.
+**Classification:** Lovable Classroom App Builder Integration — Future / Approval-Gated
+
+Lovable is a **future app-builder integration** for classroom-app ideas. Chief of Staff may eventually route **approved** classroom-app concepts into Lovable for teacher tools, classroom mini-apps, review games, dashboards, workflow helpers, and other classroom-support apps.
+
+**Architecture rule:** Chief of Staff must **not** become Lovable. Chief of Staff decides, validates, routes, tracks, and provides status. Lovable remains an external app-builder tool used only after an approved classroom-app request passes the safety/implementation gate.
 
 Current boundaries:
 
@@ -34,9 +38,10 @@ Current boundaries:
 - no app generation or deployment
 - no live integration, OAuth, credentials, or automation
 - no network calls from Chief of Staff to Lovable
+- no student data or generated student-facing apps
 - no connection to renderer runtime in this phase
 
-Future Lovable work may consume **approved renderer/output-contract patterns** only after separate renderer and integration intake. See `docs/renderer-v1-foundation.md` and `docs/integration-planning-foundation-v0.md`.
+Future Lovable work may consume **approved renderer/output-contract patterns** only after separate renderer and integration intake. See `docs/renderer-v1-foundation.md`, `docs/master-build-roadmap.md` Program G1, and `docs/integration-planning-foundation-v0.md`.
 
 Browser profile note: `docs/browser-profiles-guide.md` lists Lovable as a separate profile for manual use only.
 

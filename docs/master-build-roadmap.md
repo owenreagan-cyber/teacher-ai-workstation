@@ -1,6 +1,6 @@
 # Master Build Roadmap
 
-Last updated: 2026-07-01
+Last updated: 2026-07-02
 
 ```text
 Status: documentation/status only
@@ -36,7 +36,7 @@ Cross-references:
 | Canvas LLM | **Frozen/stopped** | Planning stack complete; stop marker active; no runtime |
 | Local LLM | **Setup only** | Ollama installer/verify; `assistant/model-routing.md` is policy doc only |
 | Mac workstation experience | **Scaffold/plan** | Phase 0E Vibe Engine complete; wallpaper foundation stack; no live curator/widget |
-| Automation/integrations | **Blocked** | Drive, Canvas API, OAuth, Gmail, secrets broker, background jobs — all deferred |
+| Automation/integrations | **Blocked** | Drive, Canvas API, OAuth, Gmail, secrets broker, background jobs, Lovable — all deferred/planning only |
 
 **Baseline proof (post Phase 2 Missions 1–4):** local `main` clean; dashboard PASS 91 / WARN 0 / FAIL 0; Curriculum Builder foundation status PASS ~1103; Canvas LLM status PASS ~629.
 
@@ -404,11 +404,49 @@ Deferred until Chief of Staff v1 command index exists. Builds Raycast/Shortcuts 
 | Google Drive API | Blocked — Level 3 permission later |
 | Gmail | Blocked — Level 4 permission later |
 | Canvas API | Blocked — Canvas stop marker |
-| Lovable (classroom app builder) | Blocked — future Chief of Staff tool routing; see `assistant/model-routing.md` |
+| Lovable Classroom App Builder | Blocked — future / approval-gated; see Program G1 and `assistant/model-routing.md` |
 | OAuth / secrets | Blocked — capability broker Phase 0F |
 | Background jobs / cron | Blocked unless explicit mission |
 | Folder scanning / indexing | Blocked — separate intake |
 | RAG / vector DB | Blocked |
+
+#### G1 — Lovable Classroom App Builder Integration (Future / Approval-Gated)
+
+```text
+Classification: Lovable Classroom App Builder Integration — Future / Approval-Gated
+Current status: planning only — not connected
+Authority: assistant/model-routing.md, docs/integration-planning-foundation-v0.md
+```
+
+**Purpose:** Chief of Staff may eventually route **approved** classroom-app ideas into Lovable for building teacher tools, classroom mini-apps, review games, dashboards, workflow helpers, and other classroom-support apps.
+
+**Architecture rule:** Chief of Staff must **not** become Lovable. Chief of Staff decides, validates, routes, tracks, and provides status. Lovable remains an external app-builder tool used only after an approved classroom-app request passes the safety/implementation gate.
+
+**Tool ecosystem placement:** Lovable sits in the future tool/integration roadmap alongside Gemini, Claude, Cursor, Codex, and other builder/model tools. See `assistant/model-routing.md`.
+
+**Allowed now:**
+
+- roadmap references
+- tool-role mapping
+- future integration boundaries
+- Chief of Staff routing concept documentation
+- approval-gated status language
+
+**Blocked until explicit future approval:**
+
+- Lovable API use
+- OAuth and credentials
+- network calls
+- live app generation
+- classroom app deployment
+- automation
+- student data
+- generated student-facing apps
+- any live integration
+
+**Future relationship to Renderer Foundation:** Approved renderer/output-contract patterns may later inform classroom-app builds in Lovable. See `docs/renderer-v1-foundation.md` §8 Future Downstream Tool Surfaces.
+
+**Non-activation:** This roadmap entry does not connect Lovable, authorize APIs, or activate app generation.
 
 ---
 

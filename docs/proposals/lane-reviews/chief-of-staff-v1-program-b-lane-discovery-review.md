@@ -32,7 +32,7 @@ Closure: `docs/chief-of-staff-v1-program-b-closure.md`. Commands: `--chief-of-st
 
 | Candidate | Status |
 | --- | --- |
-| Program B vs full CLI surface map doc | **proposed** |
+| Program B vs full CLI surface map doc | **implemented** — PR #215 |
 | Smoke test expansion for B4 queue commands | **proposed** |
 | Chief of Staff aggregate "all modes" read-only status | **deferred** |
 | Command deprecation policy doc | **deferred** |

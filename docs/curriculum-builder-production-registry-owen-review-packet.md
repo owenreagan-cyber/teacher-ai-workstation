@@ -86,6 +86,14 @@ CB-PROD-GOV (`docs/curriculum-builder-production-registry-governance-foundation.
 
 **Governance foundation does not approve checklist items or authorize writes.**
 
+## 3c. Decision Readiness (Post–PR #218)
+
+| Deliverable | Purpose |
+| --- | --- |
+| `docs/curriculum-builder-production-registry-owen-decision-worksheet.md` | Owen worksheet + routing |
+| `docs/curriculum-builder-production-registry-post-decision-implementation-map.md` | Post-decision mission phases |
+| Expanded write-mission preflight | `docs/proposals/backlog/production-registry-write-mission.md` |
+
 ---
 
 ## 4. What Remains Blocked (Until Owen Approves)

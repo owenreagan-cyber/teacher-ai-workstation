@@ -18,6 +18,8 @@ Handoff and status clarity. Start from `docs/phase-1-chief-of-staff-status-audit
 
 ## Recently Completed
 
+- Post-#218 Safe Work Mega Run (2026-07-02): Owen decision worksheet, post-decision map, metadata pilot planning, status banner hardening, Level 2 review sync, expected WARN global/component clarity. No writes.
+
 - Governance-First Production Registry Foundation (2026-07-02): CB-PROD-GOV docs, candidate path skeleton, `--curriculum-production-registry-governance-status`, guardrail tests. Blocked writes; Owen checklist items still pending.
 
 - Owen § J Production Registry Review Packet (2026-07-02): `docs/curriculum-builder-production-registry-owen-review-packet.md` — decision table, categories, non-approval language. Product-decision wall documented. No production writes.

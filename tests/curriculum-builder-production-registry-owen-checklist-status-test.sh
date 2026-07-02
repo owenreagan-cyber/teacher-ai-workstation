@@ -39,8 +39,8 @@ grep -q 'doc mentions build queue product-decision wall' "${tmp}" || {
   rm -f "${tmp}"
   exit 1
 }
-grep -q 'doc mentions review packet non-approval statement' "${tmp}" || {
-  echo "FAIL: status script should verify review packet non-approval language"
+grep -q 'doc mentions decision worksheet non-approval' "${tmp}" || {
+  echo "FAIL: missing decision worksheet coherence check"
   cat "${tmp}"
   rm -f "${tmp}"
   exit 1

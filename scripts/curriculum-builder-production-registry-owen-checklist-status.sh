@@ -44,6 +44,9 @@ EOF
 section 'Tracker Document'
 check_file "${tracker_doc}"
 check_file "${review_packet}"
+check_file docs/curriculum-builder-production-registry-owen-decision-worksheet.md
+check_file docs/curriculum-builder-production-registry-post-decision-implementation-map.md
+check_doc_contains docs/curriculum-builder-production-registry-owen-decision-worksheet.md "Documenting an option does not approve it" "decision worksheet non-approval"
 check_doc_contains "${tracker_doc}" "not_complete_awaiting_owen" "tracker closure status"
 check_doc_contains "${tracker_doc}" "Owen status" "tracker Owen status column"
 check_doc_contains "${tracker_doc}" "curriculum-builder-production-registry-owen-review-packet" "tracker links review packet"
@@ -97,7 +100,7 @@ section 'Roadmap and Ledger Coherence'
 check_doc_contains docs/proposals/index.md "Owen § J production registry checklist tracker" "proposal ledger owen tracker"
 check_doc_contains docs/master-build-roadmap.md "Owen must complete the approval checklist" "roadmap Owen checklist gate"
 check_doc_contains docs/build-queue.md "Product-decision wall" "build queue product-decision wall"
-check_doc_contains assistant/memory/active-priorities.md "Owen § J production registry checklist review" "active priorities Owen review"
+check_doc_contains assistant/memory/active-priorities.md "Owen § J checklist review" "active priorities Owen review"
 
 section 'Negative Non-Activation Assertions'
 grep -Fq -- '--curriculum-registry-write)' bin/chief-of-staff 2>/dev/null && fail 'chief-of-staff must not implement --curriculum-registry-write handler' || pass 'chief-of-staff has no --curriculum-registry-write handler'

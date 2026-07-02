@@ -32,7 +32,7 @@ Implementation: none authorized by this review
 | --- | --- |
 | Health vs Updater boundary one-liner in status output | **proposed** |
 | Negative assertion: no Mac system probes in H0 script | **implemented** (existing grep checks) |
-| Aggregate H+I read-only lane status command | **proposed** |
+| Aggregate H+I read-only lane status command | **implemented** — `--workstation-ops-lane-status` PR #214 |
 | Canvas frozen state banner in health output | **proposed** |
 | Live health probe mission template (blocked/) | **deferred** |
 

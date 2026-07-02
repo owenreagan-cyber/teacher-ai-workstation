@@ -20,6 +20,12 @@ bash "${status_script}" >"${tmp}" 2>&1 || {
 grep -q '^FAIL: 0$' "${tmp}" || { echo "FAIL: planning status reported failures"; cat "${tmp}"; rm -f "${tmp}"; exit 1; }
 grep -q 'planning_only' "${tmp}" || { echo "FAIL: missing planning_only boundary"; cat "${tmp}"; rm -f "${tmp}"; exit 1; }
 grep -q 'Production registry writes: blocked' "${tmp}" || { echo "FAIL: missing blocked writes"; cat "${tmp}"; rm -f "${tmp}"; exit 1; }
+grep -q 'ChatGPT review recommended before implementation prompt: yes' "${tmp}" || {
+  echo "FAIL: missing ChatGPT review gate banner"
+  cat "${tmp}"
+  rm -f "${tmp}"
+  exit 1
+}
 rm -f "${tmp}"
 
 if [[ -f assistant/curriculum-builder/registry/v0/registry.json ]]; then

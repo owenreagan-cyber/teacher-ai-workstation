@@ -40,6 +40,7 @@ Registry writes: no
 Active --write: no
 PASS does not authorize promotion: yes
 Fixture promotion: blocked
+Authority map: docs/curriculum-builder-registry-authority-map.md
 Network calls: no
 Student data: no
 Real curriculum content: no

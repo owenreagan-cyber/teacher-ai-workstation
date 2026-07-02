@@ -66,7 +66,7 @@ Implementation: none authorized by this review
 | Governance-first production registry foundation | high | low | **implemented** — `--curriculum-production-registry-governance-status` |
 | Production path decision record (post-Owen) | high | medium | **blocked** — Owen decision |
 | Cross-link dry-run promotion spec in planning brief | low | low | **implemented** (via spec doc references) |
-| ChatGPT review gate reminder in status output | low | low | **proposed** |
+| ChatGPT review gate reminder in status output | low | low | **implemented** — planning status banner |
 | Separate implementation mission template for production registry | medium | medium | **implemented** — `docs/proposals/backlog/production-registry-write-mission.md` |
 
 ---

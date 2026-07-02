@@ -26,6 +26,12 @@ grep -q 'read-only planning only' "${tmp}" || {
   rm -f "${tmp}"
   exit 1
 }
+grep -q 'A4–A7 schemas: inactive' "${tmp}" || {
+  echo "FAIL: missing A4-A7 inactive banner"
+  cat "${tmp}"
+  rm -f "${tmp}"
+  exit 1
+}
 grep -q 'no network call attempted' "${tmp}" || {
   echo "FAIL: missing negative network assertion"
   cat "${tmp}"

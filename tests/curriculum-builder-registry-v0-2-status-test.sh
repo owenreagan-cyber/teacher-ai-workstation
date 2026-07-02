@@ -32,6 +32,12 @@ grep -q 'PASS does not authorize promotion: yes' "${tmp}" || {
   rm -f "${tmp}"
   exit 1
 }
+grep -q 'Authority map: docs/curriculum-builder-registry-authority-map.md' "${tmp}" || {
+  echo "FAIL: missing authority map banner"
+  cat "${tmp}"
+  rm -f "${tmp}"
+  exit 1
+}
 grep -q 'no registry write attempted' "${tmp}" || {
   echo "FAIL: missing negative registry write assertion"
   cat "${tmp}"

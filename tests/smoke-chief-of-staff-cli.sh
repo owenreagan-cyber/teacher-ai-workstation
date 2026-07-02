@@ -90,6 +90,9 @@ bin/chief-of-staff --blocker-queue >/dev/null
 bin/chief-of-staff --mode-status >/dev/null
 bin/chief-of-staff --system-health >/dev/null
 bin/chief-of-staff --workstation-health >/dev/null
+bin/chief-of-staff --system-update-check >/dev/null
+bin/chief-of-staff --system-update-plan >/dev/null
+bash tests/teacher-workstation-system-updater-test.sh >/dev/null
 bash tests/teacher-workstation-health-monitor-test.sh >/dev/null
 bash tests/chief-of-staff-daily-operations-test.sh >/dev/null
 bin/chief-of-staff --intake-status >/dev/null

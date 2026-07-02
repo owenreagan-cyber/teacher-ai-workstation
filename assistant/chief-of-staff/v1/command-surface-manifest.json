@@ -31,6 +31,15 @@
       ]
     },
     {
+      "id": "system_updater",
+      "name": "System Updater",
+      "commands": [
+        {"flag": "--system-update-check", "status": "implemented", "purpose": "System Updater read-only foundation check (Program I)"},
+        {"flag": "--system-update-plan", "status": "implemented", "purpose": "Manual update planning checklist (Program I)"},
+        {"flag": "--apply-approved-updates", "status": "blocked", "purpose": "Apply updates blocked without explicit approval mission"}
+      ]
+    },
+    {
       "id": "proof",
       "name": "Proof",
       "commands": [
@@ -91,9 +100,6 @@
         {"flag": "--mode-status", "status": "implemented", "purpose": "Operating context mode concepts (Program B5)"},
         {"flag": "--model-routing-status", "status": "planned", "purpose": "AI tool routing matrix status"},
         {"flag": "--local-llm-workstation-status", "status": "planned", "purpose": "Local LLM/Ollama workstation status (Program D1)"},
-        {"flag": "--system-update-check", "status": "planned", "purpose": "System Updater read-only checks (Program I)"},
-        {"flag": "--system-update-plan", "status": "blocked", "purpose": "System Updater apply blocked without approval"},
-        {"flag": "--apply-approved-updates", "status": "blocked", "purpose": "System Updater apply blocked without approval"},
         {"flag": "--lovable-status", "status": "planned", "purpose": "Lovable integration inactive status (Program G1)"},
         {"flag": "--3d-builder-status", "status": "planned", "purpose": "3D Builder Workshop Agent status (Program J)"}
       ]

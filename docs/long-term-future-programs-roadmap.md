@@ -82,45 +82,38 @@ Closure: `docs/teacher-workstation-health-monitor-foundation.md`
 
 ## Teacher Workstation System Updater
 
-**Classification:** Future / Approval-Gated / Planning Only
+**Classification:** Implemented Read-Only Foundation (Program I)
 
 ### Purpose
 
-Future approval-gated local update assistant. Recommends and applies **only approved** updates.
-
-### Future examples
-
-- workstation update planning
-- migration planning
-- dependency review
-- version tracking
-- upgrade readiness
-- repo update status
-- model/tool inventory review
+Approval-gated local update planning assistant. Recommends and plans updates; does not apply unless a future approved mission allows it.
 
 ### Current status
 
-Planning only. Not connected.
+Read-only planning foundation active. `bin/chief-of-staff --system-update-check` and `--system-update-plan` provide deterministic local-only surfaces.
+
+Closure: `docs/teacher-workstation-system-updater-foundation.md`
 
 ### Future phases
 
 | Phase | Scope |
 | --- | --- |
-| I0 | Read-only update checks |
-| I1 | Guided update plans requiring approval |
-| I2 | Apply approved updates only — explicit mission each |
+| I0 | Read-only update planning foundation — **complete** |
+| I1 | Guided update plans requiring approval — **future** |
+| I2 | Apply approved updates only — **blocked** |
 
 ### Blocked capabilities
 
 - automatic updates
 - package installation
+- package manager execution
 - system modifications
 - model downloads
 - Mac setting changes
 - network calls
 - background jobs
 
-**Detail:** `docs/master-build-roadmap.md` Program I
+**Detail:** `docs/teacher-workstation-system-updater.md`, `docs/master-build-roadmap.md` Program I
 
 ---
 

@@ -811,6 +811,31 @@ else
   fail "chief-of-staff missing --workstation-health"
 fi
 
+section "Teacher Workstation System Updater (Program I) Files"
+for path in \
+  docs/teacher-workstation-system-updater.md \
+  docs/teacher-workstation-system-updater-foundation.md \
+  scripts/teacher-workstation-system-updater-status.sh \
+  scripts/teacher-workstation-system-update-plan.sh \
+  tests/teacher-workstation-system-updater-test.sh; do
+  check_required_file "${path}"
+done
+check_bash_syntax scripts/teacher-workstation-system-updater-status.sh
+check_bash_syntax scripts/teacher-workstation-system-update-plan.sh
+check_bash_syntax tests/teacher-workstation-system-updater-test.sh
+check_doc_contains docs/teacher-workstation-system-updater-foundation.md "complete_v1_i" "system updater closure status"
+check_doc_contains docs/teacher-workstation-system-updater.md "recommends and plans only" "system updater read-only boundary"
+if grep -Fq -- '--system-update-check' bin/chief-of-staff; then
+  pass "chief-of-staff exposes --system-update-check"
+else
+  fail "chief-of-staff missing --system-update-check"
+fi
+if grep -Fq -- '--system-update-plan' bin/chief-of-staff; then
+  pass "chief-of-staff exposes --system-update-plan"
+else
+  fail "chief-of-staff missing --system-update-plan"
+fi
+
 section "Curriculum Registry–Contract Binding v0 Foundation Files"
 for path in \
   docs/curriculum-binding-v0.md \

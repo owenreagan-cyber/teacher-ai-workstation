@@ -202,8 +202,10 @@ check_text "${build_queue_doc}" "Chief of Staff v1" "build queue references chie
 check_file "docs/chief-of-staff-v1-foundation.md"
 check_file "docs/chief-of-staff-agent-core.md"
 check_file "docs/teacher-workstation-health-monitor-foundation.md"
-check_text "${build_queue_doc}" "master-build-roadmap" "build queue references master roadmap"
+check_file "docs/teacher-workstation-system-updater-foundation.md"
 check_text "${build_queue_doc}" "Health Monitor" "build queue references health monitor"
+check_text "${build_queue_doc}" "System Updater" "build queue references system updater"
+check_text "${build_queue_doc}" "master-build-roadmap" "build queue references master roadmap"
 check_text "${active_priorities_doc}" "Master Build Roadmap" "active priorities references master roadmap"
 check_text "${engineering_constitution_doc}" "master-build-roadmap.md" "engineering constitution links master roadmap"
 

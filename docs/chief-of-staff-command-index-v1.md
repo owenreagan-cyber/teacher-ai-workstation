@@ -66,6 +66,13 @@ These flags exist in `bin/chief-of-staff` and work as read-only local status sur
 | `bin/chief-of-staff --blocker-queue` | Blocker queue surfacing |
 | `bin/chief-of-staff --mode-status` | Operating context mode concepts |
 
+### System Updater (Program I)
+
+| Command | Purpose |
+| --- | --- |
+| `bin/chief-of-staff --system-update-check` | System Updater read-only foundation check |
+| `bin/chief-of-staff --system-update-plan` | Manual update planning checklist |
+
 ### Health Monitor (Program H)
 
 | Command | Purpose |
@@ -95,7 +102,6 @@ Documented for future programs. **Not implemented** unless added to CLI.
 | `bin/chief-of-staff --prove-main` | Proof | Local main cleanliness proof |
 | `bin/chief-of-staff --model-routing-status` | Routing | AI tool routing matrix status |
 | `bin/chief-of-staff --local-llm-workstation-status` | D1 | Local LLM/Ollama status |
-| `bin/chief-of-staff --system-update-check` | I | System Updater read-only checks |
 | `bin/chief-of-staff --widget-health` | F | Widget catalog health |
 | `bin/chief-of-staff --shortcut-health` | F | Shortcut catalog health |
 | `bin/chief-of-staff --lovable-status` | G1 | Lovable inactive integration status |
@@ -111,6 +117,7 @@ Intentionally not available until explicit approval supersedes stop markers or g
 | Lovable API / app generation | Program G1 — planning only |
 | Drive/Gmail/Canvas API surfaces | Program G — integrations blocked |
 | Ollama install / model download | Program D — approval-gated |
+| `--apply-approved-updates` | System Updater apply blocked without approval mission |
 
 ## Proof Scripts
 

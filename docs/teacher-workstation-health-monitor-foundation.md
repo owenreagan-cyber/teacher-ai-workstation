@@ -57,9 +57,9 @@ bin/chief-of-staff --dashboard
 
 ## Recommended Next Mission
 
-**Teacher Workstation System Updater — Read-Only Update Planning Foundation (Program I)**
+**AI Tool Routing Matrix — Operational Routing Surface**
 
-Health Monitor observes; System Updater (future) recommends/applies approved updates only.
+Health Monitor observes; System Updater (v0) plans updates read-only. Next: operational routing status without cloud API activation.
 
 ## Non-Activation
 

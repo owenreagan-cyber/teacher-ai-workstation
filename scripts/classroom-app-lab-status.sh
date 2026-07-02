@@ -49,6 +49,9 @@ EOF
 check_file docs/classroom-app-lab-prototype-rescue-foundation.md
 check_file docs/classroom-app-lab-non-activation-boundaries.md
 check_file docs/classroom-app-lab-readiness-plan.md
+check_file docs/classroom-app-lab-fake-prototype-inventory-template.md
+check_file docs/classroom-app-lab-vs-lovable-lane-boundary.md
+check_file docs/proposals/blocked/classroom-utility-apps-external-ideas.md
 check_doc_contains docs/classroom-app-lab-prototype-rescue-foundation.md "complete_v1_cal1" "classroom app lab closure status"
 check_doc_contains docs/classroom-app-lab-non-activation-boundaries.md "Zip upload: blocked" "zip upload blocked"
 check_doc_contains docs/classroom-app-lab-non-activation-boundaries.md "Zip extraction: blocked" "zip extraction blocked"
@@ -56,6 +59,10 @@ check_doc_contains docs/classroom-app-lab-non-activation-boundaries.md "Code par
 check_doc_contains docs/classroom-app-lab-non-activation-boundaries.md "App execution: blocked" "app execution blocked"
 check_doc_contains docs/classroom-app-lab-non-activation-boundaries.md "Automatic Cursor execution: blocked" "automatic cursor execution blocked"
 check_doc_contains docs/classroom-app-lab-readiness-plan.md "Prototype Rescue" "prototype rescue workflow"
+check_doc_contains docs/classroom-app-lab-fake-prototype-inventory-template.md "planning_template_only" "fake prototype inventory template"
+check_doc_contains docs/classroom-app-lab-vs-lovable-lane-boundary.md "CAL1" "CAL1 lane boundary"
+check_doc_contains docs/classroom-app-lab-vs-lovable-lane-boundary.md "G1" "G1 lane boundary"
+check_doc_contains docs/proposals/blocked/classroom-utility-apps-external-ideas.md "ClassPass App" "blocked ClassPass classification"
 check_doc_contains docs/long-term-future-programs-roadmap.md "Classroom App Lab" "long-term roadmap classroom app lab"
 
 section 'Roadmap and Capability Coherence'

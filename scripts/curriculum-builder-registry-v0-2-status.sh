@@ -38,6 +38,8 @@ cat <<'EOF'
 Status: dry-run validation only
 Registry writes: no
 Active --write: no
+PASS does not authorize promotion: yes
+Fixture promotion: blocked
 Network calls: no
 Student data: no
 Real curriculum content: no

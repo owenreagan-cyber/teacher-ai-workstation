@@ -19,11 +19,12 @@ Canonical closure index for **Program F1 — Read-Only Widget and Shortcut Catal
 | --- | --- | --- |
 | 1 | Non-activation boundaries | `docs/widget-shortcut-builder-non-activation-boundaries.md` |
 | 2 | Readiness plan | `docs/widget-shortcut-builder-readiness-plan.md` |
-| 3 | Status script | `scripts/widget-shortcut-builder-status.sh` |
-| 4 | `--widget-shortcut-status` | `bin/chief-of-staff --widget-shortcut-status` |
-| 5 | Manifest entry | command surface manifest |
-| 6 | Dashboard section | `scripts/chief-of-staff-dashboard.sh` |
-| 7 | Tests | `tests/widget-shortcut-builder-status-test.sh` |
+| 3 | Fake catalog index | `docs/widget-shortcut-builder-fake-catalog-index.md` |
+| 4 | Status script | `scripts/widget-shortcut-builder-status.sh` |
+| 5 | `--widget-shortcut-status` | `bin/chief-of-staff --widget-shortcut-status` |
+| 6 | Manifest entry | command surface manifest |
+| 7 | Dashboard section | `scripts/chief-of-staff-dashboard.sh` |
+| 8 | Tests | `tests/widget-shortcut-builder-status-test.sh` |
 
 ## Implemented Capabilities
 

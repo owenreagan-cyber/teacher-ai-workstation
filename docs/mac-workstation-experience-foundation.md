@@ -42,6 +42,13 @@ Canonical closure index for **Program E1 — Read-Only Mac Workstation Experienc
 | Widget/shortcut install | blocked — Program F |
 | Mac system mutations | blocked |
 
+## Related Programs
+
+| Program | Cross-link |
+| --- | --- |
+| Widget and Shortcut Builder (F1) | `docs/widget-shortcut-builder-catalog-foundation.md` |
+| F1 fake catalog index | `docs/widget-shortcut-builder-fake-catalog-index.md` |
+
 ## Orchestrated Proof
 
 ```bash

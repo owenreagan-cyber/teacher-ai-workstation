@@ -897,6 +897,8 @@ for path in \
   docs/widget-shortcut-builder-catalog-foundation.md \
   docs/widget-shortcut-builder-non-activation-boundaries.md \
   docs/widget-shortcut-builder-readiness-plan.md \
+  docs/widget-shortcut-builder-fake-catalog-index.md \
+  assistant/widget-shortcut/samples/fake-widget-shortcut-catalog.json \
   scripts/widget-shortcut-builder-status.sh \
   tests/widget-shortcut-builder-status-test.sh; do
   check_required_file "${path}"
@@ -917,6 +919,9 @@ for path in \
   docs/classroom-app-lab-prototype-rescue-foundation.md \
   docs/classroom-app-lab-non-activation-boundaries.md \
   docs/classroom-app-lab-readiness-plan.md \
+  docs/classroom-app-lab-fake-prototype-inventory-template.md \
+  docs/classroom-app-lab-vs-lovable-lane-boundary.md \
+  docs/proposals/blocked/classroom-utility-apps-external-ideas.md \
   scripts/classroom-app-lab-status.sh \
   tests/classroom-app-lab-status-test.sh; do
   check_required_file "${path}"
@@ -1084,6 +1089,18 @@ check_bash_syntax scripts/curriculum-builder-production-registry-planning-status
 check_bash_syntax tests/curriculum-builder-production-registry-planning-status-test.sh
 check_doc_contains docs/curriculum-builder-production-registry-workflow-planning-brief.md "complete_production_registry_planning_brief" "production registry planning brief closure status"
 grep -Fq -- '--curriculum-production-registry-planning-status' bin/chief-of-staff && pass "chief-of-staff exposes --curriculum-production-registry-planning-status" || fail "chief-of-staff missing --curriculum-production-registry-planning-status"
+
+section "Owen Production Registry Checklist Tracker Files"
+for path in \
+  docs/curriculum-builder-production-registry-owen-checklist-tracker.md \
+  scripts/curriculum-builder-production-registry-owen-checklist-status.sh \
+  tests/curriculum-builder-production-registry-owen-checklist-status-test.sh; do
+  check_required_file "${path}"
+done
+check_bash_syntax scripts/curriculum-builder-production-registry-owen-checklist-status.sh
+check_bash_syntax tests/curriculum-builder-production-registry-owen-checklist-status-test.sh
+check_doc_contains docs/curriculum-builder-production-registry-owen-checklist-tracker.md "not_complete_awaiting_owen" "owen checklist tracker closure"
+grep -Fq -- '--curriculum-production-registry-owen-checklist-status' bin/chief-of-staff && pass "chief-of-staff exposes --curriculum-production-registry-owen-checklist-status" || fail "chief-of-staff missing --curriculum-production-registry-owen-checklist-status"
 
 section "Curriculum Source Readiness Foundation Files"
 for path in \

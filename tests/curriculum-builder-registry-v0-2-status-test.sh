@@ -26,6 +26,12 @@ grep -q 'dry-run validation only' "${tmp}" || {
   rm -f "${tmp}"
   exit 1
 }
+grep -q 'PASS does not authorize promotion: yes' "${tmp}" || {
+  echo "FAIL: missing PASS does not authorize promotion banner"
+  cat "${tmp}"
+  rm -f "${tmp}"
+  exit 1
+}
 grep -q 'no registry write attempted' "${tmp}" || {
   echo "FAIL: missing negative registry write assertion"
   cat "${tmp}"

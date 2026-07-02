@@ -116,6 +116,8 @@ bash scripts/curriculum-builder-registry-v0-2-retrieval-check.sh >/dev/null
 bash tests/curriculum-builder-registry-v0-2-retrieval-test.sh >/dev/null
 bin/chief-of-staff --curriculum-production-registry-planning-status >/dev/null
 bash tests/curriculum-builder-production-registry-planning-status-test.sh >/dev/null
+bin/chief-of-staff --curriculum-production-registry-owen-checklist-status >/dev/null
+bash tests/curriculum-builder-production-registry-owen-checklist-status-test.sh >/dev/null
 bin/chief-of-staff --curriculum-source-readiness-status >/dev/null
 bash tests/curriculum-source-readiness-status-test.sh >/dev/null
 bin/chief-of-staff --curriculum-registry-lane-status >/dev/null

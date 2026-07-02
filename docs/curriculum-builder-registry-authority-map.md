@@ -82,6 +82,19 @@ Aggregate lane proof: `bin/chief-of-staff --curriculum-registry-lane-status`
 - Owen approval checklist before any implementation
 - Production path/model remains **open decision**
 
+### Owen § J checklist tracker (`--curriculum-production-registry-owen-checklist-status`)
+
+- Read-only tracker: `docs/curriculum-builder-production-registry-owen-checklist-tracker.md`
+- Mirrors planning brief § J rows; all items **pending** until Owen approves
+- Tracker PASS **≠** implementation authorization
+- Expected WARN: pending checklist items (see expected WARNs doc)
+
+### Curriculum Source Readiness (`--curriculum-source-readiness-status`)
+
+- Fake metadata inventory: `assistant/curriculum-builder/samples/curriculum-source-readiness/`
+- Readiness planning only — **not** real intake or production registry
+- Included in aggregate `--curriculum-registry-lane-status`
+
 ### Blocked write surfaces (manifest)
 
 | Command | Status |

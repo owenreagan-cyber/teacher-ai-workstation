@@ -20,6 +20,10 @@ Cross-references:
 
 - Engineering authority: `docs/engineering-constitution.md`
 - Approval gate: `docs/implementation-approval-gate.md`
+- Capability map: `docs/teacher-workstation-capability-map.md`
+- AI tool routing matrix: `docs/ai-tool-routing-matrix.md`
+- 3D Builder Workshop Agent: `docs/3d-builder-workshop-agent-roadmap.md`
+- Phase 3 closure: `docs/teacher-workstation-foundation-v0.md`
 - Active handoff: `assistant/memory/active-priorities.md`
 - Build queue: `docs/build-queue.md`
 - Parked tracks map: `docs/phase-1-chief-of-staff-status-audit.md`
@@ -31,14 +35,17 @@ Cross-references:
 | Area | State | Summary |
 | --- | --- | --- |
 | Engineering governance | **Active** | Constitution, senior-engineer workflow, implementation approval gate |
-| Chief of Staff | **Strong foundation** | ~124 CLI flags, dashboard 91/91, memory, intake, workflows — gaps in daily ops and unified next-action |
-| Curriculum Builder | **Phase 2 v0 partial** | Registry, Output Contract, Binding, 2 canonical contracts — no renderers, ingestion, or generation |
+| Chief of Staff | **Strong foundation** | CLI, dashboard, memory, intake, proof runner — daily ops and unified next-action incomplete |
+| Phase 3 foundations | **Complete (v0)** | Lesson Planning, Curriculum Library, Renderer, Local Retrieval, Integration Planning |
+| Curriculum Builder | **v1 foundation complete** | Registry, 5 contracts, binding, validation — no renderers, real records, or generation |
 | Canvas LLM | **Frozen/stopped** | Planning stack complete; stop marker active; no runtime |
-| Local LLM | **Setup only** | Ollama installer/verify; `assistant/model-routing.md` is policy doc only |
-| Mac workstation experience | **Scaffold/plan** | Phase 0E Vibe Engine complete; wallpaper foundation stack; no live curator/widget |
-| Automation/integrations | **Blocked** | Drive, Canvas API, OAuth, Gmail, secrets broker, background jobs, Lovable — all deferred/planning only |
+| Local LLM | **Setup only** | Ollama installer/verify; routing matrix doc-only; no downloads |
+| Mac workstation experience | **Scaffold/plan** | Wallpaper foundation stack; teacher modes planned; no live curator/widget |
+| Health Monitor / System Updater | **Planned** | Roadmap only; observe/report and read-only update checks first |
+| 3D Builder Workshop Agent | **Planned** | `3d-agent/` readiness parked; no CAD/slicing/printing |
+| Automation/integrations | **Blocked** | Drive, Canvas API, OAuth, Gmail, Lovable, cloud APIs — all deferred/planning only |
 
-**Baseline proof (post Phase 2 Missions 1–4):** local `main` clean; dashboard PASS 91 / WARN 0 / FAIL 0; Curriculum Builder foundation status PASS ~1103; Canvas LLM status PASS ~629.
+**Baseline proof:** local `main` clean; dashboard PASS 97 / WARN 0 / FAIL 0; Phase 3 foundation orchestration active; Canvas LLM stop marker active.
 
 ---
 
@@ -85,9 +92,23 @@ Cross-references:
 - Wallpaper/photo curator foundation stack (validators, schemas, dry-run helpers)
 - Vibe Panel roadmap (explicit: do not build app yet)
 
-### Local LLM — installer baseline
+### Phase 3 — Teacher Workstation Foundation (complete)
 
-- `setup/08-local-ai.sh`, `assistant/model-routing.md`, dashboard LLM CLI readiness probe
+Closure: `docs/teacher-workstation-foundation-v0.md`
+
+| Workstream | Doc |
+| --- | --- |
+| Lesson Planning Foundation | `docs/lesson-planning-v1-foundation.md` |
+| Curriculum Library Foundation | `docs/curriculum-library-v1-foundation.md` |
+| Renderer Foundation v1 | `docs/renderer-v1-foundation.md` |
+| Local Retrieval Foundation v0 | `docs/local-retrieval-foundation-v0.md` |
+| Integration Planning Foundation v0 | `docs/integration-planning-foundation-v0.md` |
+
+### Long-term planning companions (new)
+
+- Capability map: `docs/teacher-workstation-capability-map.md`
+- AI tool routing matrix: `docs/ai-tool-routing-matrix.md`
+- 3D Builder Workshop Agent: `docs/3d-builder-workshop-agent-roadmap.md`
 
 ---
 
@@ -95,31 +116,72 @@ Cross-references:
 
 | Program | v1 goal (summary) | Current gap |
 | --- | --- | --- |
-| **Curriculum Builder Complete** | Approved registry + contracts + binding + renderers + teacher-reviewed outputs | v0 only; 3 contract placeholders; no real records; no renderers |
-| **Chief of Staff v1** | Stable daily operating system with next-action clarity | No daily-ops mode; build-queue parsing only; model routing doc-only |
-| **Canvas LLM Restart and Completion** | Bounded manual export path when explicitly reopened | Entire runtime track frozen; stop marker blocks default PRs |
-| **Local LLM Workstation Setup** | Reliable local model ops with documented routing policy | No capability broker; no automated routing; Phase 0F secrets deferred |
-| **Mac Workstation Experience** | Coherent desktop/vibe command center | Plans exceed implementation; wallpaper curator not live |
-| **Widget and Shortcut Builder** | Approved shortcuts/widgets for teacher workflows | Roadmap only; no WidgetKit/Shortcuts install |
-| **Integration and Automation Layer** | Permissioned connectors when approved | Gmail/Drive/Canvas API/OAuth all blocked |
+| **Chief of Staff v1 Agent Core** | Central control plane with next-action, briefing, closeout, mode awareness | Command index incomplete; no unified daily briefing |
+| **Teacher Workstation Capability Map** | One canonical map of all systems and status labels | **Documented** — maintain with programs |
+| **Teacher Workstation Health Monitor** | Observe/report workstation health (manual read-only first) | Not started |
+| **Teacher Workstation System Updater** | Read-only update checks → guided plans → approved maintenance | Not started |
+| **AI Tool Routing Matrix** | Documented roles for cloud/local/builder tools | **Documented** — routing inactive |
+| **Curriculum Builder Complete** | Registry + contracts + renderers + teacher-reviewed outputs | v1 foundation done; renderers/generation gated |
+| **Local LLM / Ollama Workstation** | Local model policy, inventory, health checks | Installer baseline only |
+| **Mac Workstation Experience** | Teacher modes, wallpaper, visible transformation | Plans exceed implementation |
+| **Widget and Shortcut Builder** | Catalogs for approved surfaces | Roadmap only |
+| **Lovable Classroom App Builder** | Future approval-gated app-builder routing | Planning only — Program G1 |
+| **3D Builder Workshop Agent** | Separate sub-agent for classroom objects | `3d-agent/` readiness parked |
+| **Canvas LLM Restart** | Bounded manual export when explicitly reopened | Frozen — stop marker |
+| **Integration and Automation Layer** | Permissioned connectors when approved | All blocked — last stage |
 
 ---
 
 ## 4. Recommended Build Order
 
-Priority respects dependencies in `docs/engineering-constitution.md` architectural layers:
+Priority respects dependencies in `docs/engineering-constitution.md` architectural layers and Phase 3 completion:
 
 ```text
-1. Curriculum Builder Complete (contracts → renderers → retrieval hooks)
-2. Chief of Staff v1 (operating system while building)
-3. Local LLM Workstation Setup (supports generation/review when approved)
-4. Mac Workstation Experience (teacher-facing polish)
-5. Widget and Shortcut Builder (surfaces approved commands)
-6. Canvas LLM Restart and Completion (only after explicit unfreeze + Curriculum Builder maturity)
-7. Integration and Automation Layer (last; permission-gated)
+ 1. Finish Current Phase 3 Foundations (complete — maintain proof)
+    Renderer, Local Retrieval, Integration Planning, Program Closure
+
+ 2. Chief of Staff v1 Agent Core
+    command catalog, next-action, daily briefing, closeout, proof runner,
+    status routing, mode awareness
+
+ 3. Teacher Workstation Capability Map (maintain with programs)
+
+ 4. Teacher Workstation Health Monitor
+    manual/read-only first — observe and report only
+
+ 5. Teacher Workstation System Updater
+    read-only checks → guided plans → approved maintenance only
+
+ 6. AI Tool Routing Matrix (maintain; routing remains inactive)
+
+ 7. Local LLM / Ollama Workstation
+    policy, inventory, health checks — no installs until approved
+
+ 8. Curriculum Builder Complete
+    real records, renderers, retrieval hooks — approval-gated subtracks
+
+ 9. Mac Workstation Experience
+    teacher modes, wallpaper, appearance — no Mac changes until approved
+
+10. Widget and Shortcut Builder
+    catalogs; manual/local-first first
+
+11. Lovable Classroom App Builder Integration
+    future approval-gated; Chief of Staff routes approved ideas only
+
+12. 3D Builder Workshop Agent
+    separate sub-agent; classroom objects — no CAD/slicing/printing until approved
+
+13. Canvas LLM Manual Restart
+    only after explicit unfreeze; manual package/readiness first
+
+14. Integrations and Automation Layer (final stage)
+    Drive/Canvas/OAuth/network/background jobs — explicit mission each
 ```
 
-**Rationale:** Registry and contracts must stabilize before renderers and Canvas packaging. Chief of Staff v1 improves daily execution during long builds. Canvas remains frozen until Owen explicitly supersedes the stop marker. Integrations are intentionally last.
+**Rationale:** Phase 3 foundations provide coherent status surfaces. Chief of Staff v1 and Health Monitor improve daily execution before write-capable curriculum work. Mac/widgets/Lovable/3D remain planning or approval-gated. Canvas stays frozen until Owen supersedes stop marker. Integrations are intentionally last.
+
+See `docs/teacher-workstation-capability-map.md` for per-capability status labels.
 
 ---
 
@@ -202,9 +264,31 @@ Approved lookup/index over registry + contracts without vector DB or RAG.
 
 ---
 
-### Program B — Chief of Staff v1
+### Program B — Chief of Staff v1 Agent Core
 
-**Program goal:** Owen can open one surface each day and know status, next action, and safe commands — without hunting docs.
+**Program goal:** Chief of Staff is the **central control plane** — agent coordinator, status/proof runner, route planner, approval gatekeeper, next-action recommender, and daily/weekly operating assistant.
+
+It should eventually answer:
+
+- What is ready?
+- What is blocked?
+- What changed?
+- What needs Owen?
+- What can Cursor do next?
+- What can Gemini design next?
+- What can Lovable build later?
+- What is safe to show students?
+- What is safe to export?
+- What should I build/review/teach today?
+
+**Future command ideas (roadmap only unless implemented in approved mission):**
+
+- `bin/chief-of-staff --commands`
+- `bin/chief-of-staff --next-action`
+- `bin/chief-of-staff --daily-briefing`
+- `bin/chief-of-staff --closeout`
+- `bin/chief-of-staff --prove-main`
+- `bin/chief-of-staff --mode-status`
 
 #### B1 — Command Surface Index v1
 
@@ -338,9 +422,22 @@ Autonomous: only after explicit unfreeze approval from Owen
 
 ---
 
-### Program D — Local LLM Workstation Setup
+### Program D — Local LLM / Ollama Workstation
 
-**Program goal:** Documented, verifiable local model operations aligned with `assistant/model-routing.md` — not automated hybrid routing.
+**Program goal:** Local model policy, inventory, health checks, and local/cloud split documentation — not automated hybrid routing.
+
+**Planning references:** `assistant/model-routing.md`, `docs/ai-tool-routing-matrix.md`, `setup/08-local-ai.sh`
+
+**Model-family roles (planning only — verify locally before assignment):**
+
+| Family | Planned role |
+| --- | --- |
+| Gemma / Gemma 3 / Gemma 3n | Lightweight helper; summarization; classification; offline assistant |
+| DeepSeek | Technical/code reasoning; validator/debugging assistance — not curriculum authority |
+| Qwen | Local coding/general assistant candidate |
+| Other | Evaluate by task, safety, speed, memory, quality |
+
+Unconfirmed model variant names remain tentative until locally verified.
 
 #### D1 — Local LLM Status Foundation
 
@@ -371,7 +468,19 @@ Phase 0F scope. Requires explicit approval before any secret storage or API key 
 
 ### Program E — Mac Workstation Experience
 
-**Program goal:** Coherent teacher desktop experience — vibe, wallpaper, shortcuts — without unapproved system changes.
+**Program goal:** Visible workstation transformation — teacher modes, wallpaper packs, appearance, desktop polish — without unapproved Mac system changes.
+
+**Future teacher modes (planning):**
+
+- Planning Mode
+- Teaching Mode
+- Curriculum Builder Mode
+- Canvas Prep Mode
+- Grading / Review Mode
+- Focus / Admin Mode
+- After-School Closeout Mode
+
+**Future mode surfaces:** wallpaper, appearance, desktop organization, widgets, shortcuts, Chief of Staff dashboard view, active folders, recommended commands.
 
 #### E1 — Mac Experience Audit Doc
 
@@ -391,7 +500,35 @@ Per `docs/vibe-panel-roadmap.md` — app build requires separate mission approva
 
 ### Program F — Widget and Shortcut Builder
 
-Deferred until Chief of Staff v1 command index exists. Builds Raycast/Shortcuts surfaces for approved commands only — no install without Owen approval per mission.
+Deferred until Chief of Staff v1 command index exists. Manual/local-first widgets and shortcuts first — no automation or install without Owen approval per mission.
+
+**Widget Catalog v1 (planning):**
+
+- Chief of Staff Status Widget
+- Next Action Widget
+- Dashboard Health Widget
+- Curriculum Builder Widget
+- Lesson Planning Widget
+- Canvas Frozen/Ready Widget
+- Local LLM Status Widget
+- Mode Widget
+- Approval Queue Widget
+- Today's Teacher Launchpad
+
+**Shortcut Catalog v1 (planning):**
+
+- Open Workstation
+- Run Dashboard
+- Run Proof Main
+- Start Planning Mode
+- Start Teaching Mode
+- Open Cursor Mission
+- Open Gemini Curriculum Architect
+- Open Lovable App Builder (manual profile only until G1 approved)
+- Capture App Idea
+- Capture Resource Note
+- Run Daily Briefing
+- Run Closeout
 
 ---
 
@@ -409,6 +546,90 @@ Deferred until Chief of Staff v1 command index exists. Builds Raycast/Shortcuts 
 | Background jobs / cron | Blocked unless explicit mission |
 | Folder scanning / indexing | Blocked — separate intake |
 | RAG / vector DB | Blocked |
+| Cloud AI APIs (OpenAI/Anthropic/Google) | Blocked — see `docs/ai-tool-routing-matrix.md` |
+
+#### G1 — Lovable Classroom App Builder Integration (Future / Approval-Gated)
+
+```text
+Classification: Lovable Classroom App Builder Integration — Future / Approval-Gated
+Current status: planning only — not connected
+Authority: assistant/model-routing.md, docs/integration-planning-foundation-v0.md
+```
+
+**Purpose:** Chief of Staff may eventually route **approved** classroom-app ideas into Lovable for teacher tools, classroom mini-apps, review games, dashboards, workflow helpers, and other classroom-support apps.
+
+**Architecture rule:** Chief of Staff must **not** become Lovable. Chief of Staff decides, validates, routes, tracks, and provides status. Lovable remains an external app-builder tool used only after an approved classroom-app request passes the safety/implementation gate.
+
+**Blocked until explicit future approval:** Lovable API, OAuth, credentials, network calls, live app generation, deployment, automation, student data, generated student-facing apps, any live integration.
+
+See `docs/ai-tool-routing-matrix.md` and `docs/renderer-v1-foundation.md` §8.
+
+---
+
+### Program H — Teacher Workstation Health Monitor
+
+**Program goal:** A manual/read-only health monitor that checks whether the workstation is healthy.
+
+**Architecture rule:** Health Monitor **observes and reports**. It does not update, install, repair, automate, or modify the system unless a later approved mission explicitly allows it.
+
+**Eventually checks:**
+
+- Chief of Staff, repo, dashboard, validation suite health
+- Curriculum Builder, Lesson Planning, Curriculum Library health
+- Renderer/Retrieval foundation health
+- Canvas frozen/active status
+- Local LLM service and installed model health
+- Widget, shortcut, wallpaper/mode health
+- Lovable/cloud tool integration status (inactive reporting)
+- Disk space / environment readiness
+
+**Future commands (roadmap only):**
+
+- `bin/chief-of-staff --system-health`
+- `bin/chief-of-staff --workstation-health`
+- `bin/chief-of-staff --local-llm-health`
+- `bin/chief-of-staff --widget-health`
+- `bin/chief-of-staff --shortcut-health`
+
+**Health Monitor v1 complete when:** read-only health report aggregates existing status scripts with PASS/WARN/FAIL footer; no repair or install behavior.
+
+---
+
+### Program I — Teacher Workstation System Updater
+
+**Program goal:** Check for and eventually manage **approved** updates to the workstation environment.
+
+**Architecture rule:** System Updater **recommends and applies only approved updates**. Health Monitor and System Updater remain separate: Health Monitor observes/reports; Updater recommends/applies approved changes.
+
+| Stage | Scope |
+| --- | --- |
+| **v0 — read-only checks** | Repo update status, dashboard, local main cleanliness, status scripts, tool inventory, model inventory, wallpaper/widget/shortcut asset presence |
+| **v1 — guided planning** | Recommend updates, produce update plan, require approval before changes |
+| **v2 — approved maintenance** | Apply approved updates only after explicit approval |
+
+**Blocked until approval:** automatic code updates, model downloads, dependency installs, Mac setting changes, widget/shortcut changes, network calls, background jobs.
+
+**Future commands (roadmap only):**
+
+- `bin/chief-of-staff --system-update-check`
+- `bin/chief-of-staff --system-update-plan`
+- `bin/chief-of-staff --apply-approved-updates`
+
+---
+
+### Program J — 3D Builder Workshop Agent
+
+**Program goal:** Separate future agent/sub-agent for classroom object creation — toys, fidgets, decals, tools, action figures, tokens, badges, manipulatives, and classroom objects.
+
+**Not** Curriculum Builder, Canvas, lesson planning, or curriculum export work. Chief of Staff coordinates and gates; it does not own the asset library or generate 3D files.
+
+**Current status:** Planning only. Readiness stack at `3d-agent/` and `docs/3d-printing-roadmap.md` remains parked. Legacy parked-track string: **3D Design Factory Agent remains parked**.
+
+**Canonical detail:** `docs/3d-builder-workshop-agent-roadmap.md`
+
+**Blocked until approval:** web search, downloads, scraping, CAD/file generation, STL/3MF export, slicer/printer integration, print jobs, model training, APIs, OAuth, network, student data, public publishing.
+
+**Future commands (roadmap only):** `--3d-builder-status`, `--3d-builder-intake-status`, `--3d-builder-library-status`, `--3d-builder-safety-status`, `--3d-builder-roadmap-status`
 
 #### G1 — Lovable Classroom App Builder Integration (Future / Approval-Gated)
 
@@ -468,6 +689,8 @@ Within an **explicitly authorized mission** (like Phase 2 Missions 1–4):
 - Scan folders, ingest files, build RAG/embeddings
 - Change Mac system settings, install widgets/shortcuts
 - Download models or configure API keys
+- Connect Lovable, cloud AI APIs, or 3D CAD/slicing/printing pipelines
+- Activate Health Monitor repair or System Updater apply without approval mission
 - Change PASS/WARN/FAIL semantics or remove existing commands
 - Start implementation solely because this roadmap exists
 
@@ -483,6 +706,8 @@ Within an **explicitly authorized mission** (like Phase 2 Missions 1–4):
 | Canvas LLM reopen | Stop marker supersession + named PR |
 | Drive/Gmail/Canvas API/OAuth | Permission levels + separate PR |
 | Mac wallpaper/widget/shortcut install | Explicit mission per change |
+| Lovable / 3D Builder / cloud API connection | Program G1 / J / routing matrix approval |
+| Health Monitor repair or Updater apply | Separate mission per stage |
 | Secrets/capability broker | Phase 0F approval |
 | Automation/background jobs | Implementation gate automation checklist |
 | Semantic changes to dashboard/commands | Constitution escalation |
@@ -507,15 +732,22 @@ Per `docs/engineering-constitution.md` §10, v1.0 means these systems exist as *
 
 | System | v1 requirement | Current |
 | --- | --- | --- |
-| Chief of Staff | Stable CLI, dashboard, memory, intake, status orchestration | **Partial** — foundation strong; daily ops incomplete |
-| Curriculum Registry | Approved manual registry with metadata references | **Partial** — v0 fictional only |
-| Output Contracts | Active contracts wired to registry and review | **Partial** — 2/5 canonical |
-| Renderers | ≥1 renderer per primary contract type | **Not started** |
+| Chief of Staff | Stable CLI, dashboard, memory, intake, daily ops, next-action | **Partial** — foundation strong; agent core incomplete |
+| Capability map | Canonical system map with status labels | **Documented** |
+| Health Monitor | Read-only workstation health report | **Planned** |
+| System Updater | Read-only update checks | **Planned** |
+| AI tool routing | Documented matrix; inactive routing | **Documented** |
+| Curriculum Registry | Approved manual registry with metadata references | **Partial** — v1 fictional foundation |
+| Output Contracts | Active contracts wired to registry and review | **Foundation complete** — 5/5 canonical v0 |
+| Renderers | ≥1 renderer per primary contract type | **Not started** — interface foundation only |
 | Canvas Package Builder | Bounded export path | **Frozen** — planning only |
-| Local Retrieval | Approved local lookup | **Not started** |
+| Local Retrieval | Approved local lookup | **Foundation complete** — no engines |
 | Lesson Generation | Human-reviewed drafts under safety boundaries | **Not started** |
-| Validation suite | PASS/WARN/FAIL for all active tracks | **Strong** for implemented tracks |
-| Dashboard | Single local health surface on `main` | **Active** — 91/91 |
+| Mac Workstation Experience | Approved modes and surfaces | **Planned** |
+| Widgets / Shortcuts | Catalogs and manual install path | **Planned** |
+| 3D Builder Workshop Agent | Gated classroom object pipeline | **Planned** |
+| Validation suite | PASS/WARN/FAIL for all active tracks | **Strong** |
+| Dashboard | Single local health surface on `main` | **Active** — 97/97 |
 
 **v1.0 is not a date.** It is an engineering completeness bar.
 
@@ -523,34 +755,40 @@ Per `docs/engineering-constitution.md` §10, v1.0 means these systems exist as *
 
 ## 10. Immediate Next Recommended Mission
 
-**Phase 2 Mission 5 — Worksheet Contract Schema v0**
+**Chief of Staff v1 Agent Core — Program B1 (Command Surface Index v1)**
 
-Promote `worksheet_contract` from placeholder to third canonical contract using the established Mission 2–4 pattern. Cursor may execute autonomously under Phase 2 bounded implementation authority.
+Phase 3 foundations are complete (`docs/teacher-workstation-foundation-v0.md`). The recommended next major program is **Chief of Staff v1** — starting with a canonical command index and deterministic next-action surface.
 
-**This roadmap does not auto-start Mission 5.** Owen or an explicit mission prompt authorizes execution.
+Alternate approval-gated tracks (Curriculum Builder renderers, Canvas restart, Mac live experience, Lovable, 3D Builder) require explicit missions per `docs/implementation-approval-gate.md`.
+
+**This roadmap does not auto-start implementation.** Owen or an explicit mission prompt authorizes execution.
 
 ---
 
 ## 11. Program Mission Sequencing (Quick Reference)
 
 ```text
-NOW (authorized pattern):
-  A1 Worksheet Contract v0
-  A2 Review Game Contract v0
-  A3 Canvas Export Package Contract v0 (metadata)
+COMPLETE:
+  Phase 3 Teacher Workstation Foundation (v0)
+  Capability map + AI tool routing matrix (documentation)
+
+NOW (autonomous pattern when authorized):
+  B1–B5 Chief of Staff v1 Agent Core
+  H0 Health Monitor read-only foundation (when mission approved)
+  I0 System Updater read-only checks (when mission approved)
+  D1 Local LLM status (read-only)
 
 THEN (mixed approval):
-  A4 Registry manual entry dry-run (autonomous)
-  B1–B4 Chief of Staff v1 (autonomous)
-  D1 Local LLM status (autonomous)
+  A4–A7 Curriculum Builder Complete subtracks
+  E* Mac Workstation Experience
+  F* Widget and Shortcut Builder catalogs
 
 LATER (approval-gated):
-  A5 Real registry records
-  A6 Renderer foundation
-  A7 Local retrieval
-  C* Canvas restart (explicit unfreeze)
-  E* Mac live experience
-  G* Integrations
+  G1 Lovable Classroom App Builder
+  J* 3D Builder Workshop Agent
+  C* Canvas LLM restart (explicit unfreeze)
+  G* Drive/Gmail/Canvas API/OAuth integrations
+  I2 System Updater approved maintenance
 ```
 
 ---
@@ -572,7 +810,7 @@ Owen approves **programs and boundaries**; Cursor owns **PR sequencing, implemen
 
 ## 13. Non-Activation Confirmation
 
-Documentation/status only. This master build roadmap is Markdown planning text. It does not activate lesson generation, real curriculum content, real review notes, student data, file scanning, folder crawling, indexing, OCR, embeddings, vector database, RAG, Canvas API, Google Drive API, OAuth, network calls, automation, background jobs, live integrations, Mac system setting changes, wallpaper changes, widget installation, shortcut installation, LLM installation, model downloads, API key setup, registry writes, contract writes, renderers, or runtime behavior.
+Documentation/status only. This master build roadmap is Markdown planning text. It does not activate lesson generation, real curriculum content, real review notes, student data, file scanning, folder crawling, indexing, OCR, embeddings, vector database, RAG, Canvas API, Google Drive API, OAuth, network calls, automation, background jobs, live integrations, Lovable connection, cloud AI API routing, Mac system setting changes, wallpaper changes, widget installation, shortcut installation, LLM installation, model downloads, API key setup, 3D file generation, STL/3MF export, slicer integration, printer integration, registry writes, contract writes, renderers, or runtime behavior.
 
 **Implementation does not proceed automatically from this audit.**
 

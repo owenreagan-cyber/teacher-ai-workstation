@@ -14,6 +14,8 @@ The Chief of Staff should use a hybrid brain strategy. Do not hardcode one model
 
 Chief of Staff may eventually route approved work to these surfaces. **All remain inactive by default** unless a separate mission explicitly approves connection.
 
+Full matrix: `docs/ai-tool-routing-matrix.md`
+
 | Tool | Role | Current status |
 | --- | --- | --- |
 | Local LLM (Ollama) | Private local inference | setup only — see `setup/08-local-ai.sh` |
@@ -41,7 +43,7 @@ Current boundaries:
 - no student data or generated student-facing apps
 - no connection to renderer runtime in this phase
 
-Future Lovable work may consume **approved renderer/output-contract patterns** only after separate renderer and integration intake. See `docs/renderer-v1-foundation.md`, `docs/master-build-roadmap.md` Program G1, and `docs/integration-planning-foundation-v0.md`.
+Future Lovable work may consume **approved renderer/output-contract patterns** only after separate renderer and integration intake. See `docs/renderer-v1-foundation.md`, `docs/master-build-roadmap.md` Program G1, `docs/integration-planning-foundation-v0.md`, and `docs/ai-tool-routing-matrix.md`.
 
 Browser profile note: `docs/browser-profiles-guide.md` lists Lovable as a separate profile for manual use only.
 

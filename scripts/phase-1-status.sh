@@ -986,6 +986,26 @@ check_bash_syntax scripts/curriculum-builder-contract-schemas-status.sh
 check_doc_contains docs/curriculum-builder-canonical-contract-schemas.md "complete_a4_a7_metadata_contracts" "contract schemas closure status"
 grep -Fq -- '--curriculum-contracts-status' bin/chief-of-staff && pass "chief-of-staff exposes --curriculum-contracts-status" || fail "chief-of-staff missing --curriculum-contracts-status"
 
+section "Curriculum Builder Registry v0.2 Manual Entry Dry-Run (CB-IMPL-1) Files"
+for path in \
+  docs/curriculum-builder-registry-v0-2-manual-entry-dry-run.md \
+  docs/curriculum-builder-registry-v0-2-dry-run-boundaries.md \
+  docs/curriculum-builder-registry-v0-2-validation-rules.md \
+  assistant/curriculum-builder/samples/registry-v0-2-dry-run/example-candidate-valid.json \
+  assistant/curriculum-builder/samples/registry-v0-2-dry-run/example-candidate-valid-002.json \
+  scripts/curriculum-builder-registry-v0-2-dry-run.sh \
+  scripts/curriculum-builder-registry-v0-2-status.sh \
+  tests/curriculum-builder-registry-v0-2-dry-run-test.sh \
+  tests/curriculum-builder-registry-v0-2-status-test.sh; do
+  check_required_file "${path}"
+done
+check_bash_syntax scripts/curriculum-builder-registry-v0-2-dry-run.sh
+check_bash_syntax scripts/curriculum-builder-registry-v0-2-status.sh
+check_bash_syntax tests/curriculum-builder-registry-v0-2-dry-run-test.sh
+check_bash_syntax tests/curriculum-builder-registry-v0-2-status-test.sh
+check_doc_contains docs/curriculum-builder-registry-v0-2-manual-entry-dry-run.md "complete_cb_impl_1_dry_run" "registry v0.2 dry-run closure status"
+grep -Fq -- '--curriculum-registry-dry-run-status' bin/chief-of-staff && pass "chief-of-staff exposes --curriculum-registry-dry-run-status" || fail "chief-of-staff missing --curriculum-registry-dry-run-status"
+
 section "Curriculum Registry–Contract Binding v0 Foundation Files"
 for path in \
   docs/curriculum-binding-v0.md \

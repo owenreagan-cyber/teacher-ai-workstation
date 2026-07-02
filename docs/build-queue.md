@@ -143,7 +143,7 @@ See `docs/master-build-roadmap.md` Program G1 and `assistant/model-routing.md`. 
 
 ## Master Build Roadmap Status
 
-Canonical program roadmap is active (`docs/master-build-roadmap.md`). Phase 3 foundations complete. Chief of Staff Program B, Health Monitor H, System Updater I, AI Tool Routing, Local LLM D1, Mac Workstation E1, Widget and Shortcut Builder F1, Classroom App Lab CAL1, Lovable G1, 3D Builder J1, Cursor Operating Modes governance, and Curriculum Builder metadata contract schemas A4–A7 read-only foundations complete. Recommended next major program: Curriculum Builder implementation subtracks (Registry v0.2 dry-run) — approval-gated.
+Canonical program roadmap is active (`docs/master-build-roadmap.md`). Phase 3 foundations complete. Chief of Staff Program B, Health Monitor H, System Updater I, AI Tool Routing, Local LLM D1, Mac Workstation E1, Widget and Shortcut Builder F1, Classroom App Lab CAL1, Lovable G1, 3D Builder J1, Cursor Operating Modes governance, Curriculum Builder metadata contract schemas A4–A7, and Registry v0.2 manual entry dry-run (CB-IMPL-1) read-only foundations complete. Recommended next major program: Curriculum Builder CB-IMPL-2 real registry records — approval-gated.
 
 Companion docs: `docs/teacher-workstation-capability-map.md`, `docs/ai-tool-routing-matrix.md`, `docs/3d-builder-workshop-agent-roadmap.md`.
 
@@ -190,6 +190,10 @@ Curriculum Output Contract v0 is active (Phase 2 Mission 2). See `docs/curriculu
 ## Curriculum Registry v0 Status
 
 Curriculum Registry v0 is active (Phase 2 Mission 1). See `docs/curriculum-registry-v0.md`. Local-first read-only manual metadata registry with deterministic validation. Fictional placeholder records only. No scanning, ingestion, RAG, lesson generation, APIs, OAuth, or student data.
+
+## Curriculum Builder Registry v0.2 Dry-Run Status (CB-IMPL-1)
+
+Registry v0.2 manual entry dry-run is active. See `docs/curriculum-builder-registry-v0-2-manual-entry-dry-run.md`. Fake candidate validation only; `--curriculum-registry-dry-run-status`; no registry writes, no active write flag, no real records, no ingestion or generation.
 
 ## Curriculum Builder Foundation Status
 

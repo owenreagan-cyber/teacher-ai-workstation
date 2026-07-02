@@ -1,0 +1,26 @@
+{
+  "dry_run_version": "0.2.0",
+  "dry_run_mode": "manual_entry_candidate",
+  "metadata_only": true,
+  "read_only": true,
+  "no_registry_write": true,
+  "would_write": false,
+  "candidate_entry": {
+    "resource_id": "example-resource-001",
+    "title": "Sample Worksheet",
+    "resource_type": "worksheet",
+    "subject": "Example Math Course",
+    "grade_band": "Example Grade 5",
+    "course": "Example Math Course",
+    "unit": "Unit 1",
+    "lesson": "Lesson 1",
+    "topic": "Example Topic Placeholder",
+    "source_reference_id": "example-source-001",
+    "source_reference": "placeholder://source/example-drive-reference",
+    "source_system": "google_drive",
+    "teacher_only": false,
+    "student_facing_allowed": true,
+    "review_status": "approved_placeholder",
+    "notes": "Fictional dry-run candidate only — no registry write."
+  }
+}

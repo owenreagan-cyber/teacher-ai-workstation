@@ -14,6 +14,8 @@ Handoff and status clarity. Start from `docs/phase-1-chief-of-staff-status-audit
 
 ## Recently Completed
 
+- Master Build Plan Safe Autopilot (2026-07-02): registry lane aggregate includes source readiness + Owen § J checklist; `--curriculum-production-registry-owen-checklist-status`; F1 fake catalog index; CAL1 prototype inventory template + G1 boundary; classroom utility blocked intake doc; dry-run promotion banner. Documentation/status only.
+
 - Curriculum Source Readiness + Fake Metadata Inventory Foundation (2026-07-02): boundary plan, fake schema/fixtures, `--curriculum-source-readiness-status`, negative guardrail tests, external planning intake map, Program B vs CLI surface map. No real curriculum ingestion.
 
 - Autonomous Backlog Implementation Sprint (2026-07-02): `--governance-lane-status`, `--workstation-ops-lane-status`, status-banner hardening, negative non-mutation guardrail tests. Ledger items moved from proposed to implemented. Documentation/status only.

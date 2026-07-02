@@ -48,6 +48,8 @@ EOF
 check_file docs/widget-shortcut-builder-catalog-foundation.md
 check_file docs/widget-shortcut-builder-non-activation-boundaries.md
 check_file docs/widget-shortcut-builder-readiness-plan.md
+check_file docs/widget-shortcut-builder-fake-catalog-index.md
+check_file assistant/widget-shortcut/samples/fake-widget-shortcut-catalog.json
 check_doc_contains docs/widget-shortcut-builder-catalog-foundation.md "complete_v1_f1" "widget shortcut closure status"
 check_doc_contains docs/widget-shortcut-builder-non-activation-boundaries.md "Widget install: blocked" "widget install blocked"
 check_doc_contains docs/widget-shortcut-builder-non-activation-boundaries.md "Shortcut install: blocked" "shortcut install blocked"
@@ -56,6 +58,9 @@ check_doc_contains docs/widget-shortcut-builder-non-activation-boundaries.md "Ap
 check_doc_contains docs/widget-shortcut-builder-non-activation-boundaries.md "Automation: no" "no automation boundary"
 check_doc_contains docs/widget-shortcut-builder-readiness-plan.md "metadata-only" "catalog metadata-only boundary"
 check_doc_contains docs/widget-shortcut-builder-readiness-plan.md "Chief of Staff Status Widget" "widget catalog concept"
+check_doc_contains docs/widget-shortcut-builder-fake-catalog-index.md "fake_fixture_only" "fake catalog index mode"
+check_doc_contains assistant/widget-shortcut/samples/fake-widget-shortcut-catalog.json "fake-widget-cos-status" "fake widget catalog row"
+check_doc_contains assistant/widget-shortcut/samples/fake-widget-shortcut-catalog.json "fake-shortcut-open-dashboard" "fake shortcut catalog row"
 
 section 'Roadmap and Capability Coherence'
 check_doc_contains docs/master-build-roadmap.md "Widget and Shortcut Builder" "roadmap widget shortcut builder"
@@ -64,6 +69,7 @@ check_doc_contains docs/build-queue.md "Widget and Shortcut Builder" "build queu
 
 section 'Related Program Cross-Links'
 check_doc_contains docs/mac-workstation-experience-foundation.md "Widget and Shortcut Builder" "mac workstation points to program f"
+check_doc_contains docs/mac-workstation-experience-foundation.md "widget-shortcut-builder-fake-catalog-index" "mac workstation points to fake catalog index"
 check_doc_contains docs/local-llm-workstation-status-foundation.md "Widget and Shortcut Builder" "local llm points to program f"
 check_doc_contains docs/ai-tool-routing-foundation.md "Widget and Shortcut Builder" "ai routing points to program f"
 

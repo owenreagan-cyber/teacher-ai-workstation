@@ -1,0 +1,65 @@
+{
+  "catalog_version": "0.1.0",
+  "catalog_mode": "fake_fixture_only",
+  "metadata_only": true,
+  "read_only": true,
+  "no_install": true,
+  "no_automation": true,
+  "fake_fixture_only": true,
+  "widget_install_allowed": false,
+  "shortcut_install_allowed": false,
+  "shortcut_execution_allowed": false,
+  "mac_system_mutation_allowed": false,
+  "network_calls_allowed": false,
+  "student_data_allowed": false,
+  "notes": "Fake widget and shortcut catalog for planning validation only. No live widgets or shortcuts.",
+  "widgets": [
+    {
+      "widget_id": "fake-widget-cos-status",
+      "label": "Chief of Staff Status Widget",
+      "program": "F1",
+      "status": "planning_only",
+      "install_allowed": false,
+      "health_probe_allowed": false,
+      "notes": "Future repo-local status surface concept — not installed."
+    },
+    {
+      "widget_id": "fake-widget-local-llm",
+      "label": "Local LLM Status Widget",
+      "program": "F1",
+      "status": "planning_only",
+      "install_allowed": false,
+      "health_probe_allowed": false,
+      "notes": "References D1 boundaries — no Ollama execution."
+    }
+  ],
+  "shortcuts": [
+    {
+      "shortcut_id": "fake-shortcut-open-dashboard",
+      "label": "Open Teacher Dashboard",
+      "program": "F1",
+      "status": "planning_only",
+      "install_allowed": false,
+      "execution_allowed": false,
+      "notes": "Metadata-only quick-action concept — no .shortcut file."
+    },
+    {
+      "shortcut_id": "fake-shortcut-curriculum-status",
+      "label": "Show Curriculum Registry Status",
+      "program": "F1",
+      "status": "planning_only",
+      "install_allowed": false,
+      "execution_allowed": false,
+      "notes": "Would invoke read-only CoS commands only when approved in future mission."
+    }
+  ],
+  "quick_actions": [
+    {
+      "action_id": "fake-action-phase1-proof",
+      "label": "Run Phase-1 Status Proof",
+      "status": "planning_only",
+      "automation_allowed": false,
+      "notes": "Planning catalog row — no shortcuts CLI invocation."
+    }
+  ]
+}

@@ -87,6 +87,7 @@
 
 ### Now
 
+- Master Build Plan Safe Autopilot sprint (2026-07-02): registry lane aggregate includes curriculum source readiness + Owen § J checklist tracker; `--curriculum-production-registry-owen-checklist-status`; F1 fake catalog index; CAL1 fake prototype inventory + G1 boundary; classroom utility external ideas blocked doc; dry-run PASS≠promotion banner. No runtime activation.
 - Curriculum Source Readiness fake metadata inventory foundation complete (`docs/curriculum-source-readiness-and-intake-boundary-plan.md`). `--curriculum-source-readiness-status`; fake schema, fixtures, validator, negative tests. Real curriculum ingestion blocked. Owen tiny-pilot checklist in boundary plan.
 - Autonomous Backlog Implementation Sprint complete (2026-07-02). `--governance-lane-status`, `--workstation-ops-lane-status`, status-banner hardening on registry/governance scripts, negative non-mutation guardrail tests. No runtime activation.
 - Autonomous Build Engine Safe Work Sprint complete (2026-07-02). Fifteen Level 2 lane reviews in `docs/proposals/lane-reviews/`; all `complete_pending_review` program lanes marked `reviewed` in roadmap § Program Lane Status. Proposal folder structure (Class H), dry-run→fixture promotion planning spec, Safe Work Class H in ABE governance. No runtime activation.

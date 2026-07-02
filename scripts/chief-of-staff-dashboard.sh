@@ -1461,6 +1461,27 @@ else
   warn "Curriculum Builder production registry planning status script missing: scripts/curriculum-builder-production-registry-planning-status.sh"
 fi
 
+section "Owen Production Registry Approval Checklist Tracker"
+if [[ -f scripts/curriculum-builder-production-registry-owen-checklist-status.sh ]]; then
+  curriculum_owen_checklist_result=0
+  curriculum_owen_checklist_output="$(bash scripts/curriculum-builder-production-registry-owen-checklist-status.sh 2>&1)" || curriculum_owen_checklist_result=$?
+  curriculum_owen_checklist_pass="$(summary_count "${curriculum_owen_checklist_output}" "PASS")"
+  curriculum_owen_checklist_warn="$(summary_count "${curriculum_owen_checklist_output}" "WARN")"
+  curriculum_owen_checklist_fail="$(summary_count "${curriculum_owen_checklist_output}" "FAIL")"
+
+  if [[ "${curriculum_owen_checklist_result}" != "0" ]]; then
+    printf '%s\n' "${curriculum_owen_checklist_output}"
+    fail "Owen production registry checklist tracker status failed"
+  elif [[ -n "${curriculum_owen_checklist_pass}" && -n "${curriculum_owen_checklist_warn}" && -n "${curriculum_owen_checklist_fail}" ]]; then
+    printf 'Owen Production Registry Checklist: PASS %s / WARN %s / FAIL %s\n' "${curriculum_owen_checklist_pass}" "${curriculum_owen_checklist_warn}" "${curriculum_owen_checklist_fail}"
+    pass "Owen production registry checklist tracker status completed"
+  else
+    pass "Owen production registry checklist tracker status completed"
+  fi
+else
+  warn "Owen production registry checklist status script missing: scripts/curriculum-builder-production-registry-owen-checklist-status.sh"
+fi
+
 section "Curriculum Source Readiness Foundation"
 if [[ -f scripts/curriculum-source-readiness-status.sh ]]; then
   curriculum_source_readiness_result=0

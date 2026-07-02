@@ -36,6 +36,7 @@ cd "${repo_root}"
 section 'Local LLM / Ollama Workstation (Read-Only Status Foundation)'
 cat <<'EOF'
 Status: read-only planning only
+No Ollama execution: yes
 Ollama install: blocked
 Model downloads: blocked
 Model inference: blocked

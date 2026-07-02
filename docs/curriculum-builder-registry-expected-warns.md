@@ -25,6 +25,16 @@ Per `docs/cursor-autonomous-build-engine.md` Expected WARN Policy.
 
 **Typical total:** 7 WARN / 0 FAIL on canonical fixture.
 
+## Owen Checklist Tracker WARNs
+
+| WARN | Count (typical) | Reason | Follow-up |
+| --- | ---: | --- | --- |
+| `11 Owen checklist items pending approval — implementation blocked` | 1 | All § J checklist rows remain `pending` until Owen explicitly approves each item | Owen product decisions required before production registry implementation mission |
+
+**Typical total on `--curriculum-production-registry-owen-checklist-status`:** 1 WARN / 0 FAIL while checklist incomplete.
+
+**Typical total on `--curriculum-registry-lane-status` aggregate:** 8 WARN / 0 FAIL (7 A4–A7 + 1 Owen checklist) when canonical fixture unchanged.
+
 ## Rules
 
 - WARNs listed here are **expected and non-blocking**.

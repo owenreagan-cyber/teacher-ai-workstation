@@ -615,26 +615,29 @@ Authority: assistant/model-routing.md, docs/integration-planning-foundation-v0.m
 
 **Architecture rule:** Health Monitor **observes and reports**. It does not update, install, repair, automate, or modify the system unless a later approved mission explicitly allows it.
 
-**Eventually checks:**
+```text
+Status: COMPLETE (read-only foundation v1_h)
+Closure: docs/teacher-workstation-health-monitor-foundation.md
+```
 
-- Chief of Staff, repo, dashboard, validation suite health
-- Curriculum Builder, Lesson Planning, Curriculum Library health
-- Renderer/Retrieval foundation health
-- Canvas frozen/active status
+Mission delivered: architecture doc, health domains, `--system-health` / `--workstation-health`, `scripts/teacher-workstation-health-status.sh`, dashboard integration, tests.
+
+**Eventually checks (future/live — not in v1_h):**
+
 - Local LLM service and installed model health
-- Widget, shortcut, wallpaper/mode health
-- Lovable/cloud tool integration status (inactive reporting)
+- Widget, shortcut, wallpaper/mode live health
+- Lovable/cloud tool live integration status
 - Disk space / environment readiness
 
-**Future commands (roadmap only):**
+**Commands:**
 
-- `bin/chief-of-staff --system-health`
-- `bin/chief-of-staff --workstation-health`
-- `bin/chief-of-staff --local-llm-health`
-- `bin/chief-of-staff --widget-health`
-- `bin/chief-of-staff --shortcut-health`
+- `bin/chief-of-staff --system-health` — implemented
+- `bin/chief-of-staff --workstation-health` — implemented (alias)
+- `bin/chief-of-staff --local-llm-health` — planned
+- `bin/chief-of-staff --widget-health` — planned
+- `bin/chief-of-staff --shortcut-health` — planned
 
-**Health Monitor v1 complete when:** read-only health report aggregates existing status scripts with PASS/WARN/FAIL footer; no repair or install behavior.
+**Health Monitor v1 complete when:** read-only health report aggregates existing status scripts with PASS/WARN/FAIL footer; no repair or install behavior. **Met.**
 
 ---
 
@@ -739,7 +742,7 @@ Per `docs/engineering-constitution.md` §10, v1.0 means these systems exist as *
 | --- | --- | --- |
 | Chief of Staff | Stable CLI, dashboard, memory, intake, daily ops, next-action | **Partial** — foundation strong; agent core incomplete |
 | Capability map | Canonical system map with status labels | **Documented** |
-| Health Monitor | Read-only workstation health report | **Planned** |
+| Health Monitor | Read-only workstation health report | **Active** — Program H foundation |
 | System Updater | Read-only update checks | **Planned** |
 | AI tool routing | Documented matrix; inactive routing | **Documented** |
 | Curriculum Registry | Approved manual registry with metadata references | **Partial** — v1 fictional foundation |
@@ -760,9 +763,9 @@ Per `docs/engineering-constitution.md` §10, v1.0 means these systems exist as *
 
 ## 10. Immediate Next Recommended Mission
 
-**Teacher Workstation Health Monitor — Read-Only Health Foundation (Program H)**
+**Teacher Workstation System Updater — Read-Only Update Planning Foundation (Program I)**
 
-Program B is complete (`docs/chief-of-staff-v1-program-b-closure.md`). Chief of Staff daily operations, closeout, approval/blocker queues, and mode status are active (read-only). Recommended next: Health Monitor read-only foundation — observe/report without repair, update, or integration.
+Program H Health Monitor foundation is complete (`docs/teacher-workstation-health-monitor-foundation.md`). `--system-health` and `--workstation-health` aggregate repo-local status read-only. Recommended next: System Updater read-only planning — no apply, install, or automation.
 
 Alternate tracks remain approval-gated per `docs/implementation-approval-gate.md`.
 

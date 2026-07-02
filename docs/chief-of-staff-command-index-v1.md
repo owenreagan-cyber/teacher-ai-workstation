@@ -66,6 +66,13 @@ These flags exist in `bin/chief-of-staff` and work as read-only local status sur
 | `bin/chief-of-staff --blocker-queue` | Blocker queue surfacing |
 | `bin/chief-of-staff --mode-status` | Operating context mode concepts |
 
+### Health Monitor (Program H)
+
+| Command | Purpose |
+| --- | --- |
+| `bin/chief-of-staff --system-health` | Teacher Workstation Health Monitor report |
+| `bin/chief-of-staff --workstation-health` | Alias for `--system-health` |
+
 ### Program Status — Curriculum & Foundations
 
 | Command | Purpose |
@@ -88,7 +95,6 @@ Documented for future programs. **Not implemented** unless added to CLI.
 | `bin/chief-of-staff --prove-main` | Proof | Local main cleanliness proof |
 | `bin/chief-of-staff --model-routing-status` | Routing | AI tool routing matrix status |
 | `bin/chief-of-staff --local-llm-workstation-status` | D1 | Local LLM/Ollama status |
-| `bin/chief-of-staff --system-health` | H | Health Monitor report |
 | `bin/chief-of-staff --system-update-check` | I | System Updater read-only checks |
 | `bin/chief-of-staff --widget-health` | F | Widget catalog health |
 | `bin/chief-of-staff --shortcut-health` | F | Shortcut catalog health |
@@ -115,6 +121,7 @@ Intentionally not available until explicit approval supersedes stop markers or g
 | `bash tests/smoke-chief-of-staff-cli.sh` | CLI smoke tests |
 | `bash tests/chief-of-staff-v1-operating-test.sh` | Operating command tests |
 | `bash tests/chief-of-staff-daily-operations-test.sh` | Program B daily operations tests |
+| `bash tests/teacher-workstation-health-monitor-test.sh` | Health Monitor tests |
 
 ## Boundaries
 

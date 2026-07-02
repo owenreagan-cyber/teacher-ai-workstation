@@ -65,6 +65,10 @@ Chief of Staff v1 Operating (read-only):
   --chief-of-staff-command-index-v1-status
                                        Show Chief of Staff command index v1 status and exit.
 
+Health Monitor (read-only; observe/report only):
+  --system-health                      Show read-only Teacher Workstation health report and exit.
+  --workstation-health                 Alias for --system-health and exit.
+
 Lesson Planning:
   --lesson-status                      Show local lesson planning workspace status and exit.
   --lesson-brief-status                Show local lesson brief helper status and exit.
@@ -2199,6 +2203,15 @@ while [[ $# -gt 0 ]]; do
         die "Chief of Staff command index v1 status script is missing: scripts/chief-of-staff-command-index-v1-status.sh"
       fi
       bash "${command_index_status_script}"
+      exit 0
+      ;;
+    --system-health|--workstation-health)
+      repo_root="$(resolve_repo_root)"
+      health_status_script="${repo_root}/scripts/teacher-workstation-health-status.sh"
+      if [[ ! -f "${health_status_script}" ]]; then
+        die "Teacher Workstation health status script is missing: scripts/teacher-workstation-health-status.sh"
+      fi
+      bash "${health_status_script}"
       exit 0
       ;;
     --validate-all)

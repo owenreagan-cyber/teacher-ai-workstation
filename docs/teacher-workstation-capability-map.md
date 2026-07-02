@@ -80,7 +80,7 @@ Cross-references:
 
 | Capability | Status | Notes |
 | --- | --- | --- |
-| Teacher Workstation Health Monitor | planned | Observe/report only; Program H |
+| Teacher Workstation Health Monitor | **implemented read-only** | Program H — `--system-health` |
 | Teacher Workstation System Updater | planned | Read-only checks first; Program I |
 | Widget catalog | planned | Program F |
 | Shortcut catalog | planned | Program F |

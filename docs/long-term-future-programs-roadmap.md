@@ -48,34 +48,24 @@ Each remains an independent future subsystem gated by `docs/implementation-appro
 
 ## Teacher Workstation Health Monitor
 
-**Classification:** Future / Approval-Gated / Planning Only
+**Classification:** Implemented Read-Only Foundation (Program H)
 
 ### Purpose
 
-Future workstation diagnostics and health reporting. Observes and reports — does not repair, install, or automate.
-
-### Future examples
-
-- repository health
-- dashboard health
-- documentation health
-- command verification
-- configuration validation
-- storage readiness
-- dependency status
-- future AI tool readiness (inactive status reporting)
-- validation suite aggregation (PASS/WARN/FAIL)
+Workstation diagnostics and health reporting. Observes and reports — does not repair, install, or automate.
 
 ### Current status
 
-Planning only. Not connected.
+Read-only foundation active. `bin/chief-of-staff --system-health` aggregates repo-local status scripts.
+
+Closure: `docs/teacher-workstation-health-monitor-foundation.md`
 
 ### Future phases
 
 | Phase | Scope |
 | --- | --- |
-| H0 | Read-only report aggregating existing status scripts |
-| H1 | Unified health summary command (roadmap only) |
+| H0 | Read-only report aggregating existing status scripts — **complete** |
+| H1 | Live service checks (LLM, widgets, disk) — **planned/blocked** |
 | H2+ | Repair/install behavior — **blocked** without separate mission |
 
 ### Blocked capabilities
@@ -86,7 +76,7 @@ Planning only. Not connected.
 - system modifications
 - unattended repair
 
-**Detail:** `docs/master-build-roadmap.md` Program H
+**Detail:** `docs/teacher-workstation-health-monitor.md`, `docs/master-build-roadmap.md` Program H
 
 ---
 

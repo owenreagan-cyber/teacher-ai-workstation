@@ -788,6 +788,29 @@ check_bash_syntax scripts/chief-of-staff-blocker-queue.sh
 check_bash_syntax scripts/chief-of-staff-mode-status.sh
 check_bash_syntax tests/chief-of-staff-daily-operations-test.sh
 
+section "Teacher Workstation Health Monitor (Program H) Files"
+for path in \
+  docs/teacher-workstation-health-monitor.md \
+  docs/teacher-workstation-health-monitor-foundation.md \
+  scripts/teacher-workstation-health-status.sh \
+  tests/teacher-workstation-health-monitor-test.sh; do
+  check_required_file "${path}"
+done
+check_bash_syntax scripts/teacher-workstation-health-status.sh
+check_bash_syntax tests/teacher-workstation-health-monitor-test.sh
+check_doc_contains docs/teacher-workstation-health-monitor-foundation.md "complete_v1_h" "health monitor closure status"
+check_doc_contains docs/teacher-workstation-health-monitor.md "observes and reports" "health monitor observe-only boundary"
+if grep -Fq -- '--system-health' bin/chief-of-staff; then
+  pass "chief-of-staff exposes --system-health"
+else
+  fail "chief-of-staff missing --system-health"
+fi
+if grep -Fq -- '--workstation-health' bin/chief-of-staff; then
+  pass "chief-of-staff exposes --workstation-health"
+else
+  fail "chief-of-staff missing --workstation-health"
+fi
+
 section "Curriculum Registry–Contract Binding v0 Foundation Files"
 for path in \
   docs/curriculum-binding-v0.md \

@@ -20,6 +20,17 @@
       ]
     },
     {
+      "id": "health_monitor",
+      "name": "Health Monitor",
+      "commands": [
+        {"flag": "--system-health", "status": "implemented", "purpose": "Teacher Workstation Health Monitor read-only report (Program H)"},
+        {"flag": "--workstation-health", "status": "implemented", "purpose": "Alias for --system-health (Program H)"},
+        {"flag": "--local-llm-health", "status": "planned", "purpose": "Local LLM runtime health (Program D; blocked)"},
+        {"flag": "--widget-health", "status": "planned", "purpose": "Widget catalog health (Program F)"},
+        {"flag": "--shortcut-health", "status": "planned", "purpose": "Shortcut catalog health (Program F)"}
+      ]
+    },
+    {
       "id": "proof",
       "name": "Proof",
       "commands": [
@@ -80,10 +91,9 @@
         {"flag": "--mode-status", "status": "implemented", "purpose": "Operating context mode concepts (Program B5)"},
         {"flag": "--model-routing-status", "status": "planned", "purpose": "AI tool routing matrix status"},
         {"flag": "--local-llm-workstation-status", "status": "planned", "purpose": "Local LLM/Ollama workstation status (Program D1)"},
-        {"flag": "--system-health", "status": "planned", "purpose": "Health Monitor read-only report (Program H)"},
         {"flag": "--system-update-check", "status": "planned", "purpose": "System Updater read-only checks (Program I)"},
-        {"flag": "--widget-health", "status": "planned", "purpose": "Widget catalog health (Program F)"},
-        {"flag": "--shortcut-health", "status": "planned", "purpose": "Shortcut catalog health (Program F)"},
+        {"flag": "--system-update-plan", "status": "blocked", "purpose": "System Updater apply blocked without approval"},
+        {"flag": "--apply-approved-updates", "status": "blocked", "purpose": "System Updater apply blocked without approval"},
         {"flag": "--lovable-status", "status": "planned", "purpose": "Lovable integration inactive status (Program G1)"},
         {"flag": "--3d-builder-status", "status": "planned", "purpose": "3D Builder Workshop Agent status (Program J)"}
       ]

@@ -96,7 +96,7 @@ Aggregate lane proof: `bin/chief-of-staff --curriculum-registry-lane-status`
 
 1. **Default read authority for “what is the registry?”** → `registry/v0/registry.json` (read-only).
 2. **Default for v0.2 experiments** → `samples/registry-v0-2-*` paths only; never treat as production.
-3. **Dry-run or fixture validation success** → does **not** authorize `--write` or registry mutation.
+3. **Dry-run or fixture validation success** → does **not** authorize `--write` or registry mutation. See `docs/curriculum-builder-registry-dry-run-fixture-promotion-planning-spec.md`.
 4. **Production registry path** → Owen must decide per planning brief § B; do not infer from repo state.
 5. **Real metadata, real paths, student data** → separate explicit approval missions.
 6. **When unsure** → run `bin/chief-of-staff --curriculum-registry-lane-status` and read this map.
@@ -110,6 +110,7 @@ Aggregate lane proof: `bin/chief-of-staff --curriculum-registry-lane-status`
 | `docs/curriculum-builder-registry-v0-2-lane-closure.md` | CB-IMPL-1–4 lane closure |
 | `docs/curriculum-builder-registry-v0-2-record-boundaries.md` | Fixture vs live boundaries |
 | `docs/curriculum-builder-production-registry-workflow-planning-brief.md` | Future production workflow (planning) |
+| `docs/curriculum-builder-registry-dry-run-fixture-promotion-planning-spec.md` | Blocked dry-run → fixture promotion seam |
 | `docs/proposals/curriculum-builder-registry-lane-discovery-review.md` | Level 2 review |
 | `docs/curriculum-registry-v0.md` | Live v0 registry |
 | `docs/curriculum-builder-canonical-contract-schemas.md` | A4–A7 contracts |

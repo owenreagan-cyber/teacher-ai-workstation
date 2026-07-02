@@ -55,5 +55,10 @@ Cursor proposal → ChatGPT review → Owen Reagan approval → scoped implement
 | Path | Purpose |
 | --- | --- |
 | `docs/proposals/index.md` | Canonical ledger table |
-| `docs/proposals/<slug>.md` | Optional detail files |
+| `docs/proposals/<slug>.md` | Optional detail files (pre-folder reviews) |
+| `docs/proposals/lane-reviews/` | Level 2 lane discovery review docs |
+| `docs/proposals/ideas/` | Early unclassified ideas |
+| `docs/proposals/backlog/` | Deferred safe work detail |
+| `docs/proposals/blocked/` | Approval-gated planning detail |
+| `docs/proposals/implemented/` | Implemented ledger archive pointers |
 | `docs/proposals/templates/` | Level 2 and Level 3 mission templates |

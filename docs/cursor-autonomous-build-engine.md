@@ -96,6 +96,7 @@ Safe work classes are **not** blanket implementation approval. The active missio
 | **Safe Work Class E** | Level 1 discovery candidates converted into docs/status-only work |
 | **Safe Work Class F** | Level 2 lane review docs/status when lane is `complete_pending_review` and prompt-approved |
 | **Safe Work Class G** | Documented expected WARN classification and WARN follow-up tracking |
+| **Safe Work Class H** | Proposal folder / idea development system (planning-only docs, templates, indexes; no runtime) |
 
 **Rules:**
 

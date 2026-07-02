@@ -942,22 +942,22 @@ Alternate tracks remain approval-gated per `docs/implementation-approval-gate.md
 
 | Lane | Program | Foundation status | lane_status | Notes |
 | --- | --- | --- | --- | --- |
-| Local LLM / Ollama | D1 | read-only foundation complete | `complete_pending_review` | No Level 2 review run |
-| Mac Workstation Experience | E1 | read-only foundation complete | `complete_pending_review` | No Level 2 review run |
-| Widget and Shortcut Builder | F1 | read-only foundation complete | `complete_pending_review` | No Level 2 review run |
-| Classroom App Lab | CAL1 | read-only foundation complete | `complete_pending_review` | No Level 2 review run |
-| Lovable Classroom App Builder | G1 | read-only foundation complete | `complete_pending_review` | No Level 2 review run |
-| 3D Builder Workshop Agent | J1 | read-only foundation complete | `complete_pending_review` | No Level 2 review run |
-| Cursor Operating Modes Governance | — | foundation complete | `complete_pending_review` | PR #203+ governance chain |
-| Autonomous Build Engine Governance | CB-AUTO-GOV | governance foundation complete | `complete_pending_review` | `docs/cursor-autonomous-build-engine.md`; continuation loop + exhaustion rules |
-| Curriculum Builder metadata contracts | A4–A7 | read-only foundation complete | `complete_pending_review` | No Level 2 review run |
-| Chief of Staff v1 Agent Core | B | Program B complete | `complete_pending_review` | No Level 2 review run |
-| Teacher Workstation Health Monitor | H | read-only foundation complete | `complete_pending_review` | No Level 2 review run |
-| Teacher Workstation System Updater | I | read-only foundation complete | `complete_pending_review` | No Level 2 review run |
-| AI Tool Routing | R0 | operational read-only complete | `complete_pending_review` | No Level 2 review run |
+| Local LLM / Ollama | D1 | read-only foundation complete | `reviewed` | Level 2 review 2026-07-02; `docs/proposals/lane-reviews/local-llm-workstation-lane-discovery-review.md` |
+| Mac Workstation Experience | E1 | read-only foundation complete | `reviewed` | Level 2 review 2026-07-02; `docs/proposals/lane-reviews/mac-workstation-experience-lane-discovery-review.md` |
+| Widget and Shortcut Builder | F1 | read-only foundation complete | `reviewed` | Level 2 review 2026-07-02; `docs/proposals/lane-reviews/widget-shortcut-builder-lane-discovery-review.md` |
+| Classroom App Lab | CAL1 | read-only foundation complete | `reviewed` | Level 2 review 2026-07-02; `docs/proposals/lane-reviews/classroom-app-lab-lane-discovery-review.md` |
+| Lovable Classroom App Builder | G1 | read-only foundation complete | `reviewed` | Level 2 review 2026-07-02; `docs/proposals/lane-reviews/lovable-classroom-app-builder-lane-discovery-review.md` |
+| 3D Builder Workshop Agent | J1 | read-only foundation complete | `reviewed` | Level 2 review 2026-07-02; `docs/proposals/lane-reviews/3d-builder-workshop-agent-lane-discovery-review.md` |
+| Cursor Operating Modes Governance | — | foundation complete | `reviewed` | Level 2 review 2026-07-02; `docs/proposals/lane-reviews/cursor-operating-modes-governance-lane-discovery-review.md` |
+| Autonomous Build Engine Governance | CB-AUTO-GOV | governance foundation complete | `reviewed` | Level 2 review 2026-07-02; `docs/proposals/lane-reviews/autonomous-build-engine-governance-lane-discovery-review.md` |
+| Curriculum Builder metadata contracts | A4–A7 | read-only foundation complete | `reviewed` | Level 2 review 2026-07-02; `docs/proposals/lane-reviews/curriculum-builder-metadata-contracts-lane-discovery-review.md` |
+| Chief of Staff v1 Agent Core | B | Program B complete | `reviewed` | Level 2 review 2026-07-02; `docs/proposals/lane-reviews/chief-of-staff-v1-program-b-lane-discovery-review.md` |
+| Teacher Workstation Health Monitor | H | read-only foundation complete | `reviewed` | Level 2 review 2026-07-02; `docs/proposals/lane-reviews/teacher-workstation-health-monitor-lane-discovery-review.md` |
+| Teacher Workstation System Updater | I | read-only foundation complete | `reviewed` | Level 2 review 2026-07-02; `docs/proposals/lane-reviews/teacher-workstation-system-updater-lane-discovery-review.md` |
+| AI Tool Routing | R0 | operational read-only complete | `reviewed` | Level 2 review 2026-07-02; `docs/proposals/lane-reviews/ai-tool-routing-lane-discovery-review.md` |
 | Curriculum Builder Registry v0.2 Local Foundation | CB-IMPL | foundation complete (CB-IMPL-1–4) | `reviewed` | Level 2 review 2026-07-02; `docs/proposals/curriculum-builder-registry-lane-discovery-review.md` |
-| Curriculum Builder Production Registry Planning | CB-PROD-PLAN | planning brief complete | `complete_pending_review` | Planning-only; implementation blocked; `docs/curriculum-builder-production-registry-workflow-planning-brief.md` |
-| Curriculum Builder Registry Hardening | CB-REG-HARDEN | hardening bundle complete | `complete_pending_review` | Authority map, lane status, A4–A7 fixture cross-validation |
+| Curriculum Builder Production Registry Planning | CB-PROD-PLAN | planning brief complete | `reviewed` | Level 2 review 2026-07-02; `docs/proposals/lane-reviews/curriculum-builder-production-registry-planning-lane-discovery-review.md` |
+| Curriculum Builder Registry Hardening | CB-REG-HARDEN | hardening bundle complete | `reviewed` | Level 2 review 2026-07-02; `docs/proposals/lane-reviews/curriculum-builder-registry-hardening-lane-discovery-review.md` |
 | Curriculum Builder v1 (registry/contracts) | A | Phase 2 foundation complete | `in_progress` | Registry v0.2 lane reviewed; production planning complete; renderers/generation/integrations remain approval-gated |
 | Canvas LLM | C | frozen/stopped | `in_progress` | Stop marker active |
 

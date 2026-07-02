@@ -47,12 +47,18 @@ Templates: `docs/proposals/templates/lane-level-discovery-mission.md`, `docs/pro
 | --------- | ---- | ----- | ----- | ---- | -------------------- | ----------------- | ----------------------- | ----------------------- | ------ | --------------------- | -------------- | ---- |
 | Registry Authority Map (v0 vs v0.2 fixture vs production) | Curriculum Builder Registry | 2 | high | low | low | none | none | none | implemented | complete — `docs/curriculum-builder-registry-authority-map.md` | Level 2 Registry Lane Review 2026-07-02 | 2026-07-02 |
 | Aggregate `--curriculum-registry-lane-status` command | Curriculum Builder Registry | 2 | medium | low | low | none | none | none | implemented | complete — `bin/chief-of-staff --curriculum-registry-lane-status` | Level 2 Registry Lane Review 2026-07-02 | 2026-07-02 |
-| Dry-run to fixture promotion planning spec | Curriculum Builder Registry | 2 | medium | low | low | none | none | none | proposed | Planning doc only; document blocked promotion path and human gates | Level 2 Registry Lane Review 2026-07-02 | 2026-07-02 |
+| Dry-run to fixture promotion planning spec | Curriculum Builder Registry | 2 | medium | low | low | none | none | none | implemented | complete — `docs/curriculum-builder-registry-dry-run-fixture-promotion-planning-spec.md` | Level 2 CB-REG-HARDEN Review 2026-07-02 | 2026-07-02 |
 | A4–A7 schema cross-validation on fake fixtures | Curriculum Builder Registry | 2 | medium | low | medium | none | none | none | implemented | complete — `--curriculum-registry-a4-a7-fixture-schema-status` | Level 2 Registry Lane Review 2026-07-02 | 2026-07-02 |
 | Production registry workflow planning brief | Curriculum Builder Registry | 2 | high | medium | medium | possible | possible | future | approved_for_planning | Owen checklist review in planning brief § J before implementation mission | Level 2 Registry Lane Review 2026-07-02 | 2026-07-02 |
 | Autonomous Build Engine governance foundation | Cursor / Governance | 2 | high | low | low | none | none | none | implemented | complete — `docs/cursor-autonomous-build-engine.md` | CB-AUTO-GOV mission 2026-07-02 | 2026-07-02 |
+| Proposal folder structure (lane-reviews, ideas, backlog, blocked, implemented) | Cursor / Governance | 2 | high | low | low | none | none | none | implemented | complete — `docs/proposals/README.md` § File Layout | ABE Safe Work Sprint 2026-07-02 | 2026-07-02 |
+| Safe Work Class H in Autonomous Build Engine governance | Cursor / Governance | 2 | medium | low | low | none | none | none | implemented | complete — `docs/cursor-autonomous-build-engine.md` | ABE Safe Work Sprint 2026-07-02 | 2026-07-02 |
+| Aggregate `--governance-lane-status` command | Cursor / Governance | 2 | medium | low | low | none | none | none | proposed | Combine operating modes + ABE + proposal folder health | Level 2 Operating Modes Review 2026-07-02 | 2026-07-02 |
+| Owen § J production registry checklist tracker | Curriculum Builder Registry | 2 | medium | low | low | none | possible | none | proposed | Read-only status rows for checklist items | Level 2 CB-PROD-PLAN Review 2026-07-02 | 2026-07-02 |
+| Program B vs full CLI surface map | Chief of Staff | 2 | medium | low | low | none | none | none | proposed | Planning doc mapping B1–B6 vs all CLI flags | Level 2 Program B Review 2026-07-02 | 2026-07-02 |
+| H+I aggregate read-only lane status command | Workstation Ops | 2 | medium | low | low | none | none | none | proposed | `--workstation-ops-lane-status` wrapper | Level 2 H/I Reviews 2026-07-02 | 2026-07-02 |
 
-Detail: `docs/proposals/curriculum-builder-registry-lane-discovery-review.md`
+Detail: `docs/proposals/lane-reviews/README.md` (index); prior registry review: `docs/proposals/curriculum-builder-registry-lane-discovery-review.md`
 
 ## Usage
 

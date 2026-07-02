@@ -5,6 +5,10 @@ node_modules/
 dist/
 .env
 .env.*
+
+# Cursor local workspace settings
+.cursor/settings.json
+
 *.local
 
 # Local workstation state and credential/token files.

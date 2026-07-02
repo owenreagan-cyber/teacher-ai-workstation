@@ -101,6 +101,10 @@ bin/chief-of-staff --lovable-status >/dev/null
 bin/chief-of-staff --3d-builder-status >/dev/null
 bin/chief-of-staff --curriculum-contracts-status >/dev/null
 bash tests/curriculum-builder-contract-schemas-status-test.sh >/dev/null
+bin/chief-of-staff --curriculum-registry-dry-run-status >/dev/null
+bash scripts/curriculum-builder-registry-v0-2-dry-run.sh >/dev/null
+bash tests/curriculum-builder-registry-v0-2-dry-run-test.sh >/dev/null
+bash tests/curriculum-builder-registry-v0-2-status-test.sh >/dev/null
 bin/chief-of-staff --cursor-operating-modes-status >/dev/null
 bash tests/ai-tool-routing-status-test.sh >/dev/null
 bash tests/local-llm-workstation-status-test.sh >/dev/null

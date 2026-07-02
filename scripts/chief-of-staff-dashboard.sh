@@ -1335,6 +1335,27 @@ else
   warn "Curriculum Builder contract schemas status script missing: scripts/curriculum-builder-contract-schemas-status.sh"
 fi
 
+section "Curriculum Builder Registry v0.2 Manual Entry Dry-Run (CB-IMPL-1)"
+if [[ -f scripts/curriculum-builder-registry-v0-2-status.sh ]]; then
+  curriculum_registry_dry_run_result=0
+  curriculum_registry_dry_run_output="$(bash scripts/curriculum-builder-registry-v0-2-status.sh 2>&1)" || curriculum_registry_dry_run_result=$?
+  curriculum_registry_dry_run_pass="$(summary_count "${curriculum_registry_dry_run_output}" "PASS")"
+  curriculum_registry_dry_run_warn="$(summary_count "${curriculum_registry_dry_run_output}" "WARN")"
+  curriculum_registry_dry_run_fail="$(summary_count "${curriculum_registry_dry_run_output}" "FAIL")"
+
+  if [[ "${curriculum_registry_dry_run_result}" != "0" ]]; then
+    printf '%s\n' "${curriculum_registry_dry_run_output}"
+    fail "Curriculum Builder Registry v0.2 dry-run status failed"
+  elif [[ -n "${curriculum_registry_dry_run_pass}" && -n "${curriculum_registry_dry_run_warn}" && -n "${curriculum_registry_dry_run_fail}" ]]; then
+    printf 'Curriculum Builder Registry v0.2 Dry-Run: PASS %s / WARN %s / FAIL %s\n' "${curriculum_registry_dry_run_pass}" "${curriculum_registry_dry_run_warn}" "${curriculum_registry_dry_run_fail}"
+    pass "Curriculum Builder Registry v0.2 dry-run status completed"
+  else
+    pass "Curriculum Builder Registry v0.2 dry-run status completed"
+  fi
+else
+  warn "Curriculum Builder Registry v0.2 dry-run status script missing: scripts/curriculum-builder-registry-v0-2-status.sh"
+fi
+
 section "Curriculum Registry v0 Manual Metadata Foundation"
 if [[ -f scripts/curriculum-registry-v0-status.sh ]]; then
   curriculum_registry_v0_result=0

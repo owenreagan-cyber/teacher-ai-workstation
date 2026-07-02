@@ -149,6 +149,8 @@ Teacher Planning Command Organization (status only; safe sample: fractions-revie
                                        Show read-only Curriculum Builder foundation status proof and exit (parked; approval-gated).
   --curriculum-contracts-status
                                        Show read-only Curriculum Builder metadata contract schemas status (Programs A4–A7) and exit.
+  --curriculum-registry-dry-run-status
+                                       Show read-only Curriculum Builder Registry v0.2 manual entry dry-run status (CB-IMPL-1) and exit.
   --curriculum-library-foundation-status
                                        Show read-only Curriculum Library v1 foundation status and exit.
   --curriculum-library-reference-v0-validate
@@ -1786,6 +1788,15 @@ while [[ $# -gt 0 ]]; do
         die "Curriculum Builder contract schemas status script is missing: scripts/curriculum-builder-contract-schemas-status.sh"
       fi
       bash "${curriculum_contracts_status_script}"
+      exit 0
+      ;;
+    --curriculum-registry-dry-run-status)
+      repo_root="$(resolve_repo_root)"
+      curriculum_registry_dry_run_status_script="${repo_root}/scripts/curriculum-builder-registry-v0-2-status.sh"
+      if [[ ! -f "${curriculum_registry_dry_run_status_script}" ]]; then
+        die "Curriculum Builder Registry v0.2 dry-run status script is missing: scripts/curriculum-builder-registry-v0-2-status.sh"
+      fi
+      bash "${curriculum_registry_dry_run_status_script}"
       exit 0
       ;;
     --curriculum-registry-v0-status)

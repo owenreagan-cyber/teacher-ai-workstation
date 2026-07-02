@@ -271,22 +271,23 @@ Define lesson/resource links without lesson generation or Canvas API.
 
 Index: `docs/curriculum-builder-canonical-contract-schemas.md` · CLI: `bin/chief-of-staff --curriculum-contracts-status`
 
-#### CB-IMPL-1 — Registry v0.2 Manual Entry Dry-Run (approval-gated)
+#### CB-IMPL-1 — Registry v0.2 Manual Entry Dry-Run
 
 ```text
+Status: complete_cb_impl_1_dry_run
 Mission: Registry manual entry CLI (validate-before-write dry-run only)
 
-Scope:
-- read-only default; --dry-run validates proposed record JSON
-- optional --write only with explicit flag + Owen approval mission
-- fictional samples remain default
+Implemented:
+- fake candidate validation only (no registry writes)
+- docs/curriculum-builder-registry-v0-2-manual-entry-dry-run.md
+- bin/chief-of-staff --curriculum-registry-dry-run-status
 
-Out of scope:
-- Drive/NAS scanning
-- folder crawling
-- live resolution
+Blocked:
+- active --write
+- persistent registry mutation
+- Drive/NAS scanning / folder crawling / live resolution
 
-Autonomous: dry-run portion yes; --write requires separate approval mission
+Autonomous: dry-run complete; --write requires CB-IMPL-2+ approval mission
 ```
 
 #### CB-IMPL-2 — Real Registry Records (approval-gated)
@@ -835,9 +836,9 @@ Per `docs/engineering-constitution.md` §10, v1.0 means these systems exist as *
 
 ## 10. Immediate Next Recommended Mission
 
-**Curriculum Builder — Registry v0.2 Manual Entry Dry-Run (CB-IMPL-1)**
+**Curriculum Builder — Real Registry Records (CB-IMPL-2)**
 
-Metadata contract schemas A4–A7 are complete (`docs/curriculum-builder-canonical-contract-schemas.md`, `bin/chief-of-staff --curriculum-contracts-status`). Workstation-readiness and governance foundations are substantially complete. Recommended next: approval-gated Registry v0.2 manual entry dry-run per implementation subtrack CB-IMPL-1.
+Registry v0.2 manual entry dry-run is complete (`docs/curriculum-builder-registry-v0-2-manual-entry-dry-run.md`, `bin/chief-of-staff --curriculum-registry-dry-run-status`). Recommended next: approval-gated real registry records per implementation subtrack CB-IMPL-2 — requires explicit intake and no-student-data confirmation. Dry-run does not authorize writes.
 
 Alternate tracks remain approval-gated per `docs/implementation-approval-gate.md`.
 
@@ -896,10 +897,10 @@ COMPLETE:
   A4–A7 Curriculum Builder metadata contract schemas (read-only)
 
 NOW (autonomous pattern when authorized):
-  CB-IMPL-1 Registry v0.2 manual entry dry-run (approval-gated)
+  CB-IMPL-2 Real registry records (approval-gated)
 
 THEN (mixed approval):
-  CB-IMPL-2–4 Curriculum Builder implementation subtracks
+  CB-IMPL-3–4 Curriculum Builder implementation subtracks
   E* Mac Workstation Experience
   F* Widget and Shortcut Builder catalogs
 

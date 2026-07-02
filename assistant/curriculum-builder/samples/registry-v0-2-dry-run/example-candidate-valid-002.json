@@ -1,0 +1,26 @@
+{
+  "dry_run_version": "0.2.0",
+  "dry_run_mode": "manual_entry_candidate",
+  "metadata_only": true,
+  "read_only": true,
+  "no_registry_write": true,
+  "would_write": false,
+  "candidate_entry": {
+    "resource_id": "example-resource-002",
+    "title": "Sample Study Guide",
+    "resource_type": "study_guide",
+    "subject": "Example ELA Course",
+    "grade_band": "Example Grade 6",
+    "course": "Example ELA Course",
+    "unit": "Unit 1",
+    "lesson": "Lesson 1",
+    "topic": "Example Reading Placeholder",
+    "source_reference_id": "example-source-002",
+    "source_reference": "placeholder://source/example-nas-reference",
+    "source_system": "nas",
+    "teacher_only": true,
+    "student_facing_allowed": false,
+    "review_status": "in_review",
+    "notes": "Second fictional dry-run candidate for validator coverage."
+  }
+}

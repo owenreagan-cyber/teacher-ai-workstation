@@ -32,10 +32,12 @@ Cross-references:
 | Review Game Contract v0 | `docs/curriculum-review-game-contract-v0.md` | Fourth canonical contract |
 | Canvas Package Contract v0 | `docs/curriculum-canvas-package-contract-v0.md` | Fifth canonical contract (metadata only) |
 | Metadata contracts A4–A7 | `docs/curriculum-builder-canonical-contract-schemas.md` | Inactive planning schemas (resource, source, review, lesson link) |
+| Registry v0.2 dry-run (CB-IMPL-1) | `docs/curriculum-builder-registry-v0-2-manual-entry-dry-run.md` | Fake manual entry candidates; dry-run validation only; no writes |
 
 Artifact roots:
 
 - Registry: `assistant/curriculum-builder/registry/v0/`
+- Dry-run samples: `assistant/curriculum-builder/samples/registry-v0-2-dry-run/`
 - Contracts: `assistant/curriculum-builder/output-contract/v0/`
 - Binding: `assistant/curriculum-builder/binding/v0/`
 
@@ -45,6 +47,7 @@ Artifact roots:
 | --- | --- |
 | `bin/chief-of-staff --curriculum-builder-foundation-status` | Full Curriculum Builder foundation PASS/WARN/FAIL |
 | `bin/chief-of-staff --curriculum-contracts-status` | Metadata contract schemas A4–A7 read-only status |
+| `bin/chief-of-staff --curriculum-registry-dry-run-status` | Registry v0.2 manual entry dry-run (CB-IMPL-1; no writes) |
 | `bin/chief-of-staff --curriculum-registry-v0-status` | Registry v0 status |
 | `bin/chief-of-staff --curriculum-registry-v0-validate` | Registry v0 validator |
 | `bin/chief-of-staff --curriculum-output-contract-v0-status` | Output contract v0 status |
@@ -57,6 +60,10 @@ Artifact roots:
 ## Validation Suite
 
 ```bash
+bash scripts/curriculum-builder-registry-v0-2-dry-run.sh
+bash scripts/curriculum-builder-registry-v0-2-status.sh
+bash tests/curriculum-builder-registry-v0-2-dry-run-test.sh
+bash tests/curriculum-builder-registry-v0-2-status-test.sh
 bash scripts/curriculum-registry-v0-validator.sh
 bash scripts/curriculum-output-contract-v0-validator.sh
 bash scripts/curriculum-binding-v0-validator.sh

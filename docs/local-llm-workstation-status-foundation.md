@@ -55,9 +55,9 @@ bin/chief-of-staff --dashboard
 
 ## Recommended Next Mission
 
-**Widget and Shortcut Builder — Read-Only Catalog Foundation (Program F1)**
+**Classroom App Lab — Prototype Rescue Foundation**
 
-Local LLM/Ollama read-only status is complete. Mac Workstation E1 is complete. Next: widget/shortcut catalog foundation without install or automation.
+Local LLM/Ollama read-only status is complete. Mac Workstation E1 and Widget and Shortcut Builder F1 are complete. Next: classroom app prototype rescue planning without runtime analyzer behavior.
 
 ## Non-Activation
 

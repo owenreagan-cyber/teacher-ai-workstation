@@ -61,6 +61,23 @@
       ]
     },
     {
+      "id": "widget_shortcut_builder",
+      "name": "Widget and Shortcut Builder",
+      "commands": [
+        {"flag": "--widget-shortcut-status", "status": "implemented", "purpose": "Widget and shortcut catalog read-only foundation (Program F1)"},
+        {"flag": "--install-widget", "status": "blocked", "purpose": "Widget install blocked without explicit approval mission"},
+        {"flag": "--install-shortcut", "status": "blocked", "purpose": "Shortcut install blocked without explicit approval mission"},
+        {"flag": "--run-shortcut", "status": "blocked", "purpose": "Shortcut execution blocked without explicit approval mission"},
+        {"flag": "--apply-widget-layout", "status": "blocked", "purpose": "Widget layout apply blocked without explicit approval mission"},
+        {"flag": "--apply-wallpaper", "status": "blocked", "purpose": "Wallpaper apply blocked without explicit approval mission"},
+        {"flag": "--launch-vibe-panel", "status": "blocked", "purpose": "Vibe Panel launch blocked without explicit approval mission"},
+        {"flag": "--sync-shortcuts", "status": "blocked", "purpose": "Shortcut sync blocked without explicit approval mission"},
+        {"flag": "--mac-automation-run", "status": "blocked", "purpose": "Mac automation blocked without explicit approval mission"},
+        {"flag": "--shortcut-build", "status": "blocked", "purpose": "Shortcut build blocked without explicit approval mission"},
+        {"flag": "--shortcut-export", "status": "blocked", "purpose": "Shortcut export blocked without explicit approval mission"}
+      ]
+    },
+    {
       "id": "proof",
       "name": "Proof",
       "commands": [

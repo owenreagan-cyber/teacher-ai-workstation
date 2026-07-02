@@ -1093,6 +1093,27 @@ else
   warn "Mac Workstation Experience status script missing: scripts/mac-workstation-experience-status.sh"
 fi
 
+section "Widget and Shortcut Builder (Program F1)"
+if [[ -f scripts/widget-shortcut-builder-status.sh ]]; then
+  widget_shortcut_result=0
+  widget_shortcut_output="$(bash scripts/widget-shortcut-builder-status.sh 2>&1)" || widget_shortcut_result=$?
+  widget_shortcut_pass="$(summary_count "${widget_shortcut_output}" "PASS")"
+  widget_shortcut_warn="$(summary_count "${widget_shortcut_output}" "WARN")"
+  widget_shortcut_fail="$(summary_count "${widget_shortcut_output}" "FAIL")"
+
+  if [[ "${widget_shortcut_result}" != "0" ]]; then
+    printf '%s\n' "${widget_shortcut_output}"
+    fail "Widget and Shortcut Builder status failed"
+  elif [[ -n "${widget_shortcut_pass}" && -n "${widget_shortcut_warn}" && -n "${widget_shortcut_fail}" ]]; then
+    printf 'Widget and Shortcut Builder: PASS %s / WARN %s / FAIL %s\n' "${widget_shortcut_pass}" "${widget_shortcut_warn}" "${widget_shortcut_fail}"
+    pass "Widget and Shortcut Builder status completed"
+  else
+    pass "Widget and Shortcut Builder status completed"
+  fi
+else
+  warn "Widget and Shortcut Builder status script missing: scripts/widget-shortcut-builder-status.sh"
+fi
+
 section "Lesson Planning v1 Foundation"
 if [[ -f scripts/lesson-planning-foundation-status.sh ]]; then
   lesson_planning_foundation_result=0

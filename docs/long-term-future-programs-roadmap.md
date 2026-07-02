@@ -234,7 +234,7 @@ Future teacher productivity widgets and shortcuts surfaced from approved Chief o
 
 ### Current status
 
-Planning only. Catalog documented; no installation.
+Read-only catalog foundation complete (`docs/widget-shortcut-builder-catalog-foundation.md`). `--widget-shortcut-status` reports catalog planning boundaries only. No widget install, shortcut install, shortcut execution, or Mac automation.
 
 ### Blocked capabilities
 
@@ -244,6 +244,41 @@ Planning only. Catalog documented; no installation.
 - background scheduling
 
 **Detail:** `docs/master-build-roadmap.md` Program F
+
+---
+
+## Classroom App Lab — Prototype Rescue
+
+**Classification:** Future / Approval-Gated / Planning Only
+
+### Purpose
+
+Future capability for managing unfinished teacher-created classroom apps, games, simulations, trackers, utilities, experiments, and student-facing tools. Initial workflow: **Prototype Rescue** — helping Owen rescue, review, and plan completion of half-built classroom apps without automatic code modification.
+
+### Possible future outputs
+
+- prototype inventory concepts
+- rescue workflow checklists
+- app idea triage surfaces
+- classroom-app readiness status
+
+### Current status
+
+Planning only. Queued after current workstation-readiness foundations. No runtime analyzer, zip upload, zip extraction, code parsing, repo ingestion, app execution, LLM/API analysis, or automatic Cursor execution.
+
+### Blocked capabilities
+
+- zip upload and extraction
+- codebase parsing and repo ingestion
+- app execution and testing
+- LLM/API analysis loops
+- automatic Cursor execution from generated analysis
+- automatic code modification
+- student data and real classroom roster data
+- network/API/OAuth
+- scanning/OCR/embeddings/RAG
+
+**Detail:** `docs/master-build-roadmap.md` — queued after Program F1
 
 ---
 

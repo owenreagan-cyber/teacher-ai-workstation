@@ -57,9 +57,9 @@ bin/chief-of-staff --dashboard
 
 ## Recommended Next Mission
 
-**Widget and Shortcut Builder — Read-Only Catalog Foundation (Program F1)**
+**Classroom App Lab — Prototype Rescue Foundation**
 
-Health Monitor, System Updater, AI Tool Routing, Local LLM, and Mac Workstation foundations are read-only. Next: widget/shortcut catalog planning without install or automation.
+Health Monitor, System Updater, AI Tool Routing, Local LLM, Mac Workstation, and Widget and Shortcut Builder foundations are read-only. Next: classroom app prototype rescue planning without runtime behavior.
 
 ## Non-Activation
 

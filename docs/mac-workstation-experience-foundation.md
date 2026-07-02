@@ -53,9 +53,9 @@ bin/chief-of-staff --dashboard
 
 ## Recommended Next Mission
 
-**Widget and Shortcut Builder — Read-Only Catalog Foundation (Program F1)**
+**Classroom App Lab — Prototype Rescue Foundation**
 
-Mac workstation planning visibility is complete read-only. Next safe foundation: widget/shortcut catalogs and status without install or automation.
+Mac workstation planning visibility is complete read-only. Widget and Shortcut Builder F1 catalog foundation is complete. Next safe foundation: classroom app prototype rescue planning without zip extraction, code parsing, or app execution.
 
 ## Non-Activation
 

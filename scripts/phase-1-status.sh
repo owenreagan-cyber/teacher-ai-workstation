@@ -892,6 +892,26 @@ else
   fail "chief-of-staff missing --mac-workstation-status"
 fi
 
+section "Widget and Shortcut Builder (Program F1) Files"
+for path in \
+  docs/widget-shortcut-builder-catalog-foundation.md \
+  docs/widget-shortcut-builder-non-activation-boundaries.md \
+  docs/widget-shortcut-builder-readiness-plan.md \
+  scripts/widget-shortcut-builder-status.sh \
+  tests/widget-shortcut-builder-status-test.sh; do
+  check_required_file "${path}"
+done
+check_bash_syntax scripts/widget-shortcut-builder-status.sh
+check_bash_syntax tests/widget-shortcut-builder-status-test.sh
+check_doc_contains docs/widget-shortcut-builder-catalog-foundation.md "complete_v1_f1" "widget shortcut closure status"
+check_doc_contains docs/widget-shortcut-builder-non-activation-boundaries.md "Widget install: blocked" "widget install blocked"
+check_doc_contains docs/widget-shortcut-builder-non-activation-boundaries.md "Shortcut execution: blocked" "shortcut execution blocked"
+if grep -Fq -- '--widget-shortcut-status' bin/chief-of-staff; then
+  pass "chief-of-staff exposes --widget-shortcut-status"
+else
+  fail "chief-of-staff missing --widget-shortcut-status"
+fi
+
 section "Curriculum Registry–Contract Binding v0 Foundation Files"
 for path in \
   docs/curriculum-binding-v0.md \

@@ -1,6 +1,6 @@
 # Cursor Operating Modes and Approval Gates
 
-Last updated: 2026-07-02
+Last updated: 2026-07-02 (Three-Level Discovery Governance)
 
 ```text
 Status: documentation/status only
@@ -123,7 +123,116 @@ Phrases such as “good idea,” “interesting,” “explore this,” “revie
 
 Discovery Mode is scoped by default to areas touched by the current mission. Full-breadth discovery across the whole product requires a standalone discovery mission.
 
-Cursor may create up to **three** full proposal entries per mission. Additional ideas should be listed as one-line candidates in the final report unless Owen explicitly requests a discovery sprint.
+Cursor may create up to **three** full proposal entries per **Level 1** mission scan. Additional ideas should be listed as one-line candidates in the final report unless Owen explicitly requests a discovery sprint.
+
+See **Three-Level Discovery Governance** below for when each discovery level runs and how large its output may be.
+
+## Three-Level Discovery Governance {#three-level-discovery-governance}
+
+This section defines **when** Discovery Mode runs and **how large** its output may be.
+
+It does **not** expand what Discovery Mode is permitted to do. All blocked-category rules, domain boundaries, and approval gates elsewhere in this document remain unchanged.
+
+A mission prompt may **narrow** this governance but may **not** widen it.
+
+**Discovery is never implementation approval.** Phrases such as “good idea,” “interesting,” “explore this,” or “put it in the backlog” are not implementation approval.
+
+All discovery levels follow:
+
+```text
+Cursor proposal → ChatGPT review → Owen Reagan approval → scoped implementation prompt → Cursor implementation
+```
+
+Cursor may report **“No discovery findings this mission”** and must not manufacture weak candidates to fill a table.
+
+Discovery findings may be recorded as **final-report candidates** without creating formal proposal ledger entries. Formal ledger entries should be reserved for high-value, clearly connected, safe-to-record ideas.
+
+Before creating a formal ledger entry, Cursor must check `docs/proposals/index.md` for duplicate or related candidates.
+
+Once merged, this document is the **sole repo authority** for discovery-scan behavior. Prior chat-based descriptions are historical design context only.
+
+### Level 1 — End-of-Mission Discovery Scan
+
+**Trigger:** Automatic at the end of future major missions (when included by mission prompt or governance), after implementation, validation, PR merge, branch cleanup, and local-main proof.
+
+**Scope:**
+
+- Files touched in the mission
+- Adjacent docs, status scripts, tests, and commands
+- Roadmap and build-queue implications
+- Obvious connections to completed foundations
+
+**Rules:**
+
+- Proposal-only — no implementation permitted
+- At most **three** proposal candidates per mission (ledger entries or final-report table rows)
+- If no meaningful findings exist, report: `No discovery findings this mission`
+- If a finding exceeds touched-files/adjacent scope, recommended next step must be `needs Level 2 lane review`
+
+**Required final-report table (Level 1):**
+
+| Candidate | Area | Value | Risk | Recommended Next Step |
+| --------- | ---- | ----- | ---- | --------------------- |
+
+**Recommended next step values:**
+
+- `no action`
+- `record as backlog idea`
+- `create proposal for Owen review`
+- `needs ChatGPT review`
+- `needs explicit Owen approval`
+- `needs Level 2 lane review`
+- `blocked by student-data boundary`
+- `blocked by real-curriculum-content boundary`
+- `blocked by API/OAuth/network boundary`
+- `blocked by runtime/generation boundary`
+
+### Level 2 — End-of-Lane Discovery Review
+
+**Trigger:** Only as an explicit Owen-approved mission.
+
+**Precondition:** The relevant lane is marked `complete_pending_review` in `docs/master-build-roadmap.md` § Program Lane Status.
+
+**Scope:**
+
+- One completed lane
+- All docs, status scripts, tests, and commands in that lane
+- Level 1 candidates connected to that lane since the last lane review
+- Roadmap, build-queue, and capability-map context
+
+**Rules:**
+
+- Proposal-only — no implementation permitted
+- Use template: `docs/proposals/templates/lane-level-discovery-mission.md`
+- Review prior Level 1 candidates for the lane before creating new recommendations
+- At most **five** full proposal entries unless Owen explicitly approves a larger discovery sprint
+- After completion, lane may be marked `reviewed` only if the Level 2 review actually completed or Owen explicitly approves the status
+
+### Level 3 — Full-Product Discovery Strategy Review
+
+**Trigger:** Only as an explicit Owen-approved mission near full-build completion.
+
+**Precondition:**
+
+- All lanes are marked `reviewed`, **or**
+- No open Level 2 reviews are required and Owen explicitly approves proceeding
+
+**Scope:**
+
+- Entire repository/product
+- Roadmap and build queue
+- Proposal ledger
+- Lane-level reviews
+- Completed foundations
+- Governance docs and domain boundaries
+
+**Rules:**
+
+- Proposal-only — no implementation permitted
+- Use template: `docs/proposals/templates/full-product-discovery-mission.md`
+- Produce a ranked portfolio
+- No hard candidate cap, but avoid low-value proposal flooding
+- All recommendations must classify approval and risk boundaries
 
 ## Approval Levels
 
@@ -159,8 +268,11 @@ Every proposed feature or improvement must use one of these states:
 | `deferred` | Recorded with reason; not active |
 | `rejected` | Recorded with reason; do not re-propose without new context |
 | `superseded` | Replaced by a newer proposal |
+| `implemented` | Shipped under explicit approval; record for history |
 
 Rejected and deferred proposals must remain recorded with the reason. Cursor must check `docs/proposals/index.md` before creating a near-duplicate proposal.
+
+Ledger status values in `docs/proposals/index.md` use the same vocabulary plus `implemented` for completed work.
 
 ## Blocked-Item Routing Rule
 
@@ -225,6 +337,7 @@ Completion reports for approved full-lifecycle missions should include:
 - Safety / non-activation confirmation
 - Improvement/hardening findings
 - New proposal entries (if any)
+- Level 1 discovery table (or “No discovery findings this mission”)
 - Blocked items skipped with reasons
 - Branch classification for unrelated old branches
 - Recommended next mission

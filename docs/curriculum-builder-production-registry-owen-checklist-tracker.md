@@ -14,7 +14,9 @@ Implementation: blocked until Owen explicitly approves each item
 
 Read-only tracker for **§ J — Owen Approval Checklist** in `docs/curriculum-builder-production-registry-workflow-planning-brief.md`. Cursor may maintain tracker rows and status proof; Owen must approve each item before any production registry **implementation** mission.
 
-**Owen review packet:** `docs/curriculum-builder-production-registry-owen-review-packet.md` — decision table, categories, and non-approval language. Preparing the packet does not approve any item.
+**Owen review packet:** `docs/curriculum-builder-production-registry-owen-review-packet.md` — decision table, categories, non-approval language. Preparing the packet does not approve any item.
+
+**Owen decision worksheet:** `docs/curriculum-builder-production-registry-owen-decision-worksheet.md` — worksheet and decision-to-prompt routing. Updating the worksheet does not approve any item.
 
 ## Companion Summary for Owen
 
@@ -76,7 +78,8 @@ bash tests/curriculum-builder-production-registry-owen-checklist-status-test.sh
 | Document | Role |
 | --- | --- |
 | `docs/curriculum-builder-production-registry-owen-review-packet.md` | Owen-facing decision packet |
-| `docs/curriculum-builder-production-registry-governance-foundation.md` | Governance-first foundation closure |
+| `docs/curriculum-builder-production-registry-owen-decision-worksheet.md` | Owen decision worksheet |
+| `docs/curriculum-builder-production-registry-post-decision-implementation-map.md` | Post-decision mission routing |
 | `docs/curriculum-builder-production-registry-workflow-planning-brief.md` | Canonical § J checklist source |
 | `docs/curriculum-builder-registry-authority-map.md` | Registry surface authority |
 | `docs/implementation-approval-gate.md` | Implementation gate |

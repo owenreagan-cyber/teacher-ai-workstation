@@ -71,7 +71,7 @@ Implementation: none authorized by this review
 | Candidate | Value | Risk | Status |
 | --- | --- | --- | --- |
 | Proposal folder structure (lane-reviews, ideas, backlog, blocked, implemented) | high | low | **implemented** (this sprint) |
-| Aggregate `--governance-lane-status` command | medium | low | **proposed** |
+| Aggregate `--governance-lane-status` command | medium | low | **implemented** — PR #214 |
 | Operating modes status output: "discovery ≠ implementation" banner | low | low | **proposed** |
 | Level 2 review index in `lane-reviews/README.md` | medium | low | **implemented** |
 | Machine-check lane_status before Level 2 mission template | low | low | **deferred** |

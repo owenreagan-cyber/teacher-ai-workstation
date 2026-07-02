@@ -40,6 +40,7 @@ Real metadata intake: blocked
 Student data: blocked
 Real curriculum content: blocked
 Implementation: blocked until Owen approval
+ChatGPT review recommended before implementation prompt: yes
 EOF
 
 section 'Planning Brief'

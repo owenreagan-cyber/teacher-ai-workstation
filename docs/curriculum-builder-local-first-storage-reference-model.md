@@ -65,7 +65,9 @@ Supabase or similar is **optional and future**. It is not required for raw curri
 
 | Document | Role |
 | --- | --- |
-| `docs/curriculum-source-readiness-and-intake-boundary-plan.md` | Fake readiness vs real intake |
+| `docs/curriculum-builder-production-registry-owen-decision-worksheet.md` | Owen decision worksheet |
+| `docs/curriculum-builder-metadata-pilot-planning-boundary.md` | Metadata pilot planning (no intake) |
+| `docs/curriculum-builder-manual-metadata-boundary.md` | Manual metadata field boundaries |
 | `docs/curriculum-builder-production-registry-path-options.md` | Path options |
 | `docs/curriculum-builder-registry-authority-map.md` | Authority surfaces |
 

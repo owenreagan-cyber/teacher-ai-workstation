@@ -29,7 +29,7 @@ Implementation: none authorized by this review
 | Candidate | Status |
 | --- | --- |
 | Status output: "check-only, no install" banner | **proposed** |
-| H+I aggregate lane status (read-only) | **proposed** |
+| H+I aggregate lane status (read-only) | **implemented** — `--workstation-ops-lane-status` |
 | Updater apply mission gated in blocked/ | **deferred** |
 | Negative test: no brew/npm install invocation | **proposed** |
 | Cross-link health monitor separation in command index | **proposed** |

@@ -14,6 +14,18 @@ Register **intentional non-blocking WARNs** from `--curriculum-registry-a4-a7-fi
 
 Per `docs/cursor-autonomous-build-engine.md` Expected WARN Policy.
 
+## Global vs Component WARN Behavior
+
+| Surface | Typical WARNs | Appears in dashboard? |
+| --- | ---: | --- |
+| `bin/chief-of-staff --dashboard` | 0 | Yes — aggregate health |
+| `scripts/chief-of-staff-validate-all.sh` | 0 | Yes |
+| `--curriculum-production-registry-owen-checklist-status` | 1 (pending checklist) | No — targeted command only |
+| `--curriculum-registry-a4-a7-fixture-schema-status` | 7 (fixture optional fields) | No — targeted command only |
+| `--curriculum-registry-lane-status` | 0 on aggregate script summary | Yes — component WARNs roll up in component lines, not aggregate FAIL |
+
+The lane aggregate script reports **PASS on its own summary** while component scripts may emit documented WARNs. Do not hide component WARNs or weaken checks to make dashboard show them.
+
 ## Registered WARNs
 
 | WARN | Count (typical) | Reason | Follow-up |

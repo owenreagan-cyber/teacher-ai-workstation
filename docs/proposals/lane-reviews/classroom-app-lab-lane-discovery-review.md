@@ -28,10 +28,10 @@ Implementation: none authorized by this review
 
 | Candidate | Status |
 | --- | --- |
-| CAL1 vs G1 Lovable lane boundary doc | **proposed** |
-| Prototype inventory template (planning-only) | **proposed** |
+| CAL1 vs G1 Lovable lane boundary doc | **implemented** — PR #216 |
+| Prototype inventory template (planning-only) | **implemented** — PR #216 |
 | App execution mission in blocked/ | **deferred** |
-| Status banner: planning-only rescue | **proposed** |
+| Status banner: planning-only rescue | **implemented** — classroom-app-lab status |
 | Cross-link capability map CAL row | **proposed** |
 
 ## Lane Status: `complete_pending_review` → `reviewed`

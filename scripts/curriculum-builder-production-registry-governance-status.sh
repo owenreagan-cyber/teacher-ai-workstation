@@ -63,7 +63,14 @@ check_doc_contains "${path_options}" "fake_fixture_only" "path options fixture b
 check_doc_contains "${review_states}" "planning_only" "review state planning only"
 check_doc_contains "${audit_stub}" "planning_stub_only" "audit stub planning only"
 check_doc_contains "${local_first}" "metadata, references, status" "local-first reference model"
-check_doc_contains "${promotion_spec}" "Automatic promotion: blocked" "promotion spec auto-promotion blocked"
+check_doc_contains "${local_first}" "Chief of Staff" "local-first chief of staff role"
+check_doc_contains "${local_first}" "Supabase" "local-first supabase optional"
+check_file docs/curriculum-builder-metadata-pilot-planning-boundary.md
+check_file docs/curriculum-builder-manual-metadata-boundary.md
+check_file docs/curriculum-builder-production-registry-owen-decision-worksheet.md
+check_file docs/curriculum-builder-production-registry-post-decision-implementation-map.md
+check_doc_contains docs/curriculum-builder-production-registry-owen-decision-worksheet.md "Decision-to-Next-Prompt Routing" "decision worksheet routing"
+check_doc_contains docs/proposals/backlog/production-registry-write-mission.md "Preflight Checklist" "write mission preflight"
 
 section 'Manual-Only Candidate Path Skeleton (Blocked)'
 check_file "${candidate_readme}"
@@ -96,6 +103,7 @@ fi
 section 'Owen Checklist and Review Packet Coherence'
 check_doc_contains docs/curriculum-builder-production-registry-owen-review-packet.md "Governance-first only" "review packet governance-first section"
 check_doc_contains docs/curriculum-builder-production-registry-owen-checklist-tracker.md "not_complete_awaiting_owen" "checklist tracker still awaiting Owen"
+check_doc_contains docs/curriculum-builder-production-registry-owen-decision-worksheet.md "Documenting an option does not approve it" "decision worksheet non-approval"
 check_doc_contains docs/curriculum-builder-production-registry-workflow-planning-brief.md "governance + blocked proof only" "planning brief § I governance scope"
 
 section 'CLI, Manifest, and Tests'

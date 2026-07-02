@@ -28,7 +28,7 @@ Implementation: none authorized by this review
 
 | Candidate | Status |
 | --- | --- |
-| D1 status banner: "no Ollama execution" | **proposed** |
+| D1 status banner: "no Ollama execution" | **implemented** — local-llm status banner PR #216 |
 | D2 capability broker planning doc in blocked/ | **deferred** |
 | Negative test: ollama binary not invoked | **implemented** (existing) |
 | Cross-link R0 routing separation | **proposed** |

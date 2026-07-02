@@ -72,7 +72,8 @@ Implementation: none authorized by this review
 | Dry-run to fixture promotion planning spec | medium | low | **implemented** |
 | Dry-run status banner: PASS ≠ promotion | low | low | **implemented** — dry-run status output |
 | Renderer no-disk-write negative test | medium | low | **implemented** — `tests/backlog-non-mutation-guardrails-test.sh` |
-| Authority map link in dry-run status script header | low | low | **proposed** |
+| Authority map link in dry-run status script header | low | low | **implemented** — dry-run status banner |
+| ChatGPT review gate reminder in planning status output | low | low | **implemented** — planning status banner |
 | CB-REG-HARDEN closure one-pager | low | low | **deferred** |
 
 ---

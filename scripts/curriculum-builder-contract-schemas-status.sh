@@ -30,6 +30,8 @@ boundaries_doc="docs/curriculum-builder-contract-boundaries.md"
 section 'Curriculum Builder Metadata Contract Schemas (Programs A4–A7)'
 cat <<'EOF'
 Status: read-only planning only
+A4–A7 schemas: inactive (planning only)
+Runtime activation: no
 Validators: none (inactive schemas)
 Ingestion: blocked
 Scanning: blocked

@@ -87,8 +87,8 @@
 
 ### Now
 
-- **Governance-first production registry foundation complete (CB-PROD-GOV)** — `docs/curriculum-builder-production-registry-governance-foundation.md`; `--curriculum-production-registry-governance-status`; blocked candidate path skeleton; audit/review/local-first planning stubs. **Owen § J checklist items still pending** — no writes approved.
-- **Owen § J production registry checklist review** — work through `docs/curriculum-builder-production-registry-owen-review-packet.md`; update tracker rows as decisions are made. Production writes and real metadata intake remain blocked.
+- **Owen § J checklist review** — use `docs/curriculum-builder-production-registry-owen-decision-worksheet.md` with review packet § 7; update tracker rows as decisions are made. All 11 items still **pending**. No writes approved.
+- **Governance-first + decision readiness complete** — CB-PROD-GOV, decision worksheet, post-decision map, metadata pilot planning boundaries, status hardening. Production writes and real metadata intake remain blocked.
 - Curriculum Source Readiness fake metadata inventory foundation complete (`docs/curriculum-source-readiness-and-intake-boundary-plan.md`). `--curriculum-source-readiness-status`; fake schema, fixtures, validator, negative tests. Real curriculum ingestion blocked. Owen tiny-pilot checklist in boundary plan.
 - Autonomous Backlog Implementation Sprint complete (2026-07-02). `--governance-lane-status`, `--workstation-ops-lane-status`, status-banner hardening on registry/governance scripts, negative non-mutation guardrail tests. No runtime activation.
 - Autonomous Build Engine Safe Work Sprint complete (2026-07-02). Fifteen Level 2 lane reviews in `docs/proposals/lane-reviews/`; all `complete_pending_review` program lanes marked `reviewed` in roadmap § Program Lane Status. Proposal folder structure (Class H), dry-run→fixture promotion planning spec, Safe Work Class H in ABE governance. No runtime activation.

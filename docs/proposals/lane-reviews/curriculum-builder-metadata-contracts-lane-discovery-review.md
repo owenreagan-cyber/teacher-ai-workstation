@@ -30,7 +30,7 @@ Implementation: none authorized by this review
 
 | Candidate | Status |
 | --- | --- |
-| A4–A7 inactive banner in contract status output | **proposed** |
+| A4–A7 inactive banner in contract status output | **implemented** — contract schemas status banner |
 | Schema version alignment with registry v0.2 fixtures | **proposed** |
 | Real curriculum parsing mission in blocked/ | **deferred** |
 | Contract activation checklist (Owen) | **proposed** |

@@ -26,11 +26,10 @@ Implementation: none authorized by this review
 
 | Candidate | Status |
 | --- | --- |
-| F1 catalog index doc (planning-only) | **proposed** |
-| Shortcut install mission in blocked/ | **deferred** |
-| Cross-link E1 Mac experience | **proposed** |
-| Status banner: catalog-only | **proposed** |
-| Negative test: no shortcuts CLI invocation | **proposed** |
+| F1 catalog index doc (planning-only) | **implemented** — fake catalog index PR #216 |
+| Cross-link E1 Mac experience | **implemented** — mac foundation cross-link |
+| Status banner: catalog-only | **implemented** — widget status banner |
+| Negative test: no shortcuts CLI invocation | **implemented** — widget status test |
 
 ## Lane Status: `complete_pending_review` → `reviewed`
 

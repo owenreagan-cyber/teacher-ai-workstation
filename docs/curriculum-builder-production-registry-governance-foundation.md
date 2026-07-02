@@ -32,6 +32,19 @@ Canonical closure index for the **governance-first production registry foundatio
 | 8 | `--curriculum-production-registry-governance-status` | `bin/chief-of-staff` |
 | 9 | Guardrail tests | `tests/curriculum-builder-production-registry-governance-status-test.sh` |
 | 10 | Promotion prevention cross-link | `docs/curriculum-builder-registry-dry-run-fixture-promotion-planning-spec.md` |
+| 11 | Owen decision worksheet | `docs/curriculum-builder-production-registry-owen-decision-worksheet.md` |
+| 12 | Post-decision implementation map | `docs/curriculum-builder-production-registry-post-decision-implementation-map.md` |
+| 13 | Metadata pilot planning boundary | `docs/curriculum-builder-metadata-pilot-planning-boundary.md` |
+| 14 | Manual metadata boundary | `docs/curriculum-builder-manual-metadata-boundary.md` |
+| 15 | Write mission preflight expansion | `docs/proposals/backlog/production-registry-write-mission.md` |
+
+## Decision Readiness (Post–PR #218)
+
+| Artifact | Role |
+| --- | --- |
+| Decision worksheet | Owen-facing checklist workflow |
+| Post-decision map | Phase routing after Owen updates tracker |
+| Metadata pilot boundary | Future metadata-only pilot — no intake |
 
 ## What This Foundation Authorizes
 

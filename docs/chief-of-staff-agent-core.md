@@ -42,7 +42,7 @@ Chief of Staff orchestrates. It **must not become** any specialist builder liste
 | Gemini / ChatGPT / Claude | External cloud tools; manual or future API |
 | Cursor | Repo implementation agent |
 | Local LLM / Ollama | Future inference runtime (Program D) |
-| Health Monitor | Future observe/report program (Program H) |
+| Health Monitor | Observe/report program (Program H) — `--system-health` |
 | System Updater | Future approved-update program (Program I) |
 | Mac Workstation Experience | Future modes/surfaces (Program E) |
 | Widget/Shortcut Builder | Future catalogs (Program F) |

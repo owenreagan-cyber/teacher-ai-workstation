@@ -14,6 +14,8 @@ Handoff and status clarity. Start from `docs/phase-1-chief-of-staff-status-audit
 
 ## Recently Completed
 
+- Teacher Workstation Health Monitor Program H complete: architecture doc, `--system-health`, `--workstation-health`, health status script, tests (`docs/teacher-workstation-health-monitor-foundation.md`). Read-only observe/report only.
+
 - Chief of Staff v1 Agent Core Program B complete: daily operations, closeout, approval/blocker queues, mode status, Program B closure (`docs/chief-of-staff-v1-program-b-closure.md`). Commands: `--daily-status`, `--closeout`, `--approval-queue`, `--blocker-queue`, `--mode-status`. Read-only only.
 
 - Chief of Staff v1 Agent Core Program B1: agent core docs, command surface manifest, `--commands`, `--chief-of-staff-v1-status`, operating model, proof workflow (`docs/chief-of-staff-v1-foundation.md`). Read-only foundation only.
@@ -133,7 +135,7 @@ See `docs/master-build-roadmap.md` Program G1 and `assistant/model-routing.md`. 
 
 ## Master Build Roadmap Status
 
-Canonical program roadmap is active (`docs/master-build-roadmap.md`). Phase 3 foundations complete. Chief of Staff v1 Agent Core Program B complete. Recommended next major program: Teacher Workstation Health Monitor — Read-Only Health Foundation (Program H).
+Canonical program roadmap is active (`docs/master-build-roadmap.md`). Phase 3 foundations complete. Chief of Staff Program B and Health Monitor Program H foundations complete. Recommended next major program: Teacher Workstation System Updater — Read-Only Update Planning Foundation (Program I).
 
 Companion docs: `docs/teacher-workstation-capability-map.md`, `docs/ai-tool-routing-matrix.md`, `docs/3d-builder-workshop-agent-roadmap.md`.
 

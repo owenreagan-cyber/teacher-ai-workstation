@@ -988,6 +988,27 @@ else
   warn "Chief of Staff daily operations test missing: tests/chief-of-staff-daily-operations-test.sh"
 fi
 
+section "Teacher Workstation Health Monitor (Program H)"
+if [[ -f scripts/teacher-workstation-health-status.sh ]]; then
+  health_result=0
+  health_output="$(bash scripts/teacher-workstation-health-status.sh 2>&1)" || health_result=$?
+  health_pass="$(summary_count "${health_output}" "PASS")"
+  health_warn="$(summary_count "${health_output}" "WARN")"
+  health_fail="$(summary_count "${health_output}" "FAIL")"
+
+  if [[ "${health_result}" != "0" ]]; then
+    printf '%s\n' "${health_output}"
+    fail "Teacher Workstation Health Monitor status failed"
+  elif [[ -n "${health_pass}" && -n "${health_warn}" && -n "${health_fail}" ]]; then
+    printf 'Health Monitor: PASS %s / WARN %s / FAIL %s\n' "${health_pass}" "${health_warn}" "${health_fail}"
+    pass "Teacher Workstation Health Monitor status completed"
+  else
+    pass "Teacher Workstation Health Monitor status completed"
+  fi
+else
+  warn "Health Monitor status script missing: scripts/teacher-workstation-health-status.sh"
+fi
+
 section "Lesson Planning v1 Foundation"
 if [[ -f scripts/lesson-planning-foundation-status.sh ]]; then
   lesson_planning_foundation_result=0

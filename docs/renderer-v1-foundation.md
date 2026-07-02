@@ -20,6 +20,7 @@ Cross-references:
 - Interface manifests: `assistant/renderer-foundation/v0/sample-renderer-manifests.json`
 - Program closure: `docs/teacher-workstation-foundation-v0.md`
 - Implementation gate: `docs/implementation-approval-gate.md`
+- Model/tool routing: `assistant/model-routing.md`
 
 ## 1. Renderer Role
 
@@ -109,6 +110,20 @@ Future renderers must refuse work when:
 - student data is present or required
 - Canvas/API/network access would be needed
 
+## 8. Future Downstream Tool Surfaces (Inactive)
+
+Approved renderer outputs may eventually feed other teacher-facing tools. **No connections are active in Renderer Foundation v1.**
+
+| Future surface | Relationship to renderers | Status |
+| --- | --- | --- |
+| Lovable | May later consume approved output-contract patterns for classroom app building | inactive |
+| Canvas LLM manual export | May later package metadata-only contract outputs when unfreezed | frozen |
+| Local printable/export paths | May later render teacher-reviewed artifacts locally | not started |
+
+Lovable is documented in `assistant/model-routing.md` as a future Chief of Staff tool integration for classroom app ideas. Chief of Staff does not route to Lovable, and renderers do not call Lovable APIs in v1.
+
+No Lovable API calls, app generation, deployment, OAuth, credentials, or automation.
+
 ## Implemented Subsystems (v1 Foundation)
 
 | Subsystem | Location | Role |
@@ -153,4 +168,4 @@ Renderer Foundation v1 is **complete** when:
 
 ## Non-Activation Confirmation
 
-Documentation/status/interface only. No renderer code, HTML/PDF generation, slides, worksheets, review games, Canvas packages, lesson generation, LLM calls, APIs, network calls, or automation.
+Documentation/status/interface only. No renderer code, HTML/PDF generation, slides, worksheets, review games, Canvas packages, lesson generation, LLM calls, APIs, network calls, Lovable integration, or automation.

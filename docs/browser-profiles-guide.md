@@ -14,7 +14,7 @@ Create a Work profile in Chrome or Arc. Add bookmarks for:
 - GitHub
 - Canva
 - Supabase
-- Lovable
+- Lovable (manual browser profile only; Chief of Staff integration inactive — see `assistant/model-routing.md`)
 - Cursor docs
 
 ## Casual browser profile

@@ -40,6 +40,10 @@ Cross-references:
 | `bin/chief-of-staff --integration-planning-foundation-v0-validate` | Read-only inactive integration manifest validator |
 | `bin/chief-of-staff --dashboard` | Includes Integration Planning foundation in dashboard |
 
+## Future Tool Integrations (Inactive)
+
+External AI and app-builder tools are documented in `assistant/model-routing.md` as part of the broader tool ecosystem (ChatGPT, Claude, Gemini, Cursor, Codex, Lovable). **Lovable** is a future classroom app-builder surface Chief of Staff may eventually route approved ideas into. No Lovable API, OAuth, app generation, deployment, or automation is active.
+
 ## Validation Suite
 
 ```bash

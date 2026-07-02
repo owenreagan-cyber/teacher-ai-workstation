@@ -404,6 +404,7 @@ Deferred until Chief of Staff v1 command index exists. Builds Raycast/Shortcuts 
 | Google Drive API | Blocked — Level 3 permission later |
 | Gmail | Blocked — Level 4 permission later |
 | Canvas API | Blocked — Canvas stop marker |
+| Lovable (classroom app builder) | Blocked — future Chief of Staff tool routing; see `assistant/model-routing.md` |
 | OAuth / secrets | Blocked — capability broker Phase 0F |
 | Background jobs / cron | Blocked unless explicit mission |
 | Folder scanning / indexing | Blocked — separate intake |

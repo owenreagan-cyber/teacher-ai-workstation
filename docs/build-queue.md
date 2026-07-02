@@ -143,7 +143,7 @@ See `docs/master-build-roadmap.md` Program G1 and `assistant/model-routing.md`. 
 
 ## Master Build Roadmap Status
 
-Canonical program roadmap is active (`docs/master-build-roadmap.md`). Phase 3 foundations complete. Chief of Staff Program B, Health Monitor H, System Updater I, AI Tool Routing, Local LLM D1, Mac Workstation E1, Widget and Shortcut Builder F1, Classroom App Lab CAL1, Lovable G1, 3D Builder J1, Cursor Operating Modes governance, Curriculum Builder metadata contract schemas A4–A7, Registry v0.2 dry-run (CB-IMPL-1), and Registry v0.2 local foundation lane CB-IMPL-2–4 read-only foundations complete. Recommended next major program: approval-gated production registry workflow or real-metadata intake.
+Canonical program roadmap is active (`docs/master-build-roadmap.md`). Phase 3 foundations complete. Chief of Staff Program B, Health Monitor H, System Updater I, AI Tool Routing, Local LLM D1, Mac Workstation E1, Widget and Shortcut Builder F1, Classroom App Lab CAL1, Lovable G1, 3D Builder J1, Cursor Operating Modes governance, Curriculum Builder metadata contract schemas A4–A7, Registry v0.2 dry-run (CB-IMPL-1), Registry v0.2 local foundation lane CB-IMPL-2–4, and production registry workflow planning brief (CB-PROD-PLAN) complete. Production registry implementation remains approval-gated — Owen checklist required.
 
 Companion docs: `docs/teacher-workstation-capability-map.md`, `docs/ai-tool-routing-matrix.md`, `docs/3d-builder-workshop-agent-roadmap.md`.
 
@@ -198,6 +198,10 @@ Registry v0.2 manual entry dry-run is active. See `docs/curriculum-builder-regis
 ## Curriculum Builder Registry v0.2 Local Foundation Lane (CB-IMPL-2–4)
 
 Registry v0.2 local foundation lane complete. See `docs/curriculum-builder-registry-v0-2-lane-closure.md`. Fake fixture records, metadata preview renderer, and local retrieval hooks; no production writes, no real curriculum, no generation.
+
+## Curriculum Builder Production Registry Workflow Planning (CB-PROD-PLAN)
+
+Production registry workflow planning brief complete. See `docs/curriculum-builder-production-registry-workflow-planning-brief.md`. `--curriculum-production-registry-planning-status` read-only proof only. Production writes, active `--write`, real metadata intake, and integrations remain blocked until Owen completes approval checklist.
 
 ## Curriculum Builder Foundation Status
 

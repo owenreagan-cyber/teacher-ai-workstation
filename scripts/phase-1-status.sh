@@ -1036,6 +1036,18 @@ grep -Fq -- '--curriculum-registry-records-status' bin/chief-of-staff && pass "c
 grep -Fq -- '--curriculum-registry-renderer-status' bin/chief-of-staff && pass "chief-of-staff exposes --curriculum-registry-renderer-status" || fail "chief-of-staff missing --curriculum-registry-renderer-status"
 grep -Fq -- '--curriculum-registry-retrieval-status' bin/chief-of-staff && pass "chief-of-staff exposes --curriculum-registry-retrieval-status" || fail "chief-of-staff missing --curriculum-registry-retrieval-status"
 
+section "Curriculum Builder Production Registry Workflow Planning Files"
+for path in \
+  docs/curriculum-builder-production-registry-workflow-planning-brief.md \
+  scripts/curriculum-builder-production-registry-planning-status.sh \
+  tests/curriculum-builder-production-registry-planning-status-test.sh; do
+  check_required_file "${path}"
+done
+check_bash_syntax scripts/curriculum-builder-production-registry-planning-status.sh
+check_bash_syntax tests/curriculum-builder-production-registry-planning-status-test.sh
+check_doc_contains docs/curriculum-builder-production-registry-workflow-planning-brief.md "complete_production_registry_planning_brief" "production registry planning brief closure status"
+grep -Fq -- '--curriculum-production-registry-planning-status' bin/chief-of-staff && pass "chief-of-staff exposes --curriculum-production-registry-planning-status" || fail "chief-of-staff missing --curriculum-production-registry-planning-status"
+
 section "Curriculum Registry–Contract Binding v0 Foundation Files"
 for path in \
   docs/curriculum-binding-v0.md \

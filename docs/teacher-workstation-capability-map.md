@@ -61,7 +61,8 @@ Cross-references:
 | Curriculum Builder Registry v0.2 local records (CB-IMPL-2) | implemented read-only | `--curriculum-registry-records-status`; fake fixture registry only |
 | Curriculum Builder Registry v0.2 renderer preview (CB-IMPL-3) | implemented read-only | `--curriculum-registry-renderer-status`; metadata preview only |
 | Curriculum Builder Registry v0.2 retrieval hooks (CB-IMPL-4) | implemented read-only | `--curriculum-registry-retrieval-status`; fake lookup only |
-| Production registry writes / real records | planned | Approval-gated — separate mission |
+| Curriculum Builder production registry planning (CB-PROD-PLAN) | implemented read-only | `--curriculum-production-registry-planning-status`; planning brief only; no writes |
+| Production registry writes / real records | planned | Approval-gated — Owen checklist required; `--curriculum-registry-write` blocked |
 | Lesson Planning Foundation | foundation complete | Phase 3 Workstream A |
 | Curriculum Library Foundation | foundation complete | Phase 3 Workstream B |
 | Renderer Foundation v1 | foundation complete | Interface/status only; no renderers |

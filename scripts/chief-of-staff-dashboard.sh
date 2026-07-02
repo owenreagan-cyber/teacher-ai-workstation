@@ -1419,6 +1419,27 @@ else
   warn "Curriculum Builder Registry v0.2 retrieval status script missing: scripts/curriculum-builder-registry-v0-2-retrieval-status.sh"
 fi
 
+section "Curriculum Builder Production Registry Workflow Planning"
+if [[ -f scripts/curriculum-builder-production-registry-planning-status.sh ]]; then
+  curriculum_production_registry_planning_result=0
+  curriculum_production_registry_planning_output="$(bash scripts/curriculum-builder-production-registry-planning-status.sh 2>&1)" || curriculum_production_registry_planning_result=$?
+  curriculum_production_registry_planning_pass="$(summary_count "${curriculum_production_registry_planning_output}" "PASS")"
+  curriculum_production_registry_planning_warn="$(summary_count "${curriculum_production_registry_planning_output}" "WARN")"
+  curriculum_production_registry_planning_fail="$(summary_count "${curriculum_production_registry_planning_output}" "FAIL")"
+
+  if [[ "${curriculum_production_registry_planning_result}" != "0" ]]; then
+    printf '%s\n' "${curriculum_production_registry_planning_output}"
+    fail "Curriculum Builder production registry planning status failed"
+  elif [[ -n "${curriculum_production_registry_planning_pass}" && -n "${curriculum_production_registry_planning_warn}" && -n "${curriculum_production_registry_planning_fail}" ]]; then
+    printf 'Curriculum Builder Production Registry Planning: PASS %s / WARN %s / FAIL %s\n' "${curriculum_production_registry_planning_pass}" "${curriculum_production_registry_planning_warn}" "${curriculum_production_registry_planning_fail}"
+    pass "Curriculum Builder production registry planning status completed"
+  else
+    pass "Curriculum Builder production registry planning status completed"
+  fi
+else
+  warn "Curriculum Builder production registry planning status script missing: scripts/curriculum-builder-production-registry-planning-status.sh"
+fi
+
 section "Curriculum Registry v0 Manual Metadata Foundation"
 if [[ -f scripts/curriculum-registry-v0-status.sh ]]; then
   curriculum_registry_v0_result=0

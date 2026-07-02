@@ -127,6 +127,7 @@ run_track "Curriculum Builder Registry v0.2 Dry-Run" scripts/curriculum-builder-
 run_track "Curriculum Builder Registry v0.2 Local Records" scripts/curriculum-builder-registry-v0-2-local-records-status.sh
 run_track "Curriculum Builder Registry v0.2 Renderer" scripts/curriculum-builder-registry-v0-2-renderer-status.sh
 run_track "Curriculum Builder Registry v0.2 Retrieval" scripts/curriculum-builder-registry-v0-2-retrieval-status.sh
+run_track "Curriculum Builder Production Registry Planning" scripts/curriculum-builder-production-registry-planning-status.sh
 
 section 'Direct Validators'
 run_track "Registry v0 Validator" scripts/curriculum-registry-v0-validator.sh

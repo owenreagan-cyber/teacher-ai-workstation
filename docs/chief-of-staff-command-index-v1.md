@@ -48,6 +48,8 @@ Cross-references:
 | `bin/chief-of-staff --curriculum-builder-foundation-status` | Full Curriculum Builder foundation checks |
 | `bin/chief-of-staff --curriculum-library-foundation-status` | Curriculum Library v1 foundation status |
 | `bin/chief-of-staff --curriculum-library-reference-v0-validate` | Curriculum Library reference v0 validator |
+| `bin/chief-of-staff --renderer-foundation-status` | Renderer Foundation v0 status |
+| `bin/chief-of-staff --renderer-foundation-v0-validate` | Renderer Foundation v0 manifest validator |
 | `bin/chief-of-staff --curriculum-registry-v0-status` | Registry v0 status |
 | `bin/chief-of-staff --curriculum-registry-v0-validate` | Registry v0 validator |
 | `bin/chief-of-staff --curriculum-output-contract-v0-status` | Output contract v0 status |

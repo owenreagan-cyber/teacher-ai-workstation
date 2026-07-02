@@ -246,7 +246,8 @@ Owen must explicitly approve each item before any production registry **implemen
 | `docs/curriculum-builder-registry-v0-2-record-boundaries.md` | Fixture vs live registry boundaries |
 | `docs/curriculum-registry-v0.md` | Live v0 registry (read-only today) |
 | `docs/implementation-approval-gate.md` | Implementation gate |
-| `docs/proposals/curriculum-builder-registry-lane-discovery-review.md` | Level 2 review |
+| `docs/curriculum-builder-production-registry-owen-review-packet.md` | Level 2 review |
+| `docs/curriculum-builder-production-registry-governance-foundation.md` | CB-PROD-GOV governance foundation |
 
 ## Non-Activation
 

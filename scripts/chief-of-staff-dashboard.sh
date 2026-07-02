@@ -1461,6 +1461,27 @@ else
   warn "Curriculum Builder production registry planning status script missing: scripts/curriculum-builder-production-registry-planning-status.sh"
 fi
 
+section "Production Registry Governance Foundation (CB-PROD-GOV)"
+if [[ -f scripts/curriculum-builder-production-registry-governance-status.sh ]]; then
+  curriculum_prod_gov_result=0
+  curriculum_prod_gov_output="$(bash scripts/curriculum-builder-production-registry-governance-status.sh 2>&1)" || curriculum_prod_gov_result=$?
+  curriculum_prod_gov_pass="$(summary_count "${curriculum_prod_gov_output}" "PASS")"
+  curriculum_prod_gov_warn="$(summary_count "${curriculum_prod_gov_output}" "WARN")"
+  curriculum_prod_gov_fail="$(summary_count "${curriculum_prod_gov_output}" "FAIL")"
+
+  if [[ "${curriculum_prod_gov_result}" != "0" ]]; then
+    printf '%s\n' "${curriculum_prod_gov_output}"
+    fail "Production registry governance status failed"
+  elif [[ -n "${curriculum_prod_gov_pass}" && -n "${curriculum_prod_gov_warn}" && -n "${curriculum_prod_gov_fail}" ]]; then
+    printf 'Production Registry Governance: PASS %s / WARN %s / FAIL %s\n' "${curriculum_prod_gov_pass}" "${curriculum_prod_gov_warn}" "${curriculum_prod_gov_fail}"
+    pass "Production registry governance status completed"
+  else
+    pass "Production registry governance status completed"
+  fi
+else
+  warn "Production registry governance status script missing: scripts/curriculum-builder-production-registry-governance-status.sh"
+fi
+
 section "Owen Production Registry Approval Checklist Tracker"
 if [[ -f scripts/curriculum-builder-production-registry-owen-checklist-status.sh ]]; then
   curriculum_owen_checklist_result=0

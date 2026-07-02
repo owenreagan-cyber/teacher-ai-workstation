@@ -161,6 +161,7 @@
         {"flag": "--curriculum-registry-lane-status", "status": "implemented", "purpose": "Curriculum Builder Registry lane aggregate status (CB-IMPL-1–4 + planning + hardening)"},
         {"flag": "--curriculum-registry-a4-a7-fixture-schema-status", "status": "implemented", "purpose": "A4–A7 canonical schema cross-validation for registry v0.2 fake fixtures"},
         {"flag": "--curriculum-production-registry-planning-status", "status": "implemented", "purpose": "Curriculum Builder production registry workflow planning status (planning-only; no writes)"},
+        {"flag": "--curriculum-production-registry-governance-status", "status": "implemented", "purpose": "Governance-first production registry foundation status (blocked writes; no intake)"},
         {"flag": "--curriculum-production-registry-owen-checklist-status", "status": "implemented", "purpose": "Owen § J production registry approval checklist tracker (planning-only; Owen decisions required)"},
         {"flag": "--curriculum-source-readiness-status", "status": "implemented", "purpose": "Curriculum Source Readiness fake metadata inventory foundation (no real ingestion)"},
         {"flag": "--curriculum-registry-write", "status": "blocked", "purpose": "Persistent registry writes blocked without explicit production approval mission"},

@@ -65,7 +65,8 @@ Cross-references:
 | Curriculum Builder Registry v0.2 renderer preview (CB-IMPL-3) | implemented read-only | `--curriculum-registry-renderer-status`; metadata preview only |
 | Curriculum Builder Registry v0.2 retrieval hooks (CB-IMPL-4) | implemented read-only | `--curriculum-registry-retrieval-status`; fake lookup only |
 | Curriculum Builder production registry planning (CB-PROD-PLAN) | implemented read-only | `--curriculum-production-registry-planning-status`; planning brief only; no writes |
-| Owen § J production registry checklist tracker | implemented read-only | `--curriculum-production-registry-owen-checklist-status`; Owen decisions required; review packet `docs/curriculum-builder-production-registry-owen-review-packet.md` |
+| Owen § J production registry checklist tracker | implemented read-only | `--curriculum-production-registry-owen-checklist-status`; Owen decisions required; review packet |
+| Governance-first production registry (CB-PROD-GOV) | implemented read-only | `--curriculum-production-registry-governance-status`; blocked-write proof; candidate skeleton |
 | Curriculum Builder Registry authority map + lane hardening | implemented read-only | `--curriculum-registry-lane-status` (includes source readiness + Owen checklist); `--curriculum-registry-a4-a7-fixture-schema-status`; see authority map |
 | Curriculum Source Readiness (fake metadata inventory) | implemented read-only | `--curriculum-source-readiness-status`; fake fixtures only; no real ingestion |
 | Production registry writes / real records | planned | Approval-gated — Owen checklist required; `--curriculum-registry-write` blocked |

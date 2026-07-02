@@ -51,6 +51,9 @@ check_doc_contains "${review_packet}" "Documenting an option does not approve it
 check_doc_contains "${review_packet}" "Preparing this packet does not authorize implementation" "review packet no implementation authorization"
 check_doc_contains "${review_packet}" "product-decision wall" "review packet product-decision wall"
 check_doc_contains "${planning_brief}" "Owen Approval Checklist" "planning brief § J"
+check_doc_contains "${tracker_doc}" "Governance Foundation Prepared" "tracker governance prepared section"
+check_file docs/curriculum-builder-production-registry-governance-foundation.md
+check_doc_contains docs/curriculum-builder-production-registry-governance-foundation.md "complete_cb_prod_gov_foundation" "governance foundation closure"
 
 section 'Checklist Item Rows (Owen Decisions Pending)'
 CHECKLIST_ITEMS=(

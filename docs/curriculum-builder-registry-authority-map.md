@@ -86,9 +86,17 @@ Aggregate lane proof: `bin/chief-of-staff --curriculum-registry-lane-status`
 
 - Read-only tracker: `docs/curriculum-builder-production-registry-owen-checklist-tracker.md`
 - Owen review packet: `docs/curriculum-builder-production-registry-owen-review-packet.md`
+- Governance foundation: `docs/curriculum-builder-production-registry-governance-foundation.md`
 - Mirrors planning brief § J rows; all items **pending** until Owen approves
 - Tracker PASS **≠** implementation authorization
 - Expected WARN: pending checklist items (see expected WARNs doc)
+
+### Governance-first foundation (`--curriculum-production-registry-governance-status`)
+
+- CB-PROD-GOV closure: blocked-write proof, candidate path skeleton, planning stubs
+- Candidate skeleton: `assistant/curriculum-builder/registry/candidate-v0-2-production/` (sentinel present)
+- Governance PASS **≠** write authorization
+- Included in aggregate `--curriculum-registry-lane-status`
 
 ### Curriculum Source Readiness (`--curriculum-source-readiness-status`)
 

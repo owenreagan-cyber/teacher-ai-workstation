@@ -42,6 +42,23 @@ Read-only tracker for **§ J — Owen Approval Checklist** in `docs/curriculum-b
 | 10 | ID namespace | pending | Owen | chosen for real records |
 | 11 | First implementation PR scope | pending | Owen | governance-only first PR accepted |
 
+## Governance Foundation Prepared (Not Owen Approval)
+
+The following governance-first scaffolding is **prepared** by CB-PROD-GOV. It does **not** change checklist `Owen status` rows above.
+
+| Foundation artifact | Prepared | Checklist items informed |
+| --- | --- | --- |
+| Governance foundation closure | yes | 11 (governance-first scope pattern) |
+| Path options doc | yes | 1, 10 |
+| Candidate path skeleton + sentinel | yes | 1, 2 |
+| Review state model | yes | 7 |
+| Audit/rollback stub | yes | 6 |
+| Local-first storage reference | yes | 3, 4, 5 |
+| `--curriculum-production-registry-governance-status` | yes | 11 |
+| Promotion prevention docs | yes | auto-promotion blocked |
+
+**All 11 Owen checklist items remain `pending` until Owen explicitly updates the tracker.**
+
 ## ChatGPT Review Gate
 
 ChatGPT review recommended before issuing implementation prompt. See `docs/proposals/curriculum-builder-registry-lane-discovery-review.md`.
@@ -59,6 +76,7 @@ bash tests/curriculum-builder-production-registry-owen-checklist-status-test.sh
 | Document | Role |
 | --- | --- |
 | `docs/curriculum-builder-production-registry-owen-review-packet.md` | Owen-facing decision packet |
+| `docs/curriculum-builder-production-registry-governance-foundation.md` | Governance-first foundation closure |
 | `docs/curriculum-builder-production-registry-workflow-planning-brief.md` | Canonical § J checklist source |
 | `docs/curriculum-builder-registry-authority-map.md` | Registry surface authority |
 | `docs/implementation-approval-gate.md` | Implementation gate |

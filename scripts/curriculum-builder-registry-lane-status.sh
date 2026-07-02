@@ -34,6 +34,7 @@ COMPONENTS=(
   "CB-IMPL-3 renderer|scripts/curriculum-builder-registry-v0-2-renderer-status.sh"
   "CB-IMPL-4 retrieval|scripts/curriculum-builder-registry-v0-2-retrieval-status.sh"
   "production registry planning|scripts/curriculum-builder-production-registry-planning-status.sh"
+  "production registry governance|scripts/curriculum-builder-production-registry-governance-status.sh"
   "Owen § J approval checklist|scripts/curriculum-builder-production-registry-owen-checklist-status.sh"
   "curriculum source readiness|scripts/curriculum-source-readiness-status.sh"
   "A4–A7 fixture schema cross-validation|scripts/curriculum-builder-registry-a4-a7-fixture-schema-status.sh"

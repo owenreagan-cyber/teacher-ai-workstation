@@ -1102,6 +1102,26 @@ check_bash_syntax tests/curriculum-builder-production-registry-owen-checklist-st
 check_doc_contains docs/curriculum-builder-production-registry-owen-checklist-tracker.md "not_complete_awaiting_owen" "owen checklist tracker closure"
 grep -Fq -- '--curriculum-production-registry-owen-checklist-status' bin/chief-of-staff && pass "chief-of-staff exposes --curriculum-production-registry-owen-checklist-status" || fail "chief-of-staff missing --curriculum-production-registry-owen-checklist-status"
 
+section "Production Registry Governance Foundation Files"
+for path in \
+  docs/curriculum-builder-production-registry-governance-foundation.md \
+  docs/curriculum-builder-production-registry-path-options.md \
+  docs/curriculum-builder-production-registry-review-state-model.md \
+  docs/curriculum-builder-production-registry-audit-rollback-planning-stub.md \
+  docs/curriculum-builder-local-first-storage-reference-model.md \
+  assistant/curriculum-builder/registry/candidate-v0-2-production/README.md \
+  assistant/curriculum-builder/registry/candidate-v0-2-production/BLOCKED-NO-WRITES.sentinel \
+  scripts/curriculum-builder-production-registry-governance-status.sh \
+  tests/curriculum-builder-production-registry-governance-status-test.sh \
+  tests/curriculum-builder-production-registry-governance-guardrails-test.sh; do
+  check_required_file "${path}"
+done
+check_bash_syntax scripts/curriculum-builder-production-registry-governance-status.sh
+check_bash_syntax tests/curriculum-builder-production-registry-governance-status-test.sh
+check_bash_syntax tests/curriculum-builder-production-registry-governance-guardrails-test.sh
+check_doc_contains docs/curriculum-builder-production-registry-governance-foundation.md "complete_cb_prod_gov_foundation" "governance foundation closure"
+grep -Fq -- '--curriculum-production-registry-governance-status' bin/chief-of-staff && pass "chief-of-staff exposes --curriculum-production-registry-governance-status" || fail "chief-of-staff missing --curriculum-production-registry-governance-status"
+
 section "Curriculum Source Readiness Foundation Files"
 for path in \
   docs/curriculum-source-readiness-and-intake-boundary-plan.md \

@@ -164,6 +164,8 @@ Teacher Planning Command Organization (status only; safe sample: fractions-revie
                                        Show read-only A4–A7 canonical schema cross-validation for registry v0.2 fake fixtures and exit.
   --curriculum-production-registry-planning-status
                                        Show read-only Curriculum Builder production registry workflow planning status (planning-only; no writes) and exit.
+  --curriculum-production-registry-governance-status
+                                       Show read-only governance-first production registry foundation status (blocked writes; no intake) and exit.
   --curriculum-production-registry-owen-checklist-status
                                        Show read-only Owen § J production registry approval checklist tracker (planning-only; Owen decisions required) and exit.
   --curriculum-source-readiness-status
@@ -1870,6 +1872,15 @@ while [[ $# -gt 0 ]]; do
         die "Curriculum Builder production registry planning status script is missing: scripts/curriculum-builder-production-registry-planning-status.sh"
       fi
       bash "${curriculum_production_registry_planning_status_script}"
+      exit 0
+      ;;
+    --curriculum-production-registry-governance-status)
+      repo_root="$(resolve_repo_root)"
+      curriculum_production_registry_governance_status_script="${repo_root}/scripts/curriculum-builder-production-registry-governance-status.sh"
+      if [[ ! -f "${curriculum_production_registry_governance_status_script}" ]]; then
+        die "Curriculum Builder production registry governance status script is missing: scripts/curriculum-builder-production-registry-governance-status.sh"
+      fi
+      bash "${curriculum_production_registry_governance_status_script}"
       exit 0
       ;;
     --curriculum-production-registry-owen-checklist-status)

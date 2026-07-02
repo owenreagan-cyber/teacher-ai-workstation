@@ -1,0 +1,12 @@
+BLOCKED: production registry writes not authorized.
+
+Status: blocked_skeleton_only
+Production writes: blocked
+Active --write: blocked
+Real metadata intake: blocked
+Automatic promotion: blocked
+
+This sentinel must remain present until Owen explicitly approves a production registry write mission
+and a separate implementation PR removes it under governed audit/rollback rules.
+
+Governance proof: bin/chief-of-staff --curriculum-production-registry-governance-status

@@ -50,11 +50,13 @@ Return to Core / Roadmap:
   --return-to-core-status              Show read-only paused-tracks / return-to-core status proof and exit.
 
 Chief of Staff v1 Operating (read-only):
+  --commands                           Show deterministic command surface index and exit.
   --next-action                        Show deterministic next recommended program and daily focus and exit.
   --validate-all                       Run read-only validation orchestration across core subsystems and exit.
   --proof-run                          Run local pre-merge proof runner and exit.
   --teacher-workstation-foundation-status
                                        Show read-only Teacher Workstation Foundation v0 orchestration status and exit.
+  --chief-of-staff-v1-status           Show Chief of Staff v1 Agent Core foundation status and exit.
   --chief-of-staff-command-index-v1-status
                                        Show Chief of Staff command index v1 status and exit.
 
@@ -2120,6 +2122,24 @@ while [[ $# -gt 0 ]]; do
         die "Chief of Staff next-action script is missing: scripts/chief-of-staff-next-action.sh"
       fi
       bash "${next_action_script}"
+      exit 0
+      ;;
+    --commands)
+      repo_root="$(resolve_repo_root)"
+      commands_script="${repo_root}/scripts/chief-of-staff-commands.sh"
+      if [[ ! -f "${commands_script}" ]]; then
+        die "Chief of Staff commands script is missing: scripts/chief-of-staff-commands.sh"
+      fi
+      bash "${commands_script}"
+      exit 0
+      ;;
+    --chief-of-staff-v1-status)
+      repo_root="$(resolve_repo_root)"
+      v1_foundation_status_script="${repo_root}/scripts/chief-of-staff-v1-foundation-status.sh"
+      if [[ ! -f "${v1_foundation_status_script}" ]]; then
+        die "Chief of Staff v1 foundation status script is missing: scripts/chief-of-staff-v1-foundation-status.sh"
+      fi
+      bash "${v1_foundation_status_script}"
       exit 0
       ;;
     --chief-of-staff-command-index-v1-status)

@@ -26,7 +26,7 @@ trap cleanup EXIT
 
 echo "Running Chief of Staff v1 operating command tests..."
 
-for cmd in --next-action; do
+for cmd in --next-action --commands; do
   OPERATING_TMP="$(mktemp "${TMPDIR:-/tmp}/chief-of-staff-v1-${cmd#--}.XXXXXX")"
   bin/chief-of-staff "${cmd}" >"${OPERATING_TMP}" 2>&1 || {
     echo "FAIL: ${cmd} exited nonzero"

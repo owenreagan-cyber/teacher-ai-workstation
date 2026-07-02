@@ -14,6 +14,8 @@ Handoff and status clarity. Start from `docs/phase-1-chief-of-staff-status-audit
 
 ## Recently Completed
 
+- Chief of Staff v1 Agent Core Program B1: agent core docs, command surface manifest, `--commands`, `--chief-of-staff-v1-status`, operating model, proof workflow (`docs/chief-of-staff-v1-foundation.md`). Read-only foundation only.
+
 - Long-term future programs planning index (`docs/long-term-future-programs-roadmap.md`): standardized Future / Approval-Gated / Planning Only entries for all approved future programs. Documentation/status only.
 
 - Expanded Master Plan gap-fill: CoS future capabilities (approval/blocker queues, health summary), Canvas Manual Restart staged sequence (C0–C6), integration staging model (G0–G5), capability map updates. Documentation/status only.
@@ -129,7 +131,7 @@ See `docs/master-build-roadmap.md` Program G1 and `assistant/model-routing.md`. 
 
 ## Master Build Roadmap Status
 
-Canonical program roadmap is active (`docs/master-build-roadmap.md`). Phase 3 foundations complete. Long-term programs documented: Capability Map, Health Monitor, System Updater, AI Tool Routing Matrix, Mac modes, Widgets/Shortcuts, Lovable (G1), 3D Builder Workshop Agent (J). Recommended next major program: Chief of Staff v1 Agent Core (Program B).
+Canonical program roadmap is active (`docs/master-build-roadmap.md`). Phase 3 foundations complete. Chief of Staff v1 Agent Core Program B1 complete. Recommended next major program: Chief of Staff v1 Program B2 (Daily Operations Framework).
 
 Companion docs: `docs/teacher-workstation-capability-map.md`, `docs/ai-tool-routing-matrix.md`, `docs/3d-builder-workshop-agent-roadmap.md`.
 

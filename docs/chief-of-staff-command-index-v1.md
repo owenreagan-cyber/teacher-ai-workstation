@@ -1,102 +1,115 @@
 # Chief of Staff Command Index v1
 
-Last updated: 2026-07-01
+Last updated: 2026-07-02
 
 ```text
 Status: documentation/status only
 Index status: active_v1
 Read-only: yes — commands report PASS/WARN/FAIL; they do not activate runtime work
+Manifest: assistant/chief-of-staff/v1/command-surface-manifest.json
+CLI index: bin/chief-of-staff --commands
 ```
 
 ## Purpose
 
-Canonical grouped index of Chief of Staff v1 operating commands. Use this document to find the right read-only status, validation, or proof surface without hunting scattered docs.
+Canonical grouped index of Chief of Staff v1 commands. Separates **implemented**, **planned**, and **blocked** surfaces.
 
 Cross-references:
 
-- Interactive CLI: `docs/interactive-chief-of-staff-cli.md`
+- Agent Core: `docs/chief-of-staff-agent-core.md`
+- Operating model: `docs/chief-of-staff-operating-model.md`
+- Proof workflow: `docs/chief-of-staff-proof-workflow.md`
+- B1 closure: `docs/chief-of-staff-v1-foundation.md`
 - Dashboard: `docs/chief-of-staff-dashboard.md`
-- v1 foundation (when complete): `docs/chief-of-staff-v1-foundation.md`
-- Master roadmap: `docs/master-build-roadmap.md`
 
-## Chief of Staff v1 Operating Commands
+## Implemented Commands
+
+These flags exist in `bin/chief-of-staff` and work as read-only local status surfaces unless noted.
+
+### Core Status
 
 | Command | Purpose |
 | --- | --- |
-| `bin/chief-of-staff --daily-status` | Unified daily operating summary |
-| `bin/chief-of-staff --next-action` | Deterministic next recommended program/focus |
-| `bin/chief-of-staff --validate-all` | Validation orchestration across core subsystems |
-| `bin/chief-of-staff --proof-run` | Reproducible pre-merge proof runner |
-| `bin/chief-of-staff --teacher-workstation-foundation-status` | Phase 3 foundation orchestration status |
-| `bin/chief-of-staff --chief-of-staff-v1-status` | Chief of Staff v1 foundation status |
 | `bin/chief-of-staff --dashboard` | Full local health dashboard |
-
-## Core Health and Workflow
-
-| Command | Purpose |
-| --- | --- |
-| `bin/chief-of-staff --dashboard` | Full workstation health dashboard |
+| `bin/chief-of-staff --status` | Basic CLI status |
 | `bin/chief-of-staff --cursor-workflow-status` | Cursor workflow and governance checks |
 | `bin/chief-of-staff --return-to-core-status` | Parked tracks / return-to-core map |
-| `bin/chief-of-staff --status` | Basic CLI status |
+| `bin/chief-of-staff --commands` | Deterministic command surface index |
+| `bin/chief-of-staff --chief-of-staff-v1-status` | Chief of Staff v1 Agent Core foundation status |
+| `bin/chief-of-staff --chief-of-staff-command-index-v1-status` | Command index v1 status proof |
+| `bin/chief-of-staff --teacher-workstation-foundation-status` | Phase 3 foundation orchestration |
+
+### Proof
+
+| Command | Purpose |
+| --- | --- |
+| `bin/chief-of-staff --proof-run` | Pre-merge proof runner |
+| `bin/chief-of-staff --validate-all` | Core validation orchestration |
+
+### Planning (partial)
+
+| Command | Purpose |
+| --- | --- |
+| `bin/chief-of-staff --next-action` | Deterministic next recommended program/focus |
+
+### Safety
+
+| Command | Purpose |
+| --- | --- |
 | `bin/chief-of-staff --memory-status` | Project memory status |
-| `bin/chief-of-staff --validate-memory` | Memory validation |
+| `bin/chief-of-staff --validate-memory` | Project memory validation |
 
-## Curriculum Builder (v1 Foundation)
-
-| Command | Purpose |
-| --- | --- |
-| `bin/chief-of-staff --curriculum-builder-foundation-status` | Full Curriculum Builder foundation checks |
-| `bin/chief-of-staff --curriculum-library-foundation-status` | Curriculum Library v1 foundation status |
-| `bin/chief-of-staff --curriculum-library-reference-v0-validate` | Curriculum Library reference v0 validator |
-| `bin/chief-of-staff --renderer-foundation-status` | Renderer Foundation v1 status |
-| `bin/chief-of-staff --renderer-foundation-v0-validate` | Renderer Foundation v0 manifest validator |
-| `bin/chief-of-staff --renderer-input-readiness-v0-validate` | Renderer input readiness v0 validator |
-| `bin/chief-of-staff --local-retrieval-foundation-status` | Local Retrieval Foundation v0 status |
-| `bin/chief-of-staff --local-retrieval-foundation-v0-validate` | Local Retrieval Foundation v0 lookup validator |
-| `bin/chief-of-staff --integration-planning-foundation-status` | Integration Planning Foundation v0 status |
-| `bin/chief-of-staff --integration-planning-foundation-v0-validate` | Integration Planning inactive manifest validator |
-| `bin/chief-of-staff --curriculum-registry-v0-status` | Registry v0 status |
-| `bin/chief-of-staff --curriculum-registry-v0-validate` | Registry v0 validator |
-| `bin/chief-of-staff --curriculum-output-contract-v0-status` | Output contract v0 status |
-| `bin/chief-of-staff --curriculum-output-contract-v0-validate` | Output contract v0 validator |
-| `bin/chief-of-staff --curriculum-binding-v0-status` | Binding v0 status |
-| `bin/chief-of-staff --curriculum-binding-v0-validate` | Binding v0 validator |
-| `bin/chief-of-staff --curriculum-binding-v0-lookup <registry_id>` | Read-only binding lookup |
-
-## Lesson Planning (Scaffold; Generation Not Active)
+### Program Status — Curriculum & Foundations
 
 | Command | Purpose |
 | --- | --- |
-| `bin/chief-of-staff --lesson-status` | Lesson planning workspace status |
-| `bin/chief-of-staff --lesson-workflow-status` | Lesson workflow status |
-| `bin/chief-of-staff --lesson-planning-foundation-status` | Lesson Planning v1 foundation status |
-| `bin/chief-of-staff --lesson-planning-workflow-v0-validate` | Lesson Planning workflow v0 validator |
-| `bin/chief-of-staff --lesson-planning-template-readiness-status` | Template readiness (parked) |
+| `bin/chief-of-staff --curriculum-builder-foundation-status` | Curriculum Builder v1 |
+| `bin/chief-of-staff --curriculum-library-foundation-status` | Curriculum Library v1 |
+| `bin/chief-of-staff --lesson-planning-foundation-status` | Lesson Planning v1 |
+| `bin/chief-of-staff --renderer-foundation-status` | Renderer Foundation v1 |
+| `bin/chief-of-staff --local-retrieval-foundation-status` | Local Retrieval v0 |
+| `bin/chief-of-staff --integration-planning-foundation-status` | Integration Planning v0 |
+| `bin/chief-of-staff --teacher-app-designer-canvas-llm-status` | Canvas LLM frozen foundation |
 
-## Canvas LLM (Frozen / Planning Only)
+## Planned Commands
 
-| Command | Purpose |
+Documented for Program B2+ and future programs. **Not implemented** unless added to CLI.
+
+| Command | Program | Purpose |
+| --- | --- | --- |
+| `bin/chief-of-staff --daily-status` | B2 | Unified daily operating summary |
+| `bin/chief-of-staff --daily-briefing` | B2+ | Daily briefing surface |
+| `bin/chief-of-staff --closeout` | B2+ | End-of-day closeout |
+| `bin/chief-of-staff --prove-main` | B1/B4 | Local main cleanliness proof |
+| `bin/chief-of-staff --mode-status` | E | Mac Workstation mode status |
+| `bin/chief-of-staff --model-routing-status` | B5 | AI tool routing matrix status |
+| `bin/chief-of-staff --local-llm-workstation-status` | D1 | Local LLM/Ollama status |
+| `bin/chief-of-staff --system-health` | H | Health Monitor report |
+| `bin/chief-of-staff --system-update-check` | I | System Updater read-only checks |
+| `bin/chief-of-staff --widget-health` | F | Widget catalog health |
+| `bin/chief-of-staff --shortcut-health` | F | Shortcut catalog health |
+| `bin/chief-of-staff --lovable-status` | G1 | Lovable inactive integration status |
+| `bin/chief-of-staff --3d-builder-status` | J | 3D Builder Workshop Agent status |
+
+## Blocked Commands
+
+Intentionally not available until explicit approval supersedes stop markers or gates.
+
+| Command | Reason |
 | --- | --- |
-| `bin/chief-of-staff --teacher-app-designer-canvas-llm-status` | Canvas LLM foundation status (frozen) |
+| Canvas restart / live export | Canvas LLM stop marker active |
+| Lovable API / app generation | Program G1 — planning only |
+| Drive/Gmail/Canvas API surfaces | Program G — integrations blocked |
+| Ollama install / model download | Program D — approval-gated |
 
-Do not start Canvas LLM runtime PRs by default. See `docs/canvas-llm-stop-marker-curriculum-builder-return.md`.
-
-## Developer Mode
-
-| Command | Purpose |
-| --- | --- |
-| `bin/chief-of-staff --developer-status` | Developer Mode status |
-| `bin/chief-of-staff --create-developer-project <template> <slug>` | Create developer project from template |
-
-## Proof and Validation Scripts
+## Proof Scripts
 
 | Script | Purpose |
 | --- | --- |
 | `bash scripts/run-workstation-proof.sh` | Full local proof runner |
 | `bash scripts/chief-of-staff-validate-all.sh` | Core validation orchestration |
 | `bash tests/smoke-chief-of-staff-cli.sh` | CLI smoke tests |
-| `bash tests/curriculum-contract-suite-v0-test.sh` | Curriculum contract suite |
+| `bash tests/chief-of-staff-v1-operating-test.sh` | Operating command tests |
 
 ## Boundaries
 

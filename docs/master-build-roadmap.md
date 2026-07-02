@@ -948,7 +948,7 @@ Per `docs/engineering-constitution.md` §10, v1.0 means these systems exist as *
 
 **Curriculum Builder — Production Registry Implementation (approval-gated)**
 
-Production registry workflow **planning brief** is complete (`docs/curriculum-builder-production-registry-workflow-planning-brief.md`; `--curriculum-production-registry-planning-status`). Owen must complete the approval checklist in § J before any implementation mission — use `docs/curriculum-builder-production-registry-owen-review-packet.md`. Production writes, real metadata intake, and integrations remain blocked. Safe scaffolding has reached the **product-decision wall**; generic autopilot is not the next step.
+Production registry workflow **planning brief** is complete (`docs/curriculum-builder-production-registry-workflow-planning-brief.md`; `--curriculum-production-registry-planning-status`). Owen must complete the approval checklist in § J before any implementation mission — use `docs/curriculum-builder-production-registry-owen-review-packet.md` and `docs/curriculum-builder-production-registry-owen-decision-worksheet.md` (post-decision routing: `docs/curriculum-builder-production-registry-post-decision-implementation-map.md`). Metadata pilot planning is documented (`docs/curriculum-builder-metadata-pilot-planning-boundary.md`; `docs/curriculum-builder-manual-metadata-boundary.md`) — intake remains blocked. Production writes, real metadata intake, and integrations remain blocked. Safe scaffolding has reached the **product-decision wall**; generic autopilot is not the next step.
 
 Registry v0.2 local foundation lane CB-IMPL-1 through CB-IMPL-4 is complete and reviewed (`docs/curriculum-builder-registry-v0-2-lane-closure.md`).
 

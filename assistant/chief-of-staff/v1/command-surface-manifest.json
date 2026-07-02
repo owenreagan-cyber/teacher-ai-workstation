@@ -155,6 +155,7 @@
         {"flag": "--curriculum-registry-records-status", "status": "implemented", "purpose": "Curriculum Builder Registry v0.2 local fake records status (CB-IMPL-2; fixture only)"},
         {"flag": "--curriculum-registry-renderer-status", "status": "implemented", "purpose": "Curriculum Builder Registry v0.2 fake-record renderer preview status (CB-IMPL-3)"},
         {"flag": "--curriculum-registry-retrieval-status", "status": "implemented", "purpose": "Curriculum Builder Registry v0.2 fake-record retrieval hooks status (CB-IMPL-4)"},
+        {"flag": "--curriculum-production-registry-planning-status", "status": "implemented", "purpose": "Curriculum Builder production registry workflow planning status (planning-only; no writes)"},
         {"flag": "--curriculum-registry-write", "status": "blocked", "purpose": "Persistent registry writes blocked without explicit production approval mission"},
         {"flag": "--curriculum-scan-folders", "status": "blocked", "purpose": "Folder scanning blocked without explicit approval mission"},
         {"flag": "--curriculum-ingest-files", "status": "blocked", "purpose": "Curriculum ingestion blocked without explicit approval mission"},

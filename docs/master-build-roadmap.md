@@ -336,7 +336,26 @@ Blocked:
 
 Lane closure: `docs/curriculum-builder-registry-v0-2-lane-closure.md`
 
-**Future (approval-gated):** production registry writes, real Owen-approved metadata intake, teacher-reviewed renderers with exported artifacts, non-RAG retrieval over approved real registry.
+#### CB-PROD-PLAN — Production Registry Workflow Planning Brief
+
+```text
+Status: complete_production_registry_planning_brief
+Mission: planning-only production registry workflow for Owen review
+
+Implemented:
+- docs/curriculum-builder-production-registry-workflow-planning-brief.md
+- bin/chief-of-staff --curriculum-production-registry-planning-status
+
+Blocked:
+- production registry writes
+- active --write / --curriculum-registry-write
+- real metadata intake
+- real curriculum records
+- APIs/OAuth/network/Canvas/Drive/NAS/iCloud
+- scanning/crawling/OCR/embeddings/RAG/generation
+```
+
+**Future (approval-gated):** governed production registry writes after Owen checklist approval — see planning brief § J.
 
 **Curriculum Builder v1 complete when:** approved real registry (or governed fictional production path), all five contract types canonical, binding operational, at least one renderer per primary contract, validation suite green, documentation complete — per `docs/engineering-constitution.md` §10.
 
@@ -872,9 +891,11 @@ Per `docs/engineering-constitution.md` §10, v1.0 means these systems exist as *
 
 ## 10. Immediate Next Recommended Mission
 
-**Curriculum Builder — Production Registry Workflow (approval-gated)**
+**Curriculum Builder — Production Registry Implementation (approval-gated)**
 
-Registry v0.2 local foundation lane CB-IMPL-1 through CB-IMPL-4 is complete (`docs/curriculum-builder-registry-v0-2-lane-closure.md`). Recommended next: explicit approval-gated production registry workflow or real-metadata intake — separate mission; fake fixture foundations do not authorize production writes or real curriculum imports.
+Production registry workflow **planning brief** is complete (`docs/curriculum-builder-production-registry-workflow-planning-brief.md`; `--curriculum-production-registry-planning-status`). Owen must complete the approval checklist in § J before any implementation mission. Production writes, real metadata intake, and integrations remain blocked.
+
+Registry v0.2 local foundation lane CB-IMPL-1 through CB-IMPL-4 is complete and reviewed (`docs/curriculum-builder-registry-v0-2-lane-closure.md`).
 
 Alternate tracks remain approval-gated per `docs/implementation-approval-gate.md`.
 
@@ -901,7 +922,8 @@ Alternate tracks remain approval-gated per `docs/implementation-approval-gate.md
 | Teacher Workstation System Updater | I | read-only foundation complete | `complete_pending_review` | No Level 2 review run |
 | AI Tool Routing | R0 | operational read-only complete | `complete_pending_review` | No Level 2 review run |
 | Curriculum Builder Registry v0.2 Local Foundation | CB-IMPL | foundation complete (CB-IMPL-1–4) | `reviewed` | Level 2 review 2026-07-02; `docs/proposals/curriculum-builder-registry-lane-discovery-review.md` |
-| Curriculum Builder v1 (registry/contracts) | A | Phase 2 foundation complete | `in_progress` | Registry v0.2 lane reviewed; renderers/generation/integrations remain approval-gated |
+| Curriculum Builder Production Registry Planning | CB-PROD-PLAN | planning brief complete | `complete_pending_review` | Planning-only; implementation blocked; `docs/curriculum-builder-production-registry-workflow-planning-brief.md` |
+| Curriculum Builder v1 (registry/contracts) | A | Phase 2 foundation complete | `in_progress` | Registry v0.2 lane reviewed; production planning complete; renderers/generation/integrations remain approval-gated |
 | Canvas LLM | C | frozen/stopped | `in_progress` | Stop marker active |
 
 **Rules:**

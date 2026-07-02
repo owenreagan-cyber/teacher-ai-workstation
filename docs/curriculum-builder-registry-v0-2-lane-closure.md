@@ -41,7 +41,7 @@ bin/chief-of-staff --dashboard
 
 ## Recommended Next
 
-Approval-gated production registry workflow or real-record intake — requires separate explicit mission beyond fake fixture foundations.
+Approval-gated production registry **implementation** after Owen completes checklist in `docs/curriculum-builder-production-registry-workflow-planning-brief.md` § J. Planning brief complete (`complete_production_registry_planning_brief`).
 
 ## Non-Activation
 

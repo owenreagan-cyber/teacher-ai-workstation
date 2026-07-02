@@ -54,6 +54,13 @@
       ]
     },
     {
+      "id": "mac_workstation_experience",
+      "name": "Mac Workstation Experience",
+      "commands": [
+        {"flag": "--mac-workstation-status", "status": "implemented", "purpose": "Mac workstation experience read-only planning foundation (Program E1)"}
+      ]
+    },
+    {
       "id": "proof",
       "name": "Proof",
       "commands": [

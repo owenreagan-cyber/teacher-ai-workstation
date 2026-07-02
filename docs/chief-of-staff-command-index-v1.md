@@ -104,6 +104,12 @@ These flags exist in `bin/chief-of-staff` and work as read-only local status sur
 | --- | --- |
 | `bin/chief-of-staff --local-llm-workstation-status` | Local LLM/Ollama read-only status foundation |
 
+### Mac Workstation Experience (Program E1)
+
+| Command | Purpose |
+| --- | --- |
+| `bin/chief-of-staff --mac-workstation-status` | Mac workstation experience read-only planning foundation |
+
 ## Planned Commands
 
 Documented for future programs. **Not implemented** unless added to CLI.

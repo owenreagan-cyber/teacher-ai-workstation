@@ -124,7 +124,7 @@ Closure: `docs/teacher-workstation-foundation-v0.md`
 | **AI Tool Routing Matrix** | Documented roles for cloud/local/builder tools | **Active** — read-only operational surface; routing inactive |
 | **Curriculum Builder Complete** | Registry + contracts + renderers + teacher-reviewed outputs | v1 foundation done; renderers/generation gated |
 | **Local LLM / Ollama Workstation** | Local model policy, inventory, health checks | **Active** — Program D1 read-only foundation |
-| **Mac Workstation Experience** | Teacher modes, wallpaper, visible transformation | Plans exceed implementation |
+| **Mac Workstation Experience** | Teacher modes, wallpaper, visible transformation | **Active** — Program E1 read-only foundation |
 | **Widget and Shortcut Builder** | Catalogs for approved surfaces | Roadmap only |
 | **Lovable Classroom App Builder** | Future approval-gated app-builder routing | Planning only — Program G1 |
 | **3D Builder Workshop Agent** | Separate sub-agent for classroom objects | `3d-agent/` readiness parked |
@@ -497,9 +497,28 @@ Phase 0F scope. Requires explicit approval before any secret storage or API key 
 
 **Future mode surfaces:** wallpaper, appearance, desktop organization, widgets, shortcuts, Chief of Staff dashboard view, active folders, recommended commands.
 
-#### E1 — Mac Experience Audit Doc
+#### E1 — Mac Experience Read-Only Planning Foundation
 
-Document what has actually changed on Mac vs repo-only plans (`setup/` scripts run state).
+```text
+Mission: Mac Workstation Experience read-only planning foundation (Program E1)
+
+Scope:
+- docs/mac-workstation-experience-foundation.md
+- docs/mac-workstation-non-activation-boundaries.md
+- docs/mac-workstation-readiness-plan.md
+- scripts/mac-workstation-experience-status.sh
+- chief-of-staff --mac-workstation-status
+- checks: repo-local docs, mode-status cross-link, negative non-activation assertions
+
+Out of scope:
+- Mac system setting changes
+- wallpaper apply
+- widget/shortcut install
+- osascript/automation
+- live curator/fetcher
+
+Autonomous: yes (read-only repo-local status only)
+```
 
 #### E2 — Wallpaper Curator Live v1 (approval-gated)
 
@@ -764,7 +783,7 @@ Per `docs/engineering-constitution.md` §10, v1.0 means these systems exist as *
 | Canvas Package Builder | Bounded export path | **Frozen** — planning only |
 | Local Retrieval | Approved local lookup | **Foundation complete** — no engines |
 | Lesson Generation | Human-reviewed drafts under safety boundaries | **Not started** |
-| Mac Workstation Experience | Approved modes and surfaces | **Planned** |
+| Mac Workstation Experience | Approved modes and surfaces | **Active** — Program E1 read-only planning |
 | Widgets / Shortcuts | Catalogs and manual install path | **Planned** |
 | 3D Builder Workshop Agent | Gated classroom object pipeline | **Planned** |
 | Validation suite | PASS/WARN/FAIL for all active tracks | **Strong** |
@@ -776,9 +795,9 @@ Per `docs/engineering-constitution.md` §10, v1.0 means these systems exist as *
 
 ## 10. Immediate Next Recommended Mission
 
-**Mac Workstation Experience — Read-Only Planning Foundation (Program E1)**
+**Widget and Shortcut Builder — Read-Only Catalog Foundation (Program F1)**
 
-Program D1 Local LLM/Ollama read-only status foundation is complete (`docs/local-llm-workstation-status-foundation.md`). `--local-llm-workstation-status` provides planning visibility only. Recommended next: Mac teacher modes and workstation experience planning/status without Mac system changes.
+Program E1 Mac Workstation Experience read-only planning foundation is complete (`docs/mac-workstation-experience-foundation.md`). `--mac-workstation-status` provides planning visibility only. Recommended next: widget/shortcut catalog foundation without install or automation.
 
 Alternate tracks remain approval-gated per `docs/implementation-approval-gate.md`.
 
@@ -796,10 +815,11 @@ COMPLETE:
   I0 System Updater read-only checks
   R0 AI Tool Routing operational surface (read-only)
   D1 Local LLM read-only status foundation
+  E1 Mac Workstation Experience read-only planning
 
 NOW (autonomous pattern when authorized):
   B1–B5 Chief of Staff v1 Agent Core (remaining planned surfaces)
-  E1 Mac Workstation Experience read-only planning
+  F1 Widget/Shortcut catalog read-only foundation
 
 THEN (mixed approval):
   A4–A7 Curriculum Builder Complete subtracks

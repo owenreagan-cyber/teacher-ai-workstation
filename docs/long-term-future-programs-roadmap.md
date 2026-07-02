@@ -187,7 +187,7 @@ Read-only status foundation complete (`docs/local-llm-workstation-status-foundat
 
 ## Mac Workstation Experience
 
-**Classification:** Future / Approval-Gated / Planning Only
+**Classification:** Read-only foundation complete — Mac activation remains Future / Approval-Gated
 
 ### Purpose
 
@@ -204,7 +204,7 @@ Future desktop experience improvements for teacher workflow optimization.
 
 ### Current status
 
-Planning only. Wallpaper foundation stack documented; live curator not started.
+Read-only planning foundation complete (`docs/mac-workstation-experience-foundation.md`). `--mac-workstation-status` reports planning boundaries only. No Mac system changes, wallpaper apply, or widget install.
 
 ### Blocked capabilities
 

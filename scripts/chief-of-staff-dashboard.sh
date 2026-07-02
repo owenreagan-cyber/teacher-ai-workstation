@@ -974,6 +974,20 @@ else
   warn "Chief of Staff v1 foundation status script missing: scripts/chief-of-staff-v1-foundation-status.sh"
 fi
 
+section "Chief of Staff v1 Agent Core (Program B Daily Operations)"
+if [[ -f tests/chief-of-staff-daily-operations-test.sh ]]; then
+  cos_daily_result=0
+  cos_daily_output="$(bash tests/chief-of-staff-daily-operations-test.sh 2>&1)" || cos_daily_result=$?
+  if [[ "${cos_daily_result}" != "0" ]]; then
+    printf '%s\n' "${cos_daily_output}"
+    fail "Chief of Staff daily operations tests failed"
+  else
+    pass "Chief of Staff daily operations tests completed"
+  fi
+else
+  warn "Chief of Staff daily operations test missing: tests/chief-of-staff-daily-operations-test.sh"
+fi
+
 section "Lesson Planning v1 Foundation"
 if [[ -f scripts/lesson-planning-foundation-status.sh ]]; then
   lesson_planning_foundation_result=0

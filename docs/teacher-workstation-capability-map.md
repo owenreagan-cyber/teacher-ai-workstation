@@ -34,21 +34,19 @@ Cross-references:
 
 | Capability | Status | Notes |
 | --- | --- | --- |
-| Chief of Staff CLI | implemented read-only | `bin/chief-of-staff`; status/orchestration; not daily-ops complete |
+| Chief of Staff CLI | implemented read-only | `bin/chief-of-staff`; status/orchestration |
 | Chief of Staff dashboard | implemented read-only | PASS/WARN/FAIL health surface |
 | Project memory / intake | implemented read-only | Local memory; human-reviewed |
 | Proof runner | implemented read-only | `scripts/run-workstation-proof.sh` |
-| Command surface index (`--commands`) | foundation complete | Program B1 |
-| Chief of Staff v1 Agent Core | foundation complete | `docs/chief-of-staff-v1-foundation.md` |
-| Next-action recommendation | implemented read-only | `--next-action` (Program B3 scope delivered early) |
-| Command surface index (`--commands`) | **foundation complete** | Program B1 |
-| Chief of Staff v1 Agent Core | **foundation complete** | Program B1 — see `docs/chief-of-staff-v1-foundation.md` |
-| Daily briefing / closeout | planned | Program B2/B extensions |
-| Tool routing surface | planned | Program B5; matrix at `docs/ai-tool-routing-matrix.md` |
-| Approval queue surfacing | planned | Implementation gate intake status |
-| Blocker queue | planned | Frozen tracks, stop markers, escalations |
+| Command surface index (`--commands`) | **foundation complete** | Program B |
+| Chief of Staff v1 Agent Core | **foundation complete** | Program B — see `docs/chief-of-staff-v1-program-b-closure.md` |
+| Next-action recommendation | implemented read-only | `--next-action` |
+| Daily status / closeout | **implemented read-only** | `--daily-status`, `--closeout` (Program B2/B3) |
+| Approval / blocker queues | **implemented read-only** | `--approval-queue`, `--blocker-queue` (Program B4) |
+| Mode awareness (conceptual) | **implemented read-only** | `--mode-status` (Program B5); no Mac changes |
+| Daily briefing (AI) | planned | Approval-gated |
+| Tool routing surface | planned | `--model-routing-status`; matrix at `docs/ai-tool-routing-matrix.md` |
 | Health summary | planned | Aggregated report via Program H |
-| Mode awareness | planned | Mac Workstation Experience — Program E |
 
 **Architecture rule:** Chief of Staff is the central agent/control plane. It coordinates, validates, routes, tracks, and reports. It does not become external builders (Lovable, renderers, 3D tools, Canvas runtime).
 

@@ -20,6 +20,8 @@ Cross-references:
 - Operating model: `docs/chief-of-staff-operating-model.md`
 - Proof workflow: `docs/chief-of-staff-proof-workflow.md`
 - B1 closure: `docs/chief-of-staff-v1-foundation.md`
+- Program B closure: `docs/chief-of-staff-v1-program-b-closure.md`
+- Daily operations: `docs/chief-of-staff-daily-operations.md`
 - Dashboard: `docs/chief-of-staff-dashboard.md`
 
 ## Implemented Commands
@@ -46,18 +48,23 @@ These flags exist in `bin/chief-of-staff` and work as read-only local status sur
 | `bin/chief-of-staff --proof-run` | Pre-merge proof runner |
 | `bin/chief-of-staff --validate-all` | Core validation orchestration |
 
-### Planning (partial)
+### Planning (Program B)
 
 | Command | Purpose |
 | --- | --- |
 | `bin/chief-of-staff --next-action` | Deterministic next recommended program/focus |
+| `bin/chief-of-staff --daily-status` | Unified daily operating summary |
+| `bin/chief-of-staff --closeout` | End-of-work closeout checklist |
 
-### Safety
+### Safety / Queues
 
 | Command | Purpose |
 | --- | --- |
 | `bin/chief-of-staff --memory-status` | Project memory status |
 | `bin/chief-of-staff --validate-memory` | Project memory validation |
+| `bin/chief-of-staff --approval-queue` | Approval queue categories |
+| `bin/chief-of-staff --blocker-queue` | Blocker queue surfacing |
+| `bin/chief-of-staff --mode-status` | Operating context mode concepts |
 
 ### Program Status — Curriculum & Foundations
 
@@ -73,16 +80,13 @@ These flags exist in `bin/chief-of-staff` and work as read-only local status sur
 
 ## Planned Commands
 
-Documented for Program B2+ and future programs. **Not implemented** unless added to CLI.
+Documented for future programs. **Not implemented** unless added to CLI.
 
 | Command | Program | Purpose |
 | --- | --- | --- |
-| `bin/chief-of-staff --daily-status` | B2 | Unified daily operating summary |
-| `bin/chief-of-staff --daily-briefing` | B2+ | Daily briefing surface |
-| `bin/chief-of-staff --closeout` | B2+ | End-of-day closeout |
-| `bin/chief-of-staff --prove-main` | B1/B4 | Local main cleanliness proof |
-| `bin/chief-of-staff --mode-status` | E | Mac Workstation mode status |
-| `bin/chief-of-staff --model-routing-status` | B5 | AI tool routing matrix status |
+| `bin/chief-of-staff --daily-briefing` | B2+ | Daily briefing surface (AI approval-gated) |
+| `bin/chief-of-staff --prove-main` | Proof | Local main cleanliness proof |
+| `bin/chief-of-staff --model-routing-status` | Routing | AI tool routing matrix status |
 | `bin/chief-of-staff --local-llm-workstation-status` | D1 | Local LLM/Ollama status |
 | `bin/chief-of-staff --system-health` | H | Health Monitor report |
 | `bin/chief-of-staff --system-update-check` | I | System Updater read-only checks |
@@ -110,6 +114,7 @@ Intentionally not available until explicit approval supersedes stop markers or g
 | `bash scripts/chief-of-staff-validate-all.sh` | Core validation orchestration |
 | `bash tests/smoke-chief-of-staff-cli.sh` | CLI smoke tests |
 | `bash tests/chief-of-staff-v1-operating-test.sh` | Operating command tests |
+| `bash tests/chief-of-staff-daily-operations-test.sh` | Program B daily operations tests |
 
 ## Boundaries
 

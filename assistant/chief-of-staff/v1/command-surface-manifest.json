@@ -1,6 +1,6 @@
 {
   "version": "v1",
-  "program": "Chief of Staff v1 Agent Core — Program B1",
+  "program": "Chief of Staff v1 Agent Core — Program B",
   "status": "active_read_only",
   "categories": [
     {
@@ -34,9 +34,9 @@
       "name": "Planning",
       "commands": [
         {"flag": "--next-action", "status": "implemented", "purpose": "Deterministic next recommended program/focus"},
-        {"flag": "--daily-status", "status": "planned", "purpose": "Unified daily operating summary (Program B2)"},
-        {"flag": "--daily-briefing", "status": "planned", "purpose": "Daily briefing surface (Program B2+)"},
-        {"flag": "--closeout", "status": "planned", "purpose": "End-of-day closeout summary (Program B2+)"},
+        {"flag": "--daily-status", "status": "implemented", "purpose": "Unified daily operating summary (Program B2)"},
+        {"flag": "--daily-briefing", "status": "planned", "purpose": "Daily briefing surface (Program B2+; AI approval-gated)"},
+        {"flag": "--closeout", "status": "implemented", "purpose": "End-of-day closeout checklist (Program B3)"},
         {"flag": "--weekly-planning", "status": "planned", "purpose": "Weekly planning review (future)"}
       ]
     },
@@ -46,6 +46,8 @@
       "commands": [
         {"flag": "--validate-memory", "status": "implemented", "purpose": "Project memory validation"},
         {"flag": "--memory-status", "status": "implemented", "purpose": "Project memory status"},
+        {"flag": "--approval-queue", "status": "implemented", "purpose": "Approval queue surfacing (Program B4)"},
+        {"flag": "--blocker-queue", "status": "implemented", "purpose": "Blocker queue surfacing (Program B4)"},
         {"flag": "--implementation-gate-status", "status": "planned", "purpose": "Implementation approval gate summary"},
         {"flag": "--non-activation-check", "status": "planned", "purpose": "Non-activation boundary proof"},
         {"flag": "--blocked-capability-check", "status": "planned", "purpose": "Blocked capability report"}
@@ -75,11 +77,11 @@
       "id": "program_future",
       "name": "Program Status — Future / Approval-Gated",
       "commands": [
-        {"flag": "--model-routing-status", "status": "planned", "purpose": "AI tool routing matrix status (Program B5)"},
+        {"flag": "--mode-status", "status": "implemented", "purpose": "Operating context mode concepts (Program B5)"},
+        {"flag": "--model-routing-status", "status": "planned", "purpose": "AI tool routing matrix status"},
         {"flag": "--local-llm-workstation-status", "status": "planned", "purpose": "Local LLM/Ollama workstation status (Program D1)"},
         {"flag": "--system-health", "status": "planned", "purpose": "Health Monitor read-only report (Program H)"},
         {"flag": "--system-update-check", "status": "planned", "purpose": "System Updater read-only checks (Program I)"},
-        {"flag": "--mode-status", "status": "planned", "purpose": "Mac Workstation Experience mode status (Program E)"},
         {"flag": "--widget-health", "status": "planned", "purpose": "Widget catalog health (Program F)"},
         {"flag": "--shortcut-health", "status": "planned", "purpose": "Shortcut catalog health (Program F)"},
         {"flag": "--lovable-status", "status": "planned", "purpose": "Lovable integration inactive status (Program G1)"},

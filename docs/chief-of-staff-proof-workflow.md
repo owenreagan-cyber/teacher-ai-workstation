@@ -4,7 +4,7 @@ Last updated: 2026-07-02
 
 ```text
 Status: documentation/status only
-Program: Chief of Staff v1 Agent Core — Program B1
+Program: Chief of Staff v1 Agent Core — Program B
 Aligns with: .cursor/rules/teacher-ai-workstation-senior-engineer.mdc
 ```
 
@@ -22,7 +22,9 @@ Define the proof workflow Chief of Staff enforces for local-first, auditable wor
 | Validation orchestration | `bin/chief-of-staff --validate-all` | Core subsystem validators |
 | Smoke CLI | `bash tests/smoke-chief-of-staff-cli.sh` | CLI regression |
 | Proof runner | `bin/chief-of-staff --proof-run` | Pre-merge bundle (`scripts/run-workstation-proof.sh`) |
-| Operating commands | `bash tests/chief-of-staff-v1-operating-test.sh` | Next-action, validate-all, proof-run |
+| Operating commands | `bash tests/chief-of-staff-v1-operating-test.sh` | Program B commands + validate-all + proof-run |
+| Daily operations | `bash tests/chief-of-staff-daily-operations-test.sh` | `--daily-status`, `--closeout`, queues, mode |
+| Closeout checklist | `bin/chief-of-staff --closeout` | End-of-work template |
 | PR proof | `gh pr view`, diff review | Before merge |
 | Merge commit | `git log -1` on `main` | After merge |
 | Branch deletion | `git branch -a`, `git fetch --prune` | After merge — branch deletion proof |

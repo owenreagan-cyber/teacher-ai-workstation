@@ -4,7 +4,7 @@ Last updated: 2026-07-02
 
 ```text
 Status: documentation/status only
-Program: Chief of Staff v1 Agent Core — Program B1
+Program: Chief of Staff v1 Agent Core — Program B
 ```
 
 ## Purpose
@@ -24,7 +24,7 @@ Teacher request
   → validation
   → proof
   → next-action recommendation
-  → closeout (planned B2+)
+  → closeout (`bin/chief-of-staff --closeout`)
 ```
 
 ## Key Principle

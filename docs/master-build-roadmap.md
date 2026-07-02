@@ -315,74 +315,70 @@ Closure: docs/chief-of-staff-v1-foundation.md
 
 Mission delivered: canonical command index, `--commands`, agent core docs, operating model, proof workflow, v1 foundation status.
 
-#### B2 — Daily Status Summary
+#### B2 — Daily Operations Framework
 
 ```text
-Mission: Single daily status summary command
-
-Scope:
-- bin/chief-of-staff --daily-status (read-only)
-- aggregates: dashboard summary, active priorities excerpt, build-queue next item
-- PASS/WARN/FAIL footer
-
-Out of scope:
-- email/notifications
-- background scheduler
-
-Autonomous: yes
+Status: COMPLETE (Program B2)
+Closure: docs/chief-of-staff-daily-operations.md
 ```
 
-#### B3 — Next-Action Recommendation v1
+Mission delivered: daily operations framework, `--daily-status`, build queue and priority pointers.
+
+#### B3 — Closeout Workflow
 
 ```text
-Mission: Unified next-action recommendation
-
-Scope:
-- parse master-build-roadmap + build-queue + active-priorities
-- deterministic recommendation string (not LLM-generated)
-- dashboard "Next Recommended Action" section uses same source
-
-Out of scope:
-- autonomous mission start without approval
-- LLM inference for ranking
-
-Autonomous: yes
+Status: COMPLETE (Program B3)
+Closure: docs/chief-of-staff-closeout-workflow.md
 ```
 
-#### B4 — Proof Runner Consolidation
+Mission delivered: closeout checklist, `--closeout` read-only template.
+
+#### B4 — Approval and Blocker Queues
 
 ```text
-Mission: Single proof runner for pre-merge validation
-
-Scope:
-- scripts/run-workstation-proof.sh calling track validators + smoke tests
-- documented in cursor workflow guide
-
-Out of scope:
-- CI changes unless separately approved
-
-Autonomous: yes
+Status: COMPLETE (Program B4)
+Closure: docs/chief-of-staff-approval-blocker-queues.md
 ```
 
-#### B5 — Model Routing Proof Surface (documentation only)
+Mission delivered: `--approval-queue`, `--blocker-queue` read-only surfacing.
+
+#### B5 — Mode Status / Operating Context
 
 ```text
-Mission: Model routing status proof (no automated routing)
-
-Scope:
-- bin/chief-of-staff --model-routing-status
-- reports: assistant/model-routing.md boundaries, llm CLI probe, Ollama reachability (local only)
-- docs update
-
-Out of scope:
-- API keys
-- cloud routing implementation
-- model downloads
-
-Autonomous: yes for status; routing implementation requires approval
+Status: COMPLETE (Program B5)
+Closure: docs/chief-of-staff-mode-status.md
 ```
 
-**Chief of Staff v1 complete when:** B1–B4 done; dashboard clean; daily workflow documented; next-action is deterministic and single-sourced.
+Mission delivered: `--mode-status` conceptual operating modes (no Mac changes).
+
+#### B6 — Program B Closure
+
+```text
+Status: COMPLETE
+Closure: docs/chief-of-staff-v1-program-b-closure.md
+```
+
+#### B3 (roadmap) — Next-Action Recommendation v1
+
+```text
+Status: COMPLETE
+Closure: scripts/chief-of-staff-next-action.sh
+```
+
+#### B4 (roadmap) — Proof Runner Consolidation
+
+```text
+Status: COMPLETE
+Closure: scripts/run-workstation-proof.sh
+```
+
+#### B5 (roadmap) — Model Routing Proof Surface (documentation only)
+
+```text
+Status: PLANNED
+```
+
+**Chief of Staff v1 Program B complete when:** B1–B6 done; daily operations, closeout, queues, and mode status documented and tested; dashboard clean; next-action is deterministic and single-sourced. Closure: `docs/chief-of-staff-v1-program-b-closure.md`.
 
 ---
 
@@ -764,9 +760,9 @@ Per `docs/engineering-constitution.md` §10, v1.0 means these systems exist as *
 
 ## 10. Immediate Next Recommended Mission
 
-**Chief of Staff v1 Agent Core — Program B2 (Daily Operations Framework)**
+**Teacher Workstation Health Monitor — Read-Only Health Foundation (Program H)**
 
-Program B1 is complete (`docs/chief-of-staff-v1-foundation.md`). Recommended next: daily briefing, closeout, `--daily-status`, approval/blocker queue surfacing.
+Program B is complete (`docs/chief-of-staff-v1-program-b-closure.md`). Chief of Staff daily operations, closeout, approval/blocker queues, and mode status are active (read-only). Recommended next: Health Monitor read-only foundation — observe/report without repair, update, or integration.
 
 Alternate tracks remain approval-gated per `docs/implementation-approval-gate.md`.
 

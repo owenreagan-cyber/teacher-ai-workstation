@@ -3,7 +3,7 @@
 Last updated: 2026-07-02
 
 ```text
-Program: Chief of Staff v1 Agent Core — Program B1
+Program: Chief of Staff v1 Agent Core — Program B
 Status: foundation complete (read-only)
 Classification: local-first control plane — not a specialist builder
 ```
@@ -23,7 +23,7 @@ Chief of Staff is the **central workstation control plane** for Teacher AI Works
 | Route | Point work to specialist tools per `docs/ai-tool-routing-matrix.md` |
 | Track | Maintain memory, intake, and program status visibility |
 | Prove | Enforce pre-merge proof workflow |
-| Report | Daily/weekly operating summaries (planned B2+) |
+| Report | Daily operating summaries via `--daily-status`, closeout, queues |
 | Enforce boundaries | Implementation gate, Canvas stop marker, non-activation rules |
 
 ## Chief of Staff Must Not Become
@@ -50,15 +50,20 @@ Chief of Staff orchestrates. It **must not become** any specialist builder liste
 | Integration engine | Last-stage connectors (Program G) |
 | Automation engine | Blocked unless explicit mission |
 
-## Program B1 Deliverables
+## Program B Deliverables
 
 | Artifact | Location |
 | --- | --- |
 | Command surface index | `docs/chief-of-staff-command-index-v1.md` |
 | Command manifest | `assistant/chief-of-staff/v1/command-surface-manifest.json` |
 | `--commands` | `bin/chief-of-staff --commands` |
+| Daily operations | `docs/chief-of-staff-daily-operations.md`, `--daily-status` |
+| Closeout workflow | `docs/chief-of-staff-closeout-workflow.md`, `--closeout` |
+| Approval/blocker queues | `docs/chief-of-staff-approval-blocker-queues.md` |
+| Mode status | `docs/chief-of-staff-mode-status.md`, `--mode-status` |
 | Operating model | `docs/chief-of-staff-operating-model.md` |
 | Proof workflow | `docs/chief-of-staff-proof-workflow.md` |
+| Program B closure | `docs/chief-of-staff-v1-program-b-closure.md` |
 | Foundation closure | `docs/chief-of-staff-v1-foundation.md` |
 | Status proof | `bin/chief-of-staff --chief-of-staff-v1-status` |
 

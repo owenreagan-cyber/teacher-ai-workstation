@@ -556,13 +556,35 @@ Current status: planning only — not connected
 Authority: assistant/model-routing.md, docs/integration-planning-foundation-v0.md
 ```
 
-**Purpose:** Chief of Staff may eventually route **approved** classroom-app ideas into Lovable for teacher tools, classroom mini-apps, review games, dashboards, workflow helpers, and other classroom-support apps.
+**Purpose:** Chief of Staff may eventually route **approved** classroom-app ideas into Lovable for building teacher tools, classroom mini-apps, review games, dashboards, workflow helpers, and other classroom-support apps.
 
 **Architecture rule:** Chief of Staff must **not** become Lovable. Chief of Staff decides, validates, routes, tracks, and provides status. Lovable remains an external app-builder tool used only after an approved classroom-app request passes the safety/implementation gate.
 
-**Blocked until explicit future approval:** Lovable API, OAuth, credentials, network calls, live app generation, deployment, automation, student data, generated student-facing apps, any live integration.
+**Tool ecosystem placement:** Lovable sits in the future tool/integration roadmap alongside Gemini, Claude, Cursor, Codex, and other builder/model tools. See `assistant/model-routing.md` and `docs/ai-tool-routing-matrix.md`.
 
-See `docs/ai-tool-routing-matrix.md` and `docs/renderer-v1-foundation.md` §8.
+**Allowed now:**
+
+- roadmap references
+- tool-role mapping
+- future integration boundaries
+- Chief of Staff routing concept documentation
+- approval-gated status language
+
+**Blocked until explicit future approval:**
+
+- Lovable API use
+- OAuth and credentials
+- network calls
+- live app generation
+- classroom app deployment
+- automation
+- student data
+- generated student-facing apps
+- any live integration
+
+**Future relationship to Renderer Foundation:** Approved renderer/output-contract patterns may later inform classroom-app builds in Lovable. See `docs/renderer-v1-foundation.md` §8 Future Downstream Tool Surfaces.
+
+**Non-activation:** This roadmap entry does not connect Lovable, authorize APIs, or activate app generation.
 
 ---
 
@@ -630,44 +652,6 @@ See `docs/ai-tool-routing-matrix.md` and `docs/renderer-v1-foundation.md` §8.
 **Blocked until approval:** web search, downloads, scraping, CAD/file generation, STL/3MF export, slicer/printer integration, print jobs, model training, APIs, OAuth, network, student data, public publishing.
 
 **Future commands (roadmap only):** `--3d-builder-status`, `--3d-builder-intake-status`, `--3d-builder-library-status`, `--3d-builder-safety-status`, `--3d-builder-roadmap-status`
-
-#### G1 — Lovable Classroom App Builder Integration (Future / Approval-Gated)
-
-```text
-Classification: Lovable Classroom App Builder Integration — Future / Approval-Gated
-Current status: planning only — not connected
-Authority: assistant/model-routing.md, docs/integration-planning-foundation-v0.md
-```
-
-**Purpose:** Chief of Staff may eventually route **approved** classroom-app ideas into Lovable for building teacher tools, classroom mini-apps, review games, dashboards, workflow helpers, and other classroom-support apps.
-
-**Architecture rule:** Chief of Staff must **not** become Lovable. Chief of Staff decides, validates, routes, tracks, and provides status. Lovable remains an external app-builder tool used only after an approved classroom-app request passes the safety/implementation gate.
-
-**Tool ecosystem placement:** Lovable sits in the future tool/integration roadmap alongside Gemini, Claude, Cursor, Codex, and other builder/model tools. See `assistant/model-routing.md`.
-
-**Allowed now:**
-
-- roadmap references
-- tool-role mapping
-- future integration boundaries
-- Chief of Staff routing concept documentation
-- approval-gated status language
-
-**Blocked until explicit future approval:**
-
-- Lovable API use
-- OAuth and credentials
-- network calls
-- live app generation
-- classroom app deployment
-- automation
-- student data
-- generated student-facing apps
-- any live integration
-
-**Future relationship to Renderer Foundation:** Approved renderer/output-contract patterns may later inform classroom-app builds in Lovable. See `docs/renderer-v1-foundation.md` §8 Future Downstream Tool Surfaces.
-
-**Non-activation:** This roadmap entry does not connect Lovable, authorize APIs, or activate app generation.
 
 ---
 

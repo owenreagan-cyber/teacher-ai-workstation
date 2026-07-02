@@ -66,6 +66,9 @@ Cross-references:
 | Curriculum Builder Registry v0.2 retrieval hooks (CB-IMPL-4) | implemented read-only | `--curriculum-registry-retrieval-status`; fake lookup only |
 | Curriculum Builder production registry planning (CB-PROD-PLAN) | implemented read-only | `--curriculum-production-registry-planning-status`; planning brief only; no writes |
 | Owen § J production registry checklist tracker | implemented read-only | `--curriculum-production-registry-owen-checklist-status`; Owen decisions required; review packet |
+| Owen § J decision worksheet + post-decision map | implemented read-only | `docs/curriculum-builder-production-registry-owen-decision-worksheet.md`; routing table; no implied approval |
+| Metadata pilot planning boundary (no intake) | implemented read-only | `docs/curriculum-builder-metadata-pilot-planning-boundary.md`; fake examples only |
+| Manual metadata boundary | implemented read-only | `docs/curriculum-builder-manual-metadata-boundary.md`; field taxonomy; no real records |
 | Governance-first production registry (CB-PROD-GOV) | implemented read-only | `--curriculum-production-registry-governance-status`; blocked-write proof; candidate skeleton |
 | Curriculum Builder Registry authority map + lane hardening | implemented read-only | `--curriculum-registry-lane-status` (includes source readiness + Owen checklist); `--curriculum-registry-a4-a7-fixture-schema-status`; see authority map |
 | Curriculum Source Readiness (fake metadata inventory) | implemented read-only | `--curriculum-source-readiness-status`; fake fixtures only; no real ingestion |

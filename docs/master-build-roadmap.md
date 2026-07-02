@@ -287,7 +287,7 @@ Blocked:
 - persistent registry mutation
 - Drive/NAS scanning / folder crawling / live resolution
 
-Autonomous: dry-run complete; --write requires CB-IMPL-2+ approval mission
+Autonomous: dry-run complete; production --write requires separate approval-gated mission (CB-IMPL-2 is fake fixtures only, not writes)
 ```
 
 #### CB-IMPL-2 — Local Fake Registry Records Foundation
@@ -900,7 +900,8 @@ Alternate tracks remain approval-gated per `docs/implementation-approval-gate.md
 | Teacher Workstation Health Monitor | H | read-only foundation complete | `complete_pending_review` | No Level 2 review run |
 | Teacher Workstation System Updater | I | read-only foundation complete | `complete_pending_review` | No Level 2 review run |
 | AI Tool Routing | R0 | operational read-only complete | `complete_pending_review` | No Level 2 review run |
-| Curriculum Builder v1 (registry/contracts) | A | Phase 2 foundation complete | `in_progress` | CB-IMPL subtracks remain |
+| Curriculum Builder Registry v0.2 Local Foundation | CB-IMPL | foundation complete (CB-IMPL-1–4) | `reviewed` | Level 2 review 2026-07-02; `docs/proposals/curriculum-builder-registry-lane-discovery-review.md` |
+| Curriculum Builder v1 (registry/contracts) | A | Phase 2 foundation complete | `in_progress` | Registry v0.2 lane reviewed; renderers/generation/integrations remain approval-gated |
 | Canvas LLM | C | frozen/stopped | `in_progress` | Stop marker active |
 
 **Rules:**

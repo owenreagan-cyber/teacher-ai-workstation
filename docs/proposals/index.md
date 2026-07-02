@@ -45,8 +45,13 @@ Templates: `docs/proposals/templates/lane-level-discovery-mission.md`, `docs/pro
 
 | Candidate | Area | Level | Value | Risk | Technical Complexity | Student-Data Risk | Curriculum-Content Risk | API/Network Requirement | Status | Recommended Next Step | Source Mission | Date |
 | --------- | ---- | ----- | ----- | ---- | -------------------- | ----------------- | ----------------------- | ----------------------- | ------ | --------------------- | -------------- | ---- |
+| Registry Authority Map (v0 vs v0.2 fixture vs production) | Curriculum Builder Registry | 2 | high | low | low | none | none | none | proposed | Create docs/status authority map; link from lane closure and boundaries | Level 2 Registry Lane Review 2026-07-02 | 2026-07-02 |
+| Aggregate `--curriculum-registry-lane-status` command | Curriculum Builder Registry | 2 | medium | low | low | none | none | none | proposed | Single CLI aggregating CB-IMPL-1–4 status outputs | Level 2 Registry Lane Review 2026-07-02 | 2026-07-02 |
+| Dry-run to fixture promotion planning spec | Curriculum Builder Registry | 2 | medium | low | low | none | none | none | proposed | Planning doc only; document blocked promotion path and human gates | Level 2 Registry Lane Review 2026-07-02 | 2026-07-02 |
+| A4–A7 schema cross-validation on fake fixtures | Curriculum Builder Registry | 2 | medium | low | medium | none | none | none | proposed | Extend fixture validator to check against canonical contract JSON schemas | Level 2 Registry Lane Review 2026-07-02 | 2026-07-02 |
+| Production registry workflow planning brief | Curriculum Builder Registry | 2 | high | medium | medium | possible | possible | future | proposed | ChatGPT + Owen planning brief before any write mission | Level 2 Registry Lane Review 2026-07-02 | 2026-07-02 |
 
-*No entries yet. Add rows for high-value ideas only. Level 1 missions may report candidates in final reports without ledger entries.*
+Detail: `docs/proposals/curriculum-builder-registry-lane-discovery-review.md`
 
 ## Usage
 

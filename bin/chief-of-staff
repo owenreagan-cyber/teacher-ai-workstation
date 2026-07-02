@@ -184,6 +184,7 @@ Teacher Planning Command Organization (status only; safe sample: fractions-revie
 
 Developer and Cursor Workflow:
   --cursor-workflow-status             Show local Cursor workflow status and exit.
+  --cursor-operating-modes-status      Show Cursor operating modes, approval gates, and proposal governance status and exit.
   --developer-status                   Show local Developer Mode status and exit.
   --create-developer-project <template> <slug>
                                        Copy a Developer Mode template into local projects.
@@ -2435,6 +2436,15 @@ while [[ $# -gt 0 ]]; do
         die "Cursor workflow status script is missing: scripts/cursor-workflow-status.sh"
       fi
       bash "${cursor_workflow_status_script}"
+      exit 0
+      ;;
+    --cursor-operating-modes-status)
+      repo_root="$(resolve_repo_root)"
+      cursor_operating_modes_status_script="${repo_root}/scripts/cursor-operating-modes-status.sh"
+      if [[ ! -f "${cursor_operating_modes_status_script}" ]]; then
+        die "Cursor operating modes status script is missing: scripts/cursor-operating-modes-status.sh"
+      fi
+      bash "${cursor_operating_modes_status_script}"
       exit 0
       ;;
     --developer-status)

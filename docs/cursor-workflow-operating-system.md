@@ -2,7 +2,7 @@
 
 ## Purpose
 
-This document defines how Owen, ChatGPT, Cursor, GitHub, and the local dashboard work together in the Teacher AI Workstation repo. Canonical engineering authority: `docs/engineering-constitution.md`.
+This document defines how Owen, ChatGPT, Cursor, GitHub, and the local dashboard work together in the Teacher AI Workstation repo. Canonical engineering authority: `docs/engineering-constitution.md`. Cursor operating modes and approval gates: `docs/cursor-operating-modes-and-approval-gates.md`. Domain boundaries: `docs/teacher-workstation-domain-boundaries.md`. Proposal ledger: `docs/proposals/index.md`.
 
 ## Roles
 

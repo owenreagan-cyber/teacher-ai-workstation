@@ -953,6 +953,22 @@ done
 check_bash_syntax scripts/3d-builder-workshop-agent-status.sh
 grep -Fq -- '--3d-builder-status' bin/chief-of-staff && pass "chief-of-staff exposes --3d-builder-status" || fail "chief-of-staff missing --3d-builder-status"
 
+section "Cursor Operating Modes and Proposal Governance Files"
+for path in \
+  docs/cursor-operating-modes-and-approval-gates.md \
+  docs/teacher-workstation-domain-boundaries.md \
+  docs/proposals/index.md \
+  docs/proposals/README.md \
+  scripts/cursor-operating-modes-status.sh \
+  tests/cursor-operating-modes-status-test.sh; do
+  check_required_file "${path}"
+done
+check_bash_syntax scripts/cursor-operating-modes-status.sh
+check_bash_syntax tests/cursor-operating-modes-status-test.sh
+check_doc_contains docs/cursor-operating-modes-and-approval-gates.md "Maximum Autonomous Execution Mode" "operating modes doc autonomous execution"
+check_doc_contains docs/teacher-workstation-domain-boundaries.md "Parent Communication Agents" "domain boundaries doc parent communication"
+grep -Fq -- '--cursor-operating-modes-status' bin/chief-of-staff && pass "chief-of-staff exposes --cursor-operating-modes-status" || fail "chief-of-staff missing --cursor-operating-modes-status"
+
 section "Curriculum Registry–Contract Binding v0 Foundation Files"
 for path in \
   docs/curriculum-binding-v0.md \
@@ -1218,6 +1234,7 @@ check_bash_syntax "scripts/review-notes-template-status.sh"
 check_bash_syntax "scripts/lesson-review-view.sh"
 check_bash_syntax "scripts/lesson-review-checklist-status.sh"
 check_bash_syntax "scripts/cursor-workflow-status.sh"
+check_bash_syntax "scripts/cursor-operating-modes-status.sh"
 check_bash_syntax "scripts/phase-1-status.sh"
 check_bash_syntax "bin/chief-of-staff"
 check_bash_syntax "scripts/verify-phase-0e.sh"

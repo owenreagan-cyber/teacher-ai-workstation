@@ -2273,6 +2273,27 @@ else
   warn "cursor workflow status script missing: scripts/cursor-workflow-status.sh"
 fi
 
+section "Cursor Operating Modes and Proposal Governance"
+if [[ -f scripts/cursor-operating-modes-status.sh ]]; then
+  cursor_modes_result=0
+  cursor_modes_output="$(bash scripts/cursor-operating-modes-status.sh 2>&1)" || cursor_modes_result=$?
+  cursor_modes_pass="$(summary_count "${cursor_modes_output}" "PASS")"
+  cursor_modes_warn="$(summary_count "${cursor_modes_output}" "WARN")"
+  cursor_modes_fail="$(summary_count "${cursor_modes_output}" "FAIL")"
+
+  if [[ "${cursor_modes_result}" != "0" ]]; then
+    printf '%s\n' "${cursor_modes_output}"
+    fail "cursor operating modes status failed"
+  elif [[ -n "${cursor_modes_pass}" && -n "${cursor_modes_warn}" && -n "${cursor_modes_fail}" ]]; then
+    printf 'Cursor Operating Modes: PASS %s / WARN %s / FAIL %s\n' "${cursor_modes_pass}" "${cursor_modes_warn}" "${cursor_modes_fail}"
+    pass "cursor operating modes status completed"
+  else
+    pass "cursor operating modes status completed"
+  fi
+else
+  warn "cursor operating modes status script missing: scripts/cursor-operating-modes-status.sh"
+fi
+
 section "Developer Mode"
 if [[ -f scripts/developer-mode-status.sh ]]; then
   developer_output=""

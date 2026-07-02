@@ -113,6 +113,10 @@ Teacher Planning Command Organization (status only; safe sample: fractions-revie
                                        Show read-only Curriculum Library v1 foundation status and exit.
   --curriculum-library-reference-v0-validate
                                        Run read-only Curriculum Library reference v0 validator and exit.
+  --renderer-foundation-status
+                                       Show read-only Renderer Foundation v0 status and exit.
+  --renderer-foundation-v0-validate
+                                       Run read-only Renderer Foundation v0 manifest validator and exit.
   --curriculum-registry-v0-status
                                        Show read-only Curriculum Registry v0 foundation status and exit.
   --curriculum-registry-v0-validate
@@ -1646,6 +1650,25 @@ while [[ $# -gt 0 ]]; do
       fi
       shift
       bash "${curriculum_library_reference_v0_validator_script}" "$@"
+      exit 0
+      ;;
+    --renderer-foundation-status)
+      repo_root="$(resolve_repo_root)"
+      renderer_foundation_status_script="${repo_root}/scripts/renderer-foundation-status.sh"
+      if [[ ! -f "${renderer_foundation_status_script}" ]]; then
+        die "Renderer Foundation status script is missing: scripts/renderer-foundation-status.sh"
+      fi
+      bash "${renderer_foundation_status_script}"
+      exit 0
+      ;;
+    --renderer-foundation-v0-validate)
+      repo_root="$(resolve_repo_root)"
+      renderer_foundation_v0_validator_script="${repo_root}/scripts/renderer-foundation-v0-validator.sh"
+      if [[ ! -f "${renderer_foundation_v0_validator_script}" ]]; then
+        die "Renderer Foundation v0 validator script is missing: scripts/renderer-foundation-v0-validator.sh"
+      fi
+      shift
+      bash "${renderer_foundation_v0_validator_script}" "$@"
       exit 0
       ;;
     --curriculum-builder-foundation-status)

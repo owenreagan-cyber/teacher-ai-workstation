@@ -1,0 +1,90 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "teacher-ai-workstation/renderer-foundation/v0/renderer-interface-schema.json",
+  "title": "Renderer Interface v0 Schema",
+  "description": "Placeholder-only renderer interface records. Interface planning only; no rendering implementation.",
+  "type": "object",
+  "required": [
+    "renderer_id",
+    "title",
+    "contract_type",
+    "compatible_contract_sample",
+    "interface_status",
+    "implementation_status",
+    "generation_enabled",
+    "html_rendering",
+    "pdf_rendering",
+    "canvas_package_generation",
+    "student_facing_output",
+    "local_first_safety_flags",
+    "notes",
+    "activation_status"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "renderer_id": {
+      "type": "string",
+      "pattern": "^sample-renderer-[a-z0-9-]+$"
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1
+    },
+    "contract_type": {
+      "type": "string",
+      "enum": [
+        "direct_instruction_slide_deck_contract",
+        "teacher_script_contract",
+        "worksheet_contract",
+        "review_game_contract",
+        "canvas_export_package_contract"
+      ]
+    },
+    "compatible_contract_sample": {
+      "type": "string",
+      "pattern": "^contracts/sample-[a-z0-9-]+\\.json$"
+    },
+    "interface_status": {
+      "type": "string",
+      "enum": ["interface_only"]
+    },
+    "implementation_status": {
+      "type": "string",
+      "enum": ["not_started"]
+    },
+    "generation_enabled": {
+      "type": "boolean",
+      "const": false
+    },
+    "html_rendering": {
+      "type": "boolean",
+      "const": false
+    },
+    "pdf_rendering": {
+      "type": "boolean",
+      "const": false
+    },
+    "canvas_package_generation": {
+      "type": "boolean",
+      "const": false
+    },
+    "student_facing_output": {
+      "type": "boolean",
+      "const": false
+    },
+    "local_first_safety_flags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "minItems": 6
+    },
+    "notes": {
+      "type": "string"
+    },
+    "activation_status": {
+      "type": "string",
+      "enum": ["renderer_foundation_v0"]
+    }
+  }
+}

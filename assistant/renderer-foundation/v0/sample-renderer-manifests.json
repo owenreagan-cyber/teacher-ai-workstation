@@ -1,0 +1,124 @@
+{
+  "manifest_version": "0.1.0",
+  "manifest_status": "active_v0",
+  "metadata_only": true,
+  "read_only": true,
+  "interface_only": true,
+  "renderers": [
+    {
+      "renderer_id": "sample-renderer-di-slide-deck-001",
+      "title": "Placeholder DI Slide Deck Renderer Interface",
+      "contract_type": "direct_instruction_slide_deck_contract",
+      "compatible_contract_sample": "contracts/sample-di-slide-deck-001.json",
+      "interface_status": "interface_only",
+      "implementation_status": "not_started",
+      "generation_enabled": false,
+      "html_rendering": false,
+      "pdf_rendering": false,
+      "canvas_package_generation": false,
+      "student_facing_output": false,
+      "local_first_safety_flags": [
+        "interface_only",
+        "no_rendering",
+        "no_generation",
+        "no_student_data",
+        "placeholder_only",
+        "no_external_resolution"
+      ],
+      "notes": "Fictional renderer interface for DI slide deck contract compatibility planning only.",
+      "activation_status": "renderer_foundation_v0"
+    },
+    {
+      "renderer_id": "sample-renderer-teacher-script-001",
+      "title": "Placeholder Teacher Script Renderer Interface",
+      "contract_type": "teacher_script_contract",
+      "compatible_contract_sample": "contracts/sample-teacher-script-001.json",
+      "interface_status": "interface_only",
+      "implementation_status": "not_started",
+      "generation_enabled": false,
+      "html_rendering": false,
+      "pdf_rendering": false,
+      "canvas_package_generation": false,
+      "student_facing_output": false,
+      "local_first_safety_flags": [
+        "interface_only",
+        "no_rendering",
+        "no_generation",
+        "no_student_data",
+        "placeholder_only",
+        "no_external_resolution"
+      ],
+      "notes": "Fictional renderer interface for teacher script contract compatibility planning only.",
+      "activation_status": "renderer_foundation_v0"
+    },
+    {
+      "renderer_id": "sample-renderer-worksheet-001",
+      "title": "Placeholder Worksheet Renderer Interface",
+      "contract_type": "worksheet_contract",
+      "compatible_contract_sample": "contracts/sample-worksheet-001.json",
+      "interface_status": "interface_only",
+      "implementation_status": "not_started",
+      "generation_enabled": false,
+      "html_rendering": false,
+      "pdf_rendering": false,
+      "canvas_package_generation": false,
+      "student_facing_output": false,
+      "local_first_safety_flags": [
+        "interface_only",
+        "no_rendering",
+        "no_generation",
+        "no_student_data",
+        "placeholder_only",
+        "no_external_resolution"
+      ],
+      "notes": "Fictional renderer interface for worksheet contract compatibility planning only.",
+      "activation_status": "renderer_foundation_v0"
+    },
+    {
+      "renderer_id": "sample-renderer-review-game-001",
+      "title": "Placeholder Review Game Renderer Interface",
+      "contract_type": "review_game_contract",
+      "compatible_contract_sample": "contracts/sample-review-game-001.json",
+      "interface_status": "interface_only",
+      "implementation_status": "not_started",
+      "generation_enabled": false,
+      "html_rendering": false,
+      "pdf_rendering": false,
+      "canvas_package_generation": false,
+      "student_facing_output": false,
+      "local_first_safety_flags": [
+        "interface_only",
+        "no_rendering",
+        "no_generation",
+        "no_student_data",
+        "placeholder_only",
+        "no_external_resolution"
+      ],
+      "notes": "Fictional renderer interface for review game contract compatibility planning only.",
+      "activation_status": "renderer_foundation_v0"
+    },
+    {
+      "renderer_id": "sample-renderer-canvas-package-001",
+      "title": "Placeholder Canvas Package Renderer Interface",
+      "contract_type": "canvas_export_package_contract",
+      "compatible_contract_sample": "contracts/sample-canvas-package-001.json",
+      "interface_status": "interface_only",
+      "implementation_status": "not_started",
+      "generation_enabled": false,
+      "html_rendering": false,
+      "pdf_rendering": false,
+      "canvas_package_generation": false,
+      "student_facing_output": false,
+      "local_first_safety_flags": [
+        "interface_only",
+        "no_rendering",
+        "no_generation",
+        "no_student_data",
+        "placeholder_only",
+        "no_external_resolution"
+      ],
+      "notes": "Fictional renderer interface for Canvas package contract compatibility planning only. Metadata interface only; no Canvas API.",
+      "activation_status": "renderer_foundation_v0"
+    }
+  ]
+}

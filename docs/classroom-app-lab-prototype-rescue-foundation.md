@@ -58,7 +58,9 @@ bin/chief-of-staff --dashboard
 
 ## Recommended Next Mission
 
-Consult `docs/master-build-roadmap.md` §10 and `docs/build-queue.md` for the next safe roadmap-supported foundation. Candidate tracks remain approval-gated (Lovable G1 planning surface, 3D Builder J, Curriculum Builder subtracks).
+**3D Builder Workshop Agent — Read-Only Planning Surface (Program J)**
+
+Classroom App Lab prototype rescue foundation is complete. Next safe foundation: 3D Builder planning surface without CAD generation, slicing, or printing.
 
 ## Non-Activation
 

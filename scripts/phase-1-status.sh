@@ -931,6 +931,25 @@ else
   fail "chief-of-staff missing --classroom-app-lab-status"
 fi
 
+section "Lovable Classroom App Builder (Program G1) Files"
+for path in \
+  docs/lovable-classroom-app-builder-foundation.md \
+  docs/lovable-classroom-app-builder-non-activation-boundaries.md \
+  docs/lovable-classroom-app-builder-readiness-plan.md \
+  scripts/lovable-classroom-app-builder-status.sh \
+  tests/lovable-classroom-app-builder-status-test.sh; do
+  check_required_file "${path}"
+done
+check_bash_syntax scripts/lovable-classroom-app-builder-status.sh
+check_bash_syntax tests/lovable-classroom-app-builder-status-test.sh
+check_doc_contains docs/lovable-classroom-app-builder-foundation.md "complete_v1_g1" "lovable closure status"
+check_doc_contains docs/lovable-classroom-app-builder-non-activation-boundaries.md "Lovable API: blocked" "lovable api blocked"
+if grep -Fq -- '--lovable-status' bin/chief-of-staff; then
+  pass "chief-of-staff exposes --lovable-status"
+else
+  fail "chief-of-staff missing --lovable-status"
+fi
+
 section "Curriculum Registry–Contract Binding v0 Foundation Files"
 for path in \
   docs/curriculum-binding-v0.md \

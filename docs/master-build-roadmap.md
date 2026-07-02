@@ -797,9 +797,9 @@ Per `docs/engineering-constitution.md` §10, v1.0 means these systems exist as *
 
 ## 10. Immediate Next Recommended Mission
 
-**Lovable Classroom App Builder — Read-Only Planning Surface (Program G1)**
+**3D Builder Workshop Agent — Read-Only Planning Surface (Program J)**
 
-Classroom App Lab Prototype Rescue read-only foundation is complete (`docs/classroom-app-lab-prototype-rescue-foundation.md`). `--classroom-app-lab-status` provides planning visibility only. Recommended next: Lovable integration planning surface without API, OAuth, or live app generation.
+Lovable Classroom App Builder read-only planning surface is complete (`docs/lovable-classroom-app-builder-foundation.md`). `--lovable-status` provides planning visibility only. Recommended next: 3D Builder Workshop Agent planning surface without CAD generation, slicing, or printing.
 
 Alternate tracks remain approval-gated per `docs/implementation-approval-gate.md`.
 
@@ -820,9 +820,10 @@ COMPLETE:
   E1 Mac Workstation Experience read-only planning
   F1 Widget/Shortcut catalog read-only foundation
   CAL1 Classroom App Lab prototype rescue read-only foundation
+  G1 Lovable Classroom App Builder read-only planning surface
 
 NOW (autonomous pattern when authorized):
-  G1 Lovable Classroom App Builder read-only planning surface
+  J1 3D Builder Workshop Agent read-only planning surface
 
 THEN (mixed approval):
   A4–A7 Curriculum Builder Complete subtracks

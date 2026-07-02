@@ -90,6 +90,16 @@
       ]
     },
     {
+      "id": "lovable_classroom_app_builder",
+      "name": "Lovable Classroom App Builder",
+      "commands": [
+        {"flag": "--lovable-status", "status": "implemented", "purpose": "Lovable integration read-only planning surface (Program G1)"},
+        {"flag": "--lovable-api-connect", "status": "blocked", "purpose": "Lovable API connection blocked without explicit approval mission"},
+        {"flag": "--lovable-generate-app", "status": "blocked", "purpose": "Live app generation blocked without explicit approval mission"},
+        {"flag": "--lovable-deploy-app", "status": "blocked", "purpose": "App deployment blocked without explicit approval mission"}
+      ]
+    },
+    {
       "id": "proof",
       "name": "Proof",
       "commands": [
@@ -148,7 +158,6 @@
       "name": "Program Status — Future / Approval-Gated",
       "commands": [
         {"flag": "--mode-status", "status": "implemented", "purpose": "Operating context mode concepts (Program B5)"},
-        {"flag": "--lovable-status", "status": "planned", "purpose": "Lovable integration inactive status (Program G1)"},
         {"flag": "--3d-builder-status", "status": "planned", "purpose": "3D Builder Workshop Agent status (Program J)"}
       ]
     }

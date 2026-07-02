@@ -1135,6 +1135,27 @@ else
   warn "Classroom App Lab status script missing: scripts/classroom-app-lab-status.sh"
 fi
 
+section "Lovable Classroom App Builder (Program G1)"
+if [[ -f scripts/lovable-classroom-app-builder-status.sh ]]; then
+  lovable_result=0
+  lovable_output="$(bash scripts/lovable-classroom-app-builder-status.sh 2>&1)" || lovable_result=$?
+  lovable_pass="$(summary_count "${lovable_output}" "PASS")"
+  lovable_warn="$(summary_count "${lovable_output}" "WARN")"
+  lovable_fail="$(summary_count "${lovable_output}" "FAIL")"
+
+  if [[ "${lovable_result}" != "0" ]]; then
+    printf '%s\n' "${lovable_output}"
+    fail "Lovable Classroom App Builder status failed"
+  elif [[ -n "${lovable_pass}" && -n "${lovable_warn}" && -n "${lovable_fail}" ]]; then
+    printf 'Lovable: PASS %s / WARN %s / FAIL %s\n' "${lovable_pass}" "${lovable_warn}" "${lovable_fail}"
+    pass "Lovable Classroom App Builder status completed"
+  else
+    pass "Lovable Classroom App Builder status completed"
+  fi
+else
+  warn "Lovable Classroom App Builder status script missing: scripts/lovable-classroom-app-builder-status.sh"
+fi
+
 section "Lesson Planning v1 Foundation"
 if [[ -f scripts/lesson-planning-foundation-status.sh ]]; then
   lesson_planning_foundation_result=0

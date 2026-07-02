@@ -121,6 +121,10 @@ Teacher Planning Command Organization (status only; safe sample: fractions-revie
                                        Show read-only Local Retrieval Foundation v0 status and exit.
   --local-retrieval-foundation-v0-validate
                                        Run read-only Local Retrieval Foundation v0 lookup validator and exit.
+  --integration-planning-foundation-status
+                                       Show read-only Integration Planning Foundation v0 status and exit.
+  --integration-planning-foundation-v0-validate
+                                       Run read-only Integration Planning Foundation v0 inactive manifest validator and exit.
   --curriculum-registry-v0-status
                                        Show read-only Curriculum Registry v0 foundation status and exit.
   --curriculum-registry-v0-validate
@@ -1692,6 +1696,25 @@ while [[ $# -gt 0 ]]; do
       fi
       shift
       bash "${local_retrieval_foundation_v0_validator_script}" "$@"
+      exit 0
+      ;;
+    --integration-planning-foundation-status)
+      repo_root="$(resolve_repo_root)"
+      integration_planning_foundation_status_script="${repo_root}/scripts/integration-planning-foundation-status.sh"
+      if [[ ! -f "${integration_planning_foundation_status_script}" ]]; then
+        die "Integration Planning Foundation status script is missing: scripts/integration-planning-foundation-status.sh"
+      fi
+      bash "${integration_planning_foundation_status_script}"
+      exit 0
+      ;;
+    --integration-planning-foundation-v0-validate)
+      repo_root="$(resolve_repo_root)"
+      integration_planning_foundation_v0_validator_script="${repo_root}/scripts/integration-planning-foundation-v0-validator.sh"
+      if [[ ! -f "${integration_planning_foundation_v0_validator_script}" ]]; then
+        die "Integration Planning Foundation v0 validator script is missing: scripts/integration-planning-foundation-v0-validator.sh"
+      fi
+      shift
+      bash "${integration_planning_foundation_v0_validator_script}" "$@"
       exit 0
       ;;
     --curriculum-builder-foundation-status)

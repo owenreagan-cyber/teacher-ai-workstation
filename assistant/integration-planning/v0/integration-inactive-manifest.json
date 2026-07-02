@@ -1,0 +1,78 @@
+{
+  "manifest_version": "0.1.0",
+  "manifest_status": "active_v0",
+  "metadata_only": true,
+  "read_only": true,
+  "integrations_inactive": true,
+  "integrations": [
+    {
+      "integration_id": "sample-integration-google-drive-001",
+      "title": "Placeholder Google Drive Integration Planning Record",
+      "integration_type": "google_drive",
+      "activation_status": "inactive",
+      "oauth_enabled": false,
+      "api_enabled": false,
+      "sync_jobs": false,
+      "webhooks": false,
+      "background_jobs": false,
+      "network_calls": false,
+      "credential_storage": false,
+      "local_first_safety_flags": [
+        "planning_only",
+        "inactive",
+        "no_oauth",
+        "no_api",
+        "no_sync_jobs",
+        "no_network_calls"
+      ],
+      "notes": "Fictional inactive Google Drive integration planning fixture only.",
+      "planning_doc": "docs/google-drive-integration-planning-v0.md"
+    },
+    {
+      "integration_id": "sample-integration-canvas-001",
+      "title": "Placeholder Canvas LMS Integration Planning Record",
+      "integration_type": "canvas_lms",
+      "activation_status": "inactive",
+      "oauth_enabled": false,
+      "api_enabled": false,
+      "sync_jobs": false,
+      "webhooks": false,
+      "background_jobs": false,
+      "network_calls": false,
+      "credential_storage": false,
+      "local_first_safety_flags": [
+        "planning_only",
+        "inactive",
+        "no_oauth",
+        "no_api",
+        "no_sync_jobs",
+        "no_network_calls"
+      ],
+      "notes": "Fictional inactive Canvas integration planning fixture only. Canvas LLM runtime remains frozen.",
+      "planning_doc": "docs/canvas-integration-planning-v0.md"
+    },
+    {
+      "integration_id": "sample-integration-oauth-001",
+      "title": "Placeholder OAuth Broker Boundary Record",
+      "integration_type": "oauth_broker",
+      "activation_status": "inactive",
+      "oauth_enabled": false,
+      "api_enabled": false,
+      "sync_jobs": false,
+      "webhooks": false,
+      "background_jobs": false,
+      "network_calls": false,
+      "credential_storage": false,
+      "local_first_safety_flags": [
+        "planning_only",
+        "inactive",
+        "no_oauth",
+        "no_api",
+        "no_sync_jobs",
+        "no_network_calls"
+      ],
+      "notes": "Fictional inactive OAuth boundary fixture only.",
+      "planning_doc": "docs/oauth-integration-boundary-v0.md"
+    }
+  ]
+}

@@ -1022,6 +1022,29 @@ else
   warn "Local Retrieval Foundation status script missing: scripts/local-retrieval-foundation-status.sh"
 fi
 
+section "Integration Planning Foundation v0"
+if [[ -f scripts/integration-planning-foundation-status.sh ]]; then
+  integration_planning_foundation_result=0
+  integration_planning_foundation_output="$(bash scripts/integration-planning-foundation-status.sh 2>&1)" || integration_planning_foundation_result=$?
+  integration_planning_foundation_pass="$(summary_count "${integration_planning_foundation_output}" "PASS")"
+  integration_planning_foundation_warn="$(summary_count "${integration_planning_foundation_output}" "WARN")"
+  integration_planning_foundation_fail="$(summary_count "${integration_planning_foundation_output}" "FAIL")"
+
+  if [[ "${integration_planning_foundation_result}" != "0" ]]; then
+    printf 'Integration Planning Foundation v0: status command completed\n'
+    printf '%s\n' "${integration_planning_foundation_output}"
+    fail "Integration Planning Foundation status failed"
+  elif [[ -n "${integration_planning_foundation_pass}" && -n "${integration_planning_foundation_warn}" && -n "${integration_planning_foundation_fail}" ]]; then
+    printf 'Integration Planning Foundation v0: PASS %s / WARN %s / FAIL %s\n' "${integration_planning_foundation_pass}" "${integration_planning_foundation_warn}" "${integration_planning_foundation_fail}"
+    pass "Integration Planning Foundation status completed"
+  else
+    printf 'Integration Planning Foundation v0: status command completed\n'
+    pass "Integration Planning Foundation status completed"
+  fi
+else
+  warn "Integration Planning Foundation status script missing: scripts/integration-planning-foundation-status.sh"
+fi
+
 section "Curriculum Builder Local-First Foundation Plan"
 if [[ -f scripts/curriculum-builder-foundation-status.sh ]]; then
   curriculum_builder_foundation_result=0

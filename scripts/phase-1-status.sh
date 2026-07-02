@@ -1048,6 +1048,23 @@ check_bash_syntax tests/curriculum-builder-production-registry-planning-status-t
 check_doc_contains docs/curriculum-builder-production-registry-workflow-planning-brief.md "complete_production_registry_planning_brief" "production registry planning brief closure status"
 grep -Fq -- '--curriculum-production-registry-planning-status' bin/chief-of-staff && pass "chief-of-staff exposes --curriculum-production-registry-planning-status" || fail "chief-of-staff missing --curriculum-production-registry-planning-status"
 
+section "Curriculum Builder Registry Hardening Bundle Files"
+for path in \
+  docs/curriculum-builder-registry-authority-map.md \
+  scripts/curriculum-builder-registry-lane-status.sh \
+  scripts/curriculum-builder-registry-a4-a7-fixture-schema-status.sh \
+  tests/curriculum-builder-registry-lane-status-test.sh \
+  tests/curriculum-builder-registry-a4-a7-fixture-schema-status-test.sh; do
+  check_required_file "${path}"
+done
+check_bash_syntax scripts/curriculum-builder-registry-lane-status.sh
+check_bash_syntax scripts/curriculum-builder-registry-a4-a7-fixture-schema-status.sh
+check_bash_syntax tests/curriculum-builder-registry-lane-status-test.sh
+check_bash_syntax tests/curriculum-builder-registry-a4-a7-fixture-schema-status-test.sh
+check_doc_contains docs/curriculum-builder-registry-authority-map.md "complete_registry_authority_map" "registry authority map closure"
+grep -Fq -- '--curriculum-registry-lane-status' bin/chief-of-staff && pass "chief-of-staff exposes --curriculum-registry-lane-status" || fail "chief-of-staff missing --curriculum-registry-lane-status"
+grep -Fq -- '--curriculum-registry-a4-a7-fixture-schema-status' bin/chief-of-staff && pass "chief-of-staff exposes --curriculum-registry-a4-a7-fixture-schema-status" || fail "chief-of-staff missing --curriculum-registry-a4-a7-fixture-schema-status"
+
 section "Curriculum Registry–Contract Binding v0 Foundation Files"
 for path in \
   docs/curriculum-binding-v0.md \

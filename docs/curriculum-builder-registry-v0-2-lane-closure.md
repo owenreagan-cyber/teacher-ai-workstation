@@ -12,6 +12,10 @@ Real registry records: blocked
 
 Level 2 review: `docs/proposals/curriculum-builder-registry-lane-discovery-review.md`
 
+Registry authority map: `docs/curriculum-builder-registry-authority-map.md`
+
+Aggregate lane status: `bin/chief-of-staff --curriculum-registry-lane-status`
+
 ## Completed Subtracks
 
 | Subtrack | Status | CLI |
@@ -28,6 +32,9 @@ bin/chief-of-staff --curriculum-registry-dry-run-status
 bin/chief-of-staff --curriculum-registry-records-status
 bin/chief-of-staff --curriculum-registry-renderer-status
 bin/chief-of-staff --curriculum-registry-retrieval-status
+bin/chief-of-staff --curriculum-registry-lane-status
+bin/chief-of-staff --curriculum-registry-a4-a7-fixture-schema-status
+bin/chief-of-staff --curriculum-production-registry-planning-status
 bin/chief-of-staff --dashboard
 ```
 

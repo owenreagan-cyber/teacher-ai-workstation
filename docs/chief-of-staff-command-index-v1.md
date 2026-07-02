@@ -91,6 +91,8 @@ These flags exist in `bin/chief-of-staff` and work as read-only local status sur
 | `bin/chief-of-staff --curriculum-registry-records-status` | Registry v0.2 local fake records (CB-IMPL-2; fixture only) |
 | `bin/chief-of-staff --curriculum-registry-renderer-status` | Registry v0.2 fake-record renderer preview (CB-IMPL-3) |
 | `bin/chief-of-staff --curriculum-registry-retrieval-status` | Registry v0.2 fake-record retrieval hooks (CB-IMPL-4) |
+| `bin/chief-of-staff --curriculum-registry-lane-status` | Registry lane aggregate status (CB-IMPL-1–4 + planning + hardening) |
+| `bin/chief-of-staff --curriculum-registry-a4-a7-fixture-schema-status` | A4–A7 canonical schema cross-validation for v0.2 fake fixtures |
 | `bin/chief-of-staff --curriculum-production-registry-planning-status` | Production registry workflow planning status (CB-PROD-PLAN; planning-only; no writes) |
 | `bin/chief-of-staff --curriculum-library-foundation-status` | Curriculum Library v1 |
 | `bin/chief-of-staff --lesson-planning-foundation-status` | Lesson Planning v1 |

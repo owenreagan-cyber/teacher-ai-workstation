@@ -72,6 +72,7 @@
       "pacing_reference": "placeholder://registry/example-record",
       "canvas_reference_future": "placeholder://canvas/example-future-reference",
       "resource_ids": ["example-resource-001", "example-resource-002"],
+      "manual_alignment_status": "aligned_placeholder",
       "generation_blocked": true
     }
   ]

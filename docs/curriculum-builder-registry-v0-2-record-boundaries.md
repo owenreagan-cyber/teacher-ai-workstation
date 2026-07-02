@@ -38,6 +38,8 @@ Real curriculum content: no
 
 Fixture validation success does **not** authorize production registry writes.
 
+Registry authority map: `docs/curriculum-builder-registry-authority-map.md`
+
 ## Non-Activation
 
 This document does not activate production writes or external integrations.

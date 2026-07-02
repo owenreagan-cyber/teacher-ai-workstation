@@ -1440,6 +1440,27 @@ else
   warn "Curriculum Builder production registry planning status script missing: scripts/curriculum-builder-production-registry-planning-status.sh"
 fi
 
+section "Curriculum Builder Registry Lane Status (Aggregate)"
+if [[ -f scripts/curriculum-builder-registry-lane-status.sh ]]; then
+  curriculum_registry_lane_result=0
+  curriculum_registry_lane_output="$(bash scripts/curriculum-builder-registry-lane-status.sh 2>&1)" || curriculum_registry_lane_result=$?
+  curriculum_registry_lane_pass="$(summary_count "${curriculum_registry_lane_output}" "PASS")"
+  curriculum_registry_lane_warn="$(summary_count "${curriculum_registry_lane_output}" "WARN")"
+  curriculum_registry_lane_fail="$(summary_count "${curriculum_registry_lane_output}" "FAIL")"
+
+  if [[ "${curriculum_registry_lane_result}" != "0" ]]; then
+    printf '%s\n' "${curriculum_registry_lane_output}"
+    fail "Curriculum Builder Registry lane status failed"
+  elif [[ -n "${curriculum_registry_lane_pass}" && -n "${curriculum_registry_lane_warn}" && -n "${curriculum_registry_lane_fail}" ]]; then
+    printf 'Curriculum Builder Registry Lane: PASS %s / WARN %s / FAIL %s\n' "${curriculum_registry_lane_pass}" "${curriculum_registry_lane_warn}" "${curriculum_registry_lane_fail}"
+    pass "Curriculum Builder Registry lane status completed"
+  else
+    pass "Curriculum Builder Registry lane status completed"
+  fi
+else
+  warn "Curriculum Builder Registry lane status script missing: scripts/curriculum-builder-registry-lane-status.sh"
+fi
+
 section "Curriculum Registry v0 Manual Metadata Foundation"
 if [[ -f scripts/curriculum-registry-v0-status.sh ]]; then
   curriculum_registry_v0_result=0

@@ -89,11 +89,11 @@ Improve over time in four areas — starting with **rules, metadata, scorecards,
 
 ### Future Data Structures (Planning)
 
-- `builder_preferences.json`
-- `asset_index.json`
+- `builder_preferences.json` — preference memory
+- `asset_index.json` — reusable object catalog
 - `source_index.json`
-- `quality_scores.json`
-- `project_outcomes.json`
+- `quality_scores.json` — scorecards
+- `project_outcomes.json` — print history
 - `printability_scorecards.json`
 
 ### Source Scoring Criteria (Planning)

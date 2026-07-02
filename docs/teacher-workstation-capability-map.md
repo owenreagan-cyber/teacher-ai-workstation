@@ -16,7 +16,7 @@ Cross-references:
 
 - Master program sequence: `docs/master-build-roadmap.md` §4
 - AI tool roles: `docs/ai-tool-routing-matrix.md`, `assistant/model-routing.md`
-- Phase 3 closure: `docs/teacher-workstation-foundation-v0.md`
+- Long-term future programs: `docs/long-term-future-programs-roadmap.md`
 
 ## Status Labels
 

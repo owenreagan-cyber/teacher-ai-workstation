@@ -1314,6 +1314,27 @@ else
   warn "Curriculum Builder foundation status script missing: scripts/curriculum-builder-foundation-status.sh"
 fi
 
+section "Curriculum Builder Metadata Contract Schemas (Programs A4–A7)"
+if [[ -f scripts/curriculum-builder-contract-schemas-status.sh ]]; then
+  curriculum_contracts_result=0
+  curriculum_contracts_output="$(bash scripts/curriculum-builder-contract-schemas-status.sh 2>&1)" || curriculum_contracts_result=$?
+  curriculum_contracts_pass="$(summary_count "${curriculum_contracts_output}" "PASS")"
+  curriculum_contracts_warn="$(summary_count "${curriculum_contracts_output}" "WARN")"
+  curriculum_contracts_fail="$(summary_count "${curriculum_contracts_output}" "FAIL")"
+
+  if [[ "${curriculum_contracts_result}" != "0" ]]; then
+    printf '%s\n' "${curriculum_contracts_output}"
+    fail "Curriculum Builder contract schemas status failed"
+  elif [[ -n "${curriculum_contracts_pass}" && -n "${curriculum_contracts_warn}" && -n "${curriculum_contracts_fail}" ]]; then
+    printf 'Curriculum Builder Contract Schemas: PASS %s / WARN %s / FAIL %s\n' "${curriculum_contracts_pass}" "${curriculum_contracts_warn}" "${curriculum_contracts_fail}"
+    pass "Curriculum Builder contract schemas status completed"
+  else
+    pass "Curriculum Builder contract schemas status completed"
+  fi
+else
+  warn "Curriculum Builder contract schemas status script missing: scripts/curriculum-builder-contract-schemas-status.sh"
+fi
+
 section "Curriculum Registry v0 Manual Metadata Foundation"
 if [[ -f scripts/curriculum-registry-v0-status.sh ]]; then
   curriculum_registry_v0_result=0

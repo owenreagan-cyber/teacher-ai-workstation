@@ -87,6 +87,7 @@
 
 ### Now
 
+- Curriculum Builder metadata contract schemas Programs A4–A7 complete (`docs/curriculum-builder-canonical-contract-schemas.md`). `--curriculum-contracts-status` read-only metadata contract visibility only. No validators, ingestion, scanning, or generation.
 - Cursor Operating Modes and Proposal Governance Foundation complete (`docs/cursor-operating-modes-and-approval-gates.md`, `docs/teacher-workstation-domain-boundaries.md`, `docs/proposals/index.md`). `--cursor-operating-modes-status` read-only governance visibility only. No runtime activation.
 - Curriculum Builder v1 foundation complete (`docs/curriculum-builder-v1-foundation.md`). Registry v0, five canonical output contract types, binding v0, contract suite validation, and Chief of Staff integration active. Renderers, generation, real records, and integrations remain approval-gated.
 - Renderer Foundation v1 complete (`docs/renderer-v1-foundation.md`). Interface/status foundation with input readiness manifest and fail-safe rules; no renderer implementation, HTML/PDF generation, or exported artifacts.

@@ -180,4 +180,8 @@ This PR is complete when:
 ```bash
 bash scripts/curriculum-builder-foundation-status.sh
 bin/chief-of-staff --curriculum-builder-foundation-status
+bin/chief-of-staff --curriculum-contracts-status
+bash scripts/curriculum-builder-contract-schemas-status.sh
 ```
+
+Metadata contract schemas (Programs A4–A7): `docs/curriculum-builder-canonical-contract-schemas.md`

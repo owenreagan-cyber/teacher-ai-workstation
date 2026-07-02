@@ -31,6 +31,7 @@ Cross-references:
 | Worksheet Contract v0 | `docs/curriculum-worksheet-contract-v0.md` | Third canonical contract |
 | Review Game Contract v0 | `docs/curriculum-review-game-contract-v0.md` | Fourth canonical contract |
 | Canvas Package Contract v0 | `docs/curriculum-canvas-package-contract-v0.md` | Fifth canonical contract (metadata only) |
+| Metadata contracts A4–A7 | `docs/curriculum-builder-canonical-contract-schemas.md` | Inactive planning schemas (resource, source, review, lesson link) |
 
 Artifact roots:
 
@@ -43,6 +44,7 @@ Artifact roots:
 | Command | Purpose |
 | --- | --- |
 | `bin/chief-of-staff --curriculum-builder-foundation-status` | Full Curriculum Builder foundation PASS/WARN/FAIL |
+| `bin/chief-of-staff --curriculum-contracts-status` | Metadata contract schemas A4–A7 read-only status |
 | `bin/chief-of-staff --curriculum-registry-v0-status` | Registry v0 status |
 | `bin/chief-of-staff --curriculum-registry-v0-validate` | Registry v0 validator |
 | `bin/chief-of-staff --curriculum-output-contract-v0-status` | Output contract v0 status |

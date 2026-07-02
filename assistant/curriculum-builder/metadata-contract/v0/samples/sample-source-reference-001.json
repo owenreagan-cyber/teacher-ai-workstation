@@ -1,0 +1,17 @@
+{
+  "contract_type": "curriculum_source_reference_contract",
+  "contract_version": "0.0.0-inactive",
+  "metadata_only": true,
+  "read_only": true,
+  "source_reference_id": "sample-source-drive-001",
+  "source_system": "google_drive",
+  "source_label": "example-drive-reference",
+  "source_kind": "file",
+  "path_or_url_reference": "placeholder://source/example-drive-reference",
+  "owner_context": "teacher_workstation_planning",
+  "access_notes": "Manual future access only — no API or crawl in v0.",
+  "content_hash_future": null,
+  "last_verified_future": null,
+  "not_scanned": true,
+  "not_ingested": true
+}

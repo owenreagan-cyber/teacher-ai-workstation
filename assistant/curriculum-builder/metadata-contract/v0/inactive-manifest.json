@@ -1,0 +1,33 @@
+{
+  "manifest_version": "0.0.0-inactive",
+  "manifest_status": "inactive_planning_only",
+  "metadata_only": true,
+  "read_only": true,
+  "validator": "none",
+  "contract_schemas": [
+    {
+      "program": "A4",
+      "contract_type": "curriculum_resource_contract",
+      "doc": "docs/curriculum-resource-contract-schema.md",
+      "sample": "samples/sample-resource-001.json"
+    },
+    {
+      "program": "A5",
+      "contract_type": "curriculum_source_reference_contract",
+      "doc": "docs/curriculum-source-reference-contract-schema.md",
+      "sample": "samples/sample-source-reference-001.json"
+    },
+    {
+      "program": "A6",
+      "contract_type": "curriculum_review_state_contract",
+      "doc": "docs/curriculum-review-state-contract-schema.md",
+      "sample": "samples/sample-review-state-001.json"
+    },
+    {
+      "program": "A7",
+      "contract_type": "curriculum_lesson_link_contract",
+      "doc": "docs/curriculum-lesson-link-contract-schema.md",
+      "sample": "samples/sample-lesson-link-001.json"
+    }
+  ]
+}

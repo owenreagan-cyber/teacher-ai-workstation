@@ -150,6 +150,10 @@
       "name": "Program Status — Curriculum",
       "commands": [
         {"flag": "--curriculum-builder-foundation-status", "status": "implemented", "purpose": "Curriculum Builder v1 foundation"},
+        {"flag": "--curriculum-contracts-status", "status": "implemented", "purpose": "Curriculum Builder metadata contract schemas A4–A7 (read-only)"},
+        {"flag": "--curriculum-scan-folders", "status": "blocked", "purpose": "Folder scanning blocked without explicit approval mission"},
+        {"flag": "--curriculum-ingest-files", "status": "blocked", "purpose": "Curriculum ingestion blocked without explicit approval mission"},
+        {"flag": "--curriculum-generate-lesson", "status": "blocked", "purpose": "Lesson generation blocked without explicit approval mission"},
         {"flag": "--curriculum-library-foundation-status", "status": "implemented", "purpose": "Curriculum Library v1 foundation"},
         {"flag": "--lesson-planning-foundation-status", "status": "implemented", "purpose": "Lesson Planning v1 foundation"},
         {"flag": "--renderer-foundation-status", "status": "implemented", "purpose": "Renderer Foundation v1"},

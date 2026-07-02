@@ -122,6 +122,7 @@ run_track "Curriculum Registry v0" scripts/curriculum-registry-v0-status.sh
 run_track "Curriculum Output Contract v0" scripts/curriculum-output-contract-v0-status.sh
 run_track "Curriculum Binding v0" scripts/curriculum-binding-v0-status.sh
 run_track "Curriculum Builder Foundation" scripts/curriculum-builder-foundation-status.sh
+run_track "Curriculum Builder Contract Schemas" scripts/curriculum-builder-contract-schemas-status.sh
 
 section 'Direct Validators'
 run_track "Registry v0 Validator" scripts/curriculum-registry-v0-validator.sh

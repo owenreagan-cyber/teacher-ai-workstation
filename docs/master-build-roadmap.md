@@ -233,7 +233,45 @@ Same pattern as A1 for `review_game_contract`.
 
 Promote `canvas_export_package_contract` placeholder to canonical **metadata** contract. No Canvas API, no package building.
 
-#### A4 — Registry v0.2 Manual Entry Dry-Run
+#### A4 — Curriculum Resource Contract Schema (metadata layer)
+
+```text
+Status: COMPLETE (read-only planning)
+Doc: docs/curriculum-resource-contract-schema.md
+```
+
+Define resource metadata without ingesting content. Inactive samples only.
+
+#### A5 — Curriculum Source Reference Contract Schema
+
+```text
+Status: COMPLETE (read-only planning)
+Doc: docs/curriculum-source-reference-contract-schema.md
+```
+
+Define source references without crawling Drive/NAS/iCloud/Canvas.
+
+#### A6 — Curriculum Review State Contract Schema
+
+```text
+Status: COMPLETE (read-only planning)
+Doc: docs/curriculum-review-state-contract-schema.md
+```
+
+Define review metadata without generating review notes.
+
+#### A7 — Curriculum Lesson Link Contract Schema
+
+```text
+Status: COMPLETE (read-only planning)
+Doc: docs/curriculum-lesson-link-contract-schema.md
+```
+
+Define lesson/resource links without lesson generation or Canvas API.
+
+Index: `docs/curriculum-builder-canonical-contract-schemas.md` · CLI: `bin/chief-of-staff --curriculum-contracts-status`
+
+#### CB-IMPL-1 — Registry v0.2 Manual Entry Dry-Run (approval-gated)
 
 ```text
 Mission: Registry manual entry CLI (validate-before-write dry-run only)
@@ -251,15 +289,15 @@ Out of scope:
 Autonomous: dry-run portion yes; --write requires separate approval mission
 ```
 
-#### A5 — Real Registry Records (approval-gated)
+#### CB-IMPL-2 — Real Registry Records (approval-gated)
 
 Replace fictional `sample-*` records with Owen-approved real metadata. Requires completed decision intake and explicit no-student-data confirmation.
 
-#### A6 — Renderer Foundation (approval-gated)
+#### CB-IMPL-3 — Renderer Foundation (approval-gated)
 
 First teacher-reviewed renderer for one contract type (likely DI slide deck or teacher script). Separate intake per `docs/implementation-approval-gate.md` validators/renderers checklist.
 
-#### A7 — Local Retrieval Hooks (approval-gated)
+#### CB-IMPL-4 — Local Retrieval Hooks (approval-gated)
 
 Approved lookup/index over registry + contracts without vector DB or RAG.
 
@@ -797,9 +835,9 @@ Per `docs/engineering-constitution.md` §10, v1.0 means these systems exist as *
 
 ## 10. Immediate Next Recommended Mission
 
-**Curriculum Builder — Additional Canonical Contract Schemas (Programs A4–A7)**
+**Curriculum Builder — Registry v0.2 Manual Entry Dry-Run (CB-IMPL-1)**
 
-3D Builder Workshop Agent read-only planning surface is complete (`docs/3d-builder-workshop-agent-foundation.md`). Workstation-readiness foundation chain is substantially complete. Recommended next: approval-gated Curriculum Builder subtracks per Phase 2 mission sequencing.
+Metadata contract schemas A4–A7 are complete (`docs/curriculum-builder-canonical-contract-schemas.md`, `bin/chief-of-staff --curriculum-contracts-status`). Workstation-readiness and governance foundations are substantially complete. Recommended next: approval-gated Registry v0.2 manual entry dry-run per implementation subtrack CB-IMPL-1.
 
 Alternate tracks remain approval-gated per `docs/implementation-approval-gate.md`.
 
@@ -822,12 +860,14 @@ COMPLETE:
   CAL1 Classroom App Lab prototype rescue read-only foundation
   G1 Lovable Classroom App Builder read-only planning surface
   J1 3D Builder Workshop Agent read-only planning surface
+  Governance Cursor operating modes foundation
+  A4–A7 Curriculum Builder metadata contract schemas (read-only)
 
 NOW (autonomous pattern when authorized):
-  A4–A7 Curriculum Builder subtracks (approval-gated)
+  CB-IMPL-1 Registry v0.2 manual entry dry-run (approval-gated)
 
 THEN (mixed approval):
-  A4–A7 Curriculum Builder Complete subtracks
+  CB-IMPL-2–4 Curriculum Builder implementation subtracks
   E* Mac Workstation Experience
   F* Widget and Shortcut Builder catalogs
 

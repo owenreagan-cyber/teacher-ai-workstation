@@ -969,6 +969,23 @@ check_doc_contains docs/cursor-operating-modes-and-approval-gates.md "Maximum Au
 check_doc_contains docs/teacher-workstation-domain-boundaries.md "Parent Communication Agents" "domain boundaries doc parent communication"
 grep -Fq -- '--cursor-operating-modes-status' bin/chief-of-staff && pass "chief-of-staff exposes --cursor-operating-modes-status" || fail "chief-of-staff missing --cursor-operating-modes-status"
 
+section "Curriculum Builder Metadata Contract Schemas (Programs A4–A7) Files"
+for path in \
+  docs/curriculum-builder-canonical-contract-schemas.md \
+  docs/curriculum-resource-contract-schema.md \
+  docs/curriculum-source-reference-contract-schema.md \
+  docs/curriculum-review-state-contract-schema.md \
+  docs/curriculum-lesson-link-contract-schema.md \
+  docs/curriculum-builder-contract-boundaries.md \
+  assistant/curriculum-builder/metadata-contract/v0/inactive-manifest.json \
+  scripts/curriculum-builder-contract-schemas-status.sh \
+  tests/curriculum-builder-contract-schemas-status-test.sh; do
+  check_required_file "${path}"
+done
+check_bash_syntax scripts/curriculum-builder-contract-schemas-status.sh
+check_doc_contains docs/curriculum-builder-canonical-contract-schemas.md "complete_a4_a7_metadata_contracts" "contract schemas closure status"
+grep -Fq -- '--curriculum-contracts-status' bin/chief-of-staff && pass "chief-of-staff exposes --curriculum-contracts-status" || fail "chief-of-staff missing --curriculum-contracts-status"
+
 section "Curriculum Registry–Contract Binding v0 Foundation Files"
 for path in \
   docs/curriculum-binding-v0.md \
@@ -1235,6 +1252,7 @@ check_bash_syntax "scripts/lesson-review-view.sh"
 check_bash_syntax "scripts/lesson-review-checklist-status.sh"
 check_bash_syntax "scripts/cursor-workflow-status.sh"
 check_bash_syntax "scripts/cursor-operating-modes-status.sh"
+check_bash_syntax "scripts/curriculum-builder-contract-schemas-status.sh"
 check_bash_syntax "scripts/phase-1-status.sh"
 check_bash_syntax "bin/chief-of-staff"
 check_bash_syntax "scripts/verify-phase-0e.sh"

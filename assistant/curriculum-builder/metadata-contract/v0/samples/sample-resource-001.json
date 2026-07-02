@@ -1,0 +1,20 @@
+{
+  "contract_type": "curriculum_resource_contract",
+  "contract_version": "0.0.0-inactive",
+  "metadata_only": true,
+  "read_only": true,
+  "resource_id": "sample-resource-worksheet-001",
+  "title": "Sample Worksheet",
+  "resource_type": "worksheet",
+  "subject": "Example Math Course",
+  "grade_band": "Example Grade 5",
+  "course": "Example Math Course",
+  "unit": "Unit 1",
+  "lesson": "Lesson 1",
+  "topic": "Example Topic Placeholder",
+  "teacher_only": false,
+  "student_facing_allowed": true,
+  "review_status": "approved_placeholder",
+  "source_reference_id": "sample-source-drive-001",
+  "notes": "Fictional placeholder resource metadata only."
+}

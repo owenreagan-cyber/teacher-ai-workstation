@@ -33,6 +33,18 @@ grep -q '11 Owen checklist items pending approval' "${tmp}" || {
   rm -f "${tmp}"
   exit 1
 }
+grep -q 'doc mentions build queue product-decision wall' "${tmp}" || {
+  echo "FAIL: missing build queue product-decision wall coherence check"
+  cat "${tmp}"
+  rm -f "${tmp}"
+  exit 1
+}
+grep -q 'doc mentions review packet non-approval statement' "${tmp}" || {
+  echo "FAIL: status script should verify review packet non-approval language"
+  cat "${tmp}"
+  rm -f "${tmp}"
+  exit 1
+}
 rm -f "${tmp}"
 
 cli_tmp="$(mktemp "${TMPDIR:-/tmp}/cb-owen-checklist-cli.XXXXXX")"

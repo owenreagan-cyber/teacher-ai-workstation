@@ -14,6 +14,18 @@ Implementation: blocked until Owen explicitly approves each item
 
 Read-only tracker for **§ J — Owen Approval Checklist** in `docs/curriculum-builder-production-registry-workflow-planning-brief.md`. Cursor may maintain tracker rows and status proof; Owen must approve each item before any production registry **implementation** mission.
 
+**Owen review packet:** `docs/curriculum-builder-production-registry-owen-review-packet.md` — decision table, categories, and non-approval language. Preparing the packet does not approve any item.
+
+## Companion Summary for Owen
+
+| Question | Answer |
+| --- | --- |
+| Are we ready to implement production writes? | **No** — all 11 items pending |
+| Is safe scaffolding complete enough to decide? | **Yes** — product-decision wall reached (PR #216) |
+| What should Owen do next? | Work through review packet § 7 decision table |
+| What is the safest first code mission after decisions? | Governance-only PR per planning brief § I |
+| Does checklist WARN mean failure? | **No** — 1 expected WARN while items pending |
+
 ## Checklist Items
 
 | # | Item | Owen status | Owner | Notes |
@@ -46,6 +58,7 @@ bash tests/curriculum-builder-production-registry-owen-checklist-status-test.sh
 
 | Document | Role |
 | --- | --- |
+| `docs/curriculum-builder-production-registry-owen-review-packet.md` | Owen-facing decision packet |
 | `docs/curriculum-builder-production-registry-workflow-planning-brief.md` | Canonical § J checklist source |
 | `docs/curriculum-builder-registry-authority-map.md` | Registry surface authority |
 | `docs/implementation-approval-gate.md` | Implementation gate |

@@ -8,11 +8,17 @@ Phase 0E Vibe Engine.
 
 ## Current Focus
 
+**Product-decision wall — Owen § J production registry checklist review.**
+
+Safe-local registry scaffolding is complete (PR #216). The highest-value next step is Owen reviewing `docs/curriculum-builder-production-registry-owen-review-packet.md` and deciding on the 11 checklist items in `docs/curriculum-builder-production-registry-owen-checklist-tracker.md`. Generic Master Build Plan autopilot is **not** the next step.
+
 Master program roadmap: `docs/master-build-roadmap.md` — Program Readiness Audit and mission sequencing for v1.0. Implementation does not proceed automatically from the roadmap.
 
 Handoff and status clarity. Start from `docs/phase-1-chief-of-staff-status-audit.md` — Repo-Wide Parked Tracks and Active Status Map and `docs/build-queue.md`.
 
 ## Recently Completed
+
+- Owen § J Production Registry Review Packet (2026-07-02): `docs/curriculum-builder-production-registry-owen-review-packet.md` — decision table, categories, non-approval language. Product-decision wall documented. No production writes.
 
 - Master Build Plan Safe Autopilot (2026-07-02): registry lane aggregate includes source readiness + Owen § J checklist; `--curriculum-production-registry-owen-checklist-status`; F1 fake catalog index; CAL1 prototype inventory template + G1 boundary; classroom utility blocked intake doc; dry-run promotion banner. Documentation/status only.
 

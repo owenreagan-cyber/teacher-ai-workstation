@@ -23,6 +23,7 @@ repo_root="$(git rev-parse --show-toplevel 2>/dev/null || true)"
 cd "${repo_root}"
 
 tracker_doc="docs/curriculum-builder-production-registry-owen-checklist-tracker.md"
+review_packet="docs/curriculum-builder-production-registry-owen-review-packet.md"
 planning_brief="docs/curriculum-builder-production-registry-workflow-planning-brief.md"
 status_script="scripts/curriculum-builder-production-registry-owen-checklist-status.sh"
 manifest="assistant/chief-of-staff/v1/command-surface-manifest.json"
@@ -42,9 +43,13 @@ EOF
 
 section 'Tracker Document'
 check_file "${tracker_doc}"
+check_file "${review_packet}"
 check_doc_contains "${tracker_doc}" "not_complete_awaiting_owen" "tracker closure status"
 check_doc_contains "${tracker_doc}" "Owen status" "tracker Owen status column"
-check_doc_contains "${tracker_doc}" "ChatGPT review recommended" "ChatGPT review gate"
+check_doc_contains "${tracker_doc}" "curriculum-builder-production-registry-owen-review-packet" "tracker links review packet"
+check_doc_contains "${review_packet}" "Documenting an option does not approve it" "review packet non-approval statement"
+check_doc_contains "${review_packet}" "Preparing this packet does not authorize implementation" "review packet no implementation authorization"
+check_doc_contains "${review_packet}" "product-decision wall" "review packet product-decision wall"
 check_doc_contains "${planning_brief}" "Owen Approval Checklist" "planning brief § J"
 
 section 'Checklist Item Rows (Owen Decisions Pending)'
@@ -88,7 +93,8 @@ bash -n tests/curriculum-builder-production-registry-owen-checklist-status-test.
 section 'Roadmap and Ledger Coherence'
 check_doc_contains docs/proposals/index.md "Owen § J production registry checklist tracker" "proposal ledger owen tracker"
 check_doc_contains docs/master-build-roadmap.md "Owen must complete the approval checklist" "roadmap Owen checklist gate"
-check_doc_contains docs/build-queue.md "Owen completes approval checklist" "build queue Owen checklist gate"
+check_doc_contains docs/build-queue.md "Product-decision wall" "build queue product-decision wall"
+check_doc_contains assistant/memory/active-priorities.md "Owen § J production registry checklist review" "active priorities Owen review"
 
 section 'Negative Non-Activation Assertions'
 grep -Fq -- '--curriculum-registry-write)' bin/chief-of-staff 2>/dev/null && fail 'chief-of-staff must not implement --curriculum-registry-write handler' || pass 'chief-of-staff has no --curriculum-registry-write handler'

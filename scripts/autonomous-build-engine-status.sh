@@ -47,6 +47,7 @@ check_doc_contains "${governance_doc}" "Autonomous Build Engine Mode" "autonomou
 check_doc_contains "${governance_doc}" "Autonomous Continuation Loop" "continuation loop"
 check_doc_contains "${governance_doc}" "Safe Work Class A" "safe work class A"
 check_doc_contains "${governance_doc}" "Safe Work Class G" "safe work class G"
+check_doc_contains "${governance_doc}" "Safe Work Class H" "safe work class H"
 check_doc_contains "${governance_doc}" "Minimum Exhaustion Rule" "minimum exhaustion rule"
 check_doc_contains "${governance_doc}" "No Soft Stop Rule" "no soft stop rule"
 check_doc_contains "${governance_doc}" "Expected WARN Policy" "expected WARN policy"
@@ -68,6 +69,14 @@ section 'Expected WARN Registry'
 check_file "${expected_warns_doc}"
 check_doc_contains "${expected_warns_doc}" "Registered WARNs" "expected warns registry"
 check_doc_contains "${governance_doc}" "curriculum-builder-registry-expected-warns.md" "expected warns cross-link"
+
+section 'Proposal Folder Structure (Safe Work Class H)'
+check_file docs/proposals/lane-reviews/README.md
+check_file docs/proposals/ideas/README.md
+check_file docs/proposals/backlog/README.md
+check_file docs/proposals/blocked/README.md
+check_file docs/proposals/implemented/README.md
+check_doc_contains docs/proposals/README.md "lane-reviews/" "proposals readme lane-reviews"
 
 section 'Operating Modes Cross-Link'
 check_doc_contains "${operating_modes_doc}" "cursor-autonomous-build-engine.md" "operating modes links autonomous build engine"

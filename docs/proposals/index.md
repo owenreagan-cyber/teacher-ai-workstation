@@ -53,10 +53,12 @@ Templates: `docs/proposals/templates/lane-level-discovery-mission.md`, `docs/pro
 | Autonomous Build Engine governance foundation | Cursor / Governance | 2 | high | low | low | none | none | none | implemented | complete — `docs/cursor-autonomous-build-engine.md` | CB-AUTO-GOV mission 2026-07-02 | 2026-07-02 |
 | Proposal folder structure (lane-reviews, ideas, backlog, blocked, implemented) | Cursor / Governance | 2 | high | low | low | none | none | none | implemented | complete — `docs/proposals/README.md` § File Layout | ABE Safe Work Sprint 2026-07-02 | 2026-07-02 |
 | Safe Work Class H in Autonomous Build Engine governance | Cursor / Governance | 2 | medium | low | low | none | none | none | implemented | complete — `docs/cursor-autonomous-build-engine.md` | ABE Safe Work Sprint 2026-07-02 | 2026-07-02 |
-| Aggregate `--governance-lane-status` command | Cursor / Governance | 2 | medium | low | low | none | none | none | proposed | Combine operating modes + ABE + proposal folder health | Level 2 Operating Modes Review 2026-07-02 | 2026-07-02 |
+| Aggregate `--governance-lane-status` command | Cursor / Governance | 2 | medium | low | low | none | none | none | implemented | complete — `bin/chief-of-staff --governance-lane-status` | Backlog Implementation Sprint 2026-07-02 | 2026-07-02 |
 | Owen § J production registry checklist tracker | Curriculum Builder Registry | 2 | medium | low | low | none | possible | none | proposed | Read-only status rows for checklist items | Level 2 CB-PROD-PLAN Review 2026-07-02 | 2026-07-02 |
 | Program B vs full CLI surface map | Chief of Staff | 2 | medium | low | low | none | none | none | proposed | Planning doc mapping B1–B6 vs all CLI flags | Level 2 Program B Review 2026-07-02 | 2026-07-02 |
-| H+I aggregate read-only lane status command | Workstation Ops | 2 | medium | low | low | none | none | none | proposed | `--workstation-ops-lane-status` wrapper | Level 2 H/I Reviews 2026-07-02 | 2026-07-02 |
+| H+I aggregate read-only lane status command | Workstation Ops | 2 | medium | low | low | none | none | none | implemented | complete — `bin/chief-of-staff --workstation-ops-lane-status` | Backlog Implementation Sprint 2026-07-02 | 2026-07-02 |
+| Status-banner hardening across lane status scripts | Cross-cutting | 2 | medium | low | low | none | none | none | implemented | complete — runtime activation / fake-fixture banners in aggregate + registry scripts | Backlog Implementation Sprint 2026-07-02 | 2026-07-02 |
+| Negative non-mutation guardrail tests | Curriculum Builder Registry | 2 | medium | low | low | none | none | none | implemented | complete — `tests/backlog-non-mutation-guardrails-test.sh` + renderer/retrieval tests | Backlog Implementation Sprint 2026-07-02 | 2026-07-02 |
 
 Detail: `docs/proposals/lane-reviews/README.md` (index); prior registry review: `docs/proposals/curriculum-builder-registry-lane-discovery-review.md`
 

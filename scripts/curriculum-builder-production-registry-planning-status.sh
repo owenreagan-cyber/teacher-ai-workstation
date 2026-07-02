@@ -32,6 +32,8 @@ manifest="assistant/chief-of-staff/v1/command-surface-manifest.json"
 section 'Curriculum Builder Production Registry Workflow Planning'
 cat <<'EOF'
 Status: planning_only
+Classification: future workflow planning — not implementation
+Runtime activation: no
 Production registry writes: blocked
 Active --write: blocked
 Real metadata intake: blocked

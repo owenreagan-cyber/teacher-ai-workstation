@@ -1049,6 +1049,30 @@ check_bash_syntax tests/autonomous-build-engine-status-test.sh
 check_doc_contains docs/cursor-autonomous-build-engine.md "complete_autonomous_build_engine_governance" "autonomous build engine closure"
 grep -Fq -- '--autonomous-build-engine-status' bin/chief-of-staff && pass "chief-of-staff exposes --autonomous-build-engine-status" || fail "chief-of-staff missing --autonomous-build-engine-status"
 
+section "Governance Lane Aggregate Status Files"
+for path in \
+  scripts/governance-lane-status.sh \
+  tests/governance-lane-status-test.sh; do
+  check_required_file "${path}"
+done
+check_bash_syntax scripts/governance-lane-status.sh
+check_bash_syntax tests/governance-lane-status-test.sh
+grep -Fq -- '--governance-lane-status' bin/chief-of-staff && pass "chief-of-staff exposes --governance-lane-status" || fail "chief-of-staff missing --governance-lane-status"
+
+section "Workstation Ops Lane Aggregate Status Files"
+for path in \
+  scripts/workstation-ops-lane-status.sh \
+  tests/workstation-ops-lane-status-test.sh; do
+  check_required_file "${path}"
+done
+check_bash_syntax scripts/workstation-ops-lane-status.sh
+check_bash_syntax tests/workstation-ops-lane-status-test.sh
+grep -Fq -- '--workstation-ops-lane-status' bin/chief-of-staff && pass "chief-of-staff exposes --workstation-ops-lane-status" || fail "chief-of-staff missing --workstation-ops-lane-status"
+
+section "Backlog Non-Mutation Guardrail Tests"
+check_required_file tests/backlog-non-mutation-guardrails-test.sh
+check_bash_syntax tests/backlog-non-mutation-guardrails-test.sh
+
 section "Curriculum Builder Production Registry Workflow Planning Files"
 for path in \
   docs/curriculum-builder-production-registry-workflow-planning-brief.md \

@@ -47,4 +47,18 @@ grep -q '^FAIL: 0$' "${cli_tmp}" || { echo "FAIL: retrieval status reported fail
 grep -q 'no embeddings or RAG attempted' "${cli_tmp}" || { echo "FAIL: missing negative RAG assertion"; cat "${cli_tmp}"; rm -f "${cli_tmp}"; exit 1; }
 rm -f "${cli_tmp}"
 
+fixture="assistant/curriculum-builder/samples/registry-v0-2-local-records/local-registry.json"
+if [[ -f "${fixture}" ]]; then
+  before_fixture="$(mktemp "${TMPDIR:-/tmp}/cb-registry-v02-retrieval-fixture-before.XXXXXX")"
+  cp "${fixture}" "${before_fixture}"
+  bash "${retrieval}" >/dev/null 2>&1
+  bash "${retrieval}" --subject "Example Math Course" >/dev/null 2>&1
+  if ! cmp -s "${fixture}" "${before_fixture}"; then
+    echo "FAIL: retrieval check mutated fixture registry"
+    rm -f "${before_fixture}"
+    exit 1
+  fi
+  rm -f "${before_fixture}"
+fi
+
 echo "PASS: Curriculum Builder Registry v0.2 retrieval tests passed."

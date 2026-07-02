@@ -46,6 +46,7 @@ Cross-references:
 | Mode awareness (conceptual) | **implemented read-only** | `--mode-status` (Program B5); no Mac changes |
 | Cursor operating modes governance | **implemented read-only** | `--cursor-operating-modes-status`; approval gates + proposal ledger |
 | Autonomous Build Engine governance | **implemented read-only** | `--autonomous-build-engine-status`; continuation loop + exhaustion rules |
+| Governance lane aggregate status | **implemented read-only** | `--governance-lane-status`; operating modes + ABE + proposal folders |
 | Daily briefing (AI) | planned | Approval-gated |
 | Tool routing surface | implemented read-only | `--model-routing-status`; matrix at `docs/ai-tool-routing-matrix.md` |
 | Health summary | planned | Aggregated report via Program H |
@@ -92,6 +93,7 @@ Cross-references:
 | --- | --- | --- |
 | Teacher Workstation Health Monitor | **implemented read-only** | Program H — `--system-health` |
 | Teacher Workstation System Updater | **implemented read-only** | Program I — `--system-update-check` |
+| Workstation ops lane aggregate status | **implemented read-only** | `--workstation-ops-lane-status`; Health H + Updater I |
 | Widget catalog | implemented read-only | `--widget-shortcut-status`; Program F1 foundation |
 | Shortcut catalog | implemented read-only | `--widget-shortcut-status`; Program F1 foundation |
 | Classroom App Lab / Prototype Rescue | implemented read-only | `--classroom-app-lab-status`; CAL1 foundation |

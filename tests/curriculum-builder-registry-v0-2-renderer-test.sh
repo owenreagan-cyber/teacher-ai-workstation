@@ -21,6 +21,34 @@ grep -q 'example-resource-001' "${tmp}" || { echo "FAIL: missing fake record in 
 grep -q 'no content generated' "${tmp}" || { echo "FAIL: missing no-generation footer"; cat "${tmp}"; rm -f "${tmp}"; exit 1; }
 rm -f "${tmp}"
 
+fixture="assistant/curriculum-builder/samples/registry-v0-2-local-records/local-registry.json"
+if [[ -f "${fixture}" ]]; then
+  before_fixture="$(mktemp "${TMPDIR:-/tmp}/cb-registry-v02-renderer-fixture-before.XXXXXX")"
+  cp "${fixture}" "${before_fixture}"
+  bash "${preview}" markdown >/dev/null 2>&1
+  if ! cmp -s "${fixture}" "${before_fixture}"; then
+    echo "FAIL: render preview mutated fixture registry"
+    rm -f "${before_fixture}"
+    exit 1
+  fi
+  rm -f "${before_fixture}"
+fi
+
+renderer_dir="assistant/curriculum-builder/samples/registry-v0-2-renderer"
+if [[ -d "${renderer_dir}" ]]; then
+  before_list="$(mktemp "${TMPDIR:-/tmp}/cb-registry-v02-renderer-dir-before.XXXXXX")"
+  ls -1 "${renderer_dir}" | sort >"${before_list}"
+  bash "${preview}" markdown >/dev/null 2>&1
+  after_list="$(mktemp "${TMPDIR:-/tmp}/cb-registry-v02-renderer-dir-after.XXXXXX")"
+  ls -1 "${renderer_dir}" | sort >"${after_list}"
+  if ! cmp -s "${before_list}" "${after_list}"; then
+    echo "FAIL: render preview wrote files under renderer samples directory"
+    rm -f "${before_list}" "${after_list}"
+    exit 1
+  fi
+  rm -f "${before_list}" "${after_list}"
+fi
+
 cli_tmp="$(mktemp "${TMPDIR:-/tmp}/cb-registry-v02-renderer-cli.XXXXXX")"
 bin/chief-of-staff --curriculum-registry-renderer-status >"${cli_tmp}" 2>&1 || {
   echo "FAIL: --curriculum-registry-renderer-status exited nonzero"

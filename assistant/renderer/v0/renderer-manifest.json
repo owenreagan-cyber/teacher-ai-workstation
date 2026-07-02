@@ -1,0 +1,95 @@
+{
+  "manifest_version": "0.1.0",
+  "manifest_status": "active_v0",
+  "foundation_level": "v1_planning",
+  "metadata_only": true,
+  "read_only": true,
+  "interface_only": true,
+  "rendering_enabled": false,
+  "generation_enabled": false,
+  "renderer_interfaces_path": "assistant/renderer-foundation/v0/sample-renderer-manifests.json",
+  "required_inputs": [
+    {
+      "input_id": "curriculum-registry-v0",
+      "input_type": "registry",
+      "artifact_path": "assistant/curriculum-builder/registry/v0/registry.json",
+      "status_command": "bin/chief-of-staff --curriculum-registry-v0-status",
+      "validate_command": "bin/chief-of-staff --curriculum-registry-v0-validate",
+      "required_for_rendering": true,
+      "automatic_resolution": false
+    },
+    {
+      "input_id": "curriculum-library-v0",
+      "input_type": "library_reference",
+      "artifact_path": "assistant/curriculum-library/v0/sample-library-references.json",
+      "status_command": "bin/chief-of-staff --curriculum-library-foundation-status",
+      "validate_command": "bin/chief-of-staff --curriculum-library-reference-v0-validate",
+      "required_for_rendering": true,
+      "automatic_resolution": false
+    },
+    {
+      "input_id": "output-contract-v0",
+      "input_type": "output_contract",
+      "artifact_path": "assistant/curriculum-builder/output-contract/v0/placeholder-manifest.json",
+      "status_command": "bin/chief-of-staff --curriculum-output-contract-v0-status",
+      "validate_command": "bin/chief-of-staff --curriculum-output-contract-v0-validate",
+      "required_for_rendering": true,
+      "automatic_resolution": false
+    },
+    {
+      "input_id": "teacher-script-contract-v0",
+      "input_type": "contract_doc",
+      "artifact_path": "docs/curriculum-teacher-script-contract-v0.md",
+      "status_command": "bin/chief-of-staff --curriculum-output-contract-v0-status",
+      "validate_command": "bash tests/curriculum-teacher-script-contract-v0-test.sh",
+      "required_for_rendering": false,
+      "automatic_resolution": false
+    },
+    {
+      "input_id": "lesson-planning-workflow-v0",
+      "input_type": "lesson_workflow",
+      "artifact_path": "assistant/lesson-planning/workflow/v0/sample-lesson-workflow-001.json",
+      "status_command": "bin/chief-of-staff --lesson-planning-foundation-status",
+      "validate_command": "bin/chief-of-staff --lesson-planning-workflow-v0-validate",
+      "required_for_rendering": false,
+      "automatic_resolution": false
+    },
+    {
+      "input_id": "binding-v0",
+      "input_type": "binding",
+      "artifact_path": "assistant/curriculum-builder/binding/v0/binding-manifest.json",
+      "status_command": "bin/chief-of-staff --curriculum-binding-v0-status",
+      "validate_command": "bin/chief-of-staff --curriculum-binding-v0-validate",
+      "required_for_rendering": true,
+      "automatic_resolution": false
+    },
+    {
+      "input_id": "canvas-llm-export-readiness",
+      "input_type": "delivery_readiness",
+      "artifact_path": "docs/canvas-llm-stop-marker-curriculum-builder-return.md",
+      "status_command": "bin/chief-of-staff --teacher-app-designer-canvas-llm-status",
+      "validate_command": "docs/canvas-llm-stop-marker-curriculum-builder-return.md",
+      "required_for_rendering": false,
+      "automatic_resolution": false
+    }
+  ],
+  "future_renderer_types": [
+    {"renderer_type": "slide_renderer", "status": "inactive"},
+    {"renderer_type": "teacher_script_renderer", "status": "inactive"},
+    {"renderer_type": "worksheet_renderer", "status": "inactive"},
+    {"renderer_type": "review_game_renderer", "status": "inactive"},
+    {"renderer_type": "canvas_package_renderer", "status": "inactive"},
+    {"renderer_type": "printable_artifact_renderer", "status": "inactive"}
+  ],
+  "fail_safe_rules": [
+    "input_validation_must_pass",
+    "dependencies_must_be_present",
+    "source_must_be_verified",
+    "review_status_must_be_approved_or_manual_ready",
+    "quarantined_resources_blocked",
+    "placeholder_only_blocked_for_real_output",
+    "student_data_blocked",
+    "canvas_api_network_blocked"
+  ],
+  "notes": "Fictional input readiness manifest for Renderer Foundation v1 validation only. No rendering."
+}

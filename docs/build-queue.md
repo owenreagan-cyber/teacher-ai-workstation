@@ -14,6 +14,8 @@ Handoff and status clarity. Start from `docs/phase-1-chief-of-staff-status-audit
 
 ## Recently Completed
 
+- Renderer Foundation v1 (Phase 3 Workstream C): interface/status foundation complete (`docs/renderer-v1-foundation.md`). Input readiness manifest, fail-safe rules, and Chief of Staff integration active. No renderer implementation.
+
 - Chief of Staff command launcher / status dashboard.
 - Lesson planning workspace scaffold.
 - Developer Mode project templates.
@@ -106,6 +108,10 @@ Handoff and status clarity. Start from `docs/phase-1-chief-of-staff-status-audit
 ## Curriculum Builder v1 Foundation Status
 
 Curriculum Builder v1 foundation is complete for the approved Phase 2 scope. See `docs/curriculum-builder-v1-foundation.md`. All five output contract types are canonical; registry, binding, validation, tests, and Chief of Staff integration are active. Renderers, generation, real registry records, and integrations remain approval-gated.
+
+## Renderer Foundation v1 Status
+
+Renderer Foundation v1 is complete for the approved Phase 3 interface/status scope. See `docs/renderer-v1-foundation.md` and `docs/renderer-input-readiness-v0.md`. Interface manifests, input readiness manifest, validators, and Chief of Staff/dashboard integration are active. No renderer implementation, HTML/PDF generation, or exported artifacts exist.
 
 ## Master Build Roadmap Status
 

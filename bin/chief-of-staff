@@ -119,6 +119,8 @@ Teacher Planning Command Organization (status only; safe sample: fractions-revie
                                        Show read-only Renderer Foundation v0 status and exit.
   --renderer-foundation-v0-validate
                                        Run read-only Renderer Foundation v0 manifest validator and exit.
+  --renderer-input-readiness-v0-validate
+                                       Run read-only Renderer input readiness v0 validator and exit.
   --local-retrieval-foundation-status
                                        Show read-only Local Retrieval Foundation v0 status and exit.
   --local-retrieval-foundation-v0-validate
@@ -1679,6 +1681,16 @@ while [[ $# -gt 0 ]]; do
       fi
       shift
       bash "${renderer_foundation_v0_validator_script}" "$@"
+      exit 0
+      ;;
+    --renderer-input-readiness-v0-validate)
+      repo_root="$(resolve_repo_root)"
+      renderer_input_readiness_v0_validator_script="${repo_root}/scripts/renderer-input-readiness-v0-validator.sh"
+      if [[ ! -f "${renderer_input_readiness_v0_validator_script}" ]]; then
+        die "Renderer input readiness v0 validator script is missing: scripts/renderer-input-readiness-v0-validator.sh"
+      fi
+      shift
+      bash "${renderer_input_readiness_v0_validator_script}" "$@"
       exit 0
       ;;
     --local-retrieval-foundation-status)

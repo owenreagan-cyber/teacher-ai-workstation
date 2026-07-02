@@ -729,6 +729,23 @@ check_bash_syntax scripts/curriculum-binding-v0-lookup.sh
 check_bash_syntax scripts/curriculum-binding-v0-status.sh
 check_bash_syntax tests/curriculum-binding-v0-test.sh
 
+section "Renderer Foundation v1 Files"
+for path in \
+  docs/renderer-v1-foundation.md \
+  docs/renderer-input-readiness-v0.md \
+  docs/renderer-foundation-v0.md \
+  assistant/renderer/v0/renderer-manifest.json \
+  assistant/renderer/v0/README.md \
+  assistant/renderer-foundation/v0/sample-renderer-manifests.json \
+  scripts/renderer-foundation-status.sh \
+  scripts/renderer-foundation-v0-validator.sh \
+  scripts/renderer-input-readiness-v0-validator.sh; do
+  check_required_file "${path}"
+done
+check_bash_syntax scripts/renderer-foundation-status.sh
+check_bash_syntax scripts/renderer-foundation-v0-validator.sh
+check_bash_syntax scripts/renderer-input-readiness-v0-validator.sh
+
 section "Teacher App Designer / Canvas LLM Foundation Files"
 for path in \
   docs/teacher-app-designer-canvas-llm-plan.md \
@@ -940,6 +957,9 @@ check_bash_syntax "scripts/teacher-workflow-safe-output-checker-status.sh"
 check_bash_syntax "scripts/teacher-workflow-output-examples-completion-status.sh"
 check_bash_syntax "scripts/lesson-planning-template-readiness-status.sh"
 check_bash_syntax "scripts/curriculum-builder-foundation-status.sh"
+check_bash_syntax "scripts/renderer-foundation-status.sh"
+check_bash_syntax "scripts/renderer-foundation-v0-validator.sh"
+check_bash_syntax "scripts/renderer-input-readiness-v0-validator.sh"
 check_bash_syntax "scripts/teacher-app-designer-canvas-llm-status.sh"
 check_bash_syntax "scripts/teacher-planning-command-organization-status.sh"
 check_bash_syntax "scripts/dashboard-section-summary-status.sh"

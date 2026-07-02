@@ -4,13 +4,13 @@ Last updated: 2026-07-01
 
 ```text
 Status: documentation/status/interface only
-Foundation status: active_v0
-Implementation approval status: not approved by default for rendering, export, or generation
+Foundation status: active_v0 (interface layer)
+Canonical closure: docs/renderer-v1-foundation.md
 ```
 
 ## Purpose
 
-This document is the **canonical closure summary** for Renderer Foundation v0 under approved Phase 3 boundaries. It defines renderer interface seams, compatibility planning with Output Contract v0, and validation surfaces — without implementing HTML, PDF, slides, worksheets, review games, or Canvas packages.
+This document defines the **renderer interface layer** for Renderer Foundation v0. The canonical v1 closure summary is `docs/renderer-v1-foundation.md`, which adds input readiness rules, fail-safes, and cross-foundation input contracts.
 
 Cross-references:
 

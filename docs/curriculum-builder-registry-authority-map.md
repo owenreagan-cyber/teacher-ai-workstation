@@ -27,6 +27,8 @@ Single reference for **which registry surface is authoritative for what**, so fu
 | **A4–A7 inactive contracts** | `assistant/curriculum-builder/metadata-contract/v0/` | `sample-*` | Planning schemas; inactive | **No** |
 | **Production registry (future)** | **Owen decision pending** — see planning brief § B | TBD | Not implemented | **Blocked** |
 
+Expected WARN registry: `docs/curriculum-builder-registry-expected-warns.md`
+
 Aggregate lane proof: `bin/chief-of-staff --curriculum-registry-lane-status`
 
 ---

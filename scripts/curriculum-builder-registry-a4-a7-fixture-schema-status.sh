@@ -29,6 +29,7 @@ Production registry writes: no
 Fixture promotion: no
 Student data: no
 Real curriculum content: no
+Expected WARNs: see docs/curriculum-builder-registry-expected-warns.md
 EOF
 
 if [[ ! -f "${fixture}" ]]; then

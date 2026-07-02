@@ -143,7 +143,7 @@ See `docs/master-build-roadmap.md` Program G1 and `assistant/model-routing.md`. 
 
 ## Master Build Roadmap Status
 
-Canonical program roadmap is active (`docs/master-build-roadmap.md`). Phase 3 foundations complete. Chief of Staff Program B, Health Monitor H, System Updater I, AI Tool Routing, Local LLM D1, Mac Workstation E1, Widget and Shortcut Builder F1, Classroom App Lab CAL1, Lovable G1, 3D Builder J1, Cursor Operating Modes governance, Curriculum Builder metadata contract schemas A4–A7, Registry v0.2 dry-run (CB-IMPL-1), Registry v0.2 local foundation lane CB-IMPL-2–4, and production registry workflow planning brief (CB-PROD-PLAN) complete. Production registry implementation remains approval-gated — Owen checklist required.
+Canonical program roadmap is active (`docs/master-build-roadmap.md`). Phase 3 foundations complete. Chief of Staff Program B, Health Monitor H, System Updater I, AI Tool Routing, Local LLM D1, Mac Workstation E1, Widget and Shortcut Builder F1, Classroom App Lab CAL1, Lovable G1, 3D Builder J1, Cursor Operating Modes governance, Autonomous Build Engine governance (CB-AUTO-GOV), Curriculum Builder metadata contract schemas A4–A7, Registry v0.2 dry-run (CB-IMPL-1), Registry v0.2 local foundation lane CB-IMPL-2–4, production registry workflow planning brief (CB-PROD-PLAN), and registry hardening bundle (CB-REG-HARDEN) complete. Production registry implementation remains approval-gated — Owen checklist required.
 
 Companion docs: `docs/teacher-workstation-capability-map.md`, `docs/ai-tool-routing-matrix.md`, `docs/3d-builder-workshop-agent-roadmap.md`.
 
@@ -206,6 +206,10 @@ Production registry workflow planning brief complete. See `docs/curriculum-build
 ## Curriculum Builder Registry Hardening Bundle (CB-REG-HARDEN)
 
 Registry authority map, aggregate lane status, and A4–A7 fixture schema cross-validation complete. See `docs/curriculum-builder-registry-authority-map.md`. `--curriculum-registry-lane-status` and `--curriculum-registry-a4-a7-fixture-schema-status` read-only only. No production writes or fixture promotion.
+
+## Autonomous Build Engine Governance (CB-AUTO-GOV)
+
+Autonomous Build Engine governance foundation complete. See `docs/cursor-autonomous-build-engine.md`. `--autonomous-build-engine-status` read-only proof; continuation loop, safe work classes, exhaustion rules. Expected registry WARNs: `docs/curriculum-builder-registry-expected-warns.md`. No runtime activation.
 
 ## Curriculum Builder Foundation Status
 

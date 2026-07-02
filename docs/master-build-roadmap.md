@@ -372,6 +372,22 @@ Blocked:
 - real metadata intake
 ```
 
+#### CB-AUTO-GOV — Autonomous Build Engine Governance
+
+```text
+Status: complete_autonomous_build_engine_governance
+Mission: permanent Autonomous Build Engine Mode, continuation loop, safe work classes, exhaustion rules
+
+Implemented:
+- docs/cursor-autonomous-build-engine.md
+- docs/curriculum-builder-registry-expected-warns.md
+- bin/chief-of-staff --autonomous-build-engine-status
+
+Blocked:
+- production/runtime/API/student-data/real-curriculum work without explicit Owen approval
+- Level 3 full-product strategy without explicit mission
+```
+
 **Future (approval-gated):** governed production registry writes after Owen checklist approval — see planning brief § J.
 
 **Curriculum Builder v1 complete when:** approved real registry (or governed fictional production path), all five contract types canonical, binding operational, at least one renderer per primary contract, validation suite green, documentation complete — per `docs/engineering-constitution.md` §10.
@@ -933,6 +949,7 @@ Alternate tracks remain approval-gated per `docs/implementation-approval-gate.md
 | Lovable Classroom App Builder | G1 | read-only foundation complete | `complete_pending_review` | No Level 2 review run |
 | 3D Builder Workshop Agent | J1 | read-only foundation complete | `complete_pending_review` | No Level 2 review run |
 | Cursor Operating Modes Governance | — | foundation complete | `complete_pending_review` | PR #203+ governance chain |
+| Autonomous Build Engine Governance | CB-AUTO-GOV | governance foundation complete | `complete_pending_review` | `docs/cursor-autonomous-build-engine.md`; continuation loop + exhaustion rules |
 | Curriculum Builder metadata contracts | A4–A7 | read-only foundation complete | `complete_pending_review` | No Level 2 review run |
 | Chief of Staff v1 Agent Core | B | Program B complete | `complete_pending_review` | No Level 2 review run |
 | Teacher Workstation Health Monitor | H | read-only foundation complete | `complete_pending_review` | No Level 2 review run |
@@ -1010,6 +1027,7 @@ Owen approves **programs and boundaries**; Cursor owns **PR sequencing, implemen
 Permanent governance foundation is active:
 
 - `docs/cursor-operating-modes-and-approval-gates.md` — autonomous execution, approval levels, proposal lifecycle, blocked-item routing
+- `docs/cursor-autonomous-build-engine.md` — Autonomous Build Engine Mode, continuation loop, safe work classes, exhaustion rules
 - `docs/teacher-workstation-domain-boundaries.md` — domain-specific safe/proposal/implementation/runtime boundaries
 - `docs/proposals/index.md` — persistent proposal ledger
 - `bin/chief-of-staff --cursor-operating-modes-status` — read-only governance status proof

@@ -1036,6 +1036,19 @@ grep -Fq -- '--curriculum-registry-records-status' bin/chief-of-staff && pass "c
 grep -Fq -- '--curriculum-registry-renderer-status' bin/chief-of-staff && pass "chief-of-staff exposes --curriculum-registry-renderer-status" || fail "chief-of-staff missing --curriculum-registry-renderer-status"
 grep -Fq -- '--curriculum-registry-retrieval-status' bin/chief-of-staff && pass "chief-of-staff exposes --curriculum-registry-retrieval-status" || fail "chief-of-staff missing --curriculum-registry-retrieval-status"
 
+section "Autonomous Build Engine Governance Files"
+for path in \
+  docs/cursor-autonomous-build-engine.md \
+  docs/curriculum-builder-registry-expected-warns.md \
+  scripts/autonomous-build-engine-status.sh \
+  tests/autonomous-build-engine-status-test.sh; do
+  check_required_file "${path}"
+done
+check_bash_syntax scripts/autonomous-build-engine-status.sh
+check_bash_syntax tests/autonomous-build-engine-status-test.sh
+check_doc_contains docs/cursor-autonomous-build-engine.md "complete_autonomous_build_engine_governance" "autonomous build engine closure"
+grep -Fq -- '--autonomous-build-engine-status' bin/chief-of-staff && pass "chief-of-staff exposes --autonomous-build-engine-status" || fail "chief-of-staff missing --autonomous-build-engine-status"
+
 section "Curriculum Builder Production Registry Workflow Planning Files"
 for path in \
   docs/curriculum-builder-production-registry-workflow-planning-brief.md \

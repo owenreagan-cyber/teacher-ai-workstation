@@ -50,6 +50,7 @@ Templates: `docs/proposals/templates/lane-level-discovery-mission.md`, `docs/pro
 | Dry-run to fixture promotion planning spec | Curriculum Builder Registry | 2 | medium | low | low | none | none | none | proposed | Planning doc only; document blocked promotion path and human gates | Level 2 Registry Lane Review 2026-07-02 | 2026-07-02 |
 | A4–A7 schema cross-validation on fake fixtures | Curriculum Builder Registry | 2 | medium | low | medium | none | none | none | implemented | complete — `--curriculum-registry-a4-a7-fixture-schema-status` | Level 2 Registry Lane Review 2026-07-02 | 2026-07-02 |
 | Production registry workflow planning brief | Curriculum Builder Registry | 2 | high | medium | medium | possible | possible | future | approved_for_planning | Owen checklist review in planning brief § J before implementation mission | Level 2 Registry Lane Review 2026-07-02 | 2026-07-02 |
+| Autonomous Build Engine governance foundation | Cursor / Governance | 2 | high | low | low | none | none | none | implemented | complete — `docs/cursor-autonomous-build-engine.md` | CB-AUTO-GOV mission 2026-07-02 | 2026-07-02 |
 
 Detail: `docs/proposals/curriculum-builder-registry-lane-discovery-review.md`
 

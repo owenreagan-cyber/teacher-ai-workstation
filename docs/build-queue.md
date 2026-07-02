@@ -203,6 +203,10 @@ Registry v0.2 local foundation lane complete. See `docs/curriculum-builder-regis
 
 Production registry workflow planning brief complete. See `docs/curriculum-builder-production-registry-workflow-planning-brief.md`. `--curriculum-production-registry-planning-status` read-only proof only. Production writes, active `--write`, real metadata intake, and integrations remain blocked until Owen completes approval checklist.
 
+## Curriculum Builder Registry Hardening Bundle (CB-REG-HARDEN)
+
+Registry authority map, aggregate lane status, and A4–A7 fixture schema cross-validation complete. See `docs/curriculum-builder-registry-authority-map.md`. `--curriculum-registry-lane-status` and `--curriculum-registry-a4-a7-fixture-schema-status` read-only only. No production writes or fixture promotion.
+
 ## Curriculum Builder Foundation Status
 
 Curriculum Builder planning foundation is complete for now. Registry v0, Output Contract Schema v0, Registry–Contract Binding v0, and Teacher Script Contract Schema v0 are active under Phase 2 Missions 1–4. Ingestion, live resolution, renderers, and generation work remain approval-gated unless separately and explicitly approved. section completion audit recorded. Recommended next focus: additional canonical contract schemas with explicit intake.

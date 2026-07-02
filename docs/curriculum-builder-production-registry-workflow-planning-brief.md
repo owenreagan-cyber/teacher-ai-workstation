@@ -239,6 +239,7 @@ Owen must explicitly approve each item before any production registry **implemen
 
 | Document | Role |
 | --- | --- |
+| `docs/curriculum-builder-registry-authority-map.md` | Registry surface authority map |
 | `docs/curriculum-builder-registry-v0-2-lane-closure.md` | Completed fake/local foundation lane |
 | `docs/curriculum-builder-registry-v0-2-record-boundaries.md` | Fixture vs live registry boundaries |
 | `docs/curriculum-registry-v0.md` | Live v0 registry (read-only today) |

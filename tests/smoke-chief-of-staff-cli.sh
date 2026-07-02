@@ -116,6 +116,10 @@ bash scripts/curriculum-builder-registry-v0-2-retrieval-check.sh >/dev/null
 bash tests/curriculum-builder-registry-v0-2-retrieval-test.sh >/dev/null
 bin/chief-of-staff --curriculum-production-registry-planning-status >/dev/null
 bash tests/curriculum-builder-production-registry-planning-status-test.sh >/dev/null
+bin/chief-of-staff --curriculum-registry-lane-status >/dev/null
+bash tests/curriculum-builder-registry-lane-status-test.sh >/dev/null
+bin/chief-of-staff --curriculum-registry-a4-a7-fixture-schema-status >/dev/null
+bash tests/curriculum-builder-registry-a4-a7-fixture-schema-status-test.sh >/dev/null
 bin/chief-of-staff --cursor-operating-modes-status >/dev/null
 bash tests/ai-tool-routing-status-test.sh >/dev/null
 bash tests/local-llm-workstation-status-test.sh >/dev/null

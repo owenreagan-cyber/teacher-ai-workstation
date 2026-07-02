@@ -157,6 +157,10 @@ Teacher Planning Command Organization (status only; safe sample: fractions-revie
                                        Show read-only Curriculum Builder Registry v0.2 fake-record renderer foundation status (CB-IMPL-3) and exit.
   --curriculum-registry-retrieval-status
                                        Show read-only Curriculum Builder Registry v0.2 fake-record retrieval hooks status (CB-IMPL-4) and exit.
+  --curriculum-registry-lane-status
+                                       Show read-only aggregate Curriculum Builder Registry lane status (CB-IMPL-1–4 + planning + hardening) and exit.
+  --curriculum-registry-a4-a7-fixture-schema-status
+                                       Show read-only A4–A7 canonical schema cross-validation for registry v0.2 fake fixtures and exit.
   --curriculum-production-registry-planning-status
                                        Show read-only Curriculum Builder production registry workflow planning status (planning-only; no writes) and exit.
   --curriculum-library-foundation-status
@@ -1832,6 +1836,24 @@ while [[ $# -gt 0 ]]; do
         die "Curriculum Builder Registry v0.2 retrieval status script is missing: scripts/curriculum-builder-registry-v0-2-retrieval-status.sh"
       fi
       bash "${curriculum_registry_retrieval_status_script}"
+      exit 0
+      ;;
+    --curriculum-registry-lane-status)
+      repo_root="$(resolve_repo_root)"
+      curriculum_registry_lane_status_script="${repo_root}/scripts/curriculum-builder-registry-lane-status.sh"
+      if [[ ! -f "${curriculum_registry_lane_status_script}" ]]; then
+        die "Curriculum Builder Registry lane status script is missing: scripts/curriculum-builder-registry-lane-status.sh"
+      fi
+      bash "${curriculum_registry_lane_status_script}"
+      exit 0
+      ;;
+    --curriculum-registry-a4-a7-fixture-schema-status)
+      repo_root="$(resolve_repo_root)"
+      curriculum_registry_a4_a7_fixture_schema_status_script="${repo_root}/scripts/curriculum-builder-registry-a4-a7-fixture-schema-status.sh"
+      if [[ ! -f "${curriculum_registry_a4_a7_fixture_schema_status_script}" ]]; then
+        die "Curriculum Builder Registry A4–A7 fixture schema status script is missing: scripts/curriculum-builder-registry-a4-a7-fixture-schema-status.sh"
+      fi
+      bash "${curriculum_registry_a4_a7_fixture_schema_status_script}"
       exit 0
       ;;
     --curriculum-production-registry-planning-status)

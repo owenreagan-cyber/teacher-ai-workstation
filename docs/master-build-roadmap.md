@@ -355,6 +355,23 @@ Blocked:
 - scanning/crawling/OCR/embeddings/RAG/generation
 ```
 
+#### CB-REG-HARDEN — Registry Lane Hardening Bundle
+
+```text
+Status: complete_registry_hardening_bundle
+Mission: authority map, aggregate lane status, A4–A7 fixture cross-validation
+
+Implemented:
+- docs/curriculum-builder-registry-authority-map.md
+- bin/chief-of-staff --curriculum-registry-lane-status
+- bin/chief-of-staff --curriculum-registry-a4-a7-fixture-schema-status
+
+Blocked:
+- production registry writes
+- fixture promotion
+- real metadata intake
+```
+
 **Future (approval-gated):** governed production registry writes after Owen checklist approval — see planning brief § J.
 
 **Curriculum Builder v1 complete when:** approved real registry (or governed fictional production path), all five contract types canonical, binding operational, at least one renderer per primary contract, validation suite green, documentation complete — per `docs/engineering-constitution.md` §10.
@@ -923,6 +940,7 @@ Alternate tracks remain approval-gated per `docs/implementation-approval-gate.md
 | AI Tool Routing | R0 | operational read-only complete | `complete_pending_review` | No Level 2 review run |
 | Curriculum Builder Registry v0.2 Local Foundation | CB-IMPL | foundation complete (CB-IMPL-1–4) | `reviewed` | Level 2 review 2026-07-02; `docs/proposals/curriculum-builder-registry-lane-discovery-review.md` |
 | Curriculum Builder Production Registry Planning | CB-PROD-PLAN | planning brief complete | `complete_pending_review` | Planning-only; implementation blocked; `docs/curriculum-builder-production-registry-workflow-planning-brief.md` |
+| Curriculum Builder Registry Hardening | CB-REG-HARDEN | hardening bundle complete | `complete_pending_review` | Authority map, lane status, A4–A7 fixture cross-validation |
 | Curriculum Builder v1 (registry/contracts) | A | Phase 2 foundation complete | `in_progress` | Registry v0.2 lane reviewed; production planning complete; renderers/generation/integrations remain approval-gated |
 | Canvas LLM | C | frozen/stopped | `in_progress` | Stop marker active |
 

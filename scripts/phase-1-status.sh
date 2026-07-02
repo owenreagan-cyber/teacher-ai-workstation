@@ -912,6 +912,25 @@ else
   fail "chief-of-staff missing --widget-shortcut-status"
 fi
 
+section "Classroom App Lab (Prototype Rescue Foundation) Files"
+for path in \
+  docs/classroom-app-lab-prototype-rescue-foundation.md \
+  docs/classroom-app-lab-non-activation-boundaries.md \
+  docs/classroom-app-lab-readiness-plan.md \
+  scripts/classroom-app-lab-status.sh \
+  tests/classroom-app-lab-status-test.sh; do
+  check_required_file "${path}"
+done
+check_bash_syntax scripts/classroom-app-lab-status.sh
+check_bash_syntax tests/classroom-app-lab-status-test.sh
+check_doc_contains docs/classroom-app-lab-prototype-rescue-foundation.md "complete_v1_cal1" "classroom app lab closure status"
+check_doc_contains docs/classroom-app-lab-non-activation-boundaries.md "Zip extraction: blocked" "classroom app lab zip extraction blocked"
+if grep -Fq -- '--classroom-app-lab-status' bin/chief-of-staff; then
+  pass "chief-of-staff exposes --classroom-app-lab-status"
+else
+  fail "chief-of-staff missing --classroom-app-lab-status"
+fi
+
 section "Curriculum Registry–Contract Binding v0 Foundation Files"
 for path in \
   docs/curriculum-binding-v0.md \

@@ -797,9 +797,9 @@ Per `docs/engineering-constitution.md` §10, v1.0 means these systems exist as *
 
 ## 10. Immediate Next Recommended Mission
 
-**Classroom App Lab — Prototype Rescue Foundation**
+**Lovable Classroom App Builder — Read-Only Planning Surface (Program G1)**
 
-Program F1 Widget and Shortcut Builder read-only catalog foundation is complete (`docs/widget-shortcut-builder-catalog-foundation.md`). `--widget-shortcut-status` provides catalog planning visibility only. Recommended next: documentation/status planning for unfinished teacher-created classroom apps without zip extraction, code parsing, app execution, or LLM/API analysis.
+Classroom App Lab Prototype Rescue read-only foundation is complete (`docs/classroom-app-lab-prototype-rescue-foundation.md`). `--classroom-app-lab-status` provides planning visibility only. Recommended next: Lovable integration planning surface without API, OAuth, or live app generation.
 
 Alternate tracks remain approval-gated per `docs/implementation-approval-gate.md`.
 
@@ -819,10 +819,10 @@ COMPLETE:
   D1 Local LLM read-only status foundation
   E1 Mac Workstation Experience read-only planning
   F1 Widget/Shortcut catalog read-only foundation
+  CAL1 Classroom App Lab prototype rescue read-only foundation
 
 NOW (autonomous pattern when authorized):
-  B1–B5 Chief of Staff v1 Agent Core (remaining planned surfaces)
-  Classroom App Lab — Prototype Rescue Foundation (documentation/status only)
+  G1 Lovable Classroom App Builder read-only planning surface
 
 THEN (mixed approval):
   A4–A7 Curriculum Builder Complete subtracks

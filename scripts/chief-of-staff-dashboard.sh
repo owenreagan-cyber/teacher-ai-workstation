@@ -1114,6 +1114,27 @@ else
   warn "Widget and Shortcut Builder status script missing: scripts/widget-shortcut-builder-status.sh"
 fi
 
+section "Classroom App Lab (Prototype Rescue Foundation)"
+if [[ -f scripts/classroom-app-lab-status.sh ]]; then
+  classroom_app_lab_result=0
+  classroom_app_lab_output="$(bash scripts/classroom-app-lab-status.sh 2>&1)" || classroom_app_lab_result=$?
+  classroom_app_lab_pass="$(summary_count "${classroom_app_lab_output}" "PASS")"
+  classroom_app_lab_warn="$(summary_count "${classroom_app_lab_output}" "WARN")"
+  classroom_app_lab_fail="$(summary_count "${classroom_app_lab_output}" "FAIL")"
+
+  if [[ "${classroom_app_lab_result}" != "0" ]]; then
+    printf '%s\n' "${classroom_app_lab_output}"
+    fail "Classroom App Lab status failed"
+  elif [[ -n "${classroom_app_lab_pass}" && -n "${classroom_app_lab_warn}" && -n "${classroom_app_lab_fail}" ]]; then
+    printf 'Classroom App Lab: PASS %s / WARN %s / FAIL %s\n' "${classroom_app_lab_pass}" "${classroom_app_lab_warn}" "${classroom_app_lab_fail}"
+    pass "Classroom App Lab status completed"
+  else
+    pass "Classroom App Lab status completed"
+  fi
+else
+  warn "Classroom App Lab status script missing: scripts/classroom-app-lab-status.sh"
+fi
+
 section "Lesson Planning v1 Foundation"
 if [[ -f scripts/lesson-planning-foundation-status.sh ]]; then
   lesson_planning_foundation_result=0

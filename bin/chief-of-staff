@@ -53,6 +53,8 @@ Chief of Staff v1 Operating (read-only):
   --next-action                        Show deterministic next recommended program and daily focus and exit.
   --validate-all                       Run read-only validation orchestration across core subsystems and exit.
   --proof-run                          Run local pre-merge proof runner and exit.
+  --teacher-workstation-foundation-status
+                                       Show read-only Teacher Workstation Foundation v0 orchestration status and exit.
   --chief-of-staff-command-index-v1-status
                                        Show Chief of Staff command index v1 status and exit.
 
@@ -2124,6 +2126,15 @@ while [[ $# -gt 0 ]]; do
         die "Chief of Staff validate-all script is missing: scripts/chief-of-staff-validate-all.sh"
       fi
       bash "${validate_all_script}"
+      exit 0
+      ;;
+    --teacher-workstation-foundation-status)
+      repo_root="$(resolve_repo_root)"
+      teacher_workstation_foundation_status_script="${repo_root}/scripts/teacher-workstation-foundation-status.sh"
+      if [[ ! -f "${teacher_workstation_foundation_status_script}" ]]; then
+        die "Teacher Workstation Foundation status script is missing: scripts/teacher-workstation-foundation-status.sh"
+      fi
+      bash "${teacher_workstation_foundation_status_script}"
       exit 0
       ;;
     --proof-run)

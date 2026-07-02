@@ -28,7 +28,7 @@ EOF
 
 section 'Default Gate'
 printf 'Implementation approval: NOT approved by default\n'
-grep -Fq 'not approved by default' docs/implementation-approval-gate.md && pass 'default gate documented' || warn 'default gate wording missing'
+grep -Fq 'Implementation approval status: not approved' docs/implementation-approval-gate.md && pass 'default gate documented' || warn 'default gate wording missing'
 
 section 'Approval Queue Categories (Planning)'
 cat <<'EOF'

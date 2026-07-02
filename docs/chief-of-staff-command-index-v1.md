@@ -49,8 +49,9 @@ Cross-references:
 | `bin/chief-of-staff --curriculum-builder-foundation-status` | Full Curriculum Builder foundation checks |
 | `bin/chief-of-staff --curriculum-library-foundation-status` | Curriculum Library v1 foundation status |
 | `bin/chief-of-staff --curriculum-library-reference-v0-validate` | Curriculum Library reference v0 validator |
-| `bin/chief-of-staff --renderer-foundation-status` | Renderer Foundation v0 status |
+| `bin/chief-of-staff --renderer-foundation-status` | Renderer Foundation v1 status |
 | `bin/chief-of-staff --renderer-foundation-v0-validate` | Renderer Foundation v0 manifest validator |
+| `bin/chief-of-staff --renderer-input-readiness-v0-validate` | Renderer input readiness v0 validator |
 | `bin/chief-of-staff --local-retrieval-foundation-status` | Local Retrieval Foundation v0 status |
 | `bin/chief-of-staff --local-retrieval-foundation-v0-validate` | Local Retrieval Foundation v0 lookup validator |
 | `bin/chief-of-staff --integration-planning-foundation-status` | Integration Planning Foundation v0 status |

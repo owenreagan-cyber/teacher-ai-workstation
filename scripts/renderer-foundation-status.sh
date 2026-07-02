@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Read-only Renderer Foundation v0 status only. No rendering, network calls, or writes.
+# Read-only Renderer Foundation v1 status only. No rendering, network calls, or writes.
 set -euo pipefail
 
 PASS_COUNT=0; WARN_COUNT=0; FAIL_COUNT=0
@@ -26,7 +26,7 @@ repo_root="$(git rev-parse --show-toplevel 2>/dev/null || true)"
 [[ -z "${repo_root}" ]] && repo_root="$(cd "${script_dir}/.." && pwd -P)"
 cd "${repo_root}"
 
-section 'Renderer Foundation v0'
+section 'Renderer Foundation v1'
 cat <<'EOF'
 Status: documentation/status/interface only
 HTML rendering: no
@@ -42,11 +42,19 @@ Network calls: no
 EOF
 
 section 'Foundation Documentation'
+check_file "docs/renderer-v1-foundation.md"
 check_file "docs/renderer-foundation-v0.md"
-check_file "docs/curriculum-output-contract-v0.md"
-check_file "docs/curriculum-binding-v0.md"
-check_doc_contains "docs/renderer-foundation-v0.md" "interface only" "interface-only boundary"
-check_doc_contains "docs/renderer-foundation-v0.md" "--renderer-foundation-status" "foundation status command"
+check_file "docs/renderer-input-readiness-v0.md"
+check_doc_contains "docs/renderer-v1-foundation.md" "not implemented" "renderer not implemented boundary"
+check_doc_contains "docs/renderer-v1-foundation.md" "--renderer-foundation-status" "foundation status command"
+check_doc_contains "docs/renderer-input-readiness-v0.md" "Fail-Safe Refusal Conditions" "fail-safe rules"
+
+section 'Renderer Input Manifest v0'
+check_file "assistant/renderer/v0/renderer-manifest.json"
+check_file "assistant/renderer/v0/README.md"
+check_file "scripts/renderer-input-readiness-v0-validator.sh"
+check_bash_syntax "scripts/renderer-input-readiness-v0-validator.sh"
+bash scripts/renderer-input-readiness-v0-validator.sh >/dev/null 2>&1 && pass "input readiness v0 validator exits 0" || fail "input readiness v0 validator failed"
 
 section 'Renderer Interface Manifest v0'
 check_file "assistant/renderer-foundation/v0/renderer-interface-schema.json"
@@ -54,10 +62,10 @@ check_file "assistant/renderer-foundation/v0/sample-renderer-manifests.json"
 check_file "assistant/renderer-foundation/v0/README.md"
 check_file "scripts/renderer-foundation-v0-validator.sh"
 check_bash_syntax "scripts/renderer-foundation-v0-validator.sh"
-bash scripts/renderer-foundation-v0-validator.sh >/dev/null 2>&1 && pass "renderer manifest v0 validator exits 0" || fail "renderer manifest v0 validator failed"
+bash scripts/renderer-foundation-v0-validator.sh >/dev/null 2>&1 && pass "renderer interface v0 validator exits 0" || fail "renderer interface v0 validator failed"
 
 if command -v python3 >/dev/null 2>&1; then
-  for f in assistant/renderer-foundation/v0/renderer-interface-schema.json assistant/renderer-foundation/v0/sample-renderer-manifests.json; do
+  for f in assistant/renderer/v0/renderer-manifest.json assistant/renderer-foundation/v0/sample-renderer-manifests.json; do
     python3 -m json.tool "${f}" >/dev/null 2>&1 && pass "JSON parses: ${f}" || fail "JSON does not parse: ${f}"
   done
 else warn 'python3 not available for JSON parse checks'; fi
@@ -65,6 +73,7 @@ else warn 'python3 not available for JSON parse checks'; fi
 section 'Chief of Staff Integration'
 check_help_contains "--renderer-foundation-status"
 check_help_contains "--renderer-foundation-v0-validate"
+check_help_contains "--renderer-input-readiness-v0-validate"
 check_bash_syntax "bin/chief-of-staff"
 pass 'no rendering attempted'; pass 'no write action attempted'; pass 'no network call attempted'
 

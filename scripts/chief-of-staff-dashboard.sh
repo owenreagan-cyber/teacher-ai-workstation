@@ -999,7 +999,7 @@ else
   warn "Curriculum Library foundation status script missing: scripts/curriculum-library-foundation-status.sh"
 fi
 
-section "Renderer Foundation v0"
+section "Renderer Foundation v1"
 if [[ -f scripts/renderer-foundation-status.sh ]]; then
   renderer_foundation_result=0
   renderer_foundation_output="$(bash scripts/renderer-foundation-status.sh 2>&1)" || renderer_foundation_result=$?
@@ -1008,14 +1008,14 @@ if [[ -f scripts/renderer-foundation-status.sh ]]; then
   renderer_foundation_fail="$(summary_count "${renderer_foundation_output}" "FAIL")"
 
   if [[ "${renderer_foundation_result}" != "0" ]]; then
-    printf 'Renderer Foundation v0: status command completed\n'
+    printf 'Renderer Foundation v1: status command completed\n'
     printf '%s\n' "${renderer_foundation_output}"
     fail "Renderer Foundation status failed"
   elif [[ -n "${renderer_foundation_pass}" && -n "${renderer_foundation_warn}" && -n "${renderer_foundation_fail}" ]]; then
-    printf 'Renderer Foundation v0: PASS %s / WARN %s / FAIL %s\n' "${renderer_foundation_pass}" "${renderer_foundation_warn}" "${renderer_foundation_fail}"
+    printf 'Renderer Foundation v1: PASS %s / WARN %s / FAIL %s\n' "${renderer_foundation_pass}" "${renderer_foundation_warn}" "${renderer_foundation_fail}"
     pass "Renderer Foundation status completed"
   else
-    printf 'Renderer Foundation v0: status command completed\n'
+    printf 'Renderer Foundation v1: status command completed\n'
     pass "Renderer Foundation status completed"
   fi
 else

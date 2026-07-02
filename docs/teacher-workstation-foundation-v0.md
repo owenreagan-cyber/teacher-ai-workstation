@@ -18,7 +18,7 @@ This document is the **canonical program closure index** for Phase 3 Teacher Wor
 | --- | --- | --- | --- |
 | A | Lesson Planning Foundation | `docs/lesson-planning-v1-foundation.md` | `bin/chief-of-staff --lesson-planning-foundation-status` |
 | B | Curriculum Library Foundation | `docs/curriculum-library-v1-foundation.md` | `bin/chief-of-staff --curriculum-library-foundation-status` |
-| C | Renderer Foundation | `docs/renderer-foundation-v0.md` | `bin/chief-of-staff --renderer-foundation-status` |
+| C | Renderer Foundation | `docs/renderer-v1-foundation.md` | `bin/chief-of-staff --renderer-foundation-status` |
 | D | Local Retrieval Foundation | `docs/local-retrieval-foundation-v0.md` | `bin/chief-of-staff --local-retrieval-foundation-status` |
 | E | Integration Planning Foundation | `docs/integration-planning-foundation-v0.md` | `bin/chief-of-staff --integration-planning-foundation-status` |
 

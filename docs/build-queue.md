@@ -1,6 +1,6 @@
 # Build Queue
 
-Last updated: 2026-07-01
+Last updated: 2026-07-02
 
 ## Current Completed Phase
 
@@ -13,6 +13,8 @@ Master program roadmap: `docs/master-build-roadmap.md` — Program Readiness Aud
 Handoff and status clarity. Start from `docs/phase-1-chief-of-staff-status-audit.md` — Repo-Wide Parked Tracks and Active Status Map and `docs/build-queue.md`.
 
 ## Recently Completed
+
+- Long-term Master Build Plan formalization: capability map, AI tool routing matrix, Health Monitor, System Updater, 3D Builder Workshop Agent, expanded program sequence in `docs/master-build-roadmap.md`. Documentation/status only — no activation.
 
 - Renderer Foundation v1 (Phase 3 Workstream C): interface/status foundation complete (`docs/renderer-v1-foundation.md`). Input readiness manifest, fail-safe rules, and Chief of Staff integration active. No renderer implementation.
 
@@ -115,7 +117,13 @@ Renderer Foundation v1 is complete for the approved Phase 3 interface/status sco
 
 ## Master Build Roadmap Status
 
-Canonical program roadmap is active (`docs/master-build-roadmap.md`). Curriculum Builder v1 foundation complete for approved scope. Recommended next major program: Chief of Staff v1.
+Canonical program roadmap is active (`docs/master-build-roadmap.md`). Phase 3 foundations complete. Long-term programs documented: Capability Map, Health Monitor, System Updater, AI Tool Routing Matrix, Mac modes, Widgets/Shortcuts, Lovable (G1), 3D Builder Workshop Agent (J). Recommended next major program: Chief of Staff v1 Agent Core (Program B).
+
+Companion docs: `docs/teacher-workstation-capability-map.md`, `docs/ai-tool-routing-matrix.md`, `docs/3d-builder-workshop-agent-roadmap.md`.
+
+## Long-Term Master Plan Status
+
+Roadmap formalization complete for documentation/status only. No integrations, Mac changes, LLM installs, APIs, widgets, shortcuts, 3D generation, or automation activated.
 
 ## Engineering Constitution Status
 
@@ -205,7 +213,7 @@ Future lesson-planning follow-ons are documentation/status-only unless explicitl
 ## Parked / Future
 
 - Repo-wide parked tracks and active status map: `docs/phase-1-chief-of-staff-status-audit.md` — Repo-Wide Parked Tracks and Active Status Map.
-- 3D Design Factory Agent: Parked until Chief of Staff and Teacher Workstation foundations are mature.
+- 3D Design Factory Agent: Parked until Chief of Staff and Teacher Workstation foundations are mature. Master plan program name: **3D Builder Workshop Agent** (`docs/3d-builder-workshop-agent-roadmap.md`). Planning only.
 - Appearance & Vibe: Automated Wallpaper and Photo Curator (foundation stack complete for now; live curator not started; paused while returning to Chief of Staff / Teacher Workstation core). Status audit: `docs/phase-1-chief-of-staff-status-audit.md` — Appearance & Vibe Wallpaper/Vibe Status Audit.
 
 ## Open Threads

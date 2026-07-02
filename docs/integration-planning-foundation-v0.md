@@ -42,7 +42,13 @@ Cross-references:
 
 ## Future Tool Integrations (Inactive)
 
-External AI and app-builder tools are documented in `assistant/model-routing.md` as part of the broader tool ecosystem (ChatGPT, Claude, Gemini, Cursor, Codex, Lovable). **Lovable** is a future classroom app-builder surface Chief of Staff may eventually route approved ideas into. No Lovable API, OAuth, app generation, deployment, or automation is active.
+External AI and app-builder tools are documented in `assistant/model-routing.md` and `docs/ai-tool-routing-matrix.md` (ChatGPT, Claude, Gemini, Cursor, Codex, Lovable, local/Ollama, future cloud APIs).
+
+**Lovable** — future classroom app-builder surface; Program G1 in `docs/master-build-roadmap.md`. Planning only — not connected.
+
+**3D Builder Workshop Agent** — separate future sub-agent; Program J. See `docs/3d-builder-workshop-agent-roadmap.md`. Planning only.
+
+No Lovable API, OAuth, app generation, 3D file generation, deployment, or automation is active.
 
 ## Validation Suite
 

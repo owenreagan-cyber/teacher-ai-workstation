@@ -712,6 +712,16 @@ check_bash_syntax tests/curriculum-contract-suite-v0-test.sh
 
 section "Master Build Roadmap Files"
 check_required_file docs/master-build-roadmap.md
+check_required_file docs/teacher-workstation-capability-map.md
+check_required_file docs/ai-tool-routing-matrix.md
+check_required_file docs/3d-builder-workshop-agent-roadmap.md
+master_roadmap_doc="docs/master-build-roadmap.md"
+check_doc_contains "${master_roadmap_doc}" "Teacher Workstation Health Monitor" "master roadmap mentions Health Monitor"
+check_doc_contains "${master_roadmap_doc}" "Teacher Workstation System Updater" "master roadmap mentions System Updater"
+check_doc_contains "${master_roadmap_doc}" "3D Builder Workshop Agent" "master roadmap mentions 3D Builder Workshop Agent"
+check_doc_contains "${master_roadmap_doc}" "Lovable Classroom App Builder" "master roadmap mentions Lovable integration"
+check_doc_contains "${master_roadmap_doc}" "Widget and Shortcut Builder" "master roadmap mentions Widget and Shortcut Builder"
+check_doc_contains "${master_roadmap_doc}" "Mac Workstation Experience" "master roadmap mentions Mac Workstation Experience"
 
 section "Curriculum Registry–Contract Binding v0 Foundation Files"
 for path in \

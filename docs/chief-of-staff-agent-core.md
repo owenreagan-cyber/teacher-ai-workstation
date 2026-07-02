@@ -43,7 +43,7 @@ Chief of Staff orchestrates. It **must not become** any specialist builder liste
 | Cursor | Repo implementation agent |
 | Local LLM / Ollama | Future inference runtime (Program D) |
 | Health Monitor | Observe/report program (Program H) — `--system-health` |
-| System Updater | Future approved-update program (Program I) |
+| System Updater | Approved-update planning program (Program I) — `--system-update-check` |
 | Mac Workstation Experience | Future modes/surfaces (Program E) |
 | Widget/Shortcut Builder | Future catalogs (Program F) |
 | 3D Builder Workshop Agent | Future sub-agent (Program J) |

@@ -69,6 +69,10 @@ Health Monitor (read-only; observe/report only):
   --system-health                      Show read-only Teacher Workstation health report and exit.
   --workstation-health                 Alias for --system-health and exit.
 
+System Updater (read-only planning; no apply/install):
+  --system-update-check                Show read-only System Updater foundation status and exit.
+  --system-update-plan                 Show read-only manual update planning checklist and exit.
+
 Lesson Planning:
   --lesson-status                      Show local lesson planning workspace status and exit.
   --lesson-brief-status                Show local lesson brief helper status and exit.
@@ -2212,6 +2216,24 @@ while [[ $# -gt 0 ]]; do
         die "Teacher Workstation health status script is missing: scripts/teacher-workstation-health-status.sh"
       fi
       bash "${health_status_script}"
+      exit 0
+      ;;
+    --system-update-check)
+      repo_root="$(resolve_repo_root)"
+      updater_status_script="${repo_root}/scripts/teacher-workstation-system-updater-status.sh"
+      if [[ ! -f "${updater_status_script}" ]]; then
+        die "Teacher Workstation system updater status script is missing: scripts/teacher-workstation-system-updater-status.sh"
+      fi
+      bash "${updater_status_script}"
+      exit 0
+      ;;
+    --system-update-plan)
+      repo_root="$(resolve_repo_root)"
+      update_plan_script="${repo_root}/scripts/teacher-workstation-system-update-plan.sh"
+      if [[ ! -f "${update_plan_script}" ]]; then
+        die "Teacher Workstation system update plan script is missing: scripts/teacher-workstation-system-update-plan.sh"
+      fi
+      bash "${update_plan_script}"
       exit 0
       ;;
     --validate-all)

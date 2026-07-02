@@ -81,7 +81,7 @@ Cross-references:
 | Capability | Status | Notes |
 | --- | --- | --- |
 | Teacher Workstation Health Monitor | **implemented read-only** | Program H — `--system-health` |
-| Teacher Workstation System Updater | planned | Read-only checks first; Program I |
+| Teacher Workstation System Updater | **implemented read-only** | Program I — `--system-update-check` |
 | Widget catalog | planned | Program F |
 | Shortcut catalog | planned | Program F |
 | Mac teacher modes | planned | Program E |

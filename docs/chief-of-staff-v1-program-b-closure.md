@@ -44,7 +44,8 @@ Canonical closure index for the full **Program B** section: command surface (B1)
 | `--prove-main` | Proof | Broad git workflow — separate design |
 | `--model-routing-status` | B5 roadmap | Future Health/Routing track |
 | `--system-health` | H | implemented (Program H) |
-| `--system-update-check` | I | System Updater not active |
+| `--system-update-check` | I | implemented (Program I) |
+| `--system-update-plan` | I | implemented (Program I) |
 | `--local-llm-workstation-status` | D | Local LLM not active |
 | `--widget-health` / `--shortcut-health` | F | Widget/shortcut not active |
 | `--lovable-status` | G1 | Lovable planning only |
@@ -61,7 +62,7 @@ Chief of Staff remains the **orchestration/control plane only**:
 | Future program | Chief of Staff role |
 | --- | --- |
 | Health Monitor | Observe via `--system-health`; no repair |
-| System Updater (I) | Observe via future `--system-update-check`; no apply |
+| System Updater (I) | Plan via `--system-update-check`; no apply |
 | Local LLM (D) | Status only when approved; no install |
 | Lovable (G) | Planning status; no API |
 | 3D Builder (J) | Status only; no CAD/export |

@@ -647,19 +647,26 @@ Mission delivered: architecture doc, health domains, `--system-health` / `--work
 
 **Architecture rule:** System Updater **recommends and applies only approved updates**. Health Monitor and System Updater remain separate: Health Monitor observes/reports; Updater recommends/applies approved changes.
 
-| Stage | Scope |
-| --- | --- |
-| **v0 — read-only checks** | Repo update status, dashboard, local main cleanliness, status scripts, tool inventory, model inventory, wallpaper/widget/shortcut asset presence |
-| **v1 — guided planning** | Recommend updates, produce update plan, require approval before changes |
-| **v2 — approved maintenance** | Apply approved updates only after explicit approval |
+```text
+Status: COMPLETE (read-only planning foundation v1_i)
+Closure: docs/teacher-workstation-system-updater-foundation.md
+```
 
-**Blocked until approval:** automatic code updates, model downloads, dependency installs, Mac setting changes, widget/shortcut changes, network calls, background jobs.
+Mission delivered: architecture doc, update domains, `--system-update-check`, `--system-update-plan`, status/plan scripts, tests, dashboard integration.
 
-**Future commands (roadmap only):**
+| Stage | Scope | Status |
+| --- | --- | --- |
+| **v0 — read-only planning** | Docs, checklists, repo-local readiness | **complete** |
+| **v1 — guided planning** | Recommend updates, manual plans, approval required | future |
+| **v2 — approved maintenance** | Apply approved updates only | blocked |
 
-- `bin/chief-of-staff --system-update-check`
-- `bin/chief-of-staff --system-update-plan`
-- `bin/chief-of-staff --apply-approved-updates`
+**Commands:**
+
+- `bin/chief-of-staff --system-update-check` — implemented
+- `bin/chief-of-staff --system-update-plan` — implemented
+- `bin/chief-of-staff --apply-approved-updates` — blocked
+
+**Blocked until approval:** automatic code updates, model downloads, dependency installs, Mac setting changes, widget/shortcut changes, network calls, background jobs, package manager execution.
 
 ---
 
@@ -743,7 +750,7 @@ Per `docs/engineering-constitution.md` §10, v1.0 means these systems exist as *
 | Chief of Staff | Stable CLI, dashboard, memory, intake, daily ops, next-action | **Partial** — foundation strong; agent core incomplete |
 | Capability map | Canonical system map with status labels | **Documented** |
 | Health Monitor | Read-only workstation health report | **Active** — Program H foundation |
-| System Updater | Read-only update checks | **Planned** |
+| System Updater | Read-only update planning | **Active** — Program I foundation |
 | AI tool routing | Documented matrix; inactive routing | **Documented** |
 | Curriculum Registry | Approved manual registry with metadata references | **Partial** — v1 fictional foundation |
 | Output Contracts | Active contracts wired to registry and review | **Foundation complete** — 5/5 canonical v0 |
@@ -763,9 +770,9 @@ Per `docs/engineering-constitution.md` §10, v1.0 means these systems exist as *
 
 ## 10. Immediate Next Recommended Mission
 
-**Teacher Workstation System Updater — Read-Only Update Planning Foundation (Program I)**
+**AI Tool Routing Matrix — Operational Routing Surface**
 
-Program H Health Monitor foundation is complete (`docs/teacher-workstation-health-monitor-foundation.md`). `--system-health` and `--workstation-health` aggregate repo-local status read-only. Recommended next: System Updater read-only planning — no apply, install, or automation.
+Program I System Updater foundation is complete (`docs/teacher-workstation-system-updater-foundation.md`). `--system-update-check` and `--system-update-plan` provide read-only update planning only. Recommended next: AI tool routing operational status surface — no cloud API activation or automated routing.
 
 Alternate tracks remain approval-gated per `docs/implementation-approval-gate.md`.
 

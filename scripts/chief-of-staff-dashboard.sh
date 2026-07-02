@@ -1009,6 +1009,27 @@ else
   warn "Health Monitor status script missing: scripts/teacher-workstation-health-status.sh"
 fi
 
+section "Teacher Workstation System Updater (Program I)"
+if [[ -f scripts/teacher-workstation-system-updater-status.sh ]]; then
+  updater_result=0
+  updater_output="$(bash scripts/teacher-workstation-system-updater-status.sh 2>&1)" || updater_result=$?
+  updater_pass="$(summary_count "${updater_output}" "PASS")"
+  updater_warn="$(summary_count "${updater_output}" "WARN")"
+  updater_fail="$(summary_count "${updater_output}" "FAIL")"
+
+  if [[ "${updater_result}" != "0" ]]; then
+    printf '%s\n' "${updater_output}"
+    fail "Teacher Workstation System Updater status failed"
+  elif [[ -n "${updater_pass}" && -n "${updater_warn}" && -n "${updater_fail}" ]]; then
+    printf 'System Updater: PASS %s / WARN %s / FAIL %s\n' "${updater_pass}" "${updater_warn}" "${updater_fail}"
+    pass "Teacher Workstation System Updater status completed"
+  else
+    pass "Teacher Workstation System Updater status completed"
+  fi
+else
+  warn "System Updater status script missing: scripts/teacher-workstation-system-updater-status.sh"
+fi
+
 section "Lesson Planning v1 Foundation"
 if [[ -f scripts/lesson-planning-foundation-status.sh ]]; then
   lesson_planning_foundation_result=0

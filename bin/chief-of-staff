@@ -147,6 +147,8 @@ Teacher Planning Command Organization (status only; safe sample: fractions-revie
                                        Show read-only lesson-planning placeholder readiness status proof and exit (parked).
   --curriculum-builder-foundation-status
                                        Show read-only Curriculum Builder foundation status proof and exit (parked; approval-gated).
+  --curriculum-contracts-status
+                                       Show read-only Curriculum Builder metadata contract schemas status (Programs A4–A7) and exit.
   --curriculum-library-foundation-status
                                        Show read-only Curriculum Library v1 foundation status and exit.
   --curriculum-library-reference-v0-validate
@@ -1775,6 +1777,15 @@ while [[ $# -gt 0 ]]; do
         die "Curriculum Builder foundation status script is missing: scripts/curriculum-builder-foundation-status.sh"
       fi
       bash "${curriculum_builder_foundation_status_script}"
+      exit 0
+      ;;
+    --curriculum-contracts-status)
+      repo_root="$(resolve_repo_root)"
+      curriculum_contracts_status_script="${repo_root}/scripts/curriculum-builder-contract-schemas-status.sh"
+      if [[ ! -f "${curriculum_contracts_status_script}" ]]; then
+        die "Curriculum Builder contract schemas status script is missing: scripts/curriculum-builder-contract-schemas-status.sh"
+      fi
+      bash "${curriculum_contracts_status_script}"
       exit 0
       ;;
     --curriculum-registry-v0-status)

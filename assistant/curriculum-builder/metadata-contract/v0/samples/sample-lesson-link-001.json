@@ -1,0 +1,15 @@
+{
+  "contract_type": "curriculum_lesson_link_contract",
+  "contract_version": "0.0.0-inactive",
+  "metadata_only": true,
+  "read_only": true,
+  "lesson_link_id": "sample-lesson-link-001",
+  "course": "Example ELA Course",
+  "unit": "Unit 1",
+  "lesson": "Lesson 1",
+  "pacing_reference": "placeholder://pacing/example-unit-1",
+  "canvas_reference_future": "placeholder://canvas/example-future-reference",
+  "resource_ids": ["sample-resource-worksheet-001"],
+  "manual_alignment_status": "aligned_placeholder",
+  "generation_blocked": true
+}

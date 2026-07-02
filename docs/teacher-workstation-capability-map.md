@@ -55,7 +55,8 @@ Cross-references:
 | Capability | Status | Notes |
 | --- | --- | --- |
 | Engineering Constitution / Approval Gate | foundation complete | Active governance |
-| Curriculum Builder v1 | foundation complete | Registry, 5 contracts, binding, validation |
+| Curriculum Builder v1 | foundation complete | Registry, 5 output contracts, binding, validation |
+| Curriculum Builder metadata contracts A4–A7 | implemented read-only | `--curriculum-contracts-status`; inactive planning schemas |
 | Lesson Planning Foundation | foundation complete | Phase 3 Workstream A |
 | Curriculum Library Foundation | foundation complete | Phase 3 Workstream B |
 | Renderer Foundation v1 | foundation complete | Interface/status only; no renderers |

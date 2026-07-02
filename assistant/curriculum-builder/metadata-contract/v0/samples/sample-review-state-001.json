@@ -1,0 +1,16 @@
+{
+  "contract_type": "curriculum_review_state_contract",
+  "contract_version": "0.0.0-inactive",
+  "metadata_only": true,
+  "read_only": true,
+  "target_id": "sample-resource-worksheet-001",
+  "target_kind": "curriculum_resource",
+  "review_status": "approved_placeholder",
+  "review_scope": "resource_metadata",
+  "teacher_verified": true,
+  "student_safe": true,
+  "teacher_only_reason": null,
+  "requires_manual_review": true,
+  "last_reviewed_future": null,
+  "review_notes_reference_future": null
+}

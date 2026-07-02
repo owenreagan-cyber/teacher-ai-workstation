@@ -85,6 +85,7 @@ Aggregate lane proof: `bin/chief-of-staff --curriculum-registry-lane-status`
 ### Owen § J checklist tracker (`--curriculum-production-registry-owen-checklist-status`)
 
 - Read-only tracker: `docs/curriculum-builder-production-registry-owen-checklist-tracker.md`
+- Owen review packet: `docs/curriculum-builder-production-registry-owen-review-packet.md`
 - Mirrors planning brief § J rows; all items **pending** until Owen approves
 - Tracker PASS **≠** implementation authorization
 - Expected WARN: pending checklist items (see expected WARNs doc)

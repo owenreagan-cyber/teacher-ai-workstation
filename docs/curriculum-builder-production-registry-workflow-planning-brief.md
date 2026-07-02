@@ -233,6 +233,8 @@ Owen must explicitly approve each item before any production registry **implemen
 
 **ChatGPT review recommended** before issuing implementation prompt. See `docs/proposals/curriculum-builder-registry-lane-discovery-review.md`.
 
+**Owen review packet:** `docs/curriculum-builder-production-registry-owen-review-packet.md`
+
 ---
 
 ## Related Documents

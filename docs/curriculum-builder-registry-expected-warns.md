@@ -33,6 +33,8 @@ Per `docs/cursor-autonomous-build-engine.md` Expected WARN Policy.
 
 **Typical total on `--curriculum-production-registry-owen-checklist-status`:** 1 WARN / 0 FAIL while checklist incomplete.
 
+**Owen review packet:** `docs/curriculum-builder-production-registry-owen-review-packet.md` explains the pending checklist WARN and decision categories. The WARN is expected until Owen approves items in the tracker.
+
 **Typical total on `--curriculum-registry-lane-status` aggregate:** 8 WARN / 0 FAIL (7 A4–A7 + 1 Owen checklist) when canonical fixture unchanged.
 
 ## Rules

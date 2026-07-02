@@ -845,6 +845,37 @@ Alternate tracks remain approval-gated per `docs/implementation-approval-gate.md
 
 ---
 
+## 10b. Program Lane Status
+
+`lane_status` tracks discovery readiness for major program lanes. See `docs/cursor-operating-modes-and-approval-gates.md` § Three-Level Discovery Governance.
+
+| Lane | Program | Foundation status | lane_status | Notes |
+| --- | --- | --- | --- | --- |
+| Local LLM / Ollama | D1 | read-only foundation complete | `complete_pending_review` | No Level 2 review run |
+| Mac Workstation Experience | E1 | read-only foundation complete | `complete_pending_review` | No Level 2 review run |
+| Widget and Shortcut Builder | F1 | read-only foundation complete | `complete_pending_review` | No Level 2 review run |
+| Classroom App Lab | CAL1 | read-only foundation complete | `complete_pending_review` | No Level 2 review run |
+| Lovable Classroom App Builder | G1 | read-only foundation complete | `complete_pending_review` | No Level 2 review run |
+| 3D Builder Workshop Agent | J1 | read-only foundation complete | `complete_pending_review` | No Level 2 review run |
+| Cursor Operating Modes Governance | — | foundation complete | `complete_pending_review` | PR #203+ governance chain |
+| Curriculum Builder metadata contracts | A4–A7 | read-only foundation complete | `complete_pending_review` | No Level 2 review run |
+| Chief of Staff v1 Agent Core | B | Program B complete | `complete_pending_review` | No Level 2 review run |
+| Teacher Workstation Health Monitor | H | read-only foundation complete | `complete_pending_review` | No Level 2 review run |
+| Teacher Workstation System Updater | I | read-only foundation complete | `complete_pending_review` | No Level 2 review run |
+| AI Tool Routing | R0 | operational read-only complete | `complete_pending_review` | No Level 2 review run |
+| Curriculum Builder v1 (registry/contracts) | A | Phase 2 foundation complete | `in_progress` | CB-IMPL subtracks remain |
+| Canvas LLM | C | frozen/stopped | `in_progress` | Stop marker active |
+
+**Rules:**
+
+- `in_progress` — lane not yet foundation-complete or still has active approved work
+- `complete_pending_review` — foundation/read-only mission complete; eligible for Level 2 lane review
+- `reviewed` — Level 2 lane discovery review completed **or** Owen explicitly approved marking reviewed
+
+Do not mark `reviewed` without Level 2 completion or explicit Owen approval.
+
+---
+
 ## 11. Program Mission Sequencing (Quick Reference)
 
 ```text
@@ -861,6 +892,7 @@ COMPLETE:
   G1 Lovable Classroom App Builder read-only planning surface
   J1 3D Builder Workshop Agent read-only planning surface
   Governance Cursor operating modes foundation
+  Three-Level Discovery Governance (operating modes + proposal ledger schema)
   A4–A7 Curriculum Builder metadata contract schemas (read-only)
 
 NOW (autonomous pattern when authorized):

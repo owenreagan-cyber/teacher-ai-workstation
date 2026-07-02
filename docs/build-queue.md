@@ -14,6 +14,8 @@ Handoff and status clarity. Start from `docs/phase-1-chief-of-staff-status-audit
 
 ## Recently Completed
 
+- Three-Level Discovery Governance established: operating modes § discovery levels, unified proposal ledger schema, Level 2/3 mission templates, program lane_status in roadmap (`docs/cursor-operating-modes-and-approval-gates.md`). Documentation/status only.
+
 - Curriculum Builder metadata contract schemas Programs A4–A7 complete: resource, source reference, review state, and lesson link contract docs, inactive samples, `--curriculum-contracts-status`, status script, tests (`docs/curriculum-builder-canonical-contract-schemas.md`). Read-only planning only.
 
 - Cursor Operating Modes and Proposal Governance Foundation complete: operating modes doc, domain boundaries doc, proposal ledger, `--cursor-operating-modes-status`, status script, tests (`docs/cursor-operating-modes-and-approval-gates.md`). Documentation/status only.

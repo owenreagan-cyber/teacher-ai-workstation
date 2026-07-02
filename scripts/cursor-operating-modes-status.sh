@@ -79,10 +79,27 @@ check_doc_contains "${domain_boundaries_doc}" "3D Design Studio" "3d design stud
 check_doc_contains "${domain_boundaries_doc}" "Lovable / App Builder Workflows" "lovable app builder boundary"
 check_doc_contains "${domain_boundaries_doc}" "Local LLM / Ollama Workflows" "local llm ollama boundary"
 
+section 'Three-Level Discovery Governance'
+check_doc_contains "${operating_modes_doc}" "## Three-Level Discovery Governance {#three-level-discovery-governance}" "three-level discovery anchor"
+check_doc_contains "${operating_modes_doc}" "Level 1 — End-of-Mission Discovery Scan" "level 1 end-of-mission scan"
+check_doc_contains "${operating_modes_doc}" "Level 2 — End-of-Lane Discovery Review" "level 2 lane discovery review"
+check_doc_contains "${operating_modes_doc}" "Level 3 — Full-Product Discovery Strategy Review" "level 3 full-product discovery"
+check_doc_contains "${operating_modes_doc}" "Discovery is never implementation approval" "discovery not implementation approval"
+check_doc_contains "${operating_modes_doc}" "No discovery findings this mission" "no discovery findings rule"
+check_file docs/proposals/templates/lane-level-discovery-mission.md
+check_file docs/proposals/templates/full-product-discovery-mission.md
+check_doc_contains docs/proposals/templates/lane-level-discovery-mission.md "[INSERT LANE NAME]" "level 2 template lane placeholder"
+
 section 'Proposal Ledger'
 check_doc_contains "${proposals_index}" "Proposal Ledger" "proposal ledger heading"
-check_doc_contains "${proposals_index}" "| Proposal | Area | Status | Risk | Approval Needed | Last Reviewed | Link |" "proposal ledger table"
+check_doc_contains "${proposals_index}" "| Candidate | Area | Level | Value | Risk | Technical Complexity | Student-Data Risk | Curriculum-Content Risk | API/Network Requirement | Status | Recommended Next Step | Source Mission | Date |" "unified proposal ledger schema"
+check_doc_contains "${proposals_index}" "Migration Note (2026-07-02)" "proposal ledger migration note"
+check_doc_contains "${proposals_index}" "implemented" "ledger documents implemented status"
 check_doc_contains "${proposals_index}" "Cursor proposal → ChatGPT review → Owen Reagan approval" "approval chain"
+check_doc_contains docs/proposals/README.md "Three-Level Discovery Relationship" "proposals readme discovery levels"
+check_doc_contains docs/master-build-roadmap.md "Program Lane Status" "roadmap program lane status"
+check_doc_contains docs/master-build-roadmap.md "complete_pending_review" "roadmap lane_status complete_pending_review"
+check_doc_contains docs/master-build-roadmap.md "reviewed" "roadmap lane_status reviewed rule"
 
 section 'Cross-Links and Roadmap Coherence'
 check_doc_contains docs/cursor-workflow-operating-system.md "docs/engineering-constitution.md" "workflow guide links engineering constitution"

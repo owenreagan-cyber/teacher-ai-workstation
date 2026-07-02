@@ -82,8 +82,9 @@ Cross-references:
 | --- | --- | --- |
 | Teacher Workstation Health Monitor | **implemented read-only** | Program H — `--system-health` |
 | Teacher Workstation System Updater | **implemented read-only** | Program I — `--system-update-check` |
-| Widget catalog | planned | Program F |
-| Shortcut catalog | planned | Program F |
+| Widget catalog | implemented read-only | `--widget-shortcut-status`; Program F1 foundation |
+| Shortcut catalog | implemented read-only | `--widget-shortcut-status`; Program F1 foundation |
+| Classroom App Lab / Prototype Rescue | planned | Future capability — documentation/status only |
 | Mac teacher modes | implemented read-only | `--mac-workstation-status`; Program E1 foundation |
 | Wallpaper / appearance | foundation complete | Planning stack; live curator not started |
 

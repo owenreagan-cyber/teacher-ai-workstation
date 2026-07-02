@@ -534,7 +534,9 @@ Per `docs/vibe-panel-roadmap.md` — app build requires separate mission approva
 
 ### Program F — Widget and Shortcut Builder
 
-Deferred until Chief of Staff v1 command index exists. Manual/local-first widgets and shortcuts first — no automation or install without Owen approval per mission.
+Program F1 read-only catalog foundation complete (`docs/widget-shortcut-builder-catalog-foundation.md`). `--widget-shortcut-status` reports catalog planning boundaries only. No widget install, shortcut install, shortcut execution, or Mac automation.
+
+Deferred live health and install paths until explicit approval per mission. Manual/local-first widgets and shortcuts first — no automation or install without Owen approval.
 
 **Widget Catalog v1 (planning):**
 
@@ -784,7 +786,7 @@ Per `docs/engineering-constitution.md` §10, v1.0 means these systems exist as *
 | Local Retrieval | Approved local lookup | **Foundation complete** — no engines |
 | Lesson Generation | Human-reviewed drafts under safety boundaries | **Not started** |
 | Mac Workstation Experience | Approved modes and surfaces | **Active** — Program E1 read-only planning |
-| Widgets / Shortcuts | Catalogs and manual install path | **Planned** |
+| Widgets / Shortcuts | Catalogs and manual install path | **Active** — Program F1 read-only catalog |
 | 3D Builder Workshop Agent | Gated classroom object pipeline | **Planned** |
 | Validation suite | PASS/WARN/FAIL for all active tracks | **Strong** |
 | Dashboard | Single local health surface on `main` | **Active** — see `bin/chief-of-staff --dashboard` |
@@ -795,9 +797,9 @@ Per `docs/engineering-constitution.md` §10, v1.0 means these systems exist as *
 
 ## 10. Immediate Next Recommended Mission
 
-**Widget and Shortcut Builder — Read-Only Catalog Foundation (Program F1)**
+**Classroom App Lab — Prototype Rescue Foundation**
 
-Program E1 Mac Workstation Experience read-only planning foundation is complete (`docs/mac-workstation-experience-foundation.md`). `--mac-workstation-status` provides planning visibility only. Recommended next: widget/shortcut catalog foundation without install or automation.
+Program F1 Widget and Shortcut Builder read-only catalog foundation is complete (`docs/widget-shortcut-builder-catalog-foundation.md`). `--widget-shortcut-status` provides catalog planning visibility only. Recommended next: documentation/status planning for unfinished teacher-created classroom apps without zip extraction, code parsing, app execution, or LLM/API analysis.
 
 Alternate tracks remain approval-gated per `docs/implementation-approval-gate.md`.
 
@@ -816,10 +818,11 @@ COMPLETE:
   R0 AI Tool Routing operational surface (read-only)
   D1 Local LLM read-only status foundation
   E1 Mac Workstation Experience read-only planning
+  F1 Widget/Shortcut catalog read-only foundation
 
 NOW (autonomous pattern when authorized):
   B1–B5 Chief of Staff v1 Agent Core (remaining planned surfaces)
-  F1 Widget/Shortcut catalog read-only foundation
+  Classroom App Lab — Prototype Rescue Foundation (documentation/status only)
 
 THEN (mixed approval):
   A4–A7 Curriculum Builder Complete subtracks

@@ -137,7 +137,7 @@ See `docs/master-build-roadmap.md` Program G1 and `assistant/model-routing.md`. 
 
 ## Master Build Roadmap Status
 
-Canonical program roadmap is active (`docs/master-build-roadmap.md`). Phase 3 foundations complete. Chief of Staff Program B, Health Monitor H, System Updater I, AI Tool Routing, Local LLM D1, and Mac Workstation E1 read-only foundations complete. Recommended next major program: Widget and Shortcut Builder — Read-Only Catalog Foundation (Program F1).
+Canonical program roadmap is active (`docs/master-build-roadmap.md`). Phase 3 foundations complete. Chief of Staff Program B, Health Monitor H, System Updater I, AI Tool Routing, Local LLM D1, Mac Workstation E1, and Widget and Shortcut Builder F1 read-only foundations complete. Recommended next major program: Classroom App Lab — Prototype Rescue Foundation.
 
 Companion docs: `docs/teacher-workstation-capability-map.md`, `docs/ai-tool-routing-matrix.md`, `docs/3d-builder-workshop-agent-roadmap.md`.
 

@@ -264,7 +264,7 @@ Future capability for managing unfinished teacher-created classroom apps, games,
 
 ### Current status
 
-Planning only. Queued after current workstation-readiness foundations. No runtime analyzer, zip upload, zip extraction, code parsing, repo ingestion, app execution, LLM/API analysis, or automatic Cursor execution.
+Read-only prototype rescue foundation complete (`docs/classroom-app-lab-prototype-rescue-foundation.md`). `--classroom-app-lab-status` reports planning boundaries only. No zip extraction, code parsing, app execution, LLM/API analysis, or automatic Cursor execution.
 
 ### Blocked capabilities
 

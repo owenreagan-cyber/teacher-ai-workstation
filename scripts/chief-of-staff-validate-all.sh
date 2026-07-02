@@ -113,6 +113,7 @@ run_track "AI Tool Routing" scripts/ai-tool-routing-status.sh
 run_track "Local LLM Workstation" scripts/local-llm-workstation-status.sh
 run_track "Mac Workstation Experience" scripts/mac-workstation-experience-status.sh
 run_track "Widget and Shortcut Builder" scripts/widget-shortcut-builder-status.sh
+run_track "Classroom App Lab" scripts/classroom-app-lab-status.sh
 run_track "Chief of Staff Next Action" scripts/chief-of-staff-next-action.sh
 run_track "Curriculum Registry v0" scripts/curriculum-registry-v0-status.sh
 run_track "Curriculum Output Contract v0" scripts/curriculum-output-contract-v0-status.sh

@@ -116,6 +116,12 @@ These flags exist in `bin/chief-of-staff` and work as read-only local status sur
 | --- | --- |
 | `bin/chief-of-staff --widget-shortcut-status` | Widget and shortcut catalog read-only foundation |
 
+### Classroom App Lab (Prototype Rescue Foundation)
+
+| Command | Purpose |
+| --- | --- |
+| `bin/chief-of-staff --classroom-app-lab-status` | Classroom App Lab prototype rescue read-only foundation |
+
 ## Planned Commands
 
 Documented for future programs. **Not implemented** unless added to CLI.

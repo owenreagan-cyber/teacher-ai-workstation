@@ -68,9 +68,9 @@ bin/chief-of-staff --dashboard
 
 ## Recommended Next Mission
 
-**Classroom App Lab — Prototype Rescue Foundation**
+**Lovable Classroom App Builder — Read-Only Planning Surface (Program G1)**
 
-Widget and Shortcut Builder read-only catalog foundation is complete. Next safe foundation: documentation/status planning for unfinished teacher-created classroom apps without zip extraction, code parsing, app execution, or LLM/API analysis.
+Widget and Shortcut Builder read-only catalog foundation is complete. Next safe foundation: Lovable integration planning surface without API, OAuth, or live app generation.
 
 ## Non-Activation
 

@@ -78,6 +78,18 @@
       ]
     },
     {
+      "id": "classroom_app_lab",
+      "name": "Classroom App Lab",
+      "commands": [
+        {"flag": "--classroom-app-lab-status", "status": "implemented", "purpose": "Classroom App Lab prototype rescue read-only foundation"},
+        {"flag": "--upload-prototype-zip", "status": "blocked", "purpose": "Prototype zip upload blocked without explicit approval mission"},
+        {"flag": "--extract-prototype", "status": "blocked", "purpose": "Zip extraction blocked without explicit approval mission"},
+        {"flag": "--analyze-prototype-code", "status": "blocked", "purpose": "Code parsing blocked without explicit approval mission"},
+        {"flag": "--run-classroom-app", "status": "blocked", "purpose": "App execution blocked without explicit approval mission"},
+        {"flag": "--rescue-prototype-auto", "status": "blocked", "purpose": "Automatic rescue loop blocked without explicit approval mission"}
+      ]
+    },
+    {
       "id": "proof",
       "name": "Proof",
       "commands": [

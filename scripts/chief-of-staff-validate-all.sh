@@ -106,6 +106,7 @@ EOF
 
 run_track "Cursor Workflow" scripts/cursor-workflow-status.sh
 run_track "Cursor Operating Modes" scripts/cursor-operating-modes-status.sh
+run_track "Autonomous Build Engine" scripts/autonomous-build-engine-status.sh
 run_track "Chief of Staff Command Index v1" scripts/chief-of-staff-command-index-v1-status.sh
 run_track "Chief of Staff v1 Agent Core" scripts/chief-of-staff-v1-foundation-status.sh
 run_track "Teacher Workstation Health Monitor" scripts/teacher-workstation-health-status.sh

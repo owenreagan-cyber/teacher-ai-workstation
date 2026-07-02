@@ -201,6 +201,7 @@ Teacher Planning Command Organization (status only; safe sample: fractions-revie
 Developer and Cursor Workflow:
   --cursor-workflow-status             Show local Cursor workflow status and exit.
   --cursor-operating-modes-status      Show Cursor operating modes, approval gates, and proposal governance status and exit.
+  --autonomous-build-engine-status     Show Autonomous Build Engine governance, continuation loop, and exhaustion rules status and exit.
   --developer-status                   Show local Developer Mode status and exit.
   --create-developer-project <template> <slug>
                                        Copy a Developer Mode template into local projects.
@@ -2533,6 +2534,15 @@ while [[ $# -gt 0 ]]; do
         die "Cursor operating modes status script is missing: scripts/cursor-operating-modes-status.sh"
       fi
       bash "${cursor_operating_modes_status_script}"
+      exit 0
+      ;;
+    --autonomous-build-engine-status)
+      repo_root="$(resolve_repo_root)"
+      autonomous_build_engine_status_script="${repo_root}/scripts/autonomous-build-engine-status.sh"
+      if [[ ! -f "${autonomous_build_engine_status_script}" ]]; then
+        die "Autonomous Build Engine status script is missing: scripts/autonomous-build-engine-status.sh"
+      fi
+      bash "${autonomous_build_engine_status_script}"
       exit 0
       ;;
     --developer-status)

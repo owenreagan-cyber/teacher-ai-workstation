@@ -44,6 +44,8 @@ Cross-references:
 | Daily status / closeout | **implemented read-only** | `--daily-status`, `--closeout` (Program B2/B3) |
 | Approval / blocker queues | **implemented read-only** | `--approval-queue`, `--blocker-queue` (Program B4) |
 | Mode awareness (conceptual) | **implemented read-only** | `--mode-status` (Program B5); no Mac changes |
+| Cursor operating modes governance | **implemented read-only** | `--cursor-operating-modes-status`; approval gates + proposal ledger |
+| Autonomous Build Engine governance | **implemented read-only** | `--autonomous-build-engine-status`; continuation loop + exhaustion rules |
 | Daily briefing (AI) | planned | Approval-gated |
 | Tool routing surface | implemented read-only | `--model-routing-status`; matrix at `docs/ai-tool-routing-matrix.md` |
 | Health summary | planned | Aggregated report via Program H |

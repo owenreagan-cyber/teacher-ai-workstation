@@ -104,6 +104,7 @@ check_doc_contains docs/master-build-roadmap.md "reviewed" "roadmap lane_status 
 section 'Cross-Links and Roadmap Coherence'
 check_doc_contains docs/cursor-workflow-operating-system.md "docs/engineering-constitution.md" "workflow guide links engineering constitution"
 check_doc_contains docs/cursor-workflow-operating-system.md "cursor-operating-modes-and-approval-gates" "workflow guide links operating modes"
+check_doc_contains docs/cursor-operating-modes-and-approval-gates.md "cursor-autonomous-build-engine.md" "operating modes links autonomous build engine"
 check_doc_contains docs/implementation-approval-gate.md "documentation/status only" "implementation gate status only"
 check_doc_contains docs/build-queue.md "master-build-roadmap" "build queue links roadmap"
 check_doc_contains assistant/memory/active-priorities.md "Implementation approval gate" "active priorities links gate"

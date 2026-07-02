@@ -60,6 +60,8 @@ Cursor must **not** stop merely because one file, one commit, one PR, two PRs, o
 
 If Cursor stops, it must cite the **exact escalation condition** that required stopping.
 
+**Autonomous Build Engine:** For continuation loops, safe work classes, minimum exhaustion, expected WARN policy, and exhaustion reporting, see `docs/cursor-autonomous-build-engine.md`. Proof: `bin/chief-of-staff --autonomous-build-engine-status`.
+
 ## Full Developer Debug / Validation Authority
 
 For approved work, Cursor may use full repo-local developer authority subject to these prohibitions unless explicitly approved:

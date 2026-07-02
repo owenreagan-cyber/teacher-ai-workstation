@@ -2441,6 +2441,27 @@ else
   warn "cursor operating modes status script missing: scripts/cursor-operating-modes-status.sh"
 fi
 
+section "Autonomous Build Engine Governance"
+if [[ -f scripts/autonomous-build-engine-status.sh ]]; then
+  autonomous_build_engine_result=0
+  autonomous_build_engine_output="$(bash scripts/autonomous-build-engine-status.sh 2>&1)" || autonomous_build_engine_result=$?
+  autonomous_build_engine_pass="$(summary_count "${autonomous_build_engine_output}" "PASS")"
+  autonomous_build_engine_warn="$(summary_count "${autonomous_build_engine_output}" "WARN")"
+  autonomous_build_engine_fail="$(summary_count "${autonomous_build_engine_output}" "FAIL")"
+
+  if [[ "${autonomous_build_engine_result}" != "0" ]]; then
+    printf '%s\n' "${autonomous_build_engine_output}"
+    fail "Autonomous Build Engine status failed"
+  elif [[ -n "${autonomous_build_engine_pass}" && -n "${autonomous_build_engine_warn}" && -n "${autonomous_build_engine_fail}" ]]; then
+    printf 'Autonomous Build Engine: PASS %s / WARN %s / FAIL %s\n' "${autonomous_build_engine_pass}" "${autonomous_build_engine_warn}" "${autonomous_build_engine_fail}"
+    pass "Autonomous Build Engine status completed"
+  else
+    pass "Autonomous Build Engine status completed"
+  fi
+else
+  warn "Autonomous Build Engine status script missing: scripts/autonomous-build-engine-status.sh"
+fi
+
 section "Developer Mode"
 if [[ -f scripts/developer-mode-status.sh ]]; then
   developer_output=""

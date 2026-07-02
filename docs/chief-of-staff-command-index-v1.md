@@ -36,6 +36,7 @@ These flags exist in `bin/chief-of-staff` and work as read-only local status sur
 | `bin/chief-of-staff --status` | Basic CLI status |
 | `bin/chief-of-staff --cursor-workflow-status` | Cursor workflow and governance checks |
 | `bin/chief-of-staff --cursor-operating-modes-status` | Cursor operating modes, approval gates, and proposal governance |
+| `bin/chief-of-staff --autonomous-build-engine-status` | Autonomous Build Engine governance, continuation loop, exhaustion rules |
 | `bin/chief-of-staff --return-to-core-status` | Parked tracks / return-to-core map |
 | `bin/chief-of-staff --commands` | Deterministic command surface index |
 | `bin/chief-of-staff --chief-of-staff-v1-status` | Chief of Staff v1 Agent Core foundation status |

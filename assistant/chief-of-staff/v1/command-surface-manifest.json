@@ -100,6 +100,17 @@
       ]
     },
     {
+      "id": "3d_builder_workshop_agent",
+      "name": "3D Builder Workshop Agent",
+      "commands": [
+        {"flag": "--3d-builder-status", "status": "implemented", "purpose": "3D Builder Workshop Agent read-only planning surface (Program J1)"},
+        {"flag": "--3d-builder-generate", "status": "blocked", "purpose": "CAD generation blocked without explicit approval mission"},
+        {"flag": "--3d-builder-export-stl", "status": "blocked", "purpose": "STL export blocked without explicit approval mission"},
+        {"flag": "--3d-builder-slice", "status": "blocked", "purpose": "Slicer integration blocked without explicit approval mission"},
+        {"flag": "--3d-builder-print", "status": "blocked", "purpose": "Printer integration blocked without explicit approval mission"}
+      ]
+    },
+    {
       "id": "proof",
       "name": "Proof",
       "commands": [
@@ -157,8 +168,7 @@
       "id": "program_future",
       "name": "Program Status — Future / Approval-Gated",
       "commands": [
-        {"flag": "--mode-status", "status": "implemented", "purpose": "Operating context mode concepts (Program B5)"},
-        {"flag": "--3d-builder-status", "status": "planned", "purpose": "3D Builder Workshop Agent status (Program J)"}
+        {"flag": "--mode-status", "status": "implemented", "purpose": "Operating context mode concepts (Program B5)"}
       ]
     }
   ]

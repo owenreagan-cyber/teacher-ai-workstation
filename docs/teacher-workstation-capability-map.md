@@ -113,7 +113,7 @@ Cross-references:
 
 | Capability | Status | Notes |
 | --- | --- | --- |
-| 3D Builder Workshop Agent | planned | Separate future sub-agent; Program J |
+| 3D Builder Workshop Agent | implemented read-only | `--3d-builder-status`; Program J1 foundation |
 | 3d-agent readiness stack | foundation complete | `3d-agent/` policies/workflows; parked |
 | Builder Brain / asset library | planned | Rules and scorecards first; no training |
 | CAD generation / slicing / printing | planned | Blocked until explicit missions |

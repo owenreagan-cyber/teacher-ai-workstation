@@ -43,7 +43,7 @@ Cross-references:
 | Local LLM | **Active (D1 read-only)** | Program D1 status foundation; no installs/downloads/inference |
 | Mac workstation experience | **Scaffold/plan** | Wallpaper foundation stack; teacher modes planned; no live curator/widget |
 | Health Monitor / System Updater | **Active** | Read-only foundations complete (Programs H and I) |
-| 3D Builder Workshop Agent | **Planned** | `3d-agent/` readiness parked; no CAD/slicing/printing |
+| 3D Builder Workshop Agent | **Active** — Program J1 read-only planning | `3d-agent/` readiness parked; no CAD/slicing/printing |
 | Automation/integrations | **Blocked** | Drive, Canvas API, OAuth, Gmail, Lovable, cloud APIs — all deferred/planning only |
 
 **Baseline proof:** local `main` clean; dashboard healthy (see `bin/chief-of-staff --dashboard`); Phase 3 foundation orchestration active; Canvas LLM stop marker active.
@@ -787,7 +787,7 @@ Per `docs/engineering-constitution.md` §10, v1.0 means these systems exist as *
 | Lesson Generation | Human-reviewed drafts under safety boundaries | **Not started** |
 | Mac Workstation Experience | Approved modes and surfaces | **Active** — Program E1 read-only planning |
 | Widgets / Shortcuts | Catalogs and manual install path | **Active** — Program F1 read-only catalog |
-| 3D Builder Workshop Agent | Gated classroom object pipeline | **Planned** |
+| 3D Builder Workshop Agent | Gated classroom object pipeline | **Active** — Program J1 read-only planning |
 | Validation suite | PASS/WARN/FAIL for all active tracks | **Strong** |
 | Dashboard | Single local health surface on `main` | **Active** — see `bin/chief-of-staff --dashboard` |
 
@@ -797,9 +797,9 @@ Per `docs/engineering-constitution.md` §10, v1.0 means these systems exist as *
 
 ## 10. Immediate Next Recommended Mission
 
-**3D Builder Workshop Agent — Read-Only Planning Surface (Program J)**
+**Curriculum Builder — Additional Canonical Contract Schemas (Programs A4–A7)**
 
-Lovable Classroom App Builder read-only planning surface is complete (`docs/lovable-classroom-app-builder-foundation.md`). `--lovable-status` provides planning visibility only. Recommended next: 3D Builder Workshop Agent planning surface without CAD generation, slicing, or printing.
+3D Builder Workshop Agent read-only planning surface is complete (`docs/3d-builder-workshop-agent-foundation.md`). Workstation-readiness foundation chain is substantially complete. Recommended next: approval-gated Curriculum Builder subtracks per Phase 2 mission sequencing.
 
 Alternate tracks remain approval-gated per `docs/implementation-approval-gate.md`.
 
@@ -821,9 +821,10 @@ COMPLETE:
   F1 Widget/Shortcut catalog read-only foundation
   CAL1 Classroom App Lab prototype rescue read-only foundation
   G1 Lovable Classroom App Builder read-only planning surface
+  J1 3D Builder Workshop Agent read-only planning surface
 
 NOW (autonomous pattern when authorized):
-  J1 3D Builder Workshop Agent read-only planning surface
+  A4–A7 Curriculum Builder subtracks (approval-gated)
 
 THEN (mixed approval):
   A4–A7 Curriculum Builder Complete subtracks

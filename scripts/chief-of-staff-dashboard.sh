@@ -1156,6 +1156,26 @@ else
   warn "Lovable Classroom App Builder status script missing: scripts/lovable-classroom-app-builder-status.sh"
 fi
 
+section "3D Builder Workshop Agent (Program J1)"
+if [[ -f scripts/3d-builder-workshop-agent-status.sh ]]; then
+  builder_result=0
+  builder_output="$(bash scripts/3d-builder-workshop-agent-status.sh 2>&1)" || builder_result=$?
+  builder_pass="$(summary_count "${builder_output}" "PASS")"
+  builder_warn="$(summary_count "${builder_output}" "WARN")"
+  builder_fail="$(summary_count "${builder_output}" "FAIL")"
+  if [[ "${builder_result}" != "0" ]]; then
+    printf '%s\n' "${builder_output}"
+    fail "3D Builder Workshop Agent status failed"
+  elif [[ -n "${builder_pass}" && -n "${builder_warn}" && -n "${builder_fail}" ]]; then
+    printf '3D Builder: PASS %s / WARN %s / FAIL %s\n' "${builder_pass}" "${builder_warn}" "${builder_fail}"
+    pass "3D Builder Workshop Agent status completed"
+  else
+    pass "3D Builder Workshop Agent status completed"
+  fi
+else
+  warn "3D Builder Workshop Agent status script missing: scripts/3d-builder-workshop-agent-status.sh"
+fi
+
 section "Lesson Planning v1 Foundation"
 if [[ -f scripts/lesson-planning-foundation-status.sh ]]; then
   lesson_planning_foundation_result=0

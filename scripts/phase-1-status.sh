@@ -944,11 +944,14 @@ check_bash_syntax scripts/lovable-classroom-app-builder-status.sh
 check_bash_syntax tests/lovable-classroom-app-builder-status-test.sh
 check_doc_contains docs/lovable-classroom-app-builder-foundation.md "complete_v1_g1" "lovable closure status"
 check_doc_contains docs/lovable-classroom-app-builder-non-activation-boundaries.md "Lovable API: blocked" "lovable api blocked"
-if grep -Fq -- '--lovable-status' bin/chief-of-staff; then
-  pass "chief-of-staff exposes --lovable-status"
-else
-  fail "chief-of-staff missing --lovable-status"
-fi
+if grep -Fq -- '--lovable-status' bin/chief-of-staff; then pass "chief-of-staff exposes --lovable-status"; else fail "chief-of-staff missing --lovable-status"; fi
+
+section "3D Builder Workshop Agent (Program J1) Files"
+for path in docs/3d-builder-workshop-agent-foundation.md docs/3d-builder-workshop-agent-non-activation-boundaries.md scripts/3d-builder-workshop-agent-status.sh tests/3d-builder-workshop-agent-status-test.sh; do
+  check_required_file "${path}"
+done
+check_bash_syntax scripts/3d-builder-workshop-agent-status.sh
+grep -Fq -- '--3d-builder-status' bin/chief-of-staff && pass "chief-of-staff exposes --3d-builder-status" || fail "chief-of-staff missing --3d-builder-status"
 
 section "Curriculum Registry–Contract Binding v0 Foundation Files"
 for path in \

@@ -91,6 +91,9 @@ Classroom App Lab (read-only; no zip/parse/execute):
 Lovable Classroom App Builder (read-only; not connected):
   --lovable-status                     Show read-only Lovable integration planning status and exit.
 
+3D Builder Workshop Agent (read-only; no CAD/print):
+  --3d-builder-status                  Show read-only 3D Builder Workshop Agent planning status and exit.
+
 Lesson Planning:
   --lesson-status                      Show local lesson planning workspace status and exit.
   --lesson-brief-status                Show local lesson brief helper status and exit.
@@ -2306,6 +2309,15 @@ while [[ $# -gt 0 ]]; do
         die "Lovable Classroom App Builder status script is missing: scripts/lovable-classroom-app-builder-status.sh"
       fi
       bash "${lovable_status_script}"
+      exit 0
+      ;;
+    --3d-builder-status)
+      repo_root="$(resolve_repo_root)"
+      builder_status_script="${repo_root}/scripts/3d-builder-workshop-agent-status.sh"
+      if [[ ! -f "${builder_status_script}" ]]; then
+        die "3D Builder Workshop Agent status script is missing: scripts/3d-builder-workshop-agent-status.sh"
+      fi
+      bash "${builder_status_script}"
       exit 0
       ;;
     --validate-all)

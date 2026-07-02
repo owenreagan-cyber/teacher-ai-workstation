@@ -128,6 +128,12 @@ These flags exist in `bin/chief-of-staff` and work as read-only local status sur
 | --- | --- |
 | `bin/chief-of-staff --lovable-status` | Lovable integration read-only planning surface |
 
+### 3D Builder Workshop Agent (Program J1)
+
+| Command | Purpose |
+| --- | --- |
+| `bin/chief-of-staff --3d-builder-status` | 3D Builder Workshop Agent read-only planning surface |
+
 ## Planned Commands
 
 Documented for future programs. **Not implemented** unless added to CLI.
@@ -139,7 +145,6 @@ Documented for future programs. **Not implemented** unless added to CLI.
 | `bin/chief-of-staff --local-llm-health` | D3 | Live Ollama health (blocked) |
 | `bin/chief-of-staff --widget-health` | F2 | Live widget catalog health (blocked) |
 | `bin/chief-of-staff --shortcut-health` | F3 | Live shortcut catalog health (blocked) |
-| `bin/chief-of-staff --3d-builder-status` | J | 3D Builder Workshop Agent status |
 
 ## Blocked Commands
 

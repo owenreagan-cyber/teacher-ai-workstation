@@ -42,11 +42,11 @@ Cross-references:
 | Canvas LLM | **Frozen/stopped** | Planning stack complete; stop marker active; no runtime |
 | Local LLM | **Setup only** | Ollama installer/verify; routing matrix doc-only; no downloads |
 | Mac workstation experience | **Scaffold/plan** | Wallpaper foundation stack; teacher modes planned; no live curator/widget |
-| Health Monitor / System Updater | **Planned** | Roadmap only; observe/report and read-only update checks first |
+| Health Monitor / System Updater | **Active** | Read-only foundations complete (Programs H and I) |
 | 3D Builder Workshop Agent | **Planned** | `3d-agent/` readiness parked; no CAD/slicing/printing |
 | Automation/integrations | **Blocked** | Drive, Canvas API, OAuth, Gmail, Lovable, cloud APIs — all deferred/planning only |
 
-**Baseline proof:** local `main` clean; dashboard PASS 97 / WARN 0 / FAIL 0; Phase 3 foundation orchestration active; Canvas LLM stop marker active.
+**Baseline proof:** local `main` clean; dashboard healthy (see `bin/chief-of-staff --dashboard`); Phase 3 foundation orchestration active; Canvas LLM stop marker active.
 
 ---
 
@@ -119,9 +119,9 @@ Closure: `docs/teacher-workstation-foundation-v0.md`
 | --- | --- | --- |
 | **Chief of Staff v1 Agent Core** | Central control plane with next-action, briefing, closeout, mode awareness | Command index incomplete; no unified daily briefing |
 | **Teacher Workstation Capability Map** | One canonical map of all systems and status labels | **Documented** — maintain with programs |
-| **Teacher Workstation Health Monitor** | Observe/report workstation health (manual read-only first) | Not started |
-| **Teacher Workstation System Updater** | Read-only update checks → guided plans → approved maintenance | Not started |
-| **AI Tool Routing Matrix** | Documented roles for cloud/local/builder tools | **Documented** — routing inactive |
+| **Teacher Workstation Health Monitor** | Observe/report workstation health (manual read-only first) | **Complete** — Program H read-only foundation |
+| **Teacher Workstation System Updater** | Read-only update checks → guided plans → approved maintenance | **Complete** — Program I read-only foundation |
+| **AI Tool Routing Matrix** | Documented roles for cloud/local/builder tools | **Active** — read-only operational surface; routing inactive |
 | **Curriculum Builder Complete** | Registry + contracts + renderers + teacher-reviewed outputs | v1 foundation done; renderers/generation gated |
 | **Local LLM / Ollama Workstation** | Local model policy, inventory, health checks | Installer baseline only |
 | **Mac Workstation Experience** | Teacher modes, wallpaper, visible transformation | Plans exceed implementation |
@@ -751,7 +751,7 @@ Per `docs/engineering-constitution.md` §10, v1.0 means these systems exist as *
 | Capability map | Canonical system map with status labels | **Documented** |
 | Health Monitor | Read-only workstation health report | **Active** — Program H foundation |
 | System Updater | Read-only update planning | **Active** — Program I foundation |
-| AI tool routing | Documented matrix; inactive routing | **Documented** |
+| AI tool routing | Documented matrix; inactive routing | **Active** — read-only operational surface |
 | Curriculum Registry | Approved manual registry with metadata references | **Partial** — v1 fictional foundation |
 | Output Contracts | Active contracts wired to registry and review | **Foundation complete** — 5/5 canonical v0 |
 | Renderers | ≥1 renderer per primary contract type | **Not started** — interface foundation only |
@@ -762,7 +762,7 @@ Per `docs/engineering-constitution.md` §10, v1.0 means these systems exist as *
 | Widgets / Shortcuts | Catalogs and manual install path | **Planned** |
 | 3D Builder Workshop Agent | Gated classroom object pipeline | **Planned** |
 | Validation suite | PASS/WARN/FAIL for all active tracks | **Strong** |
-| Dashboard | Single local health surface on `main` | **Active** — 97/97 |
+| Dashboard | Single local health surface on `main` | **Active** — see `bin/chief-of-staff --dashboard` |
 
 **v1.0 is not a date.** It is an engineering completeness bar.
 
@@ -770,9 +770,11 @@ Per `docs/engineering-constitution.md` §10, v1.0 means these systems exist as *
 
 ## 10. Immediate Next Recommended Mission
 
-**AI Tool Routing Matrix — Operational Routing Surface**
+**Local LLM / Ollama Workstation — Read-Only Status Foundation (Program D1)**
 
-Program I System Updater foundation is complete (`docs/teacher-workstation-system-updater-foundation.md`). `--system-update-check` and `--system-update-plan` provide read-only update planning only. Recommended next: AI tool routing operational status surface — no cloud API activation or automated routing.
+AI Tool Routing operational surface is complete (`docs/ai-tool-routing-foundation.md`). `--model-routing-status` provides read-only routing lane visibility only. Recommended next: Local LLM/Ollama read-only status foundation — no installs, downloads, or inference.
+
+Alternate tracks remain approval-gated per `docs/implementation-approval-gate.md`.
 
 Alternate tracks remain approval-gated per `docs/implementation-approval-gate.md`.
 
@@ -786,11 +788,12 @@ Alternate tracks remain approval-gated per `docs/implementation-approval-gate.md
 COMPLETE:
   Phase 3 Teacher Workstation Foundation (v0)
   Capability map + AI tool routing matrix (documentation)
+  H0 Health Monitor read-only foundation
+  I0 System Updater read-only checks
+  R0 AI Tool Routing operational surface (read-only)
 
 NOW (autonomous pattern when authorized):
   B1–B5 Chief of Staff v1 Agent Core
-  H0 Health Monitor read-only foundation (when mission approved)
-  I0 System Updater read-only checks (when mission approved)
   D1 Local LLM status (read-only)
 
 THEN (mixed approval):

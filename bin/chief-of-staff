@@ -73,6 +73,9 @@ System Updater (read-only planning; no apply/install):
   --system-update-check                Show read-only System Updater foundation status and exit.
   --system-update-plan                 Show read-only manual update planning checklist and exit.
 
+AI Tool Routing (read-only; no live routing):
+  --model-routing-status               Show read-only AI tool routing operational status and exit.
+
 Lesson Planning:
   --lesson-status                      Show local lesson planning workspace status and exit.
   --lesson-brief-status                Show local lesson brief helper status and exit.
@@ -2234,6 +2237,15 @@ while [[ $# -gt 0 ]]; do
         die "Teacher Workstation system update plan script is missing: scripts/teacher-workstation-system-update-plan.sh"
       fi
       bash "${update_plan_script}"
+      exit 0
+      ;;
+    --model-routing-status)
+      repo_root="$(resolve_repo_root)"
+      routing_status_script="${repo_root}/scripts/ai-tool-routing-status.sh"
+      if [[ ! -f "${routing_status_script}" ]]; then
+        die "AI tool routing status script is missing: scripts/ai-tool-routing-status.sh"
+      fi
+      bash "${routing_status_script}"
       exit 0
       ;;
     --validate-all)

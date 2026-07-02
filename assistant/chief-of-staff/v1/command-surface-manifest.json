@@ -40,6 +40,13 @@
       ]
     },
     {
+      "id": "ai_tool_routing",
+      "name": "AI Tool Routing",
+      "commands": [
+        {"flag": "--model-routing-status", "status": "implemented", "purpose": "AI tool routing matrix operational status (read-only)"}
+      ]
+    },
+    {
       "id": "proof",
       "name": "Proof",
       "commands": [
@@ -98,7 +105,6 @@
       "name": "Program Status — Future / Approval-Gated",
       "commands": [
         {"flag": "--mode-status", "status": "implemented", "purpose": "Operating context mode concepts (Program B5)"},
-        {"flag": "--model-routing-status", "status": "planned", "purpose": "AI tool routing matrix status"},
         {"flag": "--local-llm-workstation-status", "status": "planned", "purpose": "Local LLM/Ollama workstation status (Program D1)"},
         {"flag": "--lovable-status", "status": "planned", "purpose": "Lovable integration inactive status (Program G1)"},
         {"flag": "--3d-builder-status", "status": "planned", "purpose": "3D Builder Workshop Agent status (Program J)"}

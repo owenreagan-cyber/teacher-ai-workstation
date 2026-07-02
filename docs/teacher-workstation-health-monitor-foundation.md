@@ -57,9 +57,9 @@ bin/chief-of-staff --dashboard
 
 ## Recommended Next Mission
 
-**AI Tool Routing Matrix — Operational Routing Surface**
+**Local LLM / Ollama Workstation — Read-Only Status Foundation (Program D1)**
 
-Health Monitor observes; System Updater (v0) plans updates read-only. Next: operational routing status without cloud API activation.
+Health Monitor observes; System Updater plans updates read-only; AI Tool Routing reports lane visibility read-only. Next: local LLM/Ollama status without install or inference.
 
 ## Non-Activation
 

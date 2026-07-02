@@ -5,7 +5,7 @@ Last updated: 2026-07-02
 ```text
 Status: documentation/status only
 Authority: companion to assistant/model-routing.md and docs/master-build-roadmap.md
-Chief of Staff routing status: planning only — no automated routing active
+Chief of Staff routing status: read-only operational surface — no automated routing active
 ```
 
 ## Purpose

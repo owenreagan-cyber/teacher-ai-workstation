@@ -119,7 +119,7 @@ Closure: `docs/teacher-workstation-system-updater-foundation.md`
 
 ## AI Tool Routing Matrix
 
-**Classification:** Future / Approval-Gated / Planning Only
+**Classification:** Read-only foundation complete — routing execution remains Future / Approval-Gated
 
 ### Purpose
 
@@ -139,7 +139,7 @@ Document how Chief of Staff may eventually route requests to specialized tools. 
 
 ### Current status
 
-Planning only. No routing implementation.
+Read-only operational surface complete (`docs/ai-tool-routing-foundation.md`). `--model-routing-status` reports lane visibility only. No routing implementation, APIs, or automated tool execution.
 
 ### Blocked capabilities
 

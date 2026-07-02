@@ -92,6 +92,12 @@ These flags exist in `bin/chief-of-staff` and work as read-only local status sur
 | `bin/chief-of-staff --integration-planning-foundation-status` | Integration Planning v0 |
 | `bin/chief-of-staff --teacher-app-designer-canvas-llm-status` | Canvas LLM frozen foundation |
 
+### AI Tool Routing (Operational Surface)
+
+| Command | Purpose |
+| --- | --- |
+| `bin/chief-of-staff --model-routing-status` | AI tool routing matrix operational status (read-only) |
+
 ## Planned Commands
 
 Documented for future programs. **Not implemented** unless added to CLI.
@@ -100,7 +106,6 @@ Documented for future programs. **Not implemented** unless added to CLI.
 | --- | --- | --- |
 | `bin/chief-of-staff --daily-briefing` | B2+ | Daily briefing surface (AI approval-gated) |
 | `bin/chief-of-staff --prove-main` | Proof | Local main cleanliness proof |
-| `bin/chief-of-staff --model-routing-status` | Routing | AI tool routing matrix status |
 | `bin/chief-of-staff --local-llm-workstation-status` | D1 | Local LLM/Ollama status |
 | `bin/chief-of-staff --widget-health` | F | Widget catalog health |
 | `bin/chief-of-staff --shortcut-health` | F | Shortcut catalog health |

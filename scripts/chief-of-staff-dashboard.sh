@@ -1030,6 +1030,27 @@ else
   warn "System Updater status script missing: scripts/teacher-workstation-system-updater-status.sh"
 fi
 
+section "AI Tool Routing Matrix (Operational Surface)"
+if [[ -f scripts/ai-tool-routing-status.sh ]]; then
+  routing_result=0
+  routing_output="$(bash scripts/ai-tool-routing-status.sh 2>&1)" || routing_result=$?
+  routing_pass="$(summary_count "${routing_output}" "PASS")"
+  routing_warn="$(summary_count "${routing_output}" "WARN")"
+  routing_fail="$(summary_count "${routing_output}" "FAIL")"
+
+  if [[ "${routing_result}" != "0" ]]; then
+    printf '%s\n' "${routing_output}"
+    fail "AI Tool Routing operational status failed"
+  elif [[ -n "${routing_pass}" && -n "${routing_warn}" && -n "${routing_fail}" ]]; then
+    printf 'AI Tool Routing: PASS %s / WARN %s / FAIL %s\n' "${routing_pass}" "${routing_warn}" "${routing_fail}"
+    pass "AI Tool Routing operational status completed"
+  else
+    pass "AI Tool Routing operational status completed"
+  fi
+else
+  warn "AI Tool Routing status script missing: scripts/ai-tool-routing-status.sh"
+fi
+
 section "Lesson Planning v1 Foundation"
 if [[ -f scripts/lesson-planning-foundation-status.sh ]]; then
   lesson_planning_foundation_result=0

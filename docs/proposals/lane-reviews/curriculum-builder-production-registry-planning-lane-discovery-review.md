@@ -62,11 +62,12 @@ Implementation: none authorized by this review
 
 | Candidate | Value | Risk | Status |
 | --- | --- | --- | --- |
-| Owen § J checklist tracker (read-only status rows) | medium | low | **proposed** |
+| Owen § J checklist tracker (read-only status rows) | medium | low | **implemented** — `--curriculum-production-registry-owen-checklist-status` |
+| Governance-first production registry foundation | high | low | **implemented** — `--curriculum-production-registry-governance-status` |
 | Production path decision record (post-Owen) | high | medium | **blocked** — Owen decision |
 | Cross-link dry-run promotion spec in planning brief | low | low | **implemented** (via spec doc references) |
 | ChatGPT review gate reminder in status output | low | low | **proposed** |
-| Separate implementation mission template for production registry | medium | medium | **proposed** |
+| Separate implementation mission template for production registry | medium | medium | **implemented** — `docs/proposals/backlog/production-registry-write-mission.md` |
 
 ---
 

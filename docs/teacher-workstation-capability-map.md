@@ -40,7 +40,11 @@ Cross-references:
 | Proof runner | implemented read-only | `scripts/run-workstation-proof.sh` |
 | Next-action recommendation | planned | Program B3 |
 | Daily briefing / closeout | planned | Program B2/B extensions |
-| Mode awareness | planned | Mac Workstation Experience |
+| Tool routing surface | planned | Program B5; matrix at `docs/ai-tool-routing-matrix.md` |
+| Approval queue surfacing | planned | Implementation gate intake status |
+| Blocker queue | planned | Frozen tracks, stop markers, escalations |
+| Health summary | planned | Aggregated report via Program H |
+| Mode awareness | planned | Mac Workstation Experience — Program E |
 
 **Architecture rule:** Chief of Staff is the central agent/control plane. It coordinates, validates, routes, tracks, and reports. It does not become external builders (Lovable, renderers, 3D tools, Canvas runtime).
 
@@ -89,6 +93,18 @@ Cross-references:
 | Canvas LLM manual export | foundation complete | Frozen/stopped; Program C |
 | Google Drive / Gmail / Canvas API | planned | Last-stage integrations; Program G |
 | OAuth / secrets broker | planned | Phase 0F; blocked |
+| Integration staging (G0–G5) | foundation complete | Documentation/dry-run only; see Program G |
+
+## Integrations and Automation (Staged)
+
+| Stage | Status | Notes |
+| --- | --- | --- |
+| G0 Documentation only | foundation complete | Roadmaps, inactive manifests |
+| G1 Manual links | planned | Browser profiles; paste-only |
+| G2 Local dry-run | foundation complete | Integration planning foundation v0 |
+| G3 Read-only integration | planned | Blocked |
+| G4 Write integration | planned | Blocked |
+| G5 Automation | planned | Blocked |
 
 ## 3D Builder Workshop Agent
 

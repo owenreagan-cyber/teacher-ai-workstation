@@ -722,6 +722,10 @@ check_doc_contains "${master_roadmap_doc}" "3D Builder Workshop Agent" "master r
 check_doc_contains "${master_roadmap_doc}" "Lovable Classroom App Builder" "master roadmap mentions Lovable integration"
 check_doc_contains "${master_roadmap_doc}" "Widget and Shortcut Builder" "master roadmap mentions Widget and Shortcut Builder"
 check_doc_contains "${master_roadmap_doc}" "Mac Workstation Experience" "master roadmap mentions Mac Workstation Experience"
+check_doc_contains "${master_roadmap_doc}" "Canvas Manual Restart" "master roadmap mentions Canvas Manual Restart"
+check_doc_contains "${master_roadmap_doc}" "Staged integration model" "master roadmap mentions staged integration model"
+capability_map_doc="docs/teacher-workstation-capability-map.md"
+check_doc_contains "${capability_map_doc}" "Integrations and Automation (Staged)" "capability map mentions staged integrations"
 
 section "Curriculum Registry–Contract Binding v0 Foundation Files"
 for path in \

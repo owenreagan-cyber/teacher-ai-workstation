@@ -57,9 +57,9 @@ bin/chief-of-staff --dashboard
 
 ## Recommended Next Mission
 
-**Mac Workstation Experience — Read-Only Planning Foundation (Program E1)**
+**Widget and Shortcut Builder — Read-Only Catalog Foundation (Program F1)**
 
-Health Monitor observes; System Updater plans updates read-only; AI Tool Routing and Local LLM report planning boundaries read-only. Next: Mac workstation experience planning without Mac system changes.
+Health Monitor, System Updater, AI Tool Routing, Local LLM, and Mac Workstation foundations are read-only. Next: widget/shortcut catalog planning without install or automation.
 
 ## Non-Activation
 

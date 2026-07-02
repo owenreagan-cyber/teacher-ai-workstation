@@ -52,9 +52,9 @@ bin/chief-of-staff --dashboard
 
 ## Recommended Next Mission
 
-**Mac Workstation Experience — Read-Only Planning Foundation (Program E1)**
+**Widget and Shortcut Builder — Read-Only Catalog Foundation (Program F1)**
 
-Routing visibility is complete read-only. Local LLM/Ollama planning status is complete read-only. Next: Mac teacher modes and workstation experience planning without Mac system changes.
+Routing visibility is complete read-only. Next: widget/shortcut catalog foundation without install or automation.
 
 ## Non-Activation
 

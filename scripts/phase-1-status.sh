@@ -873,6 +873,25 @@ else
   fail "chief-of-staff missing --local-llm-workstation-status"
 fi
 
+section "Mac Workstation Experience (Program E1) Files"
+for path in \
+  docs/mac-workstation-experience-foundation.md \
+  docs/mac-workstation-non-activation-boundaries.md \
+  docs/mac-workstation-readiness-plan.md \
+  scripts/mac-workstation-experience-status.sh \
+  tests/mac-workstation-experience-status-test.sh; do
+  check_required_file "${path}"
+done
+check_bash_syntax scripts/mac-workstation-experience-status.sh
+check_bash_syntax tests/mac-workstation-experience-status-test.sh
+check_doc_contains docs/mac-workstation-experience-foundation.md "complete_v1_e1" "mac workstation closure status"
+check_doc_contains docs/mac-workstation-non-activation-boundaries.md "Mac system changes: blocked" "mac system changes blocked"
+if grep -Fq -- '--mac-workstation-status' bin/chief-of-staff; then
+  pass "chief-of-staff exposes --mac-workstation-status"
+else
+  fail "chief-of-staff missing --mac-workstation-status"
+fi
+
 section "Curriculum Registry–Contract Binding v0 Foundation Files"
 for path in \
   docs/curriculum-binding-v0.md \

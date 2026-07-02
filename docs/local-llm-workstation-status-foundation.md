@@ -55,9 +55,9 @@ bin/chief-of-staff --dashboard
 
 ## Recommended Next Mission
 
-**Mac Workstation Experience — Read-Only Planning Foundation (Program E1)**
+**Widget and Shortcut Builder — Read-Only Catalog Foundation (Program F1)**
 
-Local LLM/Ollama read-only status is complete. Next safe foundation: Mac teacher modes and workstation experience planning/status without Mac system changes.
+Local LLM/Ollama read-only status is complete. Mac Workstation E1 is complete. Next: widget/shortcut catalog foundation without install or automation.
 
 ## Non-Activation
 

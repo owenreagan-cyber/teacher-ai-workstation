@@ -79,6 +79,9 @@ AI Tool Routing (read-only; no live routing):
 Local LLM / Ollama (read-only; no install/inference):
   --local-llm-workstation-status       Show read-only Local LLM/Ollama workstation status and exit.
 
+Mac Workstation Experience (read-only; no Mac changes):
+  --mac-workstation-status             Show read-only Mac workstation experience planning status and exit.
+
 Lesson Planning:
   --lesson-status                      Show local lesson planning workspace status and exit.
   --lesson-brief-status                Show local lesson brief helper status and exit.
@@ -2258,6 +2261,15 @@ while [[ $# -gt 0 ]]; do
         die "Local LLM workstation status script is missing: scripts/local-llm-workstation-status.sh"
       fi
       bash "${local_llm_status_script}"
+      exit 0
+      ;;
+    --mac-workstation-status)
+      repo_root="$(resolve_repo_root)"
+      mac_status_script="${repo_root}/scripts/mac-workstation-experience-status.sh"
+      if [[ ! -f "${mac_status_script}" ]]; then
+        die "Mac Workstation Experience status script is missing: scripts/mac-workstation-experience-status.sh"
+      fi
+      bash "${mac_status_script}"
       exit 0
       ;;
     --validate-all)

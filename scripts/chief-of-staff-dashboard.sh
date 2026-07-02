@@ -1072,6 +1072,27 @@ else
   warn "Local LLM workstation status script missing: scripts/local-llm-workstation-status.sh"
 fi
 
+section "Mac Workstation Experience (Program E1)"
+if [[ -f scripts/mac-workstation-experience-status.sh ]]; then
+  mac_ws_result=0
+  mac_ws_output="$(bash scripts/mac-workstation-experience-status.sh 2>&1)" || mac_ws_result=$?
+  mac_ws_pass="$(summary_count "${mac_ws_output}" "PASS")"
+  mac_ws_warn="$(summary_count "${mac_ws_output}" "WARN")"
+  mac_ws_fail="$(summary_count "${mac_ws_output}" "FAIL")"
+
+  if [[ "${mac_ws_result}" != "0" ]]; then
+    printf '%s\n' "${mac_ws_output}"
+    fail "Mac Workstation Experience status failed"
+  elif [[ -n "${mac_ws_pass}" && -n "${mac_ws_warn}" && -n "${mac_ws_fail}" ]]; then
+    printf 'Mac Workstation: PASS %s / WARN %s / FAIL %s\n' "${mac_ws_pass}" "${mac_ws_warn}" "${mac_ws_fail}"
+    pass "Mac Workstation Experience status completed"
+  else
+    pass "Mac Workstation Experience status completed"
+  fi
+else
+  warn "Mac Workstation Experience status script missing: scripts/mac-workstation-experience-status.sh"
+fi
+
 section "Lesson Planning v1 Foundation"
 if [[ -f scripts/lesson-planning-foundation-status.sh ]]; then
   lesson_planning_foundation_result=0

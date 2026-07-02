@@ -84,7 +84,7 @@ Cross-references:
 | Teacher Workstation System Updater | **implemented read-only** | Program I — `--system-update-check` |
 | Widget catalog | planned | Program F |
 | Shortcut catalog | planned | Program F |
-| Mac teacher modes | planned | Program E |
+| Mac teacher modes | implemented read-only | `--mac-workstation-status`; Program E1 foundation |
 | Wallpaper / appearance | foundation complete | Planning stack; live curator not started |
 
 ## External Builders and Integrations

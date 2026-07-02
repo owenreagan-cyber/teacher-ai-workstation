@@ -1006,6 +1006,36 @@ check_bash_syntax tests/curriculum-builder-registry-v0-2-status-test.sh
 check_doc_contains docs/curriculum-builder-registry-v0-2-manual-entry-dry-run.md "complete_cb_impl_1_dry_run" "registry v0.2 dry-run closure status"
 grep -Fq -- '--curriculum-registry-dry-run-status' bin/chief-of-staff && pass "chief-of-staff exposes --curriculum-registry-dry-run-status" || fail "chief-of-staff missing --curriculum-registry-dry-run-status"
 
+section "Curriculum Builder Registry v0.2 Local Foundation Lane (CB-IMPL-2–4) Files"
+for path in \
+  docs/curriculum-builder-registry-v0-2-local-records-foundation.md \
+  docs/curriculum-builder-registry-v0-2-record-boundaries.md \
+  docs/curriculum-builder-registry-v0-2-renderer-foundation.md \
+  docs/curriculum-builder-registry-v0-2-retrieval-hooks-foundation.md \
+  docs/curriculum-builder-registry-v0-2-lane-closure.md \
+  assistant/curriculum-builder/samples/registry-v0-2-local-records/local-registry.json \
+  scripts/curriculum-builder-registry-v0-2-local-records-validate.sh \
+  scripts/curriculum-builder-registry-v0-2-local-records-status.sh \
+  scripts/curriculum-builder-registry-v0-2-render-preview.sh \
+  scripts/curriculum-builder-registry-v0-2-renderer-status.sh \
+  scripts/curriculum-builder-registry-v0-2-retrieval-check.sh \
+  scripts/curriculum-builder-registry-v0-2-retrieval-status.sh \
+  tests/curriculum-builder-registry-v0-2-local-records-test.sh \
+  tests/curriculum-builder-registry-v0-2-renderer-test.sh \
+  tests/curriculum-builder-registry-v0-2-retrieval-test.sh; do
+  check_required_file "${path}"
+done
+check_bash_syntax scripts/curriculum-builder-registry-v0-2-local-records-validate.sh
+check_bash_syntax scripts/curriculum-builder-registry-v0-2-local-records-status.sh
+check_bash_syntax scripts/curriculum-builder-registry-v0-2-render-preview.sh
+check_bash_syntax scripts/curriculum-builder-registry-v0-2-renderer-status.sh
+check_bash_syntax scripts/curriculum-builder-registry-v0-2-retrieval-check.sh
+check_bash_syntax scripts/curriculum-builder-registry-v0-2-retrieval-status.sh
+check_doc_contains docs/curriculum-builder-registry-v0-2-lane-closure.md "complete_cb_impl_2_3_4_local_foundation_lane" "lane closure status"
+grep -Fq -- '--curriculum-registry-records-status' bin/chief-of-staff && pass "chief-of-staff exposes --curriculum-registry-records-status" || fail "chief-of-staff missing --curriculum-registry-records-status"
+grep -Fq -- '--curriculum-registry-renderer-status' bin/chief-of-staff && pass "chief-of-staff exposes --curriculum-registry-renderer-status" || fail "chief-of-staff missing --curriculum-registry-renderer-status"
+grep -Fq -- '--curriculum-registry-retrieval-status' bin/chief-of-staff && pass "chief-of-staff exposes --curriculum-registry-retrieval-status" || fail "chief-of-staff missing --curriculum-registry-retrieval-status"
+
 section "Curriculum Registry–Contract Binding v0 Foundation Files"
 for path in \
   docs/curriculum-binding-v0.md \

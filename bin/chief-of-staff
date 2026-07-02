@@ -151,6 +151,12 @@ Teacher Planning Command Organization (status only; safe sample: fractions-revie
                                        Show read-only Curriculum Builder metadata contract schemas status (Programs A4–A7) and exit.
   --curriculum-registry-dry-run-status
                                        Show read-only Curriculum Builder Registry v0.2 manual entry dry-run status (CB-IMPL-1) and exit.
+  --curriculum-registry-records-status
+                                       Show read-only Curriculum Builder Registry v0.2 local fake records status (CB-IMPL-2) and exit.
+  --curriculum-registry-renderer-status
+                                       Show read-only Curriculum Builder Registry v0.2 fake-record renderer foundation status (CB-IMPL-3) and exit.
+  --curriculum-registry-retrieval-status
+                                       Show read-only Curriculum Builder Registry v0.2 fake-record retrieval hooks status (CB-IMPL-4) and exit.
   --curriculum-library-foundation-status
                                        Show read-only Curriculum Library v1 foundation status and exit.
   --curriculum-library-reference-v0-validate
@@ -1797,6 +1803,33 @@ while [[ $# -gt 0 ]]; do
         die "Curriculum Builder Registry v0.2 dry-run status script is missing: scripts/curriculum-builder-registry-v0-2-status.sh"
       fi
       bash "${curriculum_registry_dry_run_status_script}"
+      exit 0
+      ;;
+    --curriculum-registry-records-status)
+      repo_root="$(resolve_repo_root)"
+      curriculum_registry_records_status_script="${repo_root}/scripts/curriculum-builder-registry-v0-2-local-records-status.sh"
+      if [[ ! -f "${curriculum_registry_records_status_script}" ]]; then
+        die "Curriculum Builder Registry v0.2 local records status script is missing: scripts/curriculum-builder-registry-v0-2-local-records-status.sh"
+      fi
+      bash "${curriculum_registry_records_status_script}"
+      exit 0
+      ;;
+    --curriculum-registry-renderer-status)
+      repo_root="$(resolve_repo_root)"
+      curriculum_registry_renderer_status_script="${repo_root}/scripts/curriculum-builder-registry-v0-2-renderer-status.sh"
+      if [[ ! -f "${curriculum_registry_renderer_status_script}" ]]; then
+        die "Curriculum Builder Registry v0.2 renderer status script is missing: scripts/curriculum-builder-registry-v0-2-renderer-status.sh"
+      fi
+      bash "${curriculum_registry_renderer_status_script}"
+      exit 0
+      ;;
+    --curriculum-registry-retrieval-status)
+      repo_root="$(resolve_repo_root)"
+      curriculum_registry_retrieval_status_script="${repo_root}/scripts/curriculum-builder-registry-v0-2-retrieval-status.sh"
+      if [[ ! -f "${curriculum_registry_retrieval_status_script}" ]]; then
+        die "Curriculum Builder Registry v0.2 retrieval status script is missing: scripts/curriculum-builder-registry-v0-2-retrieval-status.sh"
+      fi
+      bash "${curriculum_registry_retrieval_status_script}"
       exit 0
       ;;
     --curriculum-registry-v0-status)

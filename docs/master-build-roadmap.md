@@ -290,17 +290,53 @@ Blocked:
 Autonomous: dry-run complete; --write requires CB-IMPL-2+ approval mission
 ```
 
-#### CB-IMPL-2 — Real Registry Records (approval-gated)
+#### CB-IMPL-2 — Local Fake Registry Records Foundation
 
-Replace fictional `sample-*` records with Owen-approved real metadata. Requires completed decision intake and explicit no-student-data confirmation.
+```text
+Status: complete_cb_impl_2_local_records
+Mission: repo-local fake fixture registry records (A4–A7 concepts)
 
-#### CB-IMPL-3 — Renderer Foundation (approval-gated)
+Implemented:
+- assistant/curriculum-builder/samples/registry-v0-2-local-records/local-registry.json
+- bin/chief-of-staff --curriculum-registry-records-status
 
-First teacher-reviewed renderer for one contract type (likely DI slide deck or teacher script). Separate intake per `docs/implementation-approval-gate.md` validators/renderers checklist.
+Blocked:
+- production registry writes
+- real curriculum records / imports
+```
 
-#### CB-IMPL-4 — Local Retrieval Hooks (approval-gated)
+#### CB-IMPL-3 — Renderer Foundation (Fake Records Only)
 
-Approved lookup/index over registry + contracts without vector DB or RAG.
+```text
+Status: complete_cb_impl_3_renderer
+Mission: deterministic metadata preview from fake fixtures
+
+Implemented:
+- scripts/curriculum-builder-registry-v0-2-render-preview.sh
+- bin/chief-of-staff --curriculum-registry-renderer-status
+
+Blocked:
+- lesson/worksheet/presentation generation
+- LLM inference / APIs
+```
+
+#### CB-IMPL-4 — Local Retrieval Hooks (Fake Records Only)
+
+```text
+Status: complete_cb_impl_4_retrieval
+Mission: deterministic filter/lookup over fake fixtures
+
+Implemented:
+- scripts/curriculum-builder-registry-v0-2-retrieval-check.sh
+- bin/chief-of-staff --curriculum-registry-retrieval-status
+
+Blocked:
+- filesystem crawl / embeddings / RAG / semantic search
+```
+
+Lane closure: `docs/curriculum-builder-registry-v0-2-lane-closure.md`
+
+**Future (approval-gated):** production registry writes, real Owen-approved metadata intake, teacher-reviewed renderers with exported artifacts, non-RAG retrieval over approved real registry.
 
 **Curriculum Builder v1 complete when:** approved real registry (or governed fictional production path), all five contract types canonical, binding operational, at least one renderer per primary contract, validation suite green, documentation complete — per `docs/engineering-constitution.md` §10.
 
@@ -836,9 +872,9 @@ Per `docs/engineering-constitution.md` §10, v1.0 means these systems exist as *
 
 ## 10. Immediate Next Recommended Mission
 
-**Curriculum Builder — Real Registry Records (CB-IMPL-2)**
+**Curriculum Builder — Production Registry Workflow (approval-gated)**
 
-Registry v0.2 manual entry dry-run is complete (`docs/curriculum-builder-registry-v0-2-manual-entry-dry-run.md`, `bin/chief-of-staff --curriculum-registry-dry-run-status`). Recommended next: approval-gated real registry records per implementation subtrack CB-IMPL-2 — requires explicit intake and no-student-data confirmation. Dry-run does not authorize writes.
+Registry v0.2 local foundation lane CB-IMPL-1 through CB-IMPL-4 is complete (`docs/curriculum-builder-registry-v0-2-lane-closure.md`). Recommended next: explicit approval-gated production registry workflow or real-metadata intake — separate mission; fake fixture foundations do not authorize production writes or real curriculum imports.
 
 Alternate tracks remain approval-gated per `docs/implementation-approval-gate.md`.
 
@@ -897,10 +933,11 @@ COMPLETE:
   A4–A7 Curriculum Builder metadata contract schemas (read-only)
 
 NOW (autonomous pattern when authorized):
-  CB-IMPL-2 Real registry records (approval-gated)
+  Production registry workflow or real-metadata intake (approval-gated)
 
 THEN (mixed approval):
-  CB-IMPL-3–4 Curriculum Builder implementation subtracks
+  Teacher-reviewed renderers with exported artifacts
+  Non-RAG retrieval over approved real registry
   E* Mac Workstation Experience
   F* Widget and Shortcut Builder catalogs
 

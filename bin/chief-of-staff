@@ -52,6 +52,11 @@ Return to Core / Roadmap:
 Chief of Staff v1 Operating (read-only):
   --commands                           Show deterministic command surface index and exit.
   --next-action                        Show deterministic next recommended program and daily focus and exit.
+  --daily-status                       Show deterministic daily operations aggregate and exit.
+  --closeout                           Show read-only end-of-work closeout checklist and exit.
+  --approval-queue                     Show read-only approval queue categories and exit.
+  --blocker-queue                      Show read-only blocker queue surfacing and exit.
+  --mode-status                        Show read-only operating context mode concepts and exit.
   --validate-all                       Run read-only validation orchestration across core subsystems and exit.
   --proof-run                          Run local pre-merge proof runner and exit.
   --teacher-workstation-foundation-status
@@ -2122,6 +2127,51 @@ while [[ $# -gt 0 ]]; do
         die "Chief of Staff next-action script is missing: scripts/chief-of-staff-next-action.sh"
       fi
       bash "${next_action_script}"
+      exit 0
+      ;;
+    --daily-status)
+      repo_root="$(resolve_repo_root)"
+      daily_status_script="${repo_root}/scripts/chief-of-staff-daily-status.sh"
+      if [[ ! -f "${daily_status_script}" ]]; then
+        die "Chief of Staff daily-status script is missing: scripts/chief-of-staff-daily-status.sh"
+      fi
+      bash "${daily_status_script}"
+      exit 0
+      ;;
+    --closeout)
+      repo_root="$(resolve_repo_root)"
+      closeout_script="${repo_root}/scripts/chief-of-staff-closeout.sh"
+      if [[ ! -f "${closeout_script}" ]]; then
+        die "Chief of Staff closeout script is missing: scripts/chief-of-staff-closeout.sh"
+      fi
+      bash "${closeout_script}"
+      exit 0
+      ;;
+    --approval-queue)
+      repo_root="$(resolve_repo_root)"
+      approval_queue_script="${repo_root}/scripts/chief-of-staff-approval-queue.sh"
+      if [[ ! -f "${approval_queue_script}" ]]; then
+        die "Chief of Staff approval-queue script is missing: scripts/chief-of-staff-approval-queue.sh"
+      fi
+      bash "${approval_queue_script}"
+      exit 0
+      ;;
+    --blocker-queue)
+      repo_root="$(resolve_repo_root)"
+      blocker_queue_script="${repo_root}/scripts/chief-of-staff-blocker-queue.sh"
+      if [[ ! -f "${blocker_queue_script}" ]]; then
+        die "Chief of Staff blocker-queue script is missing: scripts/chief-of-staff-blocker-queue.sh"
+      fi
+      bash "${blocker_queue_script}"
+      exit 0
+      ;;
+    --mode-status)
+      repo_root="$(resolve_repo_root)"
+      mode_status_script="${repo_root}/scripts/chief-of-staff-mode-status.sh"
+      if [[ ! -f "${mode_status_script}" ]]; then
+        die "Chief of Staff mode-status script is missing: scripts/chief-of-staff-mode-status.sh"
+      fi
+      bash "${mode_status_script}"
       exit 0
       ;;
     --commands)

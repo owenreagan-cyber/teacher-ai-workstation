@@ -83,6 +83,12 @@ bash tests/chief-of-staff-next-action-test.sh >/dev/null
 bin/chief-of-staff --chief-of-staff-command-index-v1-status >/dev/null
 bin/chief-of-staff --chief-of-staff-v1-status >/dev/null
 bin/chief-of-staff --commands >/dev/null
+bin/chief-of-staff --daily-status >/dev/null
+bin/chief-of-staff --closeout >/dev/null
+bin/chief-of-staff --approval-queue >/dev/null
+bin/chief-of-staff --blocker-queue >/dev/null
+bin/chief-of-staff --mode-status >/dev/null
+bash tests/chief-of-staff-daily-operations-test.sh >/dev/null
 bin/chief-of-staff --intake-status >/dev/null
 bin/chief-of-staff --intake-summary >/dev/null
 bin/chief-of-staff --intake-diff >/dev/null

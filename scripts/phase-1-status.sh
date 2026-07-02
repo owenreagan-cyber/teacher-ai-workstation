@@ -746,7 +746,8 @@ check_bash_syntax scripts/chief-of-staff-v1-foundation-status.sh
 check_bash_syntax scripts/chief-of-staff-command-index-v1-status.sh
 agent_core_doc="docs/chief-of-staff-agent-core.md"
 check_doc_contains "${agent_core_doc}" "must not become" "agent core non-ownership boundaries"
-check_doc_contains docs/chief-of-staff-v1-foundation.md "complete_v1_b1" "v1 foundation closure status"
+check_doc_contains docs/chief-of-staff-v1-foundation.md "complete_v1_b" "v1 foundation closure status"
+check_doc_contains docs/chief-of-staff-v1-program-b-closure.md "complete_v1_b" "program b closure status"
 if grep -Fq -- '--commands' bin/chief-of-staff; then
   pass "chief-of-staff exposes --commands"
 else
@@ -757,6 +758,35 @@ if grep -Fq -- '--chief-of-staff-v1-status' bin/chief-of-staff; then
 else
   fail "chief-of-staff missing --chief-of-staff-v1-status"
 fi
+for cos_flag in --daily-status --closeout --approval-queue --blocker-queue --mode-status; do
+  if grep -Fq -- "${cos_flag}" bin/chief-of-staff; then
+    pass "chief-of-staff exposes ${cos_flag}"
+  else
+    fail "chief-of-staff missing ${cos_flag}"
+  fi
+done
+
+section "Chief of Staff v1 Agent Core (Program B) Files"
+for path in \
+  docs/chief-of-staff-daily-operations.md \
+  docs/chief-of-staff-closeout-workflow.md \
+  docs/chief-of-staff-approval-blocker-queues.md \
+  docs/chief-of-staff-mode-status.md \
+  docs/chief-of-staff-v1-program-b-closure.md \
+  scripts/chief-of-staff-daily-status.sh \
+  scripts/chief-of-staff-closeout.sh \
+  scripts/chief-of-staff-approval-queue.sh \
+  scripts/chief-of-staff-blocker-queue.sh \
+  scripts/chief-of-staff-mode-status.sh \
+  tests/chief-of-staff-daily-operations-test.sh; do
+  check_required_file "${path}"
+done
+check_bash_syntax scripts/chief-of-staff-daily-status.sh
+check_bash_syntax scripts/chief-of-staff-closeout.sh
+check_bash_syntax scripts/chief-of-staff-approval-queue.sh
+check_bash_syntax scripts/chief-of-staff-blocker-queue.sh
+check_bash_syntax scripts/chief-of-staff-mode-status.sh
+check_bash_syntax tests/chief-of-staff-daily-operations-test.sh
 
 section "Curriculum Registry–Contract Binding v0 Foundation Files"
 for path in \

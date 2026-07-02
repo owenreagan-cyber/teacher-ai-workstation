@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Read-only Chief of Staff v1 Agent Core (Program B1) foundation status.
+# Read-only Chief of Staff v1 Agent Core (Program B) foundation status.
 set -euo pipefail
 
 PASS_COUNT=0
@@ -51,7 +51,7 @@ repo_root="$(git rev-parse --show-toplevel 2>/dev/null || true)"
 [[ -z "${repo_root}" ]] && repo_root="$(cd "${script_dir}/.." && pwd -P)"
 cd "${repo_root}"
 
-section 'Chief of Staff v1 Agent Core (Program B1)'
+section 'Chief of Staff v1 Agent Core (Program B)'
 cat <<'EOF'
 Status: read-only foundation status only
 Lesson generation: no
@@ -61,27 +61,43 @@ Integration activation: no
 EOF
 
 check_file docs/chief-of-staff-v1-foundation.md
+check_file docs/chief-of-staff-v1-program-b-closure.md
 check_file docs/chief-of-staff-agent-core.md
 check_file docs/chief-of-staff-operating-model.md
 check_file docs/chief-of-staff-proof-workflow.md
 check_file docs/chief-of-staff-command-index-v1.md
+check_file docs/chief-of-staff-daily-operations.md
+check_file docs/chief-of-staff-closeout-workflow.md
+check_file docs/chief-of-staff-approval-blocker-queues.md
+check_file docs/chief-of-staff-mode-status.md
 check_file assistant/chief-of-staff/v1/command-surface-manifest.json
 
+check_doc_contains docs/chief-of-staff-v1-program-b-closure.md "complete_v1_b" "program b closure status"
 check_doc_contains docs/chief-of-staff-agent-core.md "must not become" "agent core non-ownership boundaries"
 check_doc_contains docs/chief-of-staff-operating-model.md "approval gate" "approval gate in operating model"
 check_doc_contains docs/chief-of-staff-proof-workflow.md "branch deletion" "branch deletion in proof workflow"
 check_doc_contains docs/chief-of-staff-command-index-v1.md "Implemented Commands" "implemented commands section"
-check_doc_contains docs/chief-of-staff-command-index-v1.md "Planned Commands" "planned commands section"
-check_doc_contains docs/chief-of-staff-command-index-v1.md "Blocked Commands" "blocked commands section"
+check_doc_contains docs/chief-of-staff-daily-operations.md "read-only" "daily operations read-only boundary"
+check_doc_contains docs/chief-of-staff-closeout-workflow.md "branch deletion" "closeout branch deletion proof"
+check_doc_contains docs/chief-of-staff-approval-blocker-queues.md "approval queue" "approval queue concept"
+check_doc_contains docs/chief-of-staff-mode-status.md "conceptual only" "mode status conceptual boundary"
 
-check_file scripts/chief-of-staff-commands.sh
-check_bash_syntax scripts/chief-of-staff-commands.sh
-check_file scripts/chief-of-staff-command-index-v1-status.sh
-check_bash_syntax scripts/chief-of-staff-command-index-v1-status.sh
+for script in \
+  scripts/chief-of-staff-commands.sh \
+  scripts/chief-of-staff-command-index-v1-status.sh \
+  scripts/chief-of-staff-daily-status.sh \
+  scripts/chief-of-staff-closeout.sh \
+  scripts/chief-of-staff-approval-queue.sh \
+  scripts/chief-of-staff-blocker-queue.sh \
+  scripts/chief-of-staff-mode-status.sh; do
+  check_file "${script}"
+  check_bash_syntax "${script}"
+done
 
 if [[ -f bin/chief-of-staff ]]; then
-  grep -Fq -- '--commands' bin/chief-of-staff && pass 'CLI exposes --commands' || fail 'CLI missing --commands'
-  grep -Fq -- '--chief-of-staff-v1-status' bin/chief-of-staff && pass 'CLI exposes --chief-of-staff-v1-status' || fail 'CLI missing --chief-of-staff-v1-status'
+  for flag in --commands --chief-of-staff-v1-status --daily-status --closeout --approval-queue --blocker-queue --mode-status; do
+    grep -Fq -- "${flag}" bin/chief-of-staff && pass "CLI exposes ${flag}" || fail "CLI missing ${flag}"
+  done
 else
   fail 'chief-of-staff CLI missing'
 fi
@@ -89,6 +105,11 @@ fi
 run_status 'Command Index v1' scripts/chief-of-staff-command-index-v1-status.sh || true
 run_status 'Commands surface' scripts/chief-of-staff-commands.sh || true
 run_status 'Next Action' scripts/chief-of-staff-next-action.sh || true
+run_status 'Daily Status' scripts/chief-of-staff-daily-status.sh || true
+run_status 'Closeout' scripts/chief-of-staff-closeout.sh || true
+run_status 'Approval Queue' scripts/chief-of-staff-approval-queue.sh || true
+run_status 'Blocker Queue' scripts/chief-of-staff-blocker-queue.sh || true
+run_status 'Mode Status' scripts/chief-of-staff-mode-status.sh || true
 
 pass 'no activation attempted'
 pass 'no network call attempted'

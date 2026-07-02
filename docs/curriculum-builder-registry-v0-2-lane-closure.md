@@ -5,9 +5,12 @@ Last updated: 2026-07-02
 ```text
 Lane: Curriculum Builder Registry Local Foundation
 Closure status: complete_cb_impl_2_3_4_local_foundation_lane
+Level 2 discovery review: reviewed (2026-07-02)
 Production registry writes: blocked
 Real registry records: blocked
 ```
+
+Level 2 review: `docs/proposals/curriculum-builder-registry-lane-discovery-review.md`
 
 ## Completed Subtracks
 

@@ -87,6 +87,7 @@
 
 ### Now
 
+- Curriculum Builder Registry v0.2 local foundation lane Level 2 discovery review complete (`docs/proposals/curriculum-builder-registry-lane-discovery-review.md`). Lane marked `reviewed` in roadmap Program Lane Status. Five proposal ledger entries; no implementation authorized.
 - Curriculum Builder Registry v0.2 local foundation lane CB-IMPL-2 through CB-IMPL-4 complete (`docs/curriculum-builder-registry-v0-2-lane-closure.md`). Fake fixture records, metadata preview renderer, and local retrieval hooks; `--curriculum-registry-records-status`, `--curriculum-registry-renderer-status`, `--curriculum-registry-retrieval-status`. No production writes, no real curriculum, no generation.
 - Curriculum Builder Registry v0.2 manual entry dry-run CB-IMPL-1 complete (`docs/curriculum-builder-registry-v0-2-manual-entry-dry-run.md`). `--curriculum-registry-dry-run-status` fake-data-only dry-run validation; no registry writes, no active write flag, no ingestion or generation.
 - Three-Level Discovery Governance complete (`docs/cursor-operating-modes-and-approval-gates.md` § Three-Level Discovery Governance). Level 1/2/3 rules, unified proposal ledger, lane templates, `lane_status` in roadmap. Proposal-only — no discovery scans run in governance mission.

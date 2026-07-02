@@ -355,6 +355,26 @@ Blocked:
 - scanning/crawling/OCR/embeddings/RAG/generation
 ```
 
+#### CB-SOURCE-READY — Curriculum Source Readiness (Fake Metadata Inventory)
+
+```text
+Status: complete_curriculum_source_readiness_plan
+Mission: fake/local curriculum source metadata readiness — no real ingestion
+
+Implemented:
+- docs/curriculum-source-readiness-and-intake-boundary-plan.md
+- docs/curriculum-source-readiness-fake-inventory-index.md
+- assistant/curriculum-builder/samples/curriculum-source-readiness/
+- bin/chief-of-staff --curriculum-source-readiness-status
+
+Blocked:
+- real curriculum ingestion, parsing, copying, indexing
+- production registry writes
+- student data
+- Drive/Canvas/NAS/iCloud/API/OAuth/network
+- scanning/crawling/OCR/embeddings/RAG/generation
+```
+
 #### CB-REG-HARDEN — Registry Lane Hardening Bundle
 
 ```text

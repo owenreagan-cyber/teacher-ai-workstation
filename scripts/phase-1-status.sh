@@ -1085,6 +1085,23 @@ check_bash_syntax tests/curriculum-builder-production-registry-planning-status-t
 check_doc_contains docs/curriculum-builder-production-registry-workflow-planning-brief.md "complete_production_registry_planning_brief" "production registry planning brief closure status"
 grep -Fq -- '--curriculum-production-registry-planning-status' bin/chief-of-staff && pass "chief-of-staff exposes --curriculum-production-registry-planning-status" || fail "chief-of-staff missing --curriculum-production-registry-planning-status"
 
+section "Curriculum Source Readiness Foundation Files"
+for path in \
+  docs/curriculum-source-readiness-and-intake-boundary-plan.md \
+  docs/curriculum-source-readiness-fake-inventory-index.md \
+  assistant/curriculum-builder/samples/curriculum-source-readiness/curriculum-source-metadata.schema.json \
+  assistant/curriculum-builder/samples/curriculum-source-readiness/fake-curriculum-source-inventory.json \
+  scripts/curriculum-source-readiness-validate.sh \
+  scripts/curriculum-source-readiness-status.sh \
+  tests/curriculum-source-readiness-status-test.sh; do
+  check_required_file "${path}"
+done
+check_bash_syntax scripts/curriculum-source-readiness-validate.sh
+check_bash_syntax scripts/curriculum-source-readiness-status.sh
+check_bash_syntax tests/curriculum-source-readiness-status-test.sh
+check_doc_contains docs/curriculum-source-readiness-and-intake-boundary-plan.md "complete_curriculum_source_readiness_plan" "curriculum source readiness closure"
+grep -Fq -- '--curriculum-source-readiness-status' bin/chief-of-staff && pass "chief-of-staff exposes --curriculum-source-readiness-status" || fail "chief-of-staff missing --curriculum-source-readiness-status"
+
 section "Curriculum Builder Registry Hardening Bundle Files"
 for path in \
   docs/curriculum-builder-registry-authority-map.md \

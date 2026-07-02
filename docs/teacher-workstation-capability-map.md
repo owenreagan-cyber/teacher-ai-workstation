@@ -66,6 +66,7 @@ Cross-references:
 | Curriculum Builder Registry v0.2 retrieval hooks (CB-IMPL-4) | implemented read-only | `--curriculum-registry-retrieval-status`; fake lookup only |
 | Curriculum Builder production registry planning (CB-PROD-PLAN) | implemented read-only | `--curriculum-production-registry-planning-status`; planning brief only; no writes |
 | Curriculum Builder Registry authority map + lane hardening | implemented read-only | `--curriculum-registry-lane-status`; `--curriculum-registry-a4-a7-fixture-schema-status`; see authority map |
+| Curriculum Source Readiness (fake metadata inventory) | implemented read-only | `--curriculum-source-readiness-status`; fake fixtures only; no real ingestion |
 | Production registry writes / real records | planned | Approval-gated — Owen checklist required; `--curriculum-registry-write` blocked |
 | Lesson Planning Foundation | foundation complete | Phase 3 Workstream A |
 | Curriculum Library Foundation | foundation complete | Phase 3 Workstream B |

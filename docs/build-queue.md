@@ -14,6 +14,8 @@ Handoff and status clarity. Start from `docs/phase-1-chief-of-staff-status-audit
 
 ## Recently Completed
 
+- Curriculum Source Readiness + Fake Metadata Inventory Foundation (2026-07-02): boundary plan, fake schema/fixtures, `--curriculum-source-readiness-status`, negative guardrail tests, external planning intake map, Program B vs CLI surface map. No real curriculum ingestion.
+
 - Autonomous Backlog Implementation Sprint (2026-07-02): `--governance-lane-status`, `--workstation-ops-lane-status`, status-banner hardening, negative non-mutation guardrail tests. Ledger items moved from proposed to implemented. Documentation/status only.
 
 - Autonomous Build Engine Safe Work Sprint (2026-07-02): fifteen Level 2 lane reviews (`docs/proposals/lane-reviews/`), proposal folder structure (Class H), dry-run→fixture promotion planning spec, Safe Work Class H in ABE governance. All program lanes `reviewed` in roadmap § Program Lane Status. Documentation/status only — no runtime activation.

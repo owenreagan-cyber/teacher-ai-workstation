@@ -1,0 +1,30 @@
+{
+  "inventory_version": "0.1.0",
+  "inventory_mode": "fake_fixture_only",
+  "metadata_only": true,
+  "read_only": true,
+  "no_production_write": true,
+  "fake_fixture_only": true,
+  "content_ingestion_allowed": false,
+  "student_data_allowed": false,
+  "real_curriculum_content_allowed": false,
+  "production_write_allowed": false,
+  "sources": [
+    {
+      "source_id": "fake-source-001",
+      "grade_band": "grade-4",
+      "subject": "ela",
+      "unit_label": "sample-unit",
+      "lesson_label": "sample-lesson",
+      "source_type": "teacher_created_placeholder",
+      "review_state": "draft_fake_fixture",
+      "content_ingestion_allowed": false,
+      "student_data_allowed": false,
+      "real_curriculum_content_allowed": false,
+      "fake_fixture_only": true,
+      "production_write_allowed": false,
+      "student_name": "should-not-exist",
+      "notes": "negative: student-like field"
+    }
+  ]
+}

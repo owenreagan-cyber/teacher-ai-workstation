@@ -1,0 +1,61 @@
+{
+  "inventory_version": "0.1.0",
+  "inventory_mode": "fake_fixture_only",
+  "metadata_only": true,
+  "read_only": true,
+  "no_production_write": true,
+  "fake_fixture_only": true,
+  "content_ingestion_allowed": false,
+  "student_data_allowed": false,
+  "real_curriculum_content_allowed": false,
+  "production_write_allowed": false,
+  "generation_blocked": true,
+  "notes": "Fake curriculum source inventory for readiness validation only. Not real curriculum.",
+  "sources": [
+    {
+      "source_id": "fake-source-001",
+      "grade_band": "grade-4",
+      "subject": "ela",
+      "unit_label": "sample-unit-alpha",
+      "lesson_label": "sample-lesson-one",
+      "source_type": "teacher_created_placeholder",
+      "review_state": "draft_fake_fixture",
+      "content_ingestion_allowed": false,
+      "student_data_allowed": false,
+      "real_curriculum_content_allowed": false,
+      "fake_fixture_only": true,
+      "production_write_allowed": false,
+      "notes": "Generic fake ELA placeholder. No real curriculum title or file path."
+    },
+    {
+      "source_id": "fake-source-002",
+      "grade_band": "grade-5",
+      "subject": "math",
+      "unit_label": "sample-unit-beta",
+      "lesson_label": "sample-lesson-two",
+      "source_type": "manual_reference_placeholder",
+      "review_state": "not_started",
+      "content_ingestion_allowed": false,
+      "student_data_allowed": false,
+      "real_curriculum_content_allowed": false,
+      "fake_fixture_only": true,
+      "production_write_allowed": false,
+      "notes": "Generic fake math placeholder for readiness inventory proof."
+    },
+    {
+      "source_id": "fake-source-003",
+      "grade_band": "grade-6",
+      "subject": "science",
+      "unit_label": "sample-unit-gamma",
+      "lesson_label": "sample-lesson-three",
+      "source_type": "draft_fake_fixture",
+      "review_state": "in_review_placeholder",
+      "content_ingestion_allowed": false,
+      "student_data_allowed": false,
+      "real_curriculum_content_allowed": false,
+      "fake_fixture_only": true,
+      "production_write_allowed": false,
+      "notes": "Third fake source for multi-record validation coverage."
+    }
+  ]
+}

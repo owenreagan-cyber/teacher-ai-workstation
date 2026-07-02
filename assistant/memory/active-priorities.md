@@ -87,8 +87,8 @@
 
 ### Now
 
-- **Owen § J production registry checklist review** — highest priority. Work through `docs/curriculum-builder-production-registry-owen-review-packet.md`; update tracker rows as decisions are made. Production writes, real metadata intake, and integrations remain blocked until explicit checklist approvals. Generic autopilot is not next.
-- Master Build Plan Safe Autopilot sprint complete (2026-07-02): registry lane aggregate, Owen checklist tracker CLI, F1/CAL1 planning foundations. Product-decision wall reached — not a scaffolding gap.
+- **Governance-first production registry foundation complete (CB-PROD-GOV)** — `docs/curriculum-builder-production-registry-governance-foundation.md`; `--curriculum-production-registry-governance-status`; blocked candidate path skeleton; audit/review/local-first planning stubs. **Owen § J checklist items still pending** — no writes approved.
+- **Owen § J production registry checklist review** — work through `docs/curriculum-builder-production-registry-owen-review-packet.md`; update tracker rows as decisions are made. Production writes and real metadata intake remain blocked.
 - Curriculum Source Readiness fake metadata inventory foundation complete (`docs/curriculum-source-readiness-and-intake-boundary-plan.md`). `--curriculum-source-readiness-status`; fake schema, fixtures, validator, negative tests. Real curriculum ingestion blocked. Owen tiny-pilot checklist in boundary plan.
 - Autonomous Backlog Implementation Sprint complete (2026-07-02). `--governance-lane-status`, `--workstation-ops-lane-status`, status-banner hardening on registry/governance scripts, negative non-mutation guardrail tests. No runtime activation.
 - Autonomous Build Engine Safe Work Sprint complete (2026-07-02). Fifteen Level 2 lane reviews in `docs/proposals/lane-reviews/`; all `complete_pending_review` program lanes marked `reviewed` in roadmap § Program Lane Status. Proposal folder structure (Class H), dry-run→fixture promotion planning spec, Safe Work Class H in ABE governance. No runtime activation.

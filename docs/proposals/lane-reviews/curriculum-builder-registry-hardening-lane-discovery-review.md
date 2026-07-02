@@ -70,8 +70,8 @@ Implementation: none authorized by this review
 | Candidate | Value | Risk | Status |
 | --- | --- | --- | --- |
 | Dry-run to fixture promotion planning spec | medium | low | **implemented** |
-| Dry-run status banner: PASS ≠ promotion | low | low | **proposed** |
-| Renderer no-disk-write negative test | medium | low | **proposed** |
+| Dry-run status banner: PASS ≠ promotion | low | low | **implemented** — dry-run status output |
+| Renderer no-disk-write negative test | medium | low | **implemented** — `tests/backlog-non-mutation-guardrails-test.sh` |
 | Authority map link in dry-run status script header | low | low | **proposed** |
 | CB-REG-HARDEN closure one-pager | low | low | **deferred** |
 

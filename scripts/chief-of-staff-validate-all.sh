@@ -131,6 +131,7 @@ run_track "Curriculum Builder Registry v0.2 Local Records" scripts/curriculum-bu
 run_track "Curriculum Builder Registry v0.2 Renderer" scripts/curriculum-builder-registry-v0-2-renderer-status.sh
 run_track "Curriculum Builder Registry v0.2 Retrieval" scripts/curriculum-builder-registry-v0-2-retrieval-status.sh
 run_track "Curriculum Builder Production Registry Planning" scripts/curriculum-builder-production-registry-planning-status.sh
+run_track "Production Registry Governance" scripts/curriculum-builder-production-registry-governance-status.sh
 run_track "Owen Production Registry Checklist" scripts/curriculum-builder-production-registry-owen-checklist-status.sh
 run_track "Curriculum Source Readiness" scripts/curriculum-source-readiness-status.sh
 run_track "Curriculum Builder Registry Lane" scripts/curriculum-builder-registry-lane-status.sh

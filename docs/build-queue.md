@@ -8,15 +8,17 @@ Phase 0E Vibe Engine.
 
 ## Current Focus
 
-**Product-decision wall — Owen § J production registry checklist review.**
+**Product-decision wall — Owen § J checklist review; governance-first foundation complete.**
 
-Safe-local registry scaffolding is complete (PR #216). The highest-value next step is Owen reviewing `docs/curriculum-builder-production-registry-owen-review-packet.md` and deciding on the 11 checklist items in `docs/curriculum-builder-production-registry-owen-checklist-tracker.md`. Generic Master Build Plan autopilot is **not** the next step.
+Safe-local registry scaffolding including CB-PROD-GOV governance foundation is complete (`docs/curriculum-builder-production-registry-governance-foundation.md`; `--curriculum-production-registry-governance-status`). Owen must still complete the review packet and approve checklist items before any write mission. Generic Master Build Plan autopilot is **not** the next step.
 
 Master program roadmap: `docs/master-build-roadmap.md` — Program Readiness Audit and mission sequencing for v1.0. Implementation does not proceed automatically from the roadmap.
 
 Handoff and status clarity. Start from `docs/phase-1-chief-of-staff-status-audit.md` — Repo-Wide Parked Tracks and Active Status Map and `docs/build-queue.md`.
 
 ## Recently Completed
+
+- Governance-First Production Registry Foundation (2026-07-02): CB-PROD-GOV docs, candidate path skeleton, `--curriculum-production-registry-governance-status`, guardrail tests. Blocked writes; Owen checklist items still pending.
 
 - Owen § J Production Registry Review Packet (2026-07-02): `docs/curriculum-builder-production-registry-owen-review-packet.md` — decision table, categories, non-approval language. Product-decision wall documented. No production writes.
 

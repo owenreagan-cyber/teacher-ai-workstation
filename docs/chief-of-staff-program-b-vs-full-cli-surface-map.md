@@ -38,7 +38,7 @@ The CLI surface grew with **program foundation status commands** and **aggregate
 | --- | --- | --- |
 | Health / Updater | `--system-health`, `--system-update-check`, `--workstation-ops-lane-status` | H, I |
 | Governance | `--cursor-operating-modes-status`, `--autonomous-build-engine-status`, `--governance-lane-status` | Governance |
-| Curriculum Builder | `--curriculum-registry-*`, `--curriculum-production-registry-planning-status`, `--curriculum-production-registry-owen-checklist-status`, `--curriculum-source-readiness-status` | A / CB-IMPL |
+| Curriculum Builder | `--curriculum-registry-*`, `--curriculum-production-registry-planning-status`, `--curriculum-production-registry-governance-status`, `--curriculum-production-registry-owen-checklist-status`, `--curriculum-source-readiness-status` | A / CB-IMPL |
 | Future program lanes | `--local-llm-workstation-status`, `--lovable-status`, `--3d-builder-status`, … | D1, G1, J1, … |
 | Canvas (frozen) | `--teacher-app-designer-canvas-llm-status` | C |
 

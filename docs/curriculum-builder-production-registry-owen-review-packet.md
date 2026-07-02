@@ -73,6 +73,19 @@ PR #216 (Master Build Plan Safe Autopilot) delivered planning/status foundations
 
 **PR #216 did not approve any checklist item and did not implement production writes.**
 
+## 3b. What Governance-First Foundation Completed (Post–PR #217)
+
+CB-PROD-GOV (`docs/curriculum-builder-production-registry-governance-foundation.md`) delivers planning brief § I scaffolding:
+
+| Deliverable | Purpose |
+| --- | --- |
+| `--curriculum-production-registry-governance-status` | Blocked-write proof |
+| Candidate path skeleton + sentinel | Manual-only path shape — no records |
+| Path options, review states, audit stub, local-first model | Owen decision support |
+| Guardrail tests | No writes; no auto-promotion |
+
+**Governance foundation does not approve checklist items or authorize writes.**
+
 ---
 
 ## 4. What Remains Blocked (Until Owen Approves)

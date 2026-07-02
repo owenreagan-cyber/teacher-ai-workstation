@@ -98,6 +98,12 @@ These flags exist in `bin/chief-of-staff` and work as read-only local status sur
 | --- | --- |
 | `bin/chief-of-staff --model-routing-status` | AI tool routing matrix operational status (read-only) |
 
+### Local LLM / Ollama Workstation (Program D1)
+
+| Command | Purpose |
+| --- | --- |
+| `bin/chief-of-staff --local-llm-workstation-status` | Local LLM/Ollama read-only status foundation |
+
 ## Planned Commands
 
 Documented for future programs. **Not implemented** unless added to CLI.
@@ -106,7 +112,7 @@ Documented for future programs. **Not implemented** unless added to CLI.
 | --- | --- | --- |
 | `bin/chief-of-staff --daily-briefing` | B2+ | Daily briefing surface (AI approval-gated) |
 | `bin/chief-of-staff --prove-main` | Proof | Local main cleanliness proof |
-| `bin/chief-of-staff --local-llm-workstation-status` | D1 | Local LLM/Ollama status |
+| `bin/chief-of-staff --local-llm-health` | D3 | Live Ollama health (blocked) |
 | `bin/chief-of-staff --widget-health` | F | Widget catalog health |
 | `bin/chief-of-staff --shortcut-health` | F | Shortcut catalog health |
 | `bin/chief-of-staff --lovable-status` | G1 | Lovable inactive integration status |

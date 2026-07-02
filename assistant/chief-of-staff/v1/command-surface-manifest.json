@@ -47,6 +47,13 @@
       ]
     },
     {
+      "id": "local_llm_workstation",
+      "name": "Local LLM / Ollama Workstation",
+      "commands": [
+        {"flag": "--local-llm-workstation-status", "status": "implemented", "purpose": "Local LLM/Ollama read-only status foundation (Program D1)"}
+      ]
+    },
+    {
       "id": "proof",
       "name": "Proof",
       "commands": [
@@ -105,7 +112,6 @@
       "name": "Program Status — Future / Approval-Gated",
       "commands": [
         {"flag": "--mode-status", "status": "implemented", "purpose": "Operating context mode concepts (Program B5)"},
-        {"flag": "--local-llm-workstation-status", "status": "planned", "purpose": "Local LLM/Ollama workstation status (Program D1)"},
         {"flag": "--lovable-status", "status": "planned", "purpose": "Lovable integration inactive status (Program G1)"},
         {"flag": "--3d-builder-status", "status": "planned", "purpose": "3D Builder Workshop Agent status (Program J)"}
       ]

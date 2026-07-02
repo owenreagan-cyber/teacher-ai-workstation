@@ -45,7 +45,7 @@ Canonical closure index for the full **Program B** section: command surface (B1)
 | `--system-health` | H | implemented (Program H) |
 | `--system-update-check` | I | implemented (Program I) |
 | `--system-update-plan` | I | implemented (Program I) |
-| `--local-llm-workstation-status` | D | Local LLM not active |
+| `--local-llm-health` | D3 | Live Ollama health blocked |
 | `--widget-health` / `--shortcut-health` | F | Widget/shortcut not active |
 | `--lovable-status` | G1 | Lovable planning only |
 | `--3d-builder-status` | J | 3D Builder not active |

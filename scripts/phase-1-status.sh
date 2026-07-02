@@ -854,6 +854,25 @@ else
   fail "chief-of-staff missing --model-routing-status"
 fi
 
+section "Local LLM / Ollama Workstation (Program D1) Files"
+for path in \
+  docs/local-llm-workstation-status-foundation.md \
+  docs/local-llm-non-activation-boundaries.md \
+  docs/local-llm-ollama-readiness-plan.md \
+  scripts/local-llm-workstation-status.sh \
+  tests/local-llm-workstation-status-test.sh; do
+  check_required_file "${path}"
+done
+check_bash_syntax scripts/local-llm-workstation-status.sh
+check_bash_syntax tests/local-llm-workstation-status-test.sh
+check_doc_contains docs/local-llm-workstation-status-foundation.md "complete_v1_d1" "local llm closure status"
+check_doc_contains docs/local-llm-non-activation-boundaries.md "Ollama install: blocked" "local llm ollama install blocked"
+if grep -Fq -- '--local-llm-workstation-status' bin/chief-of-staff; then
+  pass "chief-of-staff exposes --local-llm-workstation-status"
+else
+  fail "chief-of-staff missing --local-llm-workstation-status"
+fi
+
 section "Curriculum Registry–Contract Binding v0 Foundation Files"
 for path in \
   docs/curriculum-binding-v0.md \

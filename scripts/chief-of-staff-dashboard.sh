@@ -1051,6 +1051,27 @@ else
   warn "AI Tool Routing status script missing: scripts/ai-tool-routing-status.sh"
 fi
 
+section "Local LLM / Ollama Workstation (Program D1)"
+if [[ -f scripts/local-llm-workstation-status.sh ]]; then
+  local_llm_result=0
+  local_llm_output="$(bash scripts/local-llm-workstation-status.sh 2>&1)" || local_llm_result=$?
+  local_llm_pass="$(summary_count "${local_llm_output}" "PASS")"
+  local_llm_warn="$(summary_count "${local_llm_output}" "WARN")"
+  local_llm_fail="$(summary_count "${local_llm_output}" "FAIL")"
+
+  if [[ "${local_llm_result}" != "0" ]]; then
+    printf '%s\n' "${local_llm_output}"
+    fail "Local LLM workstation status failed"
+  elif [[ -n "${local_llm_pass}" && -n "${local_llm_warn}" && -n "${local_llm_fail}" ]]; then
+    printf 'Local LLM Workstation: PASS %s / WARN %s / FAIL %s\n' "${local_llm_pass}" "${local_llm_warn}" "${local_llm_fail}"
+    pass "Local LLM workstation status completed"
+  else
+    pass "Local LLM workstation status completed"
+  fi
+else
+  warn "Local LLM workstation status script missing: scripts/local-llm-workstation-status.sh"
+fi
+
 section "Lesson Planning v1 Foundation"
 if [[ -f scripts/lesson-planning-foundation-status.sh ]]; then
   lesson_planning_foundation_result=0

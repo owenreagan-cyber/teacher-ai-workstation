@@ -52,9 +52,9 @@ bin/chief-of-staff --dashboard
 
 ## Recommended Next Mission
 
-**Local LLM / Ollama Workstation — Read-Only Status Foundation (Program D)**
+**Mac Workstation Experience — Read-Only Planning Foundation (Program E1)**
 
-Routing visibility is complete read-only. Next: local LLM inventory/status planning without install or inference.
+Routing visibility is complete read-only. Local LLM/Ollama planning status is complete read-only. Next: Mac teacher modes and workstation experience planning without Mac system changes.
 
 ## Non-Activation
 

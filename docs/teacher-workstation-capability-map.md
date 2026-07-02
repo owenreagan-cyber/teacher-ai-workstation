@@ -72,7 +72,7 @@ Cross-references:
 | --- | --- | --- |
 | AI Tool Routing Matrix | foundation complete | `docs/ai-tool-routing-foundation.md` |
 | Model routing policy | foundation complete | `assistant/model-routing.md` |
-| Local LLM / Ollama workstation | planned | Installer baseline only; no downloads |
+| Local LLM / Ollama workstation | implemented read-only | `--local-llm-workstation-status`; Program D1 foundation |
 | Cloud API routing (OpenAI/Anthropic/Google) | planned | Blocked until explicit approval |
 | Automated model selection | planned | Chief of Staff routing concept only |
 

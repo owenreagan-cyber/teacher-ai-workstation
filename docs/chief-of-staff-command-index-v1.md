@@ -27,6 +27,7 @@ Cross-references:
 | `bin/chief-of-staff --next-action` | Deterministic next recommended program/focus |
 | `bin/chief-of-staff --validate-all` | Validation orchestration across core subsystems |
 | `bin/chief-of-staff --proof-run` | Reproducible pre-merge proof runner |
+| `bin/chief-of-staff --teacher-workstation-foundation-status` | Phase 3 foundation orchestration status |
 | `bin/chief-of-staff --chief-of-staff-v1-status` | Chief of Staff v1 foundation status |
 | `bin/chief-of-staff --dashboard` | Full local health dashboard |
 

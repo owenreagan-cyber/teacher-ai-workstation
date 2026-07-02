@@ -930,6 +930,29 @@ else
   warn "Lesson-planning template readiness status script missing: scripts/lesson-planning-template-readiness-status.sh"
 fi
 
+section "Teacher Workstation Foundation v0"
+if [[ -f scripts/teacher-workstation-foundation-status.sh ]]; then
+  teacher_workstation_foundation_result=0
+  teacher_workstation_foundation_output="$(bash scripts/teacher-workstation-foundation-status.sh 2>&1)" || teacher_workstation_foundation_result=$?
+  teacher_workstation_foundation_pass="$(summary_count "${teacher_workstation_foundation_output}" "PASS")"
+  teacher_workstation_foundation_warn="$(summary_count "${teacher_workstation_foundation_output}" "WARN")"
+  teacher_workstation_foundation_fail="$(summary_count "${teacher_workstation_foundation_output}" "FAIL")"
+
+  if [[ "${teacher_workstation_foundation_result}" != "0" ]]; then
+    printf 'Teacher Workstation Foundation v0: status command completed\n'
+    printf '%s\n' "${teacher_workstation_foundation_output}"
+    fail "Teacher Workstation Foundation orchestration status failed"
+  elif [[ -n "${teacher_workstation_foundation_pass}" && -n "${teacher_workstation_foundation_warn}" && -n "${teacher_workstation_foundation_fail}" ]]; then
+    printf 'Teacher Workstation Foundation v0: PASS %s / WARN %s / FAIL %s\n' "${teacher_workstation_foundation_pass}" "${teacher_workstation_foundation_warn}" "${teacher_workstation_foundation_fail}"
+    pass "Teacher Workstation Foundation orchestration status completed"
+  else
+    printf 'Teacher Workstation Foundation v0: status command completed\n'
+    pass "Teacher Workstation Foundation orchestration status completed"
+  fi
+else
+  warn "Teacher Workstation Foundation status script missing: scripts/teacher-workstation-foundation-status.sh"
+fi
+
 section "Lesson Planning v1 Foundation"
 if [[ -f scripts/lesson-planning-foundation-status.sh ]]; then
   lesson_planning_foundation_result=0

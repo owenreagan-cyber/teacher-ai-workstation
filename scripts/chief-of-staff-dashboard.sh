@@ -953,6 +953,27 @@ else
   warn "Teacher Workstation Foundation status script missing: scripts/teacher-workstation-foundation-status.sh"
 fi
 
+section "Chief of Staff v1 Agent Core (Program B1)"
+if [[ -f scripts/chief-of-staff-v1-foundation-status.sh ]]; then
+  cos_v1_result=0
+  cos_v1_output="$(bash scripts/chief-of-staff-v1-foundation-status.sh 2>&1)" || cos_v1_result=$?
+  cos_v1_pass="$(summary_count "${cos_v1_output}" "PASS")"
+  cos_v1_warn="$(summary_count "${cos_v1_output}" "WARN")"
+  cos_v1_fail="$(summary_count "${cos_v1_output}" "FAIL")"
+
+  if [[ "${cos_v1_result}" != "0" ]]; then
+    printf '%s\n' "${cos_v1_output}"
+    fail "Chief of Staff v1 Agent Core foundation status failed"
+  elif [[ -n "${cos_v1_pass}" && -n "${cos_v1_warn}" && -n "${cos_v1_fail}" ]]; then
+    printf 'Chief of Staff v1 Agent Core: PASS %s / WARN %s / FAIL %s\n' "${cos_v1_pass}" "${cos_v1_warn}" "${cos_v1_fail}"
+    pass "Chief of Staff v1 Agent Core foundation status completed"
+  else
+    pass "Chief of Staff v1 Agent Core foundation status completed"
+  fi
+else
+  warn "Chief of Staff v1 foundation status script missing: scripts/chief-of-staff-v1-foundation-status.sh"
+fi
+
 section "Lesson Planning v1 Foundation"
 if [[ -f scripts/lesson-planning-foundation-status.sh ]]; then
   lesson_planning_foundation_result=0

@@ -81,6 +81,8 @@ bash tests/curriculum-canvas-package-contract-v0-test.sh >/dev/null
 bash tests/curriculum-contract-suite-v0-test.sh >/dev/null
 bash tests/chief-of-staff-next-action-test.sh >/dev/null
 bin/chief-of-staff --chief-of-staff-command-index-v1-status >/dev/null
+bin/chief-of-staff --chief-of-staff-v1-status >/dev/null
+bin/chief-of-staff --commands >/dev/null
 bin/chief-of-staff --intake-status >/dev/null
 bin/chief-of-staff --intake-summary >/dev/null
 bin/chief-of-staff --intake-diff >/dev/null

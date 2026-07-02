@@ -309,25 +309,11 @@ It should eventually answer:
 #### B1 — Command Surface Index v1
 
 ```text
-Mission: Complete Chief of Staff v1 command surface
-
-Scope:
-- canonical command index doc (grouped by program)
-- help text alignment audit
-- dashboard section labels match index
-- smoke tests for critical commands
-
-Out of scope:
-- new runtime features
-- automation
-
-Autonomous: yes
-
-Definition of done:
-- docs/chief-of-staff-command-index-v1.md (or equivalent)
-- cursor-workflow + foundation status checks
-- dashboard clean
+Status: COMPLETE (foundation v1_b1)
+Closure: docs/chief-of-staff-v1-foundation.md
 ```
+
+Mission delivered: canonical command index, `--commands`, agent core docs, operating model, proof workflow, v1 foundation status.
 
 #### B2 — Daily Status Summary
 
@@ -778,11 +764,11 @@ Per `docs/engineering-constitution.md` §10, v1.0 means these systems exist as *
 
 ## 10. Immediate Next Recommended Mission
 
-**Chief of Staff v1 Agent Core — Program B1 (Command Surface Index v1)**
+**Chief of Staff v1 Agent Core — Program B2 (Daily Operations Framework)**
 
-Phase 3 foundations are complete (`docs/teacher-workstation-foundation-v0.md`). The recommended next major program is **Chief of Staff v1** — starting with a canonical command index and deterministic next-action surface.
+Program B1 is complete (`docs/chief-of-staff-v1-foundation.md`). Recommended next: daily briefing, closeout, `--daily-status`, approval/blocker queue surfacing.
 
-Alternate approval-gated tracks (Curriculum Builder renderers, Canvas restart, Mac live experience, Lovable, 3D Builder) require explicit missions per `docs/implementation-approval-gate.md`.
+Alternate tracks remain approval-gated per `docs/implementation-approval-gate.md`.
 
 **This roadmap does not auto-start implementation.** Owen or an explicit mission prompt authorizes execution.
 

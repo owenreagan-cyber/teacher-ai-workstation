@@ -1,0 +1,16 @@
+# Chief of Staff v1 Agent Core — Interface Artifacts
+
+```text
+Program: B1 — Command Surface Index v1
+Status: foundation complete (read-only)
+```
+
+## Contents
+
+| Artifact | Purpose |
+| --- | --- |
+| `command-surface-manifest.json` | Canonical implemented/planned/blocked command surface for `--commands` |
+
+## Boundaries
+
+Local-first, read-only. No network, APIs, automation, or generation.

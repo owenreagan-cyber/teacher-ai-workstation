@@ -67,6 +67,11 @@ fi
 cd "${repo_root}"
 
 index_doc="docs/chief-of-staff-command-index-v1.md"
+agent_core_doc="docs/chief-of-staff-agent-core.md"
+v1_foundation_doc="docs/chief-of-staff-v1-foundation.md"
+manifest_file="assistant/chief-of-staff/v1/command-surface-manifest.json"
+commands_script="scripts/chief-of-staff-commands.sh"
+v1_foundation_script="scripts/chief-of-staff-v1-foundation-status.sh"
 next_action_script="scripts/chief-of-staff-next-action.sh"
 chief_of_staff="bin/chief-of-staff"
 dashboard_doc="docs/chief-of-staff-dashboard.md"
@@ -80,13 +85,25 @@ EOF
 
 check_file "${index_doc}"
 check_doc_contains "${index_doc}" "Index status: active_v1" "index active_v1"
-check_doc_contains "${index_doc}" "--daily-status" "daily-status command documented"
+check_doc_contains "${index_doc}" "Implemented Commands" "implemented commands section"
+check_doc_contains "${index_doc}" "Planned Commands" "planned commands section"
+check_doc_contains "${index_doc}" "Blocked Commands" "blocked commands section"
+check_doc_contains "${index_doc}" "--commands" "commands command documented"
 check_doc_contains "${index_doc}" "--next-action" "next-action command documented"
 check_doc_contains "${index_doc}" "--validate-all" "validate-all command documented"
 check_doc_contains "${index_doc}" "--proof-run" "proof-run command documented"
+check_doc_contains "${index_doc}" "--daily-status" "daily-status planned command documented"
 check_doc_contains "${index_doc}" "Curriculum Builder" "curriculum builder commands documented"
 check_doc_contains "${index_doc}" "Canvas LLM" "canvas llm commands documented"
 check_doc_contains "${index_doc}" "no lesson generation" "no lesson generation boundary"
+
+check_file "${agent_core_doc}"
+check_file "${v1_foundation_doc}"
+check_file "${manifest_file}"
+check_file "${commands_script}"
+check_bash_syntax "${commands_script}"
+check_file "${v1_foundation_script}"
+check_bash_syntax "${v1_foundation_script}"
 
 check_file "${next_action_script}"
 check_bash_syntax "${next_action_script}"
@@ -101,6 +118,16 @@ if [[ -f "${chief_of_staff}" ]]; then
     pass "chief-of-staff exposes --chief-of-staff-command-index-v1-status"
   else
     fail "chief-of-staff missing --chief-of-staff-command-index-v1-status"
+  fi
+  if grep -Fq -- '--commands' "${chief_of_staff}"; then
+    pass "chief-of-staff exposes --commands"
+  else
+    fail "chief-of-staff missing --commands"
+  fi
+  if grep -Fq -- '--chief-of-staff-v1-status' "${chief_of_staff}"; then
+    pass "chief-of-staff exposes --chief-of-staff-v1-status"
+  else
+    fail "chief-of-staff missing --chief-of-staff-v1-status"
   fi
 else
   fail "chief-of-staff missing"

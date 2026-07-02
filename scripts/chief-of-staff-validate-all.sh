@@ -106,6 +106,7 @@ EOF
 
 run_track "Cursor Workflow" scripts/cursor-workflow-status.sh
 run_track "Chief of Staff Command Index v1" scripts/chief-of-staff-command-index-v1-status.sh
+run_track "Chief of Staff v1 Agent Core" scripts/chief-of-staff-v1-foundation-status.sh
 run_track "Chief of Staff Next Action" scripts/chief-of-staff-next-action.sh
 run_track "Curriculum Registry v0" scripts/curriculum-registry-v0-status.sh
 run_track "Curriculum Output Contract v0" scripts/curriculum-output-contract-v0-status.sh

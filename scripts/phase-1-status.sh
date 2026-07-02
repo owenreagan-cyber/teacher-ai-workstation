@@ -727,6 +727,37 @@ check_doc_contains "${master_roadmap_doc}" "Staged integration model" "master ro
 capability_map_doc="docs/teacher-workstation-capability-map.md"
 check_doc_contains "${capability_map_doc}" "Integrations and Automation (Staged)" "capability map mentions staged integrations"
 
+section "Chief of Staff v1 Agent Core (Program B1) Files"
+for path in \
+  docs/chief-of-staff-v1-foundation.md \
+  docs/chief-of-staff-agent-core.md \
+  docs/chief-of-staff-operating-model.md \
+  docs/chief-of-staff-proof-workflow.md \
+  docs/chief-of-staff-command-index-v1.md \
+  assistant/chief-of-staff/v1/command-surface-manifest.json \
+  assistant/chief-of-staff/v1/README.md \
+  scripts/chief-of-staff-commands.sh \
+  scripts/chief-of-staff-v1-foundation-status.sh \
+  scripts/chief-of-staff-command-index-v1-status.sh; do
+  check_required_file "${path}"
+done
+check_bash_syntax scripts/chief-of-staff-commands.sh
+check_bash_syntax scripts/chief-of-staff-v1-foundation-status.sh
+check_bash_syntax scripts/chief-of-staff-command-index-v1-status.sh
+agent_core_doc="docs/chief-of-staff-agent-core.md"
+check_doc_contains "${agent_core_doc}" "must not become" "agent core non-ownership boundaries"
+check_doc_contains docs/chief-of-staff-v1-foundation.md "complete_v1_b1" "v1 foundation closure status"
+if grep -Fq -- '--commands' bin/chief-of-staff; then
+  pass "chief-of-staff exposes --commands"
+else
+  fail "chief-of-staff missing --commands"
+fi
+if grep -Fq -- '--chief-of-staff-v1-status' bin/chief-of-staff; then
+  pass "chief-of-staff exposes --chief-of-staff-v1-status"
+else
+  fail "chief-of-staff missing --chief-of-staff-v1-status"
+fi
+
 section "Curriculum Registry–Contract Binding v0 Foundation Files"
 for path in \
   docs/curriculum-binding-v0.md \

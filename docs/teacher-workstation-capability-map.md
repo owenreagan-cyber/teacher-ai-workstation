@@ -38,7 +38,11 @@ Cross-references:
 | Chief of Staff dashboard | implemented read-only | PASS/WARN/FAIL health surface |
 | Project memory / intake | implemented read-only | Local memory; human-reviewed |
 | Proof runner | implemented read-only | `scripts/run-workstation-proof.sh` |
-| Next-action recommendation | planned | Program B3 |
+| Command surface index (`--commands`) | foundation complete | Program B1 |
+| Chief of Staff v1 Agent Core | foundation complete | `docs/chief-of-staff-v1-foundation.md` |
+| Next-action recommendation | implemented read-only | `--next-action` (Program B3 scope delivered early) |
+| Command surface index (`--commands`) | **foundation complete** | Program B1 |
+| Chief of Staff v1 Agent Core | **foundation complete** | Program B1 — see `docs/chief-of-staff-v1-foundation.md` |
 | Daily briefing / closeout | planned | Program B2/B extensions |
 | Tool routing surface | planned | Program B5; matrix at `docs/ai-tool-routing-matrix.md` |
 | Approval queue surfacing | planned | Implementation gate intake status |

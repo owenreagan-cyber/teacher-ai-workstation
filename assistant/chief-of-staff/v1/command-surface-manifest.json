@@ -1,0 +1,90 @@
+{
+  "version": "v1",
+  "program": "Chief of Staff v1 Agent Core — Program B1",
+  "status": "active_read_only",
+  "categories": [
+    {
+      "id": "core_status",
+      "name": "Core Status",
+      "commands": [
+        {"flag": "--dashboard", "status": "implemented", "purpose": "Full local health dashboard"},
+        {"flag": "--status", "status": "implemented", "purpose": "Basic CLI status"},
+        {"flag": "--cursor-workflow-status", "status": "implemented", "purpose": "Cursor workflow and governance checks"},
+        {"flag": "--return-to-core-status", "status": "implemented", "purpose": "Parked tracks and return-to-core map"},
+        {"flag": "--chief-of-staff-v1-status", "status": "implemented", "purpose": "Chief of Staff v1 Agent Core foundation status"},
+        {"flag": "--chief-of-staff-command-index-v1-status", "status": "implemented", "purpose": "Command index v1 status proof"},
+        {"flag": "--teacher-workstation-foundation-status", "status": "implemented", "purpose": "Phase 3 foundation orchestration status"},
+        {"flag": "--commands", "status": "implemented", "purpose": "Deterministic command surface index"},
+        {"flag": "--capability-map-status", "status": "planned", "purpose": "Capability map status summary"},
+        {"flag": "--roadmap-status", "status": "planned", "purpose": "Master build roadmap status summary"}
+      ]
+    },
+    {
+      "id": "proof",
+      "name": "Proof",
+      "commands": [
+        {"flag": "--proof-run", "status": "implemented", "purpose": "Pre-merge proof runner"},
+        {"flag": "--validate-all", "status": "implemented", "purpose": "Validation orchestration across core subsystems"},
+        {"flag": "--prove-main", "status": "planned", "purpose": "Local main cleanliness and merge proof"},
+        {"flag": "--branch-cleanup-proof", "status": "planned", "purpose": "Feature branch deletion proof"}
+      ]
+    },
+    {
+      "id": "planning",
+      "name": "Planning",
+      "commands": [
+        {"flag": "--next-action", "status": "implemented", "purpose": "Deterministic next recommended program/focus"},
+        {"flag": "--daily-status", "status": "planned", "purpose": "Unified daily operating summary (Program B2)"},
+        {"flag": "--daily-briefing", "status": "planned", "purpose": "Daily briefing surface (Program B2+)"},
+        {"flag": "--closeout", "status": "planned", "purpose": "End-of-day closeout summary (Program B2+)"},
+        {"flag": "--weekly-planning", "status": "planned", "purpose": "Weekly planning review (future)"}
+      ]
+    },
+    {
+      "id": "safety_approval",
+      "name": "Safety / Approval",
+      "commands": [
+        {"flag": "--validate-memory", "status": "implemented", "purpose": "Project memory validation"},
+        {"flag": "--memory-status", "status": "implemented", "purpose": "Project memory status"},
+        {"flag": "--implementation-gate-status", "status": "planned", "purpose": "Implementation approval gate summary"},
+        {"flag": "--non-activation-check", "status": "planned", "purpose": "Non-activation boundary proof"},
+        {"flag": "--blocked-capability-check", "status": "planned", "purpose": "Blocked capability report"}
+      ]
+    },
+    {
+      "id": "program_curriculum",
+      "name": "Program Status — Curriculum",
+      "commands": [
+        {"flag": "--curriculum-builder-foundation-status", "status": "implemented", "purpose": "Curriculum Builder v1 foundation"},
+        {"flag": "--curriculum-library-foundation-status", "status": "implemented", "purpose": "Curriculum Library v1 foundation"},
+        {"flag": "--lesson-planning-foundation-status", "status": "implemented", "purpose": "Lesson Planning v1 foundation"},
+        {"flag": "--renderer-foundation-status", "status": "implemented", "purpose": "Renderer Foundation v1"},
+        {"flag": "--local-retrieval-foundation-status", "status": "implemented", "purpose": "Local Retrieval Foundation v0"},
+        {"flag": "--integration-planning-foundation-status", "status": "implemented", "purpose": "Integration Planning Foundation v0"}
+      ]
+    },
+    {
+      "id": "program_canvas",
+      "name": "Program Status — Canvas",
+      "commands": [
+        {"flag": "--teacher-app-designer-canvas-llm-status", "status": "implemented", "purpose": "Canvas LLM frozen foundation status"},
+        {"flag": "--canvas-restart-status", "status": "blocked", "purpose": "Canvas restart blocked by stop marker"}
+      ]
+    },
+    {
+      "id": "program_future",
+      "name": "Program Status — Future / Approval-Gated",
+      "commands": [
+        {"flag": "--model-routing-status", "status": "planned", "purpose": "AI tool routing matrix status (Program B5)"},
+        {"flag": "--local-llm-workstation-status", "status": "planned", "purpose": "Local LLM/Ollama workstation status (Program D1)"},
+        {"flag": "--system-health", "status": "planned", "purpose": "Health Monitor read-only report (Program H)"},
+        {"flag": "--system-update-check", "status": "planned", "purpose": "System Updater read-only checks (Program I)"},
+        {"flag": "--mode-status", "status": "planned", "purpose": "Mac Workstation Experience mode status (Program E)"},
+        {"flag": "--widget-health", "status": "planned", "purpose": "Widget catalog health (Program F)"},
+        {"flag": "--shortcut-health", "status": "planned", "purpose": "Shortcut catalog health (Program F)"},
+        {"flag": "--lovable-status", "status": "planned", "purpose": "Lovable integration inactive status (Program G1)"},
+        {"flag": "--3d-builder-status", "status": "planned", "purpose": "3D Builder Workshop Agent status (Program J)"}
+      ]
+    }
+  ]
+}

@@ -117,6 +117,10 @@ Teacher Planning Command Organization (status only; safe sample: fractions-revie
                                        Show read-only Renderer Foundation v0 status and exit.
   --renderer-foundation-v0-validate
                                        Run read-only Renderer Foundation v0 manifest validator and exit.
+  --local-retrieval-foundation-status
+                                       Show read-only Local Retrieval Foundation v0 status and exit.
+  --local-retrieval-foundation-v0-validate
+                                       Run read-only Local Retrieval Foundation v0 lookup validator and exit.
   --curriculum-registry-v0-status
                                        Show read-only Curriculum Registry v0 foundation status and exit.
   --curriculum-registry-v0-validate
@@ -1669,6 +1673,25 @@ while [[ $# -gt 0 ]]; do
       fi
       shift
       bash "${renderer_foundation_v0_validator_script}" "$@"
+      exit 0
+      ;;
+    --local-retrieval-foundation-status)
+      repo_root="$(resolve_repo_root)"
+      local_retrieval_foundation_status_script="${repo_root}/scripts/local-retrieval-foundation-status.sh"
+      if [[ ! -f "${local_retrieval_foundation_status_script}" ]]; then
+        die "Local Retrieval Foundation status script is missing: scripts/local-retrieval-foundation-status.sh"
+      fi
+      bash "${local_retrieval_foundation_status_script}"
+      exit 0
+      ;;
+    --local-retrieval-foundation-v0-validate)
+      repo_root="$(resolve_repo_root)"
+      local_retrieval_foundation_v0_validator_script="${repo_root}/scripts/local-retrieval-foundation-v0-validator.sh"
+      if [[ ! -f "${local_retrieval_foundation_v0_validator_script}" ]]; then
+        die "Local Retrieval Foundation v0 validator script is missing: scripts/local-retrieval-foundation-v0-validator.sh"
+      fi
+      shift
+      bash "${local_retrieval_foundation_v0_validator_script}" "$@"
       exit 0
       ;;
     --curriculum-builder-foundation-status)

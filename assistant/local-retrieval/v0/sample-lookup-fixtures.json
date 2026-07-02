@@ -1,0 +1,100 @@
+{
+  "lookup_version": "0.1.0",
+  "lookup_status": "active_v0",
+  "metadata_only": true,
+  "read_only": true,
+  "manual_lookup_only": true,
+  "lookups": [
+    {
+      "lookup_id": "sample-lookup-registry-001",
+      "lookup_type": "registry_id",
+      "query": "sample-sm5-textbook-001",
+      "expected_result_kind": "registry_record",
+      "resolution_mode": "manual_fixture_only",
+      "automatic_resolution": false,
+      "semantic_search": false,
+      "indexing": false,
+      "local_first_safety_flags": [
+        "manual_lookup_only",
+        "no_semantic_search",
+        "no_indexing",
+        "no_student_data",
+        "placeholder_only",
+        "no_external_resolution"
+      ],
+      "notes": "Fictional manual registry lookup fixture for Local Retrieval v0 validation only.",
+      "activation_status": "local_retrieval_v0"
+    },
+    {
+      "lookup_id": "sample-lookup-contract-001",
+      "lookup_type": "contract_id",
+      "query": "sample-contract-worksheet-001",
+      "expected_result_kind": "contract_record",
+      "resolution_mode": "manual_fixture_only",
+      "automatic_resolution": false,
+      "semantic_search": false,
+      "indexing": false,
+      "local_first_safety_flags": [
+        "manual_lookup_only",
+        "no_semantic_search",
+        "no_indexing",
+        "no_student_data",
+        "placeholder_only",
+        "no_external_resolution"
+      ],
+      "notes": "Fictional manual contract lookup fixture for Local Retrieval v0 validation only.",
+      "activation_status": "local_retrieval_v0"
+    },
+    {
+      "lookup_id": "sample-lookup-binding-001",
+      "lookup_type": "binding_report",
+      "query": "sample-sm5-textbook-001",
+      "expected_result_kind": "binding_report",
+      "resolution_mode": "manual_fixture_only",
+      "automatic_resolution": false,
+      "semantic_search": false,
+      "indexing": false,
+      "local_first_safety_flags": [
+        "manual_lookup_only",
+        "no_semantic_search",
+        "no_indexing",
+        "no_student_data",
+        "placeholder_only",
+        "no_external_resolution"
+      ],
+      "notes": "Fictional binding lookup fixture for Local Retrieval v0 validation only.",
+      "activation_status": "local_retrieval_v0"
+    },
+    {
+      "lookup_id": "sample-lookup-missing-001",
+      "lookup_type": "registry_id",
+      "query": "sample-missing-registry-999",
+      "expected_result_kind": "missing_reference_report",
+      "resolution_mode": "manual_fixture_only",
+      "automatic_resolution": false,
+      "semantic_search": false,
+      "indexing": false,
+      "local_first_safety_flags": [
+        "manual_lookup_only",
+        "no_semantic_search",
+        "no_indexing",
+        "no_student_data",
+        "placeholder_only",
+        "no_external_resolution"
+      ],
+      "notes": "Fictional missing-reference lookup fixture for Local Retrieval v0 validation only.",
+      "activation_status": "local_retrieval_v0"
+    }
+  ],
+  "missing_reference_reports": [
+    {
+      "report_id": "sample-missing-ref-report-001",
+      "lookup_id": "sample-lookup-missing-001",
+      "registry_id": "sample-missing-registry-999",
+      "status": "missing",
+      "resolution_mode": "manual_fixture_only",
+      "automatic_resolution": false,
+      "notes": "Fictional missing-reference report for deterministic validation only."
+    }
+  ]
+}

@@ -1,0 +1,69 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "teacher-ai-workstation/local-retrieval/v0/lookup-interface-schema.json",
+  "title": "Local Retrieval Lookup Interface v0 Schema",
+  "description": "Placeholder-only manual lookup records. Interface planning only; no retrieval engine.",
+  "type": "object",
+  "required": [
+    "lookup_id",
+    "lookup_type",
+    "query",
+    "expected_result_kind",
+    "resolution_mode",
+    "automatic_resolution",
+    "semantic_search",
+    "indexing",
+    "local_first_safety_flags",
+    "notes",
+    "activation_status"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "lookup_id": {
+      "type": "string",
+      "pattern": "^sample-lookup-[a-z0-9-]+$"
+    },
+    "lookup_type": {
+      "type": "string",
+      "enum": ["registry_id", "contract_id", "binding_report"]
+    },
+    "query": {
+      "type": "string",
+      "minLength": 1
+    },
+    "expected_result_kind": {
+      "type": "string",
+      "enum": ["registry_record", "contract_record", "binding_report", "missing_reference_report"]
+    },
+    "resolution_mode": {
+      "type": "string",
+      "enum": ["manual_fixture_only"]
+    },
+    "automatic_resolution": {
+      "type": "boolean",
+      "const": false
+    },
+    "semantic_search": {
+      "type": "boolean",
+      "const": false
+    },
+    "indexing": {
+      "type": "boolean",
+      "const": false
+    },
+    "local_first_safety_flags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "minItems": 6
+    },
+    "notes": {
+      "type": "string"
+    },
+    "activation_status": {
+      "type": "string",
+      "enum": ["local_retrieval_v0"]
+    }
+  }
+}

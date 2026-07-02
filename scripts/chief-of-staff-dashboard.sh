@@ -999,6 +999,29 @@ else
   warn "Renderer Foundation status script missing: scripts/renderer-foundation-status.sh"
 fi
 
+section "Local Retrieval Foundation v0"
+if [[ -f scripts/local-retrieval-foundation-status.sh ]]; then
+  local_retrieval_foundation_result=0
+  local_retrieval_foundation_output="$(bash scripts/local-retrieval-foundation-status.sh 2>&1)" || local_retrieval_foundation_result=$?
+  local_retrieval_foundation_pass="$(summary_count "${local_retrieval_foundation_output}" "PASS")"
+  local_retrieval_foundation_warn="$(summary_count "${local_retrieval_foundation_output}" "WARN")"
+  local_retrieval_foundation_fail="$(summary_count "${local_retrieval_foundation_output}" "FAIL")"
+
+  if [[ "${local_retrieval_foundation_result}" != "0" ]]; then
+    printf 'Local Retrieval Foundation v0: status command completed\n'
+    printf '%s\n' "${local_retrieval_foundation_output}"
+    fail "Local Retrieval Foundation status failed"
+  elif [[ -n "${local_retrieval_foundation_pass}" && -n "${local_retrieval_foundation_warn}" && -n "${local_retrieval_foundation_fail}" ]]; then
+    printf 'Local Retrieval Foundation v0: PASS %s / WARN %s / FAIL %s\n' "${local_retrieval_foundation_pass}" "${local_retrieval_foundation_warn}" "${local_retrieval_foundation_fail}"
+    pass "Local Retrieval Foundation status completed"
+  else
+    printf 'Local Retrieval Foundation v0: status command completed\n'
+    pass "Local Retrieval Foundation status completed"
+  fi
+else
+  warn "Local Retrieval Foundation status script missing: scripts/local-retrieval-foundation-status.sh"
+fi
+
 section "Curriculum Builder Local-First Foundation Plan"
 if [[ -f scripts/curriculum-builder-foundation-status.sh ]]; then
   curriculum_builder_foundation_result=0

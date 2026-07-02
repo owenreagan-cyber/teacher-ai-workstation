@@ -28,6 +28,8 @@ Policy baseline: `assistant/model-routing.md`
 | **OpenAI API** (future) | Approved cloud inference | Default routing without intake | TBD per mission | Student PII default block | blocked | inactive | explicit mission |
 | **Anthropic API** (future) | Approved cloud inference | Default routing without intake | TBD per mission | Student PII default block | blocked | inactive | explicit mission |
 | **Google API** (future) | Approved cloud inference | Default routing without intake | TBD per mission | Student PII default block | blocked | inactive | explicit mission |
+| **3D Builder Workshop Agent** (future) | Classroom object design/sourcing pipeline | Curriculum generation, CoS replacement | Approved object specs after gate | Student data, unapproved deploy | blocked | inactive | Program J |
+| **Image generation** (future) | Visual asset workflows when approved | Student-facing output without review | Teacher-approved prompts only | Student PII, copyrighted refs | blocked | inactive | explicit mission |
 
 ## High-Level Roles
 
@@ -38,6 +40,8 @@ Policy baseline: `assistant/model-routing.md`
 - **Codex:** focused code implementation/review if used.
 - **Lovable:** future classroom app builder — external tool after safety gate.
 - **Ollama/local models:** offline local helpers; never source of truth without review.
+- **3D Builder Workshop Agent:** future classroom object sub-agent; Program J.
+- **Image generation (future):** visual asset workflows when explicitly approved.
 
 ## Local Model Families (Planning)
 
@@ -55,7 +59,7 @@ Roles are planning guidance only. Model names and versions must be verified loca
 1. Chief of Staff decides, validates, routes, tracks, and reports — it does not replace specialized builders.
 2. Sensitive student data stays local-only or unprocessed until explicitly approved.
 3. Cloud tools remain manual-paste or mission-scoped unless a separate API mission approves connection.
-4. Lovable, renderers, and 3D Builder Workshop Agent remain external/separate subsystems.
+4. Lovable, Curriculum Builder runtime, Local LLM inference, renderers, and 3D Builder Workshop Agent remain external/separate subsystems. Chief of Staff orchestrates only.
 
 ## Future Chief of Staff Surfaces (Roadmap Only)
 

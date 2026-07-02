@@ -21,6 +21,7 @@ Cross-references:
 - Engineering authority: `docs/engineering-constitution.md`
 - Approval gate: `docs/implementation-approval-gate.md`
 - Capability map: `docs/teacher-workstation-capability-map.md`
+- Long-term future programs (planning index): `docs/long-term-future-programs-roadmap.md`
 - AI tool routing matrix: `docs/ai-tool-routing-matrix.md`
 - 3D Builder Workshop Agent: `docs/3d-builder-workshop-agent-roadmap.md`
 - Phase 3 closure: `docs/teacher-workstation-foundation-v0.md`
@@ -182,6 +183,8 @@ Priority respects dependencies in `docs/engineering-constitution.md` architectur
 **Rationale:** Phase 3 foundations provide coherent status surfaces. Chief of Staff v1 and Health Monitor improve daily execution before write-capable curriculum work. Mac/widgets/Lovable/3D remain planning or approval-gated. Canvas stays frozen until Owen supersedes stop marker. Integrations are intentionally last.
 
 See `docs/teacher-workstation-capability-map.md` for per-capability status labels.
+
+**Standardized planning index:** `docs/long-term-future-programs-roadmap.md` — Future / Approval-Gated / Planning Only entries for Health Monitor, System Updater, AI Tool Routing, Local LLM, Mac Experience, Widgets/Shortcuts, Lovable, and 3D Builder Workshop Agent.
 
 ---
 

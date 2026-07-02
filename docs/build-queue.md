@@ -14,6 +14,8 @@ Handoff and status clarity. Start from `docs/phase-1-chief-of-staff-status-audit
 
 ## Recently Completed
 
+- Long-term future programs planning index (`docs/long-term-future-programs-roadmap.md`): standardized Future / Approval-Gated / Planning Only entries for all approved future programs. Documentation/status only.
+
 - Expanded Master Plan gap-fill: CoS future capabilities (approval/blocker queues, health summary), Canvas Manual Restart staged sequence (C0–C6), integration staging model (G0–G5), capability map updates. Documentation/status only.
 
 - Long-term Master Build Plan formalization: capability map, AI tool routing matrix, Health Monitor, System Updater, 3D Builder Workshop Agent, expanded program sequence in `docs/master-build-roadmap.md`. Documentation/status only — no activation.

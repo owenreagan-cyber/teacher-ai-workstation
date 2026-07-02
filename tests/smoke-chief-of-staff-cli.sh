@@ -123,6 +123,11 @@ bash tests/curriculum-builder-registry-a4-a7-fixture-schema-status-test.sh >/dev
 bin/chief-of-staff --cursor-operating-modes-status >/dev/null
 bin/chief-of-staff --autonomous-build-engine-status >/dev/null
 bash tests/autonomous-build-engine-status-test.sh >/dev/null
+bin/chief-of-staff --governance-lane-status >/dev/null
+bash tests/governance-lane-status-test.sh >/dev/null
+bin/chief-of-staff --workstation-ops-lane-status >/dev/null
+bash tests/workstation-ops-lane-status-test.sh >/dev/null
+bash tests/backlog-non-mutation-guardrails-test.sh >/dev/null
 bash tests/ai-tool-routing-status-test.sh >/dev/null
 bash tests/local-llm-workstation-status-test.sh >/dev/null
 bash tests/mac-workstation-experience-status-test.sh >/dev/null

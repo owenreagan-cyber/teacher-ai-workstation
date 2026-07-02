@@ -32,6 +32,9 @@ status_test="tests/autonomous-build-engine-status-test.sh"
 section 'Autonomous Build Engine Governance (Read-Only Foundation)'
 cat <<'EOF'
 Status: documentation/status only
+Classification: governance docs + status checks only
+Runtime activation: no
+Discovery does not authorize implementation: yes
 Production registry writes: blocked
 Active --write: blocked
 Student data: blocked

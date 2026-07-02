@@ -1030,6 +1030,27 @@ else
   warn "System Updater status script missing: scripts/teacher-workstation-system-updater-status.sh"
 fi
 
+section "Workstation Operations Lane Status (Aggregate H+I)"
+if [[ -f scripts/workstation-ops-lane-status.sh ]]; then
+  workstation_ops_lane_result=0
+  workstation_ops_lane_output="$(bash scripts/workstation-ops-lane-status.sh 2>&1)" || workstation_ops_lane_result=$?
+  workstation_ops_lane_pass="$(summary_count "${workstation_ops_lane_output}" "PASS")"
+  workstation_ops_lane_warn="$(summary_count "${workstation_ops_lane_output}" "WARN")"
+  workstation_ops_lane_fail="$(summary_count "${workstation_ops_lane_output}" "FAIL")"
+
+  if [[ "${workstation_ops_lane_result}" != "0" ]]; then
+    printf '%s\n' "${workstation_ops_lane_output}"
+    fail "Workstation ops lane status failed"
+  elif [[ -n "${workstation_ops_lane_pass}" && -n "${workstation_ops_lane_warn}" && -n "${workstation_ops_lane_fail}" ]]; then
+    printf 'Workstation Ops Lane: PASS %s / WARN %s / FAIL %s\n' "${workstation_ops_lane_pass}" "${workstation_ops_lane_warn}" "${workstation_ops_lane_fail}"
+    pass "Workstation ops lane status completed"
+  else
+    pass "Workstation ops lane status completed"
+  fi
+else
+  warn "Workstation ops lane status script missing: scripts/workstation-ops-lane-status.sh"
+fi
+
 section "AI Tool Routing Matrix (Operational Surface)"
 if [[ -f scripts/ai-tool-routing-status.sh ]]; then
   routing_result=0
@@ -2460,6 +2481,27 @@ if [[ -f scripts/autonomous-build-engine-status.sh ]]; then
   fi
 else
   warn "Autonomous Build Engine status script missing: scripts/autonomous-build-engine-status.sh"
+fi
+
+section "Governance Lane Status (Aggregate)"
+if [[ -f scripts/governance-lane-status.sh ]]; then
+  governance_lane_result=0
+  governance_lane_output="$(bash scripts/governance-lane-status.sh 2>&1)" || governance_lane_result=$?
+  governance_lane_pass="$(summary_count "${governance_lane_output}" "PASS")"
+  governance_lane_warn="$(summary_count "${governance_lane_output}" "WARN")"
+  governance_lane_fail="$(summary_count "${governance_lane_output}" "FAIL")"
+
+  if [[ "${governance_lane_result}" != "0" ]]; then
+    printf '%s\n' "${governance_lane_output}"
+    fail "Governance lane status failed"
+  elif [[ -n "${governance_lane_pass}" && -n "${governance_lane_warn}" && -n "${governance_lane_fail}" ]]; then
+    printf 'Governance Lane: PASS %s / WARN %s / FAIL %s\n' "${governance_lane_pass}" "${governance_lane_warn}" "${governance_lane_fail}"
+    pass "Governance lane status completed"
+  else
+    pass "Governance lane status completed"
+  fi
+else
+  warn "Governance lane status script missing: scripts/governance-lane-status.sh"
 fi
 
 section "Developer Mode"

@@ -72,6 +72,7 @@ Health Monitor (read-only; observe/report only):
 System Updater (read-only planning; no apply/install):
   --system-update-check                Show read-only System Updater foundation status and exit.
   --system-update-plan                 Show read-only manual update planning checklist and exit.
+  --workstation-ops-lane-status        Show aggregate workstation ops lane status (Health H + Updater I) and exit.
 
 AI Tool Routing (read-only; no live routing):
   --model-routing-status               Show read-only AI tool routing operational status and exit.
@@ -202,6 +203,7 @@ Developer and Cursor Workflow:
   --cursor-workflow-status             Show local Cursor workflow status and exit.
   --cursor-operating-modes-status      Show Cursor operating modes, approval gates, and proposal governance status and exit.
   --autonomous-build-engine-status     Show Autonomous Build Engine governance, continuation loop, and exhaustion rules status and exit.
+  --governance-lane-status             Show aggregate governance lane status (operating modes + ABE + proposal folders) and exit.
   --developer-status                   Show local Developer Mode status and exit.
   --create-developer-project <template> <slug>
                                        Copy a Developer Mode template into local projects.
@@ -2347,6 +2349,15 @@ while [[ $# -gt 0 ]]; do
       bash "${update_plan_script}"
       exit 0
       ;;
+    --workstation-ops-lane-status)
+      repo_root="$(resolve_repo_root)"
+      workstation_ops_lane_status_script="${repo_root}/scripts/workstation-ops-lane-status.sh"
+      if [[ ! -f "${workstation_ops_lane_status_script}" ]]; then
+        die "Workstation ops lane status script is missing: scripts/workstation-ops-lane-status.sh"
+      fi
+      bash "${workstation_ops_lane_status_script}"
+      exit 0
+      ;;
     --model-routing-status)
       repo_root="$(resolve_repo_root)"
       routing_status_script="${repo_root}/scripts/ai-tool-routing-status.sh"
@@ -2543,6 +2554,15 @@ while [[ $# -gt 0 ]]; do
         die "Autonomous Build Engine status script is missing: scripts/autonomous-build-engine-status.sh"
       fi
       bash "${autonomous_build_engine_status_script}"
+      exit 0
+      ;;
+    --governance-lane-status)
+      repo_root="$(resolve_repo_root)"
+      governance_lane_status_script="${repo_root}/scripts/governance-lane-status.sh"
+      if [[ ! -f "${governance_lane_status_script}" ]]; then
+        die "Governance lane status script is missing: scripts/governance-lane-status.sh"
+      fi
+      bash "${governance_lane_status_script}"
       exit 0
       ;;
     --developer-status)

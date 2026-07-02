@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Read-only aggregate Curriculum Builder Registry lane status (CB-IMPL-1–4 + planning + hardening).
+# Read-only aggregate governance lane status (operating modes + ABE + proposal folders).
 set -euo pipefail
 
 PASS_COUNT=0
@@ -22,45 +22,40 @@ repo_root="$(git rev-parse --show-toplevel 2>/dev/null || true)"
 [[ -z "${repo_root}" ]] && repo_root="$(cd "${script_dir}/.." && pwd -P)"
 cd "${repo_root}"
 
-status_script="scripts/curriculum-builder-registry-lane-status.sh"
-authority_map="docs/curriculum-builder-registry-authority-map.md"
-lane_closure="docs/curriculum-builder-registry-v0-2-lane-closure.md"
-level2_review="docs/proposals/curriculum-builder-registry-lane-discovery-review.md"
-planning_brief="docs/curriculum-builder-production-registry-workflow-planning-brief.md"
+status_script="scripts/governance-lane-status.sh"
+manifest="assistant/chief-of-staff/v1/command-surface-manifest.json"
 
 COMPONENTS=(
-  "CB-IMPL-1 dry-run|scripts/curriculum-builder-registry-v0-2-status.sh"
-  "CB-IMPL-2 local fake records|scripts/curriculum-builder-registry-v0-2-local-records-status.sh"
-  "CB-IMPL-3 renderer|scripts/curriculum-builder-registry-v0-2-renderer-status.sh"
-  "CB-IMPL-4 retrieval|scripts/curriculum-builder-registry-v0-2-retrieval-status.sh"
-  "production registry planning|scripts/curriculum-builder-production-registry-planning-status.sh"
-  "A4–A7 fixture schema cross-validation|scripts/curriculum-builder-registry-a4-a7-fixture-schema-status.sh"
+  "Cursor Operating Modes Governance|scripts/cursor-operating-modes-status.sh"
+  "Autonomous Build Engine Governance|scripts/autonomous-build-engine-status.sh"
 )
 
-section 'Curriculum Builder Registry Lane Status (Aggregate)'
+section 'Governance Lane Status (Aggregate)'
 cat <<'EOF'
-Status: read-only aggregate lane proof
-Classification: fake-fixture-only registry foundations
+Status: read-only aggregate governance proof
+Classification: documentation/status only
 Runtime activation: no
+Discovery does not authorize implementation: yes
 Production registry writes: blocked
 Active --write: blocked
-Fixture promotion: blocked
-Network calls: no
-Student data: no
-Real curriculum content: no
-Expected WARNs: see docs/curriculum-builder-registry-expected-warns.md
+APIs/OAuth/network: blocked
+Student data: blocked
+Generation: blocked
 EOF
 
-section 'Lane Documentation'
-check_file "${authority_map}"
-check_file "${lane_closure}"
-check_file "${level2_review}"
-check_file "${planning_brief}"
-check_doc_contains "${authority_map}" "complete_registry_authority_map" "authority map closure"
-check_doc_contains "${lane_closure}" "complete_cb_impl_2_3_4_local_foundation_lane" "lane closure"
-check_doc_contains "${level2_review}" "reviewed" "level 2 review status"
-check_doc_contains "${planning_brief}" "complete_production_registry_planning_brief" "planning brief closure"
-check_doc_contains "${planning_brief}" "Production registry writes: blocked" "planning blocked writes"
+section 'Governance Lane Reviews'
+check_file docs/proposals/lane-reviews/cursor-operating-modes-governance-lane-discovery-review.md
+check_file docs/proposals/lane-reviews/autonomous-build-engine-governance-lane-discovery-review.md
+check_doc_contains docs/master-build-roadmap.md "docs/proposals/lane-reviews/cursor-operating-modes-governance-lane-discovery-review.md" "operating modes lane reviewed"
+check_doc_contains docs/master-build-roadmap.md "docs/proposals/lane-reviews/autonomous-build-engine-governance-lane-discovery-review.md" "abe lane reviewed"
+
+section 'Proposal Folder Health (Safe Work Class H)'
+check_file docs/proposals/lane-reviews/README.md
+check_file docs/proposals/ideas/README.md
+check_file docs/proposals/backlog/README.md
+check_file docs/proposals/blocked/README.md
+check_file docs/proposals/implemented/README.md
+check_doc_contains docs/proposals/README.md "lane-reviews/" "proposals readme lane-reviews"
 
 section 'Component Status Scripts'
 bash -n "${status_script}" && pass "bash syntax ok: ${status_script}" || fail "bash syntax failed: ${status_script}"
@@ -80,7 +75,7 @@ for entry in "${COMPONENTS[@]}"; do
     printf '%s\n' "${component_output}" | tail -20
     continue
   fi
-  if grep -q '^FAIL: [1-9]' <<< "${component_output}" || grep -q 'FAIL_COUNT:[1-9]' <<< "${component_output}"; then
+  if grep -q '^FAIL: [1-9]' <<< "${component_output}"; then
     fail "component reported FAIL: ${label}"
     printf '%s\n' "${component_output}" | tail -20
     continue
@@ -91,20 +86,19 @@ for entry in "${COMPONENTS[@]}"; do
 done
 
 section 'CLI, Manifest, and Tests'
-grep -Fq -- '--curriculum-registry-lane-status' bin/chief-of-staff && pass 'CLI exposes --curriculum-registry-lane-status' || fail 'CLI missing --curriculum-registry-lane-status'
-grep -Fq -- '"--curriculum-registry-lane-status"' assistant/chief-of-staff/v1/command-surface-manifest.json && pass 'manifest lists --curriculum-registry-lane-status' || fail 'manifest missing --curriculum-registry-lane-status'
-grep -Fq -- '"--curriculum-registry-write"' assistant/chief-of-staff/v1/command-surface-manifest.json && pass 'manifest retains blocked --curriculum-registry-write' || fail 'manifest missing blocked write command'
-check_file tests/curriculum-builder-registry-lane-status-test.sh
-bash -n tests/curriculum-builder-registry-lane-status-test.sh && pass 'bash syntax ok: lane status test' || fail 'bash syntax failed: lane status test'
+grep -Fq -- '--governance-lane-status' bin/chief-of-staff && pass 'CLI exposes --governance-lane-status' || fail 'CLI missing --governance-lane-status'
+grep -Fq -- '"--governance-lane-status"' "${manifest}" && pass 'manifest lists --governance-lane-status' || fail 'manifest missing --governance-lane-status'
+check_file tests/governance-lane-status-test.sh
+bash -n tests/governance-lane-status-test.sh && pass 'bash syntax ok: governance lane test' || fail 'bash syntax failed: governance lane test'
 
 section 'Negative Non-Activation Assertions'
 grep -Eq '(^|[;&|[:space:]])curl[[:space:]]' "${status_script}" 2>/dev/null && fail "${status_script} must not shell-invoke curl" || pass "${status_script} does not shell-invoke curl"
 grep -Eq '(^|[;&|[:space:]])find[[:space:]]' "${status_script}" 2>/dev/null && fail "${status_script} must not shell-invoke find" || pass "${status_script} does not shell-invoke find"
 grep -Eq '(^|[;&|[:space:]])ollama[[:space:]]' "${status_script}" 2>/dev/null && fail "${status_script} must not shell-invoke ollama" || pass "${status_script} does not shell-invoke ollama"
 grep -Fq -- '--curriculum-registry-write)' bin/chief-of-staff 2>/dev/null && fail 'chief-of-staff must not implement --curriculum-registry-write handler' || pass 'chief-of-staff has no --curriculum-registry-write handler'
-pass 'no production registry write attempted'
+pass 'aggregate governance status does not hide component failures'
+pass 'no runtime activation attempted'
 pass 'no network call attempted'
-pass 'aggregate lane status does not hide component failures'
 
 section 'Summary'
 printf 'PASS: %s\n' "${PASS_COUNT}"

@@ -382,6 +382,7 @@ Implemented:
 - docs/cursor-autonomous-build-engine.md
 - docs/curriculum-builder-registry-expected-warns.md
 - bin/chief-of-staff --autonomous-build-engine-status
+- bin/chief-of-staff --governance-lane-status
 
 Blocked:
 - production/runtime/API/student-data/real-curriculum work without explicit Owen approval
@@ -786,6 +787,7 @@ Mission delivered: architecture doc, health domains, `--system-health` / `--work
 
 - `bin/chief-of-staff --system-health` — implemented
 - `bin/chief-of-staff --workstation-health` — implemented (alias)
+- `bin/chief-of-staff --workstation-ops-lane-status` — implemented (aggregate H+I lane proof)
 - `bin/chief-of-staff --local-llm-health` — planned
 - `bin/chief-of-staff --widget-health` — planned
 - `bin/chief-of-staff --shortcut-health` — planned

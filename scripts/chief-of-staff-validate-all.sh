@@ -107,10 +107,12 @@ EOF
 run_track "Cursor Workflow" scripts/cursor-workflow-status.sh
 run_track "Cursor Operating Modes" scripts/cursor-operating-modes-status.sh
 run_track "Autonomous Build Engine" scripts/autonomous-build-engine-status.sh
+run_track "Governance Lane" scripts/governance-lane-status.sh
 run_track "Chief of Staff Command Index v1" scripts/chief-of-staff-command-index-v1-status.sh
 run_track "Chief of Staff v1 Agent Core" scripts/chief-of-staff-v1-foundation-status.sh
 run_track "Teacher Workstation Health Monitor" scripts/teacher-workstation-health-status.sh
 run_track "Teacher Workstation System Updater" scripts/teacher-workstation-system-updater-status.sh
+run_track "Workstation Ops Lane" scripts/workstation-ops-lane-status.sh
 run_track "AI Tool Routing" scripts/ai-tool-routing-status.sh
 run_track "Local LLM Workstation" scripts/local-llm-workstation-status.sh
 run_track "Mac Workstation Experience" scripts/mac-workstation-experience-status.sh

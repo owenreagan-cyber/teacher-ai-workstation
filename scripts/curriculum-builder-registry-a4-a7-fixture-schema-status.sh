@@ -24,6 +24,8 @@ status_script="scripts/curriculum-builder-registry-a4-a7-fixture-schema-status.s
 section 'Curriculum Builder Registry A4–A7 Fixture Schema Cross-Validation'
 cat <<'EOF'
 Status: read-only fixture cross-validation only
+Classification: fake-fixture-only — not production approval
+Runtime activation: no
 Canonical schemas: inactive A4–A7 samples via inactive-manifest.json
 Production registry writes: no
 Fixture promotion: no

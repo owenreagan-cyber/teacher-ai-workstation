@@ -127,7 +127,7 @@ Closure: `docs/teacher-workstation-foundation-v0.md`
 | **Widget and Shortcut Builder** | Catalogs for approved surfaces | Roadmap only |
 | **Lovable Classroom App Builder** | Future approval-gated app-builder routing | Planning only — Program G1 |
 | **3D Builder Workshop Agent** | Separate sub-agent for classroom objects | `3d-agent/` readiness parked |
-| **Canvas LLM Restart** | Bounded manual export when explicitly reopened | Frozen — stop marker |
+| **Canvas Manual Restart** | Bounded manual export when explicitly reopened | Frozen — stop marker |
 | **Integration and Automation Layer** | Permissioned connectors when approved | All blocked — last stage |
 
 ---
@@ -172,8 +172,8 @@ Priority respects dependencies in `docs/engineering-constitution.md` architectur
 12. 3D Builder Workshop Agent
     separate sub-agent; classroom objects — no CAD/slicing/printing until approved
 
-13. Canvas LLM Manual Restart
-    only after explicit unfreeze; manual package/readiness first
+13. Canvas Manual Restart
+    only after explicit unfreeze; staged C0–C6 sequence
 
 14. Integrations and Automation Layer (final stage)
     Drive/Canvas/OAuth/network/background jobs — explicit mission each
@@ -281,6 +281,19 @@ It should eventually answer:
 - What is safe to export?
 - What should I build/review/teach today?
 
+**Future capabilities (roadmap only):**
+
+- command catalog
+- next-action recommendation
+- daily briefing and closeout
+- proof runner consolidation
+- status routing across foundation tracks
+- mode awareness (Mac Workstation Experience)
+- tool routing (see `docs/ai-tool-routing-matrix.md`)
+- approval queue surfacing (`docs/implementation-approval-gate.md` intake status)
+- blocker queue (frozen tracks, escalation conditions, stop markers)
+- health summary (aggregated PASS/WARN/FAIL from Health Monitor)
+
 **Future command ideas (roadmap only unless implemented in approved mission):**
 
 - `bin/chief-of-staff --commands`
@@ -384,11 +397,23 @@ Autonomous: yes for status; routing implementation requires approval
 
 ---
 
-### Program C — Canvas LLM Restart and Completion
+### Program C — Canvas Manual Restart (Frozen)
 
-**Status: FROZEN — do not start by default.**
+**Status: FROZEN — do not start by default.** Canvas LLM remains stopped until Owen explicitly supersedes the stop marker.
 
 Evidence: `docs/canvas-llm-stop-marker-curriculum-builder-return.md` — stop marker active, default next PR blocked.
+
+**Future restart sequence (approval-gated, in order):**
+
+| Stage | Scope | Status |
+| --- | --- | --- |
+| C0 — Readiness audit | Frozen foundation proof, contract maturity check, stop-marker review | planning only |
+| C1 — Manual package manifest | Read-only validator for manual export package JSON shapes | first mission when unfreezed |
+| C2 — Static preview package | Fictional sample packages; local preview only | blocked |
+| C3 — Manual copy/paste Canvas-ready content | Human-in-loop export; no API | blocked |
+| C4 — Export bundle files | Weekly bundle dry-run validator | blocked |
+| C5 — Canvas API planning | OAuth/API architecture docs only | blocked |
+| C6 — Canvas API integration | Live Canvas connection | blocked — separate mission |
 
 **Safe restart prerequisites (all required):**
 
@@ -534,7 +559,18 @@ Deferred until Chief of Staff v1 command index exists. Manual/local-first widget
 
 ### Program G — Integration and Automation Layer
 
-**Explicitly deferred.** See `docs/phase-1-chief-of-staff-status-audit.md` § What Should Not Be Automated Yet.
+**Explicitly deferred — final stage only.** See `docs/phase-1-chief-of-staff-status-audit.md` § What Should Not Be Automated Yet.
+
+**Staged integration model (no stage active without explicit mission approval):**
+
+| Stage | Description | Current |
+| --- | --- | --- |
+| G0 — Documentation only | Roadmaps, boundaries, inactive manifests | **active** (planning) |
+| G1 — Manual links | Browser profiles, paste-only workflows | planning |
+| G2 — Local dry-run | Validators and fictional fixtures only | partial (integration planning foundation) |
+| G3 — Read-only integration | Local probes without writes | blocked |
+| G4 — Write integration | Approved connectors with human gates | blocked |
+| G5 — Automation | Background jobs, scheduled tasks | blocked |
 
 | Integration | Status |
 | --- | --- |

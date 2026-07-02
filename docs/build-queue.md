@@ -14,6 +14,8 @@ Handoff and status clarity. Start from `docs/phase-1-chief-of-staff-status-audit
 
 ## Recently Completed
 
+- Expanded Master Plan gap-fill: CoS future capabilities (approval/blocker queues, health summary), Canvas Manual Restart staged sequence (C0–C6), integration staging model (G0–G5), capability map updates. Documentation/status only.
+
 - Long-term Master Build Plan formalization: capability map, AI tool routing matrix, Health Monitor, System Updater, 3D Builder Workshop Agent, expanded program sequence in `docs/master-build-roadmap.md`. Documentation/status only — no activation.
 
 - Renderer Foundation v1 (Phase 3 Workstream C): interface/status foundation complete (`docs/renderer-v1-foundation.md`). Input readiness manifest, fail-safe rules, and Chief of Staff integration active. No renderer implementation.

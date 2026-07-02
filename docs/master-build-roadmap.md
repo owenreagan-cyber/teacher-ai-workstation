@@ -854,6 +854,15 @@ Each program mission should specify:
 
 Owen approves **programs and boundaries**; Cursor owns **PR sequencing, implementation, validation, merge, and proof** within those boundaries.
 
+### Cursor Operating Modes and Proposal Governance (Complete)
+
+Permanent governance foundation is active:
+
+- `docs/cursor-operating-modes-and-approval-gates.md` — autonomous execution, approval levels, proposal lifecycle, blocked-item routing
+- `docs/teacher-workstation-domain-boundaries.md` — domain-specific safe/proposal/implementation/runtime boundaries
+- `docs/proposals/index.md` — persistent proposal ledger
+- `bin/chief-of-staff --cursor-operating-modes-status` — read-only governance status proof
+
 ---
 
 ## 13. Non-Activation Confirmation

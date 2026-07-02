@@ -1,0 +1,87 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "teacher-ai-workstation/curriculum-builder/samples/curriculum-source-readiness/curriculum-source-metadata.schema.json",
+  "title": "Curriculum Source Metadata (Fake Fixture Schema)",
+  "description": "Planning-only fake curriculum source metadata schema. No real curriculum content. No ingestion.",
+  "type": "object",
+  "required": [
+    "source_id",
+    "grade_band",
+    "subject",
+    "unit_label",
+    "lesson_label",
+    "source_type",
+    "review_state",
+    "content_ingestion_allowed",
+    "student_data_allowed",
+    "real_curriculum_content_allowed",
+    "fake_fixture_only",
+    "production_write_allowed",
+    "notes"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "source_id": {
+      "type": "string",
+      "pattern": "^fake-source-[0-9]{3}$"
+    },
+    "grade_band": {
+      "type": "string",
+      "minLength": 1
+    },
+    "subject": {
+      "type": "string",
+      "minLength": 1
+    },
+    "unit_label": {
+      "type": "string",
+      "minLength": 1
+    },
+    "lesson_label": {
+      "type": "string",
+      "minLength": 1
+    },
+    "source_type": {
+      "type": "string",
+      "enum": [
+        "teacher_created_placeholder",
+        "manual_reference_placeholder",
+        "folder_index_placeholder",
+        "canvas_export_placeholder",
+        "draft_fake_fixture"
+      ]
+    },
+    "review_state": {
+      "type": "string",
+      "enum": [
+        "draft_fake_fixture",
+        "not_started",
+        "in_review_placeholder",
+        "approved_placeholder"
+      ]
+    },
+    "content_ingestion_allowed": {
+      "type": "boolean",
+      "const": false
+    },
+    "student_data_allowed": {
+      "type": "boolean",
+      "const": false
+    },
+    "real_curriculum_content_allowed": {
+      "type": "boolean",
+      "const": false
+    },
+    "fake_fixture_only": {
+      "type": "boolean",
+      "const": true
+    },
+    "production_write_allowed": {
+      "type": "boolean",
+      "const": false
+    },
+    "notes": {
+      "type": "string"
+    }
+  }
+}

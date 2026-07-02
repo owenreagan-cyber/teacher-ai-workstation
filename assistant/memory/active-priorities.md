@@ -87,6 +87,7 @@
 
 ### Now
 
+- Curriculum Source Readiness fake metadata inventory foundation complete (`docs/curriculum-source-readiness-and-intake-boundary-plan.md`). `--curriculum-source-readiness-status`; fake schema, fixtures, validator, negative tests. Real curriculum ingestion blocked. Owen tiny-pilot checklist in boundary plan.
 - Autonomous Backlog Implementation Sprint complete (2026-07-02). `--governance-lane-status`, `--workstation-ops-lane-status`, status-banner hardening on registry/governance scripts, negative non-mutation guardrail tests. No runtime activation.
 - Autonomous Build Engine Safe Work Sprint complete (2026-07-02). Fifteen Level 2 lane reviews in `docs/proposals/lane-reviews/`; all `complete_pending_review` program lanes marked `reviewed` in roadmap § Program Lane Status. Proposal folder structure (Class H), dry-run→fixture promotion planning spec, Safe Work Class H in ABE governance. No runtime activation.
 - Curriculum Builder Registry hardening bundle complete (`docs/curriculum-builder-registry-authority-map.md`). `--curriculum-registry-lane-status`, `--curriculum-registry-a4-a7-fixture-schema-status`; authority map, aggregate lane proof, A4–A7 fixture cross-validation; no production writes.

@@ -26,6 +26,7 @@ Single reference for **which registry surface is authoritative for what**, so fu
 | **Registry v0.2 local fixtures** | `assistant/curriculum-builder/samples/registry-v0-2-local-records/local-registry.json` | `example-*` | Fake fixture envelope only (CB-IMPL-2) | **No** |
 | **A4–A7 inactive contracts** | `assistant/curriculum-builder/metadata-contract/v0/` | `sample-*` | Planning schemas; inactive | **No** |
 | **Production registry (future)** | **Owen decision pending** — see planning brief § B | TBD | Not implemented | **Blocked** |
+| **Curriculum Source Readiness (fake)** | `assistant/curriculum-builder/samples/curriculum-source-readiness/` | `fake-source-*` | Fake metadata inventory only; not production | **No** |
 
 Expected WARN registry: `docs/curriculum-builder-registry-expected-warns.md`
 
@@ -111,6 +112,8 @@ Aggregate lane proof: `bin/chief-of-staff --curriculum-registry-lane-status`
 | `docs/curriculum-builder-registry-v0-2-record-boundaries.md` | Fixture vs live boundaries |
 | `docs/curriculum-builder-production-registry-workflow-planning-brief.md` | Future production workflow (planning) |
 | `docs/curriculum-builder-registry-dry-run-fixture-promotion-planning-spec.md` | Blocked dry-run → fixture promotion seam |
+| `docs/curriculum-source-readiness-and-intake-boundary-plan.md` | Fake curriculum source readiness (no real ingestion) |
+| `docs/curriculum-source-readiness-fake-inventory-index.md` | Fake source inventory index |
 | `docs/proposals/curriculum-builder-registry-lane-discovery-review.md` | Level 2 review |
 | `docs/curriculum-registry-v0.md` | Live v0 registry |
 | `docs/curriculum-builder-canonical-contract-schemas.md` | A4–A7 contracts |

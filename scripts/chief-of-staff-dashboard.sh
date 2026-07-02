@@ -1461,6 +1461,27 @@ else
   warn "Curriculum Builder production registry planning status script missing: scripts/curriculum-builder-production-registry-planning-status.sh"
 fi
 
+section "Curriculum Source Readiness Foundation"
+if [[ -f scripts/curriculum-source-readiness-status.sh ]]; then
+  curriculum_source_readiness_result=0
+  curriculum_source_readiness_output="$(bash scripts/curriculum-source-readiness-status.sh 2>&1)" || curriculum_source_readiness_result=$?
+  curriculum_source_readiness_pass="$(summary_count "${curriculum_source_readiness_output}" "PASS")"
+  curriculum_source_readiness_warn="$(summary_count "${curriculum_source_readiness_output}" "WARN")"
+  curriculum_source_readiness_fail="$(summary_count "${curriculum_source_readiness_output}" "FAIL")"
+
+  if [[ "${curriculum_source_readiness_result}" != "0" ]]; then
+    printf '%s\n' "${curriculum_source_readiness_output}"
+    fail "Curriculum Source Readiness status failed"
+  elif [[ -n "${curriculum_source_readiness_pass}" && -n "${curriculum_source_readiness_warn}" && -n "${curriculum_source_readiness_fail}" ]]; then
+    printf 'Curriculum Source Readiness: PASS %s / WARN %s / FAIL %s\n' "${curriculum_source_readiness_pass}" "${curriculum_source_readiness_warn}" "${curriculum_source_readiness_fail}"
+    pass "Curriculum Source Readiness status completed"
+  else
+    pass "Curriculum Source Readiness status completed"
+  fi
+else
+  warn "Curriculum Source Readiness status script missing: scripts/curriculum-source-readiness-status.sh"
+fi
+
 section "Curriculum Builder Registry Lane Status (Aggregate)"
 if [[ -f scripts/curriculum-builder-registry-lane-status.sh ]]; then
   curriculum_registry_lane_result=0

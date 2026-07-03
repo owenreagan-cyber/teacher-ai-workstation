@@ -1,0 +1,15 @@
+{
+  "fixture_classification": "negative_blocked_fields_reference",
+  "purpose": "Documents fields that must NOT appear in approved planning fixtures",
+  "blocked_examples": {
+    "drive_url": "https://drive.google.com/example-forbidden",
+    "file_path": "/Users/example/forbidden-path",
+    "nas_path": "smb://nas.example/forbidden",
+    "canvas_course_id": "12345",
+    "generation_prompt": "Generate slides about forbidden real content",
+    "student_name": "forbidden-student-identifier",
+    "real_textbook_excerpt": "forbidden-real-curriculum-text",
+    "oauth_token_field": "forbidden-token"
+  },
+  "note": "This file is a negative reference only. Status tests verify planning fixtures exclude these patterns."
+}

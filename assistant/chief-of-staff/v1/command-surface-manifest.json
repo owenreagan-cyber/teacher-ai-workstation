@@ -178,6 +178,7 @@
         {"flag": "--curriculum-library-foundation-status", "status": "implemented", "purpose": "Curriculum Library v1 foundation"},
         {"flag": "--lesson-planning-foundation-status", "status": "implemented", "purpose": "Lesson Planning v1 foundation"},
         {"flag": "--renderer-foundation-status", "status": "implemented", "purpose": "Renderer Foundation v1"},
+        {"flag": "--presentation-engine-renderer-foundation-status", "status": "implemented", "purpose": "Presentation Engine renderer-foundation planning (read-only; no rendering)"},
         {"flag": "--local-retrieval-foundation-status", "status": "implemented", "purpose": "Local Retrieval Foundation v0"},
         {"flag": "--integration-planning-foundation-status", "status": "implemented", "purpose": "Integration Planning Foundation v0"}
       ]

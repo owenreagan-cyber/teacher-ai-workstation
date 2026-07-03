@@ -26,6 +26,7 @@ Per `docs/cursor-autonomous-build-engine.md` Expected WARN Policy.
 | `--curriculum-production-registry-first-record-status` | 0 | No — targeted command only |
 | `--curriculum-production-registry-next-gate-status` | 0 | No — targeted command only |
 | `--curriculum-production-registry-metadata-pilot-plan-status` | 0 | No — targeted command only |
+| `--presentation-engine-renderer-foundation-status` | 0 | No — targeted command only |
 | `--curriculum-registry-a4-a7-fixture-schema-status` | 7 (fixture optional fields) | No — targeted command only |
 | `--curriculum-registry-lane-status` | 0 on aggregate script summary | Yes — component WARNs roll up in component lines, not aggregate FAIL |
 

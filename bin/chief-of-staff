@@ -188,6 +188,8 @@ Teacher Planning Command Organization (status only; safe sample: fractions-revie
                                        Run read-only Curriculum Library reference v0 validator and exit.
   --renderer-foundation-status
                                        Show read-only Renderer Foundation v0 status and exit.
+  --presentation-engine-renderer-foundation-status
+                                       Show read-only Presentation Engine renderer-foundation planning status and exit.
   --renderer-foundation-v0-validate
                                        Run read-only Renderer Foundation v0 manifest validator and exit.
   --renderer-input-readiness-v0-validate
@@ -1746,6 +1748,15 @@ while [[ $# -gt 0 ]]; do
         die "Renderer Foundation status script is missing: scripts/renderer-foundation-status.sh"
       fi
       bash "${renderer_foundation_status_script}"
+      exit 0
+      ;;
+    --presentation-engine-renderer-foundation-status)
+      repo_root="$(resolve_repo_root)"
+      presentation_engine_renderer_foundation_status_script="${repo_root}/scripts/presentation-engine-renderer-foundation-status.sh"
+      if [[ ! -f "${presentation_engine_renderer_foundation_status_script}" ]]; then
+        die "Presentation Engine renderer foundation status script is missing: scripts/presentation-engine-renderer-foundation-status.sh"
+      fi
+      bash "${presentation_engine_renderer_foundation_status_script}"
       exit 0
       ;;
     --renderer-foundation-v0-validate)

@@ -8,15 +8,17 @@ Phase 0E Vibe Engine.
 
 ## Current Focus
 
-**Whole-system master roadmap build-state report complete — production registry parked (Option D recommended).**
+**Presentation Engine renderer-foundation planning complete — production registry parked (Option D recommended).**
 
-Whole-system master roadmap build-state report and `--whole-system-master-roadmap-status` provide repo-backed posture across all 15 program lanes and ranked next-safe-lane selector. first governed production registry record complete. Next-gate decision packet complete; writer scripts, second record, and pilot expansion remain blocked until explicit Owen decision.
+Presentation Engine classroom-display planning lane complete (`docs/presentation-engine-renderer-foundation.md`; `--presentation-engine-renderer-foundation-status`). Runtime rendering, export, AI generation, and real curriculum ingestion remain blocked. first governed production registry record complete; whole-system master roadmap and production registry parked state (Option D) unchanged.
 
 Master program roadmap: `docs/master-build-roadmap.md` — Program Readiness Audit and mission sequencing for v1.0. Whole-system report: `docs/whole-system-master-roadmap-build-state-report.md`. Implementation does not proceed automatically from the roadmap.
 
 Handoff and status clarity. Start from `docs/phase-1-chief-of-staff-status-audit.md` — Repo-Wide Parked Tracks and Active Status Map and `docs/build-queue.md`.
 
 ## Recently Completed
+
+- Presentation Engine Renderer Foundation Planning (2026-07-03): `docs/presentation-engine-renderer-foundation.md`; static interface plan; blocked runtime boundaries; fake/local fixtures; `--presentation-engine-renderer-foundation-status`. No runtime rendering, export, or generation.
 
 - Whole-System Master Roadmap Build-State Report (2026-07-03): `docs/whole-system-master-roadmap-build-state-report.md`; `--whole-system-master-roadmap-status`; 15-lane evidence classification; next safe lane selector; blocked gates summary; production registry parked-state reference. No runtime activation.
 

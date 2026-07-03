@@ -1,0 +1,17 @@
+{
+  "fixture_classification": "fake_local_planning_only",
+  "presentation_plan_id": "example-presentation-plan-001",
+  "title_label": "Example Fraction Review Display",
+  "subject_label": "example-math",
+  "grade_band_label": "example-grade",
+  "resource_reference_label": "fake-local-resource-label",
+  "theme_profile_label": "example-classroom-theme",
+  "teacher_display_mode": "example-full-screen",
+  "speaker_notes_label": "example-teacher-cue-label",
+  "classroom_interaction_hint": "example-think-pair-share-label",
+  "export_target": "blocked_planning_only",
+  "runtime_rendering": "blocked",
+  "ai_generation": "blocked",
+  "integrations": "blocked",
+  "student_data": "blocked_absolute"
+}

@@ -7,6 +7,7 @@ Status: documentation/status only
 Authority: whole-system posture snapshot — not implementation approval
 Baseline: main after Whole-System Master Roadmap Build-State Report mission
 Closure: whole_system_master_roadmap_status_complete
+Presentation Engine planning closure: complete_presentation_engine_renderer_foundation_planning
 ```
 
 **Status key:** `[x]` Built/merged · `[~]` Currently being built · `[>]` Ready for safe planning/build · `[!]` Blocked pending Owen/safety gate · `[ ]` Future / not started · `[?]` Insufficient repo evidence
@@ -80,8 +81,8 @@ Closure: next_safe_lane_selector_complete
 Ranked recommendations (safest first):
 
 1. **safest next docs/status build lane** — Whole-system roadmap coherence maintenance, proposal index sync, capability-map cross-links, aggregate status hardening. No runtime risk. Command: `--whole-system-master-roadmap-status`.
-2. **strongest classroom-value planning lane** — Presentation Engine / renderer foundation interface planning; A4–A7 fixture optional-field enrichment; classroom utility app per-app mission templates (planning only).
-3. **blocked high-value lane requiring Owen decision** — Production registry Option A (writer/`--write`), Option B (second record), or Option C (metadata pilot expansion). All blocked until explicit Owen mission.
+2. **strongest classroom-value planning lane** — Presentation Engine renderer-foundation planning **complete** (`docs/presentation-engine-renderer-foundation.md`; `--presentation-engine-renderer-foundation-status`); A4–A7 fixture optional-field enrichment; classroom utility app per-app mission templates (planning only).
+3. **blocked high-value lane requiring Owen decision** — Production registry Option A (writer/`--write`), Option B (second record), or Option C (metadata pilot expansion). Presentation Engine runtime export/render. All blocked until explicit Owen mission.
 4. **future lane needing more repo evidence** — Academic OS beyond external intake map; unified daily AI briefing; live Vibe Panel / wallpaper apply.
 
 **Recommended default:** Maintain **Option D (parked)** for production registry. Proceed with safe docs/status lanes until Owen selects A, B, or C.
@@ -256,9 +257,10 @@ Cross-references: `docs/build-queue.md`, `docs/master-build-roadmap.md`, `docs/p
 | Marker | Item | Evidence |
 | --- | --- | --- |
 | [x] | Resource Registry = Curriculum Builder registry lanes (v0/v0.2/production planning) | repo-backed |
-| [>] | Presentation Engine — proposal candidate; renderer foundation interface only | planning/proposal-only |
+| [x] | Presentation Engine renderer-foundation planning complete | repo-backed — `docs/presentation-engine-renderer-foundation.md`; `--presentation-engine-renderer-foundation-status` |
+| [!] | Presentation Engine runtime render/export/generation | blocked gate — `docs/presentation-engine-blocked-runtime-boundaries.md` |
 | [?] | Academic OS — insufficient repo evidence (external planning reference only) | insufficient repo evidence |
-| **Proof** | `docs/proposals/ideas/external-planning-input-intake-map.md` | |
+| **Proof** | `--presentation-engine-renderer-foundation-status`; `docs/proposals/ideas/external-planning-input-intake-map.md` | |
 
 ---
 
@@ -279,9 +281,10 @@ Cross-references: `docs/build-queue.md`, `docs/master-build-roadmap.md`, `docs/p
 
 | Surface | State |
 | --- | --- |
-| Dashboard | 128 / 0 / 0 PASS |
-| Validate-all | 46 / 0 / 0 PASS |
-| Whole-system roadmap status | new — `--whole-system-master-roadmap-status` |
+| Dashboard | 130 / 0 / 0 PASS |
+| Validate-all | 47 / 0 / 0 PASS |
+| Whole-system roadmap status | `--whole-system-master-roadmap-status` |
+| Presentation Engine renderer foundation | `--presentation-engine-renderer-foundation-status` |
 | Governance status | 54 / 0 / 0 PASS |
 | Checklist status | 59 / 0 / 0 PASS |
 | Registry lane status | 50 / 0 / 0 PASS |
@@ -290,7 +293,7 @@ Cross-references: `docs/build-queue.md`, `docs/master-build-roadmap.md`, `docs/p
 | Empty-file status (historical) | 30 / 0 / 0 PASS |
 | Phase-1 | 758 / 0 / 0 PASS |
 | Active mission | None |
-| Next step | Safe docs/status lanes; production registry parked (Option D) |
+| Next step | Safe docs/status lanes; production registry parked (Option D); Presentation Engine planning complete — runtime blocked |
 
 **Safety gates preserved:** First governed production registry record exists (`records` count exactly 1; ID `resource-math-lesson-108-presentation`); `BLOCKED-NO-WRITES.sentinel` intact; no `--write`; no writer scripts; no second production record; real curriculum file access blocked; copied curriculum content blocked; source auto-resolution blocked; integration and runtime gates blocked.
 

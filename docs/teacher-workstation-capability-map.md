@@ -84,6 +84,7 @@ Cross-references:
 | Lesson Planning Foundation | foundation complete | Phase 3 Workstream A |
 | Curriculum Library Foundation | foundation complete | Phase 3 Workstream B |
 | Renderer Foundation v1 | foundation complete | Interface/status only; no renderers |
+| Presentation Engine renderer foundation | foundation complete (planning) | `--presentation-engine-renderer-foundation-status`; classroom display planning only; no rendering |
 | Local Retrieval Foundation v0 | foundation complete | Planning/interfaces; no engines |
 | Integration Planning Foundation v0 | foundation complete | Drive/Canvas/OAuth planning; inactive |
 | Real registry records | planned | Approval-gated |

@@ -1,0 +1,23 @@
+{
+  "fixture_classification": "fake_local_planning_only",
+  "slide_outline_id": "example-slide-outline-001",
+  "presentation_plan_id": "example-presentation-plan-001",
+  "theme_profile_label": "example-classroom-theme",
+  "teacher_display_mode": "example-full-screen",
+  "slides": [
+    {
+      "slide_index": 1,
+      "slide_title_label": "Example Opener Label",
+      "speaker_notes_label": "example-teacher-cue-label",
+      "classroom_interaction_hint": "example-think-pair-share-label"
+    },
+    {
+      "slide_index": 2,
+      "slide_title_label": "Example Practice Display Label",
+      "speaker_notes_label": "example-transition-cue-label",
+      "classroom_interaction_hint": "example-whiteboard-prompt-label"
+    }
+  ],
+  "export_target": "blocked_planning_only",
+  "runtime_rendering": "blocked"
+}

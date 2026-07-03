@@ -94,6 +94,8 @@ check_doc_contains "${report}" "docs/master-build-roadmap.md" "master build road
 check_doc_contains "${report}" "docs/build-queue.md" "build queue cross-link"
 check_doc_contains "${report}" "docs/proposals/index.md" "proposal ledger cross-link"
 check_doc_contains "${report}" "--whole-system-master-roadmap-status" "whole-system status command cross-link"
+check_doc_contains "${report}" "--presentation-engine-renderer-foundation-status" "presentation engine status command cross-link"
+check_doc_contains "${report}" "complete_presentation_engine_renderer_foundation_planning" "presentation engine planning closure"
 
 section 'Production Registry Parked-State Proof'
 check_file "${production_registry_path}"
@@ -124,6 +126,23 @@ if [[ -f scripts/curriculum-builder-production-registry-next-gate-status.sh ]]; 
   fi
 else
   fail 'next-gate status script missing'
+fi
+
+section 'Dependent Status: Presentation Engine Renderer Foundation'
+if [[ -f scripts/presentation-engine-renderer-foundation-status.sh ]]; then
+  pe_output="$(bash scripts/presentation-engine-renderer-foundation-status.sh 2>&1)" || pe_result=$?
+  pe_result="${pe_result:-0}"
+  if [[ "${pe_result}" != "0" ]]; then
+    fail 'presentation engine renderer foundation status script exited nonzero'
+    printf '%s\n' "${pe_output}" | tail -20
+  elif grep -q '^FAIL: [1-9]' <<< "${pe_output}"; then
+    fail 'presentation engine renderer foundation status reported FAIL'
+    printf '%s\n' "${pe_output}" | tail -20
+  else
+    pass 'presentation engine renderer foundation status component clean'
+  fi
+else
+  fail 'presentation engine renderer foundation status script missing'
 fi
 
 section 'CLI, Manifest, and Tests'

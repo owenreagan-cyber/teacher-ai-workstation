@@ -1067,6 +1067,24 @@ grep -Fq -- '--autonomous-build-engine-status' bin/chief-of-staff && pass "chief
 check_doc_contains docs/whole-system-master-roadmap-build-state-report.md "whole_system_master_roadmap_status_complete" "whole-system report closure"
 grep -Fq -- '--whole-system-master-roadmap-status' bin/chief-of-staff && pass "chief-of-staff exposes --whole-system-master-roadmap-status" || fail "chief-of-staff missing --whole-system-master-roadmap-status"
 
+section "Presentation Engine Renderer Foundation Planning Files"
+for path in \
+  docs/presentation-engine-renderer-foundation.md \
+  docs/presentation-engine-static-renderer-interface-plan.md \
+  docs/presentation-engine-blocked-runtime-boundaries.md \
+  assistant/presentation-engine/samples/renderer-planning/example-presentation-plan-001.json \
+  assistant/presentation-engine/samples/renderer-planning/example-slide-outline-001.json \
+  assistant/presentation-engine/samples/renderer-planning/negative/blocked-runtime-export-example.json \
+  scripts/presentation-engine-renderer-foundation-status.sh \
+  tests/presentation-engine-renderer-foundation-status-test.sh; do
+  check_required_file "${path}"
+done
+check_bash_syntax scripts/presentation-engine-renderer-foundation-status.sh
+check_bash_syntax tests/presentation-engine-renderer-foundation-status-test.sh
+check_doc_contains docs/presentation-engine-renderer-foundation.md "complete_presentation_engine_renderer_foundation_planning" "presentation engine closure status"
+check_doc_contains docs/presentation-engine-blocked-runtime-boundaries.md "Runtime rendering" "presentation engine runtime rendering blocked"
+grep -Fq -- '--presentation-engine-renderer-foundation-status' bin/chief-of-staff && pass "chief-of-staff exposes --presentation-engine-renderer-foundation-status" || fail "chief-of-staff missing --presentation-engine-renderer-foundation-status"
+
 section "Governance Lane Aggregate Status Files"
 for path in \
   scripts/governance-lane-status.sh \

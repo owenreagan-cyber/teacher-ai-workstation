@@ -61,7 +61,7 @@ check_file docs/curriculum-builder-production-registry-owen-decision-worksheet.m
 check_file docs/curriculum-builder-production-registry-post-decision-implementation-map.md
 check_doc_contains docs/curriculum-builder-production-registry-owen-decision-worksheet.md "Documenting an option does not approve it" "decision worksheet non-approval"
 check_doc_contains docs/curriculum-builder-production-registry-owen-checklist-tracker.md "metadata_boundaries_approved_awaiting_pilot_and_write_missions" "tracker closure status"
-check_doc_contains "${boundary_doc}" "metadata_boundaries_approved" "metadata boundary doc classification"
+check_doc_contains "${boundary_doc}" "metadata_boundary_refinement_complete" "metadata boundary doc classification"
 check_doc_contains "${boundary_doc}" "Manual Owen-entered descriptive metadata only" "item 3 boundary"
 check_doc_contains "${boundary_doc}" "Manual non-resolving source-reference labels" "item 4 boundary"
 check_doc_contains "${tracker_doc}" "Owen status" "tracker Owen status column"
@@ -146,9 +146,9 @@ bash -n tests/curriculum-builder-production-registry-owen-checklist-status-test.
 
 section 'Roadmap and Ledger Coherence'
 check_doc_contains docs/proposals/index.md "Owen § J production registry checklist tracker" "proposal ledger owen tracker"
-check_doc_contains docs/master-build-roadmap.md "metadata-boundary refinement" "roadmap metadata-boundary refinement gate"
-check_doc_contains docs/build-queue.md "metadata-boundary refinement" "build queue metadata-boundary refinement"
-check_doc_contains assistant/memory/active-priorities.md "metadata-boundary refinement" "active priorities metadata-boundary refinement"
+check_doc_contains docs/master-build-roadmap.md "Metadata-boundary refinement" "roadmap metadata-boundary refinement"
+check_doc_contains docs/build-queue.md "empty-file mission" "build queue empty-file mission gate"
+check_doc_contains assistant/memory/active-priorities.md "Metadata-boundary refinement complete" "active priorities metadata-boundary refinement complete"
 
 section 'Negative Non-Activation Assertions'
 grep -Fq -- '--curriculum-registry-write)' bin/chief-of-staff 2>/dev/null && fail 'chief-of-staff must not implement --curriculum-registry-write handler' || pass 'chief-of-staff has no --curriculum-registry-write handler'

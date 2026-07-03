@@ -1,0 +1,12 @@
+{
+  "planning_version": "0.1.0",
+  "fake_fixture_only": true,
+  "planning_only": true,
+  "id": "example-negative-drive-url-001",
+  "title": "Negative test — drive URL in source_reference",
+  "source_reference": {
+    "display_label": "Bad example",
+    "source_type": "drive_label",
+    "location_note": "https://drive.google.com/file/d/abc123/view"
+  }
+}

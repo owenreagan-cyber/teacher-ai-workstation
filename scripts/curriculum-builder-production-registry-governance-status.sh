@@ -103,7 +103,7 @@ fi
 section 'Owen Checklist and Review Packet Coherence'
 check_doc_contains docs/curriculum-builder-production-registry-owen-review-packet.md "Governance-first only" "review packet governance-first section"
 check_doc_contains docs/curriculum-builder-production-registry-owen-checklist-tracker.md "metadata_boundaries_approved_awaiting_pilot_and_write_missions" "checklist tracker metadata boundary closure"
-check_doc_contains docs/curriculum-builder-production-registry-metadata-source-boundaries.md "metadata_boundaries_approved" "metadata boundary doc"
+check_doc_contains docs/curriculum-builder-production-registry-metadata-source-boundaries.md "metadata_boundary_refinement_complete" "metadata boundary refinement closure"
 check_doc_contains docs/curriculum-builder-production-registry-phase-2-preflight.md "phase_2_preflight_complete" "phase 2 preflight doc closure"
 check_doc_contains "${path_options}" "Owen-approved" "path options Owen-approved"
 check_doc_contains docs/curriculum-builder-production-registry-owen-decision-worksheet.md "Documenting an option does not approve it" "decision worksheet non-approval"

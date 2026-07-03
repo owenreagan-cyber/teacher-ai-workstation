@@ -3,15 +3,17 @@
 Last updated: 2026-07-02
 
 ```text
-Status: metadata_boundaries_approved
-Classification: Owen decision record — planning only, no intake
+Status: metadata_boundary_refinement_complete
+Classification: Owen decision record + refinement closure — planning only, no intake
 Closure: metadata_boundaries_approved_awaiting_pilot_and_write_missions
+Proof: --curriculum-production-registry-metadata-boundary-status
 ```
 
 ## Non-Approval Statement
 
 ```text
 Approving items 3 and 4 records boundary policy only.
+Metadata-boundary refinement documents field contracts and guardrails only.
 It does not authorize production-registry.json creation.
 It does not authorize resource-* records.
 It does not authorize --write or writer scripts.
@@ -35,108 +37,89 @@ Manual Owen-entered descriptive metadata only (title, subject, grade band, unit,
 
 Manual non-resolving source-reference labels typed by Owen only (display label, source_type enum, citation/note string); no API/OAuth, no live Drive/Canvas/NAS/iCloud access, no auto-resolution, no crawling/scanning, no real file reads, no resolvable file IDs or paths.
 
-## Manual-Only Semantics
+## Manual-Only Metadata Principle
 
-- All metadata and source-reference values are **typed by Owen** at write time.
+- All metadata values are **typed by Owen** at write time.
 - No file reads, parsers, crawlers, or integrations populate fields.
 - Labels describe resources; they do not contain resource content.
 
-## Non-Resolving Source-Reference Semantics
+## Non-Resolving Source-Reference Principle
 
 - `source_type` values are **label semantics only** — never credentials, IDs, paths, API targets, or fetch targets.
 - Allowed `source_type` values: `manual_label`, `print_resource`, `drive_label`, `local_label`, `nas_label`, `icloud_label`, `canvas_label`.
 - Strings are opaque human-readable notes; code must not resolve or fetch from them.
 
-## Allowed Metadata Fields (Planning — First Governed Record)
+## Contract Documents (Refinement)
+
+| Document | Role |
+| --- | --- |
+| `docs/curriculum-builder-production-registry-manual-metadata-field-contract.md` | Allowed metadata fields with validator expectations |
+| `docs/curriculum-builder-production-registry-source-reference-contract.md` | Allowed `source_reference` shape |
+| `docs/curriculum-builder-production-registry-blocked-field-guardrails.md` | Blocked categories and future validator rules |
+
+## Allowed Metadata Fields (Summary)
 
 | Field | Notes |
 | --- | --- |
-| `id` | `resource-*` namespace (item 10) |
-| `title` | Owen-typed short label |
-| `subject` | Owen-typed |
-| `grade_band` | Owen-typed |
-| `unit_label` | Label only |
-| `lesson_label` | Label only |
-| `resource_type` | Enum or Owen-typed |
-| `audience` | `teacher_facing` / `student_facing` |
-| `review_state` | § D gate model (item 7) |
-| `manual_tags` | Owen-typed tags array |
-| `notes` | Short Owen note — not worksheet text |
-| `source_reference` | See allowed shape below |
-| `created_by` | Provenance |
-| `created_at` / `updated_at` | Audit timestamps |
+| `id` | `resource-*` namespace in production (item 10) |
+| `title`, `subject`, `grade_band`, `unit_label`, `lesson_label` | Owen-typed labels |
+| `resource_type`, `audience`, `review_state`, `manual_tags`, `notes` | Descriptive metadata |
+| `source_reference` | Non-resolving object per source-reference contract |
+| `created_by`, `created_at`, `updated_at` | Provenance and audit |
 
-## Allowed Source-Reference Shape (Planning Only)
+## Allowed Source-Reference Shape (Planning)
 
 ```json
 {
   "source_reference": {
-    "display_label": "Grade 5 Science textbook — teacher shelf copy",
+    "display_label": "Sample textbook — teacher shelf copy",
     "source_type": "print_resource",
-    "location_note": "Blue binder, classroom shelf row 2",
-    "citation_note": "Optional Owen note — non-resolving"
+    "location_note": "Example binder, shelf row placeholder",
+    "citation_note": "Optional non-resolving note"
   }
 }
 ```
 
-## Blocked Metadata and Source-Reference Categories
+## Blocked Categories (Summary)
 
-| Category | Blocked examples |
+Curriculum content, student data, auto-ingest, ML/search artifacts, resolvable source IDs, live fetch URLs, integration artifacts, scanning output, batch/promotion. See blocked-field guardrails doc for full list and validator expectations.
+
+## Fake Planning Example
+
+`assistant/curriculum-builder/samples/metadata-boundary-planning/example-metadata-boundary-record.json` — `example-*` ID, planning-only flags, not production authority.
+
+## Validation / Readiness Expectations
+
+| Surface | Command |
 | --- | --- |
-| Curriculum content | Worksheet text, textbook excerpts, answer keys, assessment questions, rubric body |
-| Student data | Names, rosters, grades, accommodations, IEP details, student work |
-| Auto-ingest | OCR output, file hashes from reading real files, extracted PDF metadata, AI summaries |
-| ML / search | Embeddings, vector IDs, RAG chunks |
-| Resolvable source IDs | Drive file ID, Canvas course/module ID, NAS mount path, iCloud path usable by code |
-| Live fetch URLs | URLs intended for integration fetch |
-| Integration artifacts | OAuth tokens, API keys, webhook URLs |
-| Scanning output | Crawler-discovered paths, folder indexes, directory listings |
-| Batch / promotion | Import manifests, dry-run auto-promotion, bulk record arrays |
+| Metadata boundary status | `--curriculum-production-registry-metadata-boundary-status` |
+| Planning fixture validator | `scripts/curriculum-builder-production-registry-metadata-boundary-validate.sh` |
 
-## First Governed Production Record (Planning Shape Only)
-
-```json
-{
-  "id": "resource-sm5-science-unit3-001",
-  "title": "Grade 5 Science — Unit 3 Lab Guide",
-  "subject": "Science",
-  "grade_band": "5",
-  "unit_label": "Unit 3: Ecosystems",
-  "lesson_label": "Lesson 2",
-  "resource_type": "lab_guide",
-  "audience": "teacher_facing",
-  "review_state": "approved",
-  "manual_tags": ["ecosystems", "lab"],
-  "notes": "Planning example only — not a real record",
-  "source_reference": {
-    "display_label": "Grade 5 Science textbook — teacher shelf copy",
-    "source_type": "print_resource",
-    "location_note": "Blue binder, classroom shelf row 2",
-    "citation_note": "Non-resolving label only"
-  },
-  "created_by": "owen",
-  "created_at": "2026-07-02T00:00:00Z",
-  "updated_at": "2026-07-02T00:00:00Z"
-}
-```
-
-**This shape is planning documentation only.** No production file or record exists.
+Negative guardrails: no `production-registry.json`, no `resource-*` production records, sentinel intact, no writer, no pilot execution.
 
 ## Future Mission Prerequisites
 
 | Mission | Prerequisites |
 | --- | --- |
-| Metadata-boundary refinement | Items 3 and 4 approved (this doc); Phase 2 preflight complete |
-| Empty-file mission | Boundary refinement docs/status/tests; separate explicit prompt |
-| Governed single-record write | Empty file exists; snapshot/rollback ready; separate explicit prompt |
-| Metadata pilot execution | Boundary refinement + separate pilot mission — not authorized by this sync |
+| Metadata-boundary refinement | **Complete** — this mission |
+| Empty-file mission | Refinement complete; separate explicit prompt |
+| Governed single-record write | Empty file + snapshot/rollback; separate prompt |
+| Metadata pilot execution | Refinement + separate pilot mission |
+
+## Metadata Pilot Boundary
+
+Pilot **planning** is documented in `docs/curriculum-builder-metadata-pilot-planning-boundary.md`. Pilot **execution** remains blocked.
+
+## Source-Reference Pilot Boundary
+
+Manual non-resolving labels only when a future write mission is approved. No auto-resolution, no integration fetch.
 
 ## Related Documents
 
 | Document | Role |
 | --- | --- |
 | `docs/curriculum-builder-production-registry-owen-checklist-tracker.md` | Canonical Owen decisions |
-| `docs/curriculum-builder-manual-metadata-boundary.md` | Field boundary reference |
+| `docs/curriculum-builder-manual-metadata-boundary.md` | Legacy field boundary reference |
 | `docs/curriculum-builder-metadata-pilot-planning-boundary.md` | Pilot planning — execution blocked |
 | `docs/curriculum-builder-production-registry-phase-2-preflight.md` | Phase 2 closure |
 | `docs/proposals/backlog/production-registry-write-mission.md` | Write mission backlog |

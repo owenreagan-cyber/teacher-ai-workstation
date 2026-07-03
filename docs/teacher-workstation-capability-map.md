@@ -65,6 +65,7 @@ Cross-references:
 | Curriculum Builder Registry v0.2 renderer preview (CB-IMPL-3) | implemented read-only | `--curriculum-registry-renderer-status`; metadata preview only |
 | Curriculum Builder Registry v0.2 retrieval hooks (CB-IMPL-4) | implemented read-only | `--curriculum-registry-retrieval-status`; fake lookup only |
 | Curriculum Builder production registry planning (CB-PROD-PLAN) | implemented read-only | `--curriculum-production-registry-planning-status`; planning brief only; no writes |
+| Production registry metadata boundary refinement | implemented read-only | `--curriculum-production-registry-metadata-boundary-status`; field contracts and guardrails; no mutation |
 | Owen § J production registry checklist tracker | implemented read-only | `--curriculum-production-registry-owen-checklist-status`; 11 approved, 0 deferred |
 | Production registry Phase 2 preflight | implemented read-only | `--curriculum-production-registry-phase-2-preflight-status`; audit/rollback readiness; no mutation |
 | Owen § J decision worksheet + post-decision map | implemented read-only | `docs/curriculum-builder-production-registry-owen-decision-worksheet.md`; routing table; governance batch recorded; no implied write approval |

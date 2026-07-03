@@ -83,7 +83,7 @@ grep -q 'no writer scripts exist' "${tmp}" || {
   rm -f "${tmp}"
   exit 1
 }
-grep -q 'doc mentions build queue metadata-boundary refinement' "${tmp}" || {
+grep -q 'doc mentions build queue empty-file mission gate' "${tmp}" || {
   echo "FAIL: missing build queue coherence check"
   cat "${tmp}"
   rm -f "${tmp}"

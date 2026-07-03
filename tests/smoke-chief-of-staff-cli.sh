@@ -123,6 +123,8 @@ bash tests/curriculum-builder-production-registry-governance-status-test.sh >/de
 bash tests/curriculum-builder-production-registry-governance-guardrails-test.sh >/dev/null
 bin/chief-of-staff --curriculum-production-registry-phase-2-preflight-status >/dev/null
 bash tests/curriculum-builder-production-registry-phase-2-preflight-status-test.sh >/dev/null
+bin/chief-of-staff --curriculum-production-registry-metadata-boundary-status >/dev/null
+bash tests/curriculum-builder-production-registry-metadata-boundary-status-test.sh >/dev/null
 bin/chief-of-staff --curriculum-source-readiness-status >/dev/null
 bash tests/curriculum-source-readiness-status-test.sh >/dev/null
 bin/chief-of-staff --curriculum-registry-lane-status >/dev/null

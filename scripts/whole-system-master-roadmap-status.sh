@@ -98,6 +98,8 @@ check_doc_contains "${report}" "--presentation-engine-renderer-foundation-status
 check_doc_contains "${report}" "complete_a4_a7_fixture_optional_field_enrichment" "A4–A7 fixture enrichment closure"
 check_doc_contains "${report}" "complete_classroom_utility_per_app_mission_templates" "classroom utility templates closure"
 check_doc_contains "${report}" "--classroom-utility-templates-status" "classroom utility templates status command cross-link"
+check_doc_contains "${report}" "complete_gemini_discovery_classification_intake" "gemini discovery classification intake closure"
+check_doc_contains "${report}" "--gemini-discovery-classification-intake-status" "gemini intake status command cross-link"
 
 section 'Production Registry Parked-State Proof'
 check_file "${production_registry_path}"
@@ -162,6 +164,23 @@ if [[ -f scripts/classroom-utility-templates-status.sh ]]; then
   fi
 else
   fail 'classroom utility templates status script missing'
+fi
+
+section 'Dependent Status: Gemini Discovery Classification Intake'
+if [[ -f scripts/gemini-discovery-classification-intake-status.sh ]]; then
+  gdc_output="$(bash scripts/gemini-discovery-classification-intake-status.sh 2>&1)" || gdc_result=$?
+  gdc_result="${gdc_result:-0}"
+  if [[ "${gdc_result}" != "0" ]]; then
+    fail 'gemini discovery classification intake status script exited nonzero'
+    printf '%s\n' "${gdc_output}" | tail -20
+  elif grep -q '^FAIL: [1-9]' <<< "${gdc_output}"; then
+    fail 'gemini discovery classification intake status reported FAIL'
+    printf '%s\n' "${gdc_output}" | tail -20
+  else
+    pass 'gemini discovery classification intake status component clean'
+  fi
+else
+  fail 'gemini discovery classification intake status script missing'
 fi
 
 section 'CLI, Manifest, and Tests'

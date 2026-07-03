@@ -8,15 +8,17 @@ Phase 0E Vibe Engine.
 
 ## Current Focus
 
-**Classroom Utility per-app mission templates complete — production registry parked (Option D recommended).**
+**Gemini discovery/classification external planning intake complete — production registry parked (Option D recommended).**
 
-Reusable per-app planning templates, candidate matrix, and student-data boundaries added (`docs/classroom-utility-per-app-mission-template.md`; `--classroom-utility-templates-status`). Runtime classroom apps, student data, and integrations remain blocked. first governed production registry record complete.
+External Gemini memo themes classified (`docs/proposals/ideas/gemini-discovery-classification-architecture-intake.md`; `--gemini-discovery-classification-intake-status`). Runtime discovery/classification, integrations, and student data remain blocked. first governed production registry record complete.
 
 Master program roadmap: `docs/master-build-roadmap.md` — Program Readiness Audit and mission sequencing for v1.0. Whole-system report: `docs/whole-system-master-roadmap-build-state-report.md`. Implementation does not proceed automatically from the roadmap.
 
 Handoff and status clarity. Start from `docs/phase-1-chief-of-staff-status-audit.md` — Repo-Wide Parked Tracks and Active Status Map and `docs/build-queue.md`.
 
 ## Recently Completed
+
+- Gemini Discovery & Classification External Planning Intake (2026-07-03): theme classification memo; blocked runtime boundaries; summary fixture; `--gemini-discovery-classification-intake-status`. No discovery crawlers, classification engines, or Gemini API.
 
 - Classroom Utility Per-App Mission Templates (2026-07-03): canonical mission template; candidate matrix; 9 per-app planning templates; student-data boundaries; fake fixtures; `--classroom-utility-templates-status`. No runtime apps or student data.
 

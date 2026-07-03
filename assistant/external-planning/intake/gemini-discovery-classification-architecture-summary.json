@@ -1,0 +1,18 @@
+{
+  "fixture_classification": "external_planning_intake_summary_only",
+  "intake_id": "gemini-discovery-classification-architecture-2026-07-03",
+  "source_label": "gemini-external-memo",
+  "memo_title": "Discovery and Classification Architecture: Local-First Teacher AI Workstation",
+  "repo_authority": false,
+  "owen_approval": false,
+  "implementation_approval": false,
+  "themes_classified_count": 22,
+  "existing_repo_lane_count": 14,
+  "blocked_count": 8,
+  "proposal_candidate_count": 1,
+  "insufficient_evidence_count": 1,
+  "runtime_discovery": "blocked",
+  "runtime_classification": "blocked",
+  "student_data": "blocked_absolute",
+  "integrations": "blocked"
+}

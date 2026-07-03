@@ -1,6 +1,6 @@
 # External Planning Input Intake Map
 
-Last updated: 2026-07-02
+Last updated: 2026-07-03
 
 ```text
 Status: planning_reference_only
@@ -45,6 +45,20 @@ Classify external planning ideas (Gemini, NotebookLM, ChatGPT transcripts, paste
 | Smart Seating App | proposal candidate | Classroom ops app — blocked until explicit mission |
 | UA Jobs Management | proposal candidate | Classroom jobs/workflow app — planning only |
 | Coin Store Ledger | proposal candidate | Classroom economy app — student-data risk if real; blocked |
+| Gemini discovery/classification architecture memo | implemented (intake) | `docs/proposals/ideas/gemini-discovery-classification-architecture-intake.md`; `--gemini-discovery-classification-intake-status`; runtime blocked |
+
+## Gemini Memo Intake (2026-07-03)
+
+External memo title: **Discovery & Classification Architecture: Local-First Teacher AI Workstation**.
+
+| Outcome | Location |
+| --- | --- |
+| Theme classification | `docs/proposals/ideas/gemini-discovery-classification-architecture-intake.md` |
+| Blocked runtime boundaries | `docs/proposals/blocked/gemini-discovery-classification-runtime-boundaries.md` |
+| Summary fixture (metadata only) | `assistant/external-planning/intake/gemini-discovery-classification-architecture-summary.json` |
+| Status proof | `bin/chief-of-staff --gemini-discovery-classification-intake-status` |
+
+Full memo text is **not** committed to the repo. Filing this intake does not authorize discovery crawlers, classification engines, or Gemini API use.
 
 ## Safe Repo Actions from External Input
 

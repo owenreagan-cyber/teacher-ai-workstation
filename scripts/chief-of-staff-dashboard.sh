@@ -1177,6 +1177,27 @@ else
   warn "Classroom Utility templates status script missing: scripts/classroom-utility-templates-status.sh"
 fi
 
+section "Gemini Discovery & Classification Intake (External Planning)"
+if [[ -f scripts/gemini-discovery-classification-intake-status.sh ]]; then
+  gemini_intake_result=0
+  gemini_intake_output="$(bash scripts/gemini-discovery-classification-intake-status.sh 2>&1)" || gemini_intake_result=$?
+  gemini_intake_pass="$(summary_count "${gemini_intake_output}" "PASS")"
+  gemini_intake_warn="$(summary_count "${gemini_intake_output}" "WARN")"
+  gemini_intake_fail="$(summary_count "${gemini_intake_output}" "FAIL")"
+
+  if [[ "${gemini_intake_result}" != "0" ]]; then
+    printf '%s\n' "${gemini_intake_output}"
+    fail "Gemini discovery/classification intake status failed"
+  elif [[ -n "${gemini_intake_pass}" && -n "${gemini_intake_warn}" && -n "${gemini_intake_fail}" ]]; then
+    printf 'Gemini Discovery Classification Intake: PASS %s / WARN %s / FAIL %s\n' "${gemini_intake_pass}" "${gemini_intake_warn}" "${gemini_intake_fail}"
+    pass "Gemini discovery/classification intake status completed"
+  else
+    pass "Gemini discovery/classification intake status completed"
+  fi
+else
+  warn "Gemini discovery/classification intake status script missing: scripts/gemini-discovery-classification-intake-status.sh"
+fi
+
 section "Lovable Classroom App Builder (Program G1)"
 if [[ -f scripts/lovable-classroom-app-builder-status.sh ]]; then
   lovable_result=0

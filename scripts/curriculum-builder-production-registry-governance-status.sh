@@ -102,7 +102,7 @@ fi
 
 section 'Owen Checklist and Review Packet Coherence'
 check_doc_contains docs/curriculum-builder-production-registry-owen-review-packet.md "Governance-first only" "review packet governance-first section"
-check_doc_contains docs/curriculum-builder-production-registry-owen-checklist-tracker.md "not_complete_awaiting_owen" "checklist tracker still awaiting Owen"
+check_doc_contains docs/curriculum-builder-production-registry-owen-checklist-tracker.md "governance_batch_recorded_awaiting_deferred_items" "checklist tracker governance batch recorded"
 check_doc_contains docs/curriculum-builder-production-registry-owen-decision-worksheet.md "Documenting an option does not approve it" "decision worksheet non-approval"
 check_doc_contains docs/curriculum-builder-production-registry-workflow-planning-brief.md "governance + blocked proof only" "planning brief § I governance scope"
 

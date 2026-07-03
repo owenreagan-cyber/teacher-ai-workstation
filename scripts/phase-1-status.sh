@@ -1106,7 +1106,7 @@ for path in \
 done
 check_bash_syntax scripts/curriculum-builder-production-registry-owen-checklist-status.sh
 check_bash_syntax tests/curriculum-builder-production-registry-owen-checklist-status-test.sh
-check_doc_contains docs/curriculum-builder-production-registry-owen-checklist-tracker.md "not_complete_awaiting_owen" "owen checklist tracker closure"
+check_doc_contains docs/curriculum-builder-production-registry-owen-checklist-tracker.md "governance_batch_recorded_awaiting_deferred_items" "owen checklist tracker closure"
 grep -Fq -- '--curriculum-production-registry-owen-checklist-status' bin/chief-of-staff && pass "chief-of-staff exposes --curriculum-production-registry-owen-checklist-status" || fail "chief-of-staff missing --curriculum-production-registry-owen-checklist-status"
 
 section "Production Registry Governance Foundation Files"

@@ -16,7 +16,7 @@ Implementation: governance scaffolding only — not write mission
 
 Canonical closure index for the **governance-first production registry foundation** described in planning brief § I and the Owen review packet. This foundation prepares docs, status proof, candidate path skeleton, and guardrails **without** authorizing production writes or real metadata intake.
 
-**PASS on governance status does not authorize writes.** Owen § J checklist items remain pending until Owen explicitly approves each row.
+**PASS on governance status does not authorize writes.** Owen § J checklist: governance affirmations recorded 2026-07-02 (items 5, 6, 7, 8, 9, 11 approved); items 1, 2, 3, 4, 10 remain deferred. Approved governance rows do not authorize production writes.
 
 ## Definition of Done
 
@@ -59,7 +59,7 @@ Canonical closure index for the **governance-first production registry foundatio
 
 ## Relationship to Owen § J Checklist
 
-All 11 checklist items remain **pending** in `docs/curriculum-builder-production-registry-owen-checklist-tracker.md` until Owen updates rows. Governance foundation **prepared** notes do not equal Owen approval.
+Governance affirmation batch recorded 2026-07-02: 6 items **approved**, 5 items **deferred** in `docs/curriculum-builder-production-registry-owen-checklist-tracker.md`. Governance foundation **prepared** notes do not equal Owen approval of writes. Deferred items block production registry implementation.
 
 ## Orchestrated Proof
 

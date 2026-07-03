@@ -36,7 +36,9 @@ Runtime activation: no
 Production registry writes: blocked
 Active --write: blocked
 Real metadata intake: blocked
-Owen approval: required for each checklist item
+Governance affirmation batch: recorded (items 5,6,7,8,9,11 approved)
+Deferred items: 5 — path, write, metadata, source refs, namespace
+Approved governance rows do not authorize production writes: yes
 ChatGPT review: recommended before implementation prompt
 PASS does not authorize implementation: yes
 EOF
@@ -47,46 +49,60 @@ check_file "${review_packet}"
 check_file docs/curriculum-builder-production-registry-owen-decision-worksheet.md
 check_file docs/curriculum-builder-production-registry-post-decision-implementation-map.md
 check_doc_contains docs/curriculum-builder-production-registry-owen-decision-worksheet.md "Documenting an option does not approve it" "decision worksheet non-approval"
-check_doc_contains "${tracker_doc}" "not_complete_awaiting_owen" "tracker closure status"
+check_doc_contains "${tracker_doc}" "governance_batch_recorded_awaiting_deferred_items" "tracker closure status"
 check_doc_contains "${tracker_doc}" "Owen status" "tracker Owen status column"
 check_doc_contains "${tracker_doc}" "curriculum-builder-production-registry-owen-review-packet" "tracker links review packet"
 check_doc_contains "${review_packet}" "Documenting an option does not approve it" "review packet non-approval statement"
 check_doc_contains "${review_packet}" "Preparing this packet does not authorize implementation" "review packet no implementation authorization"
 check_doc_contains "${review_packet}" "product-decision wall" "review packet product-decision wall"
 check_doc_contains "${planning_brief}" "Owen Approval Checklist" "planning brief § J"
-check_doc_contains "${tracker_doc}" "Governance Foundation Prepared" "tracker governance prepared section"
+check_doc_contains "${tracker_doc}" "Governance Affirmation Batch" "tracker governance affirmation batch section"
 check_file docs/curriculum-builder-production-registry-governance-foundation.md
 check_doc_contains docs/curriculum-builder-production-registry-governance-foundation.md "complete_cb_prod_gov_foundation" "governance foundation closure"
 
-section 'Checklist Item Rows (Owen Decisions Pending)'
-CHECKLIST_ITEMS=(
-  "Production registry path"
-  "Write behavior allowed"
-  "Real curriculum metadata allowed"
-  "Real source references allowed"
-  "Source systems permitted"
-  "Rollback requirements"
-  "Review states"
-  "Student-data prohibition"
-  "Canvas/Drive/NAS/iCloud/API/OAuth/network"
-  "ID namespace"
-  "First implementation PR scope"
+section 'Checklist Item Rows (Owen Decisions)'
+CHECKLIST_EXPECTED=(
+  "Production registry path|deferred"
+  "Write behavior allowed|deferred"
+  "Real curriculum metadata allowed|deferred"
+  "Real source references allowed|deferred"
+  "Source systems permitted|approved"
+  "Rollback requirements|approved"
+  "Review states|approved"
+  "Student-data prohibition|approved"
+  "Canvas/Drive/NAS/iCloud/API/OAuth/network|approved"
+  "ID namespace|deferred"
+  "First implementation PR scope|approved"
 )
 
+approved_count=0
+deferred_count=0
 pending_count=0
-for item in "${CHECKLIST_ITEMS[@]}"; do
-  if grep -Fq -- "| ${item} | pending | Owen |" "${tracker_doc}"; then
-    pass "checklist item tracked pending: ${item}"
-    pending_count=$((pending_count + 1))
+for entry in "${CHECKLIST_EXPECTED[@]}"; do
+  item="${entry%%|*}"
+  expected="${entry##*|}"
+  if grep -Fq -- "| ${item} | ${expected} | Owen |" "${tracker_doc}"; then
+    pass "checklist item ${expected}: ${item}"
+    case "${expected}" in
+      approved) approved_count=$((approved_count + 1)) ;;
+      deferred) deferred_count=$((deferred_count + 1)) ;;
+      pending) pending_count=$((pending_count + 1)) ;;
+    esac
   else
-    fail "tracker missing pending row for: ${item}"
+    fail "tracker row mismatch for ${item}: expected Owen status ${expected}"
   fi
 done
 
-if [[ "${pending_count}" -eq 11 ]]; then
-  warn "11 Owen checklist items pending approval — implementation blocked"
+if [[ "${approved_count}" -eq 6 && "${deferred_count}" -eq 5 && "${pending_count}" -eq 0 ]]; then
+  pass "governance affirmation batch recorded: 6 approved, 5 deferred"
 else
-  fail "expected 11 pending Owen checklist items; found ${pending_count}"
+  fail "expected 6 approved and 5 deferred; found approved=${approved_count} deferred=${deferred_count} pending=${pending_count}"
+fi
+
+if [[ "${deferred_count}" -gt 0 ]]; then
+  warn "${deferred_count} Owen checklist items deferred — path, namespace, write, and metadata intake remain blocked"
+else
+  pass "no deferred Owen checklist items"
 fi
 
 section 'CLI, Manifest, and Tests'
@@ -98,9 +114,9 @@ bash -n tests/curriculum-builder-production-registry-owen-checklist-status-test.
 
 section 'Roadmap and Ledger Coherence'
 check_doc_contains docs/proposals/index.md "Owen § J production registry checklist tracker" "proposal ledger owen tracker"
-check_doc_contains docs/master-build-roadmap.md "Owen must complete the approval checklist" "roadmap Owen checklist gate"
+check_doc_contains docs/master-build-roadmap.md "Next decision step: path + namespace" "roadmap Owen checklist gate"
 check_doc_contains docs/build-queue.md "Product-decision wall" "build queue product-decision wall"
-check_doc_contains assistant/memory/active-priorities.md "Owen § J checklist review" "active priorities Owen review"
+check_doc_contains assistant/memory/active-priorities.md "path + namespace" "active priorities path namespace next step"
 
 section 'Negative Non-Activation Assertions'
 grep -Fq -- '--curriculum-registry-write)' bin/chief-of-staff 2>/dev/null && fail 'chief-of-staff must not implement --curriculum-registry-write handler' || pass 'chief-of-staff has no --curriculum-registry-write handler'

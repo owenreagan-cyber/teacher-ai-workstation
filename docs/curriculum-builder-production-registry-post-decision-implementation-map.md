@@ -11,21 +11,25 @@ Classification: post-Owen-decision routing — not implementation authority
 
 Map Owen § J checklist outcomes to **safe next missions** without implying approval. Use after Owen updates the checklist tracker.
 
-## Phase 0 — Current (No Write Authorization)
+## Phase 0 — Prior (All Pending)
 
 | Condition | Repo state |
 | --- | --- |
 | All 11 items `pending` | CB-PROD-GOV complete; writes blocked; 1 expected checklist WARN |
-| Governance status PASS | Blocked-write proof only |
 
-## Phase 1 — Owen Affirmations Only (No Writes)
+**Superseded 2026-07-02** by governance affirmation batch.
 
-**Trigger:** Owen approves items 5, 6, 7, 8, 9, 11 (governance affirmations) without items 1, 2, 10.
+## Phase 1 — Current: Governance Affirmations Recorded (No Writes)
+
+**Trigger:** Owen approved items 5, 6, 7, 8, 9, 11; deferred items 1, 2, 3, 4, 10 (2026-07-02).
 
 | Mission | Scope | Blocked |
 | --- | --- | --- |
-| Tracker + doc refresh | Update tracker rows; cross-link path decision | Write code |
-| Path decision doc update | Record Owen's choice in path-options doc | Creating registry files |
+| Tracker + doc refresh | Governance batch recorded in tracker | Write code |
+| Path + namespace session | Owen decides items 1 and 10 together | Creating registry files |
+| Write behavior | Item 2 remains deferred | Any `--write` or writer scripts |
+
+**Expected checklist WARN:** 1 (5 deferred items). Approved governance rows do **not** authorize production writes.
 
 ## Phase 2 — Governed Write Preflight (Still No Writer)
 
@@ -58,14 +62,14 @@ See `docs/proposals/backlog/production-registry-write-mission.md` § Preflight C
 | Metadata pilot planning | `docs/curriculum-builder-metadata-pilot-planning-boundary.md` |
 | Fake-only field examples | No real titles/paths |
 
-Blocked until approved: real metadata in production registry.
+Blocked until approved: real metadata in production registry. Items 3 and 4 remain **deferred** as of 2026-07-02.
 
 ## Phase 5 — Integrations (Per-System Missions)
 
 **Trigger:** Item 9 opened per integration + separate Owen mission each.
 
-Never bulk-approved via § J alone.
+Item 9 approval affirms integrations **remain blocked** in v1 unless separate missions. Never bulk-approved via § J alone.
 
 ## Non-Activation
 
-This map does not authorize any phase transition automatically.
+This map does not authorize any phase transition automatically. Phase 1 does not authorize writes.

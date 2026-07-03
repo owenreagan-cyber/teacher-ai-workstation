@@ -88,7 +88,7 @@
 ### Now
 
 - **Lane-review hardening sprint complete** — health/updater boundaries, updater check-only banners, Mac E1/F1 cross-links, Canvas frozen banner, Lovable no-API guardrails, R0+D1 cross-links, operating modes discovery banner, ABE sprint queue template, 3D planning-only banner. `tests/lane-review-hardening-guardrails-test.sh`. No runtime activation.
-- **Owen § J checklist review** — use `docs/curriculum-builder-production-registry-owen-decision-worksheet.md` with review packet § 7; update tracker rows as decisions are made. All 11 items still **pending**. No writes approved.
+- **Governance affirmation batch recorded (2026-07-02)** — items 5, 6, 7, 8, 9, 11 approved; items 1, 2, 3, 4, 10 deferred. Approved governance rows do **not** authorize writes. Next step: **path + namespace session** (items 1 and 10). Item 2 write behavior remains deferred.
 - **Governance-first + decision readiness complete** — CB-PROD-GOV, decision worksheet, post-decision map, metadata pilot planning boundaries, status hardening. Production writes and real metadata intake remain blocked.
 - Curriculum Source Readiness fake metadata inventory foundation complete (`docs/curriculum-source-readiness-and-intake-boundary-plan.md`). `--curriculum-source-readiness-status`; fake schema, fixtures, validator, negative tests. Real curriculum ingestion blocked. Owen tiny-pilot checklist in boundary plan.
 - Autonomous Backlog Implementation Sprint complete (2026-07-02). `--governance-lane-status`, `--workstation-ops-lane-status`, status-banner hardening on registry/governance scripts, negative non-mutation guardrail tests. No runtime activation.

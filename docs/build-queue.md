@@ -8,9 +8,9 @@ Phase 0E Vibe Engine.
 
 ## Current Focus
 
-**Product-decision wall — Owen § J checklist review; governance-first foundation complete.**
+**Product-decision wall — Owen § J governance batch recorded; path + namespace next.**
 
-Safe-local registry scaffolding including CB-PROD-GOV governance foundation is complete (`docs/curriculum-builder-production-registry-governance-foundation.md`; `--curriculum-production-registry-governance-status`). Owen must still complete the review packet and approve checklist items before any write mission. Generic Master Build Plan autopilot is **not** the next step.
+Safe-local registry scaffolding including CB-PROD-GOV governance foundation is complete (`docs/curriculum-builder-production-registry-governance-foundation.md`; `--curriculum-production-registry-governance-status`). Owen recorded governance affirmations 2026-07-02 (items 5, 6, 7, 8, 9, 11 approved; items 1, 2, 3, 4, 10 deferred). **No write mission approved.** Next human step: path + namespace session. Generic Master Build Plan autopilot is **not** the next step.
 
 Master program roadmap: `docs/master-build-roadmap.md` — Program Readiness Audit and mission sequencing for v1.0. Implementation does not proceed automatically from the roadmap.
 

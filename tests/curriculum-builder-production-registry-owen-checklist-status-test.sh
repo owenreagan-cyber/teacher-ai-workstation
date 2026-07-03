@@ -21,14 +21,20 @@ grep -q '^FAIL: 0$' "${tmp}" || {
   rm -f "${tmp}"
   exit 1
 }
-grep -q 'Owen approval: required for each checklist item' "${tmp}" || {
-  echo "FAIL: missing Owen approval boundary header"
+grep -q 'Approved governance rows do not authorize production writes: yes' "${tmp}" || {
+  echo "FAIL: missing governance non-write boundary header"
   cat "${tmp}"
   rm -f "${tmp}"
   exit 1
 }
-grep -q '11 Owen checklist items pending approval' "${tmp}" || {
-  echo "FAIL: missing expected pending checklist WARN"
+grep -q '5 Owen checklist items deferred — path, namespace, write, and metadata intake remain blocked' "${tmp}" || {
+  echo "FAIL: missing expected deferred checklist WARN"
+  cat "${tmp}"
+  rm -f "${tmp}"
+  exit 1
+}
+grep -q 'governance affirmation batch recorded: 6 approved, 5 deferred' "${tmp}" || {
+  echo "FAIL: missing governance affirmation batch PASS"
   cat "${tmp}"
   rm -f "${tmp}"
   exit 1

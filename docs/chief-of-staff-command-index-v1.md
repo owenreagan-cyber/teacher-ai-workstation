@@ -116,6 +116,7 @@ These flags exist in `bin/chief-of-staff` and work as read-only local status sur
 | `bin/chief-of-staff --curriculum-library-foundation-status` | Curriculum Library v1 |
 | `bin/chief-of-staff --lesson-planning-foundation-status` | Lesson Planning v1 |
 | `bin/chief-of-staff --renderer-foundation-status` | Renderer Foundation v1 |
+| `bin/chief-of-staff --presentation-engine-renderer-foundation-status` | Presentation Engine renderer-foundation planning (read-only; no rendering) |
 | `bin/chief-of-staff --local-retrieval-foundation-status` | Local Retrieval v0 |
 | `bin/chief-of-staff --integration-planning-foundation-status` | Integration Planning v0 |
 | `bin/chief-of-staff --teacher-app-designer-canvas-llm-status` | Canvas LLM frozen foundation |

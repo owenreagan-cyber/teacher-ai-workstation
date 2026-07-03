@@ -102,6 +102,7 @@ Closure: `docs/teacher-workstation-foundation-v0.md`
 | Lesson Planning Foundation | `docs/lesson-planning-v1-foundation.md` |
 | Curriculum Library Foundation | `docs/curriculum-library-v1-foundation.md` |
 | Renderer Foundation v1 | `docs/renderer-v1-foundation.md` |
+| Presentation Engine renderer foundation (planning) | `docs/presentation-engine-renderer-foundation.md` |
 | Local Retrieval Foundation v0 | `docs/local-retrieval-foundation-v0.md` |
 | Integration Planning Foundation v0 | `docs/integration-planning-foundation-v0.md` |
 
@@ -123,6 +124,7 @@ Closure: `docs/teacher-workstation-foundation-v0.md`
 | **Teacher Workstation System Updater** | Read-only update checks → guided plans → approved maintenance | **Complete** — Program I read-only foundation |
 | **AI Tool Routing Matrix** | Documented roles for cloud/local/builder tools | **Active** — read-only operational surface; routing inactive |
 | **Curriculum Builder Complete** | Registry + contracts + renderers + teacher-reviewed outputs | v1 foundation done; renderers/generation gated |
+| **Presentation Engine** | Classroom display planning structures from approved metadata labels | **Planning complete** — renderer-foundation docs/fixtures; runtime render/export blocked |
 | **Local LLM / Ollama Workstation** | Local model policy, inventory, health checks | **Active** — Program D1 read-only foundation |
 | **Mac Workstation Experience** | Teacher modes, wallpaper, visible transformation | **Active** — Program E1 read-only foundation |
 | **Widget and Shortcut Builder** | Catalogs for approved surfaces | Roadmap only |

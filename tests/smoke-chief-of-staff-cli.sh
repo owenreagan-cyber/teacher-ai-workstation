@@ -147,6 +147,8 @@ bin/chief-of-staff --governance-lane-status >/dev/null
 bash tests/governance-lane-status-test.sh >/dev/null
 bin/chief-of-staff --whole-system-master-roadmap-status >/dev/null
 bash tests/whole-system-master-roadmap-status-test.sh >/dev/null
+bin/chief-of-staff --presentation-engine-renderer-foundation-status >/dev/null
+bash tests/presentation-engine-renderer-foundation-status-test.sh >/dev/null
 bin/chief-of-staff --workstation-ops-lane-status >/dev/null
 bash tests/workstation-ops-lane-status-test.sh >/dev/null
 bash tests/backlog-non-mutation-guardrails-test.sh >/dev/null

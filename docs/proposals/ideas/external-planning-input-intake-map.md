@@ -34,7 +34,7 @@ Classify external planning ideas (Gemini, NotebookLM, ChatGPT transcripts, paste
 
 | External Idea | Classification | Repo Anchor / Notes |
 | --- | --- | --- |
-| Presentation Engine | proposal candidate | Related to Renderer Foundation v1 / future renderers — approval-gated |
+| Presentation Engine | implemented (planning) | `docs/presentation-engine-renderer-foundation.md`; `--presentation-engine-renderer-foundation-status`; runtime blocked |
 | Resource Registry | existing repo lane | Curriculum Builder Registry v0/v0.2, authority map, CB-IMPL |
 | Email Responder | out of scope | Parent communication / email workflows blocked |
 | UA Noise Meter | proposal candidate | Classroom app lane family — CAL1/G1 adjacent; no app built |

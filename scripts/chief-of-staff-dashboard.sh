@@ -1266,6 +1266,27 @@ else
   warn "Renderer Foundation status script missing: scripts/renderer-foundation-status.sh"
 fi
 
+section "Presentation Engine Renderer Foundation (Planning)"
+if [[ -f scripts/presentation-engine-renderer-foundation-status.sh ]]; then
+  presentation_engine_renderer_foundation_result=0
+  presentation_engine_renderer_foundation_output="$(bash scripts/presentation-engine-renderer-foundation-status.sh 2>&1)" || presentation_engine_renderer_foundation_result=$?
+  presentation_engine_renderer_foundation_pass="$(summary_count "${presentation_engine_renderer_foundation_output}" "PASS")"
+  presentation_engine_renderer_foundation_warn="$(summary_count "${presentation_engine_renderer_foundation_output}" "WARN")"
+  presentation_engine_renderer_foundation_fail="$(summary_count "${presentation_engine_renderer_foundation_output}" "FAIL")"
+
+  if [[ "${presentation_engine_renderer_foundation_result}" != "0" ]]; then
+    printf '%s\n' "${presentation_engine_renderer_foundation_output}"
+    fail "Presentation Engine renderer foundation status failed"
+  elif [[ -n "${presentation_engine_renderer_foundation_pass}" && -n "${presentation_engine_renderer_foundation_warn}" && -n "${presentation_engine_renderer_foundation_fail}" ]]; then
+    printf 'Presentation Engine Renderer Foundation: PASS %s / WARN %s / FAIL %s\n' "${presentation_engine_renderer_foundation_pass}" "${presentation_engine_renderer_foundation_warn}" "${presentation_engine_renderer_foundation_fail}"
+    pass "Presentation Engine renderer foundation status completed"
+  else
+    pass "Presentation Engine renderer foundation status completed"
+  fi
+else
+  warn "Presentation Engine renderer foundation status script missing: scripts/presentation-engine-renderer-foundation-status.sh"
+fi
+
 section "Local Retrieval Foundation v0"
 if [[ -f scripts/local-retrieval-foundation-status.sh ]]; then
   local_retrieval_foundation_result=0

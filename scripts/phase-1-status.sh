@@ -953,6 +953,21 @@ check_doc_contains docs/classroom-utility-per-app-mission-template.md "complete_
 check_doc_contains docs/classroom-utility-student-data-boundaries.md "blocked — absolute" "student data absolute block"
 grep -Fq -- '--classroom-utility-templates-status' bin/chief-of-staff && pass "chief-of-staff exposes --classroom-utility-templates-status" || fail "chief-of-staff missing --classroom-utility-templates-status"
 
+section "Gemini Discovery Classification Intake Files"
+for path in \
+  docs/proposals/ideas/gemini-discovery-classification-architecture-intake.md \
+  docs/proposals/blocked/gemini-discovery-classification-runtime-boundaries.md \
+  assistant/external-planning/intake/gemini-discovery-classification-architecture-summary.json \
+  scripts/gemini-discovery-classification-intake-status.sh \
+  tests/gemini-discovery-classification-intake-status-test.sh; do
+  check_required_file "${path}"
+done
+check_bash_syntax scripts/gemini-discovery-classification-intake-status.sh
+check_bash_syntax tests/gemini-discovery-classification-intake-status-test.sh
+check_doc_contains docs/proposals/ideas/gemini-discovery-classification-architecture-intake.md "complete_gemini_discovery_classification_intake" "gemini intake closure"
+check_doc_contains docs/proposals/blocked/gemini-discovery-classification-runtime-boundaries.md "blocked" "gemini blocked runtime boundaries"
+grep -Fq -- '--gemini-discovery-classification-intake-status' bin/chief-of-staff && pass "chief-of-staff exposes --gemini-discovery-classification-intake-status" || fail "chief-of-staff missing --gemini-discovery-classification-intake-status"
+
 section "Lovable Classroom App Builder (Program G1) Files"
 for path in \
   docs/lovable-classroom-app-builder-foundation.md \

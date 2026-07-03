@@ -263,9 +263,11 @@ Cross-references: `docs/build-queue.md`, `docs/master-build-roadmap.md`, `docs/p
 | --- | --- | --- |
 | [x] | Resource Registry = Curriculum Builder registry lanes (v0/v0.2/production planning) | repo-backed |
 | [x] | Presentation Engine renderer-foundation planning complete | repo-backed — `docs/presentation-engine-renderer-foundation.md`; `--presentation-engine-renderer-foundation-status` |
+| [x] | Gemini discovery/classification external planning intake complete | repo-backed — `docs/proposals/ideas/gemini-discovery-classification-architecture-intake.md`; `complete_gemini_discovery_classification_intake` |
 | [!] | Presentation Engine runtime render/export/generation | blocked gate — `docs/presentation-engine-blocked-runtime-boundaries.md` |
+| [!] | Discovery/classification runtime (crawlers, orchestrators, AI auto-labeling) | blocked gate — `docs/proposals/blocked/gemini-discovery-classification-runtime-boundaries.md` |
 | [?] | Academic OS — insufficient repo evidence (external planning reference only) | insufficient repo evidence |
-| **Proof** | `--presentation-engine-renderer-foundation-status`; `docs/proposals/ideas/external-planning-input-intake-map.md` | |
+| **Proof** | `--presentation-engine-renderer-foundation-status`; `--gemini-discovery-classification-intake-status`; `docs/proposals/ideas/external-planning-input-intake-map.md` | |
 
 ---
 
@@ -286,10 +288,11 @@ Cross-references: `docs/build-queue.md`, `docs/master-build-roadmap.md`, `docs/p
 
 | Surface | State |
 | --- | --- |
-| Dashboard | 131 / 0 / 0 PASS |
-| Validate-all | 47 / 0 / 0 PASS |
+| Dashboard | 132 / 0 / 0 PASS |
+| Validate-all | 50 / 0 / 0 PASS |
 | Whole-system roadmap status | `--whole-system-master-roadmap-status` |
 | Presentation Engine renderer foundation | `--presentation-engine-renderer-foundation-status` |
+| Gemini discovery/classification intake | `--gemini-discovery-classification-intake-status` |
 | Classroom Utility templates | `--classroom-utility-templates-status` |
 | Governance status | 54 / 0 / 0 PASS |
 | Checklist status | 59 / 0 / 0 PASS |
@@ -299,7 +302,7 @@ Cross-references: `docs/build-queue.md`, `docs/master-build-roadmap.md`, `docs/p
 | Empty-file status (historical) | 30 / 0 / 0 PASS |
 | Phase-1 | 758 / 0 / 0 PASS |
 | Active mission | None |
-| Next step | Safe docs/status lanes; production registry parked (Option D); Classroom Utility templates complete — per-app runtime blocked |
+| Next step | Safe docs/status lanes; production registry parked (Option D); Gemini discovery/classification intake complete — runtime blocked |
 
 **Safety gates preserved:** First governed production registry record exists (`records` count exactly 1; ID `resource-math-lesson-108-presentation`); `BLOCKED-NO-WRITES.sentinel` intact; no `--write`; no writer scripts; no second production record; real curriculum file access blocked; copied curriculum content blocked; source auto-resolution blocked; integration and runtime gates blocked.
 

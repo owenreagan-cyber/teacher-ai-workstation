@@ -89,6 +89,7 @@
 
 - **Whole-system master roadmap build-state report complete (2026-07-03)** — `docs/whole-system-master-roadmap-build-state-report.md`; `--whole-system-master-roadmap-status`; 15-lane evidence classification; next safe lane selector; production registry parked (Option D). No runtime activation.
 - **Presentation Engine renderer-foundation planning complete (2026-07-03)** — `docs/presentation-engine-renderer-foundation.md`; `--presentation-engine-renderer-foundation-status`; fake/local fixtures; runtime render/export/generation blocked. No runtime activation.
+- **A4–A7 fixture optional-field enrichment complete (2026-07-03)** — `docs/curriculum-builder-registry-a4-a7-fixture-evidence.md`; `--curriculum-registry-a4-a7-fixture-schema-status`; targeted WARNs 7 → 0. No ingestion or registry mutation.
 - **Lane-review hardening sprint complete** — health/updater boundaries, updater check-only banners, Mac E1/F1 cross-links, Canvas frozen banner, Lovable no-API guardrails, R0+D1 cross-links, operating modes discovery banner, ABE sprint queue template, 3D planning-only banner. `tests/lane-review-hardening-guardrails-test.sh`. No runtime activation.
 - **Next-gate decision packet complete (2026-07-03)** — writer/second-record/pilot/parked options documented; `--curriculum-production-registry-next-gate-status`; all gates blocked pending Owen decision.
 - **Post-first-record hardening complete (2026-07-03)** — sentinel semantics, negative validator tests, next-gate classification, snapshot audit docs; no new records.

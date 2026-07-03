@@ -95,7 +95,8 @@ check_doc_contains "${report}" "docs/build-queue.md" "build queue cross-link"
 check_doc_contains "${report}" "docs/proposals/index.md" "proposal ledger cross-link"
 check_doc_contains "${report}" "--whole-system-master-roadmap-status" "whole-system status command cross-link"
 check_doc_contains "${report}" "--presentation-engine-renderer-foundation-status" "presentation engine status command cross-link"
-check_doc_contains "${report}" "complete_presentation_engine_renderer_foundation_planning" "presentation engine planning closure"
+check_doc_contains "${report}" "complete_a4_a7_fixture_optional_field_enrichment" "A4–A7 fixture enrichment closure"
+check_doc_contains "${report}" "--curriculum-registry-a4-a7-fixture-schema-status" "A4–A7 status command cross-link"
 
 section 'Production Registry Parked-State Proof'
 check_file "${production_registry_path}"

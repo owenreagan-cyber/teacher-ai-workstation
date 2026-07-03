@@ -1280,6 +1280,8 @@ grep -Fq -- '--curriculum-source-readiness-status' bin/chief-of-staff && pass "c
 section "Curriculum Builder Registry Hardening Bundle Files"
 for path in \
   docs/curriculum-builder-registry-authority-map.md \
+  docs/curriculum-builder-registry-a4-a7-fixture-evidence.md \
+  assistant/curriculum-builder/samples/registry-v0-2-local-records/negative/negative-real-drive-url.json \
   scripts/curriculum-builder-registry-lane-status.sh \
   scripts/curriculum-builder-registry-a4-a7-fixture-schema-status.sh \
   tests/curriculum-builder-registry-lane-status-test.sh \
@@ -1291,6 +1293,7 @@ check_bash_syntax scripts/curriculum-builder-registry-a4-a7-fixture-schema-statu
 check_bash_syntax tests/curriculum-builder-registry-lane-status-test.sh
 check_bash_syntax tests/curriculum-builder-registry-a4-a7-fixture-schema-status-test.sh
 check_doc_contains docs/curriculum-builder-registry-authority-map.md "complete_registry_authority_map" "registry authority map closure"
+check_doc_contains docs/curriculum-builder-registry-a4-a7-fixture-evidence.md "complete_a4_a7_fixture_optional_field_enrichment" "A4–A7 fixture evidence closure"
 grep -Fq -- '--curriculum-registry-lane-status' bin/chief-of-staff && pass "chief-of-staff exposes --curriculum-registry-lane-status" || fail "chief-of-staff missing --curriculum-registry-lane-status"
 grep -Fq -- '--curriculum-registry-a4-a7-fixture-schema-status' bin/chief-of-staff && pass "chief-of-staff exposes --curriculum-registry-a4-a7-fixture-schema-status" || fail "chief-of-staff missing --curriculum-registry-a4-a7-fixture-schema-status"
 

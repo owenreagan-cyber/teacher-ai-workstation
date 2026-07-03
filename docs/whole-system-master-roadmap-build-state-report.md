@@ -8,6 +8,7 @@ Authority: whole-system posture snapshot — not implementation approval
 Baseline: main after Whole-System Master Roadmap Build-State Report mission
 Closure: whole_system_master_roadmap_status_complete
 Presentation Engine planning closure: complete_presentation_engine_renderer_foundation_planning
+A4–A7 fixture enrichment closure: complete_a4_a7_fixture_optional_field_enrichment
 ```
 
 **Status key:** `[x]` Built/merged · `[~]` Currently being built · `[>]` Ready for safe planning/build · `[!]` Blocked pending Owen/safety gate · `[ ]` Future / not started · `[?]` Insufficient repo evidence
@@ -81,7 +82,7 @@ Closure: next_safe_lane_selector_complete
 Ranked recommendations (safest first):
 
 1. **safest next docs/status build lane** — Whole-system roadmap coherence maintenance, proposal index sync, capability-map cross-links, aggregate status hardening. No runtime risk. Command: `--whole-system-master-roadmap-status`.
-2. **strongest classroom-value planning lane** — Presentation Engine renderer-foundation planning **complete** (`docs/presentation-engine-renderer-foundation.md`; `--presentation-engine-renderer-foundation-status`); A4–A7 fixture optional-field enrichment; classroom utility app per-app mission templates (planning only).
+2. **strongest classroom-value planning lane** — A4–A7 fixture optional-field enrichment **complete** (`docs/curriculum-builder-registry-a4-a7-fixture-evidence.md`; `--curriculum-registry-a4-a7-fixture-schema-status`); classroom utility app per-app mission templates (planning only).
 3. **blocked high-value lane requiring Owen decision** — Production registry Option A (writer/`--write`), Option B (second record), or Option C (metadata pilot expansion). Presentation Engine runtime export/render. All blocked until explicit Owen mission.
 4. **future lane needing more repo evidence** — Academic OS beyond external intake map; unified daily AI briefing; live Vibe Panel / wallpaper apply.
 
@@ -121,7 +122,8 @@ Cross-references: `docs/build-queue.md`, `docs/master-build-roadmap.md`, `docs/p
 | Marker | Item | Evidence |
 | --- | --- | --- |
 | [x] | v1 foundation, v0.2 CB-IMPL-1–4, hardening bundle, source readiness, A4–A7 contracts | repo-backed |
-| [>] | A4–A7 fixture optional-field enrichment; schema version alignment doc (Owen-gated) | planning/proposal-only |
+| [x] | A4–A7 fixture optional-field enrichment complete | repo-backed — `docs/curriculum-builder-registry-a4-a7-fixture-evidence.md`; 0 targeted WARN |
+| [>] | Schema version alignment doc (Owen-gated) | planning/proposal-only |
 | [!] | Real records beyond production pilot, renderers, lesson generation | blocked gate |
 | **Proof** | `--curriculum-registry-lane-status`, `--curriculum-contracts-status` | |
 
@@ -293,7 +295,7 @@ Cross-references: `docs/build-queue.md`, `docs/master-build-roadmap.md`, `docs/p
 | Empty-file status (historical) | 30 / 0 / 0 PASS |
 | Phase-1 | 758 / 0 / 0 PASS |
 | Active mission | None |
-| Next step | Safe docs/status lanes; production registry parked (Option D); Presentation Engine planning complete — runtime blocked |
+| Next step | Safe docs/status lanes; production registry parked (Option D); A4–A7 fixture enrichment complete — ingestion blocked |
 
 **Safety gates preserved:** First governed production registry record exists (`records` count exactly 1; ID `resource-math-lesson-108-presentation`); `BLOCKED-NO-WRITES.sentinel` intact; no `--write`; no writer scripts; no second production record; real curriculum file access blocked; copied curriculum content blocked; source auto-resolution blocked; integration and runtime gates blocked.
 

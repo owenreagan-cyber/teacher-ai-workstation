@@ -1,0 +1,19 @@
+{
+  "fixture_classification": "negative_blocked_fields_reference",
+  "violation": "path_or_url_reference must use placeholder URI scheme only",
+  "source_references": [
+    {
+      "source_reference_id": "example-source-bad-url",
+      "source_system": "google_drive",
+      "source_label": "example-forbidden-url",
+      "source_kind": "file",
+      "path_or_url_reference": "https://drive.google.com/example-forbidden",
+      "owner_context": "negative-fixture",
+      "access_notes": "Negative fixture — forbidden URL pattern.",
+      "not_scanned": true,
+      "not_ingested": true
+    }
+  ],
+  "records": [],
+  "lesson_links": []
+}

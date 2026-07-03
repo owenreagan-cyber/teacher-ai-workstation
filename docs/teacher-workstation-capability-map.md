@@ -78,7 +78,7 @@ Cross-references:
 | Metadata pilot planning boundary (no intake) | implemented read-only | `docs/curriculum-builder-metadata-pilot-planning-boundary.md`; fake examples only |
 | Manual metadata boundary | implemented read-only | `docs/curriculum-builder-manual-metadata-boundary.md`; field taxonomy; no real records |
 | Governance-first production registry (CB-PROD-GOV) | implemented read-only | `--curriculum-production-registry-governance-status`; blocked-write proof; candidate skeleton |
-| Curriculum Builder Registry authority map + lane hardening | implemented read-only | `--curriculum-registry-lane-status` (includes source readiness + Owen checklist); `--curriculum-registry-a4-a7-fixture-schema-status`; see authority map |
+| Curriculum Builder Registry authority map + lane hardening | implemented read-only | `--curriculum-registry-lane-status` (includes source readiness + Owen checklist); `--curriculum-registry-a4-a7-fixture-schema-status` (0 targeted WARN); see authority map + A4–A7 evidence doc |
 | Curriculum Source Readiness (fake metadata inventory) | implemented read-only | `--curriculum-source-readiness-status`; fake fixtures only; no real ingestion |
 | Production registry writes / real records | planned | Approval-gated — Owen checklist required; `--curriculum-registry-write` blocked |
 | Lesson Planning Foundation | foundation complete | Phase 3 Workstream A |

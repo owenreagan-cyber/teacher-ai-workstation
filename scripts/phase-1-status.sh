@@ -936,6 +936,23 @@ else
   fail "chief-of-staff missing --classroom-app-lab-status"
 fi
 
+section "Classroom Utility Per-App Mission Templates Files"
+for path in \
+  docs/classroom-utility-per-app-mission-template.md \
+  docs/classroom-utility-app-candidate-matrix.md \
+  docs/classroom-utility-student-data-boundaries.md \
+  docs/classroom-utility-templates/classpass-planning-template.md \
+  assistant/classroom-utilities/samples/planning/example-classpass-labels-001.json \
+  scripts/classroom-utility-templates-status.sh \
+  tests/classroom-utility-templates-status-test.sh; do
+  check_required_file "${path}"
+done
+check_bash_syntax scripts/classroom-utility-templates-status.sh
+check_bash_syntax tests/classroom-utility-templates-status-test.sh
+check_doc_contains docs/classroom-utility-per-app-mission-template.md "complete_classroom_utility_per_app_mission_templates" "classroom utility templates closure"
+check_doc_contains docs/classroom-utility-student-data-boundaries.md "blocked — absolute" "student data absolute block"
+grep -Fq -- '--classroom-utility-templates-status' bin/chief-of-staff && pass "chief-of-staff exposes --classroom-utility-templates-status" || fail "chief-of-staff missing --classroom-utility-templates-status"
+
 section "Lovable Classroom App Builder (Program G1) Files"
 for path in \
   docs/lovable-classroom-app-builder-foundation.md \

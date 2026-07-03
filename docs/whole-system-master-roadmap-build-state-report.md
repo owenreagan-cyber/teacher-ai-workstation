@@ -9,6 +9,7 @@ Baseline: main after Whole-System Master Roadmap Build-State Report mission
 Closure: whole_system_master_roadmap_status_complete
 Presentation Engine planning closure: complete_presentation_engine_renderer_foundation_planning
 A4–A7 fixture enrichment closure: complete_a4_a7_fixture_optional_field_enrichment
+Classroom Utility templates closure: complete_classroom_utility_per_app_mission_templates
 ```
 
 **Status key:** `[x]` Built/merged · `[~]` Currently being built · `[>]` Ready for safe planning/build · `[!]` Blocked pending Owen/safety gate · `[ ]` Future / not started · `[?]` Insufficient repo evidence
@@ -82,8 +83,8 @@ Closure: next_safe_lane_selector_complete
 Ranked recommendations (safest first):
 
 1. **safest next docs/status build lane** — Whole-system roadmap coherence maintenance, proposal index sync, capability-map cross-links, aggregate status hardening. No runtime risk. Command: `--whole-system-master-roadmap-status`.
-2. **strongest classroom-value planning lane** — A4–A7 fixture optional-field enrichment **complete** (`docs/curriculum-builder-registry-a4-a7-fixture-evidence.md`; `--curriculum-registry-a4-a7-fixture-schema-status`); classroom utility app per-app mission templates (planning only).
-3. **blocked high-value lane requiring Owen decision** — Production registry Option A (writer/`--write`), Option B (second record), or Option C (metadata pilot expansion). Presentation Engine runtime export/render. All blocked until explicit Owen mission.
+2. **strongest classroom-value planning lane** — Classroom Utility per-app mission templates **complete** (`docs/classroom-utility-per-app-mission-template.md`; `--classroom-utility-templates-status`); per-app Owen-gated implementation missions remain blocked.
+3. **blocked high-value lane requiring Owen decision** — Production registry Option A (writer/`--write`), Option B (second record), or Option C (metadata pilot expansion). Any single classroom utility app runtime. All blocked until explicit Owen mission.
 4. **future lane needing more repo evidence** — Academic OS beyond external intake map; unified daily AI briefing; live Vibe Panel / wallpaper apply.
 
 **Recommended default:** Maintain **Option D (parked)** for production registry. Proceed with safe docs/status lanes until Owen selects A, B, or C.
@@ -238,8 +239,10 @@ Cross-references: `docs/build-queue.md`, `docs/master-build-roadmap.md`, `docs/p
 | Marker | Item | Evidence |
 | --- | --- | --- |
 | [x] | CAL1 foundation, fake inventory, blocked external ideas doc, capability map CAL cross-link | repo-backed |
+| [x] | Per-app mission templates complete (9 candidates, matrix, student-data boundaries) | repo-backed — `docs/classroom-utility-per-app-mission-template.md`; `--classroom-utility-templates-status` |
 | [!] | All named utility apps blocked until per-app Owen mission | blocked gate |
-| **Proof** | `--classroom-app-lab-status` | |
+| [!] | Student-data workflows (real rosters, grades, behavior logs) | blocked gate — absolute |
+| **Proof** | `--classroom-app-lab-status`; `--classroom-utility-templates-status` | |
 
 ---
 
@@ -283,10 +286,11 @@ Cross-references: `docs/build-queue.md`, `docs/master-build-roadmap.md`, `docs/p
 
 | Surface | State |
 | --- | --- |
-| Dashboard | 130 / 0 / 0 PASS |
+| Dashboard | 131 / 0 / 0 PASS |
 | Validate-all | 47 / 0 / 0 PASS |
 | Whole-system roadmap status | `--whole-system-master-roadmap-status` |
 | Presentation Engine renderer foundation | `--presentation-engine-renderer-foundation-status` |
+| Classroom Utility templates | `--classroom-utility-templates-status` |
 | Governance status | 54 / 0 / 0 PASS |
 | Checklist status | 59 / 0 / 0 PASS |
 | Registry lane status | 50 / 0 / 0 PASS |
@@ -295,7 +299,7 @@ Cross-references: `docs/build-queue.md`, `docs/master-build-roadmap.md`, `docs/p
 | Empty-file status (historical) | 30 / 0 / 0 PASS |
 | Phase-1 | 758 / 0 / 0 PASS |
 | Active mission | None |
-| Next step | Safe docs/status lanes; production registry parked (Option D); A4–A7 fixture enrichment complete — ingestion blocked |
+| Next step | Safe docs/status lanes; production registry parked (Option D); Classroom Utility templates complete — per-app runtime blocked |
 
 **Safety gates preserved:** First governed production registry record exists (`records` count exactly 1; ID `resource-math-lesson-108-presentation`); `BLOCKED-NO-WRITES.sentinel` intact; no `--write`; no writer scripts; no second production record; real curriculum file access blocked; copied curriculum content blocked; source auto-resolution blocked; integration and runtime gates blocked.
 

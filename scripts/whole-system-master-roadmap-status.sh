@@ -96,7 +96,8 @@ check_doc_contains "${report}" "docs/proposals/index.md" "proposal ledger cross-
 check_doc_contains "${report}" "--whole-system-master-roadmap-status" "whole-system status command cross-link"
 check_doc_contains "${report}" "--presentation-engine-renderer-foundation-status" "presentation engine status command cross-link"
 check_doc_contains "${report}" "complete_a4_a7_fixture_optional_field_enrichment" "A4–A7 fixture enrichment closure"
-check_doc_contains "${report}" "--curriculum-registry-a4-a7-fixture-schema-status" "A4–A7 status command cross-link"
+check_doc_contains "${report}" "complete_classroom_utility_per_app_mission_templates" "classroom utility templates closure"
+check_doc_contains "${report}" "--classroom-utility-templates-status" "classroom utility templates status command cross-link"
 
 section 'Production Registry Parked-State Proof'
 check_file "${production_registry_path}"
@@ -144,6 +145,23 @@ if [[ -f scripts/presentation-engine-renderer-foundation-status.sh ]]; then
   fi
 else
   fail 'presentation engine renderer foundation status script missing'
+fi
+
+section 'Dependent Status: Classroom Utility Templates'
+if [[ -f scripts/classroom-utility-templates-status.sh ]]; then
+  cut_output="$(bash scripts/classroom-utility-templates-status.sh 2>&1)" || cut_result=$?
+  cut_result="${cut_result:-0}"
+  if [[ "${cut_result}" != "0" ]]; then
+    fail 'classroom utility templates status script exited nonzero'
+    printf '%s\n' "${cut_output}" | tail -20
+  elif grep -q '^FAIL: [1-9]' <<< "${cut_output}"; then
+    fail 'classroom utility templates status reported FAIL'
+    printf '%s\n' "${cut_output}" | tail -20
+  else
+    pass 'classroom utility templates status component clean'
+  fi
+else
+  fail 'classroom utility templates status script missing'
 fi
 
 section 'CLI, Manifest, and Tests'

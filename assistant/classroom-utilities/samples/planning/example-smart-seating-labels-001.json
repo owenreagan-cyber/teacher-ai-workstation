@@ -1,0 +1,10 @@
+{
+  "fixture_classification": "fake_local_planning_only",
+  "app_candidate": "smart-seating",
+  "seat_label": "example-seat-01",
+  "team_label": "example-team-red",
+  "layout_label": "example-grid-4x6",
+  "student_label": "example-student-a",
+  "runtime_app": "blocked",
+  "integrations": "blocked"
+}

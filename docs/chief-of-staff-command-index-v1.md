@@ -150,6 +150,7 @@ These flags exist in `bin/chief-of-staff` and work as read-only local status sur
 | Command | Purpose |
 | --- | --- |
 | `bin/chief-of-staff --classroom-app-lab-status` | Classroom App Lab prototype rescue read-only foundation |
+| `bin/chief-of-staff --classroom-utility-templates-status` | Classroom Utility per-app mission templates (planning only) |
 
 ### Lovable Classroom App Builder (Program G1)
 

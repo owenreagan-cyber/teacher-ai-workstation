@@ -1,0 +1,14 @@
+{
+  "fixture_classification": "negative_blocked_fields_reference",
+  "purpose": "Documents forbidden fields for classroom utility planning fixtures",
+  "blocked_examples": {
+    "real_student_name": "forbidden-real-name",
+    "grade_value": "98",
+    "iep_reference": "forbidden-iep-text",
+    "parent_email": "forbidden@example.com",
+    "drive_url": "https://drive.google.com/forbidden",
+    "canvas_course_id": "12345",
+    "oauth_token": "forbidden-token"
+  },
+  "note": "Negative reference only — status tests verify positive fixtures exclude these patterns."
+}

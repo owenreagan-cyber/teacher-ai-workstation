@@ -158,6 +158,8 @@ bash tests/local-llm-workstation-status-test.sh >/dev/null
 bash tests/mac-workstation-experience-status-test.sh >/dev/null
 bash tests/widget-shortcut-builder-status-test.sh >/dev/null
 bash tests/classroom-app-lab-status-test.sh >/dev/null
+bin/chief-of-staff --classroom-utility-templates-status >/dev/null
+bash tests/classroom-utility-templates-status-test.sh >/dev/null
 bash tests/lovable-classroom-app-builder-status-test.sh >/dev/null
 bash tests/3d-builder-workshop-agent-status-test.sh >/dev/null
 bash tests/cursor-operating-modes-status-test.sh >/dev/null

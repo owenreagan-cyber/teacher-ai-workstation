@@ -1,0 +1,8 @@
+{
+  "fixture_classification": "fake_local_planning_only",
+  "app_candidate": "prize-board",
+  "reward_label": "example-reward-placeholder",
+  "display_mode_label": "example-wall-display",
+  "team_label": "example-team-blue",
+  "runtime_app": "blocked"
+}

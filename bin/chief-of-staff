@@ -88,6 +88,8 @@ Widget and Shortcut Builder (read-only; no install or automation):
 
 Classroom App Lab (read-only; no zip/parse/execute):
   --classroom-app-lab-status           Show read-only Classroom App Lab prototype rescue planning status and exit.
+  --classroom-utility-templates-status
+                                       Show read-only Classroom Utility per-app mission templates planning status and exit.
 
 Lovable Classroom App Builder (read-only; not connected):
   --lovable-status                     Show read-only Lovable integration planning status and exit.
@@ -2512,6 +2514,15 @@ while [[ $# -gt 0 ]]; do
         die "Classroom App Lab status script is missing: scripts/classroom-app-lab-status.sh"
       fi
       bash "${classroom_app_lab_status_script}"
+      exit 0
+      ;;
+    --classroom-utility-templates-status)
+      repo_root="$(resolve_repo_root)"
+      classroom_utility_templates_status_script="${repo_root}/scripts/classroom-utility-templates-status.sh"
+      if [[ ! -f "${classroom_utility_templates_status_script}" ]]; then
+        die "Classroom Utility templates status script is missing: scripts/classroom-utility-templates-status.sh"
+      fi
+      bash "${classroom_utility_templates_status_script}"
       exit 0
       ;;
     --lovable-status)

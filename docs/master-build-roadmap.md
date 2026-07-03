@@ -971,7 +971,7 @@ Alternate tracks remain approval-gated per `docs/implementation-approval-gate.md
 | Local LLM / Ollama | D1 | read-only foundation complete | `reviewed` | Level 2 review 2026-07-02; `docs/proposals/lane-reviews/local-llm-workstation-lane-discovery-review.md` |
 | Mac Workstation Experience | E1 | read-only foundation complete | `reviewed` | Level 2 review 2026-07-02; `docs/proposals/lane-reviews/mac-workstation-experience-lane-discovery-review.md` |
 | Widget and Shortcut Builder | F1 | read-only foundation complete | `reviewed` | Level 2 review 2026-07-02; `docs/proposals/lane-reviews/widget-shortcut-builder-lane-discovery-review.md` |
-| Classroom App Lab | CAL1 | read-only foundation complete | `reviewed` | Level 2 review 2026-07-02; `docs/proposals/lane-reviews/classroom-app-lab-lane-discovery-review.md` |
+| Classroom App Lab | CAL1 | read-only foundation complete; per-app mission templates complete | `reviewed` | Level 2 review 2026-07-02; `--classroom-utility-templates-status` |
 | Lovable Classroom App Builder | G1 | read-only foundation complete | `reviewed` | Level 2 review 2026-07-02; `docs/proposals/lane-reviews/lovable-classroom-app-builder-lane-discovery-review.md` |
 | 3D Builder Workshop Agent | J1 | read-only foundation complete | `reviewed` | Level 2 review 2026-07-02; `docs/proposals/lane-reviews/3d-builder-workshop-agent-lane-discovery-review.md` |
 | Cursor Operating Modes Governance | — | foundation complete | `reviewed` | Level 2 review 2026-07-02; `docs/proposals/lane-reviews/cursor-operating-modes-governance-lane-discovery-review.md` |

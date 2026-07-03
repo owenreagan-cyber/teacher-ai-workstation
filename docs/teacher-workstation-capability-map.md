@@ -112,6 +112,7 @@ Cross-references:
 | Widget catalog | implemented read-only | `--widget-shortcut-status`; Program F1 foundation |
 | Shortcut catalog | implemented read-only | `--widget-shortcut-status`; Program F1 foundation |
 | Classroom App Lab / Prototype Rescue | implemented read-only | `--classroom-app-lab-status`; CAL1 foundation |
+| Classroom Utility per-app mission templates | implemented read-only (planning) | `--classroom-utility-templates-status`; templates + matrix; no runtime apps |
 | Mac teacher modes | implemented read-only | `--mac-workstation-status`; Program E1 foundation |
 | Wallpaper / appearance | foundation complete | Planning stack; live curator not started |
 

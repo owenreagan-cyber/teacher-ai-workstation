@@ -1,0 +1,10 @@
+{
+  "fixture_classification": "fake_local_planning_only",
+  "app_candidate": "classpass",
+  "pass_label": "example-pass-template",
+  "destination_label": "example-destination-office",
+  "student_label": "example-student-a",
+  "runtime_app": "blocked",
+  "student_data": "fake_labels_only",
+  "integrations": "blocked"
+}

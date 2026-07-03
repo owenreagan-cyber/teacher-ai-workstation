@@ -1156,6 +1156,27 @@ else
   warn "Classroom App Lab status script missing: scripts/classroom-app-lab-status.sh"
 fi
 
+section "Classroom Utility Per-App Mission Templates (Planning)"
+if [[ -f scripts/classroom-utility-templates-status.sh ]]; then
+  classroom_utility_templates_result=0
+  classroom_utility_templates_output="$(bash scripts/classroom-utility-templates-status.sh 2>&1)" || classroom_utility_templates_result=$?
+  classroom_utility_templates_pass="$(summary_count "${classroom_utility_templates_output}" "PASS")"
+  classroom_utility_templates_warn="$(summary_count "${classroom_utility_templates_output}" "WARN")"
+  classroom_utility_templates_fail="$(summary_count "${classroom_utility_templates_output}" "FAIL")"
+
+  if [[ "${classroom_utility_templates_result}" != "0" ]]; then
+    printf '%s\n' "${classroom_utility_templates_output}"
+    fail "Classroom Utility templates status failed"
+  elif [[ -n "${classroom_utility_templates_pass}" && -n "${classroom_utility_templates_warn}" && -n "${classroom_utility_templates_fail}" ]]; then
+    printf 'Classroom Utility Templates: PASS %s / WARN %s / FAIL %s\n' "${classroom_utility_templates_pass}" "${classroom_utility_templates_warn}" "${classroom_utility_templates_fail}"
+    pass "Classroom Utility templates status completed"
+  else
+    pass "Classroom Utility templates status completed"
+  fi
+else
+  warn "Classroom Utility templates status script missing: scripts/classroom-utility-templates-status.sh"
+fi
+
 section "Lovable Classroom App Builder (Program G1)"
 if [[ -f scripts/lovable-classroom-app-builder-status.sh ]]; then
   lovable_result=0

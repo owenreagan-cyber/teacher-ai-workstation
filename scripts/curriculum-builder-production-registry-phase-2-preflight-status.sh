@@ -36,24 +36,24 @@ production_registry_dir="assistant/curriculum-builder/registry/v0-2"
 sentinel="assistant/curriculum-builder/registry/candidate-v0-2-production/BLOCKED-NO-WRITES.sentinel"
 manifest="assistant/chief-of-staff/v1/command-surface-manifest.json"
 status_script="scripts/curriculum-builder-production-registry-phase-2-preflight-status.sh"
-validator_script="scripts/curriculum-builder-production-registry-empty-file-validate.sh"
+validator_script="scripts/curriculum-builder-production-registry-first-record-validate.sh"
 
-check_production_registry_empty_shell() {
+check_production_registry_first_record() {
   local registry_path="$1"
   if [[ ! -f "${registry_path}" ]]; then
-    fail "production-registry.json must exist as empty shell"
+    fail "production-registry.json must exist with one approved record"
     return
   fi
   if [[ ! -f "${validator_script}" ]]; then
-    fail "empty-file validator missing"
+    fail "first-record validator missing"
     return
   fi
   local validate_output validate_result=0
   validate_output="$(bash "${validator_script}" "${registry_path}" 2>&1)" || validate_result=$?
-  if [[ "${validate_result}" -eq 0 ]] && grep -q 'empty shell validation succeeded' <<< "${validate_output}"; then
-    pass "production-registry.json exists with empty records shell"
+  if [[ "${validate_result}" -eq 0 ]] && grep -q 'first production registry record validation succeeded' <<< "${validate_output}"; then
+    pass "production-registry.json exists with one approved record"
   else
-    fail "production-registry.json must be valid empty shell"
+    fail "production-registry.json must validate as one approved record"
     printf '%s\n' "${validate_output}" | tail -5
   fi
 }
@@ -76,8 +76,8 @@ cat <<'EOF'
 Status: phase_2_preflight_readiness
 Classification: read-only preflight proof — not implementation
 Runtime activation: no
-Production registry file: exists (empty shell — separate empty-file mission)
-Record writes: blocked
+Production registry file: exists (one approved record)
+Record writes via tooling: blocked
 Active --write: blocked
 Real metadata intake: blocked
 Write behavior: approved in principle (item 2)
@@ -125,8 +125,8 @@ check_doc_contains "${metadata_blocked}" "blocked" "real metadata intake blocked
 check_file docs/curriculum-builder-production-registry-metadata-source-boundaries.md
 check_doc_contains docs/curriculum-builder-production-registry-metadata-source-boundaries.md "metadata_boundaries_approved" "metadata boundary doc"
 
-section 'Production Surface Empty Shell'
-check_production_registry_empty_shell "${production_registry_path}"
+section 'Production Surface First Record'
+check_production_registry_first_record "${production_registry_path}"
 check_no_resource_production_files "${production_registry_dir}"
 
 section 'Sentinel and Write Guards'

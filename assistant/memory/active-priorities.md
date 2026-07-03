@@ -88,14 +88,15 @@
 ### Now
 
 - **Lane-review hardening sprint complete** — health/updater boundaries, updater check-only banners, Mac E1/F1 cross-links, Canvas frozen banner, Lovable no-API guardrails, R0+D1 cross-links, operating modes discovery banner, ABE sprint queue template, 3D planning-only banner. `tests/lane-review-hardening-guardrails-test.sh`. No runtime activation.
-- **Metadata pilot execution planning complete (2026-07-02)** — one-record protocol, Owen worksheet, acceptance criteria, snapshot plan; `--curriculum-production-registry-metadata-pilot-plan-status`; no execution.
-- **Empty-file mission complete (2026-07-02)** — `production-registry.json` with `records: []`; `--curriculum-production-registry-empty-file-status`; sentinel intact; record writes blocked.
+- **First governed production registry record complete (2026-07-03)** — exactly one approved manual metadata record (`resource-math-lesson-108-presentation`); `--curriculum-production-registry-first-record-status`; sentinel intact; writer scripts and `--write` blocked.
+- **Metadata pilot execution planning complete (2026-07-02)** — one-record protocol, Owen worksheet, acceptance criteria, snapshot plan; `--curriculum-production-registry-metadata-pilot-plan-status`; first record executed via governed PR.
+- **Empty-file mission complete (2026-07-02, historical)** — pre-write empty shell baseline; `--curriculum-production-registry-empty-file-status` (historical); sentinel intact.
 - **Metadata-boundary refinement complete (2026-07-02)** — field contracts, blocked guardrails, planning validator, `--curriculum-production-registry-metadata-boundary-status`; no record mutation.
 - **Owen § J checklist complete (2026-07-02)** — items 3 and 4 approved with strict manual-only boundaries.
 - **Phase 2 preflight complete (2026-07-02)** — audit/rollback readiness, negative guardrails, `--curriculum-production-registry-phase-2-preflight-status`; empty shell baseline; no records, no --write.
 - **Write behavior approved in principle (2026-07-02)** — item 2 manual-only, snapshot-first.
 - **Path + namespace approved (2026-07-02)** — item 1 Option B; item 10 `resource-*`.
-- **Metadata intake and mutation remain blocked** — boundary approval does not authorize pilot execution or registry writes.
+- **Metadata intake and mutation via tooling remain blocked** — first record exists; boundary approval does not authorize writer scripts, second record, or integrations.
 - **Governance-first + decision readiness complete** — CB-PROD-GOV, decision worksheet, post-decision map, metadata pilot planning boundaries, status hardening. Production writes and real metadata intake remain blocked.
 - Curriculum Source Readiness fake metadata inventory foundation complete (`docs/curriculum-source-readiness-and-intake-boundary-plan.md`). `--curriculum-source-readiness-status`; fake schema, fixtures, validator, negative tests. Real curriculum ingestion blocked. Owen tiny-pilot checklist in boundary plan.
 - Autonomous Backlog Implementation Sprint complete (2026-07-02). `--governance-lane-status`, `--workstation-ops-lane-status`, status-banner hardening on registry/governance scripts, negative non-mutation guardrail tests. No runtime activation.

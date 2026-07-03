@@ -29,23 +29,23 @@ planning_brief="docs/curriculum-builder-production-registry-workflow-planning-br
 path_options="docs/curriculum-builder-production-registry-path-options.md"
 status_script="scripts/curriculum-builder-production-registry-owen-checklist-status.sh"
 manifest="assistant/chief-of-staff/v1/command-surface-manifest.json"
-check_production_registry_empty_shell() {
+check_production_registry_first_record() {
   local registry_path="$1"
-  local validator_script="scripts/curriculum-builder-production-registry-empty-file-validate.sh"
+  local validator_script="scripts/curriculum-builder-production-registry-first-record-validate.sh"
   if [[ ! -f "${registry_path}" ]]; then
-    fail "production-registry.json must exist as empty shell"
+    fail "production-registry.json must exist with one approved record"
     return
   fi
   if [[ ! -f "${validator_script}" ]]; then
-    fail "empty-file validator missing"
+    fail "first-record validator missing"
     return
   fi
   local validate_output validate_result=0
   validate_output="$(bash "${validator_script}" "${registry_path}" 2>&1)" || validate_result=$?
-  if [[ "${validate_result}" -eq 0 ]] && grep -q 'empty shell validation succeeded' <<< "${validate_output}"; then
-    pass "production-registry.json exists with empty records shell"
+  if [[ "${validate_result}" -eq 0 ]] && grep -q 'first production registry record validation succeeded' <<< "${validate_output}"; then
+    pass "production-registry.json exists with one approved record"
   else
-    fail "production-registry.json must be valid empty shell"
+    fail "production-registry.json must validate as one approved record"
     printf '%s\n' "${validate_output}" | tail -5
   fi
 }
@@ -71,8 +71,8 @@ cat <<'EOF'
 Status: planning_only
 Classification: read-only checklist tracker — not implementation
 Runtime activation: no
-Production registry file: exists (empty shell)
-Record writes: blocked
+Production registry file: exists (one approved record)
+Record writes via tooling: blocked
 Active --write: blocked
 Real metadata intake: blocked
 Metadata pilot execution: blocked
@@ -113,7 +113,7 @@ check_file "${path_options}"
 check_doc_contains "${path_options}" "Owen-approved" "path options Owen-approved Option B"
 check_doc_contains "${path_options}" "production-registry.json" "path options canonical production path"
 check_doc_contains "${path_options}" "resource-*" "path options resource namespace"
-check_production_registry_empty_shell "${production_registry_path}"
+check_production_registry_first_record "${production_registry_path}"
 check_no_resource_production_files "$(dirname "${production_registry_path}")"
 check_file "${sentinel}"
 grep -Fq -- 'Production writes: blocked' "${sentinel}" && pass 'BLOCKED-NO-WRITES.sentinel remains intact' || fail 'sentinel must state production writes blocked'
@@ -181,9 +181,9 @@ bash -n tests/curriculum-builder-production-registry-owen-checklist-status-test.
 
 section 'Roadmap and Ledger Coherence'
 check_doc_contains docs/proposals/index.md "Owen § J production registry checklist tracker" "proposal ledger owen tracker"
-check_doc_contains docs/master-build-roadmap.md "Metadata pilot execution planning complete" "roadmap metadata pilot planning complete"
-check_doc_contains docs/build-queue.md "metadata pilot execution planning complete" "build queue metadata pilot planning complete"
-check_doc_contains assistant/memory/active-priorities.md "Metadata pilot execution planning complete" "active priorities metadata pilot planning complete"
+check_doc_contains docs/build-queue.md "first governed production registry record" "build queue first record complete"
+check_doc_contains docs/master-build-roadmap.md "first governed production registry record" "roadmap first record complete"
+check_doc_contains assistant/memory/active-priorities.md "First governed production registry record" "active priorities first record complete"
 
 section 'Negative Non-Activation Assertions'
 grep -Fq -- '--curriculum-registry-write)' bin/chief-of-staff 2>/dev/null && fail 'chief-of-staff must not implement --curriculum-registry-write handler' || pass 'chief-of-staff has no --curriculum-registry-write handler'

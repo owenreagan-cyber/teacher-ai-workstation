@@ -36,21 +36,23 @@ production_registry_path="assistant/curriculum-builder/registry/v0-2/production-
 production_registry_dir="assistant/curriculum-builder/registry/v0-2"
 sentinel="assistant/curriculum-builder/registry/candidate-v0-2-production/BLOCKED-NO-WRITES.sentinel"
 empty_shell_validator="scripts/curriculum-builder-production-registry-empty-file-validate.sh"
+first_record_validator="scripts/curriculum-builder-production-registry-first-record-validate.sh"
+pre_write_snapshot="assistant/curriculum-builder/registry/audit/snapshots/production-registry-20260703T042100Z-pre-write.json"
 status_script="scripts/curriculum-builder-production-registry-metadata-pilot-plan-status.sh"
 manifest="assistant/chief-of-staff/v1/command-surface-manifest.json"
 
 section 'Production Registry Metadata Pilot Plan Status'
 cat <<'EOF'
 Status: metadata_pilot_execution_plan_complete
-Classification: one-record pilot protocol — planning only
+Classification: one-record pilot protocol — first record executed via governed PR
 Runtime activation: no
-Production registry file: exists (empty shell)
-Records array: empty
-Metadata pilot execution: blocked
-Record writes: blocked
+Production registry file: exists (one approved record)
+Records count: exactly 1
+Metadata pilot execution beyond first record: blocked
+Record writes via tooling: blocked
 Active --write: blocked
-PASS does not authorize metadata pilot execution: yes
-PASS does not authorize record writes: yes
+PASS does not authorize second record: yes
+PASS does not authorize write tooling: yes
 EOF
 
 section 'Pilot Execution Planning Documentation'
@@ -73,16 +75,24 @@ check_file "${metadata_contract}"
 check_file "${source_contract}"
 check_file "${guardrails_doc}"
 
-section 'Production Registry Empty Shell'
+section 'Production Registry First Record'
 check_file "${production_registry_path}"
-check_file "${empty_shell_validator}"
-validate_output="$(bash "${empty_shell_validator}" "${production_registry_path}" 2>&1)" || validate_result=$?
+check_file "${first_record_validator}"
+validate_output="$(bash "${first_record_validator}" "${production_registry_path}" 2>&1)" || validate_result=$?
 validate_result="${validate_result:-0}"
-if [[ "${validate_result}" -eq 0 ]] && grep -q 'empty shell validation succeeded' <<< "${validate_output}"; then
-  pass "production-registry.json validates as empty shell"
+if [[ "${validate_result}" -eq 0 ]] && grep -q 'first production registry record validation succeeded' <<< "${validate_output}"; then
+  pass "production-registry.json validates as one approved record"
 else
-  fail "production-registry.json must remain empty shell"
+  fail "production-registry.json must contain one approved record"
   printf '%s\n' "${validate_output}" | tail -5
+fi
+check_file "${pre_write_snapshot}"
+snapshot_output="$(bash "${empty_shell_validator}" "${pre_write_snapshot}" 2>&1)" || snapshot_result=$?
+snapshot_result="${snapshot_result:-0}"
+if [[ "${snapshot_result}" -eq 0 ]] && grep -q 'empty shell validation succeeded' <<< "${snapshot_output}"; then
+  pass "pre-write snapshot validates as empty shell"
+else
+  fail "pre-write snapshot must validate as empty shell"
 fi
 
 section 'Resource Non-Existence'
@@ -109,7 +119,7 @@ fi
 section 'Write-Mission and Post-Decision Coherence'
 check_file "${write_mission}"
 check_doc_contains "${write_mission}" "Metadata pilot execution planning" "write mission planning distinction"
-check_doc_contains "${write_mission}" "Metadata pilot execution" "write mission execution blocked"
+check_doc_contains "${write_mission}" "first governed single-record write" "write mission first-record complete"
 check_file "${post_decision}"
 check_doc_contains "${post_decision}" "Metadata Pilot" "post-decision metadata pilot phase"
 
@@ -121,7 +131,7 @@ bash -n "${status_script}" && pass "bash syntax ok: ${status_script}" || fail "b
 bash -n tests/curriculum-builder-production-registry-metadata-pilot-plan-status-test.sh && pass 'bash syntax ok: metadata pilot plan test' || fail 'bash syntax failed: metadata pilot plan test'
 
 section 'Negative Non-Activation Assertions'
-pass 'metadata pilot execution is not active'
+pass 'metadata pilot limited to one explicit record'
 pass 'real curriculum file access is not active'
 pass 'source auto-resolution is not active'
 pass 'integration/network activation is not active'

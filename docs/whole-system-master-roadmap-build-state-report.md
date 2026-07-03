@@ -1,11 +1,11 @@
 # Whole-System Master Roadmap Build-State Report
 
-Last updated: 2026-07-02
+Last updated: 2026-07-03
 
 ```text
 Status: documentation/status only
 Authority: whole-system posture snapshot — not implementation approval
-Baseline: main after Production Registry Metadata Pilot Execution Planning mission
+Baseline: main after Production Registry First Governed Record mission
 ```
 
 **Status key:** `[x]` Built/merged · `[~]` Currently being built · `[>]` Ready for safe planning/build · `[!]` Blocked pending Owen/safety gate · `[ ]` Future / not started · `[?]` Insufficient repo evidence
@@ -59,9 +59,10 @@ Baseline: main after Production Registry Metadata Pilot Execution Planning missi
 | [x] | **Metadata-boundary refinement complete** — field contracts, guardrails, planning validator |
 | [x] | **Owen § J checklist complete** — all 11 items decided |
 | [x] | **Metadata pilot execution planning complete** — one-record protocol, worksheet, acceptance criteria |
-| [x] | **Empty-file mission complete** — `production-registry.json` with `records: []` |
-| [!] | Record writes blocked; metadata pilot execution blocked; no `resource-*` production records |
-| **Proof** | `--curriculum-production-registry-metadata-pilot-plan-status`; empty-file status ~30/0/0 |
+| [x] | **Empty-file mission complete (historical)** — pre-write empty shell baseline |
+| [x] | **First governed production registry record complete** — exactly one manual metadata record (`resource-math-lesson-108-presentation`) |
+| [!] | Write tooling blocked; second record blocked; metadata pilot beyond first record blocked |
+| **Proof** | `--curriculum-production-registry-first-record-status`; first-record status ~35+ / 0 / 0 |
 
 ### Owen § J Checklist State (2026-07-02)
 
@@ -79,9 +80,9 @@ Baseline: main after Production Registry Metadata Pilot Execution Planning missi
 | 10 ID namespace | approved | `resource-*` |
 | 11 First implementation PR scope | approved | CB-PROD-GOV merged |
 
-**Metadata pilot execution planning does not authorize pilot execution or record writes.**
+**First governed record does not authorize write tooling, second record, or integrations.**
 
-**Next possible gate:** Governed single-record write mission (separate explicit prompt).
+**Next possible gates:** Writer/`--write` tooling, second record, metadata pilot beyond first record — all require separate explicit prompts.
 
 ---
 
@@ -200,14 +201,14 @@ Baseline: main after Production Registry Metadata Pilot Execution Planning missi
 
 | Surface | State |
 | --- | --- |
-| Dashboard | ~126+ / 0 / 0 PASS |
-| Validate-all | ~44+ / 0 / 0 PASS |
-| Metadata pilot plan | ~35+ / 0 / 0 PASS |
-| Empty-file status | ~30 / 0 / 0 PASS |
+| Dashboard | ~127+ / 0 / 0 PASS |
+| Validate-all | ~45+ / 0 / 0 PASS |
+| First-record status | ~35+ / 0 / 0 PASS |
+| Empty-file status (historical) | ~30 / 0 / 0 PASS |
 | Active mission | None |
-| Next possible gate | Governed single-record write (separate explicit prompt) |
+| Next possible gates | Writer/`--write` tooling, second record — separate explicit prompts |
 
-**Safety gates preserved:** Empty `production-registry.json` (`records: []`); metadata pilot execution planning complete; no `resource-*` production records; no `--write`; sentinel intact. Record writes blocked. Metadata pilot execution blocked. Source auto-resolution blocked.
+**Safety gates preserved:** First governed production registry record exists (`records` count exactly 1; ID `resource-math-lesson-108-presentation`); `BLOCKED-NO-WRITES.sentinel` intact; no `--write`; no writer scripts; no second production record; real curriculum file access blocked; copied curriculum content blocked; source auto-resolution blocked; integration and runtime gates blocked.
 
 ## Non-Activation
 

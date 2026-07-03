@@ -1,11 +1,12 @@
 # Production Registry Metadata Pilot Execution Plan
 
-Last updated: 2026-07-02
+Last updated: 2026-07-03
 
 ```text
 Status: metadata_pilot_execution_plan_complete
-Classification: one-record pilot protocol — planning only, no execution
+Classification: one-record pilot protocol — first record executed via governed PR (2026-07-03)
 Proof: --curriculum-production-registry-metadata-pilot-plan-status
+First record proof: --curriculum-production-registry-first-record-status
 ```
 
 ## Non-Activation Statement

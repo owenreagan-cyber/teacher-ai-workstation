@@ -1198,6 +1198,21 @@ check_bash_syntax tests/curriculum-builder-production-registry-metadata-pilot-pl
 check_doc_contains docs/curriculum-builder-production-registry-metadata-pilot-execution-plan.md "metadata_pilot_execution_plan_complete" "metadata pilot execution plan closure"
 grep -Fq -- '--curriculum-production-registry-metadata-pilot-plan-status' bin/chief-of-staff && pass "chief-of-staff exposes --curriculum-production-registry-metadata-pilot-plan-status" || fail "chief-of-staff missing --curriculum-production-registry-metadata-pilot-plan-status"
 
+section "Production Registry First Governed Record Files"
+for path in \
+  docs/curriculum-builder-production-registry-first-record.md \
+  assistant/curriculum-builder/registry/audit/snapshots/production-registry-20260703T042100Z-pre-write.json \
+  scripts/curriculum-builder-production-registry-first-record-validate.sh \
+  scripts/curriculum-builder-production-registry-first-record-status.sh \
+  tests/curriculum-builder-production-registry-first-record-status-test.sh; do
+  check_required_file "${path}"
+done
+check_bash_syntax scripts/curriculum-builder-production-registry-first-record-validate.sh
+check_bash_syntax scripts/curriculum-builder-production-registry-first-record-status.sh
+check_bash_syntax tests/curriculum-builder-production-registry-first-record-status-test.sh
+check_doc_contains docs/curriculum-builder-production-registry-first-record.md "first_record_complete" "first record closure"
+grep -Fq -- '--curriculum-production-registry-first-record-status' bin/chief-of-staff && pass "chief-of-staff exposes --curriculum-production-registry-first-record-status" || fail "chief-of-staff missing --curriculum-production-registry-first-record-status"
+
 section "Curriculum Source Readiness Foundation Files"
 for path in \
   docs/curriculum-source-readiness-and-intake-boundary-plan.md \

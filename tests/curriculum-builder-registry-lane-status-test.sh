@@ -78,6 +78,7 @@ for flag in \
   --curriculum-production-registry-governance-status \
   --curriculum-production-registry-phase-2-preflight-status \
   --curriculum-production-registry-metadata-boundary-status \
+  --curriculum-production-registry-empty-file-status \
   --curriculum-production-registry-owen-checklist-status \
   --curriculum-source-readiness-status; do
   out="$(mktemp "${TMPDIR:-/tmp}/cb-registry-lane-component.XXXXXX")"

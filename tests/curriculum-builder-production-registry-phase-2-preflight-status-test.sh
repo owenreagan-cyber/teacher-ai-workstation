@@ -25,7 +25,7 @@ grep -q '^FAIL: 0$' "${tmp}" || {
   rm -f "${tmp}"
   exit 1
 }
-grep -q 'Production registry writes: blocked' "${tmp}" || {
+grep -q 'Record writes: blocked' "${tmp}" || {
   echo "FAIL: missing blocked writes banner"
   cat "${tmp}"
   rm -f "${tmp}"
@@ -37,8 +37,8 @@ grep -q 'PASS does not authorize registry mutation: yes' "${tmp}" || {
   rm -f "${tmp}"
   exit 1
 }
-grep -q 'production-registry.json does not exist (blocked)' "${tmp}" || {
-  echo "FAIL: missing production-registry.json non-existence check"
+grep -q 'production-registry.json exists with empty records shell' "${tmp}" || {
+  echo "FAIL: missing production-registry.json empty shell check"
   cat "${tmp}"
   rm -f "${tmp}"
   exit 1
@@ -81,8 +81,8 @@ if grep -q 'items 3 and 4 remain deferred' "${tmp}"; then
 fi
 rm -f "${tmp}"
 
-if [[ -f "${production_registry_path}" ]]; then
-  echo "FAIL: production-registry.json must not exist in Phase 2 preflight"
+if [[ ! -f "${production_registry_path}" ]]; then
+  echo "FAIL: production-registry.json must exist as empty shell after empty-file mission"
   exit 1
 fi
 

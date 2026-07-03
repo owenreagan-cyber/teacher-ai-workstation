@@ -125,6 +125,8 @@ bin/chief-of-staff --curriculum-production-registry-phase-2-preflight-status >/d
 bash tests/curriculum-builder-production-registry-phase-2-preflight-status-test.sh >/dev/null
 bin/chief-of-staff --curriculum-production-registry-metadata-boundary-status >/dev/null
 bash tests/curriculum-builder-production-registry-metadata-boundary-status-test.sh >/dev/null
+bin/chief-of-staff --curriculum-production-registry-empty-file-status >/dev/null
+bash tests/curriculum-builder-production-registry-empty-file-status-test.sh >/dev/null
 bin/chief-of-staff --curriculum-source-readiness-status >/dev/null
 bash tests/curriculum-source-readiness-status-test.sh >/dev/null
 bin/chief-of-staff --curriculum-registry-lane-status >/dev/null

@@ -5,7 +5,7 @@ Last updated: 2026-07-02
 ```text
 Status: documentation/status only
 Authority: whole-system posture snapshot — not implementation approval
-Baseline: main after Production Registry Metadata Boundary Refinement mission
+Baseline: main after Production Registry Empty-File mission
 ```
 
 **Status key:** `[x]` Built/merged · `[~]` Currently being built · `[>]` Ready for safe planning/build · `[!]` Blocked pending Owen/safety gate · `[ ]` Future / not started · `[?]` Insufficient repo evidence
@@ -58,9 +58,10 @@ Baseline: main after Production Registry Metadata Boundary Refinement mission
 | [x] | Phase 2 preflight complete |
 | [x] | **Metadata-boundary refinement complete** — field contracts, guardrails, planning validator |
 | [x] | **Owen § J checklist complete** — all 11 items decided |
-| [!] | Metadata pilot execution blocked |
-| [!] | Registry mutation blocked; `production-registry.json` not created; no `resource-*` records |
-| **Proof** | `--curriculum-production-registry-metadata-boundary-status` (~60/0/0); Owen checklist ~58/0/0 |
+| [x] | **Empty-file mission complete** — `production-registry.json` with `records: []` |
+| [!] | Record writes blocked; no `resource-*` production records |
+| [!] | Metadata pilot execution blocked; writer/`--write` blocked |
+| **Proof** | `--curriculum-production-registry-empty-file-status`; metadata boundary ~60/0/0; Owen checklist ~58/0/0 |
 
 ### Owen § J Checklist State (2026-07-02)
 
@@ -78,9 +79,9 @@ Baseline: main after Production Registry Metadata Boundary Refinement mission
 | 10 ID namespace | approved | `resource-*` |
 | 11 First implementation PR scope | approved | CB-PROD-GOV merged |
 
-**Metadata-boundary refinement does not authorize registry mutation or metadata pilot execution.**
+**Empty shell does not authorize record writes or metadata pilot execution.**
 
-**Next possible gate:** Empty-file mission (separate explicit prompt).
+**Next possible gates:** Metadata pilot execution planning or governed single-record write planning — each requires separate explicit prompt.
 
 ---
 
@@ -199,15 +200,16 @@ Baseline: main after Production Registry Metadata Boundary Refinement mission
 
 | Surface | State |
 | --- | --- |
-| Dashboard | ~124 / 0 / 0 PASS |
-| Validate-all | ~42 / 0 / 0 PASS |
-| Owen checklist | ~58 / 0 / 0 PASS |
-| Metadata boundary | ~60 / 0 / 0 PASS |
-| Phase 2 preflight | ~51 / 0 / 0 PASS |
+| Dashboard | ~130+ / 0 / 0 PASS (empty-file track added) |
+| Validate-all | ~43+ / 0 / 0 PASS |
+| Owen checklist | ~58+ / 0 / 0 PASS |
+| Empty-file status | ~25+ / 0 / 0 PASS |
+| Metadata boundary | ~60+ / 0 / 0 PASS |
+| Phase 2 preflight | ~51+ / 0 / 0 PASS |
 | Active mission | None |
-| Next possible gate | Empty-file mission (separate prompt) |
+| Next possible gate | Metadata pilot execution planning or governed single-record write planning (separate prompts) |
 
-**Safety gates preserved:** No registry mutation, no `production-registry.json`, no `resource-*` records, no `--write`. Metadata pilot execution blocked. Source auto-resolution blocked.
+**Safety gates preserved:** Empty `production-registry.json` exists (`records: []`); no `resource-*` production records; no `--write`; sentinel intact. Record writes blocked. Metadata pilot execution blocked. Source auto-resolution blocked. Real curriculum file access blocked.
 
 ## Non-Activation
 

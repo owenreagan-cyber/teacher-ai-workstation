@@ -38,8 +38,8 @@ grep -q 'PASS does not authorize registry mutation: yes' "${tmp}" || {
   rm -f "${tmp}"
   exit 1
 }
-grep -q 'production-registry.json does not exist (blocked)' "${tmp}" || {
-  echo "FAIL: missing production-registry.json non-existence check"
+grep -q 'production-registry.json exists with empty records shell' "${tmp}" || {
+  echo "FAIL: missing production-registry.json empty shell check"
   cat "${tmp}"
   rm -f "${tmp}"
   exit 1
@@ -82,8 +82,8 @@ grep -q 'canonical planning fixture validates' "${tmp}" || {
 }
 rm -f "${tmp}"
 
-if [[ -f "${production_registry_path}" ]]; then
-  echo "FAIL: production-registry.json must not exist"
+if [[ ! -f "${production_registry_path}" ]]; then
+  echo "FAIL: production-registry.json must exist as empty shell after empty-file mission"
   exit 1
 fi
 

@@ -1167,6 +1167,22 @@ check_bash_syntax tests/curriculum-builder-production-registry-metadata-boundary
 check_doc_contains docs/curriculum-builder-production-registry-metadata-source-boundaries.md "metadata_boundary_refinement_complete" "metadata boundary refinement closure"
 grep -Fq -- '--curriculum-production-registry-metadata-boundary-status' bin/chief-of-staff && pass "chief-of-staff exposes --curriculum-production-registry-metadata-boundary-status" || fail "chief-of-staff missing --curriculum-production-registry-metadata-boundary-status"
 
+section "Production Registry Empty-File Shell Files"
+for path in \
+  docs/curriculum-builder-production-registry-empty-file.md \
+  assistant/curriculum-builder/registry/v0-2/production-registry.json \
+  scripts/curriculum-builder-production-registry-empty-file-validate.sh \
+  scripts/curriculum-builder-production-registry-empty-file-status.sh \
+  tests/curriculum-builder-production-registry-empty-file-status-test.sh; do
+  check_required_file "${path}"
+done
+check_bash_syntax scripts/curriculum-builder-production-registry-empty-file-validate.sh
+check_bash_syntax scripts/curriculum-builder-production-registry-empty-file-status.sh
+check_bash_syntax tests/curriculum-builder-production-registry-empty-file-status-test.sh
+check_doc_contains docs/curriculum-builder-production-registry-empty-file.md "empty_file_complete" "empty file closure"
+check_doc_contains docs/curriculum-builder-production-registry-snapshot-diff-restore-readiness.md "empty shell baseline" "snapshot empty shell baseline"
+grep -Fq -- '--curriculum-production-registry-empty-file-status' bin/chief-of-staff && pass "chief-of-staff exposes --curriculum-production-registry-empty-file-status" || fail "chief-of-staff missing --curriculum-production-registry-empty-file-status"
+
 section "Curriculum Source Readiness Foundation Files"
 for path in \
   docs/curriculum-source-readiness-and-intake-boundary-plan.md \

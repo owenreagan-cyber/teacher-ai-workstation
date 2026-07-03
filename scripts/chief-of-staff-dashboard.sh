@@ -1545,6 +1545,27 @@ else
   warn "Production registry metadata boundary status script missing: scripts/curriculum-builder-production-registry-metadata-boundary-status.sh"
 fi
 
+section "Production Registry Empty-File Shell"
+if [[ -f scripts/curriculum-builder-production-registry-empty-file-status.sh ]]; then
+  curriculum_empty_file_result=0
+  curriculum_empty_file_output="$(bash scripts/curriculum-builder-production-registry-empty-file-status.sh 2>&1)" || curriculum_empty_file_result=$?
+  curriculum_empty_file_pass="$(summary_count "${curriculum_empty_file_output}" "PASS")"
+  curriculum_empty_file_warn="$(summary_count "${curriculum_empty_file_output}" "WARN")"
+  curriculum_empty_file_fail="$(summary_count "${curriculum_empty_file_output}" "FAIL")"
+
+  if [[ "${curriculum_empty_file_result}" != "0" ]]; then
+    printf '%s\n' "${curriculum_empty_file_output}"
+    fail "Production registry empty-file status failed"
+  elif [[ -n "${curriculum_empty_file_pass}" && -n "${curriculum_empty_file_warn}" && -n "${curriculum_empty_file_fail}" ]]; then
+    printf 'Production Registry Empty File: PASS %s / WARN %s / FAIL %s\n' "${curriculum_empty_file_pass}" "${curriculum_empty_file_warn}" "${curriculum_empty_file_fail}"
+    pass "Production registry empty-file status completed"
+  else
+    pass "Production registry empty-file status completed"
+  fi
+else
+  warn "Production registry empty-file status script missing: scripts/curriculum-builder-production-registry-empty-file-status.sh"
+fi
+
 section "Curriculum Source Readiness Foundation"
 if [[ -f scripts/curriculum-source-readiness-status.sh ]]; then
   curriculum_source_readiness_result=0

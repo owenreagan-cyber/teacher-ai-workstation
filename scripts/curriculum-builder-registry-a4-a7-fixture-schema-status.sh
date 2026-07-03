@@ -18,6 +18,8 @@ repo_root="$(git rev-parse --show-toplevel 2>/dev/null || true)"
 cd "${repo_root}"
 
 fixture="assistant/curriculum-builder/samples/registry-v0-2-local-records/local-registry.json"
+negative_dir="assistant/curriculum-builder/samples/registry-v0-2-local-records/negative"
+evidence_doc="docs/curriculum-builder-registry-a4-a7-fixture-evidence.md"
 manifest="assistant/curriculum-builder/metadata-contract/v0/inactive-manifest.json"
 status_script="scripts/curriculum-builder-registry-a4-a7-fixture-schema-status.sh"
 
@@ -54,6 +56,8 @@ fi
 
 pass "fixture file exists: ${fixture}"
 pass "inactive manifest exists: ${manifest}"
+check_file "${evidence_doc}"
+grep -Fq -- "complete_a4_a7_fixture_optional_field_enrichment" "${evidence_doc}" && pass "A4–A7 fixture evidence doc closure marker present" || fail "A4–A7 fixture evidence doc missing closure marker"
 
 if ! command -v python3 >/dev/null 2>&1; then
   fail "python3 required for A4–A7 fixture cross-validation"
@@ -79,6 +83,10 @@ ENVELOPE = {"contract_type", "contract_version", "metadata_only", "read_only"}
 OPTIONAL_NULL = {
     "content_hash_future", "last_verified_future", "review_notes_reference_future",
     "last_reviewed_future", "teacher_only_reason",
+}
+FORBIDDEN_FIELDS = {
+    "student_name", "student_id", "student_identifier", "iep_reference",
+    "oauth_token", "api_key", "generation_prompt",
 }
 A6_REVIEW_STATUSES = {
     "not_started", "in_review", "approved_placeholder", "deferred", "rejected_placeholder",
@@ -114,6 +122,10 @@ for entry in manifest.get("contract_schemas", []):
 def required_keys(sample: dict) -> set:
     return set(sample.keys()) - ENVELOPE - OPTIONAL_NULL
 
+def check_forbidden(obj, label):
+    for key in sorted(FORBIDDEN_FIELDS & set(obj.keys())):
+        errors.append(f"{label} contains forbidden field: {key}")
+
 def check_object(obj, program, label, extra_ok=None):
     sample = contract_samples.get(program)
     if not sample:
@@ -133,6 +145,7 @@ if not isinstance(records, list) or not records:
 else:
     for idx, record in enumerate(records):
         check_object(record, "A4", f"records[{idx}]")
+        check_forbidden(record, f"records[{idx}]")
         rs = record.get("review_status")
         if rs not in A6_REVIEW_STATUSES:
             errors.append(f"records[{idx}] review_status not A6-compatible: {rs!r}")
@@ -142,6 +155,7 @@ a5_sample = contract_samples.get("A5", {})
 a5_core = {"source_reference_id", "source_system", "source_label", "path_or_url_reference", "not_scanned", "not_ingested"}
 a5_recommended = required_keys(a5_sample) - a5_core
 for idx, src in enumerate(fixture.get("source_references", [])):
+    check_forbidden(src, f"source_references[{idx}]")
     missing_core = sorted(a5_core - set(src.keys()))
     if missing_core:
         errors.append(f"source_references[{idx}] missing A5 core fields: {', '.join(missing_core)}")
@@ -155,11 +169,35 @@ for idx, src in enumerate(fixture.get("source_references", [])):
 # A7 — lesson_links
 for idx, link in enumerate(fixture.get("lesson_links", [])):
     check_object(link, "A7", f"lesson_links[{idx}]")
+    check_forbidden(link, f"lesson_links[{idx}]")
     if link.get("generation_blocked") is not True:
         errors.append(f"lesson_links[{idx}] generation_blocked must be true")
 
-# A6 — embedded review on records (standalone A6 envelope not required in fixture)
-warnings.append("fixture embeds review_status on A4 records; standalone A6 envelope objects not required")
+# A6 — embedded review on records (intentional fixture design)
+embedded_a6_ok = bool(records) and all(
+    isinstance(r.get("review_status"), str) and r.get("review_status") in A6_REVIEW_STATUSES
+    for r in records
+)
+if embedded_a6_ok:
+    print("PASS: A6 review_status embedded on A4 records per fixture design")
+    print("a6_embedded_design: true")
+else:
+    warnings.append("fixture missing valid embedded A6 review_status on all A4 records")
+
+# Optional-field coverage summary (fake/local enrichment)
+a5_optional_present = 0
+a5_optional_total = 0
+for src in fixture.get("source_references", []):
+    for field in sorted(a5_recommended):
+        a5_optional_total += 1
+        if field in src:
+            a5_optional_present += 1
+if a5_optional_total:
+    print(f"PASS: A5 optional fields present {a5_optional_present}/{a5_optional_total} across source_references")
+    print(f"a5_optional_coverage: {a5_optional_present}/{a5_optional_total}")
+tags_count = sum(1 for r in records if isinstance(r.get("tags"), list) and r["tags"])
+if records:
+    print(f"PASS: A4 optional tags present on {tags_count}/{len(records)} records")
 
 if errors:
     for err in errors:
@@ -184,6 +222,8 @@ while IFS= read -r line; do
     FAIL:*) fail "${line#FAIL: }" ;;
     fixture_only:*) pass "${line}" ;;
     no_production_write:*) pass "${line}" ;;
+    a6_embedded_design:*) pass "${line}" ;;
+    a5_optional_coverage:*) pass "A5 optional field coverage: ${line#a5_optional_coverage: }" ;;
   esac
 done <<< "${validation_output}"
 
@@ -194,6 +234,127 @@ elif grep -q 'PASS: fixture cross-validates' <<< "${validation_output}"; then
 else
   fail "A4–A7 fixture schema cross-validation did not report success"
   printf '%s\n' "${validation_output}"
+fi
+
+section 'Negative Fixture Guardrails'
+if [[ -d "${negative_dir}" ]]; then
+  pass "negative fixture directory exists: ${negative_dir}"
+  for neg in "${negative_dir}"/negative-*.json; do
+    [[ -f "${neg}" ]] || continue
+    neg_name="$(basename "${neg}")"
+    neg_output="$(python3 - "${repo_root}" "${neg}" <<'PY'
+import json
+import re
+import sys
+from pathlib import Path
+
+repo_root = Path(sys.argv[1])
+fixture_path = Path(sys.argv[2])
+manifest_path = repo_root / "assistant/curriculum-builder/metadata-contract/v0/inactive-manifest.json"
+samples_dir = manifest_path.parent
+
+ENVELOPE = {"contract_type", "contract_version", "metadata_only", "read_only"}
+OPTIONAL_NULL = {
+    "content_hash_future", "last_verified_future", "review_notes_reference_future",
+    "last_reviewed_future", "teacher_only_reason",
+}
+FORBIDDEN_FIELDS = {
+    "student_name", "student_id", "student_identifier", "iep_reference",
+    "oauth_token", "api_key", "generation_prompt",
+}
+A6_REVIEW_STATUSES = {
+    "not_started", "in_review", "approved_placeholder", "deferred", "rejected_placeholder",
+    "deferred_placeholder",
+}
+PLACEHOLDER_REF = re.compile(
+    r"^(placeholder://|gdrive://placeholder/|nas://placeholder/|icloud://placeholder/|local://placeholder/)"
+)
+
+errors = []
+with open(manifest_path, encoding="utf-8") as handle:
+    manifest = json.load(handle)
+with open(fixture_path, encoding="utf-8") as handle:
+    fixture = json.load(handle)
+
+contract_samples = {}
+for entry in manifest.get("contract_schemas", []):
+    program = entry.get("program")
+    sample_rel = entry.get("sample")
+    if not program or not sample_rel:
+        continue
+    sample_path = samples_dir / sample_rel
+    if sample_path.is_file():
+        with open(sample_path, encoding="utf-8") as sf:
+            contract_samples[program] = json.load(sf)
+
+def required_keys(sample: dict) -> set:
+    return set(sample.keys()) - ENVELOPE - OPTIONAL_NULL
+
+def check_forbidden(obj, label):
+    for key in sorted(FORBIDDEN_FIELDS & set(obj.keys())):
+        errors.append(f"{label} contains forbidden field: {key}")
+
+records = fixture.get("records", [])
+for idx, record in enumerate(records):
+    sample = contract_samples.get("A4")
+    if sample:
+        missing = sorted(required_keys(sample) - set(record.keys()))
+        if missing:
+            errors.append(f"records[{idx}] missing A4 fields: {', '.join(missing)}")
+    check_forbidden(record, f"records[{idx}]")
+    rs = record.get("review_status")
+    if rs is not None and rs not in A6_REVIEW_STATUSES:
+        errors.append(f"records[{idx}] review_status not A6-compatible: {rs!r}")
+
+a5_sample = contract_samples.get("A5", {})
+a5_core = {"source_reference_id", "source_system", "source_label", "path_or_url_reference", "not_scanned", "not_ingested"}
+for idx, src in enumerate(fixture.get("source_references", [])):
+    check_forbidden(src, f"source_references[{idx}]")
+    missing_core = sorted(a5_core - set(src.keys()))
+    if missing_core:
+        errors.append(f"source_references[{idx}] missing A5 core fields: {', '.join(missing_core)}")
+    path_ref = src.get("path_or_url_reference", "")
+    if path_ref and (not isinstance(path_ref, str) or not PLACEHOLDER_REF.match(path_ref)):
+        errors.append(f"source_references[{idx}] path_or_url_reference must be placeholder URI")
+
+for idx, link in enumerate(fixture.get("lesson_links", [])):
+    sample = contract_samples.get("A7")
+    if sample:
+        missing = sorted(required_keys(sample) - set(link.keys()))
+        if missing:
+            errors.append(f"lesson_links[{idx}] missing A7 fields: {', '.join(missing)}")
+    check_forbidden(link, f"lesson_links[{idx}]")
+    if "generation_blocked" in link and link.get("generation_blocked") is not True:
+        errors.append(f"lesson_links[{idx}] generation_blocked must be true")
+
+if errors:
+    print("NEGATIVE_EXPECTED_FAIL: true")
+    print(f"NEGATIVE_ERROR_COUNT: {len(errors)}")
+else:
+    print("NEGATIVE_UNEXPECTED_PASS: true")
+PY
+)"
+    if grep -q 'NEGATIVE_EXPECTED_FAIL: true' <<< "${neg_output}"; then
+      pass "negative fixture correctly fails validation: ${neg_name}"
+    else
+      fail "negative fixture must fail validation: ${neg_name}"
+      printf '%s\n' "${neg_output}"
+    fi
+  done
+else
+  fail "negative fixture directory missing: ${negative_dir}"
+fi
+
+section 'Production Registry Parked-State Proof'
+production_registry_path="assistant/curriculum-builder/registry/v0-2/production-registry.json"
+sentinel="assistant/curriculum-builder/registry/candidate-v0-2-production/BLOCKED-NO-WRITES.sentinel"
+if [[ -f "${production_registry_path}" ]] && command -v python3 >/dev/null 2>&1; then
+  record_count="$(python3 -c "import json; d=json.load(open('${production_registry_path}')); print(len(d.get('records',[])))" 2>/dev/null || echo 0)"
+  [[ "${record_count}" == "1" ]] && pass 'production registry records count exactly 1' || fail "production registry records count must be 1 (got ${record_count})"
+  [[ -f "${sentinel}" ]] && pass 'BLOCKED-NO-WRITES.sentinel intact' || fail 'BLOCKED-NO-WRITES.sentinel missing'
+  grep -Fq -- '--curriculum-registry-write)' bin/chief-of-staff 2>/dev/null && fail 'chief-of-staff must not implement --curriculum-registry-write handler' || pass 'chief-of-staff has no --curriculum-registry-write handler'
+else
+  warn 'production registry parked-state proof skipped'
 fi
 
 section 'Status Script and CLI'

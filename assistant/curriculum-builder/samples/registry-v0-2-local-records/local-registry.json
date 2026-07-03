@@ -8,10 +8,10 @@
   "records": [
     {
       "resource_id": "example-resource-001",
-      "title": "Sample Worksheet",
+      "title": "Example Worksheet Label",
       "resource_type": "worksheet",
-      "subject": "Example Math Course",
-      "grade_band": "Example Grade 5",
+      "subject": "example-math",
+      "grade_band": "example-grade-5",
       "course": "Example Math Course",
       "unit": "Example Unit 1",
       "lesson": "Example Lesson 1",
@@ -23,14 +23,15 @@
       "student_facing_allowed": true,
       "review_status": "approved_placeholder",
       "lesson_link_id": "example-lesson-link-001",
+      "tags": ["example-tag", "fake-fixture-only"],
       "notes": "Fictional local fixture record only — no production registry write."
     },
     {
       "resource_id": "example-resource-002",
-      "title": "Example Resource",
+      "title": "Example Study Guide Label",
       "resource_type": "study_guide",
-      "subject": "Example ELA Course",
-      "grade_band": "Example Grade 6",
+      "subject": "example-ela",
+      "grade_band": "example-grade-6",
       "course": "Example ELA Course",
       "unit": "Example Unit 1",
       "lesson": "Example Lesson 1",
@@ -42,6 +43,7 @@
       "student_facing_allowed": false,
       "review_status": "in_review",
       "lesson_link_id": "example-lesson-link-001",
+      "tags": ["example-tag", "fake-fixture-only"],
       "notes": "Second fictional local fixture record for validator coverage."
     }
   ],
@@ -50,7 +52,10 @@
       "source_reference_id": "example-source-001",
       "source_system": "google_drive",
       "source_label": "example-drive-reference",
+      "source_kind": "file",
       "path_or_url_reference": "placeholder://source/example-drive-reference",
+      "owner_context": "teacher_workstation_planning",
+      "access_notes": "Fake fixture only — manual future access; no API or crawl.",
       "not_scanned": true,
       "not_ingested": true
     },
@@ -58,7 +63,10 @@
       "source_reference_id": "example-source-002",
       "source_system": "nas",
       "source_label": "example-nas-reference",
+      "source_kind": "folder",
       "path_or_url_reference": "placeholder://source/example-nas-reference",
+      "owner_context": "example-nas-planning-context",
+      "access_notes": "Fake NAS label only — not scanned; not ingested.",
       "not_scanned": true,
       "not_ingested": true
     }

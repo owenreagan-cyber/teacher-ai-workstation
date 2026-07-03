@@ -385,8 +385,10 @@ Mission: authority map, aggregate lane status, A4–A7 fixture cross-validation
 
 Implemented:
 - docs/curriculum-builder-registry-authority-map.md
+- docs/curriculum-builder-registry-a4-a7-fixture-evidence.md
 - bin/chief-of-staff --curriculum-registry-lane-status
 - bin/chief-of-staff --curriculum-registry-a4-a7-fixture-schema-status
+- A4–A7 optional-field enrichment (targeted WARNs 7 → 0; fake/local fixtures only)
 
 Blocked:
 - production registry writes

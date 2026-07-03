@@ -18,7 +18,10 @@ bash "${status_script}" >"${tmp}" 2>&1 || {
   exit 1
 }
 grep -q '^FAIL: 0$' "${tmp}" || { echo "FAIL: status reported failures"; cat "${tmp}"; rm -f "${tmp}"; exit 1; }
+grep -q '^WARN: 0$' "${tmp}" || { echo "FAIL: expected 0 WARN after A4–A7 optional-field enrichment"; cat "${tmp}"; rm -f "${tmp}"; exit 1; }
 grep -q 'no_production_write: true' "${tmp}" || { echo "FAIL: missing no_production_write"; cat "${tmp}"; rm -f "${tmp}"; exit 1; }
+grep -q 'a6_embedded_design: true' "${tmp}" || { echo "FAIL: missing A6 embedded design marker"; cat "${tmp}"; rm -f "${tmp}"; exit 1; }
+grep -q 'negative fixture correctly fails validation' "${tmp}" || { echo "FAIL: missing negative fixture guardrail proof"; cat "${tmp}"; rm -f "${tmp}"; exit 1; }
 rm -f "${tmp}"
 
 bad_tmp="$(mktemp "${TMPDIR:-/tmp}/cb-registry-a4a7-bad.XXXXXX.json")"
@@ -90,6 +93,11 @@ rm -f "${cli_tmp}"
 
 if ! bin/chief-of-staff --help 2>&1 | grep -Fq -- '--curriculum-registry-a4-a7-fixture-schema-status'; then
   echo "FAIL: --help missing a4-a7 fixture schema status command"
+  exit 1
+fi
+
+if ! grep -Fq -- 'complete_a4_a7_fixture_optional_field_enrichment' docs/curriculum-builder-registry-a4-a7-fixture-evidence.md; then
+  echo "FAIL: A4–A7 fixture evidence doc missing closure marker"
   exit 1
 fi
 

@@ -8,15 +8,17 @@ Phase 0E Vibe Engine.
 
 ## Current Focus
 
-**Presentation Engine renderer-foundation planning complete — production registry parked (Option D recommended).**
+**A4–A7 fixture optional-field enrichment complete — production registry parked (Option D recommended).**
 
-Presentation Engine classroom-display planning lane complete (`docs/presentation-engine-renderer-foundation.md`; `--presentation-engine-renderer-foundation-status`). Runtime rendering, export, AI generation, and real curriculum ingestion remain blocked. first governed production registry record complete; whole-system master roadmap and production registry parked state (Option D) unchanged.
+Fake/local A4–A7 optional fields enriched in canonical fixture (`docs/curriculum-builder-registry-a4-a7-fixture-evidence.md`; `--curriculum-registry-a4-a7-fixture-schema-status`). Targeted A4–A7 WARNs resolved (7 → 0). first governed production registry record complete; runtime ingestion, export, and generation remain blocked.
 
 Master program roadmap: `docs/master-build-roadmap.md` — Program Readiness Audit and mission sequencing for v1.0. Whole-system report: `docs/whole-system-master-roadmap-build-state-report.md`. Implementation does not proceed automatically from the roadmap.
 
 Handoff and status clarity. Start from `docs/phase-1-chief-of-staff-status-audit.md` — Repo-Wide Parked Tracks and Active Status Map and `docs/build-queue.md`.
 
 ## Recently Completed
+
+- A4–A7 Fixture Optional-Field Enrichment (2026-07-03): fake/local optional fields in `local-registry.json`; negative fixtures; `docs/curriculum-builder-registry-a4-a7-fixture-evidence.md`; targeted WARNs 7 → 0. No ingestion or registry mutation.
 
 - Presentation Engine Renderer Foundation Planning (2026-07-03): `docs/presentation-engine-renderer-foundation.md`; static interface plan; blocked runtime boundaries; fake/local fixtures; `--presentation-engine-renderer-foundation-status`. No runtime rendering, export, or generation.
 

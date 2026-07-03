@@ -1,0 +1,19 @@
+{
+  "fixture_classification": "negative_blocked_fields_reference",
+  "violation": "lesson_links generation_blocked must be true",
+  "records": [],
+  "source_references": [],
+  "lesson_links": [
+    {
+      "lesson_link_id": "example-lesson-link-bad-gen",
+      "course": "Example ELA Course",
+      "unit": "Example Unit 1",
+      "lesson": "Example Lesson 1",
+      "pacing_reference": "placeholder://registry/example-record",
+      "canvas_reference_future": "placeholder://canvas/example-future-reference",
+      "resource_ids": ["example-resource-001"],
+      "manual_alignment_status": "aligned_placeholder",
+      "generation_blocked": false
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "fixture_classification": "negative_blocked_fields_reference",
+  "violation": "student identifiers must not appear in planning fixtures",
+  "records": [
+    {
+      "resource_id": "example-resource-bad-student",
+      "title": "Negative Student Identifier Fixture",
+      "resource_type": "worksheet",
+      "subject": "example-math",
+      "grade_band": "example-grade-5",
+      "course": "Example Math Course",
+      "unit": "Example Unit 1",
+      "lesson": "Example Lesson 1",
+      "topic": "Example Topic Placeholder",
+      "source_reference_id": "example-source-001",
+      "teacher_only": false,
+      "student_facing_allowed": true,
+      "review_status": "approved_placeholder",
+      "student_name": "forbidden-student-identifier",
+      "notes": "Negative fixture — student identifier field forbidden."
+    }
+  ],
+  "source_references": [],
+  "lesson_links": []
+}

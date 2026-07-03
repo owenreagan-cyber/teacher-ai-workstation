@@ -33,10 +33,10 @@ Closure: `docs/chief-of-staff-v1-program-b-closure.md`. Commands: `--chief-of-st
 | Candidate | Status |
 | --- | --- |
 | Program B vs full CLI surface map doc | **implemented** — PR #215 |
-| Smoke test expansion for B4 queue commands | **proposed** |
+| Smoke test expansion for B4 queue commands | **implemented** — smoke test covers `--approval-queue` and `--blocker-queue` |
 | Chief of Staff aggregate "all modes" read-only status | **deferred** |
 | Command deprecation policy doc | **deferred** |
-| B7 future mission placeholder in closure | **proposed** |
+| B7 future mission placeholder in closure | **implemented** — Program B closure B7 placeholder |
 
 ## Lane Status: `complete_pending_review` → `reviewed`
 

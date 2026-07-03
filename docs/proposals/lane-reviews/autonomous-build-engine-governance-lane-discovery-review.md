@@ -70,7 +70,7 @@ Implementation: none authorized by this review
 | Status script checks proposal folder READMEs exist | low | low | **implemented** — ABE status script |
 | Autonomous sprint queue template doc | medium | low | **implemented** — `docs/cursor-autonomous-build-engine-sprint-queue-template.md` |
 | Self-review of CB-AUTO-GOV lane (this doc) | high | low | **implemented** |
-| Batch Level 2 review playbook for sprint missions | medium | low | **proposed** |
+| Batch Level 2 review playbook for sprint missions | medium | low | **implemented** — `docs/cursor-autonomous-build-engine-level-2-batch-playbook.md` |
 
 ---
 

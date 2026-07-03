@@ -93,7 +93,8 @@ check_doc_contains "${boundaries_doc}" "Canvas crawling" "boundaries block canva
 check_doc_contains "${boundaries_doc}" "OAuth" "boundaries block oauth"
 check_doc_contains "${index_doc}" "complete_a4_a7_metadata_contracts" "index closure status"
 
-section 'Governance and Roadmap Coherence'
+check_file docs/curriculum-builder-contract-activation-checklist-owen.md
+check_doc_contains docs/curriculum-builder-contract-activation-checklist-owen.md "pending" "contract activation owen checklist"
 check_doc_contains docs/cursor-operating-modes-and-approval-gates.md "Proposal Lifecycle" "governance proposal lifecycle"
 check_doc_contains docs/teacher-workstation-domain-boundaries.md "Curriculum / Lesson" "domain boundaries curriculum"
 check_doc_contains docs/master-build-roadmap.md "curriculum-builder-canonical-contract-schemas" "roadmap links contract schemas index"

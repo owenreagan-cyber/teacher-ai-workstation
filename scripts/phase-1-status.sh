@@ -1045,6 +1045,9 @@ section "Autonomous Build Engine Governance Files"
 for path in \
   docs/cursor-autonomous-build-engine.md \
   docs/cursor-autonomous-build-engine-sprint-queue-template.md \
+  docs/cursor-autonomous-build-engine-level-2-batch-playbook.md \
+  docs/mac-workstation-e1-vs-wallpaper-lane-map.md \
+  docs/curriculum-builder-contract-activation-checklist-owen.md \
   docs/curriculum-builder-registry-expected-warns.md \
   docs/whole-system-master-roadmap-build-state-report.md \
   scripts/autonomous-build-engine-status.sh \

@@ -96,6 +96,10 @@ Program B closure is documentation and read-only CLI only. No APIs, OAuth, netwo
 
 ## Recommended Next Mission
 
+**B7 — Future Chief of Staff Mission Placeholder (planning-only)**
+
+Program B1–B6 are complete. B7 is reserved for a future approved mission (e.g., unified daily briefing aggregation) and must not auto-start without explicit Owen authorization.
+
 **Teacher Workstation Health Monitor — Read-Only Health Foundation (Program H)**
 
 Chief of Staff Program B establishes daily operations, closeout, queues, and mode context. The next natural section is a read-only Health Monitor that observes workstation health without repairing, updating, or integrating.

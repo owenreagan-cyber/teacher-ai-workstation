@@ -88,6 +88,10 @@ Backlog pointer for **future** governed production registry mutation missions be
 | 7 | Writer / `--write` tooling | **not done** |
 | 8 | Sentinel removal | **not approved** |
 
+## Next-Gate Classification
+
+See `docs/curriculum-builder-production-registry-next-gate-classification.md` for blocked next gates (writer/--write, second record, pilot expansion, integrations).
+
 ## Distinction
 
 The first governed single-record write was a **manual PR edit** of `production-registry.json`. It does **not** authorize writer scripts, active `--write`, batch import, auto-promotion, or sentinel removal.

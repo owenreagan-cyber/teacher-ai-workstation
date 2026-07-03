@@ -88,6 +88,7 @@
 ### Now
 
 - **Lane-review hardening sprint complete** — health/updater boundaries, updater check-only banners, Mac E1/F1 cross-links, Canvas frozen banner, Lovable no-API guardrails, R0+D1 cross-links, operating modes discovery banner, ABE sprint queue template, 3D planning-only banner. `tests/lane-review-hardening-guardrails-test.sh`. No runtime activation.
+- **Post-first-record hardening complete (2026-07-03)** — sentinel semantics, negative validator tests, next-gate classification, snapshot audit docs; no new records.
 - **First governed production registry record complete (2026-07-03)** — exactly one approved manual metadata record (`resource-math-lesson-108-presentation`); `--curriculum-production-registry-first-record-status`; sentinel intact; writer scripts and `--write` blocked.
 - **Metadata pilot execution planning complete (2026-07-02)** — one-record protocol, Owen worksheet, acceptance criteria, snapshot plan; `--curriculum-production-registry-metadata-pilot-plan-status`; first record executed via governed PR.
 - **Empty-file mission complete (2026-07-02, historical)** — pre-write empty shell baseline; `--curriculum-production-registry-empty-file-status` (historical); sentinel intact.

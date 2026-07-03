@@ -5,7 +5,7 @@ Last updated: 2026-07-03
 ```text
 Status: documentation/status only
 Authority: whole-system posture snapshot — not implementation approval
-Baseline: main after Production Registry First Governed Record mission
+Baseline: main after Production Registry Post–First-Record Hardening mission
 ```
 
 **Status key:** `[x]` Built/merged · `[~]` Currently being built · `[>]` Ready for safe planning/build · `[!]` Blocked pending Owen/safety gate · `[ ]` Future / not started · `[?]` Insufficient repo evidence
@@ -60,9 +60,10 @@ Baseline: main after Production Registry First Governed Record mission
 | [x] | **Owen § J checklist complete** — all 11 items decided |
 | [x] | **Metadata pilot execution planning complete** — one-record protocol, worksheet, acceptance criteria |
 | [x] | **Empty-file mission complete (historical)** — pre-write empty shell baseline |
-| [x] | **First governed production registry record complete** — exactly one manual metadata record (`resource-math-lesson-108-presentation`) |
+| [x] | **First governed production registry record complete** — `resource-math-lesson-108-presentation` |
+| [x] | **Post-first-record hardening** — sentinel semantics, negative tests, next-gate classification |
 | [!] | Write tooling blocked; second record blocked; metadata pilot beyond first record blocked |
-| **Proof** | `--curriculum-production-registry-first-record-status`; first-record status ~35+ / 0 / 0 |
+| **Proof** | `--curriculum-production-registry-first-record-status`; first-record status ~50+ / 0 / 0 |
 
 ### Owen § J Checklist State (2026-07-02)
 
@@ -203,7 +204,7 @@ Baseline: main after Production Registry First Governed Record mission
 | --- | --- |
 | Dashboard | ~127+ / 0 / 0 PASS |
 | Validate-all | ~45+ / 0 / 0 PASS |
-| First-record status | ~35+ / 0 / 0 PASS |
+| First-record status | ~50+ / 0 / 0 PASS |
 | Empty-file status (historical) | ~30 / 0 / 0 PASS |
 | Active mission | None |
 | Next possible gates | Writer/`--write` tooling, second record — separate explicit prompts |

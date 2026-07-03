@@ -23,7 +23,7 @@ This plan does not authorize source auto-resolution.
 
 ## Purpose
 
-Define the **exact protocol** for the first future governed single-record write to the production registry. The pilot is **one-record-only** so Owen can validate manual metadata entry, review gates, snapshot/diff/restore proof, and rollback before any broader write missions.
+Define the **exact protocol** for the governed single-record write to the production registry. **First record executed 2026-07-03.** The pilot remains **one-record-only**; expansion beyond the first approved record requires separate explicit missions.
 
 ## Why One Record Only
 
@@ -40,7 +40,8 @@ Define the **exact protocol** for the first future governed single-record write 
 | --- | --- |
 | Production path | `assistant/curriculum-builder/registry/v0-2/production-registry.json` |
 | Namespace | `resource-*` |
-| Empty-file baseline | `records: []` — see `docs/curriculum-builder-production-registry-empty-file.md` |
+| Empty-file baseline | pre-write snapshot `records: []` — see `docs/curriculum-builder-production-registry-empty-file.md` |
+| Live registry | one approved record — see `docs/curriculum-builder-production-registry-first-record.md` |
 | Sentinel | `BLOCKED-NO-WRITES.sentinel` remains until separate write mission |
 
 ## Manual-Only Data Entry Rules

@@ -1,0 +1,50 @@
+{
+  "version": "0.2",
+  "registry_type": "production",
+  "records": [
+    {
+      "id": "resource-math-lesson-108-presentation",
+      "title": "Lesson 108: Schedules and Elapsed Time Presentation Blueprint",
+      "subject": "math",
+      "grade_band": "elementary-grade-4-5",
+      "unit_label": "Pacing Block 36 Weeks — Saxon Math Level 5",
+      "lesson_label": "Lesson 108",
+      "resource_type": "presentation_slide_deck",
+      "audience": "teacher_facing",
+      "review_state": "approved",
+      "manual_tags": ["first-record"],
+      "notes": "Planning negative fixture — two records.",
+      "source_reference": {
+        "display_label": "Fixture only",
+        "source_type": "manual_label",
+        "location_note": "Label only",
+        "citation_note": "Fixture only"
+      },
+      "created_by": "Fixture",
+      "created_at": "2026-07-03T04:21:00Z",
+      "updated_at": "2026-07-03T04:21:00Z"
+    },
+    {
+      "id": "resource-math-lesson-109-presentation",
+      "title": "Second record negative fixture",
+      "subject": "math",
+      "grade_band": "elementary-grade-4-5",
+      "unit_label": "Fixture",
+      "lesson_label": "Lesson 109",
+      "resource_type": "presentation_slide_deck",
+      "audience": "teacher_facing",
+      "review_state": "approved",
+      "manual_tags": ["negative-fixture"],
+      "notes": "Must fail validator.",
+      "source_reference": {
+        "display_label": "Fixture only",
+        "source_type": "manual_label",
+        "location_note": "Label only",
+        "citation_note": "Fixture only"
+      },
+      "created_by": "Fixture",
+      "created_at": "2026-07-03T04:21:00Z",
+      "updated_at": "2026-07-03T04:21:00Z"
+    }
+  ]
+}

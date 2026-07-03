@@ -131,6 +131,7 @@ bin/chief-of-staff --curriculum-production-registry-metadata-pilot-plan-status >
 bash tests/curriculum-builder-production-registry-metadata-pilot-plan-status-test.sh >/dev/null
 bin/chief-of-staff --curriculum-production-registry-first-record-status >/dev/null
 bash tests/curriculum-builder-production-registry-first-record-status-test.sh >/dev/null
+bash tests/curriculum-builder-production-registry-first-record-validate-test.sh >/dev/null
 bin/chief-of-staff --curriculum-source-readiness-status >/dev/null
 bash tests/curriculum-source-readiness-status-test.sh >/dev/null
 bin/chief-of-staff --curriculum-registry-lane-status >/dev/null

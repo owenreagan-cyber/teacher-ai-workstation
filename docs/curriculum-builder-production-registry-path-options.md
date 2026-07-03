@@ -1,12 +1,12 @@
 # Production Registry Path Options (Owen Path Decision Recorded)
 
-Last updated: 2026-07-02
+Last updated: 2026-07-03
 
 ```text
 Status: planning_only
-Classification: path decision recorded — not implementation authority
+Classification: path decision recorded — not write-tooling authority
 Owen checklist item: 1 — Production registry path (approved 2026-07-02)
-Implementation: blocked — metadata boundaries approved; mutation and pilot execution remain separate missions
+Implementation: first governed record complete; writer tooling and second record blocked
 ```
 
 ## Purpose
@@ -26,8 +26,8 @@ assistant/curriculum-builder/registry/v0-2/production-registry.json
 | Rule | Detail |
 | --- | --- |
 | v0 remains fictional | `registry/v0/registry.json` stays read-only `sample-*` reference |
-| File exists as empty shell | `records: []` only; record writes remain blocked until separate governed write mission |
-| Candidate skeleton | `candidate-v0-2-production/` remains blocked planning skeleton; not the canonical production authority |
+| File exists with one governed record | `records` count exactly **1**; ID `resource-math-lesson-108-presentation`; write tooling blocked |
+| Candidate skeleton | `candidate-v0-2-production/` remains blocked planning skeleton; sentinel intact |
 
 ## Current Committed Surfaces
 
@@ -35,7 +35,7 @@ assistant/curriculum-builder/registry/v0-2/production-registry.json
 | --- | --- | --- | --- |
 | Registry v0 (live read-only) | `assistant/curriculum-builder/registry/v0/registry.json` | Fictional `sample-*` placeholders | **Not production** — remains read-only reference |
 | v0.2 fake fixtures | `assistant/curriculum-builder/samples/registry-v0-2-local-records/` | `fake_fixture_only` envelope | **Not production** |
-| **Production registry** | `assistant/curriculum-builder/registry/v0-2/production-registry.json` | **Empty shell — `records: []`** | **Approved path — record writes blocked** |
+| **Production registry** | `assistant/curriculum-builder/registry/v0-2/production-registry.json` | **One governed manual metadata record** | **Approved path — write tooling blocked** |
 | Candidate skeleton (blocked) | `assistant/curriculum-builder/registry/candidate-v0-2-production/` | Manual-only path shape; no records | **Planning only** — not canonical authority |
 
 ## Path Options for Owen

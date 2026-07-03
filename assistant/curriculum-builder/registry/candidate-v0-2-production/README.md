@@ -27,7 +27,7 @@ candidate-v0-2-production/
 - **Do not** copy v0.2 fake fixtures into this path
 - **Do not** remove `BLOCKED-NO-WRITES.sentinel` without Owen-approved production mission
 - Dry-run candidates in `samples/registry-v0-2-dry-run/` must **not** auto-promote here
-- v0 `registry/v0/registry.json` remains the only committed non-sample registry file today
+- v0 `registry/v0/registry.json` remains read-only fictional reference; canonical production authority is `registry/v0-2/production-registry.json` (one governed record)
 
 ## Owen Decisions Still Required
 

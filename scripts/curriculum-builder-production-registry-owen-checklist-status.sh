@@ -83,7 +83,7 @@ Metadata boundaries: approved (items 3 and 4 — 2026-07-02)
 All Owen checklist items decided: yes (11 approved, 0 deferred)
 Approved item 2 does not authorize registry mutation: yes
 No write mission is authorized: yes
-ChatGPT review: recommended before empty-file or write prompt
+ChatGPT review: recommended before writer tooling or second-record prompt
 PASS does not authorize implementation: yes
 EOF
 

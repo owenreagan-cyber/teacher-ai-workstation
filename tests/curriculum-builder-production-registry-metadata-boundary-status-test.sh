@@ -83,7 +83,7 @@ grep -q 'canonical planning fixture validates' "${tmp}" || {
 rm -f "${tmp}"
 
 if [[ ! -f "${production_registry_path}" ]]; then
-  echo "FAIL: production-registry.json must exist as empty shell after empty-file mission"
+  echo "FAIL: production-registry.json must exist with one approved record"
   exit 1
 fi
 

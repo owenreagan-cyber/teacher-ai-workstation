@@ -69,9 +69,13 @@ Empty-file status is historical; live registry has one approved record.
 
 ## First Governed Record (2026-07-03)
 
-**Typical total on `--curriculum-production-registry-first-record-status`:** 0 WARN / 0 FAIL when one approved record, sentinel, and negative guards are coherent.
+**Typical total on `--curriculum-production-registry-first-record-status`:** 0 WARN / 0 FAIL when one approved record, sentinel semantics, negative validator tests, and audit diff proof are coherent.
 
 First record does not authorize write tooling, second record, or source auto-resolution.
+
+## Post–First-Record Hardening (2026-07-03)
+
+Negative validator fixtures and sentinel semantics doc are expected. No new WARNs on dashboard or validate-all.
 
 ## Metadata Boundary Refinement (2026-07-02)
 

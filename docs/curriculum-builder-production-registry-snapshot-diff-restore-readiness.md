@@ -1,29 +1,41 @@
 # Production Registry Snapshot / Diff / Restore Readiness
 
-Last updated: 2026-07-02
+Last updated: 2026-07-03
 
 ```text
-Status: planning_readiness_only
-Classification: future write-mission prerequisite — no tooling active
-Implementation: documentation and negative tests only
+Status: first_record_snapshot_proof_complete
+Prior classification: planning_readiness_only (historical)
+Classification: audit readiness — manual pre-write snapshot captured; no restore tooling active
+Implementation: pre-write snapshot artifact + read-only validators
 ```
 
 ## Purpose
 
-Define the **future** snapshot, diff, and restore model for governed production registry writes. No snapshot files, diff reports, or restore commands exist today. The **empty shell baseline** (`production-registry.json` with `records: []`) is the restore target before any record mission.
+Define the snapshot, diff, and restore model for governed production registry writes. The first governed record mission captured a **pre-write empty shell baseline** snapshot and added exactly one manual metadata record. No automated restore command exists.
 
-## Empty Shell Baseline
+**Non-activation:** No restore CLI. No automated diff tooling. Pre-write snapshot is audit proof only — does not authorize write tooling or a second record.
+
+## Baselines
+
+### Pre-Write Empty Shell (Historical Restore Target)
+
+| Field | Value |
+| --- | --- |
+| Snapshot path | `assistant/curriculum-builder/registry/audit/snapshots/production-registry-20260703T042100Z-pre-write.json` |
+| `records` | `[]` |
+| Role | Rollback target if Owen directs restore to empty shell |
+
+### Live Production Registry (Current)
 
 | Field | Value |
 | --- | --- |
 | Path | `assistant/curriculum-builder/registry/v0-2/production-registry.json` |
-| `version` | `0.2` |
-| `registry_type` | `production` |
-| `records` | `[]` |
+| `records` count | exactly **1** |
+| Approved ID | `resource-math-lesson-108-presentation` |
 
-Future restore proof must restore to this exact empty shell before any governed single-record write mission. Future diff expectations start from `records: []`.
+Rollback to empty shell uses the pre-write snapshot or `git revert`. Future second-record missions should capture a new pre-write snapshot with `records` count `1`.
 
-## Future Snapshot File Naming (Planning)
+## Snapshot File Naming
 
 ```text
 assistant/curriculum-builder/registry/audit/snapshots/
@@ -36,72 +48,30 @@ Rules:
 
 - ISO-8601 UTC timestamp in filename
 - `pre-write` mandatory before any mutation
-- `post-write` captured after successful validator PASS
+- `post-write` optional audit artifact after validator PASS
 - `rollback-restore` documents restore target when rollback executed
 
-**Directory not created in Phase 2 preflight.**
+## Diff Expectations
 
-## Future Diff Report Format (Planning)
+First-record mission observed diff:
 
 ```text
-assistant/curriculum-builder/registry/audit/diffs/
-  production-registry-YYYYMMDDTHHMMSSZ.diff.json
+records.length: 0 → 1
+single new resource-* ID: resource-math-lesson-108-presentation
 ```
 
-Planned fields:
+## Validation After Write
 
-| Field | Example |
-| --- | --- |
-| `diff_id` | `diff-20260702T120000Z` |
-| `snapshot_before` | path to pre-write snapshot |
-| `snapshot_after` | path to post-write snapshot |
-| `records_added` | count |
-| `records_changed` | count |
-| `records_removed` | count |
-| `registry_id_changes` | list of `resource-*` IDs affected |
-| `validator_pass` | boolean |
+1. `scripts/curriculum-builder-production-registry-first-record-validate.sh` PASS
+2. `--curriculum-production-registry-first-record-status` PASS
+3. `BLOCKED-NO-WRITES.sentinel` remains intact
 
-Human-readable summary to stdout in future write mission — not implemented today.
+## Validation After Restore to Empty Shell
 
-## Future Restore Verification (Planning)
-
-After restore:
-
-1. Production path byte-identical to pre-write snapshot OR
-2. Validator reports equivalent registry state
-3. Diff report shows zero net change from pre-write baseline
-4. Status command proves no orphan `resource-*` records
-
-## Rollback Proof Checklist (Future Mission)
-
-| # | Check |
-| --- | --- |
-| 1 | Pre-write snapshot exists |
-| 2 | Write attempted only after `review_state: approved` |
-| 3 | Post-write validator run |
-| 4 | On FAIL: restore executed |
-| 5 | Post-restore validator PASS |
-| 6 | Audit log records rollback reason |
-| 7 | No student data in any audit artifact |
-
-## Read-Only Checks Today
-
-| Check | Today |
-| --- | --- |
-| Planning docs exist | yes — this doc + audit preflight |
-| `production-registry.json` exists | **yes** — empty shell baseline |
-| Snapshot tooling exists | **no** — blocked |
-| Restore command exists | **no** — blocked |
-| Status proves empty shell | `--curriculum-production-registry-empty-file-status` |
-
-## Related Documents
-
-| Document | Role |
-| --- | --- |
-| `docs/curriculum-builder-production-registry-empty-file.md` | Empty-file closure |
-| `docs/curriculum-builder-production-registry-audit-rollback-preflight.md` | Audit model |
-| `docs/curriculum-builder-production-registry-phase-2-preflight.md` | Phase 2 closure |
+1. `scripts/curriculum-builder-production-registry-empty-file-validate.sh` PASS on restored file
+2. `--curriculum-production-registry-empty-file-status` PASS (historical)
+3. No orphan `resource-*` files in production directory
 
 ## Non-Activation
 
-No snapshot of production-registry.json tooling exists yet. No restore from production records (records array is empty). No diff against production records.
+No restore CLI. No automated diff tooling. Does not authorize a second record or write tooling.

@@ -69,6 +69,24 @@ grep -Fq 'no second production record authorized' "${tmp}" || {
   rm -f "${tmp}"
   exit 1
 }
+grep -Fq 'audit diff narrative: 0 to 1 record' "${tmp}" || {
+  echo "FAIL: missing audit diff narrative check"
+  cat "${tmp}"
+  rm -f "${tmp}"
+  exit 1
+}
+grep -Fq 'first-record validator negative tests pass' "${tmp}" || {
+  echo "FAIL: missing negative validator test check"
+  cat "${tmp}"
+  rm -f "${tmp}"
+  exit 1
+}
+grep -Fq 'doc mentions sentinel not zero-records-only' "${tmp}" || {
+  echo "FAIL: missing sentinel semantics check"
+  cat "${tmp}"
+  rm -f "${tmp}"
+  exit 1
+}
 rm -f "${tmp}"
 
 if [[ ! -f "${production_registry_path}" ]]; then

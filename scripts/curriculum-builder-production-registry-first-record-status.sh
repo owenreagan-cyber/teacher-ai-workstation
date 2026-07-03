@@ -23,6 +23,9 @@ repo_root="$(git rev-parse --show-toplevel 2>/dev/null || true)"
 cd "${repo_root}"
 
 first_record_doc="docs/curriculum-builder-production-registry-first-record.md"
+sentinel_doc="docs/curriculum-builder-production-registry-sentinel-semantics.md"
+next_gate_doc="docs/curriculum-builder-production-registry-next-gate-classification.md"
+snapshot_plan_doc="docs/curriculum-builder-production-registry-first-record-snapshot-diff-restore-plan.md"
 production_registry_path="assistant/curriculum-builder/registry/v0-2/production-registry.json"
 production_registry_dir="assistant/curriculum-builder/registry/v0-2"
 pre_write_snapshot="assistant/curriculum-builder/registry/audit/snapshots/production-registry-20260703T042100Z-pre-write.json"
@@ -90,6 +93,33 @@ print(len(d.get('records', [])))
 [[ "${record_count}" == "1" ]] && pass "records count is exactly 1" || fail "records count must be exactly 1"
 grep -Fq "\"${APPROVED_ID}\"" "${production_registry_path}" && pass "approved record ID present" || fail "approved record ID missing"
 
+snapshot_count="$(python3 -c "
+import json
+with open('${pre_write_snapshot}') as f:
+    d = json.load(f)
+print(len(d.get('records', [])))
+")"
+[[ "${snapshot_count}" == "0" ]] && pass "pre-write snapshot records count is 0" || fail "pre-write snapshot must have zero records"
+[[ "${snapshot_count}" == "0" && "${record_count}" == "1" ]] && pass "audit diff narrative: 0 to 1 record" || fail "snapshot/live record count diff mismatch"
+
+section 'Sentinel Semantics (Choice A)'
+check_file "${sentinel_doc}"
+check_doc_contains "${sentinel_doc}" "sentinel no longer means records count must be zero" "sentinel not zero-records-only"
+check_doc_contains "${sentinel_doc}" "sentinel no longer means the production file must be absent" "sentinel not file-absent"
+check_doc_contains "${sentinel_doc}" "Manual governed PR edits require explicit prompts" "manual PR edit gate"
+grep -Fq -- 'Production writes: blocked' "${sentinel}" && pass 'sentinel states production writes blocked' || fail 'sentinel must state production writes blocked'
+
+section 'Next-Gate Classification'
+check_file "${next_gate_doc}"
+check_doc_contains "${next_gate_doc}" "Writer / --write tooling" "writer gate blocked"
+check_doc_contains "${next_gate_doc}" "Second production record" "second record gate blocked"
+check_doc_contains "${write_mission}" "Registry mutation: blocked" "write mission mutation blocked"
+
+section 'Snapshot / Diff / Restore Audit'
+check_file "${snapshot_plan_doc}"
+check_doc_contains "${snapshot_plan_doc}" "first_record_audit_complete" "snapshot plan audit closure"
+check_doc_contains "${snapshot_plan_doc}" "production-registry-20260703T042100Z-pre-write.json" "snapshot artifact path"
+
 section 'Resource File Non-Existence'
 resource_file_count=0
 if [[ -d "${production_registry_dir}" ]]; then
@@ -121,6 +151,9 @@ section 'CLI, Manifest, and Tests'
 grep -Fq -- '--curriculum-production-registry-first-record-status' bin/chief-of-staff && pass 'CLI exposes --curriculum-production-registry-first-record-status' || fail 'CLI missing --curriculum-production-registry-first-record-status'
 grep -Fq -- '"--curriculum-production-registry-first-record-status"' "${manifest}" && pass 'manifest lists --curriculum-production-registry-first-record-status' || fail 'manifest missing --curriculum-production-registry-first-record-status'
 check_file tests/curriculum-builder-production-registry-first-record-status-test.sh
+check_file tests/curriculum-builder-production-registry-first-record-validate-test.sh
+bash -n tests/curriculum-builder-production-registry-first-record-validate-test.sh && pass 'bash syntax ok: first record validate test' || fail 'bash syntax failed: first record validate test'
+bash tests/curriculum-builder-production-registry-first-record-validate-test.sh >/dev/null 2>&1 && pass 'first-record validator negative tests pass' || fail 'first-record validator negative tests failed'
 bash -n "${status_script}" && pass "bash syntax ok: ${status_script}" || fail "bash syntax failed: ${status_script}"
 bash -n tests/curriculum-builder-production-registry-first-record-status-test.sh && pass 'bash syntax ok: first record test' || fail 'bash syntax failed: first record test'
 

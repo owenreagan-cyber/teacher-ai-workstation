@@ -1044,13 +1044,17 @@ grep -Fq -- '--curriculum-registry-retrieval-status' bin/chief-of-staff && pass 
 section "Autonomous Build Engine Governance Files"
 for path in \
   docs/cursor-autonomous-build-engine.md \
+  docs/cursor-autonomous-build-engine-sprint-queue-template.md \
   docs/curriculum-builder-registry-expected-warns.md \
+  docs/whole-system-master-roadmap-build-state-report.md \
   scripts/autonomous-build-engine-status.sh \
-  tests/autonomous-build-engine-status-test.sh; do
+  tests/autonomous-build-engine-status-test.sh \
+  tests/lane-review-hardening-guardrails-test.sh; do
   check_required_file "${path}"
 done
 check_bash_syntax scripts/autonomous-build-engine-status.sh
 check_bash_syntax tests/autonomous-build-engine-status-test.sh
+check_bash_syntax tests/lane-review-hardening-guardrails-test.sh
 check_doc_contains docs/cursor-autonomous-build-engine.md "complete_autonomous_build_engine_governance" "autonomous build engine closure"
 grep -Fq -- '--autonomous-build-engine-status' bin/chief-of-staff && pass "chief-of-staff exposes --autonomous-build-engine-status" || fail "chief-of-staff missing --autonomous-build-engine-status"
 

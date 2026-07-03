@@ -32,6 +32,7 @@ status_test="tests/cursor-operating-modes-status-test.sh"
 section 'Cursor Operating Modes and Proposal Governance (Read-Only Foundation)'
 cat <<'EOF'
 Status: documentation/status only
+Discovery ≠ implementation approval: yes
 Runtime activation: no
 Network calls: no
 Proposal ledger: repo docs only

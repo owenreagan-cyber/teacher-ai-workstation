@@ -27,10 +27,10 @@ Implementation: none authorized by this review
 | Candidate | Status |
 | --- | --- |
 | G1 integration planning brief in blocked/ | **deferred** |
-| Lovable API mission approval gate checklist | **proposed** |
-| Cross-link CAL1 and R0 | **proposed** |
-| Status banner: no Lovable API calls | **proposed** |
-| Negative test: no lovable.dev fetch | **proposed** |
+| Lovable API mission approval gate checklist | **implemented** — `docs/lovable-classroom-app-builder-mission-approval-gate-checklist.md` |
+| Cross-link CAL1 and R0 | **implemented** — lane-review hardening sprint 2026-07-02 |
+| Status banner: no Lovable API calls | **implemented** — lane-review hardening sprint 2026-07-02 |
+| Negative test: no lovable.dev fetch | **implemented** — lane-review hardening sprint 2026-07-02 |
 
 ## Lane Status: `complete_pending_review` → `reviewed`
 

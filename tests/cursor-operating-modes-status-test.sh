@@ -20,6 +20,12 @@ grep -q '^FAIL: 0$' "${tmp}" || {
   rm -f "${tmp}"
   exit 1
 }
+grep -q 'Discovery ≠ implementation approval' "${tmp}" || {
+  echo "FAIL: missing discovery not implementation banner"
+  cat "${tmp}"
+  rm -f "${tmp}"
+  exit 1
+}
 grep -q 'documentation/status only' "${tmp}" || {
   echo "FAIL: missing documentation/status boundary header"
   cat "${tmp}"

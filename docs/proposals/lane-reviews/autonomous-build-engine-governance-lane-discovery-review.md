@@ -67,8 +67,8 @@ Implementation: none authorized by this review
 | Candidate | Value | Risk | Status |
 | --- | --- | --- | --- |
 | Safe Work Class H in governance doc + status check | medium | low | **implemented** |
-| Status script checks proposal folder READMEs exist | low | low | **proposed** |
-| Autonomous sprint queue template doc | medium | low | **proposed** |
+| Status script checks proposal folder READMEs exist | low | low | **implemented** — ABE status script |
+| Autonomous sprint queue template doc | medium | low | **implemented** — `docs/cursor-autonomous-build-engine-sprint-queue-template.md` |
 | Self-review of CB-AUTO-GOV lane (this doc) | high | low | **implemented** |
 | Batch Level 2 review playbook for sprint missions | medium | low | **proposed** |
 

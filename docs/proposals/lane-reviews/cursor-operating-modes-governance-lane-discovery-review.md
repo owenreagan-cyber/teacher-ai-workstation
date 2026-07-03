@@ -72,7 +72,7 @@ Implementation: none authorized by this review
 | --- | --- | --- | --- |
 | Proposal folder structure (lane-reviews, ideas, backlog, blocked, implemented) | high | low | **implemented** (this sprint) |
 | Aggregate `--governance-lane-status` command | medium | low | **implemented** — PR #214 |
-| Operating modes status output: "discovery ≠ implementation" banner | low | low | **proposed** |
+| Operating modes status output: "discovery ≠ implementation" banner | low | low | **implemented** — lane-review hardening sprint 2026-07-02 |
 | Level 2 review index in `lane-reviews/README.md` | medium | low | **implemented** |
 | Machine-check lane_status before Level 2 mission template | low | low | **deferred** |
 

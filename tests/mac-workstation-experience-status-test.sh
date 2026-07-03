@@ -20,8 +20,20 @@ grep -q '^FAIL: 0$' "${tmp}" || {
   rm -f "${tmp}"
   exit 1
 }
-grep -q 'read-only planning only' "${tmp}" || {
-  echo "FAIL: missing read-only planning boundary header"
+grep -q 'Planning-only: yes' "${tmp}" || {
+  echo "FAIL: missing planning-only banner"
+  cat "${tmp}"
+  rm -f "${tmp}"
+  exit 1
+}
+grep -q 'Widget/Shortcut lane (F1)' "${tmp}" || {
+  echo "FAIL: missing F1 widget cross-link banner"
+  cat "${tmp}"
+  rm -f "${tmp}"
+  exit 1
+}
+grep -q 'does not shell-invoke PlistBuddy' "${tmp}" || {
+  echo "FAIL: missing negative PlistBuddy assertion"
   cat "${tmp}"
   rm -f "${tmp}"
   exit 1

@@ -20,8 +20,14 @@ grep -q '^FAIL: 0$' "${tmp}" || {
   rm -f "${tmp}"
   exit 1
 }
-grep -q 'read-only planning only' "${tmp}" || {
-  echo "FAIL: missing read-only planning boundary header"
+grep -q 'AI Tool Routing R0' "${tmp}" || {
+  echo "FAIL: missing D1+R0 cross-link banner"
+  cat "${tmp}"
+  rm -f "${tmp}"
+  exit 1
+}
+grep -q 'does not shell-invoke ollama run/pull/list/generate/serve' "${tmp}" || {
+  echo "FAIL: missing negative ollama run/pull assertion"
   cat "${tmp}"
   rm -f "${tmp}"
   exit 1

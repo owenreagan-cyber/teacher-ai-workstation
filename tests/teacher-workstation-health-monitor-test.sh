@@ -26,6 +26,18 @@ grep -q 'observe and report only' "${tmp}" || {
   rm -f "${tmp}"
   exit 1
 }
+grep -q 'Health vs Updater' "${tmp}" || {
+  echo "FAIL: health status missing health vs updater boundary banner"
+  cat "${tmp}"
+  rm -f "${tmp}"
+  exit 1
+}
+grep -q 'Canvas LLM: frozen' "${tmp}" || {
+  echo "FAIL: health status missing canvas frozen banner"
+  cat "${tmp}"
+  rm -f "${tmp}"
+  exit 1
+}
 rm -f "${tmp}"
 
 for cmd in --system-health --workstation-health; do

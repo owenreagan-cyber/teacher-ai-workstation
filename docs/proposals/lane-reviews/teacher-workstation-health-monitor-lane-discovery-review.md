@@ -30,10 +30,10 @@ Implementation: none authorized by this review
 
 | Candidate | Status |
 | --- | --- |
-| Health vs Updater boundary one-liner in status output | **proposed** |
+| Health vs Updater boundary one-liner in status output | **implemented** — lane-review hardening sprint 2026-07-02 |
 | Negative assertion: no Mac system probes in H0 script | **implemented** (existing grep checks) |
 | Aggregate H+I read-only lane status command | **implemented** — `--workstation-ops-lane-status` PR #214 |
-| Canvas frozen state banner in health output | **proposed** |
+| Canvas frozen state banner in health output | **implemented** — lane-review hardening sprint 2026-07-02 |
 | Live health probe mission template (blocked/) | **deferred** |
 
 ## Lane Status: `complete_pending_review` → `reviewed`

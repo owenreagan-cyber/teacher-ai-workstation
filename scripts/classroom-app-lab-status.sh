@@ -67,7 +67,8 @@ check_doc_contains docs/long-term-future-programs-roadmap.md "Classroom App Lab"
 
 section 'Roadmap and Capability Coherence'
 check_doc_contains docs/master-build-roadmap.md "Classroom App Lab" "roadmap classroom app lab"
-check_doc_contains docs/teacher-workstation-capability-map.md "Classroom App Lab" "capability map classroom app lab"
+check_doc_contains docs/teacher-workstation-capability-map.md "Classroom App Lab" "capability map CAL row"
+check_doc_contains docs/teacher-workstation-capability-map.md "Classroom App Lab / Prototype Rescue" "capability map classroom app lab row"
 check_doc_contains docs/build-queue.md "Classroom App Lab" "build queue classroom app lab"
 
 section 'Related Program Cross-Links'

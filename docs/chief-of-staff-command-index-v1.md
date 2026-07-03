@@ -73,8 +73,8 @@ These flags exist in `bin/chief-of-staff` and work as read-only local status sur
 
 | Command | Purpose |
 | --- | --- |
-| `bin/chief-of-staff --system-update-check` | System Updater read-only foundation check |
-| `bin/chief-of-staff --system-update-plan` | Manual update planning checklist |
+| `bin/chief-of-staff --system-update-check` | System Updater read-only foundation check (check-only; no install) |
+| `bin/chief-of-staff --system-update-plan` | Manual update planning checklist — separate from Health H |
 
 ### Workstation Operations (Aggregate)
 
@@ -86,8 +86,9 @@ These flags exist in `bin/chief-of-staff` and work as read-only local status sur
 
 | Command | Purpose |
 | --- | --- |
-| `bin/chief-of-staff --system-health` | Teacher Workstation Health Monitor report |
+| `bin/chief-of-staff --system-health` | Teacher Workstation Health Monitor report (observe-only; separate from Updater I) |
 | `bin/chief-of-staff --workstation-health` | Alias for `--system-health` |
+| `bin/chief-of-staff --workstation-ops-lane-status` | Aggregate Health H + Updater I lane status |
 
 ### Program Status — Curriculum & Foundations
 

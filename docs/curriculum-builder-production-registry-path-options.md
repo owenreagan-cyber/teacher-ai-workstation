@@ -6,7 +6,7 @@ Last updated: 2026-07-02
 Status: planning_only
 Classification: path decision recorded — not implementation authority
 Owen checklist item: 1 — Production registry path (approved 2026-07-02)
-Implementation: blocked until item 2 write behavior approved + separate write mission
+Implementation: blocked until Phase 2 preflight complete + separate write mission; items 3 and 4 deferred
 ```
 
 ## Purpose

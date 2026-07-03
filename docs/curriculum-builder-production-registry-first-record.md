@@ -43,6 +43,7 @@ The first manual production record **exists**, but `BLOCKED-NO-WRITES.sentinel` 
 | --- | --- |
 | `docs/curriculum-builder-production-registry-empty-file.md` | Historical empty-shell milestone |
 | `docs/curriculum-builder-production-registry-metadata-pilot-execution-plan.md` | Pilot protocol |
+| `docs/curriculum-builder-production-registry-sentinel-semantics.md` | Sentinel choice A semantics |
 | `docs/proposals/backlog/production-registry-write-mission.md` | Write mission backlog |
 
 ## Non-Activation

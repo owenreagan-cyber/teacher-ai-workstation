@@ -1204,12 +1204,19 @@ for path in \
   assistant/curriculum-builder/registry/audit/snapshots/production-registry-20260703T042100Z-pre-write.json \
   scripts/curriculum-builder-production-registry-first-record-validate.sh \
   scripts/curriculum-builder-production-registry-first-record-status.sh \
-  tests/curriculum-builder-production-registry-first-record-status-test.sh; do
+  tests/curriculum-builder-production-registry-first-record-status-test.sh \
+  tests/curriculum-builder-production-registry-first-record-validate-test.sh \
+  docs/curriculum-builder-production-registry-sentinel-semantics.md \
+  docs/curriculum-builder-production-registry-next-gate-classification.md \
+  assistant/curriculum-builder/samples/first-record-planning/README.md; do
   check_required_file "${path}"
 done
 check_bash_syntax scripts/curriculum-builder-production-registry-first-record-validate.sh
 check_bash_syntax scripts/curriculum-builder-production-registry-first-record-status.sh
 check_bash_syntax tests/curriculum-builder-production-registry-first-record-status-test.sh
+check_bash_syntax tests/curriculum-builder-production-registry-first-record-validate-test.sh
+check_doc_contains docs/curriculum-builder-production-registry-sentinel-semantics.md "sentinel no longer means records count must be zero" "sentinel semantics"
+check_doc_contains docs/curriculum-builder-production-registry-next-gate-classification.md "next_gate_classification_complete" "next gate classification"
 check_doc_contains docs/curriculum-builder-production-registry-first-record.md "first_record_complete" "first record closure"
 grep -Fq -- '--curriculum-production-registry-first-record-status' bin/chief-of-staff && pass "chief-of-staff exposes --curriculum-production-registry-first-record-status" || fail "chief-of-staff missing --curriculum-production-registry-first-record-status"
 

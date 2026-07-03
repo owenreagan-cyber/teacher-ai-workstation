@@ -93,8 +93,8 @@ check_file "${audit_stub}"
 check_doc_contains "${preflight_doc}" "phase_2_preflight_complete" "phase 2 preflight closure"
 check_doc_contains "${preflight_doc}" "does not create production-registry.json" "phase 2 no file creation"
 check_doc_contains "${audit_preflight}" "audit_rollback_preflight_only" "audit rollback preflight classification"
-check_doc_contains "${snapshot_readiness}" "planning_readiness_only" "snapshot readiness classification"
-check_doc_contains "${snapshot_readiness}" "No snapshot of production-registry.json" "snapshot non-activation"
+check_doc_contains "${snapshot_readiness}" "first_record_snapshot_proof_complete" "snapshot readiness classification"
+check_doc_contains "${snapshot_readiness}" "No restore CLI" "snapshot non-activation"
 
 section 'Owen Checklist Preconditions'
 check_file "${tracker_doc}"

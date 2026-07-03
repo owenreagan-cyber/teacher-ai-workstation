@@ -1,0 +1,28 @@
+{
+  "version": "0.2",
+  "registry_type": "production",
+  "records": [
+    {
+      "id": "resource-math-lesson-108-presentation",
+      "title": "URL in notes negative fixture",
+      "subject": "math",
+      "grade_band": "elementary-grade-4-5",
+      "unit_label": "Fixture",
+      "lesson_label": "Lesson 108",
+      "resource_type": "presentation_slide_deck",
+      "audience": "teacher_facing",
+      "review_state": "approved",
+      "manual_tags": ["negative-fixture"],
+      "notes": "Blocked pattern https://example.com/path in notes.",
+      "source_reference": {
+        "display_label": "Fixture only",
+        "source_type": "manual_label",
+        "location_note": "Label only",
+        "citation_note": "Fixture only"
+      },
+      "created_by": "Fixture",
+      "created_at": "2026-07-03T04:21:00Z",
+      "updated_at": "2026-07-03T04:21:00Z"
+    }
+  ]
+}

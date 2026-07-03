@@ -1,100 +1,85 @@
 # First Production Record — Snapshot / Diff / Restore Pilot Plan
 
-Last updated: 2026-07-02
+Last updated: 2026-07-03
 
 ```text
-Status: planning_only
-Classification: audit proof plan for first record — no snapshot tooling active
+Status: first_record_audit_complete
+Classification: audit proof for first governed record — read-only validation only
 Baseline: empty shell baseline (records: [])
+Live state: one approved record (records count exactly 1)
 ```
 
 ## Purpose
 
-Define how the **future** governed single-record write mission will prove snapshot, diff, and restore correctness. Includes pre-write snapshot of empty shell baseline. No snapshot files or restore commands exist today.
+Document snapshot, diff, and restore proof for the **completed** first governed single-record write. Pre-write snapshot captured; live registry holds exactly one approved record. No restore command or automated snapshot tooling is active.
 
-## Pre-Write Snapshot of Empty Shell
+## Pre-Write Snapshot of Empty Shell (Captured)
 
-| Step | Action |
-| ---: | --- |
-| 1 | Confirm `production-registry.json` validates as empty shell |
-| 2 | Copy canonical empty shell to planned snapshot path (future mission) |
-| 3 | Record snapshot ID and timestamp in audit log (future mission) |
-| 4 | Validator PASS on snapshot artifact before any mutation |
+pre-write snapshot of empty shell baseline captured before first governed record write.
 
-Planned snapshot naming (from `docs/curriculum-builder-production-registry-snapshot-diff-restore-readiness.md`):
+| Field | Value |
+| --- | --- |
+| Path | `assistant/curriculum-builder/registry/audit/snapshots/production-registry-20260703T042100Z-pre-write.json` |
+| `records` count | `0` |
+| Validator | `scripts/curriculum-builder-production-registry-empty-file-validate.sh` |
 
-```text
-assistant/curriculum-builder/registry/audit/snapshots/
-  production-registry-YYYYMMDDTHHMMSSZ-pre-write.json
-```
+## Post-Write Live State
 
-**Directory not created in this planning mission.**
+| Field | Value |
+| --- | --- |
+| Path | `assistant/curriculum-builder/registry/v0-2/production-registry.json` |
+| `records` count | `1` |
+| Approved ID | `resource-math-lesson-108-presentation` |
+| Validator | `scripts/curriculum-builder-production-registry-first-record-validate.sh` |
 
-## Expected Diff Shape
+## Observed Diff Shape
 
-| Field | Before | After |
+| Field | Before (snapshot) | After (live) |
 | --- | --- | --- |
 | `records.length` | `0` | `1` |
-| New ID | — | exactly one `resource-*` |
+| New ID | — | `resource-math-lesson-108-presentation` |
 | Other records | — | none |
 
-Diff report fields (planning):
-
-- `records_added`: 1
-- `records_changed`: 0
-- `records_removed`: 0
-- `registry_id_changes`: single new `resource-*` ID
-
-## Post-Write Validation
-
-1. Run metadata-boundary validator on new record shape.
-2. Run production registry structural validator.
-3. Confirm `records.length === 1`.
-4. FAIL → execute restore plan immediately.
-
-## Restore to Empty Shell Proof
+## Restore Plan (If Validation Fails)
 
 | Step | Action |
 | ---: | --- |
-| 1 | Replace `production-registry.json` with pre-write snapshot |
-| 2 | Validator PASS on restored empty shell |
-| 3 | Diff shows zero net change from baseline |
-| 4 | Status commands confirm `records: []` |
+| 1 | Replace `production-registry.json` with pre-write snapshot **or** `git revert` merge commit |
+| 2 | Run empty-shell validator on restored file |
+| 3 | Run `--curriculum-production-registry-empty-file-status` (historical) and confirm snapshot coherence |
+| 4 | Document rollback reason in audit notes (manual) |
 
-## Validation After Restore
+**Validation after restore to empty shell:**
 
-- `--curriculum-production-registry-empty-file-status` must PASS
-- No orphan `resource-*` files in production directory
-- Audit log records rollback reason
+- `--curriculum-production-registry-empty-file-status` must PASS (historical milestone)
+- `--curriculum-production-registry-first-record-status` must FAIL until a new governed write restores the record
 
-## Final State After Successful Pilot (Future Mission)
+**Validation after restore is not required** while live registry validates as one approved record.
 
-Depends on future prompt:
+## Rollback to Empty Shell vs Keep Record
 
-- **Option A:** Keep the one approved record (pilot success).
-- **Option B:** Restore to empty shell after proof drill (if mission specifies drill-only).
+| Option | When |
+| --- | --- |
+| Keep one approved record | Default after successful first-record mission (current state) |
+| Restore empty shell | Validation failure, Owen-directed rollback, or explicit drill mission |
 
-Default planning assumption: **Option A** only when write mission explicitly commits the record.
-
-## Proof Reporting (Future Mission)
-
-Future write mission completion report must include:
+## Proof Reporting (Completed Mission)
 
 | Proof item | Evidence |
 | --- | --- |
-| Pre-write snapshot path | File path + hash |
-| Post-write validator output | PASS lines |
+| Pre-write snapshot path | `production-registry-20260703T042100Z-pre-write.json` |
+| Post-write validator | `--curriculum-production-registry-first-record-status` PASS |
 | Diff summary | `0 → 1` record |
-| Rollback tested or waived | Owen sign-off |
+| Sentinel | intact — automated writes still blocked |
 
 ## Related Documents
 
 | Document | Role |
 | --- | --- |
 | `docs/curriculum-builder-production-registry-snapshot-diff-restore-readiness.md` | General snapshot model |
-| `docs/curriculum-builder-production-registry-audit-rollback-preflight.md` | Audit preflight |
-| `docs/curriculum-builder-production-registry-metadata-pilot-execution-plan.md` | Pilot protocol |
+| `docs/curriculum-builder-production-registry-sentinel-semantics.md` | Sentinel choice A |
+| `docs/curriculum-builder-production-registry-first-record.md` | First record closure |
 
 ## Non-Activation
 
-No snapshot tooling implemented. No restore command. `production-registry.json` remains `records: []`.
+No restore command implemented. No automated snapshot tooling. Sentinel remains intact.

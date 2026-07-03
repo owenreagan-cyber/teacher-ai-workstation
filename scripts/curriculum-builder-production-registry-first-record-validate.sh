@@ -57,8 +57,6 @@ SOURCE_TYPES = {
     "manual_label", "print_resource", "drive_label", "local_label",
     "nas_label", "icloud_label", "canvas_label",
 }
-AUDIENCE = {"teacher_facing", "student_facing"}
-
 errors = []
 
 with open(registry_file, encoding="utf-8") as handle:
@@ -110,8 +108,8 @@ else:
             errors.append("notes must not contain URL patterns")
 
         audience = record.get("audience")
-        if audience not in AUDIENCE:
-            errors.append(f"audience must be teacher_facing or student_facing (got {audience})")
+        if audience != "teacher_facing":
+            errors.append(f"first record audience must be teacher_facing (got {audience})")
 
         review_state = record.get("review_state")
         if review_state != "approved":

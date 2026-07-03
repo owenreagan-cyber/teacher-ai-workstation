@@ -18,6 +18,17 @@ grep -q 'Production registry writes: blocked' "${governance_doc}" || {
 
 [[ -f "${sentinel}" ]] || { echo "FAIL: blocked-write sentinel missing"; exit 1; }
 
+sentinel_doc="docs/curriculum-builder-production-registry-sentinel-semantics.md"
+[[ -f "${sentinel_doc}" ]] || { echo "FAIL: sentinel semantics doc missing"; exit 1; }
+grep -Fq "sentinel no longer means records count must be zero" "${sentinel_doc}" || {
+  echo "FAIL: sentinel semantics must clarify post-first-record state"
+  exit 1
+}
+grep -Fq "sentinel no longer means the production file must be absent" "${sentinel_doc}" || {
+  echo "FAIL: sentinel semantics must clarify production file may exist"
+  exit 1
+}
+
 if grep -Fq -- '--curriculum-registry-write)' bin/chief-of-staff 2>/dev/null; then
   echo "FAIL: chief-of-staff must not implement --curriculum-registry-write handler"
   exit 1

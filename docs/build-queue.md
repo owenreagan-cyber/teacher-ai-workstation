@@ -8,9 +8,9 @@ Phase 0E Vibe Engine.
 
 ## Current Focus
 
-**Product-decision wall — first governed production registry record complete; write tooling blocked.**
+**Product-decision wall — post-first-record hardening complete; write tooling blocked.**
 
-Safe-local registry scaffolding complete. Owen § J checklist complete. empty-file mission complete (historical). Metadata pilot execution planning complete. **first governed production registry record complete** (`--curriculum-production-registry-first-record-status`). `production-registry.json` contains exactly one approved manual metadata record (`resource-math-lesson-108-presentation`). **Writer scripts, active `--write`, second record, and metadata pilot beyond first record remain blocked.** Next possible gates require separate explicit prompts.
+first governed production registry record complete. Post-first-record sentinel semantics and next-gate classification documented. `production-registry.json` contains exactly one approved manual metadata record. **Writer scripts, active `--write`, second record, and metadata pilot beyond first record remain blocked.** Next possible gates require separate explicit Owen decisions.
 
 Master program roadmap: `docs/master-build-roadmap.md` — Program Readiness Audit and mission sequencing for v1.0. Implementation does not proceed automatically from the roadmap.
 

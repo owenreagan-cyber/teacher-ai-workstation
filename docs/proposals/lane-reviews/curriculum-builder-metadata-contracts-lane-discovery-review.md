@@ -31,9 +31,9 @@ Implementation: none authorized by this review
 | Candidate | Status |
 | --- | --- |
 | A4–A7 inactive banner in contract status output | **implemented** — contract schemas status banner |
-| Schema version alignment with registry v0.2 fixtures | **proposed** |
+| Schema version alignment with registry v0.2 fixtures | **implemented** — Owen checklist doc; alignment planning only |
 | Real curriculum parsing mission in blocked/ | **deferred** |
-| Contract activation checklist (Owen) | **proposed** |
+| Contract activation checklist (Owen) | **implemented** — `docs/curriculum-builder-contract-activation-checklist-owen.md` |
 | Aggregate A4–A7 + registry lane status doc link | **implemented** (registry lane status) |
 
 ## Lane Status: `complete_pending_review` → `reviewed`

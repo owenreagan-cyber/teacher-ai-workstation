@@ -28,7 +28,7 @@ Implementation: none authorized by this review
 
 | Candidate | Status |
 | --- | --- |
-| E1 vs wallpaper photo processor lane map | **proposed** |
+| E1 vs wallpaper photo processor lane map | **implemented** — `docs/mac-workstation-e1-vs-wallpaper-lane-map.md` |
 | Mac mutation mission template in blocked/ | **deferred** |
 | Status output: "planning-only" banner | **implemented** — lane-review hardening sprint 2026-07-02 |
 | Cross-link F1 widget lane | **implemented** — lane-review hardening sprint 2026-07-02 |

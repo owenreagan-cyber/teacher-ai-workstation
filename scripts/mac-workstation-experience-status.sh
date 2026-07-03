@@ -59,6 +59,8 @@ check_doc_contains docs/mac-workstation-readiness-plan.md "read-only planning" "
 check_doc_contains docs/chief-of-staff-mode-status.md "Mac changes: no" "mode status mac boundary"
 check_doc_contains docs/widget-shortcut-builder-catalog-foundation.md "complete_v1_f1" "f1 widget shortcut cross-link"
 check_doc_contains docs/mac-workstation-experience-foundation.md "Wallpaper" "mac wallpaper lane reference"
+check_file docs/mac-workstation-e1-vs-wallpaper-lane-map.md
+check_doc_contains docs/mac-workstation-e1-vs-wallpaper-lane-map.md "planning-only" "e1 wallpaper lane map"
 
 section 'Roadmap and Capability Coherence'
 check_doc_contains docs/master-build-roadmap.md "Mac Workstation Experience" "roadmap mac workstation"

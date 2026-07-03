@@ -103,7 +103,7 @@ done
 [[ "${runtime_hits}" == "0" ]] && pass 'no frontmatter parser/validator scripts in scripts/'
 grep -Fq -- '--markdown-frontmatter-parse)' bin/chief-of-staff 2>/dev/null && fail 'CLI must not expose frontmatter parse command' || pass 'CLI has no frontmatter parse command'
 grep -Fq -- '--markdown-frontmatter-validate)' bin/chief-of-staff 2>/dev/null && fail 'CLI must not expose frontmatter validate command' || pass 'CLI has no frontmatter validate command'
-grep -Fq -- '--curriculum-scan-folders)' bin/chief-of-staff 2>/dev/null && pass 'curriculum scan remains blocked in manifest surface' || warn 'curriculum scan flag not found in CLI (expected blocked)'
+grep -Fq -- '"--curriculum-scan-folders"' assistant/chief-of-staff/v1/command-surface-manifest.json 2>/dev/null && pass 'curriculum scan remains blocked in manifest' || warn 'curriculum scan blocked flag not found in manifest'
 
 section 'Production Registry Parked-State Proof'
 if [[ -f "${production_registry_path}" ]] && command -v python3 >/dev/null 2>&1; then

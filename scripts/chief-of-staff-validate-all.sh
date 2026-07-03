@@ -136,6 +136,7 @@ run_track "Owen Production Registry Checklist" scripts/curriculum-builder-produc
 run_track "Production Registry Phase 2 Preflight" scripts/curriculum-builder-production-registry-phase-2-preflight-status.sh
 run_track "Production Registry Metadata Boundary" scripts/curriculum-builder-production-registry-metadata-boundary-status.sh
 run_track "Production Registry Empty File" scripts/curriculum-builder-production-registry-empty-file-status.sh
+run_track "Production Registry Metadata Pilot Plan" scripts/curriculum-builder-production-registry-metadata-pilot-plan-status.sh
 run_track "Curriculum Source Readiness" scripts/curriculum-source-readiness-status.sh
 run_track "Curriculum Builder Registry Lane" scripts/curriculum-builder-registry-lane-status.sh
 run_track "Curriculum Builder Registry A4-A7 Fixture Schema" scripts/curriculum-builder-registry-a4-a7-fixture-schema-status.sh

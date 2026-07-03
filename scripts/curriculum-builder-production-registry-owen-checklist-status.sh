@@ -181,9 +181,9 @@ bash -n tests/curriculum-builder-production-registry-owen-checklist-status-test.
 
 section 'Roadmap and Ledger Coherence'
 check_doc_contains docs/proposals/index.md "Owen § J production registry checklist tracker" "proposal ledger owen tracker"
-check_doc_contains docs/master-build-roadmap.md "Metadata-boundary refinement" "roadmap metadata-boundary refinement"
-check_doc_contains docs/build-queue.md "empty-file mission complete" "build queue empty-file mission complete"
-check_doc_contains assistant/memory/active-priorities.md "Metadata-boundary refinement complete" "active priorities metadata-boundary refinement complete"
+check_doc_contains docs/master-build-roadmap.md "Metadata pilot execution planning complete" "roadmap metadata pilot planning complete"
+check_doc_contains docs/build-queue.md "metadata pilot execution planning complete" "build queue metadata pilot planning complete"
+check_doc_contains assistant/memory/active-priorities.md "Metadata pilot execution planning complete" "active priorities metadata pilot planning complete"
 
 section 'Negative Non-Activation Assertions'
 grep -Fq -- '--curriculum-registry-write)' bin/chief-of-staff 2>/dev/null && fail 'chief-of-staff must not implement --curriculum-registry-write handler' || pass 'chief-of-staff has no --curriculum-registry-write handler'

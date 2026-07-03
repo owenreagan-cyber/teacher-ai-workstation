@@ -88,6 +88,7 @@
 ### Now
 
 - **Lane-review hardening sprint complete** — health/updater boundaries, updater check-only banners, Mac E1/F1 cross-links, Canvas frozen banner, Lovable no-API guardrails, R0+D1 cross-links, operating modes discovery banner, ABE sprint queue template, 3D planning-only banner. `tests/lane-review-hardening-guardrails-test.sh`. No runtime activation.
+- **Metadata pilot execution planning complete (2026-07-02)** — one-record protocol, Owen worksheet, acceptance criteria, snapshot plan; `--curriculum-production-registry-metadata-pilot-plan-status`; no execution.
 - **Empty-file mission complete (2026-07-02)** — `production-registry.json` with `records: []`; `--curriculum-production-registry-empty-file-status`; sentinel intact; record writes blocked.
 - **Metadata-boundary refinement complete (2026-07-02)** — field contracts, blocked guardrails, planning validator, `--curriculum-production-registry-metadata-boundary-status`; no record mutation.
 - **Owen § J checklist complete (2026-07-02)** — items 3 and 4 approved with strict manual-only boundaries.

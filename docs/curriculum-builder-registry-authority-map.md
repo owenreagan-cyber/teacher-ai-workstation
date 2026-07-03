@@ -83,6 +83,11 @@ Aggregate lane proof: `bin/chief-of-staff --curriculum-registry-lane-status`
 - Production path: `assistant/curriculum-builder/registry/v0-2/production-registry.json` (empty shell; `records: []`)
 - ID namespace: `resource-*` (Owen-approved)
 
+### Metadata pilot execution planning (`--curriculum-production-registry-metadata-pilot-plan-status`)
+
+- One-record protocol planning only; execution blocked
+- Production path: `assistant/curriculum-builder/registry/v0-2/production-registry.json` (empty shell; `records: []`)
+
 ### Owen § J checklist tracker (`--curriculum-production-registry-owen-checklist-status`)
 
 - Read-only tracker: `docs/curriculum-builder-production-registry-owen-checklist-tracker.md`

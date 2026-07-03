@@ -108,6 +108,7 @@ These flags exist in `bin/chief-of-staff` and work as read-only local status sur
 | `bin/chief-of-staff --curriculum-production-registry-phase-2-preflight-status` | Phase 2 production registry preflight (audit/rollback readiness; no file, no record, no write) |
 | `bin/chief-of-staff --curriculum-production-registry-metadata-boundary-status` | Production registry metadata-boundary refinement (contracts and guardrails; no mutation) |
 | `bin/chief-of-staff --curriculum-production-registry-empty-file-status` | Production registry empty-file shell status (records blocked; sentinel intact) |
+| `bin/chief-of-staff --curriculum-production-registry-metadata-pilot-plan-status` | Metadata pilot execution planning status (one-record protocol; no execution) |
 | `bin/chief-of-staff --curriculum-source-readiness-status` | Curriculum Source Readiness fake metadata inventory foundation (no real ingestion) |
 | `bin/chief-of-staff --curriculum-library-foundation-status` | Curriculum Library v1 |
 | `bin/chief-of-staff --lesson-planning-foundation-status` | Lesson Planning v1 |

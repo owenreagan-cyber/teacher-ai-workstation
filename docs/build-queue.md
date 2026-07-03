@@ -8,9 +8,9 @@ Phase 0E Vibe Engine.
 
 ## Current Focus
 
-**Product-decision wall — empty-file mission complete; record writes blocked.**
+**Product-decision wall — metadata pilot execution planning complete; record writes blocked.**
 
-Safe-local registry scaffolding complete. Owen § J checklist complete. Metadata-boundary refinement complete. **Empty-file mission complete** (`--curriculum-production-registry-empty-file-status`). `production-registry.json` exists with `records: []`. **Record writes remain blocked.** Next possible gates: metadata pilot execution planning or governed single-record write planning — each via separate explicit prompt.
+Safe-local registry scaffolding complete. Owen § J checklist complete. Empty-file mission complete. **Metadata pilot execution planning complete** (`--curriculum-production-registry-metadata-pilot-plan-status`). `production-registry.json` exists with `records: []`. **Record writes and metadata pilot execution remain blocked.** Next possible gate: **governed single-record write** via separate explicit prompt.
 
 Master program roadmap: `docs/master-build-roadmap.md` — Program Readiness Audit and mission sequencing for v1.0. Implementation does not proceed automatically from the roadmap.
 

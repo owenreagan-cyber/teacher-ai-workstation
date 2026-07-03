@@ -38,8 +38,8 @@ grep -q 'PASS does not authorize registry mutation: yes' "${tmp}" || {
   rm -f "${tmp}"
   exit 1
 }
-grep -q 'production-registry.json exists with empty records shell' "${tmp}" || {
-  echo "FAIL: missing production-registry.json empty shell check"
+grep -q 'production-registry.json exists with one approved record' "${tmp}" || {
+  echo "FAIL: missing production-registry.json one approved record check"
   cat "${tmp}"
   rm -f "${tmp}"
   exit 1

@@ -65,8 +65,9 @@ Cross-references:
 | Curriculum Builder Registry v0.2 renderer preview (CB-IMPL-3) | implemented read-only | `--curriculum-registry-renderer-status`; metadata preview only |
 | Curriculum Builder Registry v0.2 retrieval hooks (CB-IMPL-4) | implemented read-only | `--curriculum-registry-retrieval-status`; fake lookup only |
 | Curriculum Builder production registry planning (CB-PROD-PLAN) | implemented read-only | `--curriculum-production-registry-planning-status`; planning brief only; no writes |
-| Production registry metadata pilot execution planning | implemented read-only | `--curriculum-production-registry-metadata-pilot-plan-status`; one-record protocol; no execution |
-| Production registry empty-file shell | implemented read-only | `--curriculum-production-registry-empty-file-status`; `records: []`; sentinel intact; record writes blocked |
+| Production registry first governed record | implemented read-only | `--curriculum-production-registry-first-record-status`; exactly one manual metadata record; write tooling blocked |
+| Production registry metadata pilot execution planning | implemented read-only | `--curriculum-production-registry-metadata-pilot-plan-status`; one-record protocol; first record executed |
+| Production registry empty-file shell | implemented read-only (historical) | `--curriculum-production-registry-empty-file-status`; pre-write empty shell baseline |
 | Production registry metadata boundary refinement | implemented read-only | `--curriculum-production-registry-metadata-boundary-status`; field contracts and guardrails; no record mutation |
 | Owen § J production registry checklist tracker | implemented read-only | `--curriculum-production-registry-owen-checklist-status`; 11 approved, 0 deferred |
 | Production registry Phase 2 preflight | implemented read-only | `--curriculum-production-registry-phase-2-preflight-status`; audit/rollback readiness; no mutation |

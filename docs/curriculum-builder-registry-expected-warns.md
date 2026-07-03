@@ -1,6 +1,6 @@
 # Curriculum Builder Registry — Expected WARNs
 
-Last updated: 2026-07-02
+Last updated: 2026-07-03
 
 ```text
 Status: documentation/status only
@@ -22,7 +22,8 @@ Per `docs/cursor-autonomous-build-engine.md` Expected WARN Policy.
 | `scripts/chief-of-staff-validate-all.sh` | 0 | Yes |
 | `--curriculum-production-registry-owen-checklist-status` | 0 | No — targeted command only |
 | `--curriculum-production-registry-metadata-boundary-status` | 0 | No — targeted command only |
-| `--curriculum-production-registry-empty-file-status` | 0 | No — targeted command only |
+| `--curriculum-production-registry-empty-file-status` | 0 | No — historical milestone; targeted command only |
+| `--curriculum-production-registry-first-record-status` | 0 | No — targeted command only |
 | `--curriculum-production-registry-metadata-pilot-plan-status` | 0 | No — targeted command only |
 | `--curriculum-registry-a4-a7-fixture-schema-status` | 7 (fixture optional fields) | No — targeted command only |
 | `--curriculum-registry-lane-status` | 0 on aggregate script summary | Yes — component WARNs roll up in component lines, not aggregate FAIL |
@@ -56,15 +57,21 @@ The prior deferred-metadata WARN on `--curriculum-production-registry-phase-2-pr
 
 ## Metadata Pilot Execution Planning (2026-07-02)
 
-**Typical total on `--curriculum-production-registry-metadata-pilot-plan-status`:** 0 WARN / 0 FAIL when planning docs and empty shell are coherent.
+**Typical total on `--curriculum-production-registry-metadata-pilot-plan-status`:** 0 WARN / 0 FAIL when planning docs, first record, and pre-write snapshot are coherent.
 
-Planning does not authorize metadata pilot execution or record writes.
+Planning does not authorize write tooling or a second record.
 
-## Empty-File Shell (2026-07-02)
+## Empty-File Shell (Historical — 2026-07-02)
 
-**Typical total on `--curriculum-production-registry-empty-file-status`:** 0 WARN / 0 FAIL when empty shell, sentinel, and negative guards are coherent.
+**Typical total on `--curriculum-production-registry-empty-file-status`:** 0 WARN / 0 FAIL when pre-write snapshot, sentinel, and historical docs are coherent.
 
-Creating the empty file does not authorize record writes, metadata pilot execution, or source auto-resolution.
+Empty-file status is historical; live registry has one approved record.
+
+## First Governed Record (2026-07-03)
+
+**Typical total on `--curriculum-production-registry-first-record-status`:** 0 WARN / 0 FAIL when one approved record, sentinel, and negative guards are coherent.
+
+First record does not authorize write tooling, second record, or source auto-resolution.
 
 ## Metadata Boundary Refinement (2026-07-02)
 

@@ -948,7 +948,7 @@ Per `docs/engineering-constitution.md` §10, v1.0 means these systems exist as *
 
 **Curriculum Builder — Production Registry Implementation (approval-gated)**
 
-Production registry workflow **planning brief** is complete. Owen § J checklist complete. Empty-file mission complete. **Metadata pilot execution planning complete** (`--curriculum-production-registry-metadata-pilot-plan-status`). **Record writes and metadata pilot execution remain blocked.** Next possible gate: governed single-record write via separate explicit prompt.
+Production registry workflow **planning brief** is complete. Owen § J checklist complete. empty-file mission complete (historical). Metadata pilot execution planning complete. **first governed production registry record complete** (`--curriculum-production-registry-first-record-status`). `production-registry.json` contains exactly one approved manual metadata record. **Writer scripts, active `--write`, second record, and metadata pilot beyond first record remain blocked.** Next possible gates require separate explicit prompts.
 
 Registry v0.2 local foundation lane CB-IMPL-1 through CB-IMPL-4 is complete and reviewed (`docs/curriculum-builder-registry-v0-2-lane-closure.md`).
 

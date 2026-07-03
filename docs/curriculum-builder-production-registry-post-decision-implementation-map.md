@@ -1,11 +1,11 @@
 # Production Registry Post-Decision Implementation Map
 
-Last updated: 2026-07-02
+Last updated: 2026-07-03
 
 ```text
 Status: planning_only
 Classification: post-Owen-decision routing — not implementation authority
-Closure: metadata_boundaries_approved_awaiting_pilot_and_write_missions
+Closure: first_governed_record_complete_awaiting_write_tooling_missions
 ```
 
 ## Purpose
@@ -34,11 +34,13 @@ Map Owen § J checklist outcomes to **safe next missions** without implying appr
 | Planning fixture + validator | `assistant/curriculum-builder/samples/metadata-boundary-planning/` |
 | Status command | `--curriculum-production-registry-metadata-boundary-status` |
 
-**Registry mutation (records):** **Still blocked**
+**Registry mutation (records):** **One governed manual record exists** — write tooling still blocked
 
-**Approved path:** `assistant/curriculum-builder/registry/v0-2/production-registry.json` (empty shell exists)
+**Approved path:** `assistant/curriculum-builder/registry/v0-2/production-registry.json` (one approved record)
 
 **Approved namespace:** `resource-*`
+
+**Approved record ID:** `resource-math-lesson-108-presentation`
 
 ## Phase 4 — Complete: Empty-File Mission (Shell Only)
 
@@ -64,19 +66,23 @@ Map Owen § J checklist outcomes to **safe next missions** without implying appr
 
 **Metadata pilot execution:** **Still blocked**
 
-## Phase 5 — Single-Record Manual Write (Future Separate Mission)
+## Phase 5 — Complete: First-Record Governed Single-Record Write (Manual PR Edit)
 
-**Trigger:** Empty file exists + explicit write mission + ChatGPT review.
+**Complete 2026-07-03.** Exactly one approved manual metadata record added via governed PR edit. Sentinel intact; writer scripts and `--write` remain blocked.
 
-| Requirement | Detail |
+| Deliverable | Proof |
 | --- | --- |
-| Smallest scope | One manual record per approved field contracts |
-| Rollback | Per audit preflight model |
-| Fields | Per metadata-boundary refinement docs |
+| `production-registry.json` (one record) | `assistant/curriculum-builder/registry/v0-2/production-registry.json` |
+| Pre-write snapshot | `assistant/curriculum-builder/registry/audit/snapshots/production-registry-20260703T042100Z-pre-write.json` |
+| First-record validator | `scripts/curriculum-builder-production-registry-first-record-validate.sh` |
+| Status command | `--curriculum-production-registry-first-record-status` |
+| Closure doc | `docs/curriculum-builder-production-registry-first-record.md` |
 
-## Phase 6 — Metadata Pilot Execution (Separate Mission)
+**Second record / write tooling:** **Still blocked**
 
-Metadata pilot execution planning complete. Pilot **execution** remains blocked until separate explicit governed single-record write or metadata pilot execution mission.
+## Phase 6 — Metadata Pilot Execution Beyond First Record (Separate Mission)
+
+Metadata pilot execution planning complete. First record exists. Additional pilot **execution** remains blocked until separate explicit mission.
 
 ## Phase 7 — Integrations (Per-System Missions)
 

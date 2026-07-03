@@ -1,12 +1,19 @@
 # Production Registry Empty-File Mission
 
-Last updated: 2026-07-02
+Last updated: 2026-07-03
 
 ```text
-Status: empty_file_complete
-Classification: empty production registry shell — records blocked
-Proof: --curriculum-production-registry-empty-file-status
+Status: empty_file_complete (historical)
+Classification: historical empty production registry shell milestone — superseded by first-record status
+Proof: --curriculum-production-registry-empty-file-status (historical)
+Current registry: see --curriculum-production-registry-first-record-status
 ```
+
+## Historical Note
+
+The empty-shell milestone is **complete and historical**. The live `production-registry.json` now contains exactly one governed manual metadata record. Pre-write baseline proof is preserved in:
+
+`assistant/curriculum-builder/registry/audit/snapshots/production-registry-20260703T042100Z-pre-write.json`
 
 ## Non-Approval Statement
 
@@ -29,7 +36,7 @@ BLOCKED-NO-WRITES.sentinel remains intact — writes remain blocked.
 
 ## Sentinel Dual State
 
-The empty production registry file **exists**, but `BLOCKED-NO-WRITES.sentinel` **remains intact**. Record creation, writer scripts, and `--write` remain blocked until separate governed write missions.
+The empty production registry file **existed** with `records: []`, but the first governed record mission has since added exactly one manual metadata record. `BLOCKED-NO-WRITES.sentinel` **remains intact** — writer scripts, active `--write`, batch import, and unapproved mutation paths remain blocked.
 
 ## Future Mission Prerequisites
 

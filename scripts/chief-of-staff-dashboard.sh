@@ -1587,6 +1587,27 @@ else
   warn "Production registry metadata pilot plan status script missing: scripts/curriculum-builder-production-registry-metadata-pilot-plan-status.sh"
 fi
 
+section "Production Registry First Governed Record"
+if [[ -f scripts/curriculum-builder-production-registry-first-record-status.sh ]]; then
+  curriculum_first_record_result=0
+  curriculum_first_record_output="$(bash scripts/curriculum-builder-production-registry-first-record-status.sh 2>&1)" || curriculum_first_record_result=$?
+  curriculum_first_record_pass="$(summary_count "${curriculum_first_record_output}" "PASS")"
+  curriculum_first_record_warn="$(summary_count "${curriculum_first_record_output}" "WARN")"
+  curriculum_first_record_fail="$(summary_count "${curriculum_first_record_output}" "FAIL")"
+
+  if [[ "${curriculum_first_record_result}" != "0" ]]; then
+    printf '%s\n' "${curriculum_first_record_output}"
+    fail "Production registry first-record status failed"
+  elif [[ -n "${curriculum_first_record_pass}" && -n "${curriculum_first_record_warn}" && -n "${curriculum_first_record_fail}" ]]; then
+    printf 'Production Registry First Record: PASS %s / WARN %s / FAIL %s\n' "${curriculum_first_record_pass}" "${curriculum_first_record_warn}" "${curriculum_first_record_fail}"
+    pass "Production registry first-record status completed"
+  else
+    pass "Production registry first-record status completed"
+  fi
+else
+  warn "Production registry first-record status script missing: scripts/curriculum-builder-production-registry-first-record-status.sh"
+fi
+
 section "Curriculum Source Readiness Foundation"
 if [[ -f scripts/curriculum-source-readiness-status.sh ]]; then
   curriculum_source_readiness_result=0

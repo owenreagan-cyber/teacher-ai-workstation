@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Read-only empty production registry file status. No record writes.
+# Read-only empty production registry file status (historical milestone).
 set -euo pipefail
 
 PASS_COUNT=0
@@ -23,8 +23,9 @@ repo_root="$(git rev-parse --show-toplevel 2>/dev/null || true)"
 cd "${repo_root}"
 
 empty_file_doc="docs/curriculum-builder-production-registry-empty-file.md"
+first_record_doc="docs/curriculum-builder-production-registry-first-record.md"
+pre_write_snapshot="assistant/curriculum-builder/registry/audit/snapshots/production-registry-20260703T042100Z-pre-write.json"
 production_registry_path="assistant/curriculum-builder/registry/v0-2/production-registry.json"
-production_registry_dir="assistant/curriculum-builder/registry/v0-2"
 sentinel="assistant/curriculum-builder/registry/candidate-v0-2-production/BLOCKED-NO-WRITES.sentinel"
 validator="scripts/curriculum-builder-production-registry-empty-file-validate.sh"
 status_script="scripts/curriculum-builder-production-registry-empty-file-status.sh"
@@ -33,49 +34,42 @@ post_decision="docs/curriculum-builder-production-registry-post-decision-impleme
 snapshot_readiness="docs/curriculum-builder-production-registry-snapshot-diff-restore-readiness.md"
 manifest="assistant/chief-of-staff/v1/command-surface-manifest.json"
 
-section 'Production Registry Empty-File Status'
+section 'Production Registry Empty-File Status (Historical)'
 cat <<'EOF'
-Status: empty_file_complete
-Classification: empty production registry shell — records blocked
+Status: empty_file_historical_complete
+Classification: historical empty-shell milestone — superseded by first-record status
 Runtime activation: no
-Production registry file: exists
-Records array: empty
-Record writes: blocked
+Empty-shell mission: complete (historical)
+Current registry state: see --curriculum-production-registry-first-record-status
+Record writes via tooling: blocked
 Active --write: blocked
-Metadata pilot execution: blocked
-Source auto-resolution: blocked
-Sentinel: intact — writes remain blocked
-PASS does not authorize record writes: yes
+Sentinel: intact
+PASS does not authorize write tooling: yes
 EOF
 
 section 'Empty-File Documentation'
 check_file "${empty_file_doc}"
 check_doc_contains "${empty_file_doc}" "empty_file_complete" "empty file closure"
 check_doc_contains "${empty_file_doc}" "sentinel remains intact" "sentinel dual state"
+check_doc_contains "${empty_file_doc}" "historical" "empty file historical note"
 
-section 'Production Registry Shell'
-check_file "${production_registry_path}"
+section 'Pre-Write Snapshot Baseline (Historical Proof)'
+check_file "${pre_write_snapshot}"
 check_file "${validator}"
 bash -n "${validator}" && pass "bash syntax ok: ${validator}" || fail "bash syntax failed: ${validator}"
-validate_output="$(bash "${validator}" "${production_registry_path}" 2>&1)" || validate_result=$?
+validate_output="$(bash "${validator}" "${pre_write_snapshot}" 2>&1)" || validate_result=$?
 validate_result="${validate_result:-0}"
 if [[ "${validate_result}" -eq 0 ]] && grep -q 'empty shell validation succeeded' <<< "${validate_output}"; then
-  pass "production-registry.json validates as empty shell"
+  pass "pre-write snapshot validates as empty shell"
 else
-  fail "production-registry.json empty shell validation failed"
+  fail "pre-write snapshot empty shell validation failed"
   printf '%s\n' "${validate_output}" | tail -10
 fi
 
-section 'Resource Non-Existence'
-resource_file_count=0
-if [[ -d "${production_registry_dir}" ]]; then
-  for candidate_file in "${production_registry_dir}"/*; do
-    [[ -e "${candidate_file}" ]] || continue
-    base="$(basename "${candidate_file}")"
-    [[ "${base}" == resource-* ]] && resource_file_count=$((resource_file_count + 1))
-  done
-fi
-[[ "${resource_file_count}" -eq 0 ]] && pass "no resource-* production record files exist" || fail "resource-* production record files must not exist"
+section 'First-Record Successor Status'
+check_file "${first_record_doc}"
+check_file scripts/curriculum-builder-production-registry-first-record-status.sh
+grep -Fq -- '--curriculum-production-registry-first-record-status' bin/chief-of-staff && pass 'CLI exposes first-record status successor' || fail 'CLI missing first-record status'
 
 section 'Sentinel and Write Guards'
 check_file "${sentinel}"
@@ -103,13 +97,10 @@ bash -n "${status_script}" && pass "bash syntax ok: ${status_script}" || fail "b
 bash -n tests/curriculum-builder-production-registry-empty-file-status-test.sh && pass 'bash syntax ok: empty file test' || fail 'bash syntax failed: empty file test'
 
 section 'Negative Non-Activation Assertions'
-pass 'metadata pilot is not active'
+pass 'empty-file status is historical only'
 pass 'real curriculum file access is not active'
 pass 'source auto-resolution is not active'
-pass 'integration/network activation is not active'
-pass 'no copied curriculum content in production registry'
 grep -Eq '(^|[;&|[:space:]])curl[[:space:]]' "${status_script}" 2>/dev/null && fail "${status_script} must not shell-invoke curl" || pass "${status_script} does not shell-invoke curl"
-pass 'empty-file status does not mutate registry records'
 
 section 'Summary'
 printf 'PASS: %s\n' "${PASS_COUNT}"

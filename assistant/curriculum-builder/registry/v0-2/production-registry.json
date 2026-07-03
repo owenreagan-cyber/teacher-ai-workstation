@@ -1,5 +1,33 @@
 {
   "version": "0.2",
   "registry_type": "production",
-  "records": []
+  "records": [
+    {
+      "id": "resource-math-lesson-108-presentation",
+      "title": "Lesson 108: Schedules and Elapsed Time Presentation Blueprint",
+      "subject": "math",
+      "grade_band": "elementary-grade-4-5",
+      "unit_label": "Pacing Block 36 Weeks — Saxon Math Level 5",
+      "lesson_label": "Lesson 108",
+      "resource_type": "presentation_slide_deck",
+      "audience": "teacher_facing",
+      "review_state": "approved",
+      "manual_tags": [
+        "first-record",
+        "saxon-math",
+        "direct-instruction",
+        "front-of-class-display"
+      ],
+      "notes": "Local metadata definition tracking a teacher-created HTML widescreen front-of-class module. Designed for widescreen screen-mirroring using high-contrast typography grids and interactive choral response loops. Record maps structure and asset attributes only; contains zero source text, question definitions, file binaries, or live environment URLs.",
+      "source_reference": {
+        "display_label": "Local Teacher-Created HTML Presentation Module",
+        "source_type": "manual_label",
+        "location_note": "Root system planning documents directory label only",
+        "citation_note": "Locally compiled blueprint for standard lesson execution parameters; metadata placeholder only"
+      },
+      "created_by": "Owen",
+      "created_at": "2026-07-03T04:21:00Z",
+      "updated_at": "2026-07-03T04:21:00Z"
+    }
+  ]
 }

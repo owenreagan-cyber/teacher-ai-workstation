@@ -25,7 +25,7 @@ Single reference for **which registry surface is authoritative for what**, so fu
 | **Registry v0.2 dry-run candidates** | `assistant/curriculum-builder/samples/registry-v0-2-dry-run/` | `example-*` | Fake candidate validation only (CB-IMPL-1) | **No** |
 | **Registry v0.2 local fixtures** | `assistant/curriculum-builder/samples/registry-v0-2-local-records/local-registry.json` | `example-*` | Fake fixture envelope only (CB-IMPL-2) | **No** |
 | **A4–A7 inactive contracts** | `assistant/curriculum-builder/metadata-contract/v0/` | `sample-*` | Planning schemas; inactive | **No** |
-| **Production registry** | `assistant/curriculum-builder/registry/v0-2/production-registry.json` | `resource-*` | Owen-approved path; empty shell exists (`records: []`) | **Blocked** — record writes not approved |
+| **Production registry** | `assistant/curriculum-builder/registry/v0-2/production-registry.json` | `resource-*` | Owen-approved path; one governed manual metadata record (`resource-math-lesson-108-presentation`) | **Blocked** — write tooling and second record not approved |
 | **Curriculum Source Readiness (fake)** | `assistant/curriculum-builder/samples/curriculum-source-readiness/` | `fake-source-*` | Fake metadata inventory only; not production | **No** |
 
 Expected WARN registry: `docs/curriculum-builder-registry-expected-warns.md`
@@ -80,13 +80,13 @@ Aggregate lane proof: `bin/chief-of-staff --curriculum-registry-lane-status`
 
 - Planning-only: `docs/curriculum-builder-production-registry-workflow-planning-brief.md`
 - Owen approval checklist before any implementation
-- Production path: `assistant/curriculum-builder/registry/v0-2/production-registry.json` (empty shell; `records: []`)
+- Production path: `assistant/curriculum-builder/registry/v0-2/production-registry.json` (one approved record; `resource-math-lesson-108-presentation`)
 - ID namespace: `resource-*` (Owen-approved)
 
 ### Metadata pilot execution planning (`--curriculum-production-registry-metadata-pilot-plan-status`)
 
 - One-record protocol planning only; execution blocked
-- Production path: `assistant/curriculum-builder/registry/v0-2/production-registry.json` (empty shell; `records: []`)
+- Production path: `assistant/curriculum-builder/registry/v0-2/production-registry.json` (one approved record; `resource-math-lesson-108-presentation`)
 
 ### Owen § J checklist tracker (`--curriculum-production-registry-owen-checklist-status`)
 
@@ -126,7 +126,7 @@ Aggregate lane proof: `bin/chief-of-staff --curriculum-registry-lane-status`
 1. **Default read authority for “what is the registry?”** → `registry/v0/registry.json` (read-only).
 2. **Default for v0.2 experiments** → `samples/registry-v0-2-*` paths only; never treat as production.
 3. **Dry-run or fixture validation success** → does **not** authorize `--write` or registry mutation. See `docs/curriculum-builder-registry-dry-run-fixture-promotion-planning-spec.md`.
-4. **Production registry path** → `assistant/curriculum-builder/registry/v0-2/production-registry.json` (Owen-approved 2026-07-02); empty shell exists; `resource-*` IDs for future records; record writes blocked until separate mission.
+4. **Production registry path** → `assistant/curriculum-builder/registry/v0-2/production-registry.json` (Owen-approved 2026-07-02); one governed manual metadata record exists; `resource-*` IDs; write tooling and second record blocked until separate missions.
 5. **Real metadata, real paths, student data** → separate explicit approval missions.
 6. **When unsure** → run `bin/chief-of-staff --curriculum-registry-lane-status` and read this map.
 

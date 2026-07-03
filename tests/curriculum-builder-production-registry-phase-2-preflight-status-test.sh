@@ -25,7 +25,7 @@ grep -q '^FAIL: 0$' "${tmp}" || {
   rm -f "${tmp}"
   exit 1
 }
-grep -q 'Record writes: blocked' "${tmp}" || {
+grep -q 'Record writes via tooling: blocked' "${tmp}" || {
   echo "FAIL: missing blocked writes banner"
   cat "${tmp}"
   rm -f "${tmp}"
@@ -37,8 +37,8 @@ grep -q 'PASS does not authorize registry mutation: yes' "${tmp}" || {
   rm -f "${tmp}"
   exit 1
 }
-grep -q 'production-registry.json exists with empty records shell' "${tmp}" || {
-  echo "FAIL: missing production-registry.json empty shell check"
+grep -q 'production-registry.json exists with one approved record' "${tmp}" || {
+  echo "FAIL: missing production-registry.json one approved record check"
   cat "${tmp}"
   rm -f "${tmp}"
   exit 1
@@ -82,7 +82,7 @@ fi
 rm -f "${tmp}"
 
 if [[ ! -f "${production_registry_path}" ]]; then
-  echo "FAIL: production-registry.json must exist as empty shell after empty-file mission"
+  echo "FAIL: production-registry.json must exist with one approved record"
   exit 1
 fi
 

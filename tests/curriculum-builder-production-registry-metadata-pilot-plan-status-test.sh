@@ -10,6 +10,7 @@ echo "Running metadata pilot execution planning status tests..."
 status_script="scripts/curriculum-builder-production-registry-metadata-pilot-plan-status.sh"
 production_registry_path="assistant/curriculum-builder/registry/v0-2/production-registry.json"
 sentinel="assistant/curriculum-builder/registry/candidate-v0-2-production/BLOCKED-NO-WRITES.sentinel"
+APPROVED_ID="resource-math-lesson-108-presentation"
 
 tmp="$(mktemp "${TMPDIR:-/tmp}/cb-metadata-pilot-plan-status.XXXXXX")"
 bash "${status_script}" >"${tmp}" 2>&1 || {
@@ -30,20 +31,26 @@ grep -q 'metadata_pilot_execution_plan_complete' "${tmp}" || {
   rm -f "${tmp}"
   exit 1
 }
-grep -q 'Records array: empty' "${tmp}" || {
-  echo "FAIL: missing empty records banner"
+grep -q 'Records count: exactly 1' "${tmp}" || {
+  echo "FAIL: missing one-record banner"
   cat "${tmp}"
   rm -f "${tmp}"
   exit 1
 }
-grep -Fq 'PASS does not authorize metadata pilot execution: yes' "${tmp}" || {
-  echo "FAIL: missing non-execution banner"
+grep -Fq 'PASS does not authorize second record: yes' "${tmp}" || {
+  echo "FAIL: missing non-second-record banner"
   cat "${tmp}"
   rm -f "${tmp}"
   exit 1
 }
-grep -Fq 'production-registry.json validates as empty shell' "${tmp}" || {
-  echo "FAIL: missing empty shell validation check"
+grep -Fq 'production-registry.json validates as one approved record' "${tmp}" || {
+  echo "FAIL: missing one-record validation check"
+  cat "${tmp}"
+  rm -f "${tmp}"
+  exit 1
+}
+grep -Fq 'pre-write snapshot validates as empty shell' "${tmp}" || {
+  echo "FAIL: missing pre-write snapshot check"
   cat "${tmp}"
   rm -f "${tmp}"
   exit 1
@@ -66,8 +73,8 @@ grep -Fq 'chief-of-staff has no --curriculum-registry-write handler' "${tmp}" ||
   rm -f "${tmp}"
   exit 1
 }
-grep -Fq 'metadata pilot execution is not active' "${tmp}" || {
-  echo "FAIL: missing metadata pilot not active assertion"
+grep -Fq 'metadata pilot limited to one explicit record' "${tmp}" || {
+  echo "FAIL: missing metadata pilot limited assertion"
   cat "${tmp}"
   rm -f "${tmp}"
   exit 1
@@ -83,9 +90,10 @@ if ! python3 -c "
 import json
 with open('${production_registry_path}') as f:
     d = json.load(f)
-assert d.get('records') == []
+assert len(d.get('records', [])) == 1
+assert d['records'][0]['id'] == '${APPROVED_ID}'
 "; then
-  echo "FAIL: production-registry.json records must remain empty"
+  echo "FAIL: production-registry.json must contain exactly one approved record"
   exit 1
 fi
 

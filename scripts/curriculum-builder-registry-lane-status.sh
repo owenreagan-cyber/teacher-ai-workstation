@@ -39,6 +39,7 @@ COMPONENTS=(
   "production registry metadata boundary|scripts/curriculum-builder-production-registry-metadata-boundary-status.sh"
   "production registry empty file|scripts/curriculum-builder-production-registry-empty-file-status.sh"
   "production registry metadata pilot plan|scripts/curriculum-builder-production-registry-metadata-pilot-plan-status.sh"
+  "production registry first record|scripts/curriculum-builder-production-registry-first-record-status.sh"
   "Owen § J approval checklist|scripts/curriculum-builder-production-registry-owen-checklist-status.sh"
   "curriculum source readiness|scripts/curriculum-source-readiness-status.sh"
   "A4–A7 fixture schema cross-validation|scripts/curriculum-builder-registry-a4-a7-fixture-schema-status.sh"

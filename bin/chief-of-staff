@@ -176,6 +176,8 @@ Teacher Planning Command Organization (status only; safe sample: fractions-revie
                                        Show read-only production registry empty-file status (empty shell exists; records blocked) and exit.
   --curriculum-production-registry-metadata-pilot-plan-status
                                        Show read-only metadata pilot execution planning status (protocol only; no execution) and exit.
+  --curriculum-production-registry-first-record-status
+                                       Show read-only first governed production registry record status (one record; write tooling blocked) and exit.
   --curriculum-source-readiness-status
                                        Show read-only Curriculum Source Readiness fake metadata inventory foundation status and exit.
   --curriculum-library-foundation-status
@@ -1934,6 +1936,15 @@ while [[ $# -gt 0 ]]; do
         die "Metadata pilot execution planning status script is missing: scripts/curriculum-builder-production-registry-metadata-pilot-plan-status.sh"
       fi
       bash "${curriculum_production_registry_metadata_pilot_plan_status_script}"
+      exit 0
+      ;;
+    --curriculum-production-registry-first-record-status)
+      repo_root="$(resolve_repo_root)"
+      curriculum_production_registry_first_record_status_script="${repo_root}/scripts/curriculum-builder-production-registry-first-record-status.sh"
+      if [[ ! -f "${curriculum_production_registry_first_record_status_script}" ]]; then
+        die "Production registry first-record status script is missing: scripts/curriculum-builder-production-registry-first-record-status.sh"
+      fi
+      bash "${curriculum_production_registry_first_record_status_script}"
       exit 0
       ;;
     --curriculum-source-readiness-status)

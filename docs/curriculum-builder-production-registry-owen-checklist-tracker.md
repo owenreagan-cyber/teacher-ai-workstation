@@ -5,7 +5,7 @@ Last updated: 2026-07-02
 ```text
 Status: planning_only
 Classification: read-only tracker — Owen decisions required
-Closure status: governance_batch_recorded_awaiting_deferred_items
+Closure status: path_namespace_recorded_awaiting_write_decision
 Authority: mirrors § J in production registry planning brief
 Implementation: blocked until Owen explicitly approves deferred items
 ```
@@ -22,18 +22,20 @@ Read-only tracker for **§ J — Owen Approval Checklist** in `docs/curriculum-b
 
 | Question | Answer |
 | --- | --- |
-| Are we ready to implement production writes? | **No** — items 1, 2, 3, 4, 10 deferred |
+| Are we ready to implement production writes? | **No** — items 2, 3, 4 deferred |
 | Is governance affirmation batch recorded? | **Yes** — items 5, 6, 7, 8, 9, 11 approved 2026-07-02 |
-| What should Owen do next? | Path + namespace session (items 1 and 10); item 2 remains deferred |
+| Are path and namespace decided? | **Yes** — item 1 Option B; item 10 `resource-*` (2026-07-02) |
+| What should Owen do next? | Item 2 write behavior decision session — separate from path/namespace |
 | What is the safest first code mission after path/namespace? | Still none until item 2 explicitly approved + separate write prompt |
-| Does checklist WARN mean failure? | **No** — 1 expected WARN while 5 items remain deferred |
+| Does checklist WARN mean failure? | **No** — 1 expected WARN while 3 items remain deferred |
+| Do approved path/namespace rows authorize writes? | **No** — path and namespace are planning decisions only |
 | Do approved governance rows authorize writes? | **No** — affirmations only |
 
 ## Checklist Items
 
 | # | Item | Owen status | Owner | Notes |
 | --- | --- | --- | --- | --- |
-| 1 | Production registry path | deferred | Owen | 2026-07-02 — Option B lean default; decide in follow-up path/namespace session |
+| 1 | Production registry path | approved | Owen | 2026-07-02 — Option B — `assistant/curriculum-builder/registry/v0-2/production-registry.json`; v0 `registry.json` remains read-only fictional `sample-*` reference |
 | 2 | Write behavior allowed | deferred | Owen | 2026-07-02 — No writes approved yet |
 | 3 | Real curriculum metadata allowed | deferred | Owen | 2026-07-02 — Metadata pilot later; no real metadata intake approved |
 | 4 | Real source references allowed | deferred | Owen | 2026-07-02 — Manual labels later; no real source references approved |
@@ -42,7 +44,7 @@ Read-only tracker for **§ J — Owen Approval Checklist** in `docs/curriculum-b
 | 7 | Review states | approved | Owen | 2026-07-02 — § D review-state gate model accepted |
 | 8 | Student-data prohibition | approved | Owen | 2026-07-02 — Student-data prohibition absolute |
 | 9 | Canvas/Drive/NAS/iCloud/API/OAuth/network | approved | Owen | 2026-07-02 — Remain blocked in v1 unless separate missions |
-| 10 | ID namespace | deferred | Owen | 2026-07-02 — Choose namespace with path decision |
+| 10 | ID namespace | approved | Owen | 2026-07-02 — `resource-*` pattern (e.g. `resource-sm5-textbook-001`); distinct from `sample-*` and `example-*` |
 | 11 | First implementation PR scope | approved | Owen | 2026-07-02 — CB-PROD-GOV merged; governed write mission remains separate and unapproved |
 
 ## Governance Affirmation Batch (2026-07-02)
@@ -52,7 +54,8 @@ Owen approved governance affirmations only. **This does not authorize production
 | Batch | Items | Effect |
 | --- | --- | --- |
 | Approved | 5, 6, 7, 8, 9, 11 | Governance principles recorded; CB-PROD-GOV scope acknowledged |
-| Deferred | 1, 2, 3, 4, 10 | Path, namespace, writes, metadata intake remain blocked |
+| Approved (path/namespace) | 1, 10 | Path and namespace recorded; file creation and writes still blocked |
+| Deferred | 2, 3, 4 | Write behavior, metadata intake, source references remain blocked |
 
 ## Governance Foundation Prepared (Not Owen Approval)
 
@@ -94,4 +97,4 @@ bash tests/curriculum-builder-production-registry-owen-checklist-status-test.sh
 
 ## Non-Activation
 
-This tracker does not activate production writes, `--write`, real intake, generation, APIs, network, scanning, or student-data workflows. Approved governance rows are affirmations only.
+This tracker does not activate production writes, `--write`, real intake, generation, APIs, network, scanning, or student-data workflows. Approved path and namespace rows do not authorize file creation or registry mutation.

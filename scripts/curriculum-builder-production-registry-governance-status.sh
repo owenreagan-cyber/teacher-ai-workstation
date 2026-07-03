@@ -58,7 +58,7 @@ check_file "${local_first}"
 check_file "${promotion_spec}"
 check_doc_contains "${governance_doc}" "complete_cb_prod_gov_foundation" "governance foundation closure"
 check_doc_contains "${governance_doc}" "Production registry writes: blocked" "governance blocked writes"
-check_doc_contains "${path_options}" "Owen Decision Pending" "path options Owen pending"
+check_doc_contains "${path_options}" "Owen-approved" "path options Owen approved"
 check_doc_contains "${path_options}" "fake_fixture_only" "path options fixture boundary"
 check_doc_contains "${review_states}" "planning_only" "review state planning only"
 check_doc_contains "${audit_stub}" "planning_stub_only" "audit stub planning only"
@@ -102,7 +102,8 @@ fi
 
 section 'Owen Checklist and Review Packet Coherence'
 check_doc_contains docs/curriculum-builder-production-registry-owen-review-packet.md "Governance-first only" "review packet governance-first section"
-check_doc_contains docs/curriculum-builder-production-registry-owen-checklist-tracker.md "governance_batch_recorded_awaiting_deferred_items" "checklist tracker governance batch recorded"
+check_doc_contains docs/curriculum-builder-production-registry-owen-checklist-tracker.md "path_namespace_recorded_awaiting_write_decision" "checklist tracker path namespace recorded"
+check_doc_contains "${path_options}" "Owen-approved" "path options Owen-approved"
 check_doc_contains docs/curriculum-builder-production-registry-owen-decision-worksheet.md "Documenting an option does not approve it" "decision worksheet non-approval"
 check_doc_contains docs/curriculum-builder-production-registry-workflow-planning-brief.md "governance + blocked proof only" "planning brief § I governance scope"
 

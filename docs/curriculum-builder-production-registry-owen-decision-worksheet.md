@@ -21,14 +21,14 @@ PASS on any status command does not authorize writes.
 
 1. Read `docs/curriculum-builder-production-registry-owen-review-packet.md` § 7 decision table.
 2. For each checklist item below, record your decision in `docs/curriculum-builder-production-registry-owen-checklist-tracker.md` (change `Owen status` from `pending` to `approved`, `deferred`, or `rejected`).
-3. Re-run `bin/chief-of-staff --curriculum-production-registry-owen-checklist-status` — the expected WARN remains while deferred items exist (5 deferred as of 2026-07-02).
+3. Re-run `bin/chief-of-staff --curriculum-production-registry-owen-checklist-status` — the expected WARN remains while deferred items exist (3 deferred as of 2026-07-02).
 4. Use the **Decision-to-Next-Prompt** table at the bottom before issuing any implementation mission.
 
 ## Checklist Worksheet
 
 | # | Item | Your decision (pending/approved/deferred/rejected) | Date | Notes |
 | ---: | --- | --- | --- | --- |
-| 1 | Production registry path | deferred | 2026-07-02 | Option B lean default; decide in follow-up path/namespace session |
+| 1 | Production registry path | approved | 2026-07-02 | Option B — `assistant/curriculum-builder/registry/v0-2/production-registry.json`; v0 remains read-only `sample-*` |
 | 2 | Write behavior allowed | deferred | 2026-07-02 | No writes approved yet |
 | 3 | Real curriculum metadata allowed | deferred | 2026-07-02 | Metadata pilot later; no real metadata intake approved |
 | 4 | Real source references allowed | deferred | 2026-07-02 | Manual labels later; no real source references approved |
@@ -37,7 +37,7 @@ PASS on any status command does not authorize writes.
 | 7 | Review states | approved | 2026-07-02 | § D review-state gate model accepted |
 | 8 | Student-data prohibition | approved | 2026-07-02 | Absolute ban affirmed |
 | 9 | Integrations blocked in v1 | approved | 2026-07-02 | Canvas/Drive/NAS/iCloud/API/OAuth/network remain blocked unless separate missions |
-| 10 | ID namespace | deferred | 2026-07-02 | Choose namespace with path decision |
+| 10 | ID namespace | approved | 2026-07-02 | `resource-*` pattern (e.g. `resource-sm5-textbook-001`); distinct from `sample-*` and `example-*` |
 | 11 | Governance-first first PR scope | approved | 2026-07-02 | CB-PROD-GOV merged; governed write mission remains separate and unapproved |
 
 ## What Approval Does / Does Not Authorize
@@ -48,22 +48,22 @@ PASS on any status command does not authorize writes.
 | Item 9 (integrations blocked) | v1 workflow stays local/manual | Drive/API intake |
 | Item 11 (governance-first scope) | Acknowledges CB-PROD-GOV complete | Production writes |
 | Item 6 + 7 (rollback + review gates) | Future write mission may reference model | Registry mutation |
-| Item 1 + 10 (path + namespace) | Path decision doc update | Creating real records |
+| Item 1 + 10 (path + namespace) | Path decision doc update; namespace recorded | Creating real records or production-registry.json |
 | Item 2 (writes allowed) | Future **separate** write mission prompt | Immediate `--write` |
 | Item 3 + 4 (real metadata) | Future **separate** metadata pilot mission | File ingestion |
 
 ## Safe Tracker Update Examples
 
-**Approve governance affirmation (item 8):**
+**Approve path decision (item 1):**
 
 ```markdown
-| 8 | Student-data prohibition | approved | Owen | 2026-07-02 | Absolute ban affirmed |
+| 1 | Production registry path | approved | Owen | 2026-07-02 | Option B — assistant/curriculum-builder/registry/v0-2/production-registry.json |
 ```
 
-**Defer path decision (item 1):**
+**Approve namespace (item 10):**
 
 ```markdown
-| 1 | Production registry path | deferred | Owen | 2026-07-02 | Need more time on option B vs C |
+| 10 | ID namespace | approved | Owen | 2026-07-02 | resource-* pattern; distinct from sample-* and example-* |
 ```
 
 **Do not use `approved` on item 2 unless Owen explicitly authorizes future governed writes.**
@@ -72,9 +72,9 @@ PASS on any status command does not authorize writes.
 
 | Owen state | Safe next mission |
 | --- | --- |
-| 5 items deferred (current) | **Path + namespace session** (items 1 and 10); item 2 remains deferred |
-| Approved items 5, 6, 7, 8, 9, 11 only (recorded 2026-07-02) | Tracker/status doc refresh only — **no writes** |
-| Approved item 1 (path) + 10 (namespace) without item 2 | Update path-options doc with chosen path; still no writes |
+| 3 items deferred (current) | **Item 2 write behavior decision session** — separate from path/namespace |
+| Approved items 1, 5, 6, 7, 8, 9, 10, 11 (recorded 2026-07-02) | Tracker/status doc refresh only — **no writes** |
+| Approved item 1 (path) + 10 (namespace) without item 2 | Path recorded; still no writes or file creation |
 | Approved 1, 2, 6, 7, 10, 11 + governance merged | **Governed single-record write mission** — see `docs/proposals/backlog/production-registry-write-mission.md` |
 | Approved 3, 4, 5 (manual only) without item 2 | **Metadata pilot planning mission** — docs/status only unless write also approved |
 | Any integration need | **Separate per-system mission** — not bulk § J approval |

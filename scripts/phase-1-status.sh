@@ -1050,16 +1050,22 @@ for path in \
   docs/curriculum-builder-contract-activation-checklist-owen.md \
   docs/curriculum-builder-registry-expected-warns.md \
   docs/whole-system-master-roadmap-build-state-report.md \
+  scripts/whole-system-master-roadmap-status.sh \
+  tests/whole-system-master-roadmap-status-test.sh \
   scripts/autonomous-build-engine-status.sh \
   tests/autonomous-build-engine-status-test.sh \
   tests/lane-review-hardening-guardrails-test.sh; do
   check_required_file "${path}"
 done
 check_bash_syntax scripts/autonomous-build-engine-status.sh
+check_bash_syntax scripts/whole-system-master-roadmap-status.sh
+check_bash_syntax tests/whole-system-master-roadmap-status-test.sh
 check_bash_syntax tests/autonomous-build-engine-status-test.sh
 check_bash_syntax tests/lane-review-hardening-guardrails-test.sh
 check_doc_contains docs/cursor-autonomous-build-engine.md "complete_autonomous_build_engine_governance" "autonomous build engine closure"
 grep -Fq -- '--autonomous-build-engine-status' bin/chief-of-staff && pass "chief-of-staff exposes --autonomous-build-engine-status" || fail "chief-of-staff missing --autonomous-build-engine-status"
+check_doc_contains docs/whole-system-master-roadmap-build-state-report.md "whole_system_master_roadmap_status_complete" "whole-system report closure"
+grep -Fq -- '--whole-system-master-roadmap-status' bin/chief-of-staff && pass "chief-of-staff exposes --whole-system-master-roadmap-status" || fail "chief-of-staff missing --whole-system-master-roadmap-status"
 
 section "Governance Lane Aggregate Status Files"
 for path in \

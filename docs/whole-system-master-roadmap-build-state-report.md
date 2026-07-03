@@ -5,73 +5,151 @@ Last updated: 2026-07-03
 ```text
 Status: documentation/status only
 Authority: whole-system posture snapshot — not implementation approval
-Baseline: main after Production Registry Next-Gate Decision Packet mission
+Baseline: main after Whole-System Master Roadmap Build-State Report mission
+Closure: whole_system_master_roadmap_status_complete
 ```
 
 **Status key:** `[x]` Built/merged · `[~]` Currently being built · `[>]` Ready for safe planning/build · `[!]` Blocked pending Owen/safety gate · `[ ]` Future / not started · `[?]` Insufficient repo evidence
+
+**Status command:** `bin/chief-of-staff --whole-system-master-roadmap-status`
+
+---
+
+## Evidence Classification
+
+| Class | Meaning | Examples in this repo |
+| --- | --- | --- |
+| **repo-backed evidence** | Merged files, status scripts, tests, CLI wiring with PASS proof | Dashboard 128/0/0; `--governance-lane-status`; first governed record in `production-registry.json` |
+| **planning/proposal-only evidence** | Docs, proposals, lane reviews without runtime activation | Writer tooling design boundary; second-record worksheet; Academic OS external intake |
+| **blocked implementation gates** | Explicit Owen/safety gates; negative tests; sentinel | `BLOCKED-NO-WRITES.sentinel`; no `--write`; Options A/B/C blocked |
+| **future ideas not started** | Named programs with no repo implementation | Live Vibe Panel; Lovable API; NAS crawler |
+| **insufficient repo evidence** | External planning references only | Academic OS full vision beyond intake map |
+
+This report does **not** mark planning docs as built runtime. PASS on status commands proves documentation/status coherence only.
+
+---
+
+## Blocked Implementation Gates Summary
+
+| Gate | State | Proof |
+| --- | --- | --- |
+| Production registry writes (automated) | blocked | Sentinel intact; no writer scripts; no `--curriculum-registry-write` |
+| Writer / `--write` tooling (Option A) | blocked pending Owen decision | `docs/curriculum-builder-production-registry-writer-tooling-design-boundary.md` |
+| Second production record (Option B) | blocked pending worksheet + Owen approval | `docs/curriculum-builder-production-registry-second-record-worksheet-plan.md` |
+| Metadata pilot expansion (Option C) | blocked pending Owen decision | Next-gate decision packet |
+| Parked state (Option D) | **allowed — recommended default** | `docs/curriculum-builder-production-registry-next-gate-decision-packet.md` |
+| Real curriculum file access | blocked | Metadata boundary; guardrail tests |
+| Copied curriculum content | blocked | Constitution; boundary docs |
+| Source auto-resolution | blocked | Source readiness planning only |
+| Student data | blocked — absolute | Owen § J item 8; constitution |
+| Drive / Canvas / NAS / iCloud / OAuth / APIs | blocked | Integration planning inactive |
+| Local LLM inference / Ollama execution | blocked | D1 read-only; negative tests |
+| Widget / shortcut install / Mac mutations | blocked | F1/E1 planning only |
+| Lovable API / app generation | blocked | G1 planning; negative fetch guardrails |
+| 3D export / slicing / printing | blocked | J1 read-only |
+| AI generation / lesson runtime | blocked | Implementation gate |
+
+---
+
+## Production Registry Parked-State Reference
+
+```text
+records count: 1
+approved record ID: resource-math-lesson-108-presentation
+second production records exist: no
+BLOCKED-NO-WRITES.sentinel intact: yes
+--write handler exists: no
+writer scripts exist: no
+real curriculum access active: no
+copied curriculum content active: no
+source auto-resolution active: no
+integrations active: no
+next gate default: Option D (parked) recommended default
+```
+
+Proof: `--curriculum-production-registry-next-gate-status`, `--curriculum-production-registry-first-record-status`, `--curriculum-production-registry-first-record-validate`
+
+---
+
+## Next Safe Lane Selector
+
+```text
+Closure: next_safe_lane_selector_complete
+```
+
+Ranked recommendations (safest first):
+
+1. **safest next docs/status build lane** — Whole-system roadmap coherence maintenance, proposal index sync, capability-map cross-links, aggregate status hardening. No runtime risk. Command: `--whole-system-master-roadmap-status`.
+2. **strongest classroom-value planning lane** — Presentation Engine / renderer foundation interface planning; A4–A7 fixture optional-field enrichment; classroom utility app per-app mission templates (planning only).
+3. **blocked high-value lane requiring Owen decision** — Production registry Option A (writer/`--write`), Option B (second record), or Option C (metadata pilot expansion). All blocked until explicit Owen mission.
+4. **future lane needing more repo evidence** — Academic OS beyond external intake map; unified daily AI briefing; live Vibe Panel / wallpaper apply.
+
+**Recommended default:** Maintain **Option D (parked)** for production registry. Proceed with safe docs/status lanes until Owen selects A, B, or C.
+
+Cross-references: `docs/build-queue.md`, `docs/master-build-roadmap.md`, `docs/proposals/index.md`, `assistant/memory/active-priorities.md`
 
 ---
 
 ## 1. Core Governance / Autonomous Build Engine
 
-| Marker | Item |
-| --- | --- |
-| [x] | Engineering Constitution, Implementation Gate, Cursor operating modes, ABE governance |
-| [x] | Proposal ledger, lane reviews (15 lanes `reviewed`), governance lane aggregate |
-| [x] | Discovery ≠ implementation banner on `--cursor-operating-modes-status` |
-| [x] | ABE sprint queue template + proposal-folder README checks |
-| [>] | Batch Level 2 review playbook (lane review still proposed/deferred) |
-| [!] | Runtime/product behavior without explicit mission |
-| **Proof** | `--cursor-operating-modes-status`, `--autonomous-build-engine-status`, `--governance-lane-status` |
+| Marker | Item | Evidence |
+| --- | --- | --- |
+| [x] | Engineering Constitution, Implementation Gate, Cursor operating modes, ABE governance | repo-backed |
+| [x] | Proposal ledger, lane reviews (15 lanes `reviewed`), governance lane aggregate | repo-backed |
+| [x] | Discovery ≠ implementation banner on `--cursor-operating-modes-status` | repo-backed |
+| [x] | ABE sprint queue template + proposal-folder README checks | repo-backed |
+| [>] | Batch Level 2 review playbook (lane review still proposed/deferred) | planning/proposal-only |
+| [!] | Runtime/product behavior without explicit mission | blocked gate |
+| **Proof** | `--cursor-operating-modes-status`, `--autonomous-build-engine-status`, `--governance-lane-status` | |
 
 ---
 
 ## 2. Chief of Staff Core
 
-| Marker | Item |
-| --- | --- |
-| [x] | CLI, dashboard (~124/0/0), Program B daily ops, queues, `--next-action`, validate-all |
-| [>] | Unified daily briefing (AI), B4 smoke expansion, B7 closure placeholder |
-| [!] | Automation beyond read-only status |
-| **Proof** | `bin/chief-of-staff --dashboard`, `docs/chief-of-staff-v1-program-b-closure.md` |
+| Marker | Item | Evidence |
+| --- | --- | --- |
+| [x] | CLI, dashboard (128/0/0), Program B daily ops, queues, `--next-action`, validate-all | repo-backed |
+| [>] | Unified daily briefing (AI), B4 smoke expansion, B7 closure placeholder | planning/proposal-only |
+| [!] | Automation beyond read-only status | blocked gate |
+| **Proof** | `bin/chief-of-staff --dashboard`, `docs/chief-of-staff-v1-program-b-closure.md` | |
 
 ---
 
 ## 3. Curriculum Builder / Curriculum Registry
 
-| Marker | Item |
-| --- | --- |
-| [x] | v1 foundation, v0.2 CB-IMPL-1–4, hardening bundle, source readiness, A4–A7 contracts |
-| [>] | A4–A7 fixture optional-field enrichment; schema version alignment doc (Owen-gated) |
-| [!] | Real records, renderers, lesson generation |
-| **Proof** | `--curriculum-registry-lane-status`, `--curriculum-contracts-status` |
+| Marker | Item | Evidence |
+| --- | --- | --- |
+| [x] | v1 foundation, v0.2 CB-IMPL-1–4, hardening bundle, source readiness, A4–A7 contracts | repo-backed |
+| [>] | A4–A7 fixture optional-field enrichment; schema version alignment doc (Owen-gated) | planning/proposal-only |
+| [!] | Real records beyond production pilot, renderers, lesson generation | blocked gate |
+| **Proof** | `--curriculum-registry-lane-status`, `--curriculum-contracts-status` | |
 
 ---
 
 ## 4. Production Registry
 
-| Marker | Item |
-| --- | --- |
-| [x] | CB-PROD-PLAN, Owen review packet, checklist tracker, CB-PROD-GOV, decision worksheet |
-| [x] | Path + namespace recorded (items 1, 10) |
-| [x] | Write behavior approved in principle (item 2) |
-| [x] | Phase 2 preflight complete |
-| [x] | **Metadata-boundary refinement complete** — field contracts, guardrails, planning validator |
-| [x] | **Owen § J checklist complete** — all 11 items decided |
-| [x] | **Metadata pilot execution planning complete** — one-record protocol, worksheet, acceptance criteria |
-| [x] | **Empty-file mission complete (historical)** — pre-write empty shell baseline |
-| [x] | **First governed production registry record complete** — `resource-math-lesson-108-presentation` |
-| [x] | **Post-first-record hardening** — sentinel semantics, negative tests, next-gate classification |
-| [x] | **Next-gate decision packet complete** — Options A–D documented; parked default recommended |
-| [!] | Write tooling blocked; second record blocked; metadata pilot beyond first record blocked |
-| **Proof** | `--curriculum-production-registry-next-gate-status`; next-gate status ~45+ / 0 / 0 |
+| Marker | Item | Evidence |
+| --- | --- | --- |
+| [x] | CB-PROD-PLAN, Owen review packet, checklist tracker, CB-PROD-GOV, decision worksheet | repo-backed |
+| [x] | Path + namespace recorded (items 1, 10) | repo-backed |
+| [x] | Write behavior approved in principle only (item 2) — manual, not tooling | repo-backed |
+| [x] | Phase 2 preflight complete | repo-backed |
+| [x] | Metadata-boundary refinement complete | repo-backed |
+| [x] | Owen § J checklist complete — all 11 items decided | repo-backed |
+| [x] | Metadata pilot execution planning complete | repo-backed |
+| [x] | Empty-file mission complete (historical) | repo-backed |
+| [x] | First governed production registry record complete | repo-backed |
+| [x] | Post-first-record hardening | repo-backed |
+| [x] | Next-gate decision packet complete — Options A–D documented | repo-backed |
+| [!] | Write tooling blocked; second record blocked; metadata pilot beyond first record blocked | blocked gate |
+| **Proof** | `--curriculum-production-registry-next-gate-status` (34/0/0); `--curriculum-production-registry-first-record-status` (50/0/0) | |
 
 ### Owen § J Checklist State (2026-07-02)
 
 | Item | Status | Note |
 | --- | --- | --- |
 | 1 Production registry path | approved | Option B — `assistant/curriculum-builder/registry/v0-2/production-registry.json` |
-| 2 Write behavior allowed | approved | Manual-only in principle; Phase 2 preflight complete |
+| 2 Write behavior allowed | approved | Manual-only in principle; Phase 2 preflight complete; no writer tooling |
 | 3 Real curriculum metadata | approved | Manual Owen-entered descriptive metadata only |
 | 4 Real source references | approved | Manual non-resolving source-reference labels |
 | 5 Source systems permitted | approved | Manual entry only |
@@ -84,118 +162,116 @@ Baseline: main after Production Registry Next-Gate Decision Packet mission
 
 **First governed record does not authorize write tooling, second record, or integrations.**
 
-**Next possible gates:** Writer/`--write` tooling, second record, metadata pilot beyond first record — all require separate explicit prompts.
-
 ---
 
 ## 5. Widgets / Shortcuts / Mac Workflow
 
-| Marker | Item |
-| --- | --- |
-| [x] | F1 catalog, E1 Mac planning, workstation ops H+I aggregate |
-| [x] | Mac E1 planning-only banner, F1 cross-link, plist negative test |
-| [>] | E1 vs wallpaper lane map doc (lane review still proposed) |
-| [!] | Widget/shortcut install, Mac mutations |
-| **Proof** | `--widget-shortcut-status`, `--mac-workstation-status`, `--workstation-ops-lane-status` |
+| Marker | Item | Evidence |
+| --- | --- | --- |
+| [x] | F1 catalog, E1 Mac planning, workstation ops H+I aggregate | repo-backed |
+| [x] | Mac E1 planning-only banner, F1 cross-link, plist negative test | repo-backed |
+| [>] | E1 vs wallpaper lane map doc (lane review still proposed) | planning/proposal-only |
+| [!] | Widget/shortcut install, Mac mutations | blocked gate |
+| **Proof** | `--widget-shortcut-status`, `--mac-workstation-status`, `--workstation-ops-lane-status` | |
 
 ---
 
 ## 6. Vibe / Teacher Experience / UI Direction
 
-| Marker | Item |
-| --- | --- |
-| [x] | Phase 0E, wallpaper/photo planning stack, lesson planning scaffold |
-| [!] | Live curator, Vibe Panel app, wallpaper apply |
-| **Proof** | Wallpaper status command family, `--lesson-planning-foundation-status` |
+| Marker | Item | Evidence |
+| --- | --- | --- |
+| [x] | Phase 0E, wallpaper/photo planning stack, lesson planning scaffold | repo-backed |
+| [!] | Live curator, Vibe Panel app, wallpaper apply | blocked gate |
+| **Proof** | Wallpaper status command family, `--lesson-planning-foundation-status` | |
 
 ---
 
 ## 7. 3D Workshop / Spatial / Visual Builder Ideas
 
-| Marker | Item |
-| --- | --- |
-| [x] | J1 read-only foundation, scope one-pager, planning-only banner, mesh/export negative tests |
-| [!] | CAD, STL/3MF export, slicing, printing |
-| **Proof** | `--3d-builder-status` |
+| Marker | Item | Evidence |
+| --- | --- | --- |
+| [x] | J1 read-only foundation, scope one-pager, planning-only banner, mesh/export negative tests | repo-backed |
+| [!] | CAD, STL/3MF export, slicing, printing | blocked gate |
+| **Proof** | `--3d-builder-status` | |
 
 ---
 
 ## 8. Homebrew / Local Installs / Dev Environment
 
-| Marker | Item |
-| --- | --- |
-| [x] | Bootstrap/setup scripts; Program H health + Program I updater read-only |
-| [x] | Updater check-only banner; brew/npm/softwareupdate negative tests |
-| [x] | Health vs Updater boundary banners |
-| [!] | brew/npm install from CoS; system apply |
-| **Proof** | `--system-update-check`, `--system-health`, setup scripts (human-run only) |
+| Marker | Item | Evidence |
+| --- | --- | --- |
+| [x] | Bootstrap/setup scripts; Program H health + Program I updater read-only | repo-backed |
+| [x] | Updater check-only banner; brew/npm/softwareupdate negative tests | repo-backed |
+| [x] | Health vs Updater boundary banners | repo-backed |
+| [!] | brew/npm install from CoS; system apply | blocked gate |
+| **Proof** | `--system-update-check`, `--system-health`, setup scripts (human-run only) | |
 
 ---
 
 ## 9. Local LLM / Ollama / AI Runtime
 
-| Marker | Item |
-| --- | --- |
-| [x] | D1 read-only foundation, R0 routing matrix, R0+D1 cross-links, readiness checklist tracker |
-| [x] | No Ollama execution banner; ollama run/pull negative tests |
-| [!] | Inference, model downloads, cloud API activation |
-| **Proof** | `--local-llm-workstation-status`, `--model-routing-status` |
+| Marker | Item | Evidence |
+| --- | --- | --- |
+| [x] | D1 read-only foundation, R0 routing matrix, R0+D1 cross-links, readiness checklist tracker | repo-backed |
+| [x] | No Ollama execution banner; ollama run/pull negative tests | repo-backed |
+| [!] | Inference, model downloads, cloud API activation | blocked gate |
+| **Proof** | `--local-llm-workstation-status`, `--model-routing-status` | |
 
 ---
 
 ## 10. Canvas / Drive / NAS / iCloud Integrations
 
-| Marker | Item |
-| --- | --- |
-| [x] | Integration planning v0 (inactive); Canvas LLM frozen; Canvas frozen banner in health output |
-| [x] | Item 9 governance affirmation: integrations remain blocked in v1 |
-| [!] | Drive/Canvas API, OAuth, NAS/iCloud connectors, Canvas unfreeze |
-| **Proof** | `--integration-planning-foundation-status`, `--teacher-app-designer-canvas-llm-status` |
+| Marker | Item | Evidence |
+| --- | --- | --- |
+| [x] | Integration planning v0 (inactive); Canvas LLM frozen; Canvas frozen banner in health output | repo-backed |
+| [x] | Item 9 governance affirmation: integrations remain blocked in v1 | repo-backed |
+| [!] | Drive/Canvas API, OAuth, NAS/iCloud connectors, Canvas unfreeze | blocked gate |
+| **Proof** | `--integration-planning-foundation-status`, `--teacher-app-designer-canvas-llm-status` | |
 
 ---
 
 ## 11. Classroom Utility Apps
 
-| Marker | Item |
-| --- | --- |
-| [x] | CAL1 foundation, fake inventory, blocked external ideas doc, capability map CAL cross-link |
-| [!] | All named utility apps blocked until per-app Owen mission |
-| **Proof** | `--classroom-app-lab-status` |
+| Marker | Item | Evidence |
+| --- | --- | --- |
+| [x] | CAL1 foundation, fake inventory, blocked external ideas doc, capability map CAL cross-link | repo-backed |
+| [!] | All named utility apps blocked until per-app Owen mission | blocked gate |
+| **Proof** | `--classroom-app-lab-status` | |
 
 ---
 
 ## 12. Lovable / App Generation / Prototype Rescue
 
-| Marker | Item |
-| --- | --- |
-| [x] | G1 planning surface, CAL1/G1 boundary, no-API banner, mission approval gate checklist |
-| [x] | Negative lovable.dev fetch guardrails |
-| [!] | Lovable API, OAuth, app generation |
-| **Proof** | `--lovable-status` |
+| Marker | Item | Evidence |
+| --- | --- | --- |
+| [x] | G1 planning surface, CAL1/G1 boundary, no-API banner, mission approval gate checklist | repo-backed |
+| [x] | Negative lovable.dev fetch guardrails | repo-backed |
+| [!] | Lovable API, OAuth, app generation | blocked gate |
+| **Proof** | `--lovable-status` | |
 
 ---
 
 ## 13. Presentation Engine / Resource Registry / Academic OS Ideas
 
-| Marker | Item |
-| --- | --- |
-| [x] | Resource Registry = Curriculum Builder registry lanes (v0/v0.2/production planning) |
-| [>] | Presentation Engine — proposal candidate; renderer foundation interface only |
-| [?] | Academic OS — insufficient repo evidence (external planning reference only) |
-| **Proof** | `docs/proposals/ideas/external-planning-input-intake-map.md` |
+| Marker | Item | Evidence |
+| --- | --- | --- |
+| [x] | Resource Registry = Curriculum Builder registry lanes (v0/v0.2/production planning) | repo-backed |
+| [>] | Presentation Engine — proposal candidate; renderer foundation interface only | planning/proposal-only |
+| [?] | Academic OS — insufficient repo evidence (external planning reference only) | insufficient repo evidence |
+| **Proof** | `docs/proposals/ideas/external-planning-input-intake-map.md` | |
 
 ---
 
 ## 14. Safety / Student Data / Real Curriculum Gates
 
-| Marker | Item |
-| --- | --- |
-| [x] | Constitution, approval gate, BLOCKED-NO-WRITES sentinel, guardrail tests |
-| [x] | Lane-review hardening guardrails |
-| [x] | Item 8 governance affirmation: student-data prohibition absolute |
-| [x] | Metadata-boundary refinement guardrails and planning validator |
-| [!] | Real curriculum file access, copied content, student data |
-| **Proof** | Expected WARNs doc; boundary doc; guardrail tests |
+| Marker | Item | Evidence |
+| --- | --- | --- |
+| [x] | Constitution, approval gate, BLOCKED-NO-WRITES sentinel, guardrail tests | repo-backed |
+| [x] | Lane-review hardening guardrails | repo-backed |
+| [x] | Item 8 governance affirmation: student-data prohibition absolute | repo-backed |
+| [x] | Metadata-boundary refinement guardrails and planning validator | repo-backed |
+| [!] | Real curriculum file access, copied content, student data | blocked gate |
+| **Proof** | Expected WARNs doc; boundary doc; guardrail tests | |
 
 ---
 
@@ -203,16 +279,28 @@ Baseline: main after Production Registry Next-Gate Decision Packet mission
 
 | Surface | State |
 | --- | --- |
-| Dashboard | ~128+ / 0 / 0 PASS |
-| Validate-all | ~46+ / 0 / 0 PASS |
-| First-record status | ~50+ / 0 / 0 PASS |
-| Next-gate status | ~34+ / 0 / 0 PASS |
-| Empty-file status (historical) | ~30 / 0 / 0 PASS |
+| Dashboard | 128 / 0 / 0 PASS |
+| Validate-all | 46 / 0 / 0 PASS |
+| Whole-system roadmap status | new — `--whole-system-master-roadmap-status` |
+| Governance status | 54 / 0 / 0 PASS |
+| Checklist status | 59 / 0 / 0 PASS |
+| Registry lane status | 50 / 0 / 0 PASS |
+| First-record status | 50 / 0 / 0 PASS |
+| Next-gate status | 34 / 0 / 0 PASS |
+| Empty-file status (historical) | 30 / 0 / 0 PASS |
+| Phase-1 | 758 / 0 / 0 PASS |
 | Active mission | None |
-| Next step | Owen chooses Option A, B, C, or D (parked recommended) |
+| Next step | Safe docs/status lanes; production registry parked (Option D) |
 
 **Safety gates preserved:** First governed production registry record exists (`records` count exactly 1; ID `resource-math-lesson-108-presentation`); `BLOCKED-NO-WRITES.sentinel` intact; no `--write`; no writer scripts; no second production record; real curriculum file access blocked; copied curriculum content blocked; source auto-resolution blocked; integration and runtime gates blocked.
 
+### Proposal / Backlog Index Coherence
+
+- Proposal ledger: `docs/proposals/index.md` — production registry missions through next-gate decision packet marked `implemented`
+- Build queue: `docs/build-queue.md` — product-decision wall; Option D parked default
+- Capability map: `docs/teacher-workstation-capability-map.md` — production registry read-only surfaces
+- Master roadmap: `docs/master-build-roadmap.md` — program lane status `reviewed` for governance lanes
+
 ## Non-Activation
 
-This report is Markdown planning/status text only. It does not authorize implementation.
+This report is Markdown planning/status text only. It does not authorize implementation. `whole_system_master_roadmap_status_complete` and `next_safe_lane_selector_complete` are documentation closure markers only.

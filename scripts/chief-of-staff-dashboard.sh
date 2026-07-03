@@ -1629,6 +1629,27 @@ else
   warn "Production registry next-gate status script missing: scripts/curriculum-builder-production-registry-next-gate-status.sh"
 fi
 
+section "Whole-System Master Roadmap Build-State"
+if [[ -f scripts/whole-system-master-roadmap-status.sh ]]; then
+  whole_system_master_roadmap_result=0
+  whole_system_master_roadmap_output="$(bash scripts/whole-system-master-roadmap-status.sh 2>&1)" || whole_system_master_roadmap_result=$?
+  whole_system_master_roadmap_pass="$(summary_count "${whole_system_master_roadmap_output}" "PASS")"
+  whole_system_master_roadmap_warn="$(summary_count "${whole_system_master_roadmap_output}" "WARN")"
+  whole_system_master_roadmap_fail="$(summary_count "${whole_system_master_roadmap_output}" "FAIL")"
+
+  if [[ "${whole_system_master_roadmap_result}" != "0" ]]; then
+    printf '%s\n' "${whole_system_master_roadmap_output}"
+    fail "Whole-system master roadmap status failed"
+  elif [[ -n "${whole_system_master_roadmap_pass}" && -n "${whole_system_master_roadmap_warn}" && -n "${whole_system_master_roadmap_fail}" ]]; then
+    printf 'Whole-System Master Roadmap: PASS %s / WARN %s / FAIL %s\n' "${whole_system_master_roadmap_pass}" "${whole_system_master_roadmap_warn}" "${whole_system_master_roadmap_fail}"
+    pass "Whole-system master roadmap status completed"
+  else
+    pass "Whole-system master roadmap status completed"
+  fi
+else
+  warn "Whole-system master roadmap status script missing: scripts/whole-system-master-roadmap-status.sh"
+fi
+
 section "Curriculum Source Readiness Foundation"
 if [[ -f scripts/curriculum-source-readiness-status.sh ]]; then
   curriculum_source_readiness_result=0

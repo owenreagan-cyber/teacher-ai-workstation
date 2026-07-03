@@ -1,6 +1,6 @@
 # Proposal Ledger
 
-Last updated: 2026-07-02
+Last updated: 2026-07-03
 
 ```text
 Status: documentation/status only
@@ -60,6 +60,7 @@ Templates: `docs/proposals/templates/lane-level-discovery-mission.md`, `docs/pro
 | Production registry first governed record | Curriculum Builder Registry | 2 | high | low | low | none | possible | none | implemented | complete — one manual metadata record | Production Registry First Record 2026-07-03 | 2026-07-03 |
 | Production registry post-first-record hardening | Curriculum Builder Registry | 2 | medium | low | low | none | possible | none | implemented | sentinel semantics, negative tests, next-gate classification | Production Registry Post-First-Record Hardening 2026-07-03 | 2026-07-03 |
 | Production registry next-gate decision packet | Curriculum Builder Registry | 2 | medium | low | low | none | possible | none | implemented | decision packet; `--curriculum-production-registry-next-gate-status` | Production Registry Next-Gate Decision Packet 2026-07-03 | 2026-07-03 |
+| Whole-system master roadmap build-state report | Cross-cutting | 2 | high | low | low | none | none | none | implemented | complete — `docs/whole-system-master-roadmap-build-state-report.md`; `--whole-system-master-roadmap-status` | Whole-System Master Roadmap Report 2026-07-03 | 2026-07-03 |
 | Production registry metadata boundary refinement | Curriculum Builder Registry | 2 | high | low | low | none | possible | none | implemented | complete — field contracts, guardrails, planning validator; `--curriculum-production-registry-metadata-boundary-status` | Production Registry Metadata Boundary Refinement 2026-07-02 | 2026-07-02 |
 | Owen § J production registry checklist tracker | Curriculum Builder Registry | 2 | medium | low | low | none | possible | none | implemented | items 3+4 boundaries approved 2026-07-02 — 11 approved, 0 deferred; `--curriculum-production-registry-owen-checklist-status` | Owen § J Items 3+4 Metadata Boundary Sync 2026-07-02 | 2026-07-02 |
 | Owen § J production registry review packet | Curriculum Builder Registry | 2 | high | low | low | none | possible | none | implemented | complete — `docs/curriculum-builder-production-registry-owen-review-packet.md` | Owen Review Packet mission 2026-07-02 | 2026-07-02 |

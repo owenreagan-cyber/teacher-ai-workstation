@@ -222,6 +222,7 @@ Developer and Cursor Workflow:
   --cursor-operating-modes-status      Show Cursor operating modes, approval gates, and proposal governance status and exit.
   --autonomous-build-engine-status     Show Autonomous Build Engine governance, continuation loop, and exhaustion rules status and exit.
   --governance-lane-status             Show aggregate governance lane status (operating modes + ABE + proposal folders) and exit.
+  --whole-system-master-roadmap-status Show whole-system master roadmap build-state report status and next safe lane selector proof and exit.
   --developer-status                   Show local Developer Mode status and exit.
   --create-developer-project <template> <slug>
                                        Copy a Developer Mode template into local projects.
@@ -2662,6 +2663,15 @@ while [[ $# -gt 0 ]]; do
         die "Governance lane status script is missing: scripts/governance-lane-status.sh"
       fi
       bash "${governance_lane_status_script}"
+      exit 0
+      ;;
+    --whole-system-master-roadmap-status)
+      repo_root="$(resolve_repo_root)"
+      whole_system_master_roadmap_status_script="${repo_root}/scripts/whole-system-master-roadmap-status.sh"
+      if [[ ! -f "${whole_system_master_roadmap_status_script}" ]]; then
+        die "Whole-system master roadmap status script is missing: scripts/whole-system-master-roadmap-status.sh"
+      fi
+      bash "${whole_system_master_roadmap_status_script}"
       exit 0
       ;;
     --developer-status)

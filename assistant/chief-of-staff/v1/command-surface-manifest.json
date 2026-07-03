@@ -13,6 +13,7 @@
         {"flag": "--cursor-operating-modes-status", "status": "implemented", "purpose": "Cursor operating modes, approval gates, and proposal governance (read-only)"},
         {"flag": "--autonomous-build-engine-status", "status": "implemented", "purpose": "Autonomous Build Engine governance, continuation loop, and exhaustion rules (read-only)"},
         {"flag": "--governance-lane-status", "status": "implemented", "purpose": "Aggregate governance lane status (operating modes + ABE + proposal folders)"},
+        {"flag": "--whole-system-master-roadmap-status", "status": "implemented", "purpose": "Whole-system master roadmap build-state report and next safe lane selector (read-only)"},
         {"flag": "--return-to-core-status", "status": "implemented", "purpose": "Parked tracks and return-to-core map"},
         {"flag": "--chief-of-staff-v1-status", "status": "implemented", "purpose": "Chief of Staff v1 Agent Core foundation status"},
         {"flag": "--chief-of-staff-command-index-v1-status", "status": "implemented", "purpose": "Command index v1 status proof"},

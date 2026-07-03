@@ -5,7 +5,7 @@ Last updated: 2026-07-02
 ```text
 Status: planning_only
 Classification: metadata-only pilot planning — no intake
-Blocked until: Owen § J items 3, 4, 5 approved + separate mission
+Blocked until: metadata-boundary refinement complete + separate pilot execution mission
 ```
 
 ## Purpose

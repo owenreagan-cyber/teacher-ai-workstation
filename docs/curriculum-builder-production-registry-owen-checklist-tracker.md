@@ -4,42 +4,42 @@ Last updated: 2026-07-02
 
 ```text
 Status: planning_only
-Classification: read-only tracker — Owen decisions required
-Closure status: phase_2_preflight_complete_awaiting_metadata_decisions
+Classification: read-only tracker — Owen decisions recorded
+Closure status: metadata_boundaries_approved_awaiting_pilot_and_write_missions
 Authority: mirrors § J in production registry planning brief
-Implementation: blocked until Owen explicitly approves deferred items or issues separate Phase 2 preflight mission
+Implementation: blocked — metadata boundary approval does not authorize registry mutation
 ```
 
 ## Purpose
 
-Read-only tracker for **§ J — Owen Approval Checklist** in `docs/curriculum-builder-production-registry-workflow-planning-brief.md`. Cursor may maintain tracker rows and status proof; Owen must approve each deferred item before metadata intake missions; registry mutation requires separate explicit missions.
+Read-only tracker for **§ J — Owen Approval Checklist** in `docs/curriculum-builder-production-registry-workflow-planning-brief.md`. All 11 checklist items have Owen decisions recorded. Metadata and source-reference boundary approval does not authorize intake, file creation, records, or writes.
 
-**Owen review packet:** `docs/curriculum-builder-production-registry-owen-review-packet.md` — decision table, categories, non-approval language. Preparing the packet does not approve any item.
+**Owen review packet:** `docs/curriculum-builder-production-registry-owen-review-packet.md` — decision table, categories, non-approval language.
 
-**Owen decision worksheet:** `docs/curriculum-builder-production-registry-owen-decision-worksheet.md` — worksheet and decision-to-prompt routing. Updating the worksheet does not authorize implementation.
+**Metadata/source boundaries:** `docs/curriculum-builder-production-registry-metadata-source-boundaries.md` — items 3 and 4 approved boundaries.
 
 ## Companion Summary for Owen
 
 | Question | Answer |
 | --- | --- |
-| Are we ready to implement production writes? | **No** — registry mutation blocked; Phase 2 preflight not started |
-| Is write behavior approved? | **Yes in principle** — item 2 approved 2026-07-02; manual-only, single-record, snapshot-first |
-| Are path and namespace decided? | **Yes** — item 1 Option B; item 10 `resource-*` (2026-07-02) |
-| What is the next eligible implementation mission? | **Items 3+4 metadata session** or **future empty-file/write mission** — separate explicit prompts |
+| Are we ready to implement production writes? | **No** — registry mutation blocked |
+| Is write behavior approved? | **Yes in principle** — item 2; manual-only, single-record, snapshot-first |
+| Are path and namespace decided? | **Yes** — item 1 Option B; item 10 `resource-*` |
+| Are metadata/source boundaries decided? | **Yes** — items 3 and 4 approved 2026-07-02 with strict manual-only boundaries |
+| What is the next eligible implementation mission? | **Metadata-boundary refinement** docs/status/tests — separate explicit prompt |
 | Is Phase 2 preflight complete? | **Yes** — `--curriculum-production-registry-phase-2-preflight-status` |
-| What should Owen do next? | Items 3 and 4 metadata/source-reference session; or issue Phase 2 preflight mission |
-| Does checklist WARN mean failure? | **No** — 1 expected WARN while 2 items remain deferred |
-| Does item 2 approval authorize registry mutation? | **No** — principle only; first implementation is Phase 2 preflight |
-| Do approved governance rows authorize writes? | **No** — affirmations only |
+| Does boundary approval authorize mutation? | **No** — empty-file and write missions remain separate |
+| Does checklist have deferred items? | **No** — all 11 items have decisions recorded |
+| Do approved rows authorize writes? | **No** — affirmations and boundaries only |
 
 ## Checklist Items
 
 | # | Item | Owen status | Owner | Notes |
 | --- | --- | --- | --- | --- |
 | 1 | Production registry path | approved | Owen | 2026-07-02 — Option B — `assistant/curriculum-builder/registry/v0-2/production-registry.json`; v0 `registry.json` remains read-only fictional `sample-*` reference |
-| 2 | Write behavior allowed | approved | Owen | 2026-07-02 — Manual-only governed writes permitted in principle; single-record, snapshot-first, rollback-required; real curriculum metadata (item 3) and real source references (item 4) remain blocked; first authorized implementation is Phase 2 preflight only — no production-registry.json, no records, no --write |
-| 3 | Real curriculum metadata allowed | deferred | Owen | 2026-07-02 — Metadata pilot later; no real metadata intake approved |
-| 4 | Real source references allowed | deferred | Owen | 2026-07-02 — Manual labels later; no real source references approved |
+| 2 | Write behavior allowed | approved | Owen | 2026-07-02 — Manual-only governed writes permitted in principle; single-record, snapshot-first, rollback-required; Phase 2 preflight complete; no production-registry.json, no records, no --write until separate missions |
+| 3 | Real curriculum metadata allowed | approved | Owen | 2026-07-02 — Manual Owen-entered descriptive metadata only (title, subject, grade band, unit, lesson, resource type, teacher/student-facing flag, review state, manual tags, notes); no copied curriculum content, no student data, no file parsing, no OCR, no AI summaries, no embeddings/RAG, no auto-ingest |
+| 4 | Real source references allowed | approved | Owen | 2026-07-02 — Manual non-resolving source-reference labels typed by Owen only (display label, source_type enum, citation/note string); no API/OAuth, no live Drive/Canvas/NAS/iCloud access, no auto-resolution, no crawling/scanning, no real file reads, no resolvable file IDs or paths |
 | 5 | Source systems permitted | approved | Owen | 2026-07-02 — Manual entry only; integrations blocked |
 | 6 | Rollback requirements | approved | Owen | 2026-07-02 — Snapshot + diff + restore required before any write mission |
 | 7 | Review states | approved | Owen | 2026-07-02 — § D review-state gate model accepted |
@@ -50,14 +50,14 @@ Read-only tracker for **§ J — Owen Approval Checklist** in `docs/curriculum-b
 
 ## Governance Affirmation Batch (2026-07-02)
 
-Owen approved governance affirmations only. **This does not authorize production writes, real metadata intake, or integrations.**
+Owen approved governance affirmations and metadata boundaries. **This does not authorize production writes, metadata pilot execution, or integrations.**
 
 | Batch | Items | Effect |
 | --- | --- | --- |
 | Approved | 5, 6, 7, 8, 9, 11 | Governance principles recorded; CB-PROD-GOV scope acknowledged |
 | Approved (path/namespace) | 1, 10 | Path and namespace recorded |
-| Approved (write behavior) | 2 | Manual-only governed writes permitted in principle; Phase 2 preflight eligible; registry mutation still blocked |
-| Deferred | 3, 4 | Real metadata intake and source references remain blocked |
+| Approved (write behavior) | 2 | Manual-only governed writes permitted in principle; Phase 2 preflight complete |
+| Approved (metadata boundaries) | 3, 4 | Manual-only metadata and non-resolving source labels; intake and mutation remain blocked |
 
 ## Governance Foundation Prepared (Not Owen Approval)
 
@@ -71,12 +71,13 @@ The following governance-first scaffolding is **prepared** by CB-PROD-GOV. Item 
 | Review state model | yes | 7 |
 | Audit/rollback stub | yes | 6 |
 | Local-first storage reference | yes | 3, 4, 5 |
+| Metadata/source boundary doc | yes | 3, 4 |
 | `--curriculum-production-registry-governance-status` | yes | 11 |
 | Promotion prevention docs | yes | auto-promotion blocked |
 
 ## ChatGPT Review Gate
 
-ChatGPT review recommended before issuing Phase 2 preflight or write implementation prompt. See `docs/proposals/curriculum-builder-registry-lane-discovery-review.md`.
+ChatGPT review recommended before empty-file or write implementation prompt. See `docs/proposals/curriculum-builder-registry-lane-discovery-review.md`.
 
 ## Status Proof
 
@@ -90,6 +91,7 @@ bash tests/curriculum-builder-production-registry-owen-checklist-status-test.sh
 
 | Document | Role |
 | --- | --- |
+| `docs/curriculum-builder-production-registry-metadata-source-boundaries.md` | Items 3 and 4 boundary record |
 | `docs/curriculum-builder-production-registry-owen-review-packet.md` | Owen-facing decision packet |
 | `docs/curriculum-builder-production-registry-owen-decision-worksheet.md` | Owen decision worksheet |
 | `docs/curriculum-builder-production-registry-post-decision-implementation-map.md` | Post-decision mission routing |
@@ -99,4 +101,4 @@ bash tests/curriculum-builder-production-registry-owen-checklist-status-test.sh
 
 ## Non-Activation
 
-This tracker does not activate production writes, `--write`, real intake, generation, APIs, network, scanning, or student-data workflows. Item 2 approval in principle does not authorize file creation, records, or registry mutation.
+This tracker does not activate production writes, `--write`, metadata pilot execution, real intake, generation, APIs, network, scanning, or student-data workflows. Items 3 and 4 boundary approval does not authorize file creation, records, or registry mutation.

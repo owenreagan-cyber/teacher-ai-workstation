@@ -20,7 +20,8 @@ Per `docs/cursor-autonomous-build-engine.md` Expected WARN Policy.
 | --- | ---: | --- |
 | `bin/chief-of-staff --dashboard` | 0 | Yes — aggregate health |
 | `scripts/chief-of-staff-validate-all.sh` | 0 | Yes |
-| `--curriculum-production-registry-owen-checklist-status` | 1 (deferred checklist) | No — targeted command only |
+| `--curriculum-production-registry-owen-checklist-status` | 0 | No — targeted command only |
+| `--curriculum-production-registry-phase-2-preflight-status` | 0 | No — targeted command only |
 | `--curriculum-registry-a4-a7-fixture-schema-status` | 7 (fixture optional fields) | No — targeted command only |
 | `--curriculum-registry-lane-status` | 0 on aggregate script summary | Yes — component WARNs roll up in component lines, not aggregate FAIL |
 
@@ -37,25 +38,21 @@ The lane aggregate script reports **PASS on its own summary** while component sc
 
 **Typical total:** 7 WARN / 0 FAIL on canonical fixture.
 
-## Owen Checklist Tracker WARNs
+## Owen Checklist Tracker (Resolved 2026-07-02)
 
-| WARN | Count (typical) | Reason | Follow-up |
-| --- | ---: | --- | --- |
-| `2 Owen checklist items deferred — real curriculum metadata and real source references remain blocked` | 1 | Items 3 and 4 remain `deferred`; item 2 approved in principle 2026-07-02 | Items 3+4 metadata session or Phase 2 preflight mission |
+Items 3 and 4 approved with strict manual-only boundaries. The prior deferred-metadata WARN on `--curriculum-production-registry-owen-checklist-status` is **resolved**.
 
-**Typical total on `--curriculum-production-registry-owen-checklist-status`:** 1 WARN / 0 FAIL while deferred items remain (2 deferred as of 2026-07-02).
+**Typical total on `--curriculum-production-registry-owen-checklist-status`:** 0 WARN / 0 FAIL (all 11 items decided).
 
-**Owen review packet:** `docs/curriculum-builder-production-registry-owen-review-packet.md` explains the deferred checklist WARN and decision categories. Item 2 approval in principle does not authorize registry mutation. The WARN is expected until deferred items 3 and 4 are resolved.
+**Owen review packet:** `docs/curriculum-builder-production-registry-owen-review-packet.md` — boundary approval does not authorize registry mutation.
 
-**Typical total on `--curriculum-registry-lane-status` aggregate:** 9 WARN / 0 FAIL (7 A4–A7 + 1 Owen checklist + 1 Phase 2 preflight deferred metadata) when canonical fixture unchanged.
+## Phase 2 Preflight (Resolved 2026-07-02)
 
-## Phase 2 Preflight WARNs
+The prior deferred-metadata WARN on `--curriculum-production-registry-phase-2-preflight-status` is **resolved** after items 3 and 4 approval.
 
-| WARN | Count (typical) | Reason | Follow-up |
-| --- | ---: | --- | --- |
-| `items 3 and 4 remain deferred — real metadata and source references blocked until Owen approves` | 1 | Items 3 and 4 deferred; Phase 2 preflight complete | Items 3+4 metadata session |
+**Typical total on `--curriculum-production-registry-phase-2-preflight-status`:** 0 WARN / 0 FAIL.
 
-**Typical total on `--curriculum-production-registry-phase-2-preflight-status`:** 1 WARN / 0 FAIL (deferred metadata items).
+**Typical total on `--curriculum-registry-lane-status` aggregate:** 7 WARN / 0 FAIL (A4–A7 fixture optional fields only) when canonical fixture unchanged.
 
 ## Rules
 
@@ -69,4 +66,6 @@ The lane aggregate script reports **PASS on its own summary** while component sc
 ```bash
 bin/chief-of-staff --curriculum-registry-a4-a7-fixture-schema-status
 bin/chief-of-staff --curriculum-registry-lane-status
+bin/chief-of-staff --curriculum-production-registry-owen-checklist-status
+bin/chief-of-staff --curriculum-production-registry-phase-2-preflight-status
 ```

@@ -23,14 +23,14 @@ grep -q '^FAIL: 0$' "${tmp}" || {
   rm -f "${tmp}"
   exit 1
 }
-grep -q 'Write behavior: approved in principle (item 2 — 2026-07-02)' "${tmp}" || {
-  echo "FAIL: missing write behavior approved in principle header"
+grep -q 'Metadata boundaries: approved (items 3 and 4 — 2026-07-02)' "${tmp}" || {
+  echo "FAIL: missing metadata boundaries approved header"
   cat "${tmp}"
   rm -f "${tmp}"
   exit 1
 }
-grep -q 'First implementation: Phase 2 preflight only' "${tmp}" || {
-  echo "FAIL: missing Phase 2 preflight only header"
+grep -q 'All Owen checklist items decided: yes (11 approved, 0 deferred)' "${tmp}" || {
+  echo "FAIL: missing all items decided header"
   cat "${tmp}"
   rm -f "${tmp}"
   exit 1
@@ -41,14 +41,20 @@ grep -q 'No write mission is authorized: yes' "${tmp}" || {
   rm -f "${tmp}"
   exit 1
 }
-grep -q '2 Owen checklist items deferred — real curriculum metadata and real source references remain blocked' "${tmp}" || {
-  echo "FAIL: missing expected deferred checklist WARN"
+grep -q 'no deferred Owen checklist items' "${tmp}" || {
+  echo "FAIL: missing no deferred items PASS"
   cat "${tmp}"
   rm -f "${tmp}"
   exit 1
 }
-grep -q 'write behavior approved in principle: 9 approved, 2 deferred' "${tmp}" || {
-  echo "FAIL: missing write behavior approved in principle PASS"
+grep -q 'all Owen checklist items decided: 11 approved, 0 deferred' "${tmp}" || {
+  echo "FAIL: missing 11 approved count PASS"
+  cat "${tmp}"
+  rm -f "${tmp}"
+  exit 1
+}
+grep -q 'metadata pilot is not active' "${tmp}" || {
+  echo "FAIL: missing metadata pilot not active check"
   cat "${tmp}"
   rm -f "${tmp}"
   exit 1
@@ -71,8 +77,14 @@ grep -q 'chief-of-staff has no --curriculum-registry-write handler' "${tmp}" || 
   rm -f "${tmp}"
   exit 1
 }
-grep -q 'doc mentions build queue product-decision wall' "${tmp}" || {
-  echo "FAIL: missing build queue product-decision wall coherence check"
+grep -q 'no writer scripts exist' "${tmp}" || {
+  echo "FAIL: missing no writer scripts check"
+  cat "${tmp}"
+  rm -f "${tmp}"
+  exit 1
+}
+grep -q 'doc mentions build queue metadata-boundary refinement' "${tmp}" || {
+  echo "FAIL: missing build queue coherence check"
   cat "${tmp}"
   rm -f "${tmp}"
   exit 1
@@ -83,6 +95,12 @@ grep -q 'doc mentions decision worksheet non-approval' "${tmp}" || {
   rm -f "${tmp}"
   exit 1
 }
+if grep -q 'Owen checklist items deferred' "${tmp}"; then
+  echo "FAIL: unexpected deferred checklist WARN after items 3 and 4 approved"
+  cat "${tmp}"
+  rm -f "${tmp}"
+  exit 1
+fi
 rm -f "${tmp}"
 
 if [[ -f "${production_registry_path}" ]]; then

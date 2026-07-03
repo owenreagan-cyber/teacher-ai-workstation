@@ -9,7 +9,7 @@ Classification: field boundary reference — no intake
 
 ## Purpose
 
-Clarify which metadata fields may eventually appear in a production registry **when Owen approves** metadata intake — and which fields are permanently prohibited.
+Clarify which metadata fields may eventually appear in a production registry **when a future write mission is approved** — and which fields are permanently prohibited. Canonical boundary record: `docs/curriculum-builder-production-registry-metadata-source-boundaries.md`.
 
 ## Allowed Metadata Fields (Future — Owen Approval Required)
 

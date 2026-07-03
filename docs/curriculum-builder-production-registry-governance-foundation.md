@@ -16,7 +16,7 @@ Implementation: governance scaffolding only — not write mission
 
 Canonical closure index for the **governance-first production registry foundation** described in planning brief § I and the Owen review packet. This foundation prepares docs, status proof, candidate path skeleton, and guardrails **without** authorizing production writes or real metadata intake.
 
-**PASS on governance status does not authorize writes.** Owen § J checklist: write behavior approved in principle 2026-07-02 (item 2); path and namespace recorded (items 1, 10); items 3 and 4 remain deferred. Item 2 approval does not authorize registry mutation.
+**PASS on governance status does not authorize writes.** Owen § J checklist: all 11 items decided 2026-07-02; items 3 and 4 approved with manual-only boundaries; metadata intake and registry mutation remain blocked.
 
 ## Definition of Done
 
@@ -60,7 +60,7 @@ Canonical closure index for the **governance-first production registry foundatio
 
 ## Relationship to Owen § J Checklist
 
-Path and namespace recorded 2026-07-02: items 1 and 10 **approved**. Write behavior approved in principle 2026-07-02: item 2 **approved** (Phase 2 preflight eligible; registry mutation blocked). Governance affirmation batch recorded 2026-07-02: items 5, 6, 7, 8, 9, 11 **approved**. Items 3 and 4 **deferred** in `docs/curriculum-builder-production-registry-owen-checklist-tracker.md`.
+Path and namespace recorded 2026-07-02: items 1 and 10 **approved**. Write behavior approved in principle 2026-07-02: item 2 **approved** (Phase 2 preflight complete). Metadata boundaries approved 2026-07-02: items 3 and 4 **approved** (manual-only; intake blocked). Governance affirmation batch recorded 2026-07-02: items 5, 6, 7, 8, 9, 11 **approved**.
 
 ## Orchestrated Proof
 

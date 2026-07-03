@@ -5,7 +5,7 @@ Last updated: 2026-07-02
 ```text
 Status: documentation/status only
 Authority: whole-system posture snapshot — not implementation approval
-Baseline: main after Production Registry Phase 2 preflight mission
+Baseline: main after Owen § J Items 3+4 Metadata Boundary Tracker Sync
 ```
 
 **Status key:** `[x]` Built/merged · `[~]` Currently being built · `[>]` Ready for safe planning/build · `[!]` Blocked pending Owen/safety gate · `[ ]` Future / not started · `[?]` Insufficient repo evidence
@@ -30,7 +30,7 @@ Baseline: main after Production Registry Phase 2 preflight mission
 
 | Marker | Item |
 | --- | --- |
-| [x] | CLI, dashboard (~123/0/0 after Phase 2 wiring), Program B daily ops, queues, `--next-action`, validate-all |
+| [x] | CLI, dashboard (~123/0/0), Program B daily ops, queues, `--next-action`, validate-all |
 | [>] | Unified daily briefing (AI), B4 smoke expansion, B7 closure placeholder |
 | [!] | Automation beyond read-only status |
 | **Proof** | `bin/chief-of-staff --dashboard`, `docs/chief-of-staff-v1-program-b-closure.md` |
@@ -53,13 +53,14 @@ Baseline: main after Production Registry Phase 2 preflight mission
 | Marker | Item |
 | --- | --- |
 | [x] | CB-PROD-PLAN, Owen review packet, checklist tracker, CB-PROD-GOV, decision worksheet |
-| [x] | Governance affirmation batch recorded 2026-07-02 (items 5, 6, 7, 8, 9, 11 approved) |
-| [x] | Path + namespace recorded 2026-07-02 (items 1 and 10 approved) |
-| [x] | Write behavior approved in principle 2026-07-02 (item 2) |
-| [x] | **Phase 2 preflight complete** — audit/rollback readiness, guardrails, `--curriculum-production-registry-phase-2-preflight-status` |
-| [!] | Items 3, 4 deferred — real metadata intake, source references blocked |
+| [x] | Path + namespace recorded (items 1, 10) |
+| [x] | Write behavior approved in principle (item 2) |
+| [x] | Phase 2 preflight complete |
+| [x] | **Metadata/source boundaries approved** (items 3, 4 — manual-only) |
+| [x] | **Owen § J checklist complete** — all 11 items decided |
+| [!] | Metadata pilot execution blocked |
 | [!] | Registry mutation blocked; `production-registry.json` not created; no `resource-*` records |
-| **Proof** | `--curriculum-production-registry-phase-2-preflight-status` (~45/1/0); governance 52/0/0; checklist ~49/1/0 (2 deferred WARN) |
+| **Proof** | `--curriculum-production-registry-owen-checklist-status` (~55/0/0); `--curriculum-production-registry-phase-2-preflight-status` |
 
 ### Owen § J Checklist State (2026-07-02)
 
@@ -67,19 +68,19 @@ Baseline: main after Production Registry Phase 2 preflight mission
 | --- | --- | --- |
 | 1 Production registry path | approved | Option B — `assistant/curriculum-builder/registry/v0-2/production-registry.json` |
 | 2 Write behavior allowed | approved | Manual-only in principle; Phase 2 preflight complete |
-| 3 Real curriculum metadata | deferred | Metadata pilot later |
-| 4 Real source references | deferred | Manual labels later |
-| 5 Source systems permitted | approved | Manual entry only; integrations blocked |
-| 6 Rollback requirements | approved | Snapshot + diff + restore before writes |
-| 7 Review states | approved | § D gate model accepted |
+| 3 Real curriculum metadata | approved | Manual Owen-entered descriptive metadata only |
+| 4 Real source references | approved | Manual non-resolving source-reference labels |
+| 5 Source systems permitted | approved | Manual entry only |
+| 6 Rollback requirements | approved | Snapshot + diff + restore |
+| 7 Review states | approved | § D gate model |
 | 8 Student-data prohibition | approved | Absolute ban |
-| 9 Integrations | approved | Remain blocked in v1 unless separate missions |
-| 10 ID namespace | approved | `resource-*`; distinct from `sample-*` and `example-*` |
-| 11 First implementation PR scope | approved | CB-PROD-GOV merged; write mission separate |
+| 9 Integrations | approved | Blocked in v1 unless separate missions |
+| 10 ID namespace | approved | `resource-*` |
+| 11 First implementation PR scope | approved | CB-PROD-GOV merged |
 
-**Phase 2 preflight complete does not authorize registry mutation.**
+**Metadata boundary approval does not authorize registry mutation or metadata pilot execution.**
 
-**Next human step:** Items 3+4 metadata/source-reference session, or future empty-file/write mission via separate explicit prompt.
+**Next safe mission:** Metadata-boundary refinement docs/status/tests (separate explicit prompt).
 
 ---
 
@@ -186,11 +187,11 @@ Baseline: main after Production Registry Phase 2 preflight mission
 | Marker | Item |
 | --- | --- |
 | [x] | Constitution, approval gate, BLOCKED-NO-WRITES sentinel, guardrail tests |
-| [x] | Lane-review hardening guardrails (`tests/lane-review-hardening-guardrails-test.sh`) |
+| [x] | Lane-review hardening guardrails |
 | [x] | Item 8 governance affirmation: student-data prohibition absolute |
-| [x] | Phase 2 preflight negative guardrails (no file, no record, no write) |
-| [!] | Real curriculum, student data, weakening PASS/WARN/FAIL semantics |
-| **Proof** | Expected WARNs doc; governance guardrail tests; Phase 2 preflight status test |
+| [x] | Metadata/source boundary doc with blocked field categories |
+| [!] | Real curriculum file access, copied content, student data |
+| **Proof** | Expected WARNs doc; boundary doc; guardrail tests |
 
 ---
 
@@ -198,14 +199,14 @@ Baseline: main after Production Registry Phase 2 preflight mission
 
 | Surface | State |
 | --- | --- |
-| Dashboard | ~123 / 0 / 0 PASS (target after Phase 2 wiring) |
-| Validate-all | ~41 / 0 / 0 PASS (target after Phase 2 wiring) |
-| Owen checklist | ~49 / 1 / 0 (expected WARN — 2 deferred) |
-| Phase 2 preflight | ~45 / 1 / 0 (expected WARN — items 3/4 deferred) |
+| Dashboard | ~123 / 0 / 0 PASS |
+| Validate-all | ~41 / 0 / 0 PASS |
+| Owen checklist | ~55 / 0 / 0 PASS (all items decided) |
+| Phase 2 preflight | ~49 / 0 / 0 PASS |
 | Active mission | None |
-| Next human step | Items 3+4 metadata session or future mutation mission |
+| Next safe mission | Metadata-boundary refinement docs/status/tests |
 
-**Safety gates preserved:** No registry mutation, no `production-registry.json`, no `resource-*` records, no `--write`. Phase 2 preflight does not authorize implementation.
+**Safety gates preserved:** No registry mutation, no `production-registry.json`, no `resource-*` records, no `--write`. Metadata pilot execution blocked. Source auto-resolution blocked.
 
 ## Non-Activation
 

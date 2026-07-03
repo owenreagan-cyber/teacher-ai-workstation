@@ -23,6 +23,7 @@ repo_root="$(git rev-parse --show-toplevel 2>/dev/null || true)"
 cd "${repo_root}"
 
 tracker_doc="docs/curriculum-builder-production-registry-owen-checklist-tracker.md"
+boundary_doc="docs/curriculum-builder-production-registry-metadata-source-boundaries.md"
 review_packet="docs/curriculum-builder-production-registry-owen-review-packet.md"
 planning_brief="docs/curriculum-builder-production-registry-workflow-planning-brief.md"
 path_options="docs/curriculum-builder-production-registry-path-options.md"
@@ -40,23 +41,29 @@ Production registry writes: blocked
 Active --write: blocked
 Real metadata intake: blocked
 Real source references: blocked
+Metadata pilot execution: blocked
+Source-reference resolution: blocked
 Path and namespace: approved (items 1 and 10 — 2026-07-02)
 Write behavior: approved in principle (item 2 — 2026-07-02)
-First implementation: Phase 2 preflight only — separate future mission
-Deferred items: 2 — real curriculum metadata, real source references
+Metadata boundaries: approved (items 3 and 4 — 2026-07-02)
+All Owen checklist items decided: yes (11 approved, 0 deferred)
 Approved item 2 does not authorize registry mutation: yes
 No write mission is authorized: yes
-ChatGPT review: recommended before Phase 2 preflight or write prompt
+ChatGPT review: recommended before empty-file or write prompt
 PASS does not authorize implementation: yes
 EOF
 
 section 'Tracker Document'
 check_file "${tracker_doc}"
+check_file "${boundary_doc}"
 check_file "${review_packet}"
 check_file docs/curriculum-builder-production-registry-owen-decision-worksheet.md
 check_file docs/curriculum-builder-production-registry-post-decision-implementation-map.md
 check_doc_contains docs/curriculum-builder-production-registry-owen-decision-worksheet.md "Documenting an option does not approve it" "decision worksheet non-approval"
-check_doc_contains docs/curriculum-builder-production-registry-owen-checklist-tracker.md "phase_2_preflight_complete_awaiting_metadata_decisions" "tracker closure status"
+check_doc_contains docs/curriculum-builder-production-registry-owen-checklist-tracker.md "metadata_boundaries_approved_awaiting_pilot_and_write_missions" "tracker closure status"
+check_doc_contains "${boundary_doc}" "metadata_boundaries_approved" "metadata boundary doc classification"
+check_doc_contains "${boundary_doc}" "Manual Owen-entered descriptive metadata only" "item 3 boundary"
+check_doc_contains "${boundary_doc}" "Manual non-resolving source-reference labels" "item 4 boundary"
 check_doc_contains "${tracker_doc}" "Owen status" "tracker Owen status column"
 check_doc_contains "${tracker_doc}" "curriculum-builder-production-registry-owen-review-packet" "tracker links review packet"
 check_doc_contains "${review_packet}" "Documenting an option does not approve it" "review packet non-approval statement"
@@ -80,8 +87,8 @@ section 'Checklist Item Rows (Owen Decisions)'
 CHECKLIST_EXPECTED=(
   "Production registry path|approved"
   "Write behavior allowed|approved"
-  "Real curriculum metadata allowed|deferred"
-  "Real source references allowed|deferred"
+  "Real curriculum metadata allowed|approved"
+  "Real source references allowed|approved"
   "Source systems permitted|approved"
   "Rollback requirements|approved"
   "Review states|approved"
@@ -109,16 +116,25 @@ for entry in "${CHECKLIST_EXPECTED[@]}"; do
   fi
 done
 
-if [[ "${approved_count}" -eq 9 && "${deferred_count}" -eq 2 && "${pending_count}" -eq 0 ]]; then
-  pass "write behavior approved in principle: 9 approved, 2 deferred"
+if [[ "${approved_count}" -eq 11 && "${deferred_count}" -eq 0 && "${pending_count}" -eq 0 ]]; then
+  pass "all Owen checklist items decided: 11 approved, 0 deferred"
 else
-  fail "expected 9 approved and 2 deferred; found approved=${approved_count} deferred=${deferred_count} pending=${pending_count}"
+  fail "expected 11 approved and 0 deferred; found approved=${approved_count} deferred=${deferred_count} pending=${pending_count}"
 fi
 
 if [[ "${deferred_count}" -gt 0 ]]; then
-  warn "${deferred_count} Owen checklist items deferred — real curriculum metadata and real source references remain blocked"
+  warn "${deferred_count} Owen checklist items deferred"
 else
   pass "no deferred Owen checklist items"
+fi
+
+pass "metadata pilot is not active"
+pass "real curriculum file access is not active"
+pass "source-reference resolution is not active"
+if [[ -f scripts/curriculum-registry-write.sh ]] || [[ -f scripts/curriculum-production-registry-write.sh ]]; then
+  fail 'writer script must not exist'
+else
+  pass 'no writer scripts exist'
 fi
 
 section 'CLI, Manifest, and Tests'
@@ -130,9 +146,9 @@ bash -n tests/curriculum-builder-production-registry-owen-checklist-status-test.
 
 section 'Roadmap and Ledger Coherence'
 check_doc_contains docs/proposals/index.md "Owen § J production registry checklist tracker" "proposal ledger owen tracker"
-check_doc_contains docs/master-build-roadmap.md "Phase 2 preflight" "roadmap Phase 2 preflight gate"
-check_doc_contains docs/build-queue.md "Product-decision wall" "build queue product-decision wall"
-check_doc_contains assistant/memory/active-priorities.md "Phase 2 preflight" "active priorities Phase 2 preflight next step"
+check_doc_contains docs/master-build-roadmap.md "metadata-boundary refinement" "roadmap metadata-boundary refinement gate"
+check_doc_contains docs/build-queue.md "metadata-boundary refinement" "build queue metadata-boundary refinement"
+check_doc_contains assistant/memory/active-priorities.md "metadata-boundary refinement" "active priorities metadata-boundary refinement"
 
 section 'Negative Non-Activation Assertions'
 grep -Fq -- '--curriculum-registry-write)' bin/chief-of-staff 2>/dev/null && fail 'chief-of-staff must not implement --curriculum-registry-write handler' || pass 'chief-of-staff has no --curriculum-registry-write handler'

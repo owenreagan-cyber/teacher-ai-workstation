@@ -948,7 +948,7 @@ Per `docs/engineering-constitution.md` §10, v1.0 means these systems exist as *
 
 **Curriculum Builder — Production Registry Implementation (approval-gated)**
 
-Production registry workflow **planning brief** is complete. Phase 2 preflight merged 2026-07-02 (`docs/curriculum-builder-production-registry-phase-2-preflight.md`; `--curriculum-production-registry-phase-2-preflight-status`). Owen approved write behavior in principle (item 2). Path and namespace recorded (items 1, 10). Items 3 and 4 remain deferred. **Next human step: items 3+4 metadata/source-reference session** or future empty-file/write mission via separate prompt. Registry mutation remains blocked.
+Production registry workflow **planning brief** is complete. Phase 2 preflight merged 2026-07-02. Owen § J checklist decisions complete 2026-07-02 — items 3 and 4 approved with strict manual-only boundaries (`docs/curriculum-builder-production-registry-metadata-source-boundaries.md`). **Next safe mission: metadata-boundary refinement** docs/status/tests via separate prompt. Empty-file and governed write missions remain separate. Registry mutation remains blocked.
 
 Registry v0.2 local foundation lane CB-IMPL-1 through CB-IMPL-4 is complete and reviewed (`docs/curriculum-builder-registry-v0-2-lane-closure.md`).
 

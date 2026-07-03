@@ -21,8 +21,8 @@ Canonical closure for **Phase 2 preflight** — audit/rollback readiness, negati
 | --- | --- | --- |
 | 1 Production registry path | approved | Option B — `assistant/curriculum-builder/registry/v0-2/production-registry.json` |
 | 2 Write behavior allowed | approved in principle | Manual-only; Phase 2 preflight scope |
-| 3 Real curriculum metadata | deferred | Real metadata blocked |
-| 4 Real source references | deferred | Real source references blocked |
+| 3 Real curriculum metadata | approved | Manual-only boundary; intake blocked |
+| 4 Real source references | approved | Non-resolving labels only; resolution blocked |
 | 6 Rollback requirements | approved | Snapshot + diff + restore model |
 | 7 Review states | approved | § D gate model |
 | 10 ID namespace | approved | `resource-*` |
@@ -43,12 +43,12 @@ Canonical closure for **Phase 2 preflight** — audit/rollback readiness, negati
 | Blocked | Reason |
 | --- | --- |
 | Creating `production-registry.json` | Future separate mission |
-| Creating `resource-*` records | Items 3/4 deferred + no write mission |
+| Creating `resource-*` records | No write mission; intake not authorized |
 | Writer scripts | Phase 3+ only |
 | Active `--write` / `--curriculum-registry-write` handler | Manifest-blocked |
 | Removing `BLOCKED-NO-WRITES.sentinel` | Explicit write mission only |
-| Real metadata intake | Item 3 deferred |
-| Real source references | Item 4 deferred |
+| Real metadata intake | Boundary approved; pilot execution blocked |
+| Real source references | Boundary approved; resolution blocked |
 | Real curriculum file access | Always blocked |
 | Integrations, scanning, generation | Constitution |
 

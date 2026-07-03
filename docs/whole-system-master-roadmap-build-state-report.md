@@ -263,7 +263,7 @@ Cross-references: `docs/build-queue.md`, `docs/master-build-roadmap.md`, `docs/p
 | --- | --- | --- |
 | [x] | Resource Registry = Curriculum Builder registry lanes (v0/v0.2/production planning) | repo-backed |
 | [x] | Presentation Engine renderer-foundation planning complete | repo-backed — `docs/presentation-engine-renderer-foundation.md`; `--presentation-engine-renderer-foundation-status` |
-| [x] | Gemini discovery/classification external planning intake complete | repo-backed — `docs/proposals/ideas/gemini-discovery-classification-architecture-intake.md`; `complete_gemini_discovery_classification_intake` |
+| [x] | Gemini discovery/classification external planning intake complete | repo-backed — `docs/external-planning/discovery-classification-memo.md`; `complete_gemini_discovery_classification_intake` |
 | [!] | Presentation Engine runtime render/export/generation | blocked gate — `docs/presentation-engine-blocked-runtime-boundaries.md` |
 | [!] | Discovery/classification runtime (crawlers, orchestrators, AI auto-labeling) | blocked gate — `docs/proposals/blocked/gemini-discovery-classification-runtime-boundaries.md` |
 | [?] | Academic OS — insufficient repo evidence (external planning reference only) | insufficient repo evidence |

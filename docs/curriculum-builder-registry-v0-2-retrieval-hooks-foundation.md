@@ -30,7 +30,7 @@ Deterministic **local filter/lookup** over committed fake fixture registry recor
 bash scripts/curriculum-builder-registry-v0-2-retrieval-check.sh
 
 # Filter by subject
-bash scripts/curriculum-builder-registry-v0-2-retrieval-check.sh --subject "Example Math Course"
+bash scripts/curriculum-builder-registry-v0-2-retrieval-check.sh --course "Example Math Course"
 
 # Lookup by resource_id
 bash scripts/curriculum-builder-registry-v0-2-retrieval-check.sh --resource-id example-resource-001

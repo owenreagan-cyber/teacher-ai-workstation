@@ -8,10 +8,12 @@ cd "${repo_root}"
 echo "Running Gemini discovery/classification intake status tests..."
 
 status_script="scripts/gemini-discovery-classification-intake-status.sh"
+filed_memo="docs/external-planning/discovery-classification-memo.md"
 intake_doc="docs/proposals/ideas/gemini-discovery-classification-architecture-intake.md"
 
 for required in \
   "${status_script}" \
+  "${filed_memo}" \
   "${intake_doc}" \
   docs/proposals/blocked/gemini-discovery-classification-runtime-boundaries.md \
   assistant/external-planning/intake/gemini-discovery-classification-architecture-summary.json; do

@@ -3,7 +3,7 @@
 ```text
 Classification: external_planning_intake_summary_only
 Runtime: none
-Full memo text: not committed to repo
+Filed memo: docs/external-planning/discovery-classification-memo.md
 ```
 
 Summary fixture for intake status proof only.

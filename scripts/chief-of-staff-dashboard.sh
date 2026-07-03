@@ -1566,6 +1566,27 @@ else
   warn "Production registry empty-file status script missing: scripts/curriculum-builder-production-registry-empty-file-status.sh"
 fi
 
+section "Production Registry Metadata Pilot Execution Planning"
+if [[ -f scripts/curriculum-builder-production-registry-metadata-pilot-plan-status.sh ]]; then
+  curriculum_metadata_pilot_plan_result=0
+  curriculum_metadata_pilot_plan_output="$(bash scripts/curriculum-builder-production-registry-metadata-pilot-plan-status.sh 2>&1)" || curriculum_metadata_pilot_plan_result=$?
+  curriculum_metadata_pilot_plan_pass="$(summary_count "${curriculum_metadata_pilot_plan_output}" "PASS")"
+  curriculum_metadata_pilot_plan_warn="$(summary_count "${curriculum_metadata_pilot_plan_output}" "WARN")"
+  curriculum_metadata_pilot_plan_fail="$(summary_count "${curriculum_metadata_pilot_plan_output}" "FAIL")"
+
+  if [[ "${curriculum_metadata_pilot_plan_result}" != "0" ]]; then
+    printf '%s\n' "${curriculum_metadata_pilot_plan_output}"
+    fail "Production registry metadata pilot plan status failed"
+  elif [[ -n "${curriculum_metadata_pilot_plan_pass}" && -n "${curriculum_metadata_pilot_plan_warn}" && -n "${curriculum_metadata_pilot_plan_fail}" ]]; then
+    printf 'Production Registry Metadata Pilot Plan: PASS %s / WARN %s / FAIL %s\n' "${curriculum_metadata_pilot_plan_pass}" "${curriculum_metadata_pilot_plan_warn}" "${curriculum_metadata_pilot_plan_fail}"
+    pass "Production registry metadata pilot plan status completed"
+  else
+    pass "Production registry metadata pilot plan status completed"
+  fi
+else
+  warn "Production registry metadata pilot plan status script missing: scripts/curriculum-builder-production-registry-metadata-pilot-plan-status.sh"
+fi
+
 section "Curriculum Source Readiness Foundation"
 if [[ -f scripts/curriculum-source-readiness-status.sh ]]; then
   curriculum_source_readiness_result=0

@@ -1183,6 +1183,21 @@ check_doc_contains docs/curriculum-builder-production-registry-empty-file.md "em
 check_doc_contains docs/curriculum-builder-production-registry-snapshot-diff-restore-readiness.md "empty shell baseline" "snapshot empty shell baseline"
 grep -Fq -- '--curriculum-production-registry-empty-file-status' bin/chief-of-staff && pass "chief-of-staff exposes --curriculum-production-registry-empty-file-status" || fail "chief-of-staff missing --curriculum-production-registry-empty-file-status"
 
+section "Production Registry Metadata Pilot Execution Planning Files"
+for path in \
+  docs/curriculum-builder-production-registry-metadata-pilot-execution-plan.md \
+  docs/curriculum-builder-production-registry-first-record-owen-entry-worksheet.md \
+  docs/curriculum-builder-production-registry-first-record-acceptance-criteria.md \
+  docs/curriculum-builder-production-registry-first-record-snapshot-diff-restore-plan.md \
+  scripts/curriculum-builder-production-registry-metadata-pilot-plan-status.sh \
+  tests/curriculum-builder-production-registry-metadata-pilot-plan-status-test.sh; do
+  check_required_file "${path}"
+done
+check_bash_syntax scripts/curriculum-builder-production-registry-metadata-pilot-plan-status.sh
+check_bash_syntax tests/curriculum-builder-production-registry-metadata-pilot-plan-status-test.sh
+check_doc_contains docs/curriculum-builder-production-registry-metadata-pilot-execution-plan.md "metadata_pilot_execution_plan_complete" "metadata pilot execution plan closure"
+grep -Fq -- '--curriculum-production-registry-metadata-pilot-plan-status' bin/chief-of-staff && pass "chief-of-staff exposes --curriculum-production-registry-metadata-pilot-plan-status" || fail "chief-of-staff missing --curriculum-production-registry-metadata-pilot-plan-status"
+
 section "Curriculum Source Readiness Foundation Files"
 for path in \
   docs/curriculum-source-readiness-and-intake-boundary-plan.md \

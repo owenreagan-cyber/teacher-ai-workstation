@@ -5,7 +5,7 @@ Last updated: 2026-07-02
 ```text
 Status: documentation/status only
 Authority: whole-system posture snapshot — not implementation approval
-Baseline: main after Production Registry Empty-File mission
+Baseline: main after Production Registry Metadata Pilot Execution Planning mission
 ```
 
 **Status key:** `[x]` Built/merged · `[~]` Currently being built · `[>]` Ready for safe planning/build · `[!]` Blocked pending Owen/safety gate · `[ ]` Future / not started · `[?]` Insufficient repo evidence
@@ -58,10 +58,10 @@ Baseline: main after Production Registry Empty-File mission
 | [x] | Phase 2 preflight complete |
 | [x] | **Metadata-boundary refinement complete** — field contracts, guardrails, planning validator |
 | [x] | **Owen § J checklist complete** — all 11 items decided |
+| [x] | **Metadata pilot execution planning complete** — one-record protocol, worksheet, acceptance criteria |
 | [x] | **Empty-file mission complete** — `production-registry.json` with `records: []` |
-| [!] | Record writes blocked; no `resource-*` production records |
-| [!] | Metadata pilot execution blocked; writer/`--write` blocked |
-| **Proof** | `--curriculum-production-registry-empty-file-status`; metadata boundary ~60/0/0; Owen checklist ~58/0/0 |
+| [!] | Record writes blocked; metadata pilot execution blocked; no `resource-*` production records |
+| **Proof** | `--curriculum-production-registry-metadata-pilot-plan-status`; empty-file status ~30/0/0 |
 
 ### Owen § J Checklist State (2026-07-02)
 
@@ -79,9 +79,9 @@ Baseline: main after Production Registry Empty-File mission
 | 10 ID namespace | approved | `resource-*` |
 | 11 First implementation PR scope | approved | CB-PROD-GOV merged |
 
-**Empty shell does not authorize record writes or metadata pilot execution.**
+**Metadata pilot execution planning does not authorize pilot execution or record writes.**
 
-**Next possible gates:** Metadata pilot execution planning or governed single-record write planning — each requires separate explicit prompt.
+**Next possible gate:** Governed single-record write mission (separate explicit prompt).
 
 ---
 
@@ -200,16 +200,14 @@ Baseline: main after Production Registry Empty-File mission
 
 | Surface | State |
 | --- | --- |
-| Dashboard | ~130+ / 0 / 0 PASS (empty-file track added) |
-| Validate-all | ~43+ / 0 / 0 PASS |
-| Owen checklist | ~58+ / 0 / 0 PASS |
-| Empty-file status | ~25+ / 0 / 0 PASS |
-| Metadata boundary | ~60+ / 0 / 0 PASS |
-| Phase 2 preflight | ~51+ / 0 / 0 PASS |
+| Dashboard | ~126+ / 0 / 0 PASS |
+| Validate-all | ~44+ / 0 / 0 PASS |
+| Metadata pilot plan | ~35+ / 0 / 0 PASS |
+| Empty-file status | ~30 / 0 / 0 PASS |
 | Active mission | None |
-| Next possible gate | Metadata pilot execution planning or governed single-record write planning (separate prompts) |
+| Next possible gate | Governed single-record write (separate explicit prompt) |
 
-**Safety gates preserved:** Empty `production-registry.json` exists (`records: []`); no `resource-*` production records; no `--write`; sentinel intact. Record writes blocked. Metadata pilot execution blocked. Source auto-resolution blocked. Real curriculum file access blocked.
+**Safety gates preserved:** Empty `production-registry.json` (`records: []`); metadata pilot execution planning complete; no `resource-*` production records; no `--write`; sentinel intact. Record writes blocked. Metadata pilot execution blocked. Source auto-resolution blocked.
 
 ## Non-Activation
 

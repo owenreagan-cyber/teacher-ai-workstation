@@ -50,6 +50,20 @@ Map Owen § J checklist outcomes to **safe next missions** without implying appr
 | Empty-file validator | `scripts/curriculum-builder-production-registry-empty-file-validate.sh` |
 | Status command | `--curriculum-production-registry-empty-file-status` |
 
+## Phase 4b — Complete: Metadata Pilot Execution Planning (No Execution)
+
+**Complete 2026-07-02.** One-record protocol, Owen worksheet, acceptance criteria, snapshot/diff/restore pilot plan. No record added.
+
+| Deliverable | Proof |
+| --- | --- |
+| Pilot execution plan | `docs/curriculum-builder-production-registry-metadata-pilot-execution-plan.md` |
+| Owen entry worksheet | `docs/curriculum-builder-production-registry-first-record-owen-entry-worksheet.md` |
+| Acceptance criteria | `docs/curriculum-builder-production-registry-first-record-acceptance-criteria.md` |
+| Snapshot pilot plan | `docs/curriculum-builder-production-registry-first-record-snapshot-diff-restore-plan.md` |
+| Status command | `--curriculum-production-registry-metadata-pilot-plan-status` |
+
+**Metadata pilot execution:** **Still blocked**
+
 ## Phase 5 — Single-Record Manual Write (Future Separate Mission)
 
 **Trigger:** Empty file exists + explicit write mission + ChatGPT review.
@@ -62,7 +76,7 @@ Map Owen § J checklist outcomes to **safe next missions** without implying appr
 
 ## Phase 6 — Metadata Pilot Execution (Separate Mission)
 
-Boundary refinement complete. Pilot **execution** remains blocked until separate mission.
+Metadata pilot execution planning complete. Pilot **execution** remains blocked until separate explicit governed single-record write or metadata pilot execution mission.
 
 ## Phase 7 — Integrations (Per-System Missions)
 

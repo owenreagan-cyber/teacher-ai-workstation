@@ -1,0 +1,14 @@
+{
+  "fixture_classification": "negative_anti_pattern_reference_only",
+  "purpose": "blocked integration and runtime patterns — planning reference only",
+  "blocked_patterns": [
+    {"pattern": "https://drive.google.com/", "reason": "Drive access blocked"},
+    {"pattern": "smb://nas-server/", "reason": "NAS path blocked"},
+    {"pattern": "icloud://", "reason": "iCloud access blocked"},
+    {"pattern": "canvas_course_id", "reason": "Canvas integration blocked"},
+    {"pattern": "embedding_id", "reason": "embeddings blocked"},
+    {"pattern": "rag_chunk", "reason": "RAG blocked"},
+    {"pattern": "oauth_token", "reason": "API/OAuth blocked"},
+    {"pattern": "ollama_prompt", "reason": "local model execution blocked"}
+  ]
+}

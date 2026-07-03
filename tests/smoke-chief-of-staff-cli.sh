@@ -151,6 +151,8 @@ bin/chief-of-staff --presentation-engine-renderer-foundation-status >/dev/null
 bash tests/presentation-engine-renderer-foundation-status-test.sh >/dev/null
 bin/chief-of-staff --gemini-discovery-classification-intake-status >/dev/null
 bash tests/gemini-discovery-classification-intake-status-test.sh >/dev/null
+bin/chief-of-staff --markdown-frontmatter-planning-status >/dev/null
+bash tests/markdown-frontmatter-planning-status-test.sh >/dev/null
 bin/chief-of-staff --workstation-ops-lane-status >/dev/null
 bash tests/workstation-ops-lane-status-test.sh >/dev/null
 bash tests/backlog-non-mutation-guardrails-test.sh >/dev/null

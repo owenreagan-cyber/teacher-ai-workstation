@@ -173,6 +173,7 @@
         {"flag": "--curriculum-production-registry-first-record-status", "status": "implemented", "purpose": "First governed production registry record status (one record; write tooling blocked)"},
         {"flag": "--curriculum-production-registry-next-gate-status", "status": "implemented", "purpose": "Next-gate decision prep status (options blocked; Owen decision required)"},
         {"flag": "--curriculum-source-readiness-status", "status": "implemented", "purpose": "Curriculum Source Readiness fake metadata inventory foundation (no real ingestion)"},
+        {"flag": "--markdown-frontmatter-planning-status", "status": "implemented", "purpose": "Markdown frontmatter / manual metadata planning (read-only; no parser/validator)"},
         {"flag": "--curriculum-registry-write", "status": "blocked", "purpose": "Persistent registry writes blocked without explicit production approval mission"},
         {"flag": "--curriculum-scan-folders", "status": "blocked", "purpose": "Folder scanning blocked without explicit approval mission"},
         {"flag": "--curriculum-ingest-files", "status": "blocked", "purpose": "Curriculum ingestion blocked without explicit approval mission"},

@@ -124,9 +124,10 @@ Cross-references: `docs/build-queue.md`, `docs/master-build-roadmap.md`, `docs/p
 | --- | --- | --- |
 | [x] | v1 foundation, v0.2 CB-IMPL-1–4, hardening bundle, source readiness, A4–A7 contracts | repo-backed |
 | [x] | A4–A7 fixture optional-field enrichment complete | repo-backed — `docs/curriculum-builder-registry-a4-a7-fixture-evidence.md`; 0 targeted WARN |
+| [x] | Manual metadata / markdown frontmatter planning program complete | repo-backed — `docs/curriculum-manual-metadata-frontmatter-planning.md`; `complete_curriculum_manual_metadata_frontmatter_planning` |
 | [>] | Schema version alignment doc (Owen-gated) | planning/proposal-only |
 | [!] | Real records beyond production pilot, renderers, lesson generation | blocked gate |
-| **Proof** | `--curriculum-registry-lane-status`, `--curriculum-contracts-status` | |
+| **Proof** | `--curriculum-registry-lane-status`, `--curriculum-contracts-status`, `--markdown-frontmatter-planning-status` | |
 
 ---
 
@@ -288,11 +289,12 @@ Cross-references: `docs/build-queue.md`, `docs/master-build-roadmap.md`, `docs/p
 
 | Surface | State |
 | --- | --- |
-| Dashboard | 132 / 0 / 0 PASS |
-| Validate-all | 50 / 0 / 0 PASS |
+| Dashboard | 133 / 0 / 0 PASS |
+| Validate-all | 51 / 0 / 0 PASS |
 | Whole-system roadmap status | `--whole-system-master-roadmap-status` |
 | Presentation Engine renderer foundation | `--presentation-engine-renderer-foundation-status` |
 | Gemini discovery/classification intake | `--gemini-discovery-classification-intake-status` |
+| Markdown frontmatter planning | `--markdown-frontmatter-planning-status` |
 | Classroom Utility templates | `--classroom-utility-templates-status` |
 | Governance status | 54 / 0 / 0 PASS |
 | Checklist status | 59 / 0 / 0 PASS |
@@ -302,7 +304,7 @@ Cross-references: `docs/build-queue.md`, `docs/master-build-roadmap.md`, `docs/p
 | Empty-file status (historical) | 30 / 0 / 0 PASS |
 | Phase-1 | 758 / 0 / 0 PASS |
 | Active mission | None |
-| Next step | Safe docs/status lanes; production registry parked (Option D); Gemini discovery/classification intake complete — runtime blocked |
+| Next step | Safe docs/status lanes; production registry parked (Option D); frontmatter planning complete — parser/schema blocked |
 
 **Safety gates preserved:** First governed production registry record exists (`records` count exactly 1; ID `resource-math-lesson-108-presentation`); `BLOCKED-NO-WRITES.sentinel` intact; no `--write`; no writer scripts; no second production record; real curriculum file access blocked; copied curriculum content blocked; source auto-resolution blocked; integration and runtime gates blocked.
 

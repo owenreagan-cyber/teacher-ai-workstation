@@ -1,0 +1,12 @@
+{
+  "fixture_classification": "negative_anti_pattern_reference_only",
+  "purpose": "blocked field names and values — do not use in fixtures or production",
+  "blocked_examples": [
+    {"field": "student_name", "reason": "student data absolute prohibition"},
+    {"field": "grade_value", "reason": "student data absolute prohibition"},
+    {"field": "iep_accommodation", "reason": "student data absolute prohibition"},
+    {"field": "behavior_note", "reason": "student data absolute prohibition"},
+    {"field": "parent_email", "reason": "student data absolute prohibition"},
+    {"field": "class_roster", "reason": "student data absolute prohibition"}
+  ]
+}

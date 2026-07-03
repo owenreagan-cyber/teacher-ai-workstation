@@ -1198,6 +1198,27 @@ else
   warn "Gemini discovery/classification intake status script missing: scripts/gemini-discovery-classification-intake-status.sh"
 fi
 
+section "Markdown Frontmatter Planning (Curriculum Metadata)"
+if [[ -f scripts/markdown-frontmatter-planning-status.sh ]]; then
+  frontmatter_planning_result=0
+  frontmatter_planning_output="$(bash scripts/markdown-frontmatter-planning-status.sh 2>&1)" || frontmatter_planning_result=$?
+  frontmatter_planning_pass="$(summary_count "${frontmatter_planning_output}" "PASS")"
+  frontmatter_planning_warn="$(summary_count "${frontmatter_planning_output}" "WARN")"
+  frontmatter_planning_fail="$(summary_count "${frontmatter_planning_output}" "FAIL")"
+
+  if [[ "${frontmatter_planning_result}" != "0" ]]; then
+    printf '%s\n' "${frontmatter_planning_output}"
+    fail "Markdown frontmatter planning status failed"
+  elif [[ -n "${frontmatter_planning_pass}" && -n "${frontmatter_planning_warn}" && -n "${frontmatter_planning_fail}" ]]; then
+    printf 'Markdown Frontmatter Planning: PASS %s / WARN %s / FAIL %s\n' "${frontmatter_planning_pass}" "${frontmatter_planning_warn}" "${frontmatter_planning_fail}"
+    pass "Markdown frontmatter planning status completed"
+  else
+    pass "Markdown frontmatter planning status completed"
+  fi
+else
+  warn "Markdown frontmatter planning status script missing: scripts/markdown-frontmatter-planning-status.sh"
+fi
+
 section "Lovable Classroom App Builder (Program G1)"
 if [[ -f scripts/lovable-classroom-app-builder-status.sh ]]; then
   lovable_result=0

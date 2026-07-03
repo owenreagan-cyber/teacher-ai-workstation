@@ -143,6 +143,7 @@ run_track "Production Registry Next Gate" scripts/curriculum-builder-production-
 run_track "Whole-System Master Roadmap" scripts/whole-system-master-roadmap-status.sh
 run_track "Presentation Engine Renderer Foundation" scripts/presentation-engine-renderer-foundation-status.sh
 run_track "Gemini Discovery Classification Intake" scripts/gemini-discovery-classification-intake-status.sh
+run_track "Markdown Frontmatter Planning" scripts/markdown-frontmatter-planning-status.sh
 run_track "Curriculum Source Readiness" scripts/curriculum-source-readiness-status.sh
 run_track "Curriculum Builder Registry Lane" scripts/curriculum-builder-registry-lane-status.sh
 run_track "Curriculum Builder Registry A4-A7 Fixture Schema" scripts/curriculum-builder-registry-a4-a7-fixture-schema-status.sh

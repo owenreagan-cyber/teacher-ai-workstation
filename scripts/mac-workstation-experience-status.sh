@@ -36,9 +36,12 @@ cd "${repo_root}"
 section 'Mac Workstation Experience (Read-Only Planning Foundation)'
 cat <<'EOF'
 Status: read-only planning only
+Planning-only: yes (Program E1 — no Mac mutations)
 Mac system changes: blocked
 Wallpaper apply: blocked
 Widget install: blocked
+Widget/Shortcut lane (F1): see --widget-shortcut-status
+Wallpaper/photo lane: separate planning stack — not live curator
 Automation: no
 Network calls: no
 EOF
@@ -54,6 +57,8 @@ check_doc_contains docs/mac-workstation-non-activation-boundaries.md "Widget ins
 check_doc_contains docs/mac-workstation-non-activation-boundaries.md "Automation: no" "no automation boundary"
 check_doc_contains docs/mac-workstation-readiness-plan.md "read-only planning" "readiness read-only boundary"
 check_doc_contains docs/chief-of-staff-mode-status.md "Mac changes: no" "mode status mac boundary"
+check_doc_contains docs/widget-shortcut-builder-catalog-foundation.md "complete_v1_f1" "f1 widget shortcut cross-link"
+check_doc_contains docs/mac-workstation-experience-foundation.md "Wallpaper" "mac wallpaper lane reference"
 
 section 'Roadmap and Capability Coherence'
 check_doc_contains docs/master-build-roadmap.md "Mac Workstation Experience" "roadmap mac workstation"
@@ -81,6 +86,11 @@ if grep -Eq '(^|[;&|[:space:]])defaults[[:space:]]+write' scripts/mac-workstatio
   fail 'mac status script must not shell-invoke prefs defaults'
 else
   pass 'mac status script does not shell-invoke prefs defaults'
+fi
+if grep -Eq '(^|[;&|[:space:]])PlistBuddy[[:space:]]' scripts/mac-workstation-experience-status.sh 2>/dev/null; then
+  fail 'mac status script must not shell-invoke PlistBuddy'
+else
+  pass 'mac status script does not shell-invoke PlistBuddy'
 fi
 if grep -Eq '(^|[;&|[:space:]])curl[[:space:]]' scripts/mac-workstation-experience-status.sh 2>/dev/null; then
   fail 'mac status script must not shell-invoke curl'

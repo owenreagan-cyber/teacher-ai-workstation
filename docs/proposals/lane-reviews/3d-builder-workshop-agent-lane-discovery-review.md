@@ -26,11 +26,11 @@ Implementation: none authorized by this review
 
 | Candidate | Status |
 | --- | --- |
-| J1 workshop scope one-pager | **proposed** |
+| J1 workshop scope one-pager | **implemented** — `docs/3d-builder-workshop-agent-scope-one-pager.md` |
 | 3D generation mission in blocked/ | **deferred** |
-| Cross-link curriculum builder output contracts | **proposed** |
-| Status banner: planning-only | **proposed** |
-| Negative test: no mesh/export tooling invoked | **proposed** |
+| Cross-link curriculum builder output contracts | **implemented** — lane-review hardening sprint 2026-07-02 |
+| Status banner: planning-only | **implemented** — lane-review hardening sprint 2026-07-02 |
+| Negative test: no mesh/export tooling invoked | **implemented** — lane-review hardening sprint 2026-07-02 |
 
 ## Lane Status: `complete_pending_review` → `reviewed`
 

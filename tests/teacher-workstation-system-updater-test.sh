@@ -47,4 +47,34 @@ for cmd in --system-update-check --system-update-plan; do
   rm -f "${tmp}"
 done
 
+tmp="$(mktemp "${TMPDIR:-/tmp}/system-updater-check-cli.XXXXXX")"
+bin/chief-of-staff --system-update-check >"${tmp}" 2>&1 || {
+  echo "FAIL: --system-update-check exited nonzero"
+  cat "${tmp}"
+  rm -f "${tmp}"
+  exit 1
+}
+grep -q 'Check-only: yes' "${tmp}" || {
+  echo "FAIL: --system-update-check missing check-only banner"
+  cat "${tmp}"
+  rm -f "${tmp}"
+  exit 1
+}
+rm -f "${tmp}"
+
+tmp="$(mktemp "${TMPDIR:-/tmp}/system-updater-status-banner.XXXXXX")"
+bash scripts/teacher-workstation-system-updater-status.sh >"${tmp}" 2>&1 || {
+  echo "FAIL: updater status script exited nonzero"
+  cat "${tmp}"
+  rm -f "${tmp}"
+  exit 1
+}
+grep -q 'does not shell-invoke brew install' "${tmp}" || {
+  echo "FAIL: updater status missing negative brew install assertion"
+  cat "${tmp}"
+  rm -f "${tmp}"
+  exit 1
+}
+rm -f "${tmp}"
+
 echo "PASS: Teacher Workstation System Updater tests passed."

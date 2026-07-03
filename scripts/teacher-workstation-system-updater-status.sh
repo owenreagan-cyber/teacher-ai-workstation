@@ -36,11 +36,13 @@ cd "${repo_root}"
 section 'Teacher Workstation System Updater (Read-Only Planning)'
 cat <<'EOF'
 Status: read-only update planning only
+Check-only: yes
+Install/apply: no
 Apply/install/repair: no
 Package managers: no
 Network calls: no
 Automation: no
-Health Monitor: separate (not invoked for repair)
+Health Monitor: separate (Program H) — observe-only; not invoked for repair
 EOF
 
 check_file docs/teacher-workstation-system-updater.md
@@ -71,6 +73,18 @@ check_file scripts/teacher-workstation-system-update-plan.sh
 [[ -f bin/chief-of-staff ]] && grep -Fq -- '--system-update-check' bin/chief-of-staff && pass 'CLI exposes --system-update-check' || fail 'CLI missing --system-update-check'
 [[ -f bin/chief-of-staff ]] && grep -Fq -- '--system-update-plan' bin/chief-of-staff && pass 'CLI exposes --system-update-plan' || fail 'CLI missing --system-update-plan'
 [[ -f assistant/chief-of-staff/v1/command-surface-manifest.json ]] && pass 'command manifest exists' || fail 'command manifest missing'
+
+section 'Negative Non-Activation Assertions'
+status_script="scripts/teacher-workstation-system-updater-status.sh"
+plan_script="scripts/teacher-workstation-system-update-plan.sh"
+for script_path in "${status_script}" "${plan_script}"; do
+  script_invocations="$(grep -Ev 'must not shell-invoke|does not shell-invoke' "${script_path}" || true)"
+  grep -Eq '(^|[;&|[:space:]])brew[[:space:]]+(install|upgrade)' <<< "${script_invocations}" && fail "${script_path} must not shell-invoke brew install" || pass "${script_path} does not shell-invoke brew install"
+  grep -Eq '(^|[;&|[:space:]])npm[[:space:]]+(install|ci)' <<< "${script_invocations}" && fail "${script_path} must not shell-invoke npm install" || pass "${script_path} does not shell-invoke npm install"
+  grep -Eq '(^|[;&|[:space:]])softwareupdate[[:space:]]+--install' <<< "${script_invocations}" && fail "${script_path} must not shell-invoke softwareupdate --install" || pass "${script_path} does not shell-invoke softwareupdate --install"
+done
+script_invocations="$(grep -Ev 'must not shell-invoke|does not shell-invoke' "${status_script}" || true)"
+grep -Eq '(^|[;&|[:space:]])curl[[:space:]]' <<< "${script_invocations}" && fail 'updater status script must not shell-invoke curl' || pass 'updater status script does not shell-invoke curl'
 
 section 'Non-Activation Health'
 pass 'no apply attempted'

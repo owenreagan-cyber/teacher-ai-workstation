@@ -30,9 +30,9 @@ Implementation: none authorized by this review
 | --- | --- |
 | E1 vs wallpaper photo processor lane map | **proposed** |
 | Mac mutation mission template in blocked/ | **deferred** |
-| Status output: "planning-only" banner | **proposed** |
-| Cross-link F1 widget lane | **proposed** |
-| Negative test: no defaults/plist writes | **proposed** |
+| Status output: "planning-only" banner | **implemented** — lane-review hardening sprint 2026-07-02 |
+| Cross-link F1 widget lane | **implemented** — lane-review hardening sprint 2026-07-02 |
+| Negative test: no defaults/plist writes | **implemented** — lane-review hardening sprint 2026-07-02 |
 
 ## Lane Status: `complete_pending_review` → `reviewed`
 

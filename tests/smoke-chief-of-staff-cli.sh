@@ -135,6 +135,7 @@ bash tests/governance-lane-status-test.sh >/dev/null
 bin/chief-of-staff --workstation-ops-lane-status >/dev/null
 bash tests/workstation-ops-lane-status-test.sh >/dev/null
 bash tests/backlog-non-mutation-guardrails-test.sh >/dev/null
+bash tests/lane-review-hardening-guardrails-test.sh >/dev/null
 bash tests/ai-tool-routing-status-test.sh >/dev/null
 bash tests/local-llm-workstation-status-test.sh >/dev/null
 bash tests/mac-workstation-experience-status-test.sh >/dev/null

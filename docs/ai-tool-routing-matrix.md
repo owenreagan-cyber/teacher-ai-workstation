@@ -5,6 +5,7 @@ Last updated: 2026-07-02
 ```text
 Status: documentation/status only
 Authority: companion to assistant/model-routing.md and docs/master-build-roadmap.md
+Matrix version: 2026-07-02-v1
 Chief of Staff routing status: read-only operational surface — no automated routing active
 ```
 

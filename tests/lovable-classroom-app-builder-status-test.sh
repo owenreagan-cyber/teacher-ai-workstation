@@ -20,8 +20,14 @@ grep -q '^FAIL: 0$' "${tmp}" || {
   rm -f "${tmp}"
   exit 1
 }
-grep -q 'read-only planning only' "${tmp}" || {
-  echo "FAIL: missing read-only planning boundary header"
+grep -q 'External Lovable fetch: blocked' "${tmp}" || {
+  echo "FAIL: missing Lovable no-fetch banner"
+  cat "${tmp}"
+  rm -f "${tmp}"
+  exit 1
+}
+grep -q 'does not reference lovable.dev fetch targets' "${tmp}" || {
+  echo "FAIL: missing negative lovable.dev assertion"
   cat "${tmp}"
   rm -f "${tmp}"
   exit 1

@@ -69,6 +69,7 @@ Templates: `docs/proposals/templates/lane-level-discovery-mission.md`, `docs/pro
 | Curriculum Source Readiness fake metadata foundation | Curriculum Builder | 2 | high | low | low | none | none | none | implemented | complete — `bin/chief-of-staff --curriculum-source-readiness-status` | Curriculum Source Readiness Sprint 2026-07-02 | 2026-07-02 |
 | External planning input intake map | Cursor / Governance | 2 | medium | low | low | none | none | none | implemented | complete — `docs/proposals/ideas/external-planning-input-intake-map.md` | Curriculum Source Readiness Sprint 2026-07-02 | 2026-07-02 |
 | Status-banner hardening across lane status scripts | Cross-cutting | 2 | medium | low | low | none | none | none | implemented | complete — runtime activation / fake-fixture banners in aggregate + registry scripts | Backlog Implementation Sprint 2026-07-02 | 2026-07-02 |
+| Lane-review hardening sprint (banners + negative guardrails) | Cross-cutting | 2 | medium | low | low | none | none | none | implemented | complete — `tests/lane-review-hardening-guardrails-test.sh` | Lane-Review Hardening Sprint 2026-07-02 | 2026-07-02 |
 | Negative non-mutation guardrail tests | Curriculum Builder Registry | 2 | medium | low | low | none | none | none | implemented | complete — `tests/backlog-non-mutation-guardrails-test.sh` + renderer/retrieval tests | Backlog Implementation Sprint 2026-07-02 | 2026-07-02 |
 
 Detail: `docs/proposals/lane-reviews/README.md` (index); prior registry review: `docs/proposals/curriculum-builder-registry-lane-discovery-review.md`

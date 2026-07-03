@@ -32,7 +32,7 @@ Implementation: none authorized by this review
 | Prototype inventory template (planning-only) | **implemented** — PR #216 |
 | App execution mission in blocked/ | **deferred** |
 | Status banner: planning-only rescue | **implemented** — classroom-app-lab status |
-| Cross-link capability map CAL row | **proposed** |
+| Cross-link capability map CAL row | **implemented** — lane-review hardening sprint 2026-07-02 |
 
 ## Lane Status: `complete_pending_review` → `reviewed`
 

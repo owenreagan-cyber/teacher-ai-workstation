@@ -18,6 +18,8 @@ Handoff and status clarity. Start from `docs/phase-1-chief-of-staff-status-audit
 
 ## Recently Completed
 
+- Lane-Review Hardening Sprint (2026-07-02): health/updater boundary banners, check-only updater guardrails, Mac E1/F1 cross-links, Canvas frozen banner, Lovable no-API guardrails, R0+D1 cross-links, routing matrix version stamp, operating modes discovery banner, ABE sprint queue template, 3D planning-only banner, consolidated guardrail tests. No runtime activation.
+
 - Post-#218 Safe Work Mega Run (2026-07-02): Owen decision worksheet, post-decision map, metadata pilot planning, status banner hardening, Level 2 review sync, expected WARN global/component clarity. No writes.
 
 - Governance-First Production Registry Foundation (2026-07-02): CB-PROD-GOV docs, candidate path skeleton, `--curriculum-production-registry-governance-status`, guardrail tests. Blocked writes; Owen checklist items still pending.

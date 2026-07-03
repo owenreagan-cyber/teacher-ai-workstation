@@ -36,6 +36,8 @@ cd "${repo_root}"
 section 'AI Tool Routing Matrix (Read-Only Operational Surface)'
 cat <<'EOF'
 Status: read-only routing visibility only
+Routing matrix version: 2026-07-02-v1
+Local LLM D1: separate lane — see --local-llm-workstation-status
 Automated routing: no
 Network calls: no
 Ollama ping: no
@@ -52,7 +54,9 @@ check_doc_contains docs/ai-tool-routing-operational-surface.md "Health Monitor" 
 check_doc_contains docs/ai-tool-routing-operational-surface.md "Network calls: no" "no network boundary"
 check_doc_contains docs/ai-tool-routing-foundation.md "complete_v1_r" "routing closure status"
 check_doc_contains docs/ai-tool-routing-matrix.md "no automated routing active" "matrix no automated routing boundary"
+check_doc_contains docs/ai-tool-routing-matrix.md "Matrix version: 2026-07-02-v1" "routing matrix version stamp"
 check_doc_contains assistant/model-routing.md "inactive by default" "model routing inactive default"
+check_doc_contains docs/lovable-classroom-app-builder-foundation.md "complete_v1_g1" "lovable g1 routing cross-link"
 
 section 'Roadmap and Capability Coherence'
 check_doc_contains docs/master-build-roadmap.md "AI Tool Routing Matrix" "roadmap ai tool routing"
@@ -72,15 +76,21 @@ section 'CLI and Manifest'
 [[ -f assistant/chief-of-staff/v1/command-surface-manifest.json ]] && pass 'command manifest exists' || fail 'command manifest missing'
 
 section 'Negative Non-Activation Assertions'
-if grep -Eq '(^|[;&|[:space:]])curl[[:space:]]' scripts/ai-tool-routing-status.sh 2>/dev/null; then
+routing_invocations="$(grep -Ev 'must not shell-invoke|does not shell-invoke|must not reference|does not reference' scripts/ai-tool-routing-status.sh || true)"
+if grep -Eq '(^|[;&|[:space:]])curl[[:space:]]' <<< "${routing_invocations}"; then
   fail 'routing status script must not shell-invoke curl'
 else
   pass 'routing status script does not shell-invoke curl'
 fi
-if grep -Eq '(^|[;&|[:space:]])ollama[[:space:]]' scripts/ai-tool-routing-status.sh 2>/dev/null; then
+if grep -Eq '(^|[;&|[:space:]])ollama[[:space:]]' <<< "${routing_invocations}"; then
   fail 'routing status script must not shell-invoke ollama'
 else
   pass 'routing status script does not shell-invoke ollama'
+fi
+if grep -Eq '(api\.openai\.com|api\.anthropic\.com|generativelanguage\.googleapis\.com|lovable\.dev)' <<< "${routing_invocations}"; then
+  fail 'routing status script must not reference cloud API endpoint invocation'
+else
+  pass 'routing status script does not reference cloud API endpoint invocation'
 fi
 pass 'no automated routing attempted'
 pass 'no API call attempted'

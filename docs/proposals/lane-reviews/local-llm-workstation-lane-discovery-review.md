@@ -31,8 +31,8 @@ Implementation: none authorized by this review
 | D1 status banner: "no Ollama execution" | **implemented** — local-llm status banner PR #216 |
 | D2 capability broker planning doc in blocked/ | **deferred** |
 | Negative test: ollama binary not invoked | **implemented** (existing) |
-| Cross-link R0 routing separation | **proposed** |
-| Local LLM readiness checklist tracker | **proposed** |
+| Cross-link R0 routing separation | **implemented** — lane-review hardening sprint 2026-07-02 |
+| Local LLM readiness checklist tracker | **implemented** — `docs/local-llm-readiness-checklist-tracker.md` |
 
 ## Lane Status: `complete_pending_review` → `reviewed`
 

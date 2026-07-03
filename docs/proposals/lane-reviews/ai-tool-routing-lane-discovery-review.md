@@ -28,11 +28,11 @@ Implementation: none authorized by this review
 
 | Candidate | Status |
 | --- | --- |
-| R0+D1 cross-link in both status script headers | **proposed** |
-| Routing matrix version stamp in status output | **proposed** |
+| R0+D1 cross-link in both status script headers | **implemented** — lane-review hardening sprint 2026-07-02 |
+| Routing matrix version stamp in status output | **implemented** — `Matrix version: 2026-07-02-v1` |
 | Automated routing mission in blocked/ | **deferred** |
-| Negative test: no API endpoint strings invoked | **proposed** |
-| Lovable routing row links to G1 planning | **proposed** |
+| Negative test: no API endpoint strings invoked | **implemented** — lane-review hardening sprint 2026-07-02 |
+| Lovable routing row links to G1 planning | **implemented** — routing status G1 cross-link |
 
 ## Lane Status: `complete_pending_review` → `reviewed`
 

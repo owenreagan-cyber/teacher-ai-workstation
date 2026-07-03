@@ -28,11 +28,11 @@ Implementation: none authorized by this review
 
 | Candidate | Status |
 | --- | --- |
-| Status output: "check-only, no install" banner | **proposed** |
+| Status output: "check-only, no install" banner | **implemented** — lane-review hardening sprint 2026-07-02 |
 | H+I aggregate lane status (read-only) | **implemented** — `--workstation-ops-lane-status` |
 | Updater apply mission gated in blocked/ | **deferred** |
-| Negative test: no brew/npm install invocation | **proposed** |
-| Cross-link health monitor separation in command index | **proposed** |
+| Negative test: no brew/npm install invocation | **implemented** — lane-review hardening sprint 2026-07-02 |
+| Cross-link health monitor separation in command index | **implemented** — lane-review hardening sprint 2026-07-02 |
 
 ## Lane Status: `complete_pending_review` → `reviewed`
 

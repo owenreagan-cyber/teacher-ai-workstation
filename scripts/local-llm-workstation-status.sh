@@ -36,6 +36,7 @@ cd "${repo_root}"
 section 'Local LLM / Ollama Workstation (Read-Only Status Foundation)'
 cat <<'EOF'
 Status: read-only planning only
+AI Tool Routing R0: separate lane — see --model-routing-status
 No Ollama execution: yes
 Ollama install: blocked
 Model downloads: blocked
@@ -56,6 +57,7 @@ check_doc_contains docs/local-llm-non-activation-boundaries.md "Network calls: n
 check_doc_contains docs/local-llm-non-activation-boundaries.md "AI Tool Routing" "ai tool routing separation"
 check_doc_contains docs/local-llm-non-activation-boundaries.md "Health Monitor" "health monitor separation"
 check_doc_contains docs/local-llm-ollama-readiness-plan.md "read-only planning" "readiness read-only boundary"
+check_doc_contains docs/local-llm-readiness-checklist-tracker.md "planning-only" "local llm readiness checklist tracker"
 check_doc_contains assistant/model-routing.md "inactive by default" "model routing inactive default"
 
 section 'Roadmap and Capability Coherence'
@@ -75,22 +77,28 @@ section 'CLI and Manifest'
 [[ -f assistant/chief-of-staff/v1/command-surface-manifest.json ]] && pass 'command manifest exists' || fail 'command manifest missing'
 
 section 'Negative Non-Activation Assertions'
-if grep -Eq '(^|[;&|[:space:]])curl[[:space:]]' scripts/local-llm-workstation-status.sh 2>/dev/null; then
+llm_invocations="$(grep -Ev 'must not shell-invoke|does not shell-invoke' scripts/local-llm-workstation-status.sh || true)"
+if grep -Eq '(^|[;&|[:space:]])curl[[:space:]]' <<< "${llm_invocations}"; then
   fail 'local llm status script must not shell-invoke curl'
 else
   pass 'local llm status script does not shell-invoke curl'
 fi
-if grep -Eq '(^|[;&|[:space:]])ollama[[:space:]]' scripts/local-llm-workstation-status.sh 2>/dev/null; then
+if grep -Eq '(^|[;&|[:space:]])ollama[[:space:]]+(run|pull|list|generate|serve)' <<< "${llm_invocations}"; then
+  fail 'local llm status script must not shell-invoke ollama run/pull/list/generate/serve'
+else
+  pass 'local llm status script does not shell-invoke ollama run/pull/list/generate/serve'
+fi
+if grep -Eq '(^|[;&|[:space:]])ollama[[:space:]]' <<< "${llm_invocations}"; then
   fail 'local llm status script must not shell-invoke ollama'
 else
   pass 'local llm status script does not shell-invoke ollama'
 fi
-if grep -Eq '(^|[;&|[:space:]])brew[[:space:]]' scripts/local-llm-workstation-status.sh 2>/dev/null; then
+if grep -Eq '(^|[;&|[:space:]])brew[[:space:]]' <<< "${llm_invocations}"; then
   fail 'local llm status script must not shell-invoke brew'
 else
   pass 'local llm status script does not shell-invoke brew'
 fi
-if grep -Eq '(^|[;&|[:space:]])nc[[:space:]]' scripts/local-llm-workstation-status.sh 2>/dev/null; then
+if grep -Eq '(^|[;&|[:space:]])nc[[:space:]]' <<< "${llm_invocations}"; then
   fail 'local llm status script must not shell-invoke nc'
 else
   pass 'local llm status script does not shell-invoke nc'

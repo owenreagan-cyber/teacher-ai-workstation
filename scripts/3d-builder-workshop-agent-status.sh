@@ -26,6 +26,7 @@ cd "${repo_root}"
 section '3D Builder Workshop Agent (Read-Only Planning Surface)'
 cat <<'EOF'
 Status: read-only planning only
+Planning-only: yes (Program J1 — no CAD/export/print)
 CAD generation: blocked
 STL/3MF export: blocked
 Slicer integration: blocked
@@ -39,7 +40,10 @@ check_file docs/3d-builder-workshop-agent-roadmap.md
 check_file docs/3d-builder-workshop-agent-non-activation-boundaries.md
 check_doc_contains docs/3d-builder-workshop-agent-foundation.md "complete_v1_j1" "3d builder closure status"
 check_doc_contains docs/3d-builder-workshop-agent-non-activation-boundaries.md "CAD generation: blocked" "cad generation blocked"
+check_file docs/3d-builder-workshop-agent-scope-one-pager.md
+check_doc_contains docs/3d-builder-workshop-agent-scope-one-pager.md "planning-only" "3d scope one-pager planning boundary"
 check_doc_contains docs/3d-builder-workshop-agent-roadmap.md "planning only" "roadmap planning only"
+check_doc_contains docs/curriculum-builder-output-contract-foundation.md "output contract" "3d curriculum output contract cross-link"
 check_doc_contains docs/master-build-roadmap.md "3D Builder Workshop Agent" "master roadmap 3d builder"
 check_doc_contains docs/teacher-workstation-capability-map.md "3D Builder Workshop Agent" "capability map 3d builder"
 
@@ -49,7 +53,9 @@ grep -Fq -- '"--3d-builder-status"' assistant/chief-of-staff/v1/command-surface-
 
 section 'Negative Non-Activation Assertions'
 status_script="scripts/3d-builder-workshop-agent-status.sh"
-grep -Eq '(^|[;&|[:space:]])curl[[:space:]]' "${status_script}" 2>/dev/null && fail '3d builder status script must not shell-invoke curl' || pass '3d builder status script does not shell-invoke curl'
+builder_invocations="$(grep -Ev 'must not shell-invoke|does not shell-invoke' "${status_script}" || true)"
+grep -Eq '(^|[;&|[:space:]])(openscad|blender|prusa-slicer|cura|meshlab|slic3r)[[:space:]]' <<< "${builder_invocations}" && fail '3d builder status script must not shell-invoke mesh/export/slicer tooling' || pass '3d builder status script does not shell-invoke mesh/export/slicer tooling'
+grep -Eq '(^|[;&|[:space:]])curl[[:space:]]' <<< "${builder_invocations}" && fail '3d builder status script must not shell-invoke curl' || pass '3d builder status script does not shell-invoke curl'
 pass 'no CAD generation attempted'
 pass 'no STL export attempted'
 pass 'no slicer integration attempted'

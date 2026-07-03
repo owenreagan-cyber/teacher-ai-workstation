@@ -79,6 +79,9 @@ check_file docs/proposals/ideas/README.md
 check_file docs/proposals/backlog/README.md
 check_file docs/proposals/blocked/README.md
 check_file docs/proposals/implemented/README.md
+check_file docs/proposals/implemented/README.md
+check_file docs/cursor-autonomous-build-engine-sprint-queue-template.md
+check_doc_contains docs/cursor-autonomous-build-engine-sprint-queue-template.md "planning-only" "abe sprint queue template planning boundary"
 check_doc_contains docs/proposals/README.md "lane-reviews/" "proposals readme lane-reviews"
 
 section 'Operating Modes Cross-Link'

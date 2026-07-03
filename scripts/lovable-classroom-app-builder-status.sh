@@ -37,9 +37,12 @@ section 'Lovable Classroom App Builder (Read-Only Planning Surface)'
 cat <<'EOF'
 Status: read-only planning only
 Lovable API: blocked
+External Lovable fetch: blocked
 OAuth: blocked
 Network calls: blocked
 Live app generation: blocked
+CAL1 boundary: docs/classroom-app-lab-vs-lovable-lane-boundary.md
+AI Tool Routing R0: Lovable row inactive — see --model-routing-status
 Automation: no
 EOF
 
@@ -53,6 +56,8 @@ check_doc_contains docs/lovable-classroom-app-builder-non-activation-boundaries.
 check_doc_contains docs/lovable-classroom-app-builder-readiness-plan.md "become Lovable" "architecture rule documented"
 check_doc_contains assistant/model-routing.md "inactive" "model routing lovable inactive"
 check_doc_contains docs/ai-tool-routing-matrix.md "Lovable" "ai tool routing matrix lovable"
+check_doc_contains docs/classroom-app-lab-vs-lovable-lane-boundary.md "G1" "cal1 g1 boundary cross-link"
+check_doc_contains docs/lovable-classroom-app-builder-mission-approval-gate-checklist.md "approval-gated" "lovable mission approval gate checklist"
 
 section 'Roadmap and Capability Coherence'
 check_doc_contains docs/master-build-roadmap.md "Lovable Classroom App Builder" "roadmap lovable program"
@@ -84,6 +89,12 @@ if grep -Eq '(^|[;&|[:space:]])curl[[:space:]]' "${status_script}" 2>/dev/null; 
   fail 'lovable status script must not shell-invoke curl'
 else
   pass 'lovable status script does not shell-invoke curl'
+fi
+lovable_invocations="$(grep -Ev 'must not reference|does not reference' "${status_script}" || true)"
+if grep -Eq 'lovable\.dev' <<< "${lovable_invocations}"; then
+  fail 'lovable status script must not reference lovable.dev fetch targets'
+else
+  pass 'lovable status script does not reference lovable.dev fetch targets'
 fi
 if grep -Eq '(^|[;&|[:space:]])wget[[:space:]]' "${status_script}" 2>/dev/null; then
   fail 'lovable status script must not shell-invoke wget'

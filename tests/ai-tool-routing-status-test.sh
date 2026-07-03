@@ -20,8 +20,20 @@ grep -q '^FAIL: 0$' "${tmp}" || {
   rm -f "${tmp}"
   exit 1
 }
-grep -q 'read-only routing visibility' "${tmp}" || {
-  echo "FAIL: missing read-only routing boundary header"
+grep -q 'Routing matrix version: 2026-07-02-v1' "${tmp}" || {
+  echo "FAIL: missing routing matrix version stamp"
+  cat "${tmp}"
+  rm -f "${tmp}"
+  exit 1
+}
+grep -q 'Local LLM D1' "${tmp}" || {
+  echo "FAIL: missing R0+D1 cross-link banner"
+  cat "${tmp}"
+  rm -f "${tmp}"
+  exit 1
+}
+grep -q 'does not reference cloud API endpoint invocation' "${tmp}" || {
+  echo "FAIL: missing negative API endpoint assertion"
   cat "${tmp}"
   rm -f "${tmp}"
   exit 1

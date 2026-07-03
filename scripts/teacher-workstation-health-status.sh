@@ -56,10 +56,11 @@ cd "${repo_root}"
 section 'Teacher Workstation Health Monitor (Read-Only)'
 cat <<'EOF'
 Status: observe and report only
+Health vs Updater: Health Monitor (H) observes only — System Updater (I) is separate; not invoked for repair
 Update/repair/install: no
 Network calls: no
 Automation: no
-System Updater: not invoked
+Canvas LLM: frozen/stopped unless Owen supersedes stop marker
 EOF
 
 check_file docs/teacher-workstation-health-monitor.md
@@ -103,11 +104,21 @@ if [[ -f docs/canvas-llm-stop-marker-curriculum-builder-return.md ]]; then
 else
   warn 'canvas stop marker doc missing'
 fi
+check_doc_contains docs/canvas-llm-stop-marker-curriculum-builder-return.md "stop marker" "canvas frozen stop marker rule"
 run_health_track 'Canvas LLM frozen foundation' scripts/teacher-app-designer-canvas-llm-status.sh || true
 check_doc_contains docs/teacher-workstation-health-monitor.md "planning-only" "future program planning boundary"
+check_doc_contains docs/teacher-workstation-health-monitor.md "System Updater" "health monitor updater separation doc"
 
 section 'Validation Suite Health'
 run_health_track 'Cursor workflow' scripts/cursor-workflow-status.sh || true
+
+section 'Negative Non-Activation Assertions'
+status_script="scripts/teacher-workstation-health-status.sh"
+script_invocations="$(grep -Ev 'must not shell-invoke|does not shell-invoke' "${status_script}" || true)"
+grep -Eq '(^|[;&|[:space:]])brew[[:space:]]+(install|upgrade)' <<< "${script_invocations}" && fail 'health status script must not shell-invoke brew install' || pass 'health status script does not shell-invoke brew install'
+grep -Eq '(^|[;&|[:space:]])npm[[:space:]]+(install|ci)' <<< "${script_invocations}" && fail 'health status script must not shell-invoke npm install' || pass 'health status script does not shell-invoke npm install'
+grep -Eq '(^|[;&|[:space:]])softwareupdate[[:space:]]' <<< "${script_invocations}" && fail 'health status script must not shell-invoke softwareupdate' || pass 'health status script does not shell-invoke softwareupdate'
+grep -Eq '(^|[;&|[:space:]])curl[[:space:]]' <<< "${script_invocations}" && fail 'health status script must not shell-invoke curl' || pass 'health status script does not shell-invoke curl'
 
 section 'Non-Activation Health'
 pass 'no repair attempted'

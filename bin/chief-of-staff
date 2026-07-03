@@ -168,6 +168,8 @@ Teacher Planning Command Organization (status only; safe sample: fractions-revie
                                        Show read-only governance-first production registry foundation status (blocked writes; no intake) and exit.
   --curriculum-production-registry-owen-checklist-status
                                        Show read-only Owen § J production registry approval checklist tracker (planning-only; Owen decisions required) and exit.
+  --curriculum-production-registry-phase-2-preflight-status
+                                       Show read-only Phase 2 production registry preflight status (no file, no record, no write) and exit.
   --curriculum-source-readiness-status
                                        Show read-only Curriculum Source Readiness fake metadata inventory foundation status and exit.
   --curriculum-library-foundation-status
@@ -1890,6 +1892,15 @@ while [[ $# -gt 0 ]]; do
         die "Owen production registry checklist status script is missing: scripts/curriculum-builder-production-registry-owen-checklist-status.sh"
       fi
       bash "${curriculum_production_registry_owen_checklist_status_script}"
+      exit 0
+      ;;
+    --curriculum-production-registry-phase-2-preflight-status)
+      repo_root="$(resolve_repo_root)"
+      curriculum_production_registry_phase_2_preflight_status_script="${repo_root}/scripts/curriculum-builder-production-registry-phase-2-preflight-status.sh"
+      if [[ ! -f "${curriculum_production_registry_phase_2_preflight_status_script}" ]]; then
+        die "Phase 2 production registry preflight status script is missing: scripts/curriculum-builder-production-registry-phase-2-preflight-status.sh"
+      fi
+      bash "${curriculum_production_registry_phase_2_preflight_status_script}"
       exit 0
       ;;
     --curriculum-source-readiness-status)

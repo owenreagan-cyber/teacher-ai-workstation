@@ -121,6 +121,8 @@ bash tests/curriculum-builder-production-registry-owen-checklist-status-test.sh 
 bin/chief-of-staff --curriculum-production-registry-governance-status >/dev/null
 bash tests/curriculum-builder-production-registry-governance-status-test.sh >/dev/null
 bash tests/curriculum-builder-production-registry-governance-guardrails-test.sh >/dev/null
+bin/chief-of-staff --curriculum-production-registry-phase-2-preflight-status >/dev/null
+bash tests/curriculum-builder-production-registry-phase-2-preflight-status-test.sh >/dev/null
 bin/chief-of-staff --curriculum-source-readiness-status >/dev/null
 bash tests/curriculum-source-readiness-status-test.sh >/dev/null
 bin/chief-of-staff --curriculum-registry-lane-status >/dev/null

@@ -24,6 +24,7 @@ grep -q 'production registry planning' "${tmp}" || { echo "FAIL: missing plannin
 grep -q 'A4–A7 fixture schema' "${tmp}" || { echo "FAIL: missing A4–A7 component"; cat "${tmp}"; rm -f "${tmp}"; exit 1; }
 grep -q 'curriculum source readiness' "${tmp}" || { echo "FAIL: missing curriculum source readiness component"; cat "${tmp}"; rm -f "${tmp}"; exit 1; }
 grep -q 'production registry governance' "${tmp}" || { echo "FAIL: missing governance component"; cat "${tmp}"; rm -f "${tmp}"; exit 1; }
+grep -q 'production registry Phase 2 preflight' "${tmp}" || { echo "FAIL: missing Phase 2 preflight component"; cat "${tmp}"; rm -f "${tmp}"; exit 1; }
 grep -q 'Owen § J approval checklist' "${tmp}" || { echo "FAIL: missing Owen checklist component"; cat "${tmp}"; rm -f "${tmp}"; exit 1; }
 rm -f "${tmp}"
 
@@ -74,6 +75,7 @@ for flag in \
   --curriculum-registry-retrieval-status \
   --curriculum-production-registry-planning-status \
   --curriculum-production-registry-governance-status \
+  --curriculum-production-registry-phase-2-preflight-status \
   --curriculum-production-registry-owen-checklist-status \
   --curriculum-source-readiness-status; do
   out="$(mktemp "${TMPDIR:-/tmp}/cb-registry-lane-component.XXXXXX")"

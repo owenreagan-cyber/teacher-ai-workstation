@@ -53,7 +53,7 @@ Safe-local scaffolding for the Curriculum Builder registry lane is largely compl
 
 **The project has reached a product-decision wall on metadata intake.**
 
-Write behavior approved in principle 2026-07-02 (item 2). Path and namespace recorded (items 1, 10). Items 3 and 4 deferred. The next high-value step is **Phase 2 preflight** (separate explicit prompt) or an **items 3+4 metadata session**. Registry mutation remains blocked.
+Phase 2 preflight complete 2026-07-02. Write behavior approved in principle (item 2). Path and namespace recorded (items 1, 10). Items 3 and 4 deferred. The next high-value step is an **items 3+4 metadata session** or a **future mutation mission** via separate explicit prompt. Registry mutation remains blocked.
 
 ---
 

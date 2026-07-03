@@ -1106,7 +1106,7 @@ for path in \
 done
 check_bash_syntax scripts/curriculum-builder-production-registry-owen-checklist-status.sh
 check_bash_syntax tests/curriculum-builder-production-registry-owen-checklist-status-test.sh
-check_doc_contains docs/curriculum-builder-production-registry-owen-checklist-tracker.md "write_behavior_approved_awaiting_metadata_decisions" "owen checklist tracker closure"
+check_doc_contains docs/curriculum-builder-production-registry-owen-checklist-tracker.md "phase_2_preflight_complete_awaiting_metadata_decisions" "owen checklist tracker closure"
 grep -Fq -- '--curriculum-production-registry-owen-checklist-status' bin/chief-of-staff && pass "chief-of-staff exposes --curriculum-production-registry-owen-checklist-status" || fail "chief-of-staff missing --curriculum-production-registry-owen-checklist-status"
 
 section "Production Registry Governance Foundation Files"
@@ -1133,6 +1133,20 @@ check_bash_syntax tests/curriculum-builder-production-registry-governance-guardr
 check_doc_contains docs/curriculum-builder-production-registry-governance-foundation.md "complete_cb_prod_gov_foundation" "governance foundation closure"
 check_doc_contains docs/curriculum-builder-production-registry-owen-decision-worksheet.md "Documenting an option does not approve it" "decision worksheet non-approval"
 grep -Fq -- '--curriculum-production-registry-governance-status' bin/chief-of-staff && pass "chief-of-staff exposes --curriculum-production-registry-governance-status" || fail "chief-of-staff missing --curriculum-production-registry-governance-status"
+
+section "Production Registry Phase 2 Preflight Files"
+for path in \
+  docs/curriculum-builder-production-registry-phase-2-preflight.md \
+  docs/curriculum-builder-production-registry-audit-rollback-preflight.md \
+  docs/curriculum-builder-production-registry-snapshot-diff-restore-readiness.md \
+  scripts/curriculum-builder-production-registry-phase-2-preflight-status.sh \
+  tests/curriculum-builder-production-registry-phase-2-preflight-status-test.sh; do
+  check_required_file "${path}"
+done
+check_bash_syntax scripts/curriculum-builder-production-registry-phase-2-preflight-status.sh
+check_bash_syntax tests/curriculum-builder-production-registry-phase-2-preflight-status-test.sh
+check_doc_contains docs/curriculum-builder-production-registry-phase-2-preflight.md "phase_2_preflight_complete" "phase 2 preflight closure"
+grep -Fq -- '--curriculum-production-registry-phase-2-preflight-status' bin/chief-of-staff && pass "chief-of-staff exposes --curriculum-production-registry-phase-2-preflight-status" || fail "chief-of-staff missing --curriculum-production-registry-phase-2-preflight-status"
 
 section "Curriculum Source Readiness Foundation Files"
 for path in \

@@ -105,6 +105,7 @@ These flags exist in `bin/chief-of-staff` and work as read-only local status sur
 | `bin/chief-of-staff --curriculum-production-registry-planning-status` | Production registry workflow planning status (CB-PROD-PLAN; planning-only; no writes) |
 | `bin/chief-of-staff --curriculum-production-registry-owen-checklist-status` | Owen § J production registry approval checklist tracker (planning-only; Owen decisions required) — companion: `docs/curriculum-builder-production-registry-owen-decision-worksheet.md` |
 | `bin/chief-of-staff --curriculum-production-registry-governance-status` | Governance-first production registry foundation (blocked writes; CB-PROD-GOV) — companions: post-decision map, metadata pilot boundary docs |
+| `bin/chief-of-staff --curriculum-production-registry-phase-2-preflight-status` | Phase 2 production registry preflight (audit/rollback readiness; no file, no record, no write) |
 | `bin/chief-of-staff --curriculum-source-readiness-status` | Curriculum Source Readiness fake metadata inventory foundation (no real ingestion) |
 | `bin/chief-of-staff --curriculum-library-foundation-status` | Curriculum Library v1 |
 | `bin/chief-of-staff --lesson-planning-foundation-status` | Lesson Planning v1 |

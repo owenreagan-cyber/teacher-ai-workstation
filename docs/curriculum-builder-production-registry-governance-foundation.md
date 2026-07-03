@@ -37,6 +37,7 @@ Canonical closure index for the **governance-first production registry foundatio
 | 13 | Metadata pilot planning boundary | `docs/curriculum-builder-metadata-pilot-planning-boundary.md` |
 | 14 | Manual metadata boundary | `docs/curriculum-builder-manual-metadata-boundary.md` |
 | 15 | Write mission preflight expansion | `docs/proposals/backlog/production-registry-write-mission.md` |
+| 16 | Phase 2 preflight foundation | `docs/curriculum-builder-production-registry-phase-2-preflight.md` |
 
 ## Decision Readiness (Post–PR #218)
 

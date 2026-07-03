@@ -56,7 +56,7 @@ check_file "${review_packet}"
 check_file docs/curriculum-builder-production-registry-owen-decision-worksheet.md
 check_file docs/curriculum-builder-production-registry-post-decision-implementation-map.md
 check_doc_contains docs/curriculum-builder-production-registry-owen-decision-worksheet.md "Documenting an option does not approve it" "decision worksheet non-approval"
-check_doc_contains "${tracker_doc}" "write_behavior_approved_awaiting_metadata_decisions" "tracker closure status"
+check_doc_contains docs/curriculum-builder-production-registry-owen-checklist-tracker.md "phase_2_preflight_complete_awaiting_metadata_decisions" "tracker closure status"
 check_doc_contains "${tracker_doc}" "Owen status" "tracker Owen status column"
 check_doc_contains "${tracker_doc}" "curriculum-builder-production-registry-owen-review-packet" "tracker links review packet"
 check_doc_contains "${review_packet}" "Documenting an option does not approve it" "review packet non-approval statement"

@@ -8,9 +8,9 @@ Phase 0E Vibe Engine.
 
 ## Current Focus
 
-**Product-decision wall — item 2 approved in principle; Phase 2 preflight eligible.**
+**Product-decision wall — Phase 2 preflight complete; items 3+4 metadata next.**
 
-Safe-local registry scaffolding including CB-PROD-GOV governance foundation is complete (`docs/curriculum-builder-production-registry-governance-foundation.md`; `--curriculum-production-registry-governance-status`). Owen approved write behavior in principle 2026-07-02 (item 2: manual-only, Phase 2 preflight only next). Path and namespace recorded (items 1, 10). Items 3 and 4 remain deferred. **No registry mutation authorized.** Next eligible mission: **Phase 2 preflight** via separate explicit prompt. Generic Master Build Plan autopilot is **not** the next step.
+Safe-local registry scaffolding including CB-PROD-GOV governance foundation is complete. Phase 2 preflight merged 2026-07-02 (`docs/curriculum-builder-production-registry-phase-2-preflight.md`; `--curriculum-production-registry-phase-2-preflight-status`). Owen approved write behavior in principle (item 2). Items 3 and 4 remain deferred. **No registry mutation authorized.** Next human step: items 3+4 metadata/source-reference session or future empty-file/write mission via separate prompt.
 
 Master program roadmap: `docs/master-build-roadmap.md` — Program Readiness Audit and mission sequencing for v1.0. Implementation does not proceed automatically from the roadmap.
 

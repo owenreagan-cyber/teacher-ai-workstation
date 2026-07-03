@@ -102,7 +102,8 @@ fi
 
 section 'Owen Checklist and Review Packet Coherence'
 check_doc_contains docs/curriculum-builder-production-registry-owen-review-packet.md "Governance-first only" "review packet governance-first section"
-check_doc_contains docs/curriculum-builder-production-registry-owen-checklist-tracker.md "write_behavior_approved_awaiting_metadata_decisions" "checklist tracker write behavior approved"
+check_doc_contains docs/curriculum-builder-production-registry-owen-checklist-tracker.md "phase_2_preflight_complete_awaiting_metadata_decisions" "checklist tracker phase 2 preflight complete"
+check_doc_contains docs/curriculum-builder-production-registry-phase-2-preflight.md "phase_2_preflight_complete" "phase 2 preflight doc closure"
 check_doc_contains "${path_options}" "Owen-approved" "path options Owen-approved"
 check_doc_contains docs/curriculum-builder-production-registry-owen-decision-worksheet.md "Documenting an option does not approve it" "decision worksheet non-approval"
 check_doc_contains docs/curriculum-builder-production-registry-workflow-planning-brief.md "governance + blocked proof only" "planning brief § I governance scope"

@@ -5,7 +5,7 @@ Last updated: 2026-07-02
 ```text
 Status: planning_stub_only
 Classification: future write-mission prerequisite — no write code
-Owen checklist item: 6 — Rollback requirements (pending)
+Owen checklist item: 6 — Rollback requirements (approved 2026-07-02)
 Implementation: blocked until Owen accepts procedure
 ```
 
@@ -51,7 +51,8 @@ Owen must accept rollback requirements in checklist item 6 before write missions
 | Document | Role |
 | --- | --- |
 | `docs/curriculum-builder-production-registry-workflow-planning-brief.md` | § E source |
-| `docs/curriculum-builder-production-registry-governance-foundation.md` | Governance closure |
+| `docs/curriculum-builder-production-registry-audit-rollback-preflight.md` | Phase 2 audit preflight expansion |
+| `docs/curriculum-builder-production-registry-snapshot-diff-restore-readiness.md` | Snapshot/diff/restore readiness |
 
 ## Non-Activation
 

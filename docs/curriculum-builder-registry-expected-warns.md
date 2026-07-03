@@ -47,7 +47,15 @@ The lane aggregate script reports **PASS on its own summary** while component sc
 
 **Owen review packet:** `docs/curriculum-builder-production-registry-owen-review-packet.md` explains the deferred checklist WARN and decision categories. Item 2 approval in principle does not authorize registry mutation. The WARN is expected until deferred items 3 and 4 are resolved.
 
-**Typical total on `--curriculum-registry-lane-status` aggregate:** 8 WARN / 0 FAIL (7 A4–A7 + 1 Owen checklist) when canonical fixture unchanged.
+**Typical total on `--curriculum-registry-lane-status` aggregate:** 9 WARN / 0 FAIL (7 A4–A7 + 1 Owen checklist + 1 Phase 2 preflight deferred metadata) when canonical fixture unchanged.
+
+## Phase 2 Preflight WARNs
+
+| WARN | Count (typical) | Reason | Follow-up |
+| --- | ---: | --- | --- |
+| `items 3 and 4 remain deferred — real metadata and source references blocked until Owen approves` | 1 | Items 3 and 4 deferred; Phase 2 preflight complete | Items 3+4 metadata session |
+
+**Typical total on `--curriculum-production-registry-phase-2-preflight-status`:** 1 WARN / 0 FAIL (deferred metadata items).
 
 ## Rules
 

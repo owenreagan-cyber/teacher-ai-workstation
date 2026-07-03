@@ -15,13 +15,14 @@ Documenting an option does not approve it.
 Updating this worksheet does not authorize implementation.
 Only explicit tracker row updates by Owen authorize checklist progress.
 PASS on any status command does not authorize writes.
+Item 2 approval in principle does not authorize registry mutation.
 ```
 
 ## How to Use This Worksheet
 
 1. Read `docs/curriculum-builder-production-registry-owen-review-packet.md` § 7 decision table.
 2. For each checklist item below, record your decision in `docs/curriculum-builder-production-registry-owen-checklist-tracker.md` (change `Owen status` from `pending` to `approved`, `deferred`, or `rejected`).
-3. Re-run `bin/chief-of-staff --curriculum-production-registry-owen-checklist-status` — the expected WARN remains while deferred items exist (3 deferred as of 2026-07-02).
+3. Re-run `bin/chief-of-staff --curriculum-production-registry-owen-checklist-status` — the expected WARN remains while deferred items exist (2 deferred as of 2026-07-02).
 4. Use the **Decision-to-Next-Prompt** table at the bottom before issuing any implementation mission.
 
 ## Checklist Worksheet
@@ -29,7 +30,7 @@ PASS on any status command does not authorize writes.
 | # | Item | Your decision (pending/approved/deferred/rejected) | Date | Notes |
 | ---: | --- | --- | --- | --- |
 | 1 | Production registry path | approved | 2026-07-02 | Option B — `assistant/curriculum-builder/registry/v0-2/production-registry.json`; v0 remains read-only `sample-*` |
-| 2 | Write behavior allowed | deferred | 2026-07-02 | No writes approved yet |
+| 2 | Write behavior allowed | approved | 2026-07-02 | Manual-only in principle; Phase 2 preflight only next; no file, no records, no --write |
 | 3 | Real curriculum metadata allowed | deferred | 2026-07-02 | Metadata pilot later; no real metadata intake approved |
 | 4 | Real source references allowed | deferred | 2026-07-02 | Manual labels later; no real source references approved |
 | 5 | Source systems permitted | approved | 2026-07-02 | Manual entry only; integrations blocked |
@@ -49,37 +50,31 @@ PASS on any status command does not authorize writes.
 | Item 11 (governance-first scope) | Acknowledges CB-PROD-GOV complete | Production writes |
 | Item 6 + 7 (rollback + review gates) | Future write mission may reference model | Registry mutation |
 | Item 1 + 10 (path + namespace) | Path decision doc update; namespace recorded | Creating real records or production-registry.json |
-| Item 2 (writes allowed) | Future **separate** write mission prompt | Immediate `--write` |
+| Item 2 (writes in principle) | Phase 2 preflight eligible via **separate** mission prompt | Immediate `--write`, file creation, records |
 | Item 3 + 4 (real metadata) | Future **separate** metadata pilot mission | File ingestion |
 
 ## Safe Tracker Update Examples
 
-**Approve path decision (item 1):**
+**Approve write behavior in principle (item 2):**
 
 ```markdown
-| 1 | Production registry path | approved | Owen | 2026-07-02 | Option B — assistant/curriculum-builder/registry/v0-2/production-registry.json |
+| 2 | Write behavior allowed | approved | Owen | 2026-07-02 | Manual-only governed writes permitted in principle; Phase 2 preflight only next |
 ```
 
-**Approve namespace (item 10):**
-
-```markdown
-| 10 | ID namespace | approved | Owen | 2026-07-02 | resource-* pattern; distinct from sample-* and example-* |
-```
-
-**Do not use `approved` on item 2 unless Owen explicitly authorizes future governed writes.**
+**Do not interpret item 2 approval as authorization to create production-registry.json or records without a separate explicit mission.**
 
 ## Decision-to-Next-Prompt Routing
 
 | Owen state | Safe next mission |
 | --- | --- |
-| 3 items deferred (current) | **Item 2 write behavior decision session** — separate from path/namespace |
-| Approved items 1, 5, 6, 7, 8, 9, 10, 11 (recorded 2026-07-02) | Tracker/status doc refresh only — **no writes** |
-| Approved item 1 (path) + 10 (namespace) without item 2 | Path recorded; still no writes or file creation |
-| Approved 1, 2, 6, 7, 10, 11 + governance merged | **Governed single-record write mission** — see `docs/proposals/backlog/production-registry-write-mission.md` |
-| Approved 3, 4, 5 (manual only) without item 2 | **Metadata pilot planning mission** — docs/status only unless write also approved |
+| 2 items deferred (current) | **Phase 2 preflight** (separate explicit prompt) or **items 3+4 metadata session** |
+| Approved items 1, 2, 5, 6, 7, 8, 9, 10, 11 (recorded 2026-07-02) | Phase 2 preflight docs/status/tests only — **no registry mutation** |
+| Phase 2 preflight complete + items 3, 4 approved | Future empty-file or single-record missions — separate prompts each |
+| Approved 1, 2, 6, 7, 10, 11 + Phase 2 complete | **Governed single-record write mission** — see write-mission backlog; still requires items 3/4 for real metadata |
+| Approved 3, 4, 5 (manual only) without registry file | **Metadata pilot planning mission** — docs/status only |
 | Any integration need | **Separate per-system mission** — not bulk § J approval |
 
-**ChatGPT review recommended** before any implementation prompt. See `docs/proposals/curriculum-builder-registry-lane-discovery-review.md`.
+**ChatGPT review recommended** before Phase 2 preflight or any write implementation prompt.
 
 ## Related Documents
 

@@ -21,46 +21,44 @@ Map Owen § J checklist outcomes to **safe next missions** without implying appr
 
 ## Phase 1 — Governance Affirmations Recorded (No Writes)
 
-**Trigger:** Owen approved items 5, 6, 7, 8, 9, 11; deferred items 1, 2, 3, 4, 10 (2026-07-02).
-
-| Mission | Scope | Blocked |
-| --- | --- | --- |
-| Tracker + doc refresh | Governance batch recorded in tracker | Write code |
-| Path + namespace session | Owen decides items 1 and 10 together | Creating registry files |
-| Write behavior | Item 2 remains deferred | Any `--write` or writer scripts |
-
 **Superseded 2026-07-02** by path + namespace decision sync.
 
-## Phase 1b — Current: Path + Namespace Recorded (No Writes)
+## Phase 1b — Path + Namespace Recorded (No Writes)
 
-**Trigger:** Owen approved items 1 and 10 (2026-07-02); items 2, 3, 4 remain deferred.
+**Superseded 2026-07-02** by item 2 write behavior tracker sync.
+
+## Phase 2 — Current: Write Behavior Approved in Principle (Preflight Eligible)
+
+**Trigger:** Owen approved item 2 in principle (2026-07-02); items 3 and 4 remain deferred.
 
 | Mission | Scope | Blocked |
 | --- | --- | --- |
-| Tracker + doc refresh | Path and namespace recorded in tracker and path-options doc | Write code |
-| Item 2 write behavior session | Owen decides whether governed writes are ever allowed | Creating `production-registry.json` |
-| Metadata intake | Items 3 and 4 remain deferred | Real metadata or source references |
+| Tracker + doc refresh | Item 2 recorded in tracker | Registry mutation |
+| **Phase 2 preflight** (separate explicit prompt) | Docs/status/tests/audit/rollback hardening only | `production-registry.json`, records, `--write`, sentinel removal |
+| Metadata intake session | Items 3 and 4 remain deferred | Real metadata or source references |
 
 **Approved path:** `assistant/curriculum-builder/registry/v0-2/production-registry.json` (file does not exist yet)
 
 **Approved namespace:** `resource-*`
 
-**Expected checklist WARN:** 1 (3 deferred items). Path and namespace approval does **not** authorize production writes.
+**Write behavior:** manual-only, single-record, snapshot-first, rollback-required — **in principle only**
 
-## Phase 2 — Governed Write Preflight (Still No Writer)
+**Expected checklist WARN:** 1 (2 deferred items). Item 2 approval does **not** authorize registry mutation.
 
-**Trigger:** Items 1, 2, 6, 7, 10, 11 approved; item 2 explicitly `yes` manual-only.
+### Phase 2 Preflight Boundaries (When Explicitly Prompted)
 
-| Mission | In scope | Out of scope |
-| --- | --- | --- |
-| Write preflight docs/tests expansion | Checklists, negative tests, audit stub refinement | `--write` handler |
-| Dry-run validation hardening | Fake candidate validation only | Promotion to production |
+| In scope | Out of scope |
+| --- | --- |
+| Checklists, negative tests, audit stub refinement | `--write` handler |
+| Dry-run validation hardening (fake candidates only) | Creating `production-registry.json` |
+| Status proof that mutation remains blocked | Creating `resource-*` records |
+| Rollback planning test expansion | Removing `BLOCKED-NO-WRITES.sentinel` |
 
 See `docs/proposals/backlog/production-registry-write-mission.md` § Preflight Checklist.
 
 ## Phase 3 — Single-Record Manual Write (Future Separate Mission)
 
-**Trigger:** Phase 2 complete + Owen issues explicit write mission prompt + ChatGPT review.
+**Trigger:** Phase 2 complete + Owen issues explicit write mission prompt + ChatGPT review + items 3/4 if real metadata required.
 
 | Requirement | Detail |
 | --- | --- |
@@ -69,24 +67,18 @@ See `docs/proposals/backlog/production-registry-write-mission.md` § Preflight C
 | Review state | Must be `approved` before write |
 | Production path | `assistant/curriculum-builder/registry/v0-2/production-registry.json` |
 | ID namespace | `resource-*` per item 10 decision |
+| Real metadata | Requires items 3 and 4 approved |
 
 ## Phase 4 — Metadata Pilot (Separate from Writes Unless Both Approved)
 
 **Trigger:** Items 3, 4, 5 approved (manual metadata boundaries).
 
-| Mission | Scope |
-| --- | --- |
-| Metadata pilot planning | `docs/curriculum-builder-metadata-pilot-planning-boundary.md` |
-| Fake-only field examples | No real titles/paths |
-
 Blocked until approved: real metadata in production registry. Items 3 and 4 remain **deferred** as of 2026-07-02.
 
 ## Phase 5 — Integrations (Per-System Missions)
 
-**Trigger:** Item 9 opened per integration + separate Owen mission each.
-
-Item 9 approval affirms integrations **remain blocked** in v1 unless separate missions. Never bulk-approved via § J alone.
+Item 9 approval affirms integrations **remain blocked** in v1 unless separate missions.
 
 ## Non-Activation
 
-This map does not authorize any phase transition automatically. Phase 1b does not authorize writes or file creation.
+This map does not authorize any phase transition automatically. Phase 2 preflight requires a separate explicit mission prompt.

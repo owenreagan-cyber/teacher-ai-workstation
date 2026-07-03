@@ -5,7 +5,7 @@ Last updated: 2026-07-02
 ```text
 Status: documentation/status only
 Authority: whole-system posture snapshot — not implementation approval
-Baseline: main after Owen § J path + namespace decision sync
+Baseline: main after Owen § J item 2 write behavior tracker sync
 ```
 
 **Status key:** `[x]` Built/merged · `[~]` Currently being built · `[>]` Ready for safe planning/build · `[!]` Blocked pending Owen/safety gate · `[ ]` Future / not started · `[?]` Insufficient repo evidence
@@ -55,16 +55,17 @@ Baseline: main after Owen § J path + namespace decision sync
 | [x] | CB-PROD-PLAN, Owen review packet, checklist tracker, CB-PROD-GOV, decision worksheet |
 | [x] | Governance affirmation batch recorded 2026-07-02 (items 5, 6, 7, 8, 9, 11 approved) |
 | [x] | Path + namespace recorded 2026-07-02 (items 1 and 10 approved) |
-| [!] | Items 2, 3, 4 deferred — write behavior, metadata intake, source references blocked |
-| [!] | No active write mission approved; production writes blocked; `production-registry.json` not created |
-| **Proof** | `--curriculum-production-registry-governance-status` (51/0/0); checklist ~50/1/0 (3 deferred WARN) |
+| [x] | Write behavior approved in principle 2026-07-02 (item 2) |
+| [!] | Items 3, 4 deferred — real metadata intake, source references blocked |
+| [!] | Phase 2 preflight not started; registry mutation blocked; `production-registry.json` not created |
+| **Proof** | `--curriculum-production-registry-governance-status` (52/0/0); checklist ~52/1/0 (2 deferred WARN) |
 
 ### Owen § J Checklist State (2026-07-02)
 
 | Item | Status | Note |
 | --- | --- | --- |
-| 1 Production registry path | approved | Option B — `assistant/curriculum-builder/registry/v0-2/production-registry.json`; v0 remains read-only `sample-*` |
-| 2 Write behavior allowed | deferred | No writes approved |
+| 1 Production registry path | approved | Option B — `assistant/curriculum-builder/registry/v0-2/production-registry.json` |
+| 2 Write behavior allowed | approved | Manual-only in principle; Phase 2 preflight only next; no file, no records, no `--write` |
 | 3 Real curriculum metadata | deferred | Metadata pilot later |
 | 4 Real source references | deferred | Manual labels later |
 | 5 Source systems permitted | approved | Manual entry only; integrations blocked |
@@ -72,14 +73,12 @@ Baseline: main after Owen § J path + namespace decision sync
 | 7 Review states | approved | § D gate model accepted |
 | 8 Student-data prohibition | approved | Absolute ban |
 | 9 Integrations | approved | Remain blocked in v1 unless separate missions |
-| 10 ID namespace | approved | `resource-*` (e.g. `resource-sm5-textbook-001`); distinct from `sample-*` and `example-*` |
+| 10 ID namespace | approved | `resource-*`; distinct from `sample-*` and `example-*` |
 | 11 First implementation PR scope | approved | CB-PROD-GOV merged; write mission separate |
 
-**Approved path:** `assistant/curriculum-builder/registry/v0-2/production-registry.json` (file not created)
+**First eligible implementation mission:** Phase 2 preflight only (docs/status/tests/audit) — separate explicit prompt required.
 
-**Approved namespace:** `resource-*`
-
-**Approved path and namespace rows do not authorize production writes.**
+**Item 2 approval does not authorize registry mutation.**
 
 ---
 
@@ -199,11 +198,11 @@ Baseline: main after Owen § J path + namespace decision sync
 | --- | --- |
 | Dashboard | 122 / 0 / 0 PASS (target) |
 | Validate-all | 40 / 0 / 0 PASS (target) |
-| Owen checklist | ~50 / 1 / 0 (expected WARN — 3 deferred) |
-| Active mission | None — item 2 write behavior decision wall |
-| Next human step | Owen item 2 write behavior decision session; items 3 and 4 metadata intake remain deferred |
+| Owen checklist | ~52 / 1 / 0 (expected WARN — 2 deferred) |
+| Active mission | None — Phase 2 preflight eligible via separate prompt |
+| Next human step | Issue Phase 2 preflight mission or items 3+4 metadata session |
 
-**Safety gates preserved:** No production writes, integrations, Mac mutations, Ollama execution, Lovable API, 3D mesh/export, or runtime activation. Approved path and namespace do not authorize writes or file creation.
+**Safety gates preserved:** No registry mutation, no `production-registry.json`, no `resource-*` records, no `--write`. Item 2 approval in principle does not authorize implementation.
 
 ## Non-Activation
 

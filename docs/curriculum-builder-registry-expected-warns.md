@@ -41,11 +41,11 @@ The lane aggregate script reports **PASS on its own summary** while component sc
 
 | WARN | Count (typical) | Reason | Follow-up |
 | --- | ---: | --- | --- |
-| `3 Owen checklist items deferred — write behavior, metadata intake, and source references remain blocked` | 1 | Items 2, 3, 4 remain `deferred`; path and namespace (items 1, 10) approved 2026-07-02 | Item 2 write behavior decision session |
+| `2 Owen checklist items deferred — real curriculum metadata and real source references remain blocked` | 1 | Items 3 and 4 remain `deferred`; item 2 approved in principle 2026-07-02 | Items 3+4 metadata session or Phase 2 preflight mission |
 
-**Typical total on `--curriculum-production-registry-owen-checklist-status`:** 1 WARN / 0 FAIL while deferred items remain (3 deferred as of 2026-07-02).
+**Typical total on `--curriculum-production-registry-owen-checklist-status`:** 1 WARN / 0 FAIL while deferred items remain (2 deferred as of 2026-07-02).
 
-**Owen review packet:** `docs/curriculum-builder-production-registry-owen-review-packet.md` explains the deferred checklist WARN and decision categories. Approved path and namespace rows do not authorize writes. The WARN is expected until deferred items 2, 3, and 4 are resolved.
+**Owen review packet:** `docs/curriculum-builder-production-registry-owen-review-packet.md` explains the deferred checklist WARN and decision categories. Item 2 approval in principle does not authorize registry mutation. The WARN is expected until deferred items 3 and 4 are resolved.
 
 **Typical total on `--curriculum-registry-lane-status` aggregate:** 8 WARN / 0 FAIL (7 A4–A7 + 1 Owen checklist) when canonical fixture unchanged.
 

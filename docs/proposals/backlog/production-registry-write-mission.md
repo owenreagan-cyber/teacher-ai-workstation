@@ -5,24 +5,28 @@ Last updated: 2026-07-02
 ```text
 Status: backlog
 Classification: future implementation mission — not authorized
-Blocked until: Owen § J checklist items 2, 6, 7, 11 approved (items 1 and 10 already approved) + governance foundation merged + separate write mission prompt
+Phase 2 preflight: eligible via separate explicit mission — not authorized by item 2 tracker sync alone
+Registry mutation: blocked until Phase 2 complete + explicit write mission prompt
 ```
 
 ## Purpose
 
-Backlog pointer for the **governed single-record manual write** mission (planning brief § I second PR). CB-PROD-GOV governance foundation is **complete**. Path and namespace are **recorded**. This mission remains **blocked** until Owen approves item 2 and issues a separate write mission prompt.
+Backlog pointer for the **governed single-record manual write** mission (planning brief § I second PR) and **Phase 2 preflight** routing. CB-PROD-GOV governance foundation is **complete**. Path, namespace, and write behavior in principle are **recorded**. Registry mutation remains **blocked** until Phase 2 preflight completes and Owen issues a separate write mission prompt.
 
 ## Prerequisites
 
 | Prerequisite | Status |
 | --- | --- |
-| Governance foundation (CB-PROD-GOV) | **complete** — `docs/curriculum-builder-production-registry-governance-foundation.md` |
+| Governance foundation (CB-PROD-GOV) | **complete** |
 | Owen path decision (item 1) | **approved** — `assistant/curriculum-builder/registry/v0-2/production-registry.json` |
-| Write behavior allowed (item 2) | **deferred** |
+| Write behavior allowed (item 2) | **approved in principle** — Phase 2 preflight eligible; mutation blocked |
 | Rollback accepted (item 6) | **approved** |
 | Review states accepted (item 7) | **approved** |
 | ID namespace chosen (item 10) | **approved** — `resource-*` |
-| Governance-first PR scope (item 11) | **approved** — foundation delivered; write still blocked |
+| Governance-first PR scope (item 11) | **approved** |
+| Phase 2 preflight complete | **not started** |
+| Real metadata (item 3) | **deferred** |
+| Real source references (item 4) | **deferred** |
 
 ## Approved Future Production Surface (Not Created)
 
@@ -30,17 +34,28 @@ Backlog pointer for the **governed single-record manual write** mission (plannin
 | --- | --- |
 | Production path | `assistant/curriculum-builder/registry/v0-2/production-registry.json` |
 | ID namespace | `resource-*` (e.g. `resource-sm5-textbook-001`) |
-| Writable | **Blocked** — item 2 deferred |
-| Create file | **Blocked** until item 2 approved + separate write mission |
+| Writable | **Blocked** — no Phase 2 preflight or write mission yet |
+| Create file | **Blocked** |
 | Remove sentinel | **Blocked** |
 | Real metadata | **Blocked** — item 3 deferred |
 | Real source references | **Blocked** — item 4 deferred |
+
+## Phase 2 Preflight (Eligible — Separate Mission Required)
+
+**Not authorized by item 2 tracker sync alone.** Owen must issue an explicit Phase 2 preflight mission prompt.
+
+| In scope | Out of scope |
+| --- | --- |
+| Audit/rollback test expansion | `--write` handler |
+| Negative guardrail tests | `production-registry.json` creation |
+| Dry-run hardening on fake candidates | `resource-*` records |
+| Status proof mutation remains blocked | Sentinel removal |
 
 ## Preflight Checklist (Before Any Write Mission Prompt)
 
 | # | Gate | Owner | Status |
 | ---: | --- | --- | --- |
-| 1 | Owen updated checklist tracker rows (not worksheet alone) | Owen | ongoing |
+| 1 | Owen updated checklist tracker rows (not worksheet alone) | Owen | **done** — item 2 |
 | 2 | ChatGPT review of implementation prompt complete | Owen + ChatGPT | pending |
 | 3 | Production path recorded in path-options doc | Owen | **done** — Option B |
 | 4 | ID namespace recorded | Owen | **done** — `resource-*` |
@@ -50,9 +65,10 @@ Backlog pointer for the **governed single-record manual write** mission (plannin
 | 8 | Negative tests pass: no `--curriculum-registry-write` handler | CI | yes |
 | 9 | Dry-run validator passes on fake candidates only | CI | yes |
 | 10 | No real metadata without items 3–5 approval | Policy | blocked |
-| 11 | Item 2 write behavior explicitly approved | Owen | **deferred** |
+| 11 | Item 2 write behavior explicitly approved | Owen | **approved in principle** |
+| 12 | Phase 2 preflight mission complete | Owen + Cursor | **not started** |
 
-## Future PR Boundaries (Write Mission)
+## Future PR Boundaries (Write Mission — Phase 3+)
 
 **In scope (smallest possible):**
 
@@ -67,7 +83,7 @@ Backlog pointer for the **governed single-record manual write** mission (plannin
 - Auto-promotion from dry-run or v0.2 fixtures
 - Active global `--write` without per-record review
 - Network, OAuth, scanning
-- Real metadata without separate metadata approval
+- Real metadata without items 3 and 4 approval
 - Removing sentinel without Owen-approved mission
 
 ## Future Tests List (Planning)
@@ -104,4 +120,4 @@ Stop write mission if:
 
 ## Non-Activation
 
-This backlog entry does not authorize implementation.
+This backlog entry does not authorize Phase 2 preflight or registry mutation without a separate explicit mission prompt.

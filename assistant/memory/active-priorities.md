@@ -88,8 +88,9 @@
 ### Now
 
 - **Lane-review hardening sprint complete** — health/updater boundaries, updater check-only banners, Mac E1/F1 cross-links, Canvas frozen banner, Lovable no-API guardrails, R0+D1 cross-links, operating modes discovery banner, ABE sprint queue template, 3D planning-only banner. `tests/lane-review-hardening-guardrails-test.sh`. No runtime activation.
-- **Path + namespace approved (2026-07-02)** — item 1 Option B `assistant/curriculum-builder/registry/v0-2/production-registry.json`; item 10 `resource-*`. File not created; writes blocked.
-- **Governance affirmation batch recorded (2026-07-02)** — items 5, 6, 7, 8, 9, 11 approved. Approved governance rows do **not** authorize writes. Next step: **item 2 write behavior decision session**. Items 3 and 4 metadata intake remain deferred.
+- **Write behavior approved in principle (2026-07-02)** — item 2 manual-only, snapshot-first; Phase 2 preflight eligible via separate prompt; registry mutation blocked.
+- **Path + namespace approved (2026-07-02)** — item 1 Option B; item 10 `resource-*`. File not created.
+- **Governance affirmation batch recorded (2026-07-02)** — items 5, 6, 7, 8, 9, 11 approved. Items 3 and 4 metadata intake remain deferred.
 - **Governance-first + decision readiness complete** — CB-PROD-GOV, decision worksheet, post-decision map, metadata pilot planning boundaries, status hardening. Production writes and real metadata intake remain blocked.
 - Curriculum Source Readiness fake metadata inventory foundation complete (`docs/curriculum-source-readiness-and-intake-boundary-plan.md`). `--curriculum-source-readiness-status`; fake schema, fixtures, validator, negative tests. Real curriculum ingestion blocked. Owen tiny-pilot checklist in boundary plan.
 - Autonomous Backlog Implementation Sprint complete (2026-07-02). `--governance-lane-status`, `--workstation-ops-lane-status`, status-banner hardening on registry/governance scripts, negative non-mutation guardrail tests. No runtime activation.

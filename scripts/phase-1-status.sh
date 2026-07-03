@@ -1220,6 +1220,22 @@ check_doc_contains docs/curriculum-builder-production-registry-next-gate-classif
 check_doc_contains docs/curriculum-builder-production-registry-first-record.md "first_record_complete" "first record closure"
 grep -Fq -- '--curriculum-production-registry-first-record-status' bin/chief-of-staff && pass "chief-of-staff exposes --curriculum-production-registry-first-record-status" || fail "chief-of-staff missing --curriculum-production-registry-first-record-status"
 
+section "Production Registry Next-Gate Decision Packet Files"
+for path in \
+  docs/curriculum-builder-production-registry-next-gate-decision-packet.md \
+  docs/curriculum-builder-production-registry-writer-tooling-design-boundary.md \
+  docs/curriculum-builder-production-registry-second-record-worksheet-plan.md \
+  scripts/curriculum-builder-production-registry-next-gate-status.sh \
+  tests/curriculum-builder-production-registry-next-gate-status-test.sh; do
+  check_required_file "${path}"
+done
+check_bash_syntax scripts/curriculum-builder-production-registry-next-gate-status.sh
+check_bash_syntax tests/curriculum-builder-production-registry-next-gate-status-test.sh
+check_doc_contains docs/curriculum-builder-production-registry-next-gate-decision-packet.md "next_gate_decision_packet_complete" "next gate decision packet closure"
+check_doc_contains docs/curriculum-builder-production-registry-writer-tooling-design-boundary.md "writer_tooling_design_boundary_planning_only" "writer tooling boundary planning"
+check_doc_contains docs/curriculum-builder-production-registry-second-record-worksheet-plan.md "second_record_worksheet_planning_only" "second record worksheet planning"
+grep -Fq -- '--curriculum-production-registry-next-gate-status' bin/chief-of-staff && pass "chief-of-staff exposes --curriculum-production-registry-next-gate-status" || fail "chief-of-staff missing --curriculum-production-registry-next-gate-status"
+
 section "Curriculum Source Readiness Foundation Files"
 for path in \
   docs/curriculum-source-readiness-and-intake-boundary-plan.md \

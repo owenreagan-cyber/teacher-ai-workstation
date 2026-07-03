@@ -24,6 +24,7 @@ Per `docs/cursor-autonomous-build-engine.md` Expected WARN Policy.
 | `--curriculum-production-registry-metadata-boundary-status` | 0 | No — targeted command only |
 | `--curriculum-production-registry-empty-file-status` | 0 | No — historical milestone; targeted command only |
 | `--curriculum-production-registry-first-record-status` | 0 | No — targeted command only |
+| `--curriculum-production-registry-next-gate-status` | 0 | No — targeted command only |
 | `--curriculum-production-registry-metadata-pilot-plan-status` | 0 | No — targeted command only |
 | `--curriculum-registry-a4-a7-fixture-schema-status` | 7 (fixture optional fields) | No — targeted command only |
 | `--curriculum-registry-lane-status` | 0 on aggregate script summary | Yes — component WARNs roll up in component lines, not aggregate FAIL |
@@ -76,6 +77,12 @@ First record does not authorize write tooling, second record, or source auto-res
 ## Post–First-Record Hardening (2026-07-03)
 
 Negative validator fixtures and sentinel semantics doc are expected. No new WARNs on dashboard or validate-all.
+
+## Next-Gate Decision Packet (2026-07-03)
+
+**Typical total on `--curriculum-production-registry-next-gate-status`:** 0 WARN / 0 FAIL when decision packet, boundary docs, and blocked-gate proofs are coherent.
+
+Decision packet does not approve any implementation gate.
 
 ## Metadata Boundary Refinement (2026-07-02)
 

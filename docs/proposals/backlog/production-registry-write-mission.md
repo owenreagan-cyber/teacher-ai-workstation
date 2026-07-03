@@ -88,9 +88,9 @@ Backlog pointer for **future** governed production registry mutation missions be
 | 7 | Writer / `--write` tooling | **not done** |
 | 8 | Sentinel removal | **not approved** |
 
-## Next-Gate Classification
+## Next-Gate Decision Packet
 
-See `docs/curriculum-builder-production-registry-next-gate-classification.md` for blocked next gates (writer/--write, second record, pilot expansion, integrations).
+See `docs/curriculum-builder-production-registry-next-gate-decision-packet.md` for Owen decision prep (Options A–D). **No gate approved.**
 
 ## Distinction
 

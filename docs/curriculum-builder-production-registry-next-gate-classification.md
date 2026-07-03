@@ -52,10 +52,11 @@ Baseline: first governed record complete (resource-math-lesson-108-presentation)
 
 | Document | Role |
 | --- | --- |
+| `docs/curriculum-builder-production-registry-next-gate-decision-packet.md` | Owen decision packet (Options A–D) |
 | `docs/proposals/backlog/production-registry-write-mission.md` | Write mission backlog |
 | `docs/curriculum-builder-production-registry-sentinel-semantics.md` | Sentinel choice A semantics |
 | `docs/curriculum-builder-production-registry-first-record.md` | First record closure |
 
 ## Non-Activation
 
-This classification does not approve any next gate.
+This classification does not approve any next gate. All next gates remain blocked pending explicit Owen decision.

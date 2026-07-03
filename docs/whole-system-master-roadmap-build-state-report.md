@@ -5,7 +5,7 @@ Last updated: 2026-07-03
 ```text
 Status: documentation/status only
 Authority: whole-system posture snapshot — not implementation approval
-Baseline: main after Production Registry Post–First-Record Hardening mission
+Baseline: main after Production Registry Next-Gate Decision Packet mission
 ```
 
 **Status key:** `[x]` Built/merged · `[~]` Currently being built · `[>]` Ready for safe planning/build · `[!]` Blocked pending Owen/safety gate · `[ ]` Future / not started · `[?]` Insufficient repo evidence
@@ -62,8 +62,9 @@ Baseline: main after Production Registry Post–First-Record Hardening mission
 | [x] | **Empty-file mission complete (historical)** — pre-write empty shell baseline |
 | [x] | **First governed production registry record complete** — `resource-math-lesson-108-presentation` |
 | [x] | **Post-first-record hardening** — sentinel semantics, negative tests, next-gate classification |
+| [x] | **Next-gate decision packet complete** — Options A–D documented; parked default recommended |
 | [!] | Write tooling blocked; second record blocked; metadata pilot beyond first record blocked |
-| **Proof** | `--curriculum-production-registry-first-record-status`; first-record status ~50+ / 0 / 0 |
+| **Proof** | `--curriculum-production-registry-next-gate-status`; next-gate status ~45+ / 0 / 0 |
 
 ### Owen § J Checklist State (2026-07-02)
 
@@ -202,12 +203,13 @@ Baseline: main after Production Registry Post–First-Record Hardening mission
 
 | Surface | State |
 | --- | --- |
-| Dashboard | ~127+ / 0 / 0 PASS |
-| Validate-all | ~45+ / 0 / 0 PASS |
+| Dashboard | ~128+ / 0 / 0 PASS |
+| Validate-all | ~46+ / 0 / 0 PASS |
 | First-record status | ~50+ / 0 / 0 PASS |
+| Next-gate status | ~34+ / 0 / 0 PASS |
 | Empty-file status (historical) | ~30 / 0 / 0 PASS |
 | Active mission | None |
-| Next possible gates | Writer/`--write` tooling, second record — separate explicit prompts |
+| Next step | Owen chooses Option A, B, C, or D (parked recommended) |
 
 **Safety gates preserved:** First governed production registry record exists (`records` count exactly 1; ID `resource-math-lesson-108-presentation`); `BLOCKED-NO-WRITES.sentinel` intact; no `--write`; no writer scripts; no second production record; real curriculum file access blocked; copied curriculum content blocked; source auto-resolution blocked; integration and runtime gates blocked.
 

@@ -8,9 +8,9 @@ Phase 0E Vibe Engine.
 
 ## Current Focus
 
-**Product-decision wall — post-first-record hardening complete; write tooling blocked.**
+**Product-decision wall — next-gate decision packet complete; all implementation gates blocked.**
 
-first governed production registry record complete. Post-first-record sentinel semantics and next-gate classification documented. `production-registry.json` contains exactly one approved manual metadata record. **Writer scripts, active `--write`, second record, and metadata pilot beyond first record remain blocked.** Next possible gates require separate explicit Owen decisions.
+first governed production registry record complete. Post-first-record hardening complete. Next-gate decision packet complete (`--curriculum-production-registry-next-gate-status`). Options A/B/C documented; **Option D (parked) recommended default**. Writer scripts, second record, and pilot expansion remain blocked until explicit Owen decision.
 
 Master program roadmap: `docs/master-build-roadmap.md` — Program Readiness Audit and mission sequencing for v1.0. Implementation does not proceed automatically from the roadmap.
 

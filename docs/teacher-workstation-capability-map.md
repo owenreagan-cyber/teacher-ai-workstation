@@ -66,6 +66,7 @@ Cross-references:
 | Curriculum Builder Registry v0.2 retrieval hooks (CB-IMPL-4) | implemented read-only | `--curriculum-registry-retrieval-status`; fake lookup only |
 | Curriculum Builder production registry planning (CB-PROD-PLAN) | implemented read-only | `--curriculum-production-registry-planning-status`; planning brief only; no writes |
 | Production registry post-first-record hardening | implemented read-only | sentinel semantics, negative validator tests, next-gate classification |
+| Production registry next-gate decision packet | implemented read-only | `--curriculum-production-registry-next-gate-status`; options blocked; Owen decision required |
 | Production registry first governed record | implemented read-only | `--curriculum-production-registry-first-record-status`; exactly one manual metadata record; write tooling blocked |
 | Production registry metadata pilot execution planning | implemented read-only | `--curriculum-production-registry-metadata-pilot-plan-status`; one-record protocol; first record executed |
 | Production registry empty-file shell | implemented read-only (historical) | `--curriculum-production-registry-empty-file-status`; pre-write empty shell baseline |

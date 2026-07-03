@@ -110,6 +110,7 @@ These flags exist in `bin/chief-of-staff` and work as read-only local status sur
 | `bin/chief-of-staff --curriculum-production-registry-empty-file-status` | Production registry empty-file shell status (records blocked; sentinel intact) |
 | `bin/chief-of-staff --curriculum-production-registry-metadata-pilot-plan-status` | Metadata pilot execution planning status (one-record protocol) |
 | `bin/chief-of-staff --curriculum-production-registry-first-record-status` | First governed production registry record status (one record; write tooling blocked) |
+| `bin/chief-of-staff --curriculum-production-registry-next-gate-status` | Next-gate decision prep status (options blocked; Owen decision required) |
 | `bin/chief-of-staff --curriculum-source-readiness-status` | Curriculum Source Readiness fake metadata inventory foundation (no real ingestion) |
 | `bin/chief-of-staff --curriculum-library-foundation-status` | Curriculum Library v1 |
 | `bin/chief-of-staff --lesson-planning-foundation-status` | Lesson Planning v1 |

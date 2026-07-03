@@ -1608,6 +1608,27 @@ else
   warn "Production registry first-record status script missing: scripts/curriculum-builder-production-registry-first-record-status.sh"
 fi
 
+section "Production Registry Next-Gate Decision Prep"
+if [[ -f scripts/curriculum-builder-production-registry-next-gate-status.sh ]]; then
+  curriculum_next_gate_result=0
+  curriculum_next_gate_output="$(bash scripts/curriculum-builder-production-registry-next-gate-status.sh 2>&1)" || curriculum_next_gate_result=$?
+  curriculum_next_gate_pass="$(summary_count "${curriculum_next_gate_output}" "PASS")"
+  curriculum_next_gate_warn="$(summary_count "${curriculum_next_gate_output}" "WARN")"
+  curriculum_next_gate_fail="$(summary_count "${curriculum_next_gate_output}" "FAIL")"
+
+  if [[ "${curriculum_next_gate_result}" != "0" ]]; then
+    printf '%s\n' "${curriculum_next_gate_output}"
+    fail "Production registry next-gate status failed"
+  elif [[ -n "${curriculum_next_gate_pass}" && -n "${curriculum_next_gate_warn}" && -n "${curriculum_next_gate_fail}" ]]; then
+    printf 'Production Registry Next Gate: PASS %s / WARN %s / FAIL %s\n' "${curriculum_next_gate_pass}" "${curriculum_next_gate_warn}" "${curriculum_next_gate_fail}"
+    pass "Production registry next-gate status completed"
+  else
+    pass "Production registry next-gate status completed"
+  fi
+else
+  warn "Production registry next-gate status script missing: scripts/curriculum-builder-production-registry-next-gate-status.sh"
+fi
+
 section "Curriculum Source Readiness Foundation"
 if [[ -f scripts/curriculum-source-readiness-status.sh ]]; then
   curriculum_source_readiness_result=0

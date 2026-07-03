@@ -168,6 +168,7 @@
         {"flag": "--curriculum-production-registry-empty-file-status", "status": "implemented", "purpose": "Production registry empty-file shell status (records blocked; sentinel intact)"},
         {"flag": "--curriculum-production-registry-metadata-pilot-plan-status", "status": "implemented", "purpose": "Metadata pilot execution planning status (one-record protocol; no execution)"},
         {"flag": "--curriculum-production-registry-first-record-status", "status": "implemented", "purpose": "First governed production registry record status (one record; write tooling blocked)"},
+        {"flag": "--curriculum-production-registry-next-gate-status", "status": "implemented", "purpose": "Next-gate decision prep status (options blocked; Owen decision required)"},
         {"flag": "--curriculum-source-readiness-status", "status": "implemented", "purpose": "Curriculum Source Readiness fake metadata inventory foundation (no real ingestion)"},
         {"flag": "--curriculum-registry-write", "status": "blocked", "purpose": "Persistent registry writes blocked without explicit production approval mission"},
         {"flag": "--curriculum-scan-folders", "status": "blocked", "purpose": "Folder scanning blocked without explicit approval mission"},

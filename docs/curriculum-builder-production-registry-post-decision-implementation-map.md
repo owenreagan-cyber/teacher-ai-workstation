@@ -80,6 +80,19 @@ Map Owen § J checklist outcomes to **safe next missions** without implying appr
 
 **Second record / write tooling:** **Still blocked**
 
+## Phase 5b — Complete: Next-Gate Decision Packet (No Gate Approved)
+
+**Complete 2026-07-03.** Owen decision prep comparing writer tooling, second-record worksheet, pilot expansion planning, and parked state.
+
+| Deliverable | Proof |
+| --- | --- |
+| Decision packet | `docs/curriculum-builder-production-registry-next-gate-decision-packet.md` |
+| Writer tooling boundary | `docs/curriculum-builder-production-registry-writer-tooling-design-boundary.md` |
+| Second-record worksheet plan | `docs/curriculum-builder-production-registry-second-record-worksheet-plan.md` |
+| Status command | `--curriculum-production-registry-next-gate-status` |
+
+**All next gates:** **Still blocked pending Owen decision**
+
 ## Phase 6 — Metadata Pilot Execution Beyond First Record (Separate Mission)
 
 Metadata pilot execution planning complete. First record exists. Additional pilot **execution** remains blocked until separate explicit mission.

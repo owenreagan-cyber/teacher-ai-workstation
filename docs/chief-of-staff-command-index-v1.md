@@ -40,6 +40,7 @@ These flags exist in `bin/chief-of-staff` and work as read-only local status sur
 | `bin/chief-of-staff --governance-lane-status` | Aggregate governance lane status (operating modes + ABE + proposal folders) |
 | `bin/chief-of-staff --whole-system-master-roadmap-status` | Whole-system master roadmap build-state report and next safe lane selector proof |
 | `bin/chief-of-staff --gemini-discovery-classification-intake-status` | Gemini discovery/classification external planning intake (classification only) |
+| `bin/chief-of-staff --markdown-frontmatter-planning-status` | Markdown frontmatter / manual metadata planning (read-only; no parser) |
 | `bin/chief-of-staff --return-to-core-status` | Parked tracks / return-to-core map |
 | `bin/chief-of-staff --commands` | Deterministic command surface index |
 | `bin/chief-of-staff --chief-of-staff-v1-status` | Chief of Staff v1 Agent Core foundation status |

@@ -969,6 +969,22 @@ check_doc_contains docs/external-planning/discovery-classification-memo.md "STAT
 check_doc_contains docs/proposals/blocked/gemini-discovery-classification-runtime-boundaries.md "blocked" "gemini blocked runtime boundaries"
 grep -Fq -- '--gemini-discovery-classification-intake-status' bin/chief-of-staff && pass "chief-of-staff exposes --gemini-discovery-classification-intake-status" || fail "chief-of-staff missing --gemini-discovery-classification-intake-status"
 
+section "Markdown Frontmatter Planning Files"
+for path in \
+  docs/curriculum-manual-metadata-frontmatter-planning.md \
+  docs/proposals/ideas/markdown-frontmatter-planning-note.md \
+  docs/proposals/blocked/markdown-frontmatter-runtime-boundaries.md \
+  assistant/curriculum-builder/samples/manual-metadata-frontmatter-planning/example-field-ideas-illustration.json \
+  scripts/markdown-frontmatter-planning-status.sh \
+  tests/markdown-frontmatter-planning-status-test.sh; do
+  check_required_file "${path}"
+done
+check_bash_syntax scripts/markdown-frontmatter-planning-status.sh
+check_bash_syntax tests/markdown-frontmatter-planning-status-test.sh
+check_doc_contains docs/curriculum-manual-metadata-frontmatter-planning.md "complete_curriculum_manual_metadata_frontmatter_planning" "frontmatter planning closure"
+check_doc_contains docs/curriculum-manual-metadata-frontmatter-planning.md "not parsed" "frontmatter not-parsed disclaimer"
+grep -Fq -- '--markdown-frontmatter-planning-status' bin/chief-of-staff && pass "chief-of-staff exposes --markdown-frontmatter-planning-status" || fail "chief-of-staff missing --markdown-frontmatter-planning-status"
+
 section "Lovable Classroom App Builder (Program G1) Files"
 for path in \
   docs/lovable-classroom-app-builder-foundation.md \

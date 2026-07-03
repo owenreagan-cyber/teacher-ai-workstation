@@ -49,7 +49,7 @@ Themes from the filed memo (`docs/external-planning/discovery-classification-mem
 | "Clean Markdown" formatting pain point | proposal candidate | Manual template planning note — no parsers |
 | High-friction metadata cataloging pain point | existing repo lane | Curriculum Source Readiness; A4–A7 contracts; fake fixtures |
 | Static metadata field ideas (`asset_domain`, `pedagogical_layer`, etc.) | proposal candidate | Field ideas only — not schemas, keys, or validators |
-| Markdown frontmatter planning note | proposal candidate | Memo §6 — no schema/validator/fixture activation |
+| Markdown frontmatter planning note | implemented (planning) | `docs/curriculum-manual-metadata-frontmatter-planning.md`; `--markdown-frontmatter-planning-status`; parser/schema blocked |
 | Empty static UI wireframe layouts | proposal candidate | Planning-only wireframes — no runtime UI |
 | Refining metadata field list (elementary coverage) | existing repo lane | Safe planning-only per memo §6 |
 | Manual tagging / naming convention guidelines | existing repo lane | Manual metadata boundary docs; Owen checklist |
@@ -98,9 +98,9 @@ Themes from the filed memo (`docs/external-planning/discovery-classification-mem
 ## Recommended Next Missions (Ranked)
 
 1. **Whole-system coherence maintenance** — safest; no runtime risk
-2. **Markdown frontmatter planning note (proposal only)** — if Owen wants a docs-only candidate
-3. **Owen architecture decision** — directory tree layout for manual text assets
-4. **Blocked** — any runtime discovery/classification or schema activation
+2. **Owen architecture decision** — directory tree layout for manual text assets
+3. **Safe local document indexing planning refinement** — if Owen wants indexing scope doc only
+4. **Blocked** — frontmatter parser/validator/schema activation without explicit mission
 
 ## Proof
 

@@ -186,6 +186,8 @@ Teacher Planning Command Organization (status only; safe sample: fractions-revie
                                        Show read-only Curriculum Source Readiness fake metadata inventory foundation status and exit.
   --gemini-discovery-classification-intake-status
                                        Show read-only Gemini discovery/classification external planning intake status and exit.
+  --markdown-frontmatter-planning-status
+                                       Show read-only markdown frontmatter / manual metadata planning status and exit.
   --curriculum-library-foundation-status
                                        Show read-only Curriculum Library v1 foundation status and exit.
   --curriculum-library-reference-v0-validate
@@ -1990,6 +1992,15 @@ while [[ $# -gt 0 ]]; do
         die "Gemini discovery/classification intake status script is missing: scripts/gemini-discovery-classification-intake-status.sh"
       fi
       bash "${gemini_intake_status_script}"
+      exit 0
+      ;;
+    --markdown-frontmatter-planning-status)
+      repo_root="$(resolve_repo_root)"
+      frontmatter_planning_status_script="${repo_root}/scripts/markdown-frontmatter-planning-status.sh"
+      if [[ ! -f "${frontmatter_planning_status_script}" ]]; then
+        die "Markdown frontmatter planning status script is missing: scripts/markdown-frontmatter-planning-status.sh"
+      fi
+      bash "${frontmatter_planning_status_script}"
       exit 0
       ;;
     --curriculum-registry-v0-status)

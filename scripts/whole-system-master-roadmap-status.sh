@@ -100,6 +100,8 @@ check_doc_contains "${report}" "complete_classroom_utility_per_app_mission_templ
 check_doc_contains "${report}" "--classroom-utility-templates-status" "classroom utility templates status command cross-link"
 check_doc_contains "${report}" "docs/external-planning/discovery-classification-memo.md" "whole-system filed memo cross-link"
 check_doc_contains "${report}" "--gemini-discovery-classification-intake-status" "gemini intake status command cross-link"
+check_doc_contains "${report}" "complete_curriculum_manual_metadata_frontmatter_planning" "frontmatter planning closure"
+check_doc_contains "${report}" "--markdown-frontmatter-planning-status" "frontmatter planning status command cross-link"
 
 section 'Production Registry Parked-State Proof'
 check_file "${production_registry_path}"
@@ -181,6 +183,23 @@ if [[ -f scripts/gemini-discovery-classification-intake-status.sh ]]; then
   fi
 else
   fail 'gemini discovery classification intake status script missing'
+fi
+
+section 'Dependent Status: Markdown Frontmatter Planning'
+if [[ -f scripts/markdown-frontmatter-planning-status.sh ]]; then
+  mfp_output="$(bash scripts/markdown-frontmatter-planning-status.sh 2>&1)" || mfp_result=$?
+  mfp_result="${mfp_result:-0}"
+  if [[ "${mfp_result}" != "0" ]]; then
+    fail 'markdown frontmatter planning status script exited nonzero'
+    printf '%s\n' "${mfp_output}" | tail -20
+  elif grep -q '^FAIL: [1-9]' <<< "${mfp_output}"; then
+    fail 'markdown frontmatter planning status reported FAIL'
+    printf '%s\n' "${mfp_output}" | tail -20
+  else
+    pass 'markdown frontmatter planning status component clean'
+  fi
+else
+  fail 'markdown frontmatter planning status script missing'
 fi
 
 section 'CLI, Manifest, and Tests'

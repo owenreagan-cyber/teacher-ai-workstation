@@ -5,7 +5,7 @@ Last updated: 2026-07-02
 ```text
 Status: documentation/status only
 Authority: whole-system posture snapshot — not implementation approval
-Baseline: main after Owen § J item 2 write behavior tracker sync
+Baseline: main after Production Registry Phase 2 preflight mission
 ```
 
 **Status key:** `[x]` Built/merged · `[~]` Currently being built · `[>]` Ready for safe planning/build · `[!]` Blocked pending Owen/safety gate · `[ ]` Future / not started · `[?]` Insufficient repo evidence
@@ -30,7 +30,7 @@ Baseline: main after Owen § J item 2 write behavior tracker sync
 
 | Marker | Item |
 | --- | --- |
-| [x] | CLI, dashboard (122/0/0), Program B daily ops, queues, `--next-action`, validate-all |
+| [x] | CLI, dashboard (~123/0/0 after Phase 2 wiring), Program B daily ops, queues, `--next-action`, validate-all |
 | [>] | Unified daily briefing (AI), B4 smoke expansion, B7 closure placeholder |
 | [!] | Automation beyond read-only status |
 | **Proof** | `bin/chief-of-staff --dashboard`, `docs/chief-of-staff-v1-program-b-closure.md` |
@@ -56,16 +56,17 @@ Baseline: main after Owen § J item 2 write behavior tracker sync
 | [x] | Governance affirmation batch recorded 2026-07-02 (items 5, 6, 7, 8, 9, 11 approved) |
 | [x] | Path + namespace recorded 2026-07-02 (items 1 and 10 approved) |
 | [x] | Write behavior approved in principle 2026-07-02 (item 2) |
+| [x] | **Phase 2 preflight complete** — audit/rollback readiness, guardrails, `--curriculum-production-registry-phase-2-preflight-status` |
 | [!] | Items 3, 4 deferred — real metadata intake, source references blocked |
-| [!] | Phase 2 preflight not started; registry mutation blocked; `production-registry.json` not created |
-| **Proof** | `--curriculum-production-registry-governance-status` (52/0/0); checklist ~52/1/0 (2 deferred WARN) |
+| [!] | Registry mutation blocked; `production-registry.json` not created; no `resource-*` records |
+| **Proof** | `--curriculum-production-registry-phase-2-preflight-status` (~45/1/0); governance 52/0/0; checklist ~49/1/0 (2 deferred WARN) |
 
 ### Owen § J Checklist State (2026-07-02)
 
 | Item | Status | Note |
 | --- | --- | --- |
 | 1 Production registry path | approved | Option B — `assistant/curriculum-builder/registry/v0-2/production-registry.json` |
-| 2 Write behavior allowed | approved | Manual-only in principle; Phase 2 preflight only next; no file, no records, no `--write` |
+| 2 Write behavior allowed | approved | Manual-only in principle; Phase 2 preflight complete |
 | 3 Real curriculum metadata | deferred | Metadata pilot later |
 | 4 Real source references | deferred | Manual labels later |
 | 5 Source systems permitted | approved | Manual entry only; integrations blocked |
@@ -76,9 +77,9 @@ Baseline: main after Owen § J item 2 write behavior tracker sync
 | 10 ID namespace | approved | `resource-*`; distinct from `sample-*` and `example-*` |
 | 11 First implementation PR scope | approved | CB-PROD-GOV merged; write mission separate |
 
-**First eligible implementation mission:** Phase 2 preflight only (docs/status/tests/audit) — separate explicit prompt required.
+**Phase 2 preflight complete does not authorize registry mutation.**
 
-**Item 2 approval does not authorize registry mutation.**
+**Next human step:** Items 3+4 metadata/source-reference session, or future empty-file/write mission via separate explicit prompt.
 
 ---
 
@@ -187,8 +188,9 @@ Baseline: main after Owen § J item 2 write behavior tracker sync
 | [x] | Constitution, approval gate, BLOCKED-NO-WRITES sentinel, guardrail tests |
 | [x] | Lane-review hardening guardrails (`tests/lane-review-hardening-guardrails-test.sh`) |
 | [x] | Item 8 governance affirmation: student-data prohibition absolute |
+| [x] | Phase 2 preflight negative guardrails (no file, no record, no write) |
 | [!] | Real curriculum, student data, weakening PASS/WARN/FAIL semantics |
-| **Proof** | Expected WARNs doc; governance guardrail tests |
+| **Proof** | Expected WARNs doc; governance guardrail tests; Phase 2 preflight status test |
 
 ---
 
@@ -196,13 +198,14 @@ Baseline: main after Owen § J item 2 write behavior tracker sync
 
 | Surface | State |
 | --- | --- |
-| Dashboard | 122 / 0 / 0 PASS (target) |
-| Validate-all | 40 / 0 / 0 PASS (target) |
-| Owen checklist | ~52 / 1 / 0 (expected WARN — 2 deferred) |
-| Active mission | None — Phase 2 preflight eligible via separate prompt |
-| Next human step | Issue Phase 2 preflight mission or items 3+4 metadata session |
+| Dashboard | ~123 / 0 / 0 PASS (target after Phase 2 wiring) |
+| Validate-all | ~41 / 0 / 0 PASS (target after Phase 2 wiring) |
+| Owen checklist | ~49 / 1 / 0 (expected WARN — 2 deferred) |
+| Phase 2 preflight | ~45 / 1 / 0 (expected WARN — items 3/4 deferred) |
+| Active mission | None |
+| Next human step | Items 3+4 metadata session or future mutation mission |
 
-**Safety gates preserved:** No registry mutation, no `production-registry.json`, no `resource-*` records, no `--write`. Item 2 approval in principle does not authorize implementation.
+**Safety gates preserved:** No registry mutation, no `production-registry.json`, no `resource-*` records, no `--write`. Phase 2 preflight does not authorize implementation.
 
 ## Non-Activation
 

@@ -50,7 +50,7 @@ check_doc_contains "${planning_brief}" "complete_production_registry_planning_br
 check_doc_contains "${planning_brief}" "Production registry writes: blocked" "planning brief blocked writes"
 check_doc_contains "${planning_brief}" "Owen Approval Checklist" "Owen approval checklist"
 check_file docs/curriculum-builder-production-registry-owen-checklist-tracker.md
-check_doc_contains docs/curriculum-builder-production-registry-owen-checklist-tracker.md "write_behavior_approved_awaiting_metadata_decisions" "owen checklist tracker closure"
+check_doc_contains docs/curriculum-builder-production-registry-owen-checklist-tracker.md "phase_2_preflight_complete_awaiting_metadata_decisions" "owen checklist tracker closure"
 check_doc_contains "${planning_brief}" "Target Registry Authority Decision" "registry authority decision"
 check_doc_contains "${planning_brief}" "Explicit Non-Goals" "explicit non-goals"
 check_doc_contains "${planning_brief}" "Student Data and Curriculum Content Boundaries" "student data boundaries"

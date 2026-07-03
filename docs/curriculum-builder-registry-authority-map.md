@@ -25,7 +25,7 @@ Single reference for **which registry surface is authoritative for what**, so fu
 | **Registry v0.2 dry-run candidates** | `assistant/curriculum-builder/samples/registry-v0-2-dry-run/` | `example-*` | Fake candidate validation only (CB-IMPL-1) | **No** |
 | **Registry v0.2 local fixtures** | `assistant/curriculum-builder/samples/registry-v0-2-local-records/local-registry.json` | `example-*` | Fake fixture envelope only (CB-IMPL-2) | **No** |
 | **A4–A7 inactive contracts** | `assistant/curriculum-builder/metadata-contract/v0/` | `sample-*` | Planning schemas; inactive | **No** |
-| **Production registry (future)** | `assistant/curriculum-builder/registry/v0-2/production-registry.json` | `resource-*` | Owen-approved path; item 2 in principle; file not created | **Blocked** — Phase 2 preflight not started |
+| **Production registry (future)** | `assistant/curriculum-builder/registry/v0-2/production-registry.json` | `resource-*` | Owen-approved path; Phase 2 preflight complete; file not created | **Blocked** — mutation missions not approved |
 | **Curriculum Source Readiness (fake)** | `assistant/curriculum-builder/samples/curriculum-source-readiness/` | `fake-source-*` | Fake metadata inventory only; not production | **No** |
 
 Expected WARN registry: `docs/curriculum-builder-registry-expected-warns.md`
@@ -88,7 +88,7 @@ Aggregate lane proof: `bin/chief-of-staff --curriculum-registry-lane-status`
 - Read-only tracker: `docs/curriculum-builder-production-registry-owen-checklist-tracker.md`
 - Owen review packet: `docs/curriculum-builder-production-registry-owen-review-packet.md`
 - Governance foundation: `docs/curriculum-builder-production-registry-governance-foundation.md`
-- Mirrors planning brief § J rows; item 2 approved in principle 2026-07-02; items 3 and 4 deferred
+- Mirrors planning brief § J rows; Phase 2 preflight complete 2026-07-02; items 3 and 4 deferred
 - Tracker PASS **≠** implementation authorization
 - Expected WARN: deferred checklist items 2, 3, 4 (see expected WARNs doc)
 

@@ -1503,6 +1503,27 @@ else
   warn "Owen production registry checklist status script missing: scripts/curriculum-builder-production-registry-owen-checklist-status.sh"
 fi
 
+section "Production Registry Phase 2 Preflight"
+if [[ -f scripts/curriculum-builder-production-registry-phase-2-preflight-status.sh ]]; then
+  curriculum_phase2_preflight_result=0
+  curriculum_phase2_preflight_output="$(bash scripts/curriculum-builder-production-registry-phase-2-preflight-status.sh 2>&1)" || curriculum_phase2_preflight_result=$?
+  curriculum_phase2_preflight_pass="$(summary_count "${curriculum_phase2_preflight_output}" "PASS")"
+  curriculum_phase2_preflight_warn="$(summary_count "${curriculum_phase2_preflight_output}" "WARN")"
+  curriculum_phase2_preflight_fail="$(summary_count "${curriculum_phase2_preflight_output}" "FAIL")"
+
+  if [[ "${curriculum_phase2_preflight_result}" != "0" ]]; then
+    printf '%s\n' "${curriculum_phase2_preflight_output}"
+    fail "Production registry Phase 2 preflight status failed"
+  elif [[ -n "${curriculum_phase2_preflight_pass}" && -n "${curriculum_phase2_preflight_warn}" && -n "${curriculum_phase2_preflight_fail}" ]]; then
+    printf 'Production Registry Phase 2 Preflight: PASS %s / WARN %s / FAIL %s\n' "${curriculum_phase2_preflight_pass}" "${curriculum_phase2_preflight_warn}" "${curriculum_phase2_preflight_fail}"
+    pass "Production registry Phase 2 preflight status completed"
+  else
+    pass "Production registry Phase 2 preflight status completed"
+  fi
+else
+  warn "Production registry Phase 2 preflight status script missing: scripts/curriculum-builder-production-registry-phase-2-preflight-status.sh"
+fi
+
 section "Curriculum Source Readiness Foundation"
 if [[ -f scripts/curriculum-source-readiness-status.sh ]]; then
   curriculum_source_readiness_result=0

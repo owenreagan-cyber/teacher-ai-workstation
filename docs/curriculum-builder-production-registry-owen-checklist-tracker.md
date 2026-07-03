@@ -5,7 +5,7 @@ Last updated: 2026-07-02
 ```text
 Status: planning_only
 Classification: read-only tracker — Owen decisions required
-Closure status: write_behavior_approved_awaiting_metadata_decisions
+Closure status: phase_2_preflight_complete_awaiting_metadata_decisions
 Authority: mirrors § J in production registry planning brief
 Implementation: blocked until Owen explicitly approves deferred items or issues separate Phase 2 preflight mission
 ```
@@ -25,7 +25,8 @@ Read-only tracker for **§ J — Owen Approval Checklist** in `docs/curriculum-b
 | Are we ready to implement production writes? | **No** — registry mutation blocked; Phase 2 preflight not started |
 | Is write behavior approved? | **Yes in principle** — item 2 approved 2026-07-02; manual-only, single-record, snapshot-first |
 | Are path and namespace decided? | **Yes** — item 1 Option B; item 10 `resource-*` (2026-07-02) |
-| What is the next eligible implementation mission? | **Phase 2 preflight only** — separate explicit prompt; no file, no records, no `--write` |
+| What is the next eligible implementation mission? | **Items 3+4 metadata session** or **future empty-file/write mission** — separate explicit prompts |
+| Is Phase 2 preflight complete? | **Yes** — `--curriculum-production-registry-phase-2-preflight-status` |
 | What should Owen do next? | Items 3 and 4 metadata/source-reference session; or issue Phase 2 preflight mission |
 | Does checklist WARN mean failure? | **No** — 1 expected WARN while 2 items remain deferred |
 | Does item 2 approval authorize registry mutation? | **No** — principle only; first implementation is Phase 2 preflight |

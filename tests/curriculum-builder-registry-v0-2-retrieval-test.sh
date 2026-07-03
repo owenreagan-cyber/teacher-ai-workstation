@@ -21,7 +21,7 @@ grep -q 'local fake-record retrieval only' "${tmp}" || { echo "FAIL: missing ret
 rm -f "${tmp}"
 
 filter_tmp="$(mktemp "${TMPDIR:-/tmp}/cb-registry-v02-retrieval-filter.XXXXXX")"
-bash "${retrieval}" --subject "Example Math Course" >"${filter_tmp}" 2>&1 || {
+bash "${retrieval}" --course "Example Math Course" >"${filter_tmp}" 2>&1 || {
   echo "FAIL: filtered retrieval exited nonzero"
   cat "${filter_tmp}"
   rm -f "${filter_tmp}"
@@ -52,7 +52,7 @@ if [[ -f "${fixture}" ]]; then
   before_fixture="$(mktemp "${TMPDIR:-/tmp}/cb-registry-v02-retrieval-fixture-before.XXXXXX")"
   cp "${fixture}" "${before_fixture}"
   bash "${retrieval}" >/dev/null 2>&1
-  bash "${retrieval}" --subject "Example Math Course" >/dev/null 2>&1
+  bash "${retrieval}" --course "Example Math Course" >/dev/null 2>&1
   if ! cmp -s "${fixture}" "${before_fixture}"; then
     echo "FAIL: retrieval check mutated fixture registry"
     rm -f "${before_fixture}"

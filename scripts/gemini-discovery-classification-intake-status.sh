@@ -23,6 +23,7 @@ repo_root="$(git rev-parse --show-toplevel 2>/dev/null || true)"
 cd "${repo_root}"
 
 intake_doc="docs/proposals/ideas/gemini-discovery-classification-architecture-intake.md"
+filed_memo="docs/external-planning/discovery-classification-memo.md"
 blocked_doc="docs/proposals/blocked/gemini-discovery-classification-runtime-boundaries.md"
 intake_map="docs/proposals/ideas/external-planning-input-intake-map.md"
 summary_fixture="assistant/external-planning/intake/gemini-discovery-classification-architecture-summary.json"
@@ -42,11 +43,15 @@ PASS does not authorize implementation: yes
 EOF
 
 section 'Canonical Intake Docs'
+check_file "${filed_memo}"
 check_file "${intake_doc}"
 check_file "${blocked_doc}"
 check_file "${intake_map}"
+check_doc_contains "${filed_memo}" "STATIC EXTERNAL PLANNING INPUT ONLY" "memo guardrail header"
+check_doc_contains "${filed_memo}" "NOT REPO AUTHORITY" "memo non-authority banner"
+check_doc_contains "${filed_memo}" "field ideas only" "memo field-ideas-only disclaimer"
 check_doc_contains "${intake_doc}" "complete_gemini_discovery_classification_intake" "intake closure marker"
-check_doc_contains "${intake_doc}" "not repo authority" "non-authority banner"
+check_doc_contains "${intake_doc}" "docs/external-planning/discovery-classification-memo.md" "intake cross-link to filed memo"
 check_doc_contains "${intake_doc}" "Three-level discovery governance" "three-level discovery cross-link"
 check_doc_contains "${intake_doc}" "safe-local-document-indexing-plan" "document indexing cross-link"
 check_doc_contains "${blocked_doc}" "Embeddings / vector database / RAG" "embeddings blocked"
@@ -91,7 +96,7 @@ fi
 section 'Roadmap and Coherence Cross-Links'
 check_doc_contains docs/whole-system-master-roadmap-build-state-report.md "complete_gemini_discovery_classification_intake" "whole-system report gemini intake closure"
 check_doc_contains docs/proposals/index.md "Gemini discovery/classification architecture intake" "proposal ledger gemini intake"
-check_doc_contains docs/build-queue.md "Gemini discovery/classification" "build queue gemini intake"
+check_doc_contains docs/build-queue.md "discovery-classification-memo" "build queue filed memo cross-link"
 check_doc_contains assistant/memory/active-priorities.md "Gemini discovery/classification" "active priorities gemini intake"
 
 section 'CLI, Manifest, and Tests'

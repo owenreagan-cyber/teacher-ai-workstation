@@ -98,7 +98,7 @@ check_doc_contains "${report}" "--presentation-engine-renderer-foundation-status
 check_doc_contains "${report}" "complete_a4_a7_fixture_optional_field_enrichment" "A4–A7 fixture enrichment closure"
 check_doc_contains "${report}" "complete_classroom_utility_per_app_mission_templates" "classroom utility templates closure"
 check_doc_contains "${report}" "--classroom-utility-templates-status" "classroom utility templates status command cross-link"
-check_doc_contains "${report}" "complete_gemini_discovery_classification_intake" "gemini discovery classification intake closure"
+check_doc_contains "${report}" "docs/external-planning/discovery-classification-memo.md" "whole-system filed memo cross-link"
 check_doc_contains "${report}" "--gemini-discovery-classification-intake-status" "gemini intake status command cross-link"
 
 section 'Production Registry Parked-State Proof'

@@ -955,7 +955,7 @@ grep -Fq -- '--classroom-utility-templates-status' bin/chief-of-staff && pass "c
 
 section "Gemini Discovery Classification Intake Files"
 for path in \
-  docs/proposals/ideas/gemini-discovery-classification-architecture-intake.md \
+  docs/external-planning/discovery-classification-memo.md \
   docs/proposals/blocked/gemini-discovery-classification-runtime-boundaries.md \
   assistant/external-planning/intake/gemini-discovery-classification-architecture-summary.json \
   scripts/gemini-discovery-classification-intake-status.sh \
@@ -965,6 +965,7 @@ done
 check_bash_syntax scripts/gemini-discovery-classification-intake-status.sh
 check_bash_syntax tests/gemini-discovery-classification-intake-status-test.sh
 check_doc_contains docs/proposals/ideas/gemini-discovery-classification-architecture-intake.md "complete_gemini_discovery_classification_intake" "gemini intake closure"
+check_doc_contains docs/external-planning/discovery-classification-memo.md "STATIC EXTERNAL PLANNING INPUT ONLY" "filed memo guardrail header"
 check_doc_contains docs/proposals/blocked/gemini-discovery-classification-runtime-boundaries.md "blocked" "gemini blocked runtime boundaries"
 grep -Fq -- '--gemini-discovery-classification-intake-status' bin/chief-of-staff && pass "chief-of-staff exposes --gemini-discovery-classification-intake-status" || fail "chief-of-staff missing --gemini-discovery-classification-intake-status"
 

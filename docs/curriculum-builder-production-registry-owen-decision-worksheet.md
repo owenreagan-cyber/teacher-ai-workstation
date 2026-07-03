@@ -21,24 +21,24 @@ PASS on any status command does not authorize writes.
 
 1. Read `docs/curriculum-builder-production-registry-owen-review-packet.md` § 7 decision table.
 2. For each checklist item below, record your decision in `docs/curriculum-builder-production-registry-owen-checklist-tracker.md` (change `Owen status` from `pending` to `approved`, `deferred`, or `rejected`).
-3. Re-run `bin/chief-of-staff --curriculum-production-registry-owen-checklist-status` — the expected WARN decreases only as items leave `pending`.
+3. Re-run `bin/chief-of-staff --curriculum-production-registry-owen-checklist-status` — the expected WARN remains while deferred items exist (5 deferred as of 2026-07-02).
 4. Use the **Decision-to-Next-Prompt** table at the bottom before issuing any implementation mission.
 
 ## Checklist Worksheet
 
 | # | Item | Your decision (pending/approved/deferred/rejected) | Date | Notes |
 | ---: | --- | --- | --- | --- |
-| 1 | Production registry path | pending | | v0 extend vs v0.2 file vs directory — see path options doc |
-| 2 | Write behavior allowed | pending | | manual-only if yes |
-| 3 | Real curriculum metadata allowed | pending | | titles/labels only — not content |
-| 4 | Real source references allowed | pending | | manual path/URL labels only |
-| 5 | Source systems permitted | pending | | manual first; integrations separate |
-| 6 | Rollback requirements | pending | | snapshot + diff + restore |
-| 7 | Review states | pending | | accept or revise § D model |
-| 8 | Student-data prohibition | pending | | recommend approve (absolute ban) |
-| 9 | Integrations blocked in v1 | pending | | recommend approve (keep blocked) |
-| 10 | ID namespace | pending | | choose pattern for real records |
-| 11 | Governance-first first PR scope | pending | | CB-PROD-GOV complete; write mission separate |
+| 1 | Production registry path | deferred | 2026-07-02 | Option B lean default; decide in follow-up path/namespace session |
+| 2 | Write behavior allowed | deferred | 2026-07-02 | No writes approved yet |
+| 3 | Real curriculum metadata allowed | deferred | 2026-07-02 | Metadata pilot later; no real metadata intake approved |
+| 4 | Real source references allowed | deferred | 2026-07-02 | Manual labels later; no real source references approved |
+| 5 | Source systems permitted | approved | 2026-07-02 | Manual entry only; integrations blocked |
+| 6 | Rollback requirements | approved | 2026-07-02 | Snapshot + diff + restore required before any write mission |
+| 7 | Review states | approved | 2026-07-02 | § D review-state gate model accepted |
+| 8 | Student-data prohibition | approved | 2026-07-02 | Absolute ban affirmed |
+| 9 | Integrations blocked in v1 | approved | 2026-07-02 | Canvas/Drive/NAS/iCloud/API/OAuth/network remain blocked unless separate missions |
+| 10 | ID namespace | deferred | 2026-07-02 | Choose namespace with path decision |
+| 11 | Governance-first first PR scope | approved | 2026-07-02 | CB-PROD-GOV merged; governed write mission remains separate and unapproved |
 
 ## What Approval Does / Does Not Authorize
 
@@ -72,9 +72,9 @@ PASS on any status command does not authorize writes.
 
 | Owen state | Safe next mission |
 | --- | --- |
-| No checklist changes | Continue Owen review; no implementation prompt |
-| Approved items 5, 6, 7, 8, 9, 11 only | Optional tracker/status doc refresh only |
-| Approved item 1 (path) + 11 | Update path-options doc with chosen path; still no writes |
+| 5 items deferred (current) | **Path + namespace session** (items 1 and 10); item 2 remains deferred |
+| Approved items 5, 6, 7, 8, 9, 11 only (recorded 2026-07-02) | Tracker/status doc refresh only — **no writes** |
+| Approved item 1 (path) + 10 (namespace) without item 2 | Update path-options doc with chosen path; still no writes |
 | Approved 1, 2, 6, 7, 10, 11 + governance merged | **Governed single-record write mission** — see `docs/proposals/backlog/production-registry-write-mission.md` |
 | Approved 3, 4, 5 (manual only) without item 2 | **Metadata pilot planning mission** — docs/status only unless write also approved |
 | Any integration need | **Separate per-system mission** — not bulk § J approval |

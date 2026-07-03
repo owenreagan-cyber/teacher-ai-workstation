@@ -20,7 +20,7 @@ Per `docs/cursor-autonomous-build-engine.md` Expected WARN Policy.
 | --- | ---: | --- |
 | `bin/chief-of-staff --dashboard` | 0 | Yes — aggregate health |
 | `scripts/chief-of-staff-validate-all.sh` | 0 | Yes |
-| `--curriculum-production-registry-owen-checklist-status` | 1 (pending checklist) | No — targeted command only |
+| `--curriculum-production-registry-owen-checklist-status` | 1 (deferred checklist) | No — targeted command only |
 | `--curriculum-registry-a4-a7-fixture-schema-status` | 7 (fixture optional fields) | No — targeted command only |
 | `--curriculum-registry-lane-status` | 0 on aggregate script summary | Yes — component WARNs roll up in component lines, not aggregate FAIL |
 
@@ -41,11 +41,11 @@ The lane aggregate script reports **PASS on its own summary** while component sc
 
 | WARN | Count (typical) | Reason | Follow-up |
 | --- | ---: | --- | --- |
-| `11 Owen checklist items pending approval — implementation blocked` | 1 | All § J checklist rows remain `pending` until Owen explicitly approves each item | Owen product decisions required before production registry implementation mission |
+| `5 Owen checklist items deferred — path, namespace, write, and metadata intake remain blocked` | 1 | Items 1, 2, 3, 4, 10 remain `deferred`; governance affirmations (items 5, 6, 7, 8, 9, 11) recorded 2026-07-02 | Path + namespace decision session; item 2 write behavior remains deferred |
 
-**Typical total on `--curriculum-production-registry-owen-checklist-status`:** 1 WARN / 0 FAIL while checklist incomplete.
+**Typical total on `--curriculum-production-registry-owen-checklist-status`:** 1 WARN / 0 FAIL while deferred items remain (5 deferred as of 2026-07-02).
 
-**Owen review packet:** `docs/curriculum-builder-production-registry-owen-review-packet.md` explains the pending checklist WARN and decision categories. The WARN is expected until Owen approves items in the tracker.
+**Owen review packet:** `docs/curriculum-builder-production-registry-owen-review-packet.md` explains the deferred checklist WARN and decision categories. Approved governance rows do not authorize writes. The WARN is expected until deferred items are resolved.
 
 **Typical total on `--curriculum-registry-lane-status` aggregate:** 8 WARN / 0 FAIL (7 A4–A7 + 1 Owen checklist) when canonical fixture unchanged.
 

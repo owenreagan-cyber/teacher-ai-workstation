@@ -29,6 +29,40 @@ planning_brief="docs/curriculum-builder-production-registry-workflow-planning-br
 path_options="docs/curriculum-builder-production-registry-path-options.md"
 status_script="scripts/curriculum-builder-production-registry-owen-checklist-status.sh"
 manifest="assistant/chief-of-staff/v1/command-surface-manifest.json"
+check_production_registry_empty_shell() {
+  local registry_path="$1"
+  local validator_script="scripts/curriculum-builder-production-registry-empty-file-validate.sh"
+  if [[ ! -f "${registry_path}" ]]; then
+    fail "production-registry.json must exist as empty shell"
+    return
+  fi
+  if [[ ! -f "${validator_script}" ]]; then
+    fail "empty-file validator missing"
+    return
+  fi
+  local validate_output validate_result=0
+  validate_output="$(bash "${validator_script}" "${registry_path}" 2>&1)" || validate_result=$?
+  if [[ "${validate_result}" -eq 0 ]] && grep -q 'empty shell validation succeeded' <<< "${validate_output}"; then
+    pass "production-registry.json exists with empty records shell"
+  else
+    fail "production-registry.json must be valid empty shell"
+    printf '%s\n' "${validate_output}" | tail -5
+  fi
+}
+
+check_no_resource_production_files() {
+  local registry_dir="$1"
+  local resource_files=0
+  if [[ -d "${registry_dir}" ]]; then
+    for candidate_file in "${registry_dir}"/*; do
+      [[ -e "${candidate_file}" ]] || continue
+      base="$(basename "${candidate_file}")"
+      [[ "${base}" == resource-* ]] && resource_files=$((resource_files + 1))
+    done
+  fi
+  [[ "${resource_files}" -eq 0 ]] && pass "no resource-* production record files exist" || fail "resource-* production record files must not exist"
+}
+
 production_registry_path="assistant/curriculum-builder/registry/v0-2/production-registry.json"
 sentinel="assistant/curriculum-builder/registry/candidate-v0-2-production/BLOCKED-NO-WRITES.sentinel"
 
@@ -37,10 +71,10 @@ cat <<'EOF'
 Status: planning_only
 Classification: read-only checklist tracker — not implementation
 Runtime activation: no
-Production registry writes: blocked
+Production registry file: exists (empty shell)
+Record writes: blocked
 Active --write: blocked
 Real metadata intake: blocked
-Real source references: blocked
 Metadata pilot execution: blocked
 Source-reference resolution: blocked
 Path and namespace: approved (items 1 and 10 — 2026-07-02)
@@ -79,7 +113,8 @@ check_file "${path_options}"
 check_doc_contains "${path_options}" "Owen-approved" "path options Owen-approved Option B"
 check_doc_contains "${path_options}" "production-registry.json" "path options canonical production path"
 check_doc_contains "${path_options}" "resource-*" "path options resource namespace"
-[[ ! -f "${production_registry_path}" ]] && pass "production-registry.json does not exist yet (blocked)" || fail "production-registry.json must not exist until write mission"
+check_production_registry_empty_shell "${production_registry_path}"
+check_no_resource_production_files "$(dirname "${production_registry_path}")"
 check_file "${sentinel}"
 grep -Fq -- 'Production writes: blocked' "${sentinel}" && pass 'BLOCKED-NO-WRITES.sentinel remains intact' || fail 'sentinel must state production writes blocked'
 
@@ -147,7 +182,7 @@ bash -n tests/curriculum-builder-production-registry-owen-checklist-status-test.
 section 'Roadmap and Ledger Coherence'
 check_doc_contains docs/proposals/index.md "Owen § J production registry checklist tracker" "proposal ledger owen tracker"
 check_doc_contains docs/master-build-roadmap.md "Metadata-boundary refinement" "roadmap metadata-boundary refinement"
-check_doc_contains docs/build-queue.md "empty-file mission" "build queue empty-file mission gate"
+check_doc_contains docs/build-queue.md "empty-file mission complete" "build queue empty-file mission complete"
 check_doc_contains assistant/memory/active-priorities.md "Metadata-boundary refinement complete" "active priorities metadata-boundary refinement complete"
 
 section 'Negative Non-Activation Assertions'

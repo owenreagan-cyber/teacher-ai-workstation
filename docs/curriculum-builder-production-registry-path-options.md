@@ -26,7 +26,7 @@ assistant/curriculum-builder/registry/v0-2/production-registry.json
 | Rule | Detail |
 | --- | --- |
 | v0 remains fictional | `registry/v0/registry.json` stays read-only `sample-*` reference |
-| File does not exist yet | Path is recorded only; creating the file requires item 2 approval + separate write mission |
+| File exists as empty shell | `records: []` only; record writes remain blocked until separate governed write mission |
 | Candidate skeleton | `candidate-v0-2-production/` remains blocked planning skeleton; not the canonical production authority |
 
 ## Current Committed Surfaces
@@ -35,7 +35,7 @@ assistant/curriculum-builder/registry/v0-2/production-registry.json
 | --- | --- | --- | --- |
 | Registry v0 (live read-only) | `assistant/curriculum-builder/registry/v0/registry.json` | Fictional `sample-*` placeholders | **Not production** — remains read-only reference |
 | v0.2 fake fixtures | `assistant/curriculum-builder/samples/registry-v0-2-local-records/` | `fake_fixture_only` envelope | **Not production** |
-| **Production registry (future)** | `assistant/curriculum-builder/registry/v0-2/production-registry.json` | **Owen-approved path; file not created** | **Approved path — writes blocked** |
+| **Production registry** | `assistant/curriculum-builder/registry/v0-2/production-registry.json` | **Empty shell — `records: []`** | **Approved path — record writes blocked** |
 | Candidate skeleton (blocked) | `assistant/curriculum-builder/registry/candidate-v0-2-production/` | Manual-only path shape; no records | **Planning only** — not canonical authority |
 
 ## Path Options for Owen

@@ -38,13 +38,48 @@ sentinel="assistant/curriculum-builder/registry/candidate-v0-2-production/BLOCKE
 manifest="assistant/chief-of-staff/v1/command-surface-manifest.json"
 metadata_blocked="docs/proposals/blocked/production-registry-real-metadata-intake.md"
 pilot_boundary="docs/curriculum-builder-metadata-pilot-planning-boundary.md"
+empty_shell_validator="scripts/curriculum-builder-production-registry-empty-file-validate.sh"
+
+check_production_registry_empty_shell() {
+  local registry_path="$1"
+  if [[ ! -f "${registry_path}" ]]; then
+    fail "production-registry.json must exist as empty shell"
+    return
+  fi
+  if [[ ! -f "${empty_shell_validator}" ]]; then
+    fail "empty-file validator missing"
+    return
+  fi
+  local validate_output validate_result=0
+  validate_output="$(bash "${empty_shell_validator}" "${registry_path}" 2>&1)" || validate_result=$?
+  if [[ "${validate_result}" -eq 0 ]] && grep -q 'empty shell validation succeeded' <<< "${validate_output}"; then
+    pass "production-registry.json exists with empty records shell"
+  else
+    fail "production-registry.json must be valid empty shell"
+    printf '%s\n' "${validate_output}" | tail -5
+  fi
+}
+
+check_no_resource_production_files() {
+  local registry_dir="$1"
+  local resource_files=0
+  if [[ -d "${registry_dir}" ]]; then
+    for candidate_file in "${registry_dir}"/*; do
+      [[ -e "${candidate_file}" ]] || continue
+      base="$(basename "${candidate_file}")"
+      [[ "${base}" == resource-* ]] && resource_files=$((resource_files + 1))
+    done
+  fi
+  [[ "${resource_files}" -eq 0 ]] && pass "no resource-* production record files exist" || fail "resource-* production record files must not exist"
+}
 
 section 'Production Registry Metadata Boundary Refinement'
 cat <<'EOF'
 Status: metadata_boundary_refinement_complete
 Classification: read-only boundary proof — not implementation
 Runtime activation: no
-Production registry writes: blocked
+Production registry file: exists (empty shell)
+Record writes: blocked
 Active --write: blocked
 Metadata pilot execution: blocked
 Real metadata intake: blocked
@@ -115,22 +150,9 @@ check_doc_contains "${metadata_blocked}" "intake execution not authorized" "meta
 check_file "${pilot_boundary}"
 check_doc_contains "${pilot_boundary}" "no intake" "metadata pilot planning boundary"
 
-section 'Production Surface Non-Existence'
-[[ ! -f "${production_registry_path}" ]] && pass "production-registry.json does not exist (blocked)" || fail "production-registry.json must not exist"
-if [[ -d "${production_registry_dir}" ]]; then
-  resource_files=0
-  for candidate_file in "${production_registry_dir}"/*; do
-    [[ -e "${candidate_file}" ]] || continue
-    base="$(basename "${candidate_file}")"
-    [[ "${base}" == ".gitkeep" ]] && continue
-    if [[ "${base}" == resource-* ]] || [[ "${base}" == production-registry.json ]]; then
-      resource_files=$((resource_files + 1))
-    fi
-  done
-  [[ "${resource_files}" -eq 0 ]] && pass "v0-2 production directory has no resource-* or production-registry files" || fail "v0-2 production directory must not contain production files"
-else
-  pass "v0-2 production directory does not exist yet (blocked)"
-fi
+section 'Production Surface Empty Shell'
+check_production_registry_empty_shell "${production_registry_path}"
+check_no_resource_production_files "${production_registry_dir}"
 
 section 'Sentinel and Write Guards'
 check_file "${sentinel}"

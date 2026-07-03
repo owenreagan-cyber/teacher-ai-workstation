@@ -21,7 +21,7 @@ Per `docs/cursor-autonomous-build-engine.md` Expected WARN Policy.
 | `bin/chief-of-staff --dashboard` | 0 | Yes — aggregate health |
 | `scripts/chief-of-staff-validate-all.sh` | 0 | Yes |
 | `--curriculum-production-registry-owen-checklist-status` | 0 | No — targeted command only |
-| `--curriculum-production-registry-metadata-boundary-status` | 0 | No — targeted command only |
+| `--curriculum-production-registry-empty-file-status` | 0 | No — targeted command only |
 | `--curriculum-registry-a4-a7-fixture-schema-status` | 7 (fixture optional fields) | No — targeted command only |
 | `--curriculum-registry-lane-status` | 0 on aggregate script summary | Yes — component WARNs roll up in component lines, not aggregate FAIL |
 
@@ -52,6 +52,12 @@ The prior deferred-metadata WARN on `--curriculum-production-registry-phase-2-pr
 
 **Typical total on `--curriculum-production-registry-phase-2-preflight-status`:** 0 WARN / 0 FAIL.
 
+## Empty-File Shell (2026-07-02)
+
+**Typical total on `--curriculum-production-registry-empty-file-status`:** 0 WARN / 0 FAIL when empty shell, sentinel, and negative guards are coherent.
+
+Creating the empty file does not authorize record writes, metadata pilot execution, or source auto-resolution.
+
 ## Metadata Boundary Refinement (2026-07-02)
 
 **Typical total on `--curriculum-production-registry-metadata-boundary-status`:** 0 WARN / 0 FAIL when refinement docs and planning validator are coherent.
@@ -72,4 +78,5 @@ bin/chief-of-staff --curriculum-registry-a4-a7-fixture-schema-status
 bin/chief-of-staff --curriculum-registry-lane-status
 bin/chief-of-staff --curriculum-production-registry-owen-checklist-status
 bin/chief-of-staff --curriculum-production-registry-phase-2-preflight-status
+bin/chief-of-staff --curriculum-production-registry-empty-file-status
 ```

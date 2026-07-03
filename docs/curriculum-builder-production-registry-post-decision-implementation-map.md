@@ -34,21 +34,21 @@ Map Owen § J checklist outcomes to **safe next missions** without implying appr
 | Planning fixture + validator | `assistant/curriculum-builder/samples/metadata-boundary-planning/` |
 | Status command | `--curriculum-production-registry-metadata-boundary-status` |
 
-**Registry mutation:** **Still blocked**
+**Registry mutation (records):** **Still blocked**
 
-**Approved path:** `assistant/curriculum-builder/registry/v0-2/production-registry.json` (file does not exist)
+**Approved path:** `assistant/curriculum-builder/registry/v0-2/production-registry.json` (empty shell exists)
 
 **Approved namespace:** `resource-*`
 
-## Phase 4 — Empty-File Mission (Future Separate Prompt)
+## Phase 4 — Complete: Empty-File Mission (Shell Only)
 
-**Trigger:** Separate explicit prompt after refinement complete.
+**Complete 2026-07-02.** Empty production registry shell with `records: []`. Sentinel intact; writes blocked.
 
-| Mission | Scope | Blocked |
-| --- | --- | --- |
-| Empty-file mission | Creating `production-registry.json` with `records: []` | Records, writes |
-| Metadata pilot execution | Not authorized | Real school materials |
-| Writer mission | Separate prompt | `--write`, sentinel removal |
+| Deliverable | Proof |
+| --- | --- |
+| `production-registry.json` | `assistant/curriculum-builder/registry/v0-2/production-registry.json` |
+| Empty-file validator | `scripts/curriculum-builder-production-registry-empty-file-validate.sh` |
+| Status command | `--curriculum-production-registry-empty-file-status` |
 
 ## Phase 5 — Single-Record Manual Write (Future Separate Mission)
 

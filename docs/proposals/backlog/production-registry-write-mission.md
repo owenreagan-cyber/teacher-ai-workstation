@@ -8,12 +8,13 @@ Classification: future implementation mission — not authorized
 Phase 2 preflight: complete
 Metadata boundaries: approved (items 3 and 4)
 Metadata-boundary refinement: complete
+Empty-file mission: complete (empty-file mission distinct from writer and record-write missions)
 Registry mutation: blocked until separate explicit write mission prompt
 ```
 
 ## Purpose
 
-Backlog pointer for **future** governed production registry mutation missions. Metadata-boundary refinement is **complete**. Registry mutation remains **blocked**.
+Backlog pointer for **future** governed production registry mutation missions. Empty production registry shell exists with `records: []`. Record writes remain **blocked**.
 
 ## Mission Types (Distinct — Not Bulk Approved)
 
@@ -21,7 +22,7 @@ Backlog pointer for **future** governed production registry mutation missions. M
 | --- | --- | --- |
 | Phase 2 preflight | **complete** | Audit/rollback readiness only |
 | Metadata-boundary refinement | **complete** | Field contracts, guardrails, planning validator |
-| Future empty-file mission | **not approved** | Creating `production-registry.json` with `records: []` |
+| Empty-file mission | **complete** | `production-registry.json` with `records: []` only — distinct from writer or record-write missions |
 | Future writer / `--write` mission | **not approved** | Write handler or script |
 | Metadata pilot execution | **not approved** | Entering real school materials |
 | Future governed single-record write | **not approved** | Record mutation; separate explicit prompt |
@@ -36,29 +37,29 @@ Backlog pointer for **future** governed production registry mutation missions. M
 | Phase 2 preflight | **complete** |
 | Items 3 and 4 boundaries | **approved** |
 | Metadata-boundary refinement | **complete** |
+| Empty-file mission | **complete** |
 | Rollback accepted (item 6) | **approved** |
 | Review states accepted (item 7) | **approved** |
 | ID namespace chosen (item 10) | **approved** — `resource-*` |
-| Empty-file mission prompt | **not issued** |
 | Governed write mission prompt | **not issued** |
 
 ## Next Gates
 
 | Gate | Status |
 | --- | --- |
-| Empty-file mission | Separate explicit prompt — **recommended next** |
-| Metadata pilot execution | Separate explicit prompt |
-| Governed single-record write | After empty file + separate prompt |
+| Metadata pilot execution planning | Separate explicit prompt |
+| Governed single-record write | After empty shell + separate prompt |
 | Writer / `--write` | Separate explicit prompt |
 
-## Approved Future Production Surface (Not Created)
+## Approved Production Surface
 
 | Field | Value |
 | --- | --- |
 | Production path | `assistant/curriculum-builder/registry/v0-2/production-registry.json` |
+| Shell state | **exists** — `records: []` |
 | ID namespace | `resource-*` |
 | Writable | **Blocked** |
-| Create file | **Blocked** |
+| Record creation | **Blocked** |
 | Metadata intake | **Blocked** |
 | Source resolution | **Blocked** |
 
@@ -69,13 +70,14 @@ Backlog pointer for **future** governed production registry mutation missions. M
 | 1 | Metadata-boundary refinement complete | **done** |
 | 2 | Phase 2 preflight complete | **done** |
 | 3 | Owen checklist complete | **done** |
-| 4 | Empty-file mission | pending |
+| 4 | Empty-file mission | **done** |
 | 5 | Governed write mission prompt | pending |
 
 ## Related
 
 | Document | Role |
 | --- | --- |
+| `docs/curriculum-builder-production-registry-empty-file.md` | Empty-file closure |
 | `docs/curriculum-builder-production-registry-metadata-source-boundaries.md` | Canonical boundaries |
 | `docs/curriculum-builder-production-registry-manual-metadata-field-contract.md` | Allowed fields |
 | `docs/curriculum-builder-production-registry-blocked-field-guardrails.md` | Blocked guardrails |
@@ -83,4 +85,4 @@ Backlog pointer for **future** governed production registry mutation missions. M
 
 ## Non-Activation
 
-This backlog does not authorize registry mutation.
+This backlog does not authorize record writes, metadata pilot execution, or source auto-resolution.

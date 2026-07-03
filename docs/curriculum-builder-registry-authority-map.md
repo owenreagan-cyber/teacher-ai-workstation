@@ -88,7 +88,7 @@ Aggregate lane proof: `bin/chief-of-staff --curriculum-registry-lane-status`
 - Read-only tracker: `docs/curriculum-builder-production-registry-owen-checklist-tracker.md`
 - Owen review packet: `docs/curriculum-builder-production-registry-owen-review-packet.md`
 - Governance foundation: `docs/curriculum-builder-production-registry-governance-foundation.md`
-- Mirrors planning brief § J rows; Owen § J complete 2026-07-02; metadata boundaries approved; mutation blocked
+- Mirrors planning brief § J rows; metadata-boundary refinement complete 2026-07-02; mutation blocked
 - Tracker PASS **≠** implementation authorization
 - Expected WARN: deferred checklist items 2, 3, 4 (see expected WARNs doc)
 

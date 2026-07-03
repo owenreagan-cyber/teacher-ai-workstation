@@ -1524,6 +1524,27 @@ else
   warn "Production registry Phase 2 preflight status script missing: scripts/curriculum-builder-production-registry-phase-2-preflight-status.sh"
 fi
 
+section "Production Registry Metadata Boundary Refinement"
+if [[ -f scripts/curriculum-builder-production-registry-metadata-boundary-status.sh ]]; then
+  curriculum_metadata_boundary_result=0
+  curriculum_metadata_boundary_output="$(bash scripts/curriculum-builder-production-registry-metadata-boundary-status.sh 2>&1)" || curriculum_metadata_boundary_result=$?
+  curriculum_metadata_boundary_pass="$(summary_count "${curriculum_metadata_boundary_output}" "PASS")"
+  curriculum_metadata_boundary_warn="$(summary_count "${curriculum_metadata_boundary_output}" "WARN")"
+  curriculum_metadata_boundary_fail="$(summary_count "${curriculum_metadata_boundary_output}" "FAIL")"
+
+  if [[ "${curriculum_metadata_boundary_result}" != "0" ]]; then
+    printf '%s\n' "${curriculum_metadata_boundary_output}"
+    fail "Production registry metadata boundary status failed"
+  elif [[ -n "${curriculum_metadata_boundary_pass}" && -n "${curriculum_metadata_boundary_warn}" && -n "${curriculum_metadata_boundary_fail}" ]]; then
+    printf 'Production Registry Metadata Boundary: PASS %s / WARN %s / FAIL %s\n' "${curriculum_metadata_boundary_pass}" "${curriculum_metadata_boundary_warn}" "${curriculum_metadata_boundary_fail}"
+    pass "Production registry metadata boundary status completed"
+  else
+    pass "Production registry metadata boundary status completed"
+  fi
+else
+  warn "Production registry metadata boundary status script missing: scripts/curriculum-builder-production-registry-metadata-boundary-status.sh"
+fi
+
 section "Curriculum Source Readiness Foundation"
 if [[ -f scripts/curriculum-source-readiness-status.sh ]]; then
   curriculum_source_readiness_result=0

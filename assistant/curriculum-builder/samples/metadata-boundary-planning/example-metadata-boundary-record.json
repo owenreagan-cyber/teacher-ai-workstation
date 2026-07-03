@@ -1,0 +1,29 @@
+{
+  "planning_version": "0.1.0",
+  "fake_fixture_only": true,
+  "planning_only": true,
+  "metadata_only": true,
+  "no_registry_write": true,
+  "would_write": false,
+  "production_namespace": false,
+  "id": "example-metadata-boundary-record-001",
+  "title": "Sample Unit Alpha Lesson One",
+  "subject": "example-science",
+  "grade_band": "example-grade-5",
+  "unit_label": "Unit Alpha Placeholder",
+  "lesson_label": "Lesson 1",
+  "resource_type": "lab_guide",
+  "audience": "teacher_facing",
+  "review_state": "approved_placeholder",
+  "manual_tags": ["placeholder", "fake", "planning"],
+  "notes": "Fictional metadata-boundary planning example only — not a production record.",
+  "source_reference": {
+    "display_label": "Sample textbook — teacher shelf copy",
+    "source_type": "print_resource",
+    "location_note": "Example binder, shelf row placeholder",
+    "citation_note": "Non-resolving label only"
+  },
+  "created_by": "owen",
+  "created_at": "2026-07-02T00:00:00Z",
+  "updated_at": "2026-07-02T00:00:00Z"
+}

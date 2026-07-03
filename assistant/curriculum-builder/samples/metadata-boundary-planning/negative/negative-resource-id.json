@@ -1,0 +1,11 @@
+{
+  "planning_version": "0.1.0",
+  "fake_fixture_only": true,
+  "planning_only": true,
+  "id": "resource-sm5-fake-should-fail-001",
+  "title": "Negative test — resource ID in planning fixture",
+  "source_reference": {
+    "display_label": "Sample label",
+    "source_type": "manual_label"
+  }
+}

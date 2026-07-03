@@ -88,7 +88,8 @@
 ### Now
 
 - **Lane-review hardening sprint complete** — health/updater boundaries, updater check-only banners, Mac E1/F1 cross-links, Canvas frozen banner, Lovable no-API guardrails, R0+D1 cross-links, operating modes discovery banner, ABE sprint queue template, 3D planning-only banner. `tests/lane-review-hardening-guardrails-test.sh`. No runtime activation.
-- **Owen § J checklist complete (2026-07-02)** — items 3 and 4 approved with strict manual-only boundaries; all 11 items decided. Next safe mission: metadata-boundary refinement docs/status/tests.
+- **Metadata-boundary refinement complete (2026-07-02)** — field contracts, blocked guardrails, planning validator, `--curriculum-production-registry-metadata-boundary-status`; no mutation.
+- **Owen § J checklist complete (2026-07-02)** — items 3 and 4 approved with strict manual-only boundaries.
 - **Phase 2 preflight complete (2026-07-02)** — audit/rollback readiness, negative guardrails, `--curriculum-production-registry-phase-2-preflight-status`; no file, no records, no --write.
 - **Write behavior approved in principle (2026-07-02)** — item 2 manual-only, snapshot-first.
 - **Path + namespace approved (2026-07-02)** — item 1 Option B; item 10 `resource-*`.

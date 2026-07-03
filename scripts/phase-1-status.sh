@@ -1149,6 +1149,24 @@ check_bash_syntax tests/curriculum-builder-production-registry-phase-2-preflight
 check_doc_contains docs/curriculum-builder-production-registry-phase-2-preflight.md "phase_2_preflight_complete" "phase 2 preflight closure"
 grep -Fq -- '--curriculum-production-registry-phase-2-preflight-status' bin/chief-of-staff && pass "chief-of-staff exposes --curriculum-production-registry-phase-2-preflight-status" || fail "chief-of-staff missing --curriculum-production-registry-phase-2-preflight-status"
 
+section "Production Registry Metadata Boundary Refinement Files"
+for path in \
+  docs/curriculum-builder-production-registry-metadata-source-boundaries.md \
+  docs/curriculum-builder-production-registry-manual-metadata-field-contract.md \
+  docs/curriculum-builder-production-registry-source-reference-contract.md \
+  docs/curriculum-builder-production-registry-blocked-field-guardrails.md \
+  assistant/curriculum-builder/samples/metadata-boundary-planning/example-metadata-boundary-record.json \
+  scripts/curriculum-builder-production-registry-metadata-boundary-validate.sh \
+  scripts/curriculum-builder-production-registry-metadata-boundary-status.sh \
+  tests/curriculum-builder-production-registry-metadata-boundary-status-test.sh; do
+  check_required_file "${path}"
+done
+check_bash_syntax scripts/curriculum-builder-production-registry-metadata-boundary-validate.sh
+check_bash_syntax scripts/curriculum-builder-production-registry-metadata-boundary-status.sh
+check_bash_syntax tests/curriculum-builder-production-registry-metadata-boundary-status-test.sh
+check_doc_contains docs/curriculum-builder-production-registry-metadata-source-boundaries.md "metadata_boundary_refinement_complete" "metadata boundary refinement closure"
+grep -Fq -- '--curriculum-production-registry-metadata-boundary-status' bin/chief-of-staff && pass "chief-of-staff exposes --curriculum-production-registry-metadata-boundary-status" || fail "chief-of-staff missing --curriculum-production-registry-metadata-boundary-status"
+
 section "Curriculum Source Readiness Foundation Files"
 for path in \
   docs/curriculum-source-readiness-and-intake-boundary-plan.md \

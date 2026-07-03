@@ -164,6 +164,7 @@
         {"flag": "--curriculum-production-registry-governance-status", "status": "implemented", "purpose": "Governance-first production registry foundation status (blocked writes; no intake)"},
         {"flag": "--curriculum-production-registry-owen-checklist-status", "status": "implemented", "purpose": "Owen § J production registry approval checklist tracker (planning-only; Owen decisions required)"},
         {"flag": "--curriculum-production-registry-phase-2-preflight-status", "status": "implemented", "purpose": "Phase 2 production registry preflight (audit/rollback readiness; no file, no record, no write)"},
+        {"flag": "--curriculum-production-registry-metadata-boundary-status", "status": "implemented", "purpose": "Production registry metadata-boundary refinement (contracts and guardrails; no mutation)"},
         {"flag": "--curriculum-source-readiness-status", "status": "implemented", "purpose": "Curriculum Source Readiness fake metadata inventory foundation (no real ingestion)"},
         {"flag": "--curriculum-registry-write", "status": "blocked", "purpose": "Persistent registry writes blocked without explicit production approval mission"},
         {"flag": "--curriculum-scan-folders", "status": "blocked", "purpose": "Folder scanning blocked without explicit approval mission"},

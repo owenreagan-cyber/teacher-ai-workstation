@@ -5,7 +5,7 @@ Last updated: 2026-07-02
 ```text
 Status: documentation/status only
 Authority: whole-system posture snapshot — not implementation approval
-Baseline: main after Owen § J Items 3+4 Metadata Boundary Tracker Sync
+Baseline: main after Production Registry Metadata Boundary Refinement mission
 ```
 
 **Status key:** `[x]` Built/merged · `[~]` Currently being built · `[>]` Ready for safe planning/build · `[!]` Blocked pending Owen/safety gate · `[ ]` Future / not started · `[?]` Insufficient repo evidence
@@ -30,7 +30,7 @@ Baseline: main after Owen § J Items 3+4 Metadata Boundary Tracker Sync
 
 | Marker | Item |
 | --- | --- |
-| [x] | CLI, dashboard (~123/0/0), Program B daily ops, queues, `--next-action`, validate-all |
+| [x] | CLI, dashboard (~124/0/0), Program B daily ops, queues, `--next-action`, validate-all |
 | [>] | Unified daily briefing (AI), B4 smoke expansion, B7 closure placeholder |
 | [!] | Automation beyond read-only status |
 | **Proof** | `bin/chief-of-staff --dashboard`, `docs/chief-of-staff-v1-program-b-closure.md` |
@@ -56,11 +56,11 @@ Baseline: main after Owen § J Items 3+4 Metadata Boundary Tracker Sync
 | [x] | Path + namespace recorded (items 1, 10) |
 | [x] | Write behavior approved in principle (item 2) |
 | [x] | Phase 2 preflight complete |
-| [x] | **Metadata/source boundaries approved** (items 3, 4 — manual-only) |
+| [x] | **Metadata-boundary refinement complete** — field contracts, guardrails, planning validator |
 | [x] | **Owen § J checklist complete** — all 11 items decided |
 | [!] | Metadata pilot execution blocked |
 | [!] | Registry mutation blocked; `production-registry.json` not created; no `resource-*` records |
-| **Proof** | `--curriculum-production-registry-owen-checklist-status` (~55/0/0); `--curriculum-production-registry-phase-2-preflight-status` |
+| **Proof** | `--curriculum-production-registry-metadata-boundary-status` (~60/0/0); Owen checklist ~58/0/0 |
 
 ### Owen § J Checklist State (2026-07-02)
 
@@ -78,9 +78,9 @@ Baseline: main after Owen § J Items 3+4 Metadata Boundary Tracker Sync
 | 10 ID namespace | approved | `resource-*` |
 | 11 First implementation PR scope | approved | CB-PROD-GOV merged |
 
-**Metadata boundary approval does not authorize registry mutation or metadata pilot execution.**
+**Metadata-boundary refinement does not authorize registry mutation or metadata pilot execution.**
 
-**Next safe mission:** Metadata-boundary refinement docs/status/tests (separate explicit prompt).
+**Next possible gate:** Empty-file mission (separate explicit prompt).
 
 ---
 
@@ -189,7 +189,7 @@ Baseline: main after Owen § J Items 3+4 Metadata Boundary Tracker Sync
 | [x] | Constitution, approval gate, BLOCKED-NO-WRITES sentinel, guardrail tests |
 | [x] | Lane-review hardening guardrails |
 | [x] | Item 8 governance affirmation: student-data prohibition absolute |
-| [x] | Metadata/source boundary doc with blocked field categories |
+| [x] | Metadata-boundary refinement guardrails and planning validator |
 | [!] | Real curriculum file access, copied content, student data |
 | **Proof** | Expected WARNs doc; boundary doc; guardrail tests |
 
@@ -199,12 +199,13 @@ Baseline: main after Owen § J Items 3+4 Metadata Boundary Tracker Sync
 
 | Surface | State |
 | --- | --- |
-| Dashboard | ~123 / 0 / 0 PASS |
-| Validate-all | ~41 / 0 / 0 PASS |
-| Owen checklist | ~55 / 0 / 0 PASS (all items decided) |
-| Phase 2 preflight | ~49 / 0 / 0 PASS |
+| Dashboard | ~124 / 0 / 0 PASS |
+| Validate-all | ~42 / 0 / 0 PASS |
+| Owen checklist | ~58 / 0 / 0 PASS |
+| Metadata boundary | ~60 / 0 / 0 PASS |
+| Phase 2 preflight | ~51 / 0 / 0 PASS |
 | Active mission | None |
-| Next safe mission | Metadata-boundary refinement docs/status/tests |
+| Next possible gate | Empty-file mission (separate prompt) |
 
 **Safety gates preserved:** No registry mutation, no `production-registry.json`, no `resource-*` records, no `--write`. Metadata pilot execution blocked. Source auto-resolution blocked.
 

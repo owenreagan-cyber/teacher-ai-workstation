@@ -21,7 +21,7 @@ Per `docs/cursor-autonomous-build-engine.md` Expected WARN Policy.
 | `bin/chief-of-staff --dashboard` | 0 | Yes — aggregate health |
 | `scripts/chief-of-staff-validate-all.sh` | 0 | Yes |
 | `--curriculum-production-registry-owen-checklist-status` | 0 | No — targeted command only |
-| `--curriculum-production-registry-phase-2-preflight-status` | 0 | No — targeted command only |
+| `--curriculum-production-registry-metadata-boundary-status` | 0 | No — targeted command only |
 | `--curriculum-registry-a4-a7-fixture-schema-status` | 7 (fixture optional fields) | No — targeted command only |
 | `--curriculum-registry-lane-status` | 0 on aggregate script summary | Yes — component WARNs roll up in component lines, not aggregate FAIL |
 
@@ -51,6 +51,10 @@ Items 3 and 4 approved with strict manual-only boundaries. The prior deferred-me
 The prior deferred-metadata WARN on `--curriculum-production-registry-phase-2-preflight-status` is **resolved** after items 3 and 4 approval.
 
 **Typical total on `--curriculum-production-registry-phase-2-preflight-status`:** 0 WARN / 0 FAIL.
+
+## Metadata Boundary Refinement (2026-07-02)
+
+**Typical total on `--curriculum-production-registry-metadata-boundary-status`:** 0 WARN / 0 FAIL when refinement docs and planning validator are coherent.
 
 **Typical total on `--curriculum-registry-lane-status` aggregate:** 7 WARN / 0 FAIL (A4–A7 fixture optional fields only) when canonical fixture unchanged.
 

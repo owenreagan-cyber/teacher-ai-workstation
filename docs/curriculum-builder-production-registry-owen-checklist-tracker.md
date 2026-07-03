@@ -26,7 +26,8 @@ Read-only tracker for **§ J — Owen Approval Checklist** in `docs/curriculum-b
 | Is write behavior approved? | **Yes in principle** — item 2; manual-only, single-record, snapshot-first |
 | Are path and namespace decided? | **Yes** — item 1 Option B; item 10 `resource-*` |
 | Are metadata/source boundaries decided? | **Yes** — items 3 and 4 approved 2026-07-02 with strict manual-only boundaries |
-| What is the next eligible implementation mission? | **Metadata-boundary refinement** docs/status/tests — separate explicit prompt |
+| What is the next eligible implementation mission? | **Empty-file mission** or **metadata pilot planning/execution** — each via separate explicit prompt |
+| Is metadata-boundary refinement complete? | **Yes** — `--curriculum-production-registry-metadata-boundary-status` |
 | Is Phase 2 preflight complete? | **Yes** — `--curriculum-production-registry-phase-2-preflight-status` |
 | Does boundary approval authorize mutation? | **No** — empty-file and write missions remain separate |
 | Does checklist have deferred items? | **No** — all 11 items have decisions recorded |

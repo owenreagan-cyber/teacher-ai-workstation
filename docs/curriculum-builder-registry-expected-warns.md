@@ -41,11 +41,11 @@ The lane aggregate script reports **PASS on its own summary** while component sc
 
 | WARN | Count (typical) | Reason | Follow-up |
 | --- | ---: | --- | --- |
-| `5 Owen checklist items deferred — path, namespace, write, and metadata intake remain blocked` | 1 | Items 1, 2, 3, 4, 10 remain `deferred`; governance affirmations (items 5, 6, 7, 8, 9, 11) recorded 2026-07-02 | Path + namespace decision session; item 2 write behavior remains deferred |
+| `3 Owen checklist items deferred — write behavior, metadata intake, and source references remain blocked` | 1 | Items 2, 3, 4 remain `deferred`; path and namespace (items 1, 10) approved 2026-07-02 | Item 2 write behavior decision session |
 
-**Typical total on `--curriculum-production-registry-owen-checklist-status`:** 1 WARN / 0 FAIL while deferred items remain (5 deferred as of 2026-07-02).
+**Typical total on `--curriculum-production-registry-owen-checklist-status`:** 1 WARN / 0 FAIL while deferred items remain (3 deferred as of 2026-07-02).
 
-**Owen review packet:** `docs/curriculum-builder-production-registry-owen-review-packet.md` explains the deferred checklist WARN and decision categories. Approved governance rows do not authorize writes. The WARN is expected until deferred items are resolved.
+**Owen review packet:** `docs/curriculum-builder-production-registry-owen-review-packet.md` explains the deferred checklist WARN and decision categories. Approved path and namespace rows do not authorize writes. The WARN is expected until deferred items 2, 3, and 4 are resolved.
 
 **Typical total on `--curriculum-registry-lane-status` aggregate:** 8 WARN / 0 FAIL (7 A4–A7 + 1 Owen checklist) when canonical fixture unchanged.
 

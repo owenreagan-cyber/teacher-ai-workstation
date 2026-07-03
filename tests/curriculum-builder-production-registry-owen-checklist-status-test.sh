@@ -8,6 +8,7 @@ cd "${repo_root}"
 echo "Running Owen production registry checklist tracker tests..."
 
 status_script="scripts/curriculum-builder-production-registry-owen-checklist-status.sh"
+production_registry_path="assistant/curriculum-builder/registry/v0-2/production-registry.json"
 tmp="$(mktemp "${TMPDIR:-/tmp}/cb-owen-checklist-status.XXXXXX")"
 bash "${status_script}" >"${tmp}" 2>&1 || {
   echo "FAIL: owen checklist status script exited nonzero"
@@ -27,14 +28,26 @@ grep -q 'Approved governance rows do not authorize production writes: yes' "${tm
   rm -f "${tmp}"
   exit 1
 }
-grep -q '5 Owen checklist items deferred — path, namespace, write, and metadata intake remain blocked' "${tmp}" || {
+grep -q 'No write mission is authorized: yes' "${tmp}" || {
+  echo "FAIL: missing no write mission authorized header"
+  cat "${tmp}"
+  rm -f "${tmp}"
+  exit 1
+}
+grep -q '3 Owen checklist items deferred — write behavior, metadata intake, and source references remain blocked' "${tmp}" || {
   echo "FAIL: missing expected deferred checklist WARN"
   cat "${tmp}"
   rm -f "${tmp}"
   exit 1
 }
-grep -q 'governance affirmation batch recorded: 6 approved, 5 deferred' "${tmp}" || {
-  echo "FAIL: missing governance affirmation batch PASS"
+grep -q 'path and namespace recorded: 8 approved, 3 deferred' "${tmp}" || {
+  echo "FAIL: missing path and namespace recorded PASS"
+  cat "${tmp}"
+  rm -f "${tmp}"
+  exit 1
+}
+grep -q 'production-registry.json does not exist yet (blocked)' "${tmp}" || {
+  echo "FAIL: missing production-registry.json non-existence check"
   cat "${tmp}"
   rm -f "${tmp}"
   exit 1
@@ -52,6 +65,11 @@ grep -q 'doc mentions decision worksheet non-approval' "${tmp}" || {
   exit 1
 }
 rm -f "${tmp}"
+
+if [[ -f "${production_registry_path}" ]]; then
+  echo "FAIL: production-registry.json must not exist until write mission"
+  exit 1
+fi
 
 cli_tmp="$(mktemp "${TMPDIR:-/tmp}/cb-owen-checklist-cli.XXXXXX")"
 bin/chief-of-staff --curriculum-production-registry-owen-checklist-status >"${cli_tmp}" 2>&1 || {

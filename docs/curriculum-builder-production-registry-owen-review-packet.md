@@ -36,7 +36,7 @@ Cursor may maintain docs, status surfaces, and fake fixtures. Only Owen may auth
 | Curriculum source readiness | `bin/chief-of-staff --curriculum-source-readiness-status` | 45 PASS / 0 WARN / 0 FAIL |
 | A4–A7 fixture cross-validation | `bin/chief-of-staff --curriculum-registry-a4-a7-fixture-schema-status` | 17 PASS / **7 WARN** / 0 FAIL |
 
-The **1 WARN** on the Owen checklist command is **expected and non-blocking**. It means **5 checklist items remain `deferred`** (items 1, 2, 3, 4, 10). Governance affirmations for items 5, 6, 7, 8, 9, 11 were recorded 2026-07-02 — **approved governance rows do not authorize production writes**. See `docs/curriculum-builder-registry-expected-warns.md`.
+The **1 WARN** on the Owen checklist command is **expected and non-blocking**. It means **3 checklist items remain `deferred`** (items 2, 3, 4). Path and namespace (items 1 and 10) were approved 2026-07-02. Governance affirmations for items 5, 6, 7, 8, 9, 11 were recorded 2026-07-02 — **approved path, namespace, and governance rows do not authorize production writes**. See `docs/curriculum-builder-registry-expected-warns.md`.
 
 ---
 
@@ -51,9 +51,9 @@ Safe-local scaffolding for the Curriculum Builder registry lane is largely compl
 - Curriculum Source Readiness fake metadata inventory (no real intake)
 - Owen § J checklist tracker with read-only status proof (PR #216)
 
-**The project has reached a product-decision wall on path, namespace, write behavior, and metadata intake.**
+**The project has reached a product-decision wall on write behavior and metadata intake.**
 
-Governance affirmation batch recorded 2026-07-02: items 5, 6, 7, 8, 9, 11 approved. Items 1, 2, 3, 4, 10 deferred. The next high-value step is a **path + namespace decision session** (items 1 and 10). Item 2 (write behavior) remains deferred. Generic autopilot or further docs/status foundations do not unlock production registry work without these decisions.
+Path and namespace recorded 2026-07-02: items 1 and 10 approved (`assistant/curriculum-builder/registry/v0-2/production-registry.json`; `resource-*`). Governance affirmation batch recorded 2026-07-02: items 5, 6, 7, 8, 9, 11 approved. Items 2, 3, 4 deferred. The next high-value step is an **item 2 write behavior decision session**. Generic autopilot or further docs/status foundations do not unlock production registry writes without item 2 approval.
 
 ---
 
@@ -64,7 +64,7 @@ PR #216 (Master Build Plan Safe Autopilot) delivered planning/status foundations
 | Deliverable | Purpose |
 | --- | --- |
 | Registry lane aggregate includes source readiness + Owen checklist | Single proof surface for CB registry foundations |
-| `--curriculum-production-registry-owen-checklist-status` | Read-only tracker: 6 approved, 5 deferred (2026-07-02) |
+| `--curriculum-production-registry-owen-checklist-status` | Read-only tracker: 8 approved, 3 deferred (2026-07-02) |
 | Owen checklist tracker doc | Mirrors planning brief § J |
 | F1 fake widget/shortcut catalog | Unrelated lane; planning only |
 | CAL1 prototype inventory + G1 boundary | Unrelated lane; planning only |
@@ -99,9 +99,10 @@ CB-PROD-GOV (`docs/curriculum-builder-production-registry-governance-foundation.
 | Batch | Items | Status | Effect |
 | --- | --- | --- | --- |
 | Approved | 5, 6, 7, 8, 9, 11 | recorded | Governance principles affirmed; CB-PROD-GOV scope acknowledged |
-| Deferred | 1, 2, 3, 4, 10 | pending Owen | Path, namespace, writes, metadata intake remain blocked |
+| Approved (path/namespace) | 1, 10 | recorded | Option B path + `resource-*` namespace recorded; file creation still blocked |
+| Deferred | 2, 3, 4 | pending Owen | Write behavior, metadata intake, source references remain blocked |
 
-**This batch does not authorize production writes, real metadata intake, or integrations.**
+**This batch does not authorize production writes, real metadata intake, file creation, or integrations.**
 
 ---
 

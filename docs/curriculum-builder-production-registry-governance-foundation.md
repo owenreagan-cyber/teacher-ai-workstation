@@ -16,7 +16,7 @@ Implementation: governance scaffolding only — not write mission
 
 Canonical closure index for the **governance-first production registry foundation** described in planning brief § I and the Owen review packet. This foundation prepares docs, status proof, candidate path skeleton, and guardrails **without** authorizing production writes or real metadata intake.
 
-**PASS on governance status does not authorize writes.** Owen § J checklist: governance affirmations recorded 2026-07-02 (items 5, 6, 7, 8, 9, 11 approved); items 1, 2, 3, 4, 10 remain deferred. Approved governance rows do not authorize production writes.
+**PASS on governance status does not authorize writes.** Owen § J checklist: path and namespace recorded 2026-07-02 (items 1 and 10 approved); governance affirmations recorded 2026-07-02 (items 5, 6, 7, 8, 9, 11 approved); items 2, 3, 4 remain deferred. Approved path and namespace rows do not authorize production writes or file creation.
 
 ## Definition of Done
 
@@ -59,7 +59,7 @@ Canonical closure index for the **governance-first production registry foundatio
 
 ## Relationship to Owen § J Checklist
 
-Governance affirmation batch recorded 2026-07-02: 6 items **approved**, 5 items **deferred** in `docs/curriculum-builder-production-registry-owen-checklist-tracker.md`. Governance foundation **prepared** notes do not equal Owen approval of writes. Deferred items block production registry implementation.
+Path and namespace recorded 2026-07-02: items 1 and 10 **approved** (`assistant/curriculum-builder/registry/v0-2/production-registry.json`; `resource-*`). Governance affirmation batch recorded 2026-07-02: 8 items **approved**, 3 items **deferred** in `docs/curriculum-builder-production-registry-owen-checklist-tracker.md`. Governance foundation **prepared** notes do not equal Owen approval of writes. Deferred items (2, 3, 4) block production registry implementation.
 
 ## Orchestrated Proof
 
@@ -73,9 +73,10 @@ bin/chief-of-staff --curriculum-registry-lane-status
 ## Recommended Next Mission (After Owen Decides)
 
 1. Owen completes review packet § 7 decision table
-2. Owen approves governance-first PR scope (checklist item 11)
-3. Owen chooses production registry path (checklist item 1) and ID namespace (item 10)
-4. **Separate** future mission: governed single-record manual write — only after items 1, 2, 6, 7, 10, 11 approved and governance foundation merged
+2. Owen approves governance-first PR scope (checklist item 11) — **done**
+3. Owen chooses production registry path (item 1) and ID namespace (item 10) — **done 2026-07-02**
+4. Owen decides write behavior (item 2) — **deferred; next human gate**
+5. **Separate** future mission: governed single-record manual write — only after items 1, 2, 6, 7, 10, 11 approved and governance foundation merged
 
 ## Non-Activation
 

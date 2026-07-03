@@ -19,7 +19,7 @@ Map Owen § J checklist outcomes to **safe next missions** without implying appr
 
 **Superseded 2026-07-02** by governance affirmation batch.
 
-## Phase 1 — Current: Governance Affirmations Recorded (No Writes)
+## Phase 1 — Governance Affirmations Recorded (No Writes)
 
 **Trigger:** Owen approved items 5, 6, 7, 8, 9, 11; deferred items 1, 2, 3, 4, 10 (2026-07-02).
 
@@ -29,7 +29,23 @@ Map Owen § J checklist outcomes to **safe next missions** without implying appr
 | Path + namespace session | Owen decides items 1 and 10 together | Creating registry files |
 | Write behavior | Item 2 remains deferred | Any `--write` or writer scripts |
 
-**Expected checklist WARN:** 1 (5 deferred items). Approved governance rows do **not** authorize production writes.
+**Superseded 2026-07-02** by path + namespace decision sync.
+
+## Phase 1b — Current: Path + Namespace Recorded (No Writes)
+
+**Trigger:** Owen approved items 1 and 10 (2026-07-02); items 2, 3, 4 remain deferred.
+
+| Mission | Scope | Blocked |
+| --- | --- | --- |
+| Tracker + doc refresh | Path and namespace recorded in tracker and path-options doc | Write code |
+| Item 2 write behavior session | Owen decides whether governed writes are ever allowed | Creating `production-registry.json` |
+| Metadata intake | Items 3 and 4 remain deferred | Real metadata or source references |
+
+**Approved path:** `assistant/curriculum-builder/registry/v0-2/production-registry.json` (file does not exist yet)
+
+**Approved namespace:** `resource-*`
+
+**Expected checklist WARN:** 1 (3 deferred items). Path and namespace approval does **not** authorize production writes.
 
 ## Phase 2 — Governed Write Preflight (Still No Writer)
 
@@ -51,7 +67,8 @@ See `docs/proposals/backlog/production-registry-write-mission.md` § Preflight C
 | Smallest scope | One manual record, snapshot before/after |
 | Rollback | Per audit stub |
 | Review state | Must be `approved` before write |
-| ID namespace | Per item 10 decision |
+| Production path | `assistant/curriculum-builder/registry/v0-2/production-registry.json` |
+| ID namespace | `resource-*` per item 10 decision |
 
 ## Phase 4 — Metadata Pilot (Separate from Writes Unless Both Approved)
 
@@ -72,4 +89,4 @@ Item 9 approval affirms integrations **remain blocked** in v1 unless separate mi
 
 ## Non-Activation
 
-This map does not authorize any phase transition automatically. Phase 1 does not authorize writes.
+This map does not authorize any phase transition automatically. Phase 1b does not authorize writes or file creation.

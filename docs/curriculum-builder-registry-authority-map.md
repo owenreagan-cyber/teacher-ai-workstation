@@ -25,7 +25,7 @@ Single reference for **which registry surface is authoritative for what**, so fu
 | **Registry v0.2 dry-run candidates** | `assistant/curriculum-builder/samples/registry-v0-2-dry-run/` | `example-*` | Fake candidate validation only (CB-IMPL-1) | **No** |
 | **Registry v0.2 local fixtures** | `assistant/curriculum-builder/samples/registry-v0-2-local-records/local-registry.json` | `example-*` | Fake fixture envelope only (CB-IMPL-2) | **No** |
 | **A4–A7 inactive contracts** | `assistant/curriculum-builder/metadata-contract/v0/` | `sample-*` | Planning schemas; inactive | **No** |
-| **Production registry (future)** | **Owen decision pending** — see planning brief § B | TBD | Not implemented | **Blocked** |
+| **Production registry (future)** | `assistant/curriculum-builder/registry/v0-2/production-registry.json` | `resource-*` | Owen-approved path; file not created | **Blocked** — item 2 deferred |
 | **Curriculum Source Readiness (fake)** | `assistant/curriculum-builder/samples/curriculum-source-readiness/` | `fake-source-*` | Fake metadata inventory only; not production | **No** |
 
 Expected WARN registry: `docs/curriculum-builder-registry-expected-warns.md`
@@ -80,16 +80,17 @@ Aggregate lane proof: `bin/chief-of-staff --curriculum-registry-lane-status`
 
 - Planning-only: `docs/curriculum-builder-production-registry-workflow-planning-brief.md`
 - Owen approval checklist before any implementation
-- Production path/model remains **open decision**
+- Production path: `assistant/curriculum-builder/registry/v0-2/production-registry.json` (Owen-approved; file not created)
+- ID namespace: `resource-*` (Owen-approved)
 
 ### Owen § J checklist tracker (`--curriculum-production-registry-owen-checklist-status`)
 
 - Read-only tracker: `docs/curriculum-builder-production-registry-owen-checklist-tracker.md`
 - Owen review packet: `docs/curriculum-builder-production-registry-owen-review-packet.md`
 - Governance foundation: `docs/curriculum-builder-production-registry-governance-foundation.md`
-- Mirrors planning brief § J rows; all items **pending** until Owen approves
+- Mirrors planning brief § J rows; path and namespace approved 2026-07-02; write behavior deferred
 - Tracker PASS **≠** implementation authorization
-- Expected WARN: pending checklist items (see expected WARNs doc)
+- Expected WARN: deferred checklist items 2, 3, 4 (see expected WARNs doc)
 
 ### Governance-first foundation (`--curriculum-production-registry-governance-status`)
 
@@ -120,7 +121,7 @@ Aggregate lane proof: `bin/chief-of-staff --curriculum-registry-lane-status`
 1. **Default read authority for “what is the registry?”** → `registry/v0/registry.json` (read-only).
 2. **Default for v0.2 experiments** → `samples/registry-v0-2-*` paths only; never treat as production.
 3. **Dry-run or fixture validation success** → does **not** authorize `--write` or registry mutation. See `docs/curriculum-builder-registry-dry-run-fixture-promotion-planning-spec.md`.
-4. **Production registry path** → Owen must decide per planning brief § B; do not infer from repo state.
+4. **Production registry path** → `assistant/curriculum-builder/registry/v0-2/production-registry.json` (Owen-approved 2026-07-02); `resource-*` IDs; file creation blocked until item 2 approved.
 5. **Real metadata, real paths, student data** → separate explicit approval missions.
 6. **When unsure** → run `bin/chief-of-staff --curriculum-registry-lane-status` and read this map.
 

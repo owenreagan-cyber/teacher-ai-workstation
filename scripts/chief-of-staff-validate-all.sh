@@ -139,6 +139,7 @@ run_track "Production Registry Empty File" scripts/curriculum-builder-production
 run_track "Production Registry Metadata Pilot Plan" scripts/curriculum-builder-production-registry-metadata-pilot-plan-status.sh
 run_track "Production Registry First Record" scripts/curriculum-builder-production-registry-first-record-status.sh
 run_track "Production Registry Next Gate" scripts/curriculum-builder-production-registry-next-gate-status.sh
+run_track "Whole-System Master Roadmap" scripts/whole-system-master-roadmap-status.sh
 run_track "Curriculum Source Readiness" scripts/curriculum-source-readiness-status.sh
 run_track "Curriculum Builder Registry Lane" scripts/curriculum-builder-registry-lane-status.sh
 run_track "Curriculum Builder Registry A4-A7 Fixture Schema" scripts/curriculum-builder-registry-a4-a7-fixture-schema-status.sh

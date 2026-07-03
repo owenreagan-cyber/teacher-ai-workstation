@@ -1,6 +1,6 @@
 # Build Queue
 
-Last updated: 2026-07-02
+Last updated: 2026-07-03
 
 ## Current Completed Phase
 
@@ -8,15 +8,17 @@ Phase 0E Vibe Engine.
 
 ## Current Focus
 
-**Product-decision wall — next-gate decision packet complete; all implementation gates blocked.**
+**Whole-system master roadmap build-state report complete — production registry parked (Option D recommended).**
 
-first governed production registry record complete. Post-first-record hardening complete. Next-gate decision packet complete (`--curriculum-production-registry-next-gate-status`). Options A/B/C documented; **Option D (parked) recommended default**. Writer scripts, second record, and pilot expansion remain blocked until explicit Owen decision.
+Whole-system master roadmap build-state report and `--whole-system-master-roadmap-status` provide repo-backed posture across all 15 program lanes and ranked next-safe-lane selector. first governed production registry record complete. Next-gate decision packet complete; writer scripts, second record, and pilot expansion remain blocked until explicit Owen decision.
 
-Master program roadmap: `docs/master-build-roadmap.md` — Program Readiness Audit and mission sequencing for v1.0. Implementation does not proceed automatically from the roadmap.
+Master program roadmap: `docs/master-build-roadmap.md` — Program Readiness Audit and mission sequencing for v1.0. Whole-system report: `docs/whole-system-master-roadmap-build-state-report.md`. Implementation does not proceed automatically from the roadmap.
 
 Handoff and status clarity. Start from `docs/phase-1-chief-of-staff-status-audit.md` — Repo-Wide Parked Tracks and Active Status Map and `docs/build-queue.md`.
 
 ## Recently Completed
+
+- Whole-System Master Roadmap Build-State Report (2026-07-03): `docs/whole-system-master-roadmap-build-state-report.md`; `--whole-system-master-roadmap-status`; 15-lane evidence classification; next safe lane selector; blocked gates summary; production registry parked-state reference. No runtime activation.
 
 - Lane-Review Hardening Sprint (2026-07-02): health/updater boundary banners, check-only updater guardrails, Mac E1/F1 cross-links, Canvas frozen banner, Lovable no-API guardrails, R0+D1 cross-links, routing matrix version stamp, operating modes discovery banner, ABE sprint queue template, 3D planning-only banner, consolidated guardrail tests. No runtime activation.
 

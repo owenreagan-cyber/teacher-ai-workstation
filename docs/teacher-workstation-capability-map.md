@@ -47,6 +47,7 @@ Cross-references:
 | Cursor operating modes governance | **implemented read-only** | `--cursor-operating-modes-status`; approval gates + proposal ledger |
 | Autonomous Build Engine governance | **implemented read-only** | `--autonomous-build-engine-status`; continuation loop + exhaustion rules |
 | Governance lane aggregate status | **implemented read-only** | `--governance-lane-status`; operating modes + ABE + proposal folders |
+| Whole-system master roadmap build-state report | **implemented read-only** | `--whole-system-master-roadmap-status`; 15-lane posture + next safe lane selector |
 | Daily briefing (AI) | planned | Approval-gated |
 | Tool routing surface | implemented read-only | `--model-routing-status`; matrix at `docs/ai-tool-routing-matrix.md` |
 | Health summary | planned | Aggregated report via Program H |

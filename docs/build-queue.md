@@ -8,9 +8,9 @@ Phase 0E Vibe Engine.
 
 ## Current Focus
 
-**Product-decision wall — Phase 2 preflight complete; items 3+4 metadata next.**
+**Product-decision wall — Owen § J complete; metadata-boundary refinement next.**
 
-Safe-local registry scaffolding including CB-PROD-GOV governance foundation is complete. Phase 2 preflight merged 2026-07-02 (`docs/curriculum-builder-production-registry-phase-2-preflight.md`; `--curriculum-production-registry-phase-2-preflight-status`). Owen approved write behavior in principle (item 2). Items 3 and 4 remain deferred. **No registry mutation authorized.** Next human step: items 3+4 metadata/source-reference session or future empty-file/write mission via separate prompt.
+Safe-local registry scaffolding including CB-PROD-GOV governance foundation is complete. Phase 2 preflight merged 2026-07-02. Owen approved items 3 and 4 with strict manual-only boundaries 2026-07-02. **No registry mutation authorized.** Next safe mission: **metadata-boundary refinement** docs/status/tests via separate explicit prompt. Empty-file and governed write missions remain separate.
 
 Master program roadmap: `docs/master-build-roadmap.md` — Program Readiness Audit and mission sequencing for v1.0. Implementation does not proceed automatically from the roadmap.
 

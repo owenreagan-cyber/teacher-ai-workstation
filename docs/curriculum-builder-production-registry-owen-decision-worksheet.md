@@ -22,7 +22,7 @@ Item 2 approval in principle does not authorize registry mutation.
 
 1. Read `docs/curriculum-builder-production-registry-owen-review-packet.md` § 7 decision table.
 2. For each checklist item below, record your decision in `docs/curriculum-builder-production-registry-owen-checklist-tracker.md` (change `Owen status` from `pending` to `approved`, `deferred`, or `rejected`).
-3. Re-run `bin/chief-of-staff --curriculum-production-registry-owen-checklist-status` — the expected WARN remains while deferred items exist (2 deferred as of 2026-07-02).
+3. Re-run `bin/chief-of-staff --curriculum-production-registry-owen-checklist-status` — all 11 items decided as of 2026-07-02 (0 expected WARN).
 4. Use the **Decision-to-Next-Prompt** table at the bottom before issuing any implementation mission.
 
 ## Checklist Worksheet
@@ -31,8 +31,8 @@ Item 2 approval in principle does not authorize registry mutation.
 | ---: | --- | --- | --- | --- |
 | 1 | Production registry path | approved | 2026-07-02 | Option B — `assistant/curriculum-builder/registry/v0-2/production-registry.json`; v0 remains read-only `sample-*` |
 | 2 | Write behavior allowed | approved | 2026-07-02 | Manual-only in principle; Phase 2 preflight only next; no file, no records, no --write |
-| 3 | Real curriculum metadata allowed | deferred | 2026-07-02 | Metadata pilot later; no real metadata intake approved |
-| 4 | Real source references allowed | deferred | 2026-07-02 | Manual labels later; no real source references approved |
+| 3 | Real curriculum metadata allowed | approved | 2026-07-02 | Manual Owen-entered descriptive metadata only (title, subject, grade band, unit, lesson, resource type, teacher/student-facing flag, review state, manual tags, notes); no copied curriculum content, no student data, no file parsing, no OCR, no AI summaries, no embeddings/RAG, no auto-ingest |
+| 4 | Real source references allowed | approved | 2026-07-02 | Manual non-resolving source-reference labels typed by Owen only (display label, source_type enum, citation/note string); no API/OAuth, no live Drive/Canvas/NAS/iCloud access, no auto-resolution, no crawling/scanning, no real file reads, no resolvable file IDs or paths |
 | 5 | Source systems permitted | approved | 2026-07-02 | Manual entry only; integrations blocked |
 | 6 | Rollback requirements | approved | 2026-07-02 | Snapshot + diff + restore required before any write mission |
 | 7 | Review states | approved | 2026-07-02 | § D review-state gate model accepted |
@@ -67,9 +67,9 @@ Item 2 approval in principle does not authorize registry mutation.
 
 | Owen state | Safe next mission |
 | --- | --- |
-| 2 items deferred (current) | **Phase 2 preflight** (separate explicit prompt) or **items 3+4 metadata session** |
-| Approved items 1, 2, 5, 6, 7, 8, 9, 10, 11 (recorded 2026-07-02) | Phase 2 preflight docs/status/tests only — **no registry mutation** |
-| Phase 2 preflight complete + items 3, 4 approved | Future empty-file or single-record missions — separate prompts each |
+| 2 items deferred (current) | **Superseded** — items 3 and 4 approved 2026-07-02 |
+| All 11 items decided + Phase 2 complete | **Metadata-boundary refinement** docs/status/tests — separate explicit prompt |
+| Metadata boundaries approved | Future empty-file or single-record missions — separate prompts each |
 | Approved 1, 2, 6, 7, 10, 11 + Phase 2 complete | **Governed single-record write mission** — see write-mission backlog; still requires items 3/4 for real metadata |
 | Approved 3, 4, 5 (manual only) without registry file | **Metadata pilot planning mission** — docs/status only |
 | Any integration need | **Separate per-system mission** — not bulk § J approval |

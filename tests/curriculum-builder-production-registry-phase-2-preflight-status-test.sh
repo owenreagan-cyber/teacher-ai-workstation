@@ -61,12 +61,24 @@ grep -q 'no production registry writer script exists' "${tmp}" || {
   rm -f "${tmp}"
   exit 1
 }
-grep -q 'items 3 and 4 remain deferred' "${tmp}" || {
-  echo "FAIL: missing expected deferred metadata WARN"
+grep -q 'items 3 and 4 approved as manual-only boundaries' "${tmp}" || {
+  echo "FAIL: missing metadata boundaries approved PASS"
   cat "${tmp}"
   rm -f "${tmp}"
   exit 1
 }
+grep -q 'metadata pilot execution remains blocked' "${tmp}" || {
+  echo "FAIL: missing metadata pilot blocked check"
+  cat "${tmp}"
+  rm -f "${tmp}"
+  exit 1
+}
+if grep -q 'items 3 and 4 remain deferred' "${tmp}"; then
+  echo "FAIL: unexpected deferred metadata WARN after items 3 and 4 approved"
+  cat "${tmp}"
+  rm -f "${tmp}"
+  exit 1
+fi
 rm -f "${tmp}"
 
 if [[ -f "${production_registry_path}" ]]; then

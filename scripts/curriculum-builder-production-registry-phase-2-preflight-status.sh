@@ -65,8 +65,9 @@ check_doc_contains "${snapshot_readiness}" "No snapshot of production-registry.j
 section 'Owen Checklist Preconditions'
 check_file "${tracker_doc}"
 check_doc_contains "${tracker_doc}" "| Write behavior allowed | approved | Owen |" "tracker item 2 approved"
-check_doc_contains "${tracker_doc}" "| Real curriculum metadata allowed | deferred | Owen |" "tracker item 3 deferred"
-check_doc_contains "${tracker_doc}" "| Real source references allowed | deferred | Owen |" "tracker item 4 deferred"
+check_doc_contains "${tracker_doc}" "| Real curriculum metadata allowed | approved | Owen |" "tracker item 3 approved"
+check_doc_contains "${tracker_doc}" "| Real source references allowed | approved | Owen |" "tracker item 4 approved"
+check_doc_contains "${tracker_doc}" "metadata_boundaries_approved_awaiting_pilot_and_write_missions" "tracker metadata boundary closure"
 check_doc_contains "${tracker_doc}" "| Production registry path | approved | Owen |" "tracker item 1 approved"
 check_doc_contains "${tracker_doc}" "| Rollback requirements | approved | Owen |" "tracker item 6 approved"
 check_doc_contains "${tracker_doc}" "| Review states | approved | Owen |" "tracker item 7 approved"
@@ -87,7 +88,8 @@ check_doc_contains "${write_mission}" "Registry mutation: blocked" "write missio
 section 'Blocked Intake Surfaces'
 check_file "${metadata_blocked}"
 check_doc_contains "${metadata_blocked}" "blocked" "real metadata intake blocked doc"
-check_doc_contains docs/curriculum-builder-metadata-pilot-planning-boundary.md "no intake" "metadata pilot no intake"
+check_file docs/curriculum-builder-production-registry-metadata-source-boundaries.md
+check_doc_contains docs/curriculum-builder-production-registry-metadata-source-boundaries.md "metadata_boundaries_approved" "metadata boundary doc"
 
 section 'Production Surface Non-Existence'
 [[ ! -f "${production_registry_path}" ]] && pass "production-registry.json does not exist (blocked)" || fail "production-registry.json must not exist in Phase 2"
@@ -128,8 +130,11 @@ check_file tests/curriculum-builder-production-registry-phase-2-preflight-status
 bash -n "${status_script}" && pass "bash syntax ok: ${status_script}" || fail "bash syntax failed: ${status_script}"
 bash -n tests/curriculum-builder-production-registry-phase-2-preflight-status-test.sh && pass 'bash syntax ok: phase 2 preflight test' || fail 'bash syntax failed: phase 2 preflight test'
 
-section 'Deferred Metadata WARN (Expected)'
-warn "items 3 and 4 remain deferred — real metadata and source references blocked until Owen approves"
+section 'Metadata Boundary Post-Decision'
+pass "items 3 and 4 approved as manual-only boundaries"
+pass "metadata pilot execution remains blocked"
+pass "metadata intake remains blocked until separate missions"
+pass "source-reference resolution remains blocked"
 
 section 'Negative Non-Activation Assertions'
 grep -Eq '(^|[;&|[:space:]])curl[[:space:]]' "${status_script}" 2>/dev/null && fail "${status_script} must not shell-invoke curl" || pass "${status_script} does not shell-invoke curl"

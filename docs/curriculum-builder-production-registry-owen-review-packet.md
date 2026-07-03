@@ -32,11 +32,11 @@ Cursor may maintain docs, status surfaces, and fake fixtures. Only Owen may auth
 | --- | --- | --- |
 | Dashboard | `bin/chief-of-staff --dashboard` | 121 PASS / 0 WARN / 0 FAIL |
 | Registry lane aggregate | `bin/chief-of-staff --curriculum-registry-lane-status` | 38 PASS / 0 WARN / 0 FAIL (aggregate script) |
-| Owen § J checklist tracker | `bin/chief-of-staff --curriculum-production-registry-owen-checklist-status` | 30 PASS / **1 WARN** / 0 FAIL |
+| Owen § J checklist tracker | `bin/chief-of-staff --curriculum-production-registry-owen-checklist-status` | ~55 PASS / 0 WARN / 0 FAIL |
 | Curriculum source readiness | `bin/chief-of-staff --curriculum-source-readiness-status` | 45 PASS / 0 WARN / 0 FAIL |
 | A4–A7 fixture cross-validation | `bin/chief-of-staff --curriculum-registry-a4-a7-fixture-schema-status` | 17 PASS / **7 WARN** / 0 FAIL |
 
-The **1 WARN** on the Owen checklist command is **expected and non-blocking**. It means **2 checklist items remain `deferred`** (items 3 and 4). Item 2 write behavior was approved in principle 2026-07-02 — **item 2 approval does not authorize registry mutation**. See `docs/curriculum-builder-registry-expected-warns.md`.
+All **11 Owen § J checklist items** have decisions recorded as of 2026-07-02. Items 3 and 4 approved with strict manual-only boundaries. **Boundary approval does not authorize registry mutation.** See `docs/curriculum-builder-registry-expected-warns.md`.
 
 ---
 
@@ -51,9 +51,7 @@ Safe-local scaffolding for the Curriculum Builder registry lane is largely compl
 - Curriculum Source Readiness fake metadata inventory (no real intake)
 - Owen § J checklist tracker with read-only status proof (PR #216)
 
-**The project has reached a product-decision wall on metadata intake.**
-
-Phase 2 preflight complete 2026-07-02. Write behavior approved in principle (item 2). Path and namespace recorded (items 1, 10). Items 3 and 4 deferred. The next high-value step is an **items 3+4 metadata session** or a **future mutation mission** via separate explicit prompt. Registry mutation remains blocked.
+**Owen § J checklist decisions complete 2026-07-02.** Phase 2 preflight complete. Items 3 and 4 approved with strict manual-only boundaries (`docs/curriculum-builder-production-registry-metadata-source-boundaries.md`). The product-decision wall on metadata intake is resolved at the boundary level; intake execution and registry mutation remain blocked. The next safe mission is **metadata-boundary refinement** docs/status/tests via separate explicit prompt.
 
 ---
 
@@ -64,7 +62,7 @@ PR #216 (Master Build Plan Safe Autopilot) delivered planning/status foundations
 | Deliverable | Purpose |
 | --- | --- |
 | Registry lane aggregate includes source readiness + Owen checklist | Single proof surface for CB registry foundations |
-| `--curriculum-production-registry-owen-checklist-status` | Read-only tracker: 9 approved, 2 deferred (2026-07-02) |
+| `--curriculum-production-registry-owen-checklist-status` | Read-only tracker: 11 approved, 0 deferred (2026-07-02) |
 | Owen checklist tracker doc | Mirrors planning brief § J |
 | F1 fake widget/shortcut catalog | Unrelated lane; planning only |
 | CAL1 prototype inventory + G1 boundary | Unrelated lane; planning only |
@@ -100,7 +98,7 @@ CB-PROD-GOV (`docs/curriculum-builder-production-registry-governance-foundation.
 | --- | --- | --- | --- |
 | Approved | 5, 6, 7, 8, 9, 11 | recorded | Governance principles affirmed; CB-PROD-GOV scope acknowledged |
 | Approved (write behavior) | 2 | recorded | Manual-only in principle; Phase 2 preflight eligible; mutation blocked |
-| Deferred | 3, 4 | pending Owen | Real metadata intake and source references remain blocked |
+| Approved (metadata boundaries) | 3, 4 | Manual-only metadata and non-resolving source labels; intake and mutation remain blocked |
 
 **This batch does not authorize production writes, real metadata intake, file creation, or integrations.**
 

@@ -1,0 +1,137 @@
+{
+  "classification": "fake_local_planning_only",
+  "resources": [
+    {
+      "resource_id": "fake-resource-saxon-lesson-021",
+      "title": "Placeholder Saxon IM5 Lesson 21 Bundle",
+      "subject_slug": "math-saxon-im5",
+      "curriculum_program": "saxon_intermediate_5",
+      "audience": "mixed_planning_only",
+      "taxonomy_folder": "01_MATH/",
+      "metadata_only": true
+    },
+    {
+      "resource_id": "fake-resource-reading-mastery-unit-04",
+      "title": "Placeholder Reading Mastery Unit 04",
+      "subject_slug": "reading-mastery",
+      "curriculum_program": "reading_mastery",
+      "audience": "student_facing",
+      "taxonomy_folder": "02_READING_MASTERY/",
+      "metadata_only": true
+    },
+    {
+      "resource_id": "fake-resource-ckhg-american-revolution",
+      "title": "Placeholder CKHG American Revolution Unit",
+      "subject_slug": "history-ckhg",
+      "curriculum_program": "ckhg",
+      "audience": "student_facing",
+      "taxonomy_folder": "06_HISTORY/",
+      "metadata_only": true
+    },
+    {
+      "resource_id": "fake-resource-cksci-matter-unit",
+      "title": "Placeholder CKSci Matter Unit",
+      "subject_slug": "science-cksci",
+      "curriculum_program": "cksci",
+      "audience": "student_facing",
+      "taxonomy_folder": "07_SCIENCE/",
+      "metadata_only": true
+    },
+    {
+      "resource_id": "fake-resource-teacher-only-assessment-key",
+      "title": "Placeholder Teacher-Only Assessment Key",
+      "subject_slug": "math-saxon-im5",
+      "curriculum_program": "saxon_intermediate_5",
+      "audience": "teacher_only",
+      "taxonomy_folder": "10_TEACHER_ONLY/",
+      "metadata_only": true,
+      "restricted_indexable": true
+    },
+    {
+      "resource_id": "fake-resource-student-facing-worksheet",
+      "title": "Placeholder Student-Facing Fraction Worksheet",
+      "subject_slug": "math-saxon-im5",
+      "curriculum_program": "saxon_intermediate_5",
+      "audience": "student_facing",
+      "taxonomy_folder": "11_STUDENT_FACING/",
+      "metadata_only": true
+    },
+    {
+      "resource_id": "fake-resource-ai-generated-adaptation",
+      "title": "Placeholder AI-Generated Lesson Adaptation",
+      "subject_slug": "math-saxon-im5",
+      "curriculum_program": "saxon_intermediate_5",
+      "audience": "mixed_planning_only",
+      "taxonomy_folder": "12_AI_GENERATED/",
+      "metadata_only": true,
+      "ai_generated": true
+    },
+    {
+      "resource_id": "fake-resource-drive-only-pacing",
+      "title": "Placeholder Drive-Only Pacing Guide",
+      "subject_slug": "pacing",
+      "curriculum_program": "general",
+      "audience": "teacher_only",
+      "taxonomy_folder": "09_PACING_GUIDES/",
+      "metadata_only": true,
+      "reconciliation": "drive_only"
+    },
+    {
+      "resource_id": "fake-resource-canvas-only-module",
+      "title": "Placeholder Canvas-Only Module Shell",
+      "subject_slug": "classroom-apps",
+      "curriculum_program": "canvas_deployment",
+      "audience": "student_facing",
+      "taxonomy_folder": "08_CLASSROOM_APPS/",
+      "metadata_only": true,
+      "reconciliation": "canvas_only"
+    },
+    {
+      "resource_id": "fake-resource-drive-canvas-both",
+      "title": "Placeholder Drive and Canvas Shared Resource",
+      "subject_slug": "language-arts-shurley",
+      "curriculum_program": "shurley",
+      "audience": "student_facing",
+      "taxonomy_folder": "04_LANGUAGE_ARTS/",
+      "metadata_only": true,
+      "reconciliation": "drive_and_canvas"
+    },
+    {
+      "resource_id": "fake-resource-duplicate-candidate-a",
+      "title": "Placeholder Duplicate Candidate A",
+      "subject_slug": "math-saxon-im5",
+      "curriculum_program": "saxon_intermediate_5",
+      "audience": "student_facing",
+      "taxonomy_folder": "01_MATH/",
+      "metadata_only": true
+    },
+    {
+      "resource_id": "fake-resource-duplicate-candidate-b",
+      "title": "Placeholder Duplicate Candidate B",
+      "subject_slug": "math-saxon-im5",
+      "curriculum_program": "saxon_intermediate_5",
+      "audience": "student_facing",
+      "taxonomy_folder": "01_MATH/",
+      "metadata_only": true
+    },
+    {
+      "resource_id": "fake-resource-version-v1",
+      "title": "Placeholder Version Candidate v1",
+      "subject_slug": "writing",
+      "curriculum_program": "writing",
+      "audience": "student_facing",
+      "taxonomy_folder": "05_WRITING/",
+      "metadata_only": true
+    },
+    {
+      "resource_id": "fake-resource-do-not-scan-blocked",
+      "title": "Placeholder Do-Not-Scan Blocked Resource",
+      "subject_slug": "restricted",
+      "curriculum_program": "blocked",
+      "audience": "teacher_only",
+      "taxonomy_folder": "99_DO_NOT_SCAN/",
+      "metadata_only": true,
+      "scan_policy": "do_not_scan"
+    }
+  ]
+}

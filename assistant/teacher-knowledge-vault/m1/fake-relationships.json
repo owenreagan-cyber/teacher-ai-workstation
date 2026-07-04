@@ -1,0 +1,37 @@
+{
+  "classification": "fake_local_planning_only",
+  "relationships": [
+    {
+      "relationship_id": "fake-rel-dup-001",
+      "from_resource_id": "fake-resource-duplicate-candidate-a",
+      "to_resource_id": "fake-resource-duplicate-candidate-b",
+      "relationship_type": "duplicate_candidate",
+      "auto_merge": false,
+      "requires_teacher_approval": true
+    },
+    {
+      "relationship_id": "fake-rel-version-001",
+      "from_resource_id": "fake-resource-version-v1",
+      "to_resource_id": "fake-resource-version-v1",
+      "relationship_type": "version_candidate",
+      "auto_merge": false,
+      "requires_teacher_approval": true
+    },
+    {
+      "relationship_id": "fake-rel-publish-001",
+      "from_resource_id": "fake-resource-drive-canvas-both",
+      "to_resource_id": "fake-resource-canvas-only-module",
+      "relationship_type": "publishes_to",
+      "auto_merge": false,
+      "requires_teacher_approval": true
+    },
+    {
+      "relationship_id": "fake-rel-reconcile-001",
+      "from_resource_id": "fake-resource-drive-only-pacing",
+      "to_resource_id": "fake-resource-canvas-only-module",
+      "relationship_type": "derived_from",
+      "reconciliation_note": "drive_only vs canvas_only drift example",
+      "auto_merge": false
+    }
+  ]
+}

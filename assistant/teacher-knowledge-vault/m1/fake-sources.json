@@ -1,0 +1,29 @@
+{
+  "classification": "fake_local_planning_only",
+  "sources": [
+    {
+      "source_id": "fake-source-google-drive",
+      "source_type": "google_drive",
+      "label": "Placeholder Google Drive Canonical Library",
+      "connector_status": "blocked"
+    },
+    {
+      "source_id": "fake-source-ugreen-nas",
+      "source_type": "ugreen_nas",
+      "label": "Placeholder UGREEN NAS Mirror",
+      "connector_status": "blocked"
+    },
+    {
+      "source_id": "fake-source-canvas",
+      "source_type": "canvas",
+      "label": "Placeholder Canvas Publishing Target",
+      "connector_status": "blocked"
+    },
+    {
+      "source_id": "fake-source-local-staging",
+      "source_type": "local_staging",
+      "label": "Placeholder MacBook Pro M5 Workshop Staging",
+      "connector_status": "blocked"
+    }
+  ]
+}

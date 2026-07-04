@@ -48,11 +48,18 @@ Knowledge Vault stores **approved reference summaries**, not raw intake, full Dr
 
 Closure marker: `complete_teacher_knowledge_vault_m0_architecture_freeze`
 
+## M1 Fake Catalog Foundation (Post-M0)
+
+M1 builds the internal catalog data model using fake fixtures only. See `docs/teacher-knowledge-vault/m1-fake-catalog-foundation.md` and `bin/chief-of-staff --teacher-knowledge-vault-m1-fake-catalog-status`.
+
+Closure marker: `complete_teacher_knowledge_vault_m1_fake_catalog_foundation`
+
 ## Chief of Staff Command Surface
 
 | Command | Purpose |
 | --- | --- |
 | `bin/chief-of-staff --teacher-knowledge-vault-m0-architecture-freeze-status` | Full Knowledge Vault M0 architecture freeze PASS/WARN/FAIL |
+| `bin/chief-of-staff --teacher-knowledge-vault-m1-fake-catalog-status` | M1 fake catalog foundation PASS/WARN/FAIL |
 | `bin/chief-of-staff --teacher-knowledge-vault-knowledge-entry-v0-validate` | Read-only knowledge entry v0 validator |
 | `bin/chief-of-staff --validate-memory` | Related memory warning check (not vault-specific) |
 | `bin/chief-of-staff --dashboard` | Includes Knowledge Vault M0 status in dashboard |

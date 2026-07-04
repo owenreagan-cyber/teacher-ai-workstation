@@ -1,0 +1,21 @@
+{
+  "classification": "fake_local_planning_only",
+  "source_items": [
+    {"source_item_id": "fake-source-item-drive-001", "source_id": "fake-source-google-drive", "placeholder_uri": "drive-placeholder://TeacherAI-Curriculum-Library/01_MATH/lesson-021/", "scan_policy": "normal"},
+    {"source_item_id": "fake-source-item-drive-002", "source_id": "fake-source-google-drive", "placeholder_uri": "drive-placeholder://TeacherAI-Curriculum-Library/02_READING_MASTERY/unit-04/", "scan_policy": "normal"},
+    {"source_item_id": "fake-source-item-drive-003", "source_id": "fake-source-google-drive", "placeholder_uri": "drive-placeholder://TeacherAI-Curriculum-Library/06_HISTORY/american-revolution/", "scan_policy": "normal"},
+    {"source_item_id": "fake-source-item-drive-004", "source_id": "fake-source-google-drive", "placeholder_uri": "drive-placeholder://TeacherAI-Curriculum-Library/07_SCIENCE/matter/", "scan_policy": "normal"},
+    {"source_item_id": "fake-source-item-drive-005", "source_id": "fake-source-google-drive", "placeholder_uri": "drive-placeholder://TeacherAI-Curriculum-Library/10_TEACHER_ONLY/assessment-key/", "scan_policy": "restricted_indexable"},
+    {"source_item_id": "fake-source-item-drive-006", "source_id": "fake-source-google-drive", "placeholder_uri": "drive-placeholder://TeacherAI-Curriculum-Library/11_STUDENT_FACING/fraction-worksheet/", "scan_policy": "normal"},
+    {"source_item_id": "fake-source-item-drive-007", "source_id": "fake-source-google-drive", "placeholder_uri": "drive-placeholder://TeacherAI-Curriculum-Library/12_AI_GENERATED/adaptation/", "scan_policy": "normal"},
+    {"source_item_id": "fake-source-item-drive-008", "source_id": "fake-source-google-drive", "placeholder_uri": "drive-placeholder://TeacherAI-Curriculum-Library/09_PACING_GUIDES/only-drive/", "scan_policy": "normal"},
+    {"source_item_id": "fake-source-item-drive-009", "source_id": "fake-source-google-drive", "placeholder_uri": "drive-placeholder://TeacherAI-Curriculum-Library/04_LANGUAGE_ARTS/shared/", "scan_policy": "normal"},
+    {"source_item_id": "fake-source-item-canvas-001", "source_id": "fake-source-canvas", "placeholder_uri": "canvas-placeholder://courses/fake-course/modules/only-canvas/", "scan_policy": "normal"},
+    {"source_item_id": "fake-source-item-canvas-002", "source_id": "fake-source-canvas", "placeholder_uri": "canvas-placeholder://courses/fake-course/modules/shared/", "scan_policy": "normal"},
+    {"source_item_id": "fake-source-item-canvas-003", "source_id": "fake-source-canvas", "placeholder_uri": "canvas-placeholder://courses/fake-course/modules/lesson-021-package/", "scan_policy": "normal"},
+    {"source_item_id": "fake-source-item-nas-001", "source_id": "fake-source-ugreen-nas", "placeholder_uri": "nas-placeholder://mirror/01_MATH/duplicate-a/", "scan_policy": "normal"},
+    {"source_item_id": "fake-source-item-nas-002", "source_id": "fake-source-ugreen-nas", "placeholder_uri": "nas-placeholder://mirror/01_MATH/duplicate-b/", "scan_policy": "normal"},
+    {"source_item_id": "fake-source-item-staging-001", "source_id": "fake-source-local-staging", "placeholder_uri": "local-staging-placeholder://workshop/writing/version-v1/", "scan_policy": "normal"},
+    {"source_item_id": "fake-source-item-blocked-001", "source_id": "fake-source-google-drive", "placeholder_uri": "drive-placeholder://TeacherAI-Curriculum-Library/99_DO_NOT_SCAN/blocked/", "scan_policy": "do_not_scan"}
+  ]
+}

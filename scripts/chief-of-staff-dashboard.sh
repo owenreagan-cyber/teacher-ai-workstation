@@ -1392,6 +1392,27 @@ else
   warn "Teacher Knowledge Vault M0 architecture freeze status script missing: scripts/teacher-knowledge-vault-m0-architecture-freeze-status.sh"
 fi
 
+section "Teacher Knowledge Vault M1 Fake Catalog Foundation"
+if [[ -f scripts/teacher-knowledge-vault-m1-fake-catalog-status.sh ]]; then
+  teacher_knowledge_vault_m1_result=0
+  teacher_knowledge_vault_m1_output="$(bash scripts/teacher-knowledge-vault-m1-fake-catalog-status.sh 2>&1)" || teacher_knowledge_vault_m1_result=$?
+  teacher_knowledge_vault_m1_pass="$(summary_count "${teacher_knowledge_vault_m1_output}" "PASS")"
+  teacher_knowledge_vault_m1_warn="$(summary_count "${teacher_knowledge_vault_m1_output}" "WARN")"
+  teacher_knowledge_vault_m1_fail="$(summary_count "${teacher_knowledge_vault_m1_output}" "FAIL")"
+
+  if [[ "${teacher_knowledge_vault_m1_result}" != "0" ]]; then
+    printf '%s\n' "${teacher_knowledge_vault_m1_output}"
+    fail "Teacher Knowledge Vault M1 fake catalog status failed"
+  elif [[ -n "${teacher_knowledge_vault_m1_pass}" && -n "${teacher_knowledge_vault_m1_warn}" && -n "${teacher_knowledge_vault_m1_fail}" ]]; then
+    printf 'Teacher Knowledge Vault M1 Fake Catalog: PASS %s / WARN %s / FAIL %s\n' "${teacher_knowledge_vault_m1_pass}" "${teacher_knowledge_vault_m1_warn}" "${teacher_knowledge_vault_m1_fail}"
+    pass "Teacher Knowledge Vault M1 fake catalog status completed"
+  else
+    pass "Teacher Knowledge Vault M1 fake catalog status completed"
+  fi
+else
+  warn "Teacher Knowledge Vault M1 fake catalog status script missing: scripts/teacher-knowledge-vault-m1-fake-catalog-status.sh"
+fi
+
 section "Local Retrieval Foundation v0"
 if [[ -f scripts/local-retrieval-foundation-status.sh ]]; then
   local_retrieval_foundation_result=0

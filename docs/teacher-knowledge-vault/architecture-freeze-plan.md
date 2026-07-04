@@ -64,6 +64,7 @@ All fixtures use `fake_local_planning_only` classification. No real teaching con
 
 ```text
 assistant/memory/knowledge/ population with real files
+M1 SQLite runtime database creation
 automatic memory loading / default CLI inclusion
 folder scanning / crawling / indexing / OCR
 embeddings / RAG / AI summarization of real files
@@ -76,7 +77,9 @@ student data / rosters / grades / parent contact info
 
 ```bash
 bin/chief-of-staff --teacher-knowledge-vault-m0-architecture-freeze-status
+bin/chief-of-staff --teacher-knowledge-vault-m1-fake-catalog-status
 bash tests/teacher-knowledge-vault-m0-architecture-freeze-status-test.sh
+bash tests/teacher-knowledge-vault-m1-fake-catalog-status-test.sh
 ```
 
 ## Non-Activation

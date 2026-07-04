@@ -1,0 +1,22 @@
+{
+  "classification": "fake_local_planning_only",
+  "runtime_executed": false,
+  "events": [
+    {"event_id": "fake-evt-001", "event_type": "discovery_run_planned", "runtime_executed": false},
+    {"event_id": "fake-evt-002", "event_type": "source_item_found", "source_item_id": "fake-source-item-drive-001", "runtime_executed": false},
+    {"event_id": "fake-evt-003", "event_type": "source_item_blocked_do_not_scan", "source_item_id": "fake-source-item-blocked-001", "runtime_executed": false},
+    {"event_id": "fake-evt-004", "event_type": "fingerprint_calculated", "fingerprint_set_id": "fake-fp-dup-group-001", "runtime_executed": false},
+    {"event_id": "fake-evt-005", "event_type": "duplicate_candidate_found", "relationship_id": "fake-rel-dup-001", "runtime_executed": false},
+    {"event_id": "fake-evt-006", "event_type": "version_candidate_found", "relationship_id": "fake-rel-version-001", "runtime_executed": false},
+    {"event_id": "fake-evt-007", "event_type": "classification_suggested", "resource_id": "fake-resource-saxon-lesson-021", "runtime_executed": false},
+    {"event_id": "fake-evt-008", "event_type": "teacher_approved", "queue_item_id": "fake-rq-010", "runtime_executed": false},
+    {"event_id": "fake-evt-009", "event_type": "teacher_rejected", "queue_item_id": "fake-rq-011", "runtime_executed": false},
+    {"event_id": "fake-evt-010", "event_type": "teacher_edited_suggestion", "queue_item_id": "fake-rq-007", "runtime_executed": false},
+    {"event_id": "fake-evt-011", "event_type": "dry_run_organization_planned", "resource_id": "fake-resource-student-facing-worksheet", "runtime_executed": false},
+    {"event_id": "fake-evt-012", "event_type": "operation_blocked_pending_approval", "resource_id": "fake-resource-student-facing-worksheet", "runtime_executed": false},
+    {"event_id": "fake-evt-013", "event_type": "ocr_requested_blocked", "queue_item_id": "fake-rq-003", "runtime_executed": false},
+    {"event_id": "fake-evt-014", "event_type": "ai_classification_requested_blocked", "resource_id": "fake-resource-ai-generated-adaptation", "runtime_executed": false},
+    {"event_id": "fake-evt-015", "event_type": "connector_access_requested_blocked", "source_id": "fake-source-google-drive", "runtime_executed": false},
+    {"event_id": "fake-evt-016", "event_type": "canvas_publish_requested_blocked", "resource_id": "fake-resource-canvas-only-module", "runtime_executed": false}
+  ]
+}

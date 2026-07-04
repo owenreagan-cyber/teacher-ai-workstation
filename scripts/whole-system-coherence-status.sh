@@ -61,7 +61,8 @@ for closure in \
   complete_app_runtime_approval_gate_program \
   level_3_classroom_timer_stopwatch_runtime_prototype \
   complete_vibe_wallpaper_widgets_planning_gate_program \
-  complete_teacher_knowledge_vault_m0_architecture_freeze; do
+  complete_teacher_knowledge_vault_m0_architecture_freeze \
+  complete_teacher_knowledge_vault_m1_fake_catalog_foundation; do
   check_doc_contains "${whole_system_report}" "${closure}" "whole-system report closure: ${closure}"
 done
 check_doc_contains "${coherence_report}" "complete_vibe_wallpaper_widgets_planning_gate_program" "coherence report vibe wallpaper widgets closure"
@@ -76,13 +77,19 @@ check_doc_contains docs/build-queue.md "decision packet" "build queue decision p
 check_doc_contains docs/build-queue.md "frontmatter planning" "build queue frontmatter"
 check_doc_contains docs/build-queue.md "coherence maintenance" "build queue coherence"
 check_doc_contains docs/build-queue.md "Knowledge Vault" "build queue knowledge vault"
+check_doc_contains docs/build-queue.md "M1 fake catalog" "build queue M1 catalog"
 check_doc_contains assistant/memory/active-priorities.md "coherence maintenance" "active priorities coherence"
 check_doc_contains docs/proposals/index.md "Whole-system coherence maintenance" "proposal ledger coherence"
 check_doc_contains docs/teacher-workstation-capability-map.md "whole-system-coherence-status" "capability map coherence status"
 
 section 'Stale Count Hardening'
-check_doc_contains "${whole_system_report}" "143 / 0 / 0 PASS" "dashboard count current"
-check_doc_contains "${whole_system_report}" "62 / 0 / 0 PASS" "validate-all count current"
+check_doc_contains "${whole_system_report}" "144 / 0 / 0 PASS" "dashboard count current"
+check_doc_contains "${whole_system_report}" "63 / 0 / 0 PASS" "validate-all count current"
+if grep -Fq -- 'Dashboard 143/0/0' "${whole_system_report}" 2>/dev/null; then
+  fail 'whole-system report must not contain stale Dashboard 143/0/0 example'
+else
+  pass 'whole-system report excludes stale Dashboard 143/0/0'
+fi
 if grep -Fq -- 'Dashboard 142/0/0' "${whole_system_report}" 2>/dev/null; then
   fail 'whole-system report must not contain stale Dashboard 142/0/0 example'
 else

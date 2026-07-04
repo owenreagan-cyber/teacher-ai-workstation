@@ -1,0 +1,23 @@
+{
+  "classification": "fake_local_planning_only",
+  "metrics_snapshot_label": "fake_m1_catalog_metrics",
+  "runtime_executed": false,
+  "sources_configured": 4,
+  "fake_resources_indexed": 13,
+  "fake_representations_counted": 18,
+  "fake_review_queue_open_count": 9,
+  "fake_duplicates_found": 1,
+  "fake_versions_found": 1,
+  "ocr_jobs_requested": 1,
+  "ocr_jobs_blocked": 1,
+  "ai_classifications_requested": 1,
+  "ai_classifications_blocked": 1,
+  "connector_access_requested": 1,
+  "connector_access_blocked": 1,
+  "organization_operations_approved": 0,
+  "organization_operations_blocked": 1,
+  "api_cost_estimate_usd": 0.0,
+  "real_files_processed": 0,
+  "sqlite_database_created": false,
+  "m0_architecture_freeze_preserved": true
+}

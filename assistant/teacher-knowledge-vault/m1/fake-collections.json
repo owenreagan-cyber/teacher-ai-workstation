@@ -1,0 +1,23 @@
+{
+  "classification": "fake_local_planning_only",
+  "collections": [
+    {
+      "collection_id": "fake-collection-saxon-im5-unit-03",
+      "title": "Placeholder Saxon IM5 Unit 03 Collection",
+      "collection_type": "unit",
+      "resource_ids": ["fake-resource-saxon-lesson-021", "fake-resource-teacher-only-assessment-key"]
+    },
+    {
+      "collection_id": "fake-collection-ckhg-quarter-01",
+      "title": "Placeholder CKHG Quarter 01 Collection",
+      "collection_type": "pacing_block",
+      "resource_ids": ["fake-resource-ckhg-american-revolution"]
+    },
+    {
+      "collection_id": "fake-collection-review-backlog",
+      "title": "Placeholder Review Backlog Collection",
+      "collection_type": "review_backlog",
+      "resource_ids": ["fake-resource-duplicate-candidate-a", "fake-resource-duplicate-candidate-b", "fake-resource-ai-generated-adaptation"]
+    }
+  ]
+}

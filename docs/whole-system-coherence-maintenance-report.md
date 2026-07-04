@@ -42,11 +42,12 @@ Record the whole-system coherence maintenance pass after recent planning lanes (
 ## Current Global State Proof (Post Agent Builder Governance)
 
 ```text
-Dashboard: 135 / 0 / 0 PASS
-Validate-all: 53 / 0 / 0 PASS
-Phase-1: 835 / 0 / 0 PASS
-Whole-system coherence status: 48 / 0 / 0 PASS
+Dashboard: 136 / 0 / 0 PASS
+Validate-all: 54 / 0 / 0 PASS
+Phase-1: 849 / 0 / 0 PASS
+Whole-system coherence status: 52 / 0 / 0 PASS
 Agent builder governance status: 44 / 0 / 0 PASS
+Owen architecture decision packets status: 65 / 0 / 0 PASS
 Chief of Staff launches external agents: no
 ```
 
@@ -65,7 +66,7 @@ recommended default: Option D (parked)
 
 Ranked recommendations (post-coherence maintenance):
 
-1. **Owen architecture decisions** — production registry Option A/B/C; manual text asset directory tree layout (Gemini memo §6).
+1. **Owen reviews decision packets** — `docs/owen-architecture-decision-packets.md`; CoS does not choose options.
 2. **Safe local document indexing planning refinement** — docs-only scope doc if Owen wants indexing boundaries updated.
 3. **Per-app classroom utility planning missions** — Owen-gated; one app at a time; runtime blocked until explicit mission.
 4. **Blocked** — frontmatter parser/validator/schema; discovery orchestrator; runtime classroom apps; registry writes.

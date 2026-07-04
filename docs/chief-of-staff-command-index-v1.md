@@ -41,6 +41,7 @@ These flags exist in `bin/chief-of-staff` and work as read-only local status sur
 | `bin/chief-of-staff --whole-system-master-roadmap-status` | Whole-system master roadmap build-state report and next safe lane selector proof |
 | `bin/chief-of-staff --whole-system-coherence-status` | Whole-system coherence maintenance audit and cross-link proof |
 | `bin/chief-of-staff --agent-builder-compatibility-governance-status` | Agent builder compatibility and external tool governance (no agent launch) |
+| `bin/chief-of-staff --owen-architecture-decision-packets-status` | Owen architecture decision packet index and boundary proof (Owen owns decisions) |
 | `bin/chief-of-staff --gemini-discovery-classification-intake-status` | Gemini discovery/classification external planning intake (classification only) |
 | `bin/chief-of-staff --markdown-frontmatter-planning-status` | Markdown frontmatter / manual metadata planning (read-only; no parser) |
 | `bin/chief-of-staff --return-to-core-status` | Parked tracks / return-to-core map |

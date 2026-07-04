@@ -107,6 +107,8 @@ check_doc_contains "${report}" "complete_whole_system_coherence_maintenance" "co
 check_doc_contains "${report}" "--whole-system-coherence-status" "coherence status command cross-link"
 check_doc_contains "${report}" "complete_agent_builder_compatibility_governance_program" "agent builder governance closure"
 check_doc_contains "${report}" "--agent-builder-compatibility-governance-status" "agent builder governance status command cross-link"
+check_doc_contains "${report}" "complete_owen_architecture_decision_packets_program" "decision packets closure"
+check_doc_contains "${report}" "--owen-architecture-decision-packets-status" "decision packets status command cross-link"
 check_file docs/whole-system-coherence-maintenance-report.md
 
 section 'Production Registry Parked-State Proof'
@@ -223,6 +225,23 @@ if [[ -f scripts/agent-builder-compatibility-governance-status.sh ]]; then
   fi
 else
   fail 'agent builder compatibility governance status script missing'
+fi
+
+section 'Dependent Status: Owen Architecture Decision Packets'
+if [[ -f scripts/owen-architecture-decision-packets-status.sh ]]; then
+  oadp_output="$(bash scripts/owen-architecture-decision-packets-status.sh 2>&1)" || oadp_result=$?
+  oadp_result="${oadp_result:-0}"
+  if [[ "${oadp_result}" != "0" ]]; then
+    fail 'Owen architecture decision packets status script exited nonzero'
+    printf '%s\n' "${oadp_output}" | tail -20
+  elif grep -q '^FAIL: [1-9]' <<< "${oadp_output}"; then
+    fail 'Owen architecture decision packets status reported FAIL'
+    printf '%s\n' "${oadp_output}" | tail -20
+  else
+    pass 'Owen architecture decision packets status component clean'
+  fi
+else
+  fail 'Owen architecture decision packets status script missing'
 fi
 
 section 'Coherence Report Cross-Check (No Nested Run)'

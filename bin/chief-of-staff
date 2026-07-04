@@ -234,6 +234,8 @@ Developer and Cursor Workflow:
   --whole-system-coherence-status      Show whole-system coherence maintenance audit and cross-link proof and exit.
   --agent-builder-compatibility-governance-status
                                        Show agent builder compatibility and external tool governance status and exit.
+  --owen-architecture-decision-packets-status
+                                       Show Owen architecture decision packet index and boundary proof and exit.
   --developer-status                   Show local Developer Mode status and exit.
   --create-developer-project <template> <slug>
                                        Copy a Developer Mode template into local projects.
@@ -2737,6 +2739,15 @@ while [[ $# -gt 0 ]]; do
         die "Agent builder compatibility governance status script is missing: scripts/agent-builder-compatibility-governance-status.sh"
       fi
       bash "${agent_builder_governance_status_script}"
+      exit 0
+      ;;
+    --owen-architecture-decision-packets-status)
+      repo_root="$(resolve_repo_root)"
+      decision_packets_status_script="${repo_root}/scripts/owen-architecture-decision-packets-status.sh"
+      if [[ ! -f "${decision_packets_status_script}" ]]; then
+        die "Owen architecture decision packets status script is missing: scripts/owen-architecture-decision-packets-status.sh"
+      fi
+      bash "${decision_packets_status_script}"
       exit 0
       ;;
     --developer-status)

@@ -143,6 +143,7 @@ run_track "Production Registry Next Gate" scripts/curriculum-builder-production-
 run_track "Whole-System Master Roadmap" scripts/whole-system-master-roadmap-status.sh
 run_track "Whole-System Coherence" scripts/whole-system-coherence-status.sh
 run_track "Agent Builder Governance" scripts/agent-builder-compatibility-governance-status.sh
+run_track "Owen Decision Packets" scripts/owen-architecture-decision-packets-status.sh
 run_track "Presentation Engine Renderer Foundation" scripts/presentation-engine-renderer-foundation-status.sh
 run_track "Gemini Discovery Classification Intake" scripts/gemini-discovery-classification-intake-status.sh
 run_track "Markdown Frontmatter Planning" scripts/markdown-frontmatter-planning-status.sh

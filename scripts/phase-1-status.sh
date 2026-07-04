@@ -1147,6 +1147,25 @@ check_doc_contains docs/agent-builder-compatibility-and-external-tool-governance
 check_doc_contains docs/whole-system-master-roadmap-build-state-report.md "complete_agent_builder_compatibility_governance_program" "whole-system report agent builder closure"
 grep -Fq -- '--agent-builder-compatibility-governance-status' bin/chief-of-staff && pass "chief-of-staff exposes --agent-builder-compatibility-governance-status" || fail "chief-of-staff missing --agent-builder-compatibility-governance-status"
 
+section "Owen Architecture Decision Packets Files"
+for path in \
+  docs/owen-architecture-decision-packets.md \
+  docs/proposals/blocked/production-registry-options-decision-packet.md \
+  docs/proposals/blocked/manual-text-asset-directory-layout-decision-packet.md \
+  docs/proposals/blocked/classroom-utility-app-priority-decision-packet.md \
+  docs/proposals/blocked/external-builder-trial-decision-packet.md \
+  docs/proposals/blocked/local-llm-ollama-decision-packet.md \
+  docs/proposals/blocked/drive-nas-icloud-canvas-integration-posture-decision-packet.md \
+  scripts/owen-architecture-decision-packets-status.sh \
+  tests/owen-architecture-decision-packets-status-test.sh; do
+  check_required_file "${path}"
+done
+check_bash_syntax scripts/owen-architecture-decision-packets-status.sh
+check_bash_syntax tests/owen-architecture-decision-packets-status-test.sh
+check_doc_contains docs/owen-architecture-decision-packets.md "complete_owen_architecture_decision_packets_program" "decision packets closure"
+check_doc_contains docs/whole-system-master-roadmap-build-state-report.md "complete_owen_architecture_decision_packets_program" "whole-system report decision packets closure"
+grep -Fq -- '--owen-architecture-decision-packets-status' bin/chief-of-staff && pass "chief-of-staff exposes --owen-architecture-decision-packets-status" || fail "chief-of-staff missing --owen-architecture-decision-packets-status"
+
 section "Presentation Engine Renderer Foundation Planning Files"
 for path in \
   docs/presentation-engine-renderer-foundation.md \

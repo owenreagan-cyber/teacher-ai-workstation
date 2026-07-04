@@ -82,6 +82,7 @@ Cross-references:
 | Curriculum Source Readiness (fake metadata inventory) | implemented read-only | `--curriculum-source-readiness-status`; fake fixtures only; no real ingestion |
 | Whole-system coherence maintenance | implemented read-only | `--whole-system-coherence-status`; audit + safe enhancement backlog |
 | Agent builder compatibility governance | implemented read-only | `--agent-builder-compatibility-governance-status`; external tool classification; no CoS agent launch |
+| Owen architecture decision packets | implemented read-only | `--owen-architecture-decision-packets-status`; six decision packets; Owen owns choices |
 | Markdown frontmatter / manual metadata planning | implemented read-only (planning) | `--markdown-frontmatter-planning-status`; field ideas only; no parser/validator |
 | Gemini discovery/classification external planning intake | implemented read-only | `--gemini-discovery-classification-intake-status`; filed memo + classification; no runtime discovery |
 | Production registry writes / real records | planned | Approval-gated — Owen checklist required; `--curriculum-registry-write` blocked |

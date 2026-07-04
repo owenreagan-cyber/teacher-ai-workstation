@@ -8,15 +8,17 @@ Phase 0E Vibe Engine.
 
 ## Current Focus
 
-**Agent builder compatibility and external tool governance complete — production registry parked (Option D recommended).**
+**Owen architecture decision packets complete — Owen owns all blocked-gate choices; production registry parked (Option D).**
 
-Governance program for Cursor, ChatGPT, Gemini, Codex, Claude Code, Antigravity — agent builder governance program (`docs/agent-builder-compatibility-and-external-tool-governance.md`; `--agent-builder-compatibility-governance-status`). Chief of Staff does not launch external agents. first governed production registry record complete.
+Decision packet index: `docs/owen-architecture-decision-packets.md`; `--owen-architecture-decision-packets-status`. Six packets ready for Owen review (registry, directory layout, classroom priority, external builder trial, local LLM, integrations). Chief of Staff does not choose options for Owen. agent builder governance complete. first governed production registry record complete (Option D parked). No runtime activation.
 
 Master program roadmap: `docs/master-build-roadmap.md` — Program Readiness Audit and mission sequencing for v1.0. Whole-system report: `docs/whole-system-master-roadmap-build-state-report.md`. Implementation does not proceed automatically from the roadmap.
 
 Handoff and status clarity. Start from `docs/phase-1-chief-of-staff-status-audit.md` — Repo-Wide Parked Tracks and Active Status Map and `docs/build-queue.md`.
 
 ## Recently Completed
+
+- Owen Architecture Decision Packet Program (2026-07-03): six decision packets; main index; `--owen-architecture-decision-packets-status`. Owen owns decisions; no runtime activation.
 
 - Agent Builder Compatibility and External Tool Governance Program (2026-07-03): builder classification; safe trial checklist; mission proof template; `--agent-builder-compatibility-governance-status`. No tool install or CoS agent launch.
 

@@ -9,6 +9,7 @@ Baseline: main after Whole-System Master Roadmap Build-State Report mission
 Closure: whole_system_master_roadmap_status_complete
 Coherence maintenance closure: complete_whole_system_coherence_maintenance
 Agent builder governance closure: complete_agent_builder_compatibility_governance_program
+Decision packets closure: complete_owen_architecture_decision_packets_program
 Presentation Engine planning closure: complete_presentation_engine_renderer_foundation_planning
 A4–A7 fixture enrichment closure: complete_a4_a7_fixture_optional_field_enrichment
 Classroom Utility templates closure: complete_classroom_utility_per_app_mission_templates
@@ -18,7 +19,7 @@ Frontmatter planning closure: complete_curriculum_manual_metadata_frontmatter_pl
 
 **Status key:** `[x]` Built/merged · `[~]` Currently being built · `[>]` Ready for safe planning/build · `[!]` Blocked pending Owen/safety gate · `[ ]` Future / not started · `[?]` Insufficient repo evidence
 
-**Status commands:** `bin/chief-of-staff --whole-system-master-roadmap-status`, `bin/chief-of-staff --whole-system-coherence-status`, `bin/chief-of-staff --agent-builder-compatibility-governance-status`
+**Status commands:** `bin/chief-of-staff --whole-system-master-roadmap-status`, `bin/chief-of-staff --whole-system-coherence-status`, `bin/chief-of-staff --agent-builder-compatibility-governance-status`, `bin/chief-of-staff --owen-architecture-decision-packets-status`
 
 ---
 
@@ -26,7 +27,7 @@ Frontmatter planning closure: complete_curriculum_manual_metadata_frontmatter_pl
 
 | Class | Meaning | Examples in this repo |
 | --- | --- | --- |
-| **repo-backed evidence** | Merged files, status scripts, tests, CLI wiring with PASS proof | Dashboard 135/0/0; `--agent-builder-compatibility-governance-status`; `--whole-system-coherence-status`; first governed record in `production-registry.json` |
+| **repo-backed evidence** | Merged files, status scripts, tests, CLI wiring with PASS proof | Dashboard 136/0/0; `--owen-architecture-decision-packets-status`; first governed record in `production-registry.json` |
 | **planning/proposal-only evidence** | Docs, proposals, lane reviews without runtime activation | Writer tooling design boundary; second-record worksheet; Academic OS external intake |
 | **blocked implementation gates** | Explicit Owen/safety gates; negative tests; sentinel | `BLOCKED-NO-WRITES.sentinel`; no `--write`; Options A/B/C blocked |
 | **future ideas not started** | Named programs with no repo implementation | Live Vibe Panel; Lovable API; NAS crawler |
@@ -86,12 +87,12 @@ Closure: next_safe_lane_selector_complete
 
 Ranked recommendations (safest first):
 
-1. **safest next docs/status build lane** — Owen architecture decisions (production registry A/B/C; manual text asset directory tree). Coherence maintenance **complete** (`docs/whole-system-coherence-maintenance-report.md`; `--whole-system-coherence-status`).
-2. **strongest classroom-value planning lane** — Per-app classroom utility Owen-gated missions from candidate matrix; templates **complete** (`--classroom-utility-templates-status`).
-3. **blocked high-value lane requiring Owen decision** — Production registry Option A (writer/`--write`), Option B (second record), or Option C (metadata pilot expansion). Any single classroom utility app runtime.
+1. **safest next docs/status build lane** — Owen reviews decision packets (`docs/owen-architecture-decision-packets.md`; `--owen-architecture-decision-packets-status`). CoS does not choose options.
+2. **strongest classroom-value planning lane** — Per-app classroom utility Owen-gated missions from candidate matrix; templates **complete** (`--classroom-utility-templates-status`); priority decision packet ready.
+3. **blocked high-value lane requiring Owen decision** — Production registry Option A/B/C (Option D parked default); manual text asset directory layout; classroom utility priority; external builder trial; local LLM posture; Drive/NAS/iCloud/Canvas integration posture.
 4. **future lane needing more repo evidence** — Academic OS beyond external intake map; unified daily AI briefing; live Vibe Panel / wallpaper apply.
 
-**Recommended default:** Maintain **Option D (parked)** for production registry. Proceed with safe docs/status lanes until Owen selects A, B, or C.
+**Recommended default:** Maintain **Option D (parked)** for production registry. Owen selects from decision packets before any blocked-gate mission proceeds.
 
 Cross-references: `docs/build-queue.md`, `docs/master-build-roadmap.md`, `docs/proposals/index.md`, `assistant/memory/active-priorities.md`
 
@@ -106,9 +107,10 @@ Cross-references: `docs/build-queue.md`, `docs/master-build-roadmap.md`, `docs/p
 | [x] | Discovery ≠ implementation banner on `--cursor-operating-modes-status` | repo-backed |
 | [x] | ABE sprint queue template + proposal-folder README checks | repo-backed |
 | [x] | Agent builder compatibility and external tool governance program complete | repo-backed — `docs/agent-builder-compatibility-and-external-tool-governance.md`; `complete_agent_builder_compatibility_governance_program` |
+| [x] | Owen architecture decision packet program complete | repo-backed — `docs/owen-architecture-decision-packets.md`; `complete_owen_architecture_decision_packets_program`; Owen owns decisions |
 | [>] | Batch Level 2 review playbook (lane review still proposed/deferred) | planning/proposal-only |
 | [!] | Runtime/product behavior without explicit mission | blocked gate |
-| **Proof** | `--cursor-operating-modes-status`, `--autonomous-build-engine-status`, `--governance-lane-status`, `--agent-builder-compatibility-governance-status` | |
+| **Proof** | `--cursor-operating-modes-status`, `--autonomous-build-engine-status`, `--governance-lane-status`, `--agent-builder-compatibility-governance-status`, `--owen-architecture-decision-packets-status` | |
 
 ---
 
@@ -116,7 +118,7 @@ Cross-references: `docs/build-queue.md`, `docs/master-build-roadmap.md`, `docs/p
 
 | Marker | Item | Evidence |
 | --- | --- | --- |
-| [x] | CLI, dashboard (135/0/0), Program B daily ops, queues, `--next-action`, validate-all (53/0/0) | repo-backed |
+| [x] | CLI, dashboard (136/0/0), Program B daily ops, queues, `--next-action`, validate-all (54/0/0) | repo-backed |
 | [>] | Unified daily briefing (AI), B4 smoke expansion, B7 closure placeholder | planning/proposal-only |
 | [!] | Automation beyond read-only status | blocked gate |
 | **Proof** | `bin/chief-of-staff --dashboard`, `docs/chief-of-staff-v1-program-b-closure.md` | |
@@ -294,10 +296,11 @@ Cross-references: `docs/build-queue.md`, `docs/master-build-roadmap.md`, `docs/p
 
 | Surface | State |
 | --- | --- |
-| Dashboard | 135 / 0 / 0 PASS |
-| Validate-all | 53 / 0 / 0 PASS |
+| Dashboard | 136 / 0 / 0 PASS |
+| Validate-all | 54 / 0 / 0 PASS |
 | Whole-system coherence maintenance | `--whole-system-coherence-status` |
 | Agent builder compatibility governance | `--agent-builder-compatibility-governance-status` |
+| Owen architecture decision packets | `--owen-architecture-decision-packets-status` |
 | Whole-system roadmap status | `--whole-system-master-roadmap-status` |
 | Presentation Engine renderer foundation | `--presentation-engine-renderer-foundation-status` |
 | Gemini discovery/classification intake | `--gemini-discovery-classification-intake-status` |
@@ -309,9 +312,9 @@ Cross-references: `docs/build-queue.md`, `docs/master-build-roadmap.md`, `docs/p
 | First-record status | 50 / 0 / 0 PASS |
 | Next-gate status | 34 / 0 / 0 PASS |
 | Empty-file status (historical) | 30 / 0 / 0 PASS |
-| Phase-1 | 835 / 0 / 0 PASS |
+| Phase-1 | 849 / 0 / 0 PASS |
 | Active mission | None |
-| Next step | Owen architecture decisions; production registry parked (Option D); agent builder governance complete — CoS does not launch external agents |
+| Next step | Owen reviews decision packets and selects blocked-gate options; production registry parked (Option D); CoS does not choose for Owen |
 
 **Safety gates preserved:** First governed production registry record exists (`records` count exactly 1; ID `resource-math-lesson-108-presentation`); `BLOCKED-NO-WRITES.sentinel` intact; no `--write`; no writer scripts; no second production record; real curriculum file access blocked; copied curriculum content blocked; source auto-resolution blocked; integration and runtime gates blocked.
 

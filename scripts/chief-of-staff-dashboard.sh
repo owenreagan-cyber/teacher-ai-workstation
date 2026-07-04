@@ -1818,6 +1818,27 @@ else
   warn "App ecosystem inventory status script missing: scripts/app-ecosystem-inventory-status.sh"
 fi
 
+section "Classroom Timer & Stopwatch Planning"
+if [[ -f scripts/classroom-timer-stopwatch-planning-status.sh ]]; then
+  timer_planning_result=0
+  timer_planning_output="$(bash scripts/classroom-timer-stopwatch-planning-status.sh 2>&1)" || timer_planning_result=$?
+  timer_planning_pass="$(summary_count "${timer_planning_output}" "PASS")"
+  timer_planning_warn="$(summary_count "${timer_planning_output}" "WARN")"
+  timer_planning_fail="$(summary_count "${timer_planning_output}" "FAIL")"
+
+  if [[ "${timer_planning_result}" != "0" ]]; then
+    printf '%s\n' "${timer_planning_output}"
+    fail "Classroom Timer & Stopwatch planning status failed"
+  elif [[ -n "${timer_planning_pass}" && -n "${timer_planning_warn}" && -n "${timer_planning_fail}" ]]; then
+    printf 'Timer & Stopwatch Planning: PASS %s / WARN %s / FAIL %s\n' "${timer_planning_pass}" "${timer_planning_warn}" "${timer_planning_fail}"
+    pass "Classroom Timer & Stopwatch planning status completed"
+  else
+    pass "Classroom Timer & Stopwatch planning status completed"
+  fi
+else
+  warn "Classroom Timer & Stopwatch planning status script missing: scripts/classroom-timer-stopwatch-planning-status.sh"
+fi
+
 section "Curriculum Source Readiness Foundation"
 if [[ -f scripts/curriculum-source-readiness-status.sh ]]; then
   curriculum_source_readiness_result=0

@@ -237,6 +237,8 @@ Developer and Cursor Workflow:
   --owen-architecture-decision-packets-status
                                        Show Owen architecture decision packet index and boundary proof and exit.
   --app-ecosystem-inventory-status     Show app ecosystem inventory and prototype build list status and exit.
+  --classroom-timer-stopwatch-planning-status
+                                       Show Classroom Timer & Stopwatch planning lane status and exit.
   --developer-status                   Show local Developer Mode status and exit.
   --create-developer-project <template> <slug>
                                        Copy a Developer Mode template into local projects.
@@ -2758,6 +2760,15 @@ while [[ $# -gt 0 ]]; do
         die "App ecosystem inventory status script is missing: scripts/app-ecosystem-inventory-status.sh"
       fi
       bash "${app_ecosystem_inventory_status_script}"
+      exit 0
+      ;;
+    --classroom-timer-stopwatch-planning-status)
+      repo_root="$(resolve_repo_root)"
+      timer_planning_status_script="${repo_root}/scripts/classroom-timer-stopwatch-planning-status.sh"
+      if [[ ! -f "${timer_planning_status_script}" ]]; then
+        die "Classroom Timer & Stopwatch planning status script is missing: scripts/classroom-timer-stopwatch-planning-status.sh"
+      fi
+      bash "${timer_planning_status_script}"
       exit 0
       ;;
     --developer-status)

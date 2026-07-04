@@ -24,7 +24,7 @@ Collect **repo-backed decision packets** for blocked gates that require Owen's e
 | --- | --- | --- | --- | --- | --- |
 | 1 | Production registry next gate | `docs/proposals/blocked/production-registry-options-decision-packet.md` | ready for review | **yes** | **Option D — parked** (1 record, sentinel intact, no `--write`) |
 | 2 | Manual text asset directory layout | `docs/proposals/blocked/manual-text-asset-directory-layout-decision-packet.md` | ready for review | **yes** | **Option 4 — defer** (no layout chosen) |
-| 3 | Classroom utility app planning priority | `docs/proposals/blocked/classroom-utility-app-priority-decision-packet.md` | ready for review | **yes** | no app selected; use **52-app inventory** for decisions |
+| 3 | Classroom utility app planning priority | `docs/proposals/blocked/classroom-utility-app-priority-decision-packet.md` | ready for review | **yes** | Owen selected **Classroom Timer & Stopwatch** for planning lane only; runtime blocked |
 | 4 | External builder trial | `docs/proposals/blocked/external-builder-trial-decision-packet.md` | ready for review | **yes** | Cursor primary; trials blocked until Owen chooses |
 | 5 | Local LLM / Ollama posture | `docs/proposals/blocked/local-llm-ollama-decision-packet.md` | ready for review | **yes** | blocked/inactive — no probing, no inference |
 | 6 | Drive / NAS / iCloud / Canvas integration | `docs/proposals/blocked/drive-nas-icloud-canvas-integration-posture-decision-packet.md` | ready for review | **yes** | no access, no API/OAuth, no scanning |
@@ -37,6 +37,7 @@ Collect **repo-backed decision packets** for blocked gates that require Owen's e
 | Agent builder classification | `docs/agent-builder-compatibility-and-external-tool-governance.md` |
 | Classroom utility candidate matrix | `docs/classroom-utility-app-candidate-matrix.md` |
 | App ecosystem inventory (52 apps) | `docs/app-ecosystem-inventory-and-prototype-build-list.md` |
+| Classroom Timer & Stopwatch planning | `docs/classroom-utilities/classroom-timer-stopwatch-planning.md` (Owen selected — planning only) |
 | Gemini directory-tree blocker | `docs/external-planning/discovery-classification-memo.md` §6 |
 | Local LLM boundaries | `docs/local-llm-non-activation-boundaries.md` |
 | Canvas LLM planning capstone | `docs/canvas-llm-planning-foundation-capstone.md` |

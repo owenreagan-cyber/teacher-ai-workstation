@@ -1180,6 +1180,21 @@ check_doc_contains docs/app-ecosystem-inventory-and-prototype-build-list.md "com
 check_doc_contains docs/whole-system-master-roadmap-build-state-report.md "complete_app_ecosystem_inventory_and_prototype_build_list" "whole-system report app ecosystem closure"
 grep -Fq -- '--app-ecosystem-inventory-status' bin/chief-of-staff && pass "chief-of-staff exposes --app-ecosystem-inventory-status" || fail "chief-of-staff missing --app-ecosystem-inventory-status"
 
+section "Classroom Timer & Stopwatch Planning Lane Files"
+for path in \
+  docs/classroom-utilities/classroom-timer-stopwatch-planning.md \
+  assistant/classroom-utilities/samples/classroom-timer-stopwatch-planning/example-timer-presets-001.json \
+  assistant/classroom-utilities/samples/classroom-timer-stopwatch-planning/example-display-modes-001.json \
+  scripts/classroom-timer-stopwatch-planning-status.sh \
+  tests/classroom-timer-stopwatch-planning-status-test.sh; do
+  check_required_file "${path}"
+done
+check_bash_syntax scripts/classroom-timer-stopwatch-planning-status.sh
+check_bash_syntax tests/classroom-timer-stopwatch-planning-status-test.sh
+check_doc_contains docs/classroom-utilities/classroom-timer-stopwatch-planning.md "complete_classroom_timer_stopwatch_planning_lane" "timer planning closure"
+check_doc_contains docs/whole-system-master-roadmap-build-state-report.md "complete_classroom_timer_stopwatch_planning_lane" "whole-system report timer planning closure"
+grep -Fq -- '--classroom-timer-stopwatch-planning-status' bin/chief-of-staff && pass "chief-of-staff exposes --classroom-timer-stopwatch-planning-status" || fail "chief-of-staff missing --classroom-timer-stopwatch-planning-status"
+
 section "Presentation Engine Renderer Foundation Planning Files"
 for path in \
   docs/presentation-engine-renderer-foundation.md \

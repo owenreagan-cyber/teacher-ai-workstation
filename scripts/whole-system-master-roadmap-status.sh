@@ -111,6 +111,8 @@ check_doc_contains "${report}" "complete_owen_architecture_decision_packets_prog
 check_doc_contains "${report}" "--owen-architecture-decision-packets-status" "decision packets status command cross-link"
 check_doc_contains "${report}" "complete_app_ecosystem_inventory_and_prototype_build_list" "app ecosystem inventory closure"
 check_doc_contains "${report}" "--app-ecosystem-inventory-status" "app ecosystem inventory status command cross-link"
+check_doc_contains "${report}" "complete_classroom_timer_stopwatch_planning_lane" "timer stopwatch planning closure"
+check_doc_contains "${report}" "--classroom-timer-stopwatch-planning-status" "timer planning status command cross-link"
 check_file docs/whole-system-coherence-maintenance-report.md
 
 section 'Production Registry Parked-State Proof'
@@ -261,6 +263,23 @@ if [[ -f scripts/app-ecosystem-inventory-status.sh ]]; then
   fi
 else
   fail 'app ecosystem inventory status script missing'
+fi
+
+section 'Dependent Status: Classroom Timer & Stopwatch Planning'
+if [[ -f scripts/classroom-timer-stopwatch-planning-status.sh ]]; then
+  cts_output="$(bash scripts/classroom-timer-stopwatch-planning-status.sh 2>&1)" || cts_result=$?
+  cts_result="${cts_result:-0}"
+  if [[ "${cts_result}" != "0" ]]; then
+    fail 'Classroom Timer & Stopwatch planning status script exited nonzero'
+    printf '%s\n' "${cts_output}" | tail -20
+  elif grep -q '^FAIL: [1-9]' <<< "${cts_output}"; then
+    fail 'Classroom Timer & Stopwatch planning status reported FAIL'
+    printf '%s\n' "${cts_output}" | tail -20
+  else
+    pass 'Classroom Timer & Stopwatch planning status component clean'
+  fi
+else
+  fail 'Classroom Timer & Stopwatch planning status script missing'
 fi
 
 section 'Coherence Report Cross-Check (No Nested Run)'

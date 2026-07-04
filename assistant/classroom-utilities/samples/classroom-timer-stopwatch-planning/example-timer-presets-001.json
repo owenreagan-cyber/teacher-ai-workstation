@@ -1,0 +1,16 @@
+{
+  "fixture_classification": "fake_local_planning_only",
+  "app_candidate": "classroom-timer-stopwatch",
+  "presets": [
+    {"label": "example-warmup-round", "duration_label": "3:00", "mode": "countdown"},
+    {"label": "example-partner-share", "duration_label": "5:00", "mode": "countdown"},
+    {"label": "example-exit-ticket", "duration_label": "2:00", "mode": "countdown"},
+    {"label": "example-station-rotation", "duration_label": "10:00", "mode": "interval", "rounds_label": "3"},
+    {"label": "example-free-stopwatch", "duration_label": null, "mode": "stopwatch"}
+  ],
+  "quick_add_labels": ["+1m", "+3m", "+5m", "+10m"],
+  "runtime_app": "blocked",
+  "student_data": "none",
+  "persistence": "blocked",
+  "integrations": "blocked"
+}

@@ -67,7 +67,7 @@ Consolidate Owen's full known **app / tool / game ecosystem** (52 canonical conc
 | 9 | Email Responder | parent email automation | Canvas / LMS admin | 4 | high | — | — | high | — | — | high | high | — | high | blocked intake | boundary doc only |
 | 10 | Titanium Realm | Zenith, Sovereign Edition | behavior / discipline | 4 | high | high | — | — | — | high | — | — | — | high | planning input | wireframe labels only |
 | 11 | Glow/Grow App | AI behavior hub | behavior / discipline | 4 | high | high | — | med | — | high | med | — | — | high | planning input | behavior label concepts only |
-| 12 | Classroom Timer & Stopwatch | timer display | presentation / display | 1 | — | — | — | — | — | — | — | — | — | — | planning input | timer UI wireframe |
+| 12 | Classroom Timer & Stopwatch | timer display | presentation / display | 1 | — | — | — | — | — | — | — | — | — | — | **planning lane complete** | `--classroom-timer-stopwatch-planning-status` |
 | 13 | AI Coupon Factory | Pass Forge, Sensei Studio | reward economy | 4 | med | — | — | — | — | — | — | — | — | med | planning input | generic coupon templates; no names |
 | 14 | Thales Academic OS | Command Center, Pacing Pilot | infrastructure layer | 5 | med | — | — | — | high | high | high | high | — | high | insufficient repo runtime | architecture sketch docs only |
 | 15 | GradeMate | worksheet grader | worksheet / assessment | 4 | high | — | high | — | high | med | — | — | high | high | planning input | fake answer key labels |
@@ -153,7 +153,7 @@ Class Pass Early Build Archive (→ ClassPass) · AI Coupon Factory aliases (→
 
 ## Recommended Next App Planning Missions (Owen Chooses)
 
-1. Owen picks **one Tier 1** canonical name for a per-app planning mission (fake fixtures only).
+1. Owen picks **next Tier 1** app for planning (Timer & Stopwatch **complete** — see `docs/classroom-utilities/classroom-timer-stopwatch-planning.md`) or defers runtime.
 2. Or Owen picks from **Tier 2** with explicit student-data boundary review.
 3. **Do not** start Tier 4–5 without decision packet + dedicated safety mission.
 4. Cross-link: `docs/proposals/blocked/classroom-utility-app-priority-decision-packet.md`
@@ -163,7 +163,7 @@ Class Pass Early Build Archive (→ ClassPass) · AI Coupon Factory aliases (→
 | Document | Relationship |
 | --- | --- |
 | `docs/classroom-utility-app-candidate-matrix.md` | 9-app subset; templates built — still valid |
-| `docs/proposals/blocked/classroom-utility-app-priority-decision-packet.md` | Owen priority packet — **superseded for scope** by this 52-app inventory |
+| `docs/classroom-utilities/classroom-timer-stopwatch-planning.md` | First Tier 1 planning lane — `complete_classroom_timer_stopwatch_planning_lane` |
 | `docs/owen-architecture-decision-packets.md` | Decision packet #3 references this inventory |
 
 ## Proof

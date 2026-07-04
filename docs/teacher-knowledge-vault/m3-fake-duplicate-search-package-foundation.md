@@ -47,10 +47,9 @@ M3 preserves:
 | M0 Architecture freeze (expanded) | complete |
 | M1 Fake catalog foundation | complete |
 | M2 Local discovery approval packet | complete |
-| **M3** Fake duplicate/search/package foundation | **complete** (this mission) |
-| M2b Selected-folder metadata prototype | blocked |
-| Runtime search/duplicate detection | blocked |
-| M4 Smart Rename suggestions | blocked |
+| **M3** Fake duplicate/search/package foundation | **complete** |
+| **M4** Smart rename foundation | **complete** |
+| M2b / runtime search / runtime rename | blocked |
 | M5+ Organization, OCR, connectors, AI | blocked |
 
 ## Proof

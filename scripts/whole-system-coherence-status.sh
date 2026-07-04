@@ -65,7 +65,8 @@ for closure in \
   complete_teacher_knowledge_vault_m1_fake_catalog_foundation \
   complete_teacher_knowledge_vault_m0_expansion_m1_alignment \
   complete_teacher_knowledge_vault_m2_local_discovery_approval_packet \
-  complete_teacher_knowledge_vault_m3_fake_duplicate_search_foundation; do
+  complete_teacher_knowledge_vault_m3_fake_duplicate_search_foundation \
+  complete_teacher_knowledge_vault_m4_smart_rename_foundation; do
   check_doc_contains "${whole_system_report}" "${closure}" "whole-system report closure: ${closure}"
 done
 check_doc_contains "${coherence_report}" "complete_vibe_wallpaper_widgets_planning_gate_program" "coherence report vibe wallpaper widgets closure"
@@ -87,8 +88,8 @@ check_doc_contains docs/proposals/index.md "Whole-system coherence maintenance" 
 check_doc_contains docs/teacher-workstation-capability-map.md "whole-system-coherence-status" "capability map coherence status"
 
 section 'Stale Count Hardening'
-check_doc_contains "${whole_system_report}" "146 / 0 / 0 PASS" "dashboard count current"
-check_doc_contains "${whole_system_report}" "65 / 0 / 0 PASS" "validate-all count current"
+check_doc_contains "${whole_system_report}" "147 / 0 / 0 PASS" "dashboard count current"
+check_doc_contains "${whole_system_report}" "66 / 0 / 0 PASS" "validate-all count current"
 if grep -Fq -- 'Dashboard 143/0/0' "${whole_system_report}" 2>/dev/null; then
   fail 'whole-system report must not contain stale Dashboard 143/0/0 example'
 else

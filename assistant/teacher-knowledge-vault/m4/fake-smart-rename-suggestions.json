@@ -1,0 +1,57 @@
+{
+  "classification": "fake_local_planning_only",
+  "runtime_executed": false,
+  "suggestions": [
+    {
+      "suggestion_id": "fake-m4-rename-001",
+      "current_display_name": "placeholder_fraction_worksheet.pdf",
+      "current_source_label": "fake-local-staging",
+      "current_path_label": "fake-local-staging://TeacherAI-Curriculum-Library/00_INBOX_UNSORTED/placeholder_fraction_worksheet.pdf",
+      "suggested_canonical_filename": "math_g5_saxon_lesson_021_homework_odds_v1.pdf",
+      "suggested_destination_path": "01_MATH/saxon_im5/lesson_021/",
+      "suggested_resource_identity": "fake-resource-saxon-lesson-021",
+      "suggested_representation_type": "homework",
+      "suggested_package_id": "fake-pkg-saxon-lesson-021",
+      "suggested_audience": "student",
+      "suggested_indexing_policy": "normal",
+      "teacher_only_risk": "low",
+      "leakage_risk": "low",
+      "duplicate_warnings": ["fake-dup-group-filename-001"],
+      "version_warnings": [],
+      "evidence_package_id": "fake-m4-evidence-001",
+      "required_review_action": "approve_later",
+      "allowed_next_actions": ["approve_later", "edit_suggestion", "reject", "send_to_manual_review"],
+      "blocked_actions": ["execute_rename_now", "execute_move_now", "publish_now", "ocr_now", "ai_classify_now"],
+      "runtime_executed": false
+    },
+    {
+      "suggestion_id": "fake-m4-rename-002",
+      "current_display_name": "placeholder_teacher_manual_scan.pdf",
+      "current_path_label": "fake-local-staging://TeacherAI-Curriculum-Library/00_INBOX_UNSORTED/placeholder_teacher_manual_scan.pdf",
+      "suggested_canonical_filename": "math_g5_saxon_lesson_021_teacher_guide_v1.pdf",
+      "suggested_destination_path": "10_TEACHER_ONLY/01_math/saxon_im5/",
+      "suggested_indexing_policy": "restricted_indexable",
+      "teacher_only_risk": "elevated",
+      "leakage_risk": "high_if_student_facing",
+      "student_facing_mode_blocked": true,
+      "required_review_action": "restricted_teacher_review",
+      "runtime_executed": false
+    },
+    {
+      "suggestion_id": "fake-m4-rename-003",
+      "current_display_name": "placeholder_ai_game_draft.html",
+      "suggested_canonical_filename": "ai_generated_math_g5_lesson_021_review_game_v1.html",
+      "suggested_destination_path": "12_AI_GENERATED/01_math/",
+      "suggested_audience": "student",
+      "leakage_check_required": true,
+      "runtime_executed": false
+    },
+    {
+      "suggestion_id": "fake-m4-rename-blocked-dns",
+      "current_path_label": "blocked-placeholder://99_DO_NOT_SCAN/fake_confidential_placeholder.pdf",
+      "suggestion_generation_blocked": true,
+      "blocked_reason": "99_DO_NOT_SCAN absolute exclusion",
+      "runtime_executed": false
+    }
+  ]
+}

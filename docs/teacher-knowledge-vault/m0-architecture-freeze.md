@@ -78,9 +78,10 @@ Details: `docs/teacher-knowledge-vault/canonical-storage-and-taxonomy.md`, `docs
 | **M1** Fake catalog foundation | **complete** (PR #254) |
 | **M2** Local discovery approval packet | **complete** |
 | **M3** Fake duplicate/search/package foundation | **complete** |
+| **M4** Smart rename foundation | **complete** |
 | M2b Selected-folder metadata prototype | blocked |
 | Runtime search/duplicate detection | blocked |
-| M4 Smart Rename suggestions | blocked |
+| Runtime smart rename | blocked |
 | M5 Approved organization + rollback | blocked |
 | M6 Native extraction/OCR | blocked |
 | M7 Drive/NAS/Canvas read-only connectors | blocked |

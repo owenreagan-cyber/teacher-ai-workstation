@@ -206,6 +206,8 @@ Teacher Planning Command Organization (status only; safe sample: fractions-revie
                                        Show read-only Teacher Knowledge Vault M2 local discovery approval packet status and exit.
   --teacher-knowledge-vault-m3-fake-duplicate-search-status
                                        Show read-only Teacher Knowledge Vault M3 fake duplicate/search/package foundation status and exit.
+  --teacher-knowledge-vault-m4-smart-rename-status
+                                       Show read-only Teacher Knowledge Vault M4 smart rename foundation status and exit.
   --teacher-knowledge-vault-knowledge-entry-v0-validate
                                        Run read-only Teacher Knowledge Vault knowledge entry v0 validator and exit.
   --renderer-foundation-v0-validate
@@ -1825,6 +1827,15 @@ while [[ $# -gt 0 ]]; do
         die "Teacher Knowledge Vault M3 fake duplicate search status script is missing: scripts/teacher-knowledge-vault-m3-fake-duplicate-search-status.sh"
       fi
       bash "${teacher_knowledge_vault_m3_fake_duplicate_search_status_script}"
+      exit 0
+      ;;
+    --teacher-knowledge-vault-m4-smart-rename-status)
+      repo_root="$(resolve_repo_root)"
+      teacher_knowledge_vault_m4_smart_rename_status_script="${repo_root}/scripts/teacher-knowledge-vault-m4-smart-rename-status.sh"
+      if [[ ! -f "${teacher_knowledge_vault_m4_smart_rename_status_script}" ]]; then
+        die "Teacher Knowledge Vault M4 smart rename status script is missing: scripts/teacher-knowledge-vault-m4-smart-rename-status.sh"
+      fi
+      bash "${teacher_knowledge_vault_m4_smart_rename_status_script}"
       exit 0
       ;;
     --teacher-knowledge-vault-knowledge-entry-v0-validate)

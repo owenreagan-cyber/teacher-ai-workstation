@@ -1,0 +1,35 @@
+{
+  "classification": "fake_local_planning_only",
+  "runtime_executed": false,
+  "review_routing": [
+    {
+      "queue_item_id": "fake-m4-rq-001",
+      "card_id": "fake-m4-card-001",
+      "review_state": "smart_rename_suggestion",
+      "requires_teacher_approval": true,
+      "rename_executed": false,
+      "move_executed": false
+    },
+    {
+      "queue_item_id": "fake-m4-rq-002",
+      "card_id": "fake-m4-card-002",
+      "review_state": "restricted_teacher_review",
+      "indexing_policy": "restricted_indexable",
+      "teacher_only_risk": "elevated",
+      "requires_teacher_approval": true
+    },
+    {
+      "queue_item_id": "fake-m4-rq-003",
+      "suggestion_id": "fake-m4-rename-003",
+      "review_state": "leakage_check_required",
+      "requires_teacher_approval": true
+    },
+    {
+      "queue_item_id": "fake-m4-rq-blocked-dns",
+      "suggestion_id": "fake-m4-rename-blocked-dns",
+      "review_state": "blocked",
+      "enters_normal_review": false,
+      "blocked_reason": "99_DO_NOT_SCAN excluded from suggestion generation"
+    }
+  ]
+}

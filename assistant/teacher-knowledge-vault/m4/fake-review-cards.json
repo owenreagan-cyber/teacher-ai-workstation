@@ -1,0 +1,36 @@
+{
+  "classification": "fake_local_planning_only",
+  "runtime_executed": false,
+  "review_cards": [
+    {
+      "card_id": "fake-m4-card-001",
+      "suggestion_id": "fake-m4-rename-001",
+      "current_display_name": "placeholder_fraction_worksheet.pdf",
+      "current_source": "fake-local-staging",
+      "suggested_filename": "math_g5_saxon_lesson_021_homework_odds_v1.pdf",
+      "suggested_destination": "01_MATH/saxon_im5/lesson_021/",
+      "matched_resource_id": "fake-resource-saxon-lesson-021",
+      "matched_package_id": "fake-pkg-saxon-lesson-021",
+      "evidence_summary": "Rule saxon_homework_odds matched; package link; filename similarity duplicate warning",
+      "confidence_summary": "final 0.86 — rule 0.94, path 0.85",
+      "duplicate_warnings": ["fake-dup-group-filename-001"],
+      "version_warnings": [],
+      "teacher_only_warning": false,
+      "leakage_warning": false,
+      "allowed_actions": ["approve_later", "edit_suggestion", "reject", "mark_as_duplicate", "send_to_manual_review"],
+      "blocked_actions": ["execute_rename_now", "execute_move_now", "publish_now", "ocr_now", "ai_classify_now", "scan_more_files_now"]
+    },
+    {
+      "card_id": "fake-m4-card-002",
+      "suggestion_id": "fake-m4-rename-002",
+      "current_display_name": "placeholder_teacher_manual_scan.pdf",
+      "suggested_filename": "math_g5_saxon_lesson_021_teacher_guide_v1.pdf",
+      "suggested_destination": "10_TEACHER_ONLY/01_math/saxon_im5/",
+      "teacher_only_warning": true,
+      "leakage_warning": true,
+      "student_facing_mode_blocked": true,
+      "allowed_actions": ["edit_suggestion", "reject", "block", "send_to_manual_review"],
+      "blocked_actions": ["execute_rename_now", "execute_move_now", "publish_now", "approve_in_student_facing_mode"]
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "classification": "fake_local_planning_only",
+  "runtime_executed": false,
+  "api_cost_estimate_usd": 0.0,
+  "real_files_processed": 0,
+  "ocr_evidence_used": 0,
+  "ai_evidence_used": 0,
+  "rename_operations_executed": 0,
+  "move_operations_executed": 0,
+  "metrics": {
+    "smart_rename_suggestions_created": 3,
+    "suggestions_by_confidence_band": {
+      "high_gte_0_90": 1,
+      "medium_0_70_to_0_89": 2,
+      "low_lt_0_70": 0
+    },
+    "suggestions_needing_manual_review": 2,
+    "teacher_only_restricted_suggestions": 1,
+    "student_facing_leakage_blocks": 1,
+    "duplicate_warnings_attached": 1,
+    "version_warnings_attached": 1,
+    "rule_matches": 6
+  }
+}

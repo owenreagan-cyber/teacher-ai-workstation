@@ -8,6 +8,7 @@ Authority: whole-system posture snapshot — not implementation approval
 Baseline: main after Whole-System Master Roadmap Build-State Report mission
 Closure: whole_system_master_roadmap_status_complete
 Coherence maintenance closure: complete_whole_system_coherence_maintenance
+Agent builder governance closure: complete_agent_builder_compatibility_governance_program
 Presentation Engine planning closure: complete_presentation_engine_renderer_foundation_planning
 A4–A7 fixture enrichment closure: complete_a4_a7_fixture_optional_field_enrichment
 Classroom Utility templates closure: complete_classroom_utility_per_app_mission_templates
@@ -17,7 +18,7 @@ Frontmatter planning closure: complete_curriculum_manual_metadata_frontmatter_pl
 
 **Status key:** `[x]` Built/merged · `[~]` Currently being built · `[>]` Ready for safe planning/build · `[!]` Blocked pending Owen/safety gate · `[ ]` Future / not started · `[?]` Insufficient repo evidence
 
-**Status commands:** `bin/chief-of-staff --whole-system-master-roadmap-status`, `bin/chief-of-staff --whole-system-coherence-status`
+**Status commands:** `bin/chief-of-staff --whole-system-master-roadmap-status`, `bin/chief-of-staff --whole-system-coherence-status`, `bin/chief-of-staff --agent-builder-compatibility-governance-status`
 
 ---
 
@@ -25,7 +26,7 @@ Frontmatter planning closure: complete_curriculum_manual_metadata_frontmatter_pl
 
 | Class | Meaning | Examples in this repo |
 | --- | --- | --- |
-| **repo-backed evidence** | Merged files, status scripts, tests, CLI wiring with PASS proof | Dashboard 134/0/0; `--whole-system-coherence-status`; first governed record in `production-registry.json` |
+| **repo-backed evidence** | Merged files, status scripts, tests, CLI wiring with PASS proof | Dashboard 135/0/0; `--agent-builder-compatibility-governance-status`; `--whole-system-coherence-status`; first governed record in `production-registry.json` |
 | **planning/proposal-only evidence** | Docs, proposals, lane reviews without runtime activation | Writer tooling design boundary; second-record worksheet; Academic OS external intake |
 | **blocked implementation gates** | Explicit Owen/safety gates; negative tests; sentinel | `BLOCKED-NO-WRITES.sentinel`; no `--write`; Options A/B/C blocked |
 | **future ideas not started** | Named programs with no repo implementation | Live Vibe Panel; Lovable API; NAS crawler |
@@ -104,9 +105,10 @@ Cross-references: `docs/build-queue.md`, `docs/master-build-roadmap.md`, `docs/p
 | [x] | Proposal ledger, lane reviews (15 lanes `reviewed`), governance lane aggregate | repo-backed |
 | [x] | Discovery ≠ implementation banner on `--cursor-operating-modes-status` | repo-backed |
 | [x] | ABE sprint queue template + proposal-folder README checks | repo-backed |
+| [x] | Agent builder compatibility and external tool governance program complete | repo-backed — `docs/agent-builder-compatibility-and-external-tool-governance.md`; `complete_agent_builder_compatibility_governance_program` |
 | [>] | Batch Level 2 review playbook (lane review still proposed/deferred) | planning/proposal-only |
 | [!] | Runtime/product behavior without explicit mission | blocked gate |
-| **Proof** | `--cursor-operating-modes-status`, `--autonomous-build-engine-status`, `--governance-lane-status` | |
+| **Proof** | `--cursor-operating-modes-status`, `--autonomous-build-engine-status`, `--governance-lane-status`, `--agent-builder-compatibility-governance-status` | |
 
 ---
 
@@ -114,7 +116,7 @@ Cross-references: `docs/build-queue.md`, `docs/master-build-roadmap.md`, `docs/p
 
 | Marker | Item | Evidence |
 | --- | --- | --- |
-| [x] | CLI, dashboard (134/0/0), Program B daily ops, queues, `--next-action`, validate-all | repo-backed |
+| [x] | CLI, dashboard (135/0/0), Program B daily ops, queues, `--next-action`, validate-all (53/0/0) | repo-backed |
 | [>] | Unified daily briefing (AI), B4 smoke expansion, B7 closure placeholder | planning/proposal-only |
 | [!] | Automation beyond read-only status | blocked gate |
 | **Proof** | `bin/chief-of-staff --dashboard`, `docs/chief-of-staff-v1-program-b-closure.md` | |
@@ -292,9 +294,10 @@ Cross-references: `docs/build-queue.md`, `docs/master-build-roadmap.md`, `docs/p
 
 | Surface | State |
 | --- | --- |
-| Dashboard | 134 / 0 / 0 PASS |
-| Validate-all | 52 / 0 / 0 PASS |
+| Dashboard | 135 / 0 / 0 PASS |
+| Validate-all | 53 / 0 / 0 PASS |
 | Whole-system coherence maintenance | `--whole-system-coherence-status` |
+| Agent builder compatibility governance | `--agent-builder-compatibility-governance-status` |
 | Whole-system roadmap status | `--whole-system-master-roadmap-status` |
 | Presentation Engine renderer foundation | `--presentation-engine-renderer-foundation-status` |
 | Gemini discovery/classification intake | `--gemini-discovery-classification-intake-status` |
@@ -306,9 +309,9 @@ Cross-references: `docs/build-queue.md`, `docs/master-build-roadmap.md`, `docs/p
 | First-record status | 50 / 0 / 0 PASS |
 | Next-gate status | 34 / 0 / 0 PASS |
 | Empty-file status (historical) | 30 / 0 / 0 PASS |
-| Phase-1 | 823 / 0 / 0 PASS |
+| Phase-1 | 835 / 0 / 0 PASS |
 | Active mission | None |
-| Next step | Owen architecture decisions; production registry parked (Option D); coherence maintenance complete |
+| Next step | Owen architecture decisions; production registry parked (Option D); agent builder governance complete — CoS does not launch external agents |
 
 **Safety gates preserved:** First governed production registry record exists (`records` count exactly 1; ID `resource-math-lesson-108-presentation`); `BLOCKED-NO-WRITES.sentinel` intact; no `--write`; no writer scripts; no second production record; real curriculum file access blocked; copied curriculum content blocked; source auto-resolution blocked; integration and runtime gates blocked.
 

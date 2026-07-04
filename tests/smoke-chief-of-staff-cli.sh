@@ -149,6 +149,8 @@ bin/chief-of-staff --whole-system-master-roadmap-status >/dev/null
 bash tests/whole-system-master-roadmap-status-test.sh >/dev/null
 bin/chief-of-staff --whole-system-coherence-status >/dev/null
 bash tests/whole-system-coherence-status-test.sh >/dev/null
+bin/chief-of-staff --agent-builder-compatibility-governance-status >/dev/null
+bash tests/agent-builder-compatibility-governance-status-test.sh >/dev/null
 bin/chief-of-staff --presentation-engine-renderer-foundation-status >/dev/null
 bash tests/presentation-engine-renderer-foundation-status-test.sh >/dev/null
 bin/chief-of-staff --gemini-discovery-classification-intake-status >/dev/null

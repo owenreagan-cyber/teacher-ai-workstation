@@ -19,8 +19,9 @@ Record the whole-system coherence maintenance pass after recent planning lanes (
 
 | Finding | Classification | Resolution |
 | --- | --- | --- |
-| Dashboard count stale (`128/0/0` in lane examples) | stale docs | Updated to `133/0/0` in whole-system report |
-| Phase-1 count stale (`758`) in global state | stale docs | Updated to current `814` PASS |
+| Dashboard count stale (`128/0/0` in lane examples) | stale docs | Updated to `133/0/0` in whole-system report (coherence mission) |
+| Phase-1 count stale (`758`) in global state | stale docs | Updated to `814` PASS (coherence mission) |
+| Dashboard/validate-all drift after agent builder governance wiring | stale docs | Section 15 current proof: dashboard `135/0/0`, validate-all `53/0/0`, phase-1 `835/0/0` |
 | Recent status commands missing from expected WARNs table | discoverability | Added gemini, frontmatter, coherence status rows |
 | No centralized safe enhancement backlog | discoverability | `docs/proposals/backlog/whole-system-safe-enhancement-discovery.md` |
 | Next safe lane selector still listed coherence maintenance as pending | stale roadmap | Updated post-closure recommendations |
@@ -36,6 +37,18 @@ Record the whole-system coherence maintenance pass after recent planning lanes (
 | Presentation Engine planning | `complete_presentation_engine_renderer_foundation_planning` | `--presentation-engine-renderer-foundation-status` | yes | yes | yes |
 | A4–A7 fixture enrichment | `complete_a4_a7_fixture_optional_field_enrichment` | `--curriculum-registry-a4-a7-fixture-schema-status` | yes | yes | yes |
 | Whole-system coherence | `complete_whole_system_coherence_maintenance` | `--whole-system-coherence-status` | yes | yes | yes |
+| Agent builder governance | `complete_agent_builder_compatibility_governance_program` | `--agent-builder-compatibility-governance-status` | yes | yes | yes |
+
+## Current Global State Proof (Post Agent Builder Governance)
+
+```text
+Dashboard: 135 / 0 / 0 PASS
+Validate-all: 53 / 0 / 0 PASS
+Phase-1: 835 / 0 / 0 PASS
+Whole-system coherence status: 48 / 0 / 0 PASS
+Agent builder governance status: 44 / 0 / 0 PASS
+Chief of Staff launches external agents: no
+```
 
 ## Production Registry Parked-State (Verified)
 

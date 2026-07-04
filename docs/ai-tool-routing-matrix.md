@@ -15,6 +15,10 @@ Define **who does what** across cloud AI, local models, coding agents, and futur
 
 Policy baseline: `assistant/model-routing.md`
 
+Read-only proof: `bin/chief-of-staff --ai-tool-routing-status`
+
+Extended governance: `docs/agent-builder-compatibility-and-external-tool-governance.md` (builder classification, CoS no-launch rule, trial checklist)
+
 ## Matrix
 
 | Tool | Best use | Should not do | Data allowed | Data blocked | Network/API | CoS routing | Approval |

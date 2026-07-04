@@ -10,43 +10,47 @@ Implementation approval status: not approved by default for auto-loading, scanni
 
 ## Purpose
 
-This document is the **canonical closure summary** for Teacher Knowledge Vault **Milestone 0 (M0) architecture freeze** under approved Phase 1C memory boundaries. It defines the local-first, human-reviewed reference model for user-approved summaries and reusable teaching notes — without auto-loading memory, scanning files, or activating Drive/Gmail/Obsidian connectors.
+This document is the **canonical closure summary** for Teacher Knowledge Vault **Milestone 0 (M0) expanded architecture freeze** and its relationship to Chief of Staff memory, curriculum DAM intelligence, and M1 fake catalog alignment.
+
+The Vault is the **intelligence layer** — not file storage. Google Drive and/or UGREEN NAS are canonical storage targets.
 
 Cross-references:
 
+- Expanded M0 freeze: `docs/teacher-knowledge-vault/m0-architecture-freeze.md`
+- ADR index: `docs/adr/teacher-knowledge-vault/README.md`
+- v1 spec: `docs/teacher-knowledge-vault/v1-architecture-spec.md`
+- M1 fake catalog: `docs/teacher-knowledge-vault/m1-fake-catalog-foundation.md`
 - Memory policy: `assistant/memory-policy.md`
-- Chief of Staff memory: `assistant/memory/README.md`
-- Intake policy: `assistant/intake/intake-policy.md`
 - Engineering authority: `docs/engineering-constitution.md`
-- Implementation gate: `docs/implementation-approval-gate.md`
 
 ## Relationship to Chief of Staff Memory
 
 | Layer | Role |
 | --- | --- |
 | **Intake review queue** | Candidate material before approval |
-| **Knowledge Vault** | User-approved reference summaries and reusable notes |
-| **Project / preference / writing-style memory** | Operational continuity and style — distinct from reference vault |
+| **Knowledge Vault (DAM intelligence)** | Metadata, identity, governance, search, review — not file storage |
+| **Chief of Staff memory paths** | Approved summaries at `assistant/memory/knowledge/` (not populated in M0/M1) |
+| **Project / preference memory** | Operational continuity — distinct from vault catalog |
 
-Knowledge Vault stores **approved reference summaries**, not raw intake, full Drive dumps, or unreviewed private data.
+## Implemented Subsystems (Expanded M0)
 
-## Implemented Subsystems (M0 Architecture Freeze)
-
-| Subsystem | Location | Role |
-| --- | --- | --- |
-| Architecture freeze plan | `docs/teacher-knowledge-vault/architecture-freeze-plan.md` | M0 scope, sequence, and mission boundaries |
-| Folder taxonomy | `docs/teacher-knowledge-vault/folder-taxonomy.md` | Planned `assistant/memory/knowledge/` layout (not populated yet) |
-| Intake-to-vault gate | `docs/teacher-knowledge-vault/intake-to-vault-approval-gate.md` | Human approval before any vault promotion runtime |
-| Manual entry plan | `docs/teacher-knowledge-vault/manual-entry-plan.md` | Owen-facing manual entry model |
-| Blocked runtime boundaries | `docs/teacher-knowledge-vault/blocked-runtime-boundaries.md` | Full blocked-behavior list |
-| Knowledge entry schema v0 | `assistant/teacher-knowledge-vault/v0/knowledge-entry-schema.json` | Placeholder entry model schema |
-| Sample entries | `assistant/teacher-knowledge-vault/v0/sample-knowledge-entries.json` | Fictional entry fixtures |
-| Fake planning fixtures | `assistant/teacher-knowledge-vault/samples/` | Fictional intake promotion and outline samples |
-| M0 status | `scripts/teacher-knowledge-vault-m0-architecture-freeze-status.sh` | Read-only M0 closure proof |
-| Entry validator | `scripts/teacher-knowledge-vault-knowledge-entry-v0-validator.sh` | Deterministic read-only JSON validation |
-| M0 status test | `tests/teacher-knowledge-vault-m0-architecture-freeze-status-test.sh` | Status command tests |
+| Subsystem | Location |
+| --- | --- |
+| M0 architecture freeze | `docs/teacher-knowledge-vault/m0-architecture-freeze.md` |
+| v1 architecture spec | `docs/teacher-knowledge-vault/v1-architecture-spec.md` |
+| Canonical storage & taxonomy | `docs/teacher-knowledge-vault/canonical-storage-and-taxonomy.md` |
+| Connector SDK, resource identity, fingerprinting, rule DSL | `docs/teacher-knowledge-vault/` |
+| Human review, observability, QA gates, plugins | `docs/teacher-knowledge-vault/` |
+| Document understanding, smart rename, evidence model | `docs/teacher-knowledge-vault/` |
+| Restricted indexing, source reconciliation, AirPlay | `docs/teacher-knowledge-vault/` |
+| ADR set (0001–0010) | `docs/adr/teacher-knowledge-vault/` |
+| M0 sample fixtures | `assistant/teacher-knowledge-vault/samples/` |
+| PR #253 memory-path docs | `architecture-freeze-plan.md`, intake gate, v0 entries |
+| M0 status | `scripts/teacher-knowledge-vault-m0-architecture-freeze-status.sh` |
 
 Closure marker: `complete_teacher_knowledge_vault_m0_architecture_freeze`
+
+Expansion alignment: `complete_teacher_knowledge_vault_m0_expansion_m1_alignment`
 
 ## M1 Fake Catalog Foundation (Post-M0)
 

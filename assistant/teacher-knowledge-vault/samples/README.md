@@ -1,15 +1,26 @@
-# Teacher Knowledge Vault Planning Fixtures
+# Teacher Knowledge Vault M0 Sample Fixtures
 
-Fictional fixtures for M0 architecture freeze planning only.
+Fictional planning fixtures for expanded M0 architecture freeze. Not connector implementations.
 
 | Fixture | Purpose |
 | --- | --- |
-| `fake-intake-promotion-record.json` | Fictional intake-to-vault promotion record (runtime blocked) |
-| `fake-knowledge-entry-outline.md` | Fictional Markdown entry outline (not a real vault file) |
+| `fake-connector-capabilities.json` | Connector SDK contract illustration |
+| `fake-source-item.json` | Normalized source item shape |
+| `fake-resource-identity.json` | Resource with representations |
+| `fake-representation-source-map.json` | Representation → source mapping |
+| `fake-fingerprint-set.json` | Fingerprint types |
+| `fake-classification-rule.yaml` | Rule DSL example |
+| `fake-observability-metrics.json` | M0 metrics sample |
+| `fake-evidence-package.json` | Evidence/confidence package |
+| `fake-smart-rename-suggestion.json` | Rename suggestion (no execute) |
+| `fake-source-reconciliation-record.json` | Multi-source reconciliation |
+| `fake-taxonomy-target.json` | Canonical taxonomy folders |
+| `fake-intake-promotion-record.json` | Intake-to-vault gate |
+| `fake-knowledge-entry-outline.md` | Memory-path outline (not vault file) |
+
+M1 catalog fixtures: `../m1/`
 
 ```bash
 bin/chief-of-staff --teacher-knowledge-vault-m0-architecture-freeze-status
-bash tests/teacher-knowledge-vault-m0-architecture-freeze-status-test.sh
+bin/chief-of-staff --teacher-knowledge-vault-m1-fake-catalog-status
 ```
-
-All fixtures use `fake_local_planning_only` classification.

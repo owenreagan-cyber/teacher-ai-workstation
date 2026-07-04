@@ -3,7 +3,8 @@
 Last updated: 2026-07-04
 
 ```text
-Status: governance proof documentation — M1 preserves M0 boundaries
+Status: governance proof documentation — M1 preserves expanded M0 boundaries
+Expansion alignment: complete_teacher_knowledge_vault_m0_expansion_m1_alignment
 ```
 
 ## M1 Governance Checklist

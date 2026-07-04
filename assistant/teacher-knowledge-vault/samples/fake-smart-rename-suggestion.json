@@ -1,0 +1,11 @@
+{
+  "classification": "fake_local_planning_only",
+  "suggestion_id": "fake-rename-001",
+  "resource_id": "fake-resource-student-facing-worksheet",
+  "current_placeholder_label": "placeholder_fraction_worksheet.pdf",
+  "suggested_canonical_filename": "math_g5_fraction_worksheet_v1.pdf",
+  "suggested_destination": "11_STUDENT_FACING/",
+  "requires_teacher_approval": true,
+  "runtime_executed": false,
+  "dry_run_only": true
+}

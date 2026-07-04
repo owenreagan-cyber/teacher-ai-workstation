@@ -1,0 +1,15 @@
+{
+  "classification": "fake_local_planning_only",
+  "suggestion_id": "fake-evidence-package-001",
+  "suggested_resource_identity": "fake-resource-saxon-lesson-021",
+  "suggested_representation_type": "homework",
+  "suggested_audience": "student_facing",
+  "suggested_canonical_filename": "math_g5_saxon_lesson_021_homework_v1.pdf",
+  "suggested_destination": "01_MATH/lesson_021/",
+  "rule_confidence": 0.98,
+  "final_confidence": 0.92,
+  "teacher_only_risk": false,
+  "leakage_risk": false,
+  "required_review_action": "ready_to_organize",
+  "runtime_executed": false
+}

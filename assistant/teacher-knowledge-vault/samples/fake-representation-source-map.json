@@ -1,0 +1,9 @@
+{
+  "classification": "fake_local_planning_only",
+  "resource_id": "fake-resource-saxon-lesson-021",
+  "mappings": [
+    {"representation_id": "fake-rep-saxon-textbook-021", "source_item_id": "fake-source-item-drive-placeholder-001", "source_id": "fake-source-google-drive"},
+    {"representation_id": "fake-rep-saxon-canvas-package-021", "source_item_id": "fake-source-item-canvas-placeholder-001", "source_id": "fake-source-canvas"}
+  ],
+  "metadata_only": true
+}

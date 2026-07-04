@@ -19,6 +19,7 @@ Vibe / Wallpaper / Widgets planning gate closure: complete_vibe_wallpaper_widget
 Curriculum Library setup foundation closure: complete_curriculum_library_setup_and_manual_registry_foundation
 Teacher Knowledge Vault M0 architecture freeze closure: complete_teacher_knowledge_vault_m0_architecture_freeze
 Teacher Knowledge Vault M1 fake catalog closure: complete_teacher_knowledge_vault_m1_fake_catalog_foundation
+Teacher Knowledge Vault M0 expansion M1 alignment: complete_teacher_knowledge_vault_m0_expansion_m1_alignment
 Presentation Engine planning closure: complete_presentation_engine_renderer_foundation_planning
 A4–A7 fixture enrichment closure: complete_a4_a7_fixture_optional_field_enrichment
 Classroom Utility templates closure: complete_classroom_utility_per_app_mission_templates

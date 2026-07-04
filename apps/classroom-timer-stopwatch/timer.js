@@ -16,27 +16,29 @@
     { label: "Exit ticket", seconds: 120, mode: "countdown" },
   ];
 
+  var DEFAULT_COUNTDOWN_SECONDS = 180;
   var mode = "countdown";
   var running = false;
   var intervalId = null;
-  var countdownRemaining = 0;
+  var countdownRemaining = DEFAULT_COUNTDOWN_SECONDS;
   var stopwatchElapsed = 0;
   var tickOrigin = 0;
   var tickBase = 0;
+  var announceToken = 0;
 
   var modeCountdownBtn = document.getElementById("mode-countdown");
   var modeStopwatchBtn = document.getElementById("mode-stopwatch");
   var modeLabel = document.getElementById("mode-label");
   var timeDisplay = document.getElementById("time-display");
   var statusLabel = document.getElementById("status-label");
+  var srAnnouncer = document.getElementById("sr-announcer");
   var startBtn = document.getElementById("btn-start");
   var pauseBtn = document.getElementById("btn-pause");
   var resetBtn = document.getElementById("btn-reset");
   var presetsContainer = document.getElementById("presets");
 
   function parseDurationSeconds(totalSeconds) {
-    var s = Math.max(0, Math.floor(totalSeconds));
-    return s;
+    return Math.max(0, Math.floor(totalSeconds));
   }
 
   function formatTime(totalSeconds) {
@@ -56,6 +58,7 @@
     return String(minutes).padStart(2, "0") + ":" + String(seconds).padStart(2, "0");
   }
 
+  /** Clears any active interval; safe to call repeatedly. */
   function clearTimerInterval() {
     if (intervalId !== null) {
       clearInterval(intervalId);
@@ -63,8 +66,50 @@
     }
   }
 
+  function announceStatus(message) {
+    if (!srAnnouncer || !message) {
+      return;
+    }
+    announceToken += 1;
+    var token = announceToken;
+    srAnnouncer.textContent = "";
+    window.setTimeout(function () {
+      if (token === announceToken) {
+        srAnnouncer.textContent = message;
+      }
+    }, 30);
+  }
+
+  function statusText() {
+    if (running) {
+      return "Running";
+    }
+    if (mode === "countdown" && countdownRemaining === 0) {
+      return "Complete";
+    }
+    if (currentValue() === 0 && mode === "stopwatch") {
+      return "Ready";
+    }
+    if (mode === "countdown" && countdownRemaining === DEFAULT_COUNTDOWN_SECONDS) {
+      return "Ready";
+    }
+    return "Paused";
+  }
+
   function currentValue() {
     return mode === "countdown" ? countdownRemaining : stopwatchElapsed;
+  }
+
+  function syncControlState() {
+    var status = statusText();
+    statusLabel.textContent = status;
+    statusLabel.setAttribute("data-status", status.toLowerCase());
+    startBtn.disabled = running;
+    pauseBtn.disabled = !running;
+    startBtn.setAttribute("aria-pressed", running ? "true" : "false");
+    pauseBtn.setAttribute("aria-pressed", running ? "true" : "false");
+    timeDisplay.setAttribute("aria-label", "Time display " + formatTime(currentValue()));
+    statusLabel.setAttribute("aria-label", "Timer status " + status);
   }
 
   function render() {
@@ -72,13 +117,7 @@
     modeLabel.textContent = mode === "countdown" ? "Countdown" : "Stopwatch";
     modeCountdownBtn.setAttribute("aria-pressed", mode === "countdown" ? "true" : "false");
     modeStopwatchBtn.setAttribute("aria-pressed", mode === "stopwatch" ? "true" : "false");
-    statusLabel.textContent = running
-      ? "Running"
-      : currentValue() === 0 && mode === "countdown"
-        ? "Ready"
-        : "Paused";
-    startBtn.disabled = running;
-    pauseBtn.disabled = !running;
+    syncControlState();
   }
 
   function tick() {
@@ -90,6 +129,9 @@
       if (countdownRemaining === 0) {
         pause();
         statusLabel.textContent = "Complete";
+        announceStatus("Countdown complete");
+        syncControlState();
+        return;
       }
     } else {
       stopwatchElapsed = tickBase + deltaSec;
@@ -98,11 +140,15 @@
   }
 
   function startInterval() {
+    if (running) {
+      return;
+    }
     clearTimerInterval();
     tickOrigin = Date.now();
     tickBase = currentValue();
     intervalId = setInterval(tick, 250);
     running = true;
+    announceStatus((mode === "countdown" ? "Countdown" : "Stopwatch") + " started");
     render();
   }
 
@@ -111,7 +157,7 @@
       return;
     }
     if (mode === "countdown" && countdownRemaining <= 0) {
-      countdownRemaining = 180;
+      countdownRemaining = DEFAULT_COUNTDOWN_SECONDS;
     }
     startInterval();
   }
@@ -123,17 +169,18 @@
     tick();
     clearTimerInterval();
     running = false;
+    announceStatus("Timer paused");
     render();
   }
 
   function reset() {
     pause();
     if (mode === "countdown") {
-      countdownRemaining = 180;
+      countdownRemaining = DEFAULT_COUNTDOWN_SECONDS;
     } else {
       stopwatchElapsed = 0;
     }
-    statusLabel.textContent = "Ready";
+    announceStatus("Timer reset");
     render();
   }
 
@@ -144,28 +191,43 @@
     pause();
     mode = nextMode;
     if (mode === "countdown") {
-      countdownRemaining = 180;
+      countdownRemaining = DEFAULT_COUNTDOWN_SECONDS;
     } else {
       stopwatchElapsed = 0;
     }
+    announceStatus("Mode switched to " + (mode === "countdown" ? "countdown" : "stopwatch"));
     render();
   }
 
-  function applyPreset(seconds) {
+  function applyPreset(index) {
+    if (index < 0 || index >= PRESETS.length) {
+      return;
+    }
+    var preset = PRESETS[index];
     pause();
     mode = "countdown";
-    countdownRemaining = parseDurationSeconds(seconds);
+    countdownRemaining = parseDurationSeconds(preset.seconds);
+    announceStatus("Preset applied: " + preset.label + ", " + formatTime(preset.seconds));
     render();
+  }
+
+  function isInteractiveTarget(target) {
+    if (!target || !target.tagName) {
+      return false;
+    }
+    var tag = target.tagName;
+    return tag === "BUTTON" || tag === "INPUT" || tag === "SELECT" || tag === "TEXTAREA";
   }
 
   function buildPresets() {
-    PRESETS.forEach(function (preset) {
+    PRESETS.forEach(function (preset, index) {
       var btn = document.createElement("button");
       btn.type = "button";
       btn.textContent = preset.label;
-      btn.setAttribute("aria-label", "Preset " + preset.label);
+      btn.setAttribute("aria-label", "Preset " + preset.label + ", press " + String(index + 1));
+      btn.dataset.presetIndex = String(index);
       btn.addEventListener("click", function () {
-        applyPreset(preset.seconds);
+        applyPreset(index);
       });
       presetsContainer.appendChild(btn);
     });
@@ -182,10 +244,11 @@
   resetBtn.addEventListener("click", reset);
 
   document.addEventListener("keydown", function (event) {
-    if (event.target && (event.target.tagName === "BUTTON" || event.target.tagName === "INPUT")) {
-      if (event.key === " " || event.key === "Enter") {
-        return;
-      }
+    if (event.repeat) {
+      return;
+    }
+    if (isInteractiveTarget(event.target) && (event.key === " " || event.key === "Enter")) {
+      return;
     }
     if (event.key === " " || event.code === "Space") {
       event.preventDefault();
@@ -194,13 +257,24 @@
       } else {
         start();
       }
-    } else if (event.key === "r" || event.key === "R") {
+      return;
+    }
+    if (event.key === "r" || event.key === "R") {
+      if (isInteractiveTarget(event.target)) {
+        return;
+      }
+      event.preventDefault();
       reset();
+      return;
+    }
+    var digit = parseInt(event.key, 10);
+    if (digit >= 1 && digit <= PRESETS.length && !isInteractiveTarget(event.target)) {
+      event.preventDefault();
+      applyPreset(digit - 1);
     }
   });
 
   buildPresets();
-  countdownRemaining = 180;
   render();
 
   /** Test exports — not used at runtime in browser; for static logic tests only. */
@@ -209,6 +283,8 @@
       formatTime: formatTime,
       parseDurationSeconds: parseDurationSeconds,
       PRESETS: PRESETS,
+      announceStatus: announceStatus,
+      statusText: statusText,
     };
   }
 })();

@@ -1,0 +1,73 @@
+{
+  "classification": "fake_local_planning_only",
+  "runtime_executed": false,
+  "operations": [
+    {
+      "operation_id": "fake-m5-op-rename-001",
+      "operation_type": "rename",
+      "source_representation_id": "fake-rep-saxon-homework-001",
+      "source_item_id": "fake-m2-item-staging-001",
+      "current_source_label": "fake-local-staging",
+      "current_path_label": "fake-local-staging://TeacherAI-Curriculum-Library/00_INBOX_UNSORTED/placeholder_fraction_worksheet.pdf",
+      "proposed_target_path_label": "fake-local-staging://TeacherAI-Curriculum-Library/01_MATH/saxon_im5/lesson_021/",
+      "proposed_target_filename": "math_g5_saxon_lesson_021_homework_odds_v1.pdf",
+      "operation_reason": "smart_rename_suggestion_promoted",
+      "evidence_package_id": "fake-m4-evidence-001",
+      "review_card_id": "fake-m4-card-001",
+      "teacher_approval_state": "pending",
+      "conflict_status": "clear",
+      "rollback_plan_id": "fake-m5-rollback-001",
+      "runtime_executed": false
+    },
+    {
+      "operation_id": "fake-m5-op-move-001",
+      "operation_type": "move",
+      "source_item_id": "fake-m2-item-staging-001",
+      "current_path_label": "fake-local-staging://TeacherAI-Curriculum-Library/00_INBOX_UNSORTED/placeholder_fraction_worksheet.pdf",
+      "proposed_target_path_label": "fake-local-staging://TeacherAI-Curriculum-Library/01_MATH/saxon_im5/lesson_021/",
+      "teacher_approval_state": "pending",
+      "rollback_plan_id": "fake-m5-rollback-002",
+      "runtime_executed": false
+    },
+    {
+      "operation_id": "fake-m5-op-archive-001",
+      "operation_type": "archive",
+      "source_item_id": "fake-m2-item-duplicate-filename-001",
+      "proposed_target_path_label": "fake-local-staging://TeacherAI-Curriculum-Library/90_ARCHIVE/",
+      "teacher_approval_state": "pending",
+      "rollback_plan_id": "fake-m5-rollback-003",
+      "runtime_executed": false
+    },
+    {
+      "operation_id": "fake-m5-op-export-001",
+      "operation_type": "export",
+      "source_item_id": "fake-resource-canvas-only-module",
+      "operation_reason": "canvas_reconciliation_export_candidate",
+      "teacher_approval_state": "pending",
+      "runtime_executed": false
+    },
+    {
+      "operation_id": "fake-m5-op-mark-canonical-001",
+      "operation_type": "mark_canonical_representation",
+      "source_representation_id": "fake-rep-saxon-homework-001",
+      "operation_reason": "version_canonical_selection_requested",
+      "teacher_approval_state": "pending",
+      "runtime_executed": false
+    },
+    {
+      "operation_id": "fake-m5-op-reject-001",
+      "operation_type": "reject_suggestion",
+      "review_card_id": "fake-m4-card-002",
+      "teacher_approval_state": "rejected",
+      "runtime_executed": false
+    },
+    {
+      "operation_id": "fake-m5-op-blocked-dns",
+      "operation_type": "move",
+      "proposed_target_path_label": "blocked-placeholder://99_DO_NOT_SCAN/blocked",
+      "conflict_status": "blocked",
+      "blocked_reason": "99_DO_NOT_SCAN destination blocked",
+      "runtime_executed": false
+    }
+  ]
+}

@@ -48,9 +48,9 @@ Cross-reference: `docs/teacher-knowledge-vault/smart-rename-policy.md`, `docs/te
 | Milestone | Status |
 | --- | --- |
 | M0–M3 | complete |
-| **M4** Smart rename foundation | **complete** (this mission) |
-| M2b / runtime search / runtime rename | blocked |
-| M5 Approved organization + rollback | blocked |
+| **M4** Smart rename foundation | **complete** |
+| **M5** Organization/rollback foundation | **complete** |
+| M2b / runtime search / runtime rename / runtime organization | blocked |
 | M6+ OCR, connectors, AI | blocked |
 
 ## Proof

@@ -1,0 +1,49 @@
+{
+  "classification": "fake_local_planning_only",
+  "runtime_executed": false,
+  "previews": [
+    {
+      "preview_id": "fake-m5-preview-001",
+      "operation_id": "fake-m5-op-rename-001",
+      "current_display_name": "placeholder_fraction_worksheet.pdf",
+      "proposed_filename": "math_g5_saxon_lesson_021_homework_odds_v1.pdf",
+      "current_path_label": "fake-local-staging://TeacherAI-Curriculum-Library/00_INBOX_UNSORTED/placeholder_fraction_worksheet.pdf",
+      "proposed_destination": "fake-local-staging://TeacherAI-Curriculum-Library/01_MATH/saxon_im5/lesson_021/",
+      "operation_type": "rename",
+      "files_affected_count": 1,
+      "duplicate_warnings": ["fake-dup-group-filename-001"],
+      "version_warnings": [],
+      "teacher_only_warning": false,
+      "student_facing_warning": false,
+      "overwrite_risk": false,
+      "missing_destination_risk": false,
+      "cloud_placeholder_risk": false,
+      "symlink_escape_risk": false,
+      "rollback_available": true,
+      "approval_required": true,
+      "runtime_executed": false
+    },
+    {
+      "preview_id": "fake-m5-preview-002",
+      "operation_id": "fake-m5-op-move-teacher-only",
+      "current_display_name": "placeholder_teacher_manual_scan.pdf",
+      "proposed_filename": "math_g5_saxon_lesson_021_teacher_guide_v1.pdf",
+      "proposed_destination": "11_STUDENT_FACING/01_worksheets_handouts/",
+      "operation_type": "move",
+      "teacher_only_warning": true,
+      "student_facing_leakage_warning": true,
+      "overwrite_risk": false,
+      "approval_required": true,
+      "runtime_executed": false
+    },
+    {
+      "preview_id": "fake-m5-preview-blocked-overwrite",
+      "operation_id": "fake-m5-op-rename-overwrite-blocked",
+      "proposed_filename": "math_g5_saxon_lesson_021_homework_odds_v1.pdf",
+      "overwrite_risk": true,
+      "conflict_type": "target_filename_already_exists",
+      "no_overwrite_block": true,
+      "runtime_executed": false
+    }
+  ]
+}

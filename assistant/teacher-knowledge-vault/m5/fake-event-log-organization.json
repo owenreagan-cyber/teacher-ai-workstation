@@ -1,0 +1,19 @@
+{
+  "classification": "fake_local_planning_only",
+  "runtime_executed": false,
+  "events": [
+    {"event_id": "fake-m5-evt-001", "event_type": "smart_rename_suggestion_created", "suggestion_id": "fake-m4-rename-001", "runtime_executed": false},
+    {"event_id": "fake-m5-evt-002", "event_type": "review_card_opened", "review_card_id": "fake-m4-card-001", "runtime_executed": false},
+    {"event_id": "fake-m5-evt-003", "event_type": "dry_run_operation_created", "preview_id": "fake-m5-preview-001", "runtime_executed": false},
+    {"event_id": "fake-m5-evt-004", "event_type": "conflict_check_run", "operation_id": "fake-m5-op-rename-001", "runtime_executed": false},
+    {"event_id": "fake-m5-evt-005", "event_type": "operation_blocked_pending_approval", "operation_id": "fake-m5-op-rename-001", "runtime_executed": false},
+    {"event_id": "fake-m5-evt-006", "event_type": "teacher_approved_planned", "operation_id": "fake-m5-op-rename-001", "runtime_executed": false},
+    {"event_id": "fake-m5-evt-007", "event_type": "operation_execution_blocked_m5", "operation_id": "fake-m5-op-rename-001", "runtime_executed": false},
+    {"event_id": "fake-m5-evt-008", "event_type": "rollback_plan_created", "rollback_plan_id": "fake-m5-rollback-001", "runtime_executed": false},
+    {"event_id": "fake-m5-evt-009", "event_type": "duplicate_merge_requested_blocked", "operation_id": "fake-m5-op-mark-duplicate-blocked", "runtime_executed": false},
+    {"event_id": "fake-m5-evt-010", "event_type": "version_canonical_selection_requested_blocked", "operation_id": "fake-m5-op-mark-canonical-001", "runtime_executed": false},
+    {"event_id": "fake-m5-evt-011", "event_type": "archive_requested_blocked", "operation_id": "fake-m5-op-archive-001", "runtime_executed": false},
+    {"event_id": "fake-m5-evt-012", "event_type": "export_requested_blocked", "operation_id": "fake-m5-op-export-001", "runtime_executed": false},
+    {"event_id": "fake-m5-evt-013", "event_type": "do_not_scan_operation_blocked", "operation_id": "fake-m5-op-blocked-dns", "runtime_executed": false}
+  ]
+}

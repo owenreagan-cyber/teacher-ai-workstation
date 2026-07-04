@@ -1,0 +1,19 @@
+{
+  "classification": "fake_local_planning_only",
+  "runtime_executed": false,
+  "api_cost_estimate_usd": 0.0,
+  "real_files_processed": 0,
+  "real_file_operations": 0,
+  "metrics": {
+    "organization_operation_requests": 7,
+    "dry_run_previews_created": 3,
+    "conflicts_detected": 10,
+    "no_overwrite_blocks": 1,
+    "teacher_approvals_required": 5,
+    "rollback_plans_created": 3,
+    "operations_executed": 0,
+    "rollback_executions": 0,
+    "delete_operations": 0,
+    "drive_nas_canvas_sync_operations": 0
+  }
+}

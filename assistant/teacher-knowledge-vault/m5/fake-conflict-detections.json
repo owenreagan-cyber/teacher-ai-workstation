@@ -1,0 +1,66 @@
+{
+  "classification": "fake_local_planning_only",
+  "runtime_executed": false,
+  "conflicts": [
+    {
+      "conflict_id": "fake-m5-conflict-overwrite-001",
+      "conflict_type": "target_filename_already_exists",
+      "operation_id": "fake-m5-op-rename-overwrite-blocked",
+      "resolution": "blocked",
+      "no_overwrite_policy": true
+    },
+    {
+      "conflict_id": "fake-m5-conflict-missing-folder-001",
+      "conflict_type": "target_folder_missing",
+      "operation_id": "fake-m5-op-move-001",
+      "resolution": "manual_review"
+    },
+    {
+      "conflict_id": "fake-m5-conflict-dns-dest-001",
+      "conflict_type": "destination_under_99_DO_NOT_SCAN",
+      "operation_id": "fake-m5-op-blocked-dns",
+      "resolution": "blocked"
+    },
+    {
+      "conflict_id": "fake-m5-conflict-leakage-001",
+      "conflict_type": "teacher_only_into_student_facing",
+      "operation_id": "fake-m5-op-move-teacher-only",
+      "resolution": "blocked"
+    },
+    {
+      "conflict_id": "fake-m5-conflict-cloud-001",
+      "conflict_type": "cloud_placeholder_unavailable",
+      "source_item_id": "fake-m2-item-cloud-placeholder-001",
+      "resolution": "blocked"
+    },
+    {
+      "conflict_id": "fake-m5-conflict-symlink-001",
+      "conflict_type": "symlink_escapes_approved_root",
+      "source_item_id": "fake-m2-item-symlink-escape-001",
+      "resolution": "blocked"
+    },
+    {
+      "conflict_id": "fake-m5-conflict-dup-unresolved-001",
+      "conflict_type": "duplicate_candidate_unresolved",
+      "duplicate_group_id": "fake-dup-group-filename-001",
+      "resolution": "manual_review"
+    },
+    {
+      "conflict_id": "fake-m5-conflict-version-unresolved-001",
+      "conflict_type": "version_candidate_unresolved",
+      "version_group_id": "fake-ver-group-saxon-lesson-021",
+      "resolution": "manual_review"
+    },
+    {
+      "conflict_id": "fake-m5-conflict-rollback-unavail-001",
+      "conflict_type": "rollback_unavailable",
+      "operation_id": "fake-m5-op-export-001",
+      "resolution": "execution_blocked"
+    },
+    {
+      "conflict_id": "fake-m5-conflict-connector-001",
+      "conflict_type": "unapproved_drive_nas_canvas_boundary",
+      "resolution": "blocked"
+    }
+  ]
+}

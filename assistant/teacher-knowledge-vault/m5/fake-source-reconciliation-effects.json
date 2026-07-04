@@ -1,0 +1,50 @@
+{
+  "classification": "fake_local_planning_only",
+  "runtime_executed": false,
+  "sync_executed": false,
+  "effects": [
+    {
+      "effect_id": "fake-m5-reconcile-001",
+      "resource_id": "fake-resource-drive-only-pacing",
+      "effect_type": "drive_only_may_become_canonical_candidate",
+      "requires_teacher_approval": true,
+      "runtime_executed": false
+    },
+    {
+      "effect_id": "fake-m5-reconcile-002",
+      "resource_id": "fake-resource-canvas-only-module",
+      "effect_type": "canvas_only_export_reconciliation_candidate",
+      "requires_teacher_approval": true,
+      "runtime_executed": false
+    },
+    {
+      "effect_id": "fake-m5-reconcile-003",
+      "resource_id": "fake-m2-item-staging-001",
+      "effect_type": "local_staging_may_become_canonical_copy_candidate",
+      "requires_teacher_approval": true,
+      "runtime_executed": false
+    },
+    {
+      "effect_id": "fake-m5-reconcile-004",
+      "resource_id": "fake-resource-ai-generated-adaptation",
+      "effect_type": "ai_generated_representation_not_purchased_curriculum",
+      "indexing_policy": "approval_gated",
+      "runtime_executed": false
+    },
+    {
+      "effect_id": "fake-m5-reconcile-005",
+      "resource_id": "fake-resource-teacher-only-assessment-key",
+      "effect_type": "teacher_only_remains_restricted",
+      "restricted_indexable": true,
+      "runtime_executed": false
+    },
+    {
+      "effect_id": "fake-m5-reconcile-006",
+      "package_id": "fake-pkg-saxon-lesson-021",
+      "effect_type": "student_facing_package_leakage_checked",
+      "leakage_check_required": true,
+      "runtime_executed": false
+    }
+  ],
+  "nas_mirror_sync_status": "future_only_blocked"
+}

@@ -1,0 +1,24 @@
+{
+  "sample_type": "fake_local_shortcut_concepts",
+  "safe_status": "fake_fixture_only",
+  "shortcut_install_approved": false,
+  "shortcut_execution_approved": false,
+  "concepts": [
+    {
+      "concept_name": "Open Dashboard",
+      "teacher_use_case": "Concept for quickly viewing Chief of Staff status",
+      "visual_mood": "single clear command",
+      "safe_status": "fake_fixture_only",
+      "blocked_runtime_actions": ["install_shortcut", "run_shortcut", "open_app", "call_url_scheme"],
+      "future_approval_needed": "Owen must approve exact shortcut behavior and installation."
+    },
+    {
+      "concept_name": "Closeout Prompt",
+      "teacher_use_case": "Concept for end-of-day checklist visibility",
+      "visual_mood": "quiet checklist",
+      "safe_status": "fake_fixture_only",
+      "blocked_runtime_actions": ["install_shortcut", "run_shortcut", "write_files", "schedule_automation"],
+      "future_approval_needed": "Owen must approve shortcut payload, execution, and rollback."
+    }
+  ]
+}

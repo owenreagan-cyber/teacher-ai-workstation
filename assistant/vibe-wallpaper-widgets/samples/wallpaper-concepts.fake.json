@@ -1,0 +1,23 @@
+{
+  "sample_type": "fake_local_wallpaper_concepts",
+  "safe_status": "fake_fixture_only",
+  "wallpaper_change_approved": false,
+  "concepts": [
+    {
+      "concept_name": "Bellwork Sunrise",
+      "teacher_use_case": "Start-of-day planning",
+      "visual_mood": "soft classroom light and quiet workspace",
+      "safe_status": "fake_fixture_only",
+      "blocked_runtime_actions": ["apply_wallpaper", "fetch_images", "scan_photo_folders", "change_desktop"],
+      "future_approval_needed": "Owen must approve any wallpaper staging or application mission."
+    },
+    {
+      "concept_name": "Focus Board",
+      "teacher_use_case": "Grading and review",
+      "visual_mood": "low-distraction board texture with clear window space",
+      "safe_status": "fake_fixture_only",
+      "blocked_runtime_actions": ["apply_wallpaper", "run_applescript", "change_mac_settings"],
+      "future_approval_needed": "Owen must approve exact files, rollback, and apply behavior."
+    }
+  ]
+}

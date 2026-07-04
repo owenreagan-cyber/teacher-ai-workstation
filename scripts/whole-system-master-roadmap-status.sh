@@ -119,6 +119,8 @@ check_doc_contains "${report}" "complete_app_runtime_approval_gate_program" "run
 check_doc_contains "${report}" "--app-runtime-approval-gate-status" "runtime approval gate status command cross-link"
 check_doc_contains "${report}" "level_3_classroom_timer_stopwatch_runtime_prototype" "timer Level 3 runtime closure"
 check_doc_contains "${report}" "--classroom-timer-stopwatch-runtime-status" "timer runtime status command cross-link"
+check_doc_contains "${report}" "complete_vibe_wallpaper_widgets_planning_gate_program" "vibe wallpaper widgets planning gate closure"
+check_doc_contains "${report}" "--vibe-wallpaper-widgets-planning-status" "vibe wallpaper widgets planning status command cross-link"
 check_file docs/whole-system-coherence-maintenance-report.md
 
 section 'Production Registry Parked-State Proof'
@@ -337,6 +339,23 @@ if [[ -f scripts/classroom-timer-stopwatch-runtime-status.sh ]]; then
   fi
 else
   fail 'Classroom Timer & Stopwatch runtime status script missing'
+fi
+
+section 'Dependent Status: Vibe / Wallpaper / Widgets Planning Gate'
+if [[ -f scripts/vibe-wallpaper-widgets-planning-status.sh ]]; then
+  vww_output="$(bash scripts/vibe-wallpaper-widgets-planning-status.sh 2>&1)" || vww_result=$?
+  vww_result="${vww_result:-0}"
+  if [[ "${vww_result}" != "0" ]]; then
+    fail 'Vibe / Wallpaper / Widgets planning status script exited nonzero'
+    printf '%s\n' "${vww_output}" | tail -20
+  elif grep -q '^FAIL: [1-9]' <<< "${vww_output}"; then
+    fail 'Vibe / Wallpaper / Widgets planning status reported FAIL'
+    printf '%s\n' "${vww_output}" | tail -20
+  else
+    pass 'Vibe / Wallpaper / Widgets planning status component clean'
+  fi
+else
+  fail 'Vibe / Wallpaper / Widgets planning status script missing'
 fi
 
 section 'Coherence Report Cross-Check (No Nested Run)'

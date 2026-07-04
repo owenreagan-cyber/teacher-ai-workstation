@@ -1135,6 +1135,27 @@ else
   warn "Widget and Shortcut Builder status script missing: scripts/widget-shortcut-builder-status.sh"
 fi
 
+section "Vibe / Wallpaper / Widgets Planning Gate"
+if [[ -f scripts/vibe-wallpaper-widgets-planning-status.sh ]]; then
+  vibe_wallpaper_widgets_result=0
+  vibe_wallpaper_widgets_output="$(bash scripts/vibe-wallpaper-widgets-planning-status.sh 2>&1)" || vibe_wallpaper_widgets_result=$?
+  vibe_wallpaper_widgets_pass="$(summary_count "${vibe_wallpaper_widgets_output}" "PASS")"
+  vibe_wallpaper_widgets_warn="$(summary_count "${vibe_wallpaper_widgets_output}" "WARN")"
+  vibe_wallpaper_widgets_fail="$(summary_count "${vibe_wallpaper_widgets_output}" "FAIL")"
+
+  if [[ "${vibe_wallpaper_widgets_result}" != "0" ]]; then
+    printf '%s\n' "${vibe_wallpaper_widgets_output}"
+    fail "Vibe / Wallpaper / Widgets planning status failed"
+  elif [[ -n "${vibe_wallpaper_widgets_pass}" && -n "${vibe_wallpaper_widgets_warn}" && -n "${vibe_wallpaper_widgets_fail}" ]]; then
+    printf 'Vibe / Wallpaper / Widgets Planning: PASS %s / WARN %s / FAIL %s\n' "${vibe_wallpaper_widgets_pass}" "${vibe_wallpaper_widgets_warn}" "${vibe_wallpaper_widgets_fail}"
+    pass "Vibe / Wallpaper / Widgets planning status completed"
+  else
+    pass "Vibe / Wallpaper / Widgets planning status completed"
+  fi
+else
+  warn "Vibe / Wallpaper / Widgets planning status script missing: scripts/vibe-wallpaper-widgets-planning-status.sh"
+fi
+
 section "Classroom App Lab (Prototype Rescue Foundation)"
 if [[ -f scripts/classroom-app-lab-status.sh ]]; then
   classroom_app_lab_result=0

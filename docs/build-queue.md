@@ -22,6 +22,8 @@ Handoff and status clarity. Start from `docs/phase-1-chief-of-staff-status-audit
 
 - Classroom Timer & Stopwatch Level 3 Runtime Prototype (2026-07-04): `apps/classroom-timer-stopwatch/`; countdown/stopwatch; Owen approved; `--classroom-timer-stopwatch-runtime-status`. Other apps blocked.
 
+- Vibe / Wallpaper / Widgets Planning Gate (2026-07-04): `docs/vibe-wallpaper-widgets/`; fake/local examples; `--vibe-wallpaper-widgets-planning-status`. Planning/docs/status/tests only; widget install, shortcut install/execution, wallpaper change, Mac system change, Homebrew install, app execution, external integrations, AI runtime behavior, and production writes blocked.
+
 - App Runtime Approval Gate Program (2026-07-04): shared gate; readiness matrix; Timer only Level 3 approved.
 
 - Classroom Timer & Stopwatch Planning Lane (2026-07-04): Tier 1 single-app planning; fake presets; `--classroom-timer-stopwatch-planning-status`. Owen selected classroom timer first; runtime blocked.

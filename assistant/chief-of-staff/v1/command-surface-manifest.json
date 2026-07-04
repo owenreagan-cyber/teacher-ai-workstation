@@ -79,6 +79,7 @@
       "name": "Widget and Shortcut Builder",
       "commands": [
         {"flag": "--widget-shortcut-status", "status": "implemented", "purpose": "Widget and shortcut catalog read-only foundation (Program F1)"},
+        {"flag": "--vibe-wallpaper-widgets-planning-status", "status": "implemented", "purpose": "Vibe, wallpaper, widget, shortcut, and visual workshop planning gate (read-only; no install/runtime/Mac changes)"},
         {"flag": "--install-widget", "status": "blocked", "purpose": "Widget install blocked without explicit approval mission"},
         {"flag": "--install-shortcut", "status": "blocked", "purpose": "Shortcut install blocked without explicit approval mission"},
         {"flag": "--run-shortcut", "status": "blocked", "purpose": "Shortcut execution blocked without explicit approval mission"},

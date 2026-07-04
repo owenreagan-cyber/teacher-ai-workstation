@@ -59,9 +59,12 @@ for closure in \
   complete_classroom_timer_stopwatch_planning_lane \
   complete_app_ecosystem_planning_lanes_program \
   complete_app_runtime_approval_gate_program \
-  level_3_classroom_timer_stopwatch_runtime_prototype; do
+  level_3_classroom_timer_stopwatch_runtime_prototype \
+  complete_vibe_wallpaper_widgets_planning_gate_program; do
   check_doc_contains "${whole_system_report}" "${closure}" "whole-system report closure: ${closure}"
 done
+check_doc_contains "${coherence_report}" "complete_vibe_wallpaper_widgets_planning_gate_program" "coherence report vibe wallpaper widgets closure"
+check_doc_contains docs/build-queue.md "Vibe / Wallpaper / Widgets Planning Gate" "build queue vibe wallpaper widgets"
 check_doc_contains docs/build-queue.md "classroom timer" "build queue timer runtime"
 check_doc_contains docs/build-queue.md "runtime approval gate" "build queue approval gate"
 check_doc_contains docs/curriculum-builder-registry-expected-warns.md "--classroom-timer-stopwatch-runtime-status" "expected warns timer runtime status"
@@ -76,8 +79,8 @@ check_doc_contains docs/proposals/index.md "Whole-system coherence maintenance" 
 check_doc_contains docs/teacher-workstation-capability-map.md "whole-system-coherence-status" "capability map coherence status"
 
 section 'Stale Count Hardening'
-check_doc_contains "${whole_system_report}" "141 / 0 / 0 PASS" "dashboard count current"
-check_doc_contains "${whole_system_report}" "59 / 0 / 0 PASS" "validate-all count current"
+check_doc_contains "${whole_system_report}" "142 / 0 / 0 PASS" "dashboard count current"
+check_doc_contains "${whole_system_report}" "61 / 0 / 0 PASS" "validate-all count current"
 if grep -Fq -- 'Dashboard 128/0/0' "${whole_system_report}" 2>/dev/null; then
   fail 'whole-system report must not contain stale Dashboard 128/0/0 example'
 else
@@ -150,6 +153,7 @@ check_doc_contains docs/curriculum-builder-registry-expected-warns.md "--app-eco
 check_doc_contains docs/curriculum-builder-registry-expected-warns.md "--classroom-timer-stopwatch-planning-status" "expected warns timer planning status"
 check_doc_contains docs/curriculum-builder-registry-expected-warns.md "--app-ecosystem-planning-lanes-status" "expected warns planning lanes status"
 check_doc_contains docs/curriculum-builder-registry-expected-warns.md "--app-runtime-approval-gate-status" "expected warns approval gate status"
+check_doc_contains docs/curriculum-builder-registry-expected-warns.md "--vibe-wallpaper-widgets-planning-status" "expected warns vibe wallpaper widgets status"
 
 section 'Production Registry Parked-State Proof'
 if [[ -f "${production_registry_path}" ]] && command -v python3 >/dev/null 2>&1; then
@@ -170,6 +174,9 @@ section 'Dashboard and Validate-All Wiring'
 grep -Fq -- 'whole-system-coherence-status.sh' scripts/chief-of-staff-dashboard.sh && pass 'dashboard wires whole-system-coherence-status' || fail 'dashboard missing whole-system-coherence-status'
 grep -Fq -- 'whole-system-coherence-status.sh' scripts/chief-of-staff-validate-all.sh && pass 'validate-all wires whole-system-coherence-status' || fail 'validate-all missing whole-system-coherence-status'
 grep -Fq -- 'whole-system-coherence' tests/smoke-chief-of-staff-cli.sh && pass 'smoke wires whole-system-coherence-status' || fail 'smoke missing whole-system-coherence-status'
+grep -Fq -- 'vibe-wallpaper-widgets-planning-status.sh' scripts/chief-of-staff-dashboard.sh && pass 'dashboard wires vibe-wallpaper-widgets-planning-status' || fail 'dashboard missing vibe-wallpaper-widgets-planning-status'
+grep -Fq -- 'vibe-wallpaper-widgets-planning-status.sh' scripts/chief-of-staff-validate-all.sh && pass 'validate-all wires vibe-wallpaper-widgets-planning-status' || fail 'validate-all missing vibe-wallpaper-widgets-planning-status'
+grep -Fq -- 'vibe-wallpaper-widgets-planning' tests/smoke-chief-of-staff-cli.sh && pass 'smoke wires vibe-wallpaper-widgets-planning-status' || fail 'smoke missing vibe-wallpaper-widgets-planning-status'
 if grep -Eq 'bash[[:space:]]+scripts/whole-system-master-roadmap-status\.sh' "${BASH_SOURCE[0]}" 2>/dev/null; then
   fail 'coherence status must not execute whole-system-master-roadmap-status.sh'
 else

@@ -914,6 +914,35 @@ else
   fail "chief-of-staff missing --widget-shortcut-status"
 fi
 
+section "Vibe / Wallpaper / Widgets Planning Gate Files"
+for path in \
+  docs/vibe-wallpaper-widgets/vibe-wallpaper-widgets-planning-gate.md \
+  docs/vibe-wallpaper-widgets/teacher-workstation-vibe-brief.md \
+  docs/vibe-wallpaper-widgets/wallpaper-concept-plan.md \
+  docs/vibe-wallpaper-widgets/widget-concept-plan.md \
+  docs/vibe-wallpaper-widgets/shortcut-concept-plan.md \
+  docs/vibe-wallpaper-widgets/visual-workshop-concept-plan.md \
+  docs/vibe-wallpaper-widgets/runtime-install-approval-gate.md \
+  assistant/vibe-wallpaper-widgets/samples/teacher-vibe-palette.fake.json \
+  assistant/vibe-wallpaper-widgets/samples/wallpaper-concepts.fake.json \
+  assistant/vibe-wallpaper-widgets/samples/widget-concepts.fake.json \
+  assistant/vibe-wallpaper-widgets/samples/shortcut-concepts.fake.json \
+  assistant/vibe-wallpaper-widgets/samples/visual-workshop-zones.fake.json \
+  scripts/vibe-wallpaper-widgets-planning-status.sh \
+  tests/vibe-wallpaper-widgets-planning-status-test.sh; do
+  check_required_file "${path}"
+done
+check_bash_syntax scripts/vibe-wallpaper-widgets-planning-status.sh
+check_bash_syntax tests/vibe-wallpaper-widgets-planning-status-test.sh
+check_doc_contains docs/vibe-wallpaper-widgets/vibe-wallpaper-widgets-planning-gate.md "complete_vibe_wallpaper_widgets_planning_gate_program" "vibe wallpaper widgets closure status"
+check_doc_contains docs/vibe-wallpaper-widgets/runtime-install-approval-gate.md "Owen must explicitly approve any future runtime/install mission" "Owen runtime/install approval requirement"
+check_doc_contains docs/whole-system-master-roadmap-build-state-report.md "complete_vibe_wallpaper_widgets_planning_gate_program" "whole-system report vibe wallpaper widgets closure"
+if grep -Fq -- '--vibe-wallpaper-widgets-planning-status' bin/chief-of-staff; then
+  pass "chief-of-staff exposes --vibe-wallpaper-widgets-planning-status"
+else
+  fail "chief-of-staff missing --vibe-wallpaper-widgets-planning-status"
+fi
+
 section "Classroom App Lab (Prototype Rescue Foundation) Files"
 for path in \
   docs/classroom-app-lab-prototype-rescue-foundation.md \

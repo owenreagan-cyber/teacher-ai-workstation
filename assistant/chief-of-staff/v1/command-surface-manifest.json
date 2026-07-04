@@ -17,6 +17,7 @@
         {"flag": "--whole-system-coherence-status", "status": "implemented", "purpose": "Whole-system coherence maintenance audit and cross-link proof (read-only)"},
         {"flag": "--agent-builder-compatibility-governance-status", "status": "implemented", "purpose": "Agent builder compatibility and external tool governance (read-only; no agent launch)"},
         {"flag": "--owen-architecture-decision-packets-status", "status": "implemented", "purpose": "Owen architecture decision packet index and boundary proof (read-only; Owen owns decisions)"},
+        {"flag": "--app-ecosystem-inventory-status", "status": "implemented", "purpose": "App ecosystem inventory and prototype build list (read-only; 52 apps; Owen owns priority)"},
         {"flag": "--gemini-discovery-classification-intake-status", "status": "implemented", "purpose": "Gemini discovery/classification external planning intake (classification only; no runtime)"},
         {"flag": "--return-to-core-status", "status": "implemented", "purpose": "Parked tracks and return-to-core map"},
         {"flag": "--chief-of-staff-v1-status", "status": "implemented", "purpose": "Chief of Staff v1 Agent Core foundation status"},

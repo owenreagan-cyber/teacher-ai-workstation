@@ -83,6 +83,7 @@ Cross-references:
 | Whole-system coherence maintenance | implemented read-only | `--whole-system-coherence-status`; audit + safe enhancement backlog |
 | Agent builder compatibility governance | implemented read-only | `--agent-builder-compatibility-governance-status`; external tool classification; no CoS agent launch |
 | Owen architecture decision packets | implemented read-only | `--owen-architecture-decision-packets-status`; six decision packets; Owen owns choices |
+| App ecosystem inventory | implemented read-only | `--app-ecosystem-inventory-status`; 52-app inventory; prototype build tiers |
 | Markdown frontmatter / manual metadata planning | implemented read-only (planning) | `--markdown-frontmatter-planning-status`; field ideas only; no parser/validator |
 | Gemini discovery/classification external planning intake | implemented read-only | `--gemini-discovery-classification-intake-status`; filed memo + classification; no runtime discovery |
 | Production registry writes / real records | planned | Approval-gated — Owen checklist required; `--curriculum-registry-write` blocked |

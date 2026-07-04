@@ -10,6 +10,7 @@ Closure: whole_system_master_roadmap_status_complete
 Coherence maintenance closure: complete_whole_system_coherence_maintenance
 Agent builder governance closure: complete_agent_builder_compatibility_governance_program
 Decision packets closure: complete_owen_architecture_decision_packets_program
+App ecosystem inventory closure: complete_app_ecosystem_inventory_and_prototype_build_list
 Presentation Engine planning closure: complete_presentation_engine_renderer_foundation_planning
 A4–A7 fixture enrichment closure: complete_a4_a7_fixture_optional_field_enrichment
 Classroom Utility templates closure: complete_classroom_utility_per_app_mission_templates
@@ -19,7 +20,7 @@ Frontmatter planning closure: complete_curriculum_manual_metadata_frontmatter_pl
 
 **Status key:** `[x]` Built/merged · `[~]` Currently being built · `[>]` Ready for safe planning/build · `[!]` Blocked pending Owen/safety gate · `[ ]` Future / not started · `[?]` Insufficient repo evidence
 
-**Status commands:** `bin/chief-of-staff --whole-system-master-roadmap-status`, `bin/chief-of-staff --whole-system-coherence-status`, `bin/chief-of-staff --agent-builder-compatibility-governance-status`, `bin/chief-of-staff --owen-architecture-decision-packets-status`
+**Status commands:** `bin/chief-of-staff --whole-system-master-roadmap-status`, `bin/chief-of-staff --whole-system-coherence-status`, `bin/chief-of-staff --owen-architecture-decision-packets-status`, `bin/chief-of-staff --app-ecosystem-inventory-status`
 
 ---
 
@@ -27,7 +28,7 @@ Frontmatter planning closure: complete_curriculum_manual_metadata_frontmatter_pl
 
 | Class | Meaning | Examples in this repo |
 | --- | --- | --- |
-| **repo-backed evidence** | Merged files, status scripts, tests, CLI wiring with PASS proof | Dashboard 136/0/0; `--owen-architecture-decision-packets-status`; first governed record in `production-registry.json` |
+| **repo-backed evidence** | Merged files, status scripts, tests, CLI wiring with PASS proof | Dashboard 137/0/0; `--app-ecosystem-inventory-status`; 52-app inventory |
 | **planning/proposal-only evidence** | Docs, proposals, lane reviews without runtime activation | Writer tooling design boundary; second-record worksheet; Academic OS external intake |
 | **blocked implementation gates** | Explicit Owen/safety gates; negative tests; sentinel | `BLOCKED-NO-WRITES.sentinel`; no `--write`; Options A/B/C blocked |
 | **future ideas not started** | Named programs with no repo implementation | Live Vibe Panel; Lovable API; NAS crawler |
@@ -118,7 +119,7 @@ Cross-references: `docs/build-queue.md`, `docs/master-build-roadmap.md`, `docs/p
 
 | Marker | Item | Evidence |
 | --- | --- | --- |
-| [x] | CLI, dashboard (136/0/0), Program B daily ops, queues, `--next-action`, validate-all (54/0/0) | repo-backed |
+| [x] | CLI, dashboard (137/0/0), Program B daily ops, queues, `--next-action`, validate-all (55/0/0) | repo-backed |
 | [>] | Unified daily briefing (AI), B4 smoke expansion, B7 closure placeholder | planning/proposal-only |
 | [!] | Automation beyond read-only status | blocked gate |
 | **Proof** | `bin/chief-of-staff --dashboard`, `docs/chief-of-staff-v1-program-b-closure.md` | |
@@ -248,9 +249,10 @@ Cross-references: `docs/build-queue.md`, `docs/master-build-roadmap.md`, `docs/p
 | --- | --- | --- |
 | [x] | CAL1 foundation, fake inventory, blocked external ideas doc, capability map CAL cross-link | repo-backed |
 | [x] | Per-app mission templates complete (9 candidates, matrix, student-data boundaries) | repo-backed — `docs/classroom-utility-per-app-mission-template.md`; `--classroom-utility-templates-status` |
+| [x] | App ecosystem inventory complete (52 canonical apps, risk tiers 1–7) | repo-backed — `docs/app-ecosystem-inventory-and-prototype-build-list.md`; `--app-ecosystem-inventory-status` |
 | [!] | All named utility apps blocked until per-app Owen mission | blocked gate |
 | [!] | Student-data workflows (real rosters, grades, behavior logs) | blocked gate — absolute |
-| **Proof** | `--classroom-app-lab-status`; `--classroom-utility-templates-status` | |
+| **Proof** | `--classroom-app-lab-status`; `--classroom-utility-templates-status`; `--app-ecosystem-inventory-status` | |
 
 ---
 
@@ -296,11 +298,12 @@ Cross-references: `docs/build-queue.md`, `docs/master-build-roadmap.md`, `docs/p
 
 | Surface | State |
 | --- | --- |
-| Dashboard | 136 / 0 / 0 PASS |
-| Validate-all | 54 / 0 / 0 PASS |
+| Dashboard | 137 / 0 / 0 PASS |
+| Validate-all | 55 / 0 / 0 PASS |
 | Whole-system coherence maintenance | `--whole-system-coherence-status` |
 | Agent builder compatibility governance | `--agent-builder-compatibility-governance-status` |
 | Owen architecture decision packets | `--owen-architecture-decision-packets-status` |
+| App ecosystem inventory | `--app-ecosystem-inventory-status` |
 | Whole-system roadmap status | `--whole-system-master-roadmap-status` |
 | Presentation Engine renderer foundation | `--presentation-engine-renderer-foundation-status` |
 | Gemini discovery/classification intake | `--gemini-discovery-classification-intake-status` |
@@ -312,9 +315,9 @@ Cross-references: `docs/build-queue.md`, `docs/master-build-roadmap.md`, `docs/p
 | First-record status | 50 / 0 / 0 PASS |
 | Next-gate status | 34 / 0 / 0 PASS |
 | Empty-file status (historical) | 30 / 0 / 0 PASS |
-| Phase-1 | 849 / 0 / 0 PASS |
+| Phase-1 | 858 / 0 / 0 PASS |
 | Active mission | None |
-| Next step | Owen reviews decision packets and selects blocked-gate options; production registry parked (Option D); CoS does not choose for Owen |
+| Next step | Owen reviews 52-app inventory and selects first safe planning lane; production registry parked (Option D); CoS does not choose app priority |
 
 **Safety gates preserved:** First governed production registry record exists (`records` count exactly 1; ID `resource-math-lesson-108-presentation`); `BLOCKED-NO-WRITES.sentinel` intact; no `--write`; no writer scripts; no second production record; real curriculum file access blocked; copied curriculum content blocked; source auto-resolution blocked; integration and runtime gates blocked.
 

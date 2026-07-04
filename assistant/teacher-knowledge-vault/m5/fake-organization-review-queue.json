@@ -1,0 +1,66 @@
+{
+  "classification": "fake_local_planning_only",
+  "runtime_executed": false,
+  "queue_items": [
+    {
+      "queue_item_id": "fake-m5-rq-001",
+      "operation_id": "fake-m5-op-rename-001",
+      "review_state": "organization_requested",
+      "requires_teacher_approval": true,
+      "execution_blocked": true
+    },
+    {
+      "queue_item_id": "fake-m5-rq-002",
+      "operation_id": "fake-m5-op-rename-001",
+      "review_state": "dry_run_ready",
+      "preview_id": "fake-m5-preview-001",
+      "requires_teacher_approval": true
+    },
+    {
+      "queue_item_id": "fake-m5-rq-003",
+      "operation_id": "fake-m5-op-rename-overwrite-blocked",
+      "review_state": "conflict_detected",
+      "conflict_id": "fake-m5-conflict-overwrite-001",
+      "requires_teacher_approval": true
+    },
+    {
+      "queue_item_id": "fake-m5-rq-004",
+      "operation_id": "fake-m5-op-rename-001",
+      "review_state": "teacher_approval_required",
+      "requires_teacher_approval": true
+    },
+    {
+      "queue_item_id": "fake-m5-rq-005",
+      "operation_id": "fake-m5-op-rename-001",
+      "review_state": "approved_pending_execution",
+      "teacher_approval_state": "approved_planned",
+      "execution_blocked": true,
+      "runtime_executed": false
+    },
+    {
+      "queue_item_id": "fake-m5-rq-006",
+      "operation_id": "fake-m5-op-blocked-dns",
+      "review_state": "execution_blocked",
+      "blocked_reason": "99_DO_NOT_SCAN destination blocked",
+      "enters_normal_review": false
+    },
+    {
+      "queue_item_id": "fake-m5-rq-007",
+      "operation_id": "fake-m5-op-move-teacher-only",
+      "review_state": "conflict_detected",
+      "conflict_type": "teacher_only_into_student_facing",
+      "student_facing_leakage_warning": true
+    },
+    {
+      "queue_item_id": "fake-m5-rq-008",
+      "operation_id": "fake-m5-op-mark-canonical-001",
+      "review_state": "organization_requested",
+      "operation_reason": "version_canonical_selection_requested"
+    },
+    {
+      "queue_item_id": "fake-m5-rq-009",
+      "operation_id": "fake-m5-op-reject-001",
+      "review_state": "rejected"
+    }
+  ]
+}

@@ -1476,6 +1476,26 @@ else
   warn "Teacher Knowledge Vault M4 smart rename status script missing: scripts/teacher-knowledge-vault-m4-smart-rename-status.sh"
 fi
 
+if [[ -f scripts/teacher-knowledge-vault-m5-organization-rollback-status.sh ]]; then
+  teacher_knowledge_vault_m5_result=0
+  teacher_knowledge_vault_m5_output="$(bash scripts/teacher-knowledge-vault-m5-organization-rollback-status.sh 2>&1)" || teacher_knowledge_vault_m5_result=$?
+  teacher_knowledge_vault_m5_pass="$(summary_count "${teacher_knowledge_vault_m5_output}" "PASS")"
+  teacher_knowledge_vault_m5_warn="$(summary_count "${teacher_knowledge_vault_m5_output}" "WARN")"
+  teacher_knowledge_vault_m5_fail="$(summary_count "${teacher_knowledge_vault_m5_output}" "FAIL")"
+
+  if [[ "${teacher_knowledge_vault_m5_result}" != "0" ]]; then
+    printf '%s\n' "${teacher_knowledge_vault_m5_output}"
+    fail "Teacher Knowledge Vault M5 organization/rollback status failed"
+  elif [[ -n "${teacher_knowledge_vault_m5_pass}" && -n "${teacher_knowledge_vault_m5_warn}" && -n "${teacher_knowledge_vault_m5_fail}" ]]; then
+    printf 'Teacher Knowledge Vault M5 Organization Rollback: PASS %s / WARN %s / FAIL %s\n' "${teacher_knowledge_vault_m5_pass}" "${teacher_knowledge_vault_m5_warn}" "${teacher_knowledge_vault_m5_fail}"
+    pass "Teacher Knowledge Vault M5 organization/rollback status completed"
+  else
+    pass "Teacher Knowledge Vault M5 organization/rollback status completed"
+  fi
+else
+  warn "Teacher Knowledge Vault M5 organization/rollback status script missing: scripts/teacher-knowledge-vault-m5-organization-rollback-status.sh"
+fi
+
 section "Local Retrieval Foundation v0"
 if [[ -f scripts/local-retrieval-foundation-status.sh ]]; then
   local_retrieval_foundation_result=0

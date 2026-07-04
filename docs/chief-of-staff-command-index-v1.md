@@ -132,6 +132,7 @@ These flags exist in `bin/chief-of-staff` and work as read-only local status sur
 | `bin/chief-of-staff --teacher-knowledge-vault-m2-local-discovery-approval-status` | Teacher Knowledge Vault M2 local discovery approval packet (read-only; no scanning) |
 | `bin/chief-of-staff --teacher-knowledge-vault-m3-fake-duplicate-search-status` | Teacher Knowledge Vault M3 fake duplicate/search/package foundation (read-only; no search runtime) |
 | `bin/chief-of-staff --teacher-knowledge-vault-m4-smart-rename-status` | Teacher Knowledge Vault M4 smart rename foundation (read-only; no rename execution) |
+| `bin/chief-of-staff --teacher-knowledge-vault-m5-organization-rollback-status` | Teacher Knowledge Vault M5 organization/rollback foundation (read-only; no organization execution) |
 | `bin/chief-of-staff --teacher-knowledge-vault-knowledge-entry-v0-validate` | Teacher Knowledge Vault knowledge entry v0 validator (read-only) |
 | `bin/chief-of-staff --local-retrieval-foundation-status` | Local Retrieval v0 |
 | `bin/chief-of-staff --integration-planning-foundation-status` | Integration Planning v0 |

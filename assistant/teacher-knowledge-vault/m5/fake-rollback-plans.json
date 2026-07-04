@@ -1,0 +1,38 @@
+{
+  "classification": "fake_local_planning_only",
+  "runtime_executed": false,
+  "rollback_executed": false,
+  "plans": [
+    {
+      "rollback_plan_id": "fake-m5-rollback-001",
+      "operation_id": "fake-m5-op-rename-001",
+      "operation_type": "rename",
+      "original_source_label": "fake-local-staging",
+      "original_path_label": "fake-local-staging://TeacherAI-Curriculum-Library/00_INBOX_UNSORTED/placeholder_fraction_worksheet.pdf",
+      "original_display_name": "placeholder_fraction_worksheet.pdf",
+      "target_path_label": "fake-local-staging://TeacherAI-Curriculum-Library/01_MATH/saxon_im5/lesson_021/",
+      "target_display_name": "math_g5_saxon_lesson_021_homework_odds_v1.pdf",
+      "restore_strategy": "rename_back_to_original",
+      "rollback_risk": "low",
+      "verification_checks": ["original_path_restored", "event_log_chain_intact"],
+      "manual_recovery_notes": "Teacher can reject and keep inbox copy if rollback needed",
+      "runtime_executed": false
+    },
+    {
+      "rollback_plan_id": "fake-m5-rollback-002",
+      "operation_id": "fake-m5-op-move-001",
+      "operation_type": "move",
+      "restore_strategy": "move_back_to_original_path",
+      "rollback_risk": "medium",
+      "runtime_executed": false
+    },
+    {
+      "rollback_plan_id": "fake-m5-rollback-003",
+      "operation_id": "fake-m5-op-archive-001",
+      "operation_type": "archive",
+      "restore_strategy": "restore_from_archive_folder",
+      "rollback_risk": "low",
+      "runtime_executed": false
+    }
+  ]
+}

@@ -18,6 +18,7 @@ Classroom Timer Level 3 runtime: level_3_classroom_timer_stopwatch_runtime_proto
 Vibe / Wallpaper / Widgets planning gate closure: complete_vibe_wallpaper_widgets_planning_gate_program
 Curriculum Library setup foundation closure: complete_curriculum_library_setup_and_manual_registry_foundation
 Teacher Knowledge Vault M0 architecture freeze closure: complete_teacher_knowledge_vault_m0_architecture_freeze
+Teacher Knowledge Vault M5 organization rollback closure: complete_teacher_knowledge_vault_m5_organization_rollback_foundation
 Teacher Knowledge Vault M4 smart rename closure: complete_teacher_knowledge_vault_m4_smart_rename_foundation
 Teacher Knowledge Vault M3 fake duplicate search closure: complete_teacher_knowledge_vault_m3_fake_duplicate_search_foundation
 Teacher Knowledge Vault M2 local discovery approval closure: complete_teacher_knowledge_vault_m2_local_discovery_approval_packet
@@ -40,7 +41,7 @@ Frontmatter planning closure: complete_curriculum_manual_metadata_frontmatter_pl
 
 | Class | Meaning | Examples in this repo |
 | --- | --- | --- |
-| **repo-backed evidence** | Merged files, status scripts, tests, CLI wiring with PASS proof | Dashboard 147/0/0; runtime approval gate; 1 runtime approved (Timer only) |
+| **repo-backed evidence** | Merged files, status scripts, tests, CLI wiring with PASS proof | Dashboard 148/0/0; runtime approval gate; 1 runtime approved (Timer only) |
 | **planning/proposal-only evidence** | Docs, proposals, lane reviews without runtime activation | Writer tooling design boundary; second-record worksheet; Academic OS external intake |
 | **blocked implementation gates** | Explicit Owen/safety gates; negative tests; sentinel | `BLOCKED-NO-WRITES.sentinel`; no `--write`; Options A/B/C blocked |
 | **future ideas not started** | Named programs with no repo implementation | Live Vibe Panel; Lovable API; NAS crawler |
@@ -318,8 +319,8 @@ Cross-references: `docs/build-queue.md`, `docs/master-build-roadmap.md`, `docs/p
 
 | Surface | State |
 | --- | --- |
-| Dashboard | 147 / 0 / 0 PASS |
-| Validate-all | 66 / 0 / 0 PASS |
+| Dashboard | 148 / 0 / 0 PASS |
+| Validate-all | 67 / 0 / 0 PASS |
 | Whole-system roadmap status | 102 / 0 / 0 PASS |
 | Whole-system coherence maintenance | 81 / 0 / 0 PASS |
 | Agent builder compatibility governance | `--agent-builder-compatibility-governance-status` |
@@ -331,6 +332,7 @@ Cross-references: `docs/build-queue.md`, `docs/master-build-roadmap.md`, `docs/p
 | Classroom Timer & Stopwatch runtime | `--classroom-timer-stopwatch-runtime-status` |
 | Curriculum Library foundation | `--curriculum-library-foundation-status`; `docs/curriculum-library/` |
 | Teacher Knowledge Vault M0 architecture freeze | `--teacher-knowledge-vault-m0-architecture-freeze-status`; `docs/teacher-knowledge-vault/` |
+| Teacher Knowledge Vault M5 organization/rollback | `--teacher-knowledge-vault-m5-organization-rollback-status`; `docs/teacher-knowledge-vault/m5-approved-organization-rollback-foundation.md` |
 | Teacher Knowledge Vault M4 smart rename | `--teacher-knowledge-vault-m4-smart-rename-status`; `docs/teacher-knowledge-vault/m4-smart-rename-foundation.md` |
 | Teacher Knowledge Vault M3 fake duplicate/search | `--teacher-knowledge-vault-m3-fake-duplicate-search-status`; `docs/teacher-knowledge-vault/m3-fake-duplicate-search-package-foundation.md` |
 | Teacher Knowledge Vault M2 local discovery approval | `--teacher-knowledge-vault-m2-local-discovery-approval-status`; `docs/teacher-knowledge-vault/m2-local-filesystem-discovery-approval-packet.md` |

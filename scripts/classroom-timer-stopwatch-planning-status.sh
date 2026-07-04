@@ -28,25 +28,26 @@ fixtures_dir="assistant/classroom-utilities/samples/classroom-timer-stopwatch-pl
 production_registry_path="assistant/curriculum-builder/registry/v0-2/production-registry.json"
 sentinel="assistant/curriculum-builder/registry/candidate-v0-2-production/BLOCKED-NO-WRITES.sentinel"
 
-section 'Classroom Timer & Stopwatch Planning Lane (Documentation Only)'
+section 'Classroom Timer & Stopwatch Planning Lane (Level 3 Runtime Implemented)'
 cat <<'EOF'
-Status: planning-only — not runtime approval
+Status: planning complete — Level 3 runtime prototype implemented (Timer only)
 Owen selected planning lane: yes
-Runtime classroom app: no
+Runtime classroom app: yes — Classroom Timer & Stopwatch only (local-only prototype)
+Other apps runtime: blocked
 Student data: blocked — absolute
 Database/API/integration: no
 AI generation/local models: no
-PASS does not authorize implementation: yes
+PASS does not authorize other apps: yes
 EOF
 
 section 'Planning Doc'
 check_file "${planning_doc}"
 check_doc_contains "${planning_doc}" "complete_classroom_timer_stopwatch_planning_lane" "planning lane closure marker"
-check_doc_contains "${planning_doc}" "planning-only — not implementation approval" "not implementation approval banner"
-check_doc_contains "${planning_doc}" "Runtime classroom app: blocked" "runtime blocked banner"
+check_doc_contains "${planning_doc}" "Level 3 runtime prototype implemented" "Level 3 runtime banner"
+check_doc_contains "${planning_doc}" "Other apps runtime: blocked" "other apps runtime blocked"
 check_doc_contains "${planning_doc}" "Student data: blocked" "student data blocked"
 check_doc_contains "${planning_doc}" "no data saved" "no data saved posture"
-check_doc_contains "${planning_doc}" "Owen selected this app for a planning lane only" "Owen planning lane selection"
+check_doc_contains "${planning_doc}" "Owen selected this app for the first planning lane" "Owen planning lane selection"
 check_doc_contains "${planning_doc}" "runtime timer app" "blocked runtime paths listed"
 check_doc_contains "${planning_doc}" "AI generation" "AI generation blocked"
 
@@ -64,16 +65,20 @@ else
   warn 'python3 not available for JSON parse checks'
 fi
 
-section 'No Executable Runtime Artifacts'
-for forbidden in \
+section 'No Executable Runtime Artifacts (Legacy Docs Path)'
+for legacy in \
   'docs/classroom-utilities/classroom-timer-stopwatch.html' \
   'docs/classroom-utilities/classroom-timer-stopwatch.js' \
-  'docs/classroom-utilities/classroom-timer-stopwatch.tsx' \
-  'assistant/classroom-utilities/runtime/classroom-timer-stopwatch'; do
-  [[ -e "${forbidden}" ]] && fail "forbidden runtime artifact exists: ${forbidden}" || pass "no forbidden runtime artifact: ${forbidden}"
+  'docs/classroom-utilities/classroom-timer-stopwatch.tsx'; do
+  [[ -e "${legacy}" ]] && fail "legacy runtime artifact in docs path: ${legacy}" || pass "no legacy runtime artifact: ${legacy}"
 done
-status_script="${BASH_SOURCE[0]}"
-grep -Eq 'setInterval|requestAnimationFrame' "${planning_doc}" 2>/dev/null && fail 'planning doc must not reference executable timer patterns' || pass 'planning doc avoids executable timer patterns'
+
+section 'Level 3 Runtime Prototype (Owen Approved)'
+check_file apps/classroom-timer-stopwatch/index.html
+check_file apps/classroom-timer-stopwatch/timer.js
+check_file scripts/classroom-timer-stopwatch-runtime-status.sh
+check_doc_contains docs/app-ecosystem/implementation-packets/classroom-timer-stopwatch-implementation-packet.md "Level 3 approved by Owen" "implementation packet Level 3"
+grep -Fq -- 'classroom-timer-stopwatch-runtime-status.sh' scripts/chief-of-staff-dashboard.sh && pass 'dashboard wires timer runtime status' || fail 'dashboard missing timer runtime status'
 
 section 'App Inventory Cross-Link'
 check_file "${inventory_doc}"
@@ -100,7 +105,8 @@ check_doc_contains docs/teacher-workstation-capability-map.md "classroom-timer-s
 section 'Dashboard and Validate-All Wiring'
 grep -Fq -- 'classroom-timer-stopwatch-planning-status.sh' scripts/chief-of-staff-dashboard.sh && pass 'dashboard wires timer planning status' || fail 'dashboard missing timer planning status'
 grep -Fq -- 'classroom-timer-stopwatch-planning-status.sh' scripts/chief-of-staff-validate-all.sh && pass 'validate-all wires timer planning status' || fail 'validate-all missing timer planning status'
-grep -Fq -- 'classroom-timer-stopwatch' tests/smoke-chief-of-staff-cli.sh && pass 'smoke wires timer planning status' || fail 'smoke missing timer planning status'
+grep -Fq -- 'classroom-timer-stopwatch-runtime-status.sh' scripts/chief-of-staff-validate-all.sh && pass 'validate-all wires timer runtime status' || fail 'validate-all missing timer runtime status'
+grep -Fq -- 'classroom-timer-stopwatch' tests/smoke-chief-of-staff-cli.sh && pass 'smoke wires timer planning/runtime' || fail 'smoke missing timer wiring'
 
 section 'CLI, Manifest, and Tests'
 bash -n "${BASH_SOURCE[0]}" && pass "bash syntax ok: ${BASH_SOURCE[0]}" || fail "bash syntax failed: status script"
@@ -110,8 +116,9 @@ check_file tests/classroom-timer-stopwatch-planning-status-test.sh
 bash -n tests/classroom-timer-stopwatch-planning-status-test.sh && pass 'bash syntax ok: timer planning test' || fail 'bash syntax failed: timer planning test'
 
 section 'Negative Non-Activation Assertions'
-grep -Eq '(^|[;&|[:space:]])curl[[:space:]]' "${status_script}" 2>/dev/null && fail "${status_script} must not shell-invoke curl" || pass "${status_script} does not shell-invoke curl"
-grep -Eq '(^|[;&|[:space:]])ollama[[:space:]]' "${status_script}" 2>/dev/null && fail "${status_script} must not shell-invoke ollama" || pass "${status_script} does not shell-invoke ollama"
+local_status_script="${BASH_SOURCE[0]}"
+grep -Eq '(^|[;&|[:space:]])curl[[:space:]]' "${local_status_script}" 2>/dev/null && fail "${local_status_script} must not shell-invoke curl" || pass "${local_status_script} does not shell-invoke curl"
+grep -Eq '(^|[;&|[:space:]])ollama[[:space:]]' "${local_status_script}" 2>/dev/null && fail "${local_status_script} must not shell-invoke ollama" || pass "${local_status_script} does not shell-invoke ollama"
 pass 'no timer executed'
 pass 'no browser launched'
 pass 'no runtime app approval implied'

@@ -239,6 +239,8 @@ Developer and Cursor Workflow:
   --app-ecosystem-inventory-status     Show app ecosystem inventory and prototype build list status and exit.
   --classroom-timer-stopwatch-planning-status
                                        Show Classroom Timer & Stopwatch planning lane status and exit.
+  --classroom-timer-stopwatch-runtime-status
+                                       Show Classroom Timer & Stopwatch Level 3 runtime prototype status and exit.
   --app-ecosystem-planning-lanes-status
                                        Show app ecosystem planning lanes program status (Tier 1–3) and exit.
   --app-runtime-approval-gate-status
@@ -2773,6 +2775,15 @@ while [[ $# -gt 0 ]]; do
         die "Classroom Timer & Stopwatch planning status script is missing: scripts/classroom-timer-stopwatch-planning-status.sh"
       fi
       bash "${timer_planning_status_script}"
+      exit 0
+      ;;
+    --classroom-timer-stopwatch-runtime-status)
+      repo_root="$(resolve_repo_root)"
+      timer_runtime_status_script="${repo_root}/scripts/classroom-timer-stopwatch-runtime-status.sh"
+      if [[ ! -f "${timer_runtime_status_script}" ]]; then
+        die "Classroom Timer & Stopwatch runtime status script is missing: scripts/classroom-timer-stopwatch-runtime-status.sh"
+      fi
+      bash "${timer_runtime_status_script}"
       exit 0
       ;;
     --app-ecosystem-planning-lanes-status)

@@ -146,6 +146,7 @@ run_track "Agent Builder Governance" scripts/agent-builder-compatibility-governa
 run_track "Owen Decision Packets" scripts/owen-architecture-decision-packets-status.sh
 run_track "App Ecosystem Inventory" scripts/app-ecosystem-inventory-status.sh
 run_track "Timer Stopwatch Planning" scripts/classroom-timer-stopwatch-planning-status.sh
+run_track "Timer Stopwatch Runtime" scripts/classroom-timer-stopwatch-runtime-status.sh
 run_track "App Ecosystem Planning Lanes" scripts/app-ecosystem-planning-lanes-status.sh
 run_track "App Runtime Approval Gate" scripts/app-runtime-approval-gate-status.sh
 run_track "Presentation Engine Renderer Foundation" scripts/presentation-engine-renderer-foundation-status.sh

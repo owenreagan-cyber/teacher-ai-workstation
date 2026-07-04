@@ -36,6 +36,7 @@ Per `docs/cursor-autonomous-build-engine.md` Expected WARN Policy.
 | `--app-ecosystem-inventory-status` | 0 | No — targeted command only |
 | `--classroom-timer-stopwatch-planning-status` | 0 | No — targeted command only |
 | `--app-ecosystem-planning-lanes-status` | 0 | No — targeted command only |
+| `--classroom-timer-stopwatch-runtime-status` | 0 | No — targeted command only |
 | `--app-runtime-approval-gate-status` | 0 | No — targeted command only |
 | `--curriculum-registry-lane-status` | 0 on aggregate script summary | Yes — component lines may show 0 WARN after enrichment |
 

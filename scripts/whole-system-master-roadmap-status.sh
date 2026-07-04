@@ -117,6 +117,8 @@ check_doc_contains "${report}" "complete_app_ecosystem_planning_lanes_program" "
 check_doc_contains "${report}" "--app-ecosystem-planning-lanes-status" "planning lanes status command cross-link"
 check_doc_contains "${report}" "complete_app_runtime_approval_gate_program" "runtime approval gate closure"
 check_doc_contains "${report}" "--app-runtime-approval-gate-status" "runtime approval gate status command cross-link"
+check_doc_contains "${report}" "level_3_classroom_timer_stopwatch_runtime_prototype" "timer Level 3 runtime closure"
+check_doc_contains "${report}" "--classroom-timer-stopwatch-runtime-status" "timer runtime status command cross-link"
 check_file docs/whole-system-coherence-maintenance-report.md
 
 section 'Production Registry Parked-State Proof'
@@ -318,6 +320,23 @@ if [[ -f scripts/app-runtime-approval-gate-status.sh ]]; then
   fi
 else
   fail 'App runtime approval gate status script missing'
+fi
+
+section 'Dependent Status: Classroom Timer & Stopwatch Runtime'
+if [[ -f scripts/classroom-timer-stopwatch-runtime-status.sh ]]; then
+  ctr_output="$(bash scripts/classroom-timer-stopwatch-runtime-status.sh 2>&1)" || ctr_result=$?
+  ctr_result="${ctr_result:-0}"
+  if [[ "${ctr_result}" != "0" ]]; then
+    fail 'Classroom Timer & Stopwatch runtime status script exited nonzero'
+    printf '%s\n' "${ctr_output}" | tail -20
+  elif grep -q '^FAIL: [1-9]' <<< "${ctr_output}"; then
+    fail 'Classroom Timer & Stopwatch runtime status reported FAIL'
+    printf '%s\n' "${ctr_output}" | tail -20
+  else
+    pass 'Classroom Timer & Stopwatch runtime status component clean'
+  fi
+else
+  fail 'Classroom Timer & Stopwatch runtime status script missing'
 fi
 
 section 'Coherence Report Cross-Check (No Nested Run)'

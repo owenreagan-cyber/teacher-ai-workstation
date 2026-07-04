@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Classroom Timer &amp; Stopwatch</title>
+    <meta
+      name="description"
+      content="Local-only classroom timer and stopwatch prototype. No network. No student data."
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header>
+      <h1>Classroom Timer &amp; Stopwatch</h1>
+      <p class="subtitle">Local-only prototype — Owen Level 3 approved</p>
+    </header>
+    <main>
+      <div class="mode-row" role="group" aria-label="Timer mode">
+        <button type="button" id="mode-countdown" aria-pressed="true">Countdown</button>
+        <button type="button" id="mode-stopwatch" aria-pressed="false">Stopwatch</button>
+      </div>
+      <section class="display-panel" aria-live="polite" aria-atomic="true">
+        <p id="mode-label">Countdown</p>
+        <p id="time-display" aria-label="Time display">03:00</p>
+        <p id="status-label">Ready</p>
+      </section>
+      <div class="controls" role="group" aria-label="Timer controls">
+        <button type="button" id="btn-start" aria-label="Start timer">Start</button>
+        <button type="button" id="btn-pause" aria-label="Pause timer" disabled>Pause</button>
+        <button type="button" id="btn-reset" aria-label="Reset timer">Reset</button>
+      </div>
+      <div class="presets" id="presets" role="group" aria-label="Preset durations"></div>
+    </main>
+    <footer>Offline local prototype. No audio, persistence, or network.</footer>
+    <script src="timer.js"></script>
+  </body>
+</html>

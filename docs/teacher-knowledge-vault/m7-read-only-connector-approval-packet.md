@@ -58,8 +58,9 @@ Cross-reference: ADR `0004-connector-sdk-contract.md`, `0002-drive-nas-canonical
 
 | Milestone | Status |
 | --- | --- |
-| M0–M6 | complete |
-| **M7** Read-only connector approval packet | **complete** (this mission) |
+| M0–M7 | complete |
+| **M7** Read-only connector approval packet | **complete** |
+| **M7b** Manual source inventory Level 1 | **complete** |
 | M2b / Drive/NAS/Canvas connector implementation | blocked |
 | Runtime extraction/OCR / organization / search / rename | blocked |
 | M8 AI/RAG | blocked |

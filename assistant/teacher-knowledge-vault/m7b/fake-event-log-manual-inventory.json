@@ -1,0 +1,18 @@
+{
+  "classification": "fake_local_planning_only",
+  "runtime_ingested": false,
+  "events": [
+    {"event_id": "fake-m7b-evt-001", "event_type": "manual_inventory_record_created", "manual_inventory_id": "fake-m7b-man-001", "runtime_ingested": false},
+    {"event_id": "fake-m7b-evt-002", "event_type": "record_sanitized", "manual_inventory_id": "fake-m7b-man-001", "runtime_ingested": false},
+    {"event_id": "fake-m7b-evt-003", "event_type": "student_data_risk_flagged", "manual_inventory_id": "fake-m7b-man-student-risk-blocked", "runtime_ingested": false},
+    {"event_id": "fake-m7b-evt-004", "event_type": "do_not_scan_record_blocked", "manual_inventory_id": "fake-m7b-man-dns", "runtime_ingested": false},
+    {"event_id": "fake-m7b-evt-005", "event_type": "teacher_only_risk_labeled", "manual_inventory_id": "fake-m7b-man-007", "runtime_ingested": false},
+    {"event_id": "fake-m7b-evt-006", "event_type": "source_role_assigned", "manual_inventory_id": "fake-m7b-man-001", "source_role": "canonical_storage", "runtime_ingested": false},
+    {"event_id": "fake-m7b-evt-007", "event_type": "source_reconciliation_candidate_created", "manual_inventory_id": "fake-m7b-man-drive-canvas", "runtime_ingested": false},
+    {"event_id": "fake-m7b-evt-008", "event_type": "record_approved_for_fake_catalog_mapping", "manual_inventory_id": "fake-m7b-man-001", "runtime_ingested": false},
+    {"event_id": "fake-m7b-evt-009", "event_type": "connector_access_requested_but_blocked", "connector_id": "fake-connector-google-drive-001", "runtime_ingested": false},
+    {"event_id": "fake-m7b-evt-010", "event_type": "api_call_requested_but_blocked", "runtime_ingested": false},
+    {"event_id": "fake-m7b-evt-011", "event_type": "content_read_requested_but_blocked", "runtime_ingested": false},
+    {"event_id": "fake-m7b-evt-012", "event_type": "runtime_ingestion_requested_but_blocked", "manual_inventory_id": "fake-m7b-man-001", "runtime_ingested": false}
+  ]
+}

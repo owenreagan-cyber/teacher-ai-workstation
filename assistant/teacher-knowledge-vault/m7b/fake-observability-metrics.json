@@ -1,0 +1,22 @@
+{
+  "classification": "fake_local_planning_only",
+  "runtime_ingested": false,
+  "api_cost_estimate_usd": 0.0,
+  "metrics": {
+    "manual_records_drafted": 13,
+    "manual_records_needing_sanitization": 1,
+    "records_blocked_student_data_risk": 1,
+    "records_blocked_do_not_scan": 1,
+    "teacher_only_records_labeled": 3,
+    "source_reconciliation_candidates": 9,
+    "connector_implementations": 0,
+    "oauth_flows_started": 0,
+    "api_calls_made": 0,
+    "network_calls_made": 0,
+    "real_sources_connected": 0,
+    "real_metadata_records_ingested": 0,
+    "real_files_read": 0,
+    "student_records_read": 0,
+    "write_operations": 0
+  }
+}

@@ -82,12 +82,14 @@ Details: `docs/teacher-knowledge-vault/canonical-storage-and-taxonomy.md`, `docs
 | **M5** Approved organization + rollback | **complete** |
 | **M6** Native extraction/OCR approval packet | **complete** |
 | **M7** Read-only connector approval packet | **complete** |
+| **M7b** Manual source inventory Level 1 | **complete** |
 | M2b Selected-folder metadata prototype | blocked |
 | Runtime search/duplicate detection | blocked |
 | Runtime smart rename | blocked |
 | Runtime organization operations | blocked |
 | Runtime extraction/OCR | blocked |
 | Drive/NAS/Canvas connector implementation | blocked |
+| Runtime manual import into catalog | blocked |
 | M8 AI/RAG | blocked |
 
 ## Proof

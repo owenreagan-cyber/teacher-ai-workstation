@@ -63,7 +63,8 @@ for closure in \
   complete_vibe_wallpaper_widgets_planning_gate_program \
   complete_teacher_knowledge_vault_m0_architecture_freeze \
   complete_teacher_knowledge_vault_m1_fake_catalog_foundation \
-  complete_teacher_knowledge_vault_m0_expansion_m1_alignment; do
+  complete_teacher_knowledge_vault_m0_expansion_m1_alignment \
+  complete_teacher_knowledge_vault_m2_local_discovery_approval_packet; do
   check_doc_contains "${whole_system_report}" "${closure}" "whole-system report closure: ${closure}"
 done
 check_doc_contains "${coherence_report}" "complete_vibe_wallpaper_widgets_planning_gate_program" "coherence report vibe wallpaper widgets closure"

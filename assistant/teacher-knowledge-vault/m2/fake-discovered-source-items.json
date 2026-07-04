@@ -1,0 +1,116 @@
+{
+  "classification": "fake_local_planning_only",
+  "runtime_executed": false,
+  "discovered_items": [
+    {
+      "source_item_id": "fake-m2-item-staging-001",
+      "path_label": "fake-local-staging://TeacherAI-Curriculum-Library/00_INBOX_UNSORTED/fake_math_worksheet_draft_v1.pdf",
+      "display_name": "fake_math_worksheet_draft_v1.pdf",
+      "parent_path_label": "fake-local-staging://TeacherAI-Curriculum-Library/00_INBOX_UNSORTED/",
+      "extension": "pdf",
+      "size_bytes": 245760,
+      "indexing_policy": "normal",
+      "requires_review": true,
+      "runtime_executed": false
+    },
+    {
+      "source_item_id": "fake-m2-item-teacher-only-001",
+      "path_label": "fake-local-staging://TeacherAI-Curriculum-Library/10_TEACHER_ONLY/fake_answer_key_placeholder.pdf",
+      "display_name": "fake_answer_key_placeholder.pdf",
+      "parent_path_label": "fake-local-staging://TeacherAI-Curriculum-Library/10_TEACHER_ONLY/",
+      "extension": "pdf",
+      "indexing_policy": "restricted_indexable",
+      "teacher_only_risk": "elevated",
+      "requires_review": true,
+      "runtime_executed": false
+    },
+    {
+      "source_item_id": "fake-m2-item-student-facing-001",
+      "path_label": "fake-local-staging://TeacherAI-Curriculum-Library/11_STUDENT_FACING/fake_student_handout_v1.pdf",
+      "display_name": "fake_student_handout_v1.pdf",
+      "parent_path_label": "fake-local-staging://TeacherAI-Curriculum-Library/11_STUDENT_FACING/",
+      "extension": "pdf",
+      "audience_risk": "student_facing",
+      "leakage_check_required": true,
+      "requires_review": true,
+      "runtime_executed": false
+    },
+    {
+      "source_item_id": "fake-m2-item-ai-generated-001",
+      "path_label": "fake-local-staging://TeacherAI-Curriculum-Library/12_AI_GENERATED/fake_ai_adaptation_draft.md",
+      "display_name": "fake_ai_adaptation_draft.md",
+      "parent_path_label": "fake-local-staging://TeacherAI-Curriculum-Library/12_AI_GENERATED/",
+      "extension": "md",
+      "indexing_policy": "approval_gated",
+      "requires_review": true,
+      "runtime_executed": false
+    },
+    {
+      "source_item_id": "fake-m2-item-cloud-placeholder-001",
+      "path_label": "fake-local-staging://TeacherAI-Curriculum-Library/01_MATH/fake_cloud_only_resource.pdf",
+      "display_name": "fake_cloud_only_resource.pdf",
+      "cloud_placeholder_status": "placeholder",
+      "requires_review": true,
+      "runtime_executed": false
+    },
+    {
+      "source_item_id": "fake-m2-item-symlink-escape-001",
+      "path_label": "fake-local-staging://TeacherAI-Curriculum-Library/00_INBOX_UNSORTED/fake_escape_link",
+      "symlink_status": "escape_blocked",
+      "blocked_reason": "symlink_outside_approved_root",
+      "requires_review": false,
+      "runtime_executed": false
+    },
+    {
+      "source_item_id": "fake-m2-item-hidden-001",
+      "path_label": "fake-local-staging://TeacherAI-Curriculum-Library/00_INBOX_UNSORTED/.fake_hidden_system_file",
+      "display_name": ".fake_hidden_system_file",
+      "blocked_reason": "hidden_system_file",
+      "runtime_executed": false
+    },
+    {
+      "source_item_id": "fake-m2-item-duplicate-filename-001",
+      "path_label": "fake-local-staging://TeacherAI-Curriculum-Library/00_INBOX_UNSORTED/fake_math_worksheet_draft_v1_copy.pdf",
+      "display_name": "fake_math_worksheet_draft_v1_copy.pdf",
+      "duplicate_candidate": true,
+      "requires_review": true,
+      "runtime_executed": false
+    },
+    {
+      "source_item_id": "fake-m2-item-large-hash-later-001",
+      "path_label": "fake-local-staging://TeacherAI-Curriculum-Library/07_SCIENCE/fake_large_scan_bundle.pdf",
+      "size_bytes": 52428800,
+      "hash_approval_required": true,
+      "requires_review": true,
+      "runtime_executed": false
+    },
+    {
+      "source_item_id": "fake-m2-item-native-extraction-later-001",
+      "path_label": "fake-local-staging://TeacherAI-Curriculum-Library/01_MATH/fake_native_text_candidate.docx",
+      "extension": "docx",
+      "native_extraction_later": true,
+      "requires_review": true,
+      "runtime_executed": false
+    },
+    {
+      "source_item_id": "fake-m2-item-ocr-later-001",
+      "path_label": "fake-local-staging://TeacherAI-Curriculum-Library/00_INBOX_UNSORTED/fake_scanned_image_packet.pdf",
+      "ocr_later": true,
+      "requires_review": true,
+      "runtime_executed": false
+    },
+    {
+      "source_item_id": "fake-m2-item-manual-review-001",
+      "path_label": "fake-local-staging://TeacherAI-Curriculum-Library/00_INBOX_UNSORTED/fake_ambiguous_unlabeled_resource.bin",
+      "review_state": "needs_manual_review",
+      "requires_review": true,
+      "runtime_executed": false
+    },
+    {
+      "source_item_id": "fake-m2-item-unapproved-root-001",
+      "path_label": "blocked-placeholder://unapproved-external-root/fake_blocked_external_file.pdf",
+      "blocked_reason": "unapproved_root",
+      "runtime_executed": false
+    }
+  ]
+}

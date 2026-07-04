@@ -17,6 +17,7 @@ App runtime approval gate closure: complete_app_runtime_approval_gate_program
 Classroom Timer Level 3 runtime: level_3_classroom_timer_stopwatch_runtime_prototype
 Vibe / Wallpaper / Widgets planning gate closure: complete_vibe_wallpaper_widgets_planning_gate_program
 Curriculum Library setup foundation closure: complete_curriculum_library_setup_and_manual_registry_foundation
+Teacher Knowledge Vault M0 architecture freeze closure: complete_teacher_knowledge_vault_m0_architecture_freeze
 Presentation Engine planning closure: complete_presentation_engine_renderer_foundation_planning
 A4–A7 fixture enrichment closure: complete_a4_a7_fixture_optional_field_enrichment
 Classroom Utility templates closure: complete_classroom_utility_per_app_mission_templates
@@ -34,7 +35,7 @@ Frontmatter planning closure: complete_curriculum_manual_metadata_frontmatter_pl
 
 | Class | Meaning | Examples in this repo |
 | --- | --- | --- |
-| **repo-backed evidence** | Merged files, status scripts, tests, CLI wiring with PASS proof | Dashboard 142/0/0; runtime approval gate; 1 runtime approved (Timer only) |
+| **repo-backed evidence** | Merged files, status scripts, tests, CLI wiring with PASS proof | Dashboard 143/0/0; runtime approval gate; 1 runtime approved (Timer only) |
 | **planning/proposal-only evidence** | Docs, proposals, lane reviews without runtime activation | Writer tooling design boundary; second-record worksheet; Academic OS external intake |
 | **blocked implementation gates** | Explicit Owen/safety gates; negative tests; sentinel | `BLOCKED-NO-WRITES.sentinel`; no `--write`; Options A/B/C blocked |
 | **future ideas not started** | Named programs with no repo implementation | Live Vibe Panel; Lovable API; NAS crawler |
@@ -312,8 +313,8 @@ Cross-references: `docs/build-queue.md`, `docs/master-build-roadmap.md`, `docs/p
 
 | Surface | State |
 | --- | --- |
-| Dashboard | 142 / 0 / 0 PASS |
-| Validate-all | 61 / 0 / 0 PASS |
+| Dashboard | 143 / 0 / 0 PASS |
+| Validate-all | 62 / 0 / 0 PASS |
 | Whole-system roadmap status | 102 / 0 / 0 PASS |
 | Whole-system coherence maintenance | 81 / 0 / 0 PASS |
 | Agent builder compatibility governance | `--agent-builder-compatibility-governance-status` |
@@ -324,6 +325,7 @@ Cross-references: `docs/build-queue.md`, `docs/master-build-roadmap.md`, `docs/p
 | Classroom Timer & Stopwatch planning | `--classroom-timer-stopwatch-planning-status` |
 | Classroom Timer & Stopwatch runtime | `--classroom-timer-stopwatch-runtime-status` |
 | Curriculum Library foundation | `--curriculum-library-foundation-status`; `docs/curriculum-library/` |
+| Teacher Knowledge Vault M0 architecture freeze | `--teacher-knowledge-vault-m0-architecture-freeze-status`; `docs/teacher-knowledge-vault/` |
 | Vibe / Wallpaper / Widgets planning status | 95 / 0 / 0 PASS |
 | Presentation Engine renderer foundation | `--presentation-engine-renderer-foundation-status` |
 | Gemini discovery/classification intake | `--gemini-discovery-classification-intake-status` |

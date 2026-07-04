@@ -1,0 +1,66 @@
+{
+  "vault_version": "0.1.0",
+  "vault_status": "active_m0_architecture_freeze",
+  "metadata_only": true,
+  "read_only": true,
+  "classification": "fake_local_planning_only",
+  "entries": [
+    {
+      "knowledge_entry_id": "sample-knowledge-entry-001",
+      "title": "Placeholder Fraction Review Reference",
+      "category": "reference_summary",
+      "summary_label": "Fictional summary label for fraction review routine placeholders only.",
+      "source_intake_ref": "fake-intake-ref-001",
+      "review_status": "teacher_reviewed",
+      "metadata_only": true,
+      "local_first_safety_flags": [
+        "metadata_only",
+        "no_student_data",
+        "not_indexed",
+        "not_scanned",
+        "placeholder_only",
+        "no_auto_load"
+      ],
+      "notes": "Fictional fixture for M0 architecture freeze. Not a real teaching note.",
+      "activation_status": "teacher_knowledge_vault_m0"
+    },
+    {
+      "knowledge_entry_id": "sample-knowledge-entry-002",
+      "title": "Placeholder Morning Brief Workflow Guide",
+      "category": "workflow_guide",
+      "summary_label": "Fictional workflow guide label for morning brief placeholders only.",
+      "source_intake_ref": "fake-intake-ref-002",
+      "review_status": "teacher_reviewed",
+      "metadata_only": true,
+      "local_first_safety_flags": [
+        "metadata_only",
+        "no_student_data",
+        "not_indexed",
+        "not_scanned",
+        "placeholder_only",
+        "no_auto_load"
+      ],
+      "notes": "Fictional fixture. No real workflow content.",
+      "activation_status": "teacher_knowledge_vault_m0"
+    },
+    {
+      "knowledge_entry_id": "sample-knowledge-entry-003",
+      "title": "Placeholder Shurley Pattern Teaching Note",
+      "category": "teaching_note",
+      "summary_label": "Fictional teaching note label for language arts pattern placeholders only.",
+      "source_intake_ref": "fake-intake-ref-003",
+      "review_status": "needs_review",
+      "metadata_only": true,
+      "local_first_safety_flags": [
+        "metadata_only",
+        "no_student_data",
+        "not_indexed",
+        "not_scanned",
+        "placeholder_only",
+        "no_auto_load"
+      ],
+      "notes": "Fictional fixture with needs_review status for gate testing.",
+      "activation_status": "teacher_knowledge_vault_m0"
+    }
+  ]
+}

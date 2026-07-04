@@ -1,0 +1,17 @@
+{
+  "classification": "fake_local_planning_only",
+  "review_queue_items": [
+    {"queue_item_id": "fake-rq-001", "resource_id": "fake-resource-saxon-lesson-021", "review_state": "new_discovery", "requires_teacher_approval": true},
+    {"queue_item_id": "fake-rq-002", "resource_id": "fake-resource-reading-mastery-unit-04", "review_state": "needs_native_extraction", "requires_teacher_approval": true},
+    {"queue_item_id": "fake-rq-003", "resource_id": "fake-resource-cksci-matter-unit", "review_state": "needs_ocr", "requires_teacher_approval": true, "ocr_blocked": true},
+    {"queue_item_id": "fake-rq-004", "resource_id": "fake-resource-ckhg-american-revolution", "review_state": "needs_classification", "requires_teacher_approval": true},
+    {"queue_item_id": "fake-rq-005", "resource_id": "fake-resource-duplicate-candidate-a", "review_state": "possible_duplicate", "requires_teacher_approval": true, "linked_resource_id": "fake-resource-duplicate-candidate-b"},
+    {"queue_item_id": "fake-rq-006", "resource_id": "fake-resource-version-v1", "review_state": "possible_version", "requires_teacher_approval": true},
+    {"queue_item_id": "fake-rq-007", "resource_id": "fake-resource-student-facing-worksheet", "review_state": "ready_to_organize", "requires_teacher_approval": true, "smart_rename_suggestion_id": "fake-rename-001"},
+    {"queue_item_id": "fake-rq-008", "resource_id": "fake-resource-teacher-only-assessment-key", "review_state": "needs_manual_review", "requires_teacher_approval": true, "restricted_indexable": true},
+    {"queue_item_id": "fake-rq-009", "resource_id": "fake-resource-student-facing-worksheet", "review_state": "needs_manual_review", "requires_teacher_approval": true, "leakage_check_required": true},
+    {"queue_item_id": "fake-rq-010", "resource_id": "fake-resource-ai-generated-adaptation", "review_state": "approved", "requires_teacher_approval": true, "runtime_executed": false},
+    {"queue_item_id": "fake-rq-011", "resource_id": "fake-resource-canvas-only-module", "review_state": "rejected", "requires_teacher_approval": true},
+    {"queue_item_id": "fake-rq-012", "resource_id": "fake-resource-do-not-scan-blocked", "review_state": "blocked", "requires_teacher_approval": true, "scan_policy": "do_not_scan", "enters_normal_review": false}
+  ]
+}

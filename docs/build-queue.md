@@ -8,15 +8,17 @@ Phase 0E Vibe Engine.
 
 ## Current Focus
 
-**curriculum library setup and manual registry foundation complete — planning/docs/fake fixtures only; no real folders; `~/TeacherAI-Curriculum-Library/` blocked until Owen-approved creation mission. Teacher Knowledge Vault M0 architecture freeze — planning/docs/fake fixtures only; no `assistant/memory/knowledge/` population; auto-load blocked.**
+**curriculum library setup and manual registry foundation complete — planning/docs/fake fixtures only; no real folders; `~/TeacherAI-Curriculum-Library/` blocked until Owen-approved creation mission. Teacher Knowledge Vault M0 architecture freeze complete (PR #253). Teacher Knowledge Vault M1 fake catalog foundation — SQLite schema direction and fake fixtures only; no scanning, connectors, or file operations.**
 
-| Master inventory (app ecosystem): `docs/app-ecosystem-inventory-and-prototype-build-list.md`; `--app-ecosystem-inventory-status`. **Curriculum Library setup foundation** (`docs/curriculum-library/`; `--curriculum-library-foundation-status`; no real folders). **Teacher Knowledge Vault M0 architecture freeze** (`docs/teacher-knowledge-vault/`; `--teacher-knowledge-vault-m0-architecture-freeze-status`; no knowledge directory population). **Classroom Timer Level 3 prototype** (`apps/classroom-timer-stopwatch/`; `--classroom-timer-stopwatch-runtime-status`). **runtime approval gate** (`docs/app-runtime-approval-gate-program.md`; `--app-runtime-approval-gate-status`): 1 app approved (Timer only). app ecosystem planning lanes program complete (Tier 1–3). Tier 4–7 blocked summary: `docs/proposals/blocked/high-risk-app-planning-blocked-summary.md`. agent builder governance complete. first governed production registry record complete (Option D parked). No runtime activation beyond Timer local prototype.
+| Master inventory (app ecosystem): `docs/app-ecosystem-inventory-and-prototype-build-list.md`; `--app-ecosystem-inventory-status`. **Curriculum Library setup foundation** (`docs/curriculum-library/`; `--curriculum-library-foundation-status`; no real folders). **Teacher Knowledge Vault M0** (`--teacher-knowledge-vault-m0-architecture-freeze-status`). **Teacher Knowledge Vault M1 fake catalog** (`docs/teacher-knowledge-vault/m1-fake-catalog-foundation.md`; `--teacher-knowledge-vault-m1-fake-catalog-status`; no SQLite runtime). **Classroom Timer Level 3 prototype** (`apps/classroom-timer-stopwatch/`; `--classroom-timer-stopwatch-runtime-status`). **runtime approval gate** (`docs/app-runtime-approval-gate-program.md`; `--app-runtime-approval-gate-status`): 1 app approved (Timer only). app ecosystem planning lanes program complete (Tier 1–3). Tier 4–7 blocked summary: `docs/proposals/blocked/high-risk-app-planning-blocked-summary.md`. agent builder governance complete. first governed production registry record complete (Option D parked). No runtime activation beyond Timer local prototype.
 
 Master program roadmap: `docs/master-build-roadmap.md` — Program Readiness Audit and mission sequencing for v1.0. Whole-system report: `docs/whole-system-master-roadmap-build-state-report.md`. Implementation does not proceed automatically from the roadmap.
 
 Handoff and status clarity. Start from `docs/phase-1-chief-of-staff-status-audit.md` — Repo-Wide Parked Tracks and Active Status Map and `docs/build-queue.md`.
 
 ## Recently Completed
+
+- Teacher Knowledge Vault M1 Fake Catalog Foundation (2026-07-04): `docs/teacher-knowledge-vault/m1-fake-catalog-foundation.md`; `assistant/teacher-knowledge-vault/m1/`; `--teacher-knowledge-vault-m1-fake-catalog-status`; fake catalog/event log/review queue/search fixtures; SQL schema draft not executed; M2–M8 blocked.
 
 - Teacher Knowledge Vault M0 Architecture Freeze (2026-07-04): `docs/teacher-knowledge-vault/`; fake fixtures; `--teacher-knowledge-vault-m0-architecture-freeze-status`; planning only — no `assistant/memory/knowledge/` population; auto-load blocked.
 

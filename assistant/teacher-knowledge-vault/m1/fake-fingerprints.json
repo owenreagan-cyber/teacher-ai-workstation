@@ -1,0 +1,33 @@
+{
+  "classification": "fake_local_planning_only",
+  "fingerprint_sets": [
+    {
+      "fingerprint_set_id": "fake-fp-dup-group-001",
+      "source_item_ids": ["fake-source-item-nas-001", "fake-source-item-nas-002"],
+      "binary_hash_placeholder": "fake-hash-duplicate-group-001",
+      "filename_fingerprint_placeholder": "math_g5_placeholder_worksheet",
+      "match_type": "duplicate_candidate"
+    },
+    {
+      "fingerprint_set_id": "fake-fp-version-group-001",
+      "source_item_ids": ["fake-source-item-staging-001"],
+      "binary_hash_placeholder": "fake-hash-version-v1",
+      "filename_fingerprint_placeholder": "writing_placeholder_draft_v1",
+      "match_type": "version_candidate"
+    },
+    {
+      "fingerprint_set_id": "fake-fp-saxon-021",
+      "source_item_ids": ["fake-source-item-drive-001"],
+      "binary_hash_placeholder": "fake-hash-saxon-021",
+      "filename_fingerprint_placeholder": "math_g5_saxon_lesson_021",
+      "match_type": "resource_anchor"
+    },
+    {
+      "fingerprint_set_id": "fake-fp-blocked",
+      "source_item_ids": ["fake-source-item-blocked-001"],
+      "binary_hash_placeholder": "fake-hash-blocked-no-scan",
+      "filename_fingerprint_placeholder": "blocked_do_not_scan",
+      "match_type": "blocked_do_not_scan"
+    }
+  ]
+}

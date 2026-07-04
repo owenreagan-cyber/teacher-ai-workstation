@@ -1,0 +1,36 @@
+{
+  "catalog_version": "0.1.0",
+  "catalog_status": "active_m1_fake_catalog_foundation",
+  "classification": "fake_local_planning_only",
+  "metadata_only": true,
+  "read_only": true,
+  "runtime_executed": false,
+  "sqlite_database_created": false,
+  "closure_marker": "complete_teacher_knowledge_vault_m1_fake_catalog_foundation",
+  "entity_counts": {
+    "resources": 14,
+    "representations": 18,
+    "sources": 4,
+    "source_items": 16,
+    "fingerprint_sets": 4,
+    "relationships": 4,
+    "collections": 3,
+    "review_queue_items": 12,
+    "event_log_entries": 16,
+    "search_examples": 11,
+    "governance_status_records": 1
+  },
+  "fixture_files": [
+    "fake-resources.json",
+    "fake-representations.json",
+    "fake-sources.json",
+    "fake-source-items.json",
+    "fake-fingerprints.json",
+    "fake-relationships.json",
+    "fake-collections.json",
+    "fake-review-queue.json",
+    "fake-event-log.json",
+    "fake-search-examples.json",
+    "fake-observability-metrics.json"
+  ]
+}

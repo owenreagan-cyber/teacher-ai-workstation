@@ -1,0 +1,23 @@
+{
+  "classification": "fake_local_planning_only",
+  "search_runtime_executed": false,
+  "queries": [
+    {"query_id": "fake-q-lesson-21", "query_text": "Lesson 21", "expected_package_ids": ["fake-pkg-saxon-lesson-021"], "teacher_mode_required": false},
+    {"query_id": "fake-q-power-up", "query_text": "Power Up", "expected_resource_ids": ["fake-resource-saxon-lesson-021"], "teacher_mode_required": false},
+    {"query_id": "fake-q-american-revolution", "query_text": "American Revolution", "expected_package_ids": ["fake-pkg-ckhg-american-revolution"], "teacher_mode_required": false},
+    {"query_id": "fake-q-fractions", "query_text": "fractions", "expected_resource_ids": ["fake-resource-student-facing-worksheet", "fake-resource-saxon-lesson-021"], "teacher_mode_required": false},
+    {"query_id": "fake-q-teacher-guide", "query_text": "teacher guide", "expected_resource_ids": ["fake-resource-saxon-lesson-021", "fake-resource-teacher-only-assessment-key"], "teacher_mode_required": true},
+    {"query_id": "fake-q-canvas-ready", "query_text": "Canvas ready", "expected_resource_ids": ["fake-resource-drive-canvas-both"], "teacher_mode_required": false},
+    {"query_id": "fake-q-only-canvas", "query_text": "only in Canvas", "expected_resource_ids": ["fake-resource-canvas-only-module"], "reconciliation_flag": "canvas_only"},
+    {"query_id": "fake-q-only-drive", "query_text": "only in Drive", "expected_resource_ids": ["fake-resource-drive-only-pacing"], "reconciliation_flag": "drive_only"},
+    {"query_id": "fake-q-needs-review", "query_text": "needs review", "expected_resource_ids": ["fake-resource-duplicate-candidate-a", "fake-resource-teacher-only-assessment-key"], "teacher_mode_required": false},
+    {"query_id": "fake-q-teacher-only", "query_text": "teacher-only", "expected_resource_ids": ["fake-resource-teacher-only-assessment-key"], "teacher_mode_required": true, "student_mode_excluded": true},
+    {"query_id": "fake-q-ai-generated", "query_text": "AI generated", "expected_resource_ids": ["fake-resource-ai-generated-adaptation"], "teacher_mode_required": false},
+    {"query_id": "fake-q-possible-duplicates", "query_text": "possible duplicates", "expected_group_ids": ["fake-dup-group-filename-001"], "teacher_mode_required": false},
+    {"query_id": "fake-q-possible-versions", "query_text": "possible versions", "expected_group_ids": ["fake-ver-group-saxon-lesson-021"], "teacher_mode_required": false},
+    {"query_id": "fake-q-complete-package", "query_text": "complete package", "expected_package_ids": ["fake-pkg-saxon-lesson-021", "fake-pkg-ckhg-american-revolution"], "teacher_mode_required": false},
+    {"query_id": "fake-q-missing-canonical", "query_text": "missing from canonical storage", "expected_resource_ids": ["fake-resource-canvas-only-module"], "reconciliation_flag": "missing_from_canonical_storage"}
+  ],
+  "excluded_from_all_search": ["fake-resource-do-not-scan-blocked"],
+  "student_mode_leakage_filter": ["answer_key", "assessment_key", "teacher_guide"]
+}

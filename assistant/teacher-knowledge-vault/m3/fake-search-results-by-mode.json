@@ -1,0 +1,74 @@
+{
+  "classification": "fake_local_planning_only",
+  "search_runtime_executed": false,
+  "results_by_mode": {
+    "teacher_planning": {
+      "query_text": "teacher guide",
+      "result_count": 2,
+      "results": [
+        {
+          "resource_id": "fake-resource-saxon-lesson-021",
+          "package_id": "fake-pkg-saxon-lesson-021",
+          "indexing_policy": "normal",
+          "teacher_only_risk": "low",
+          "representations_shown": ["teacher_guide", "homework"]
+        },
+        {
+          "resource_id": "fake-resource-teacher-only-assessment-key",
+          "indexing_policy": "restricted_indexable",
+          "teacher_only_risk": "elevated",
+          "representations_shown": ["answer_key", "assessment"]
+        }
+      ],
+      "do_not_scan_excluded": true
+    },
+    "student_facing": {
+      "query_text": "Lesson 21",
+      "result_count": 2,
+      "results": [
+        {
+          "resource_id": "fake-resource-saxon-lesson-021",
+          "package_id": "fake-pkg-saxon-lesson-021",
+          "representations_shown": ["student_textbook_section", "homework"],
+          "filtered_out": ["answer_key", "teacher_guide", "assessment"]
+        },
+        {
+          "resource_id": "fake-resource-student-facing-worksheet",
+          "representations_shown": ["worksheet"],
+          "leakage_check_passed": true
+        }
+      ],
+      "teacher_only_filtered_count": 1,
+      "student_facing_leakage_blocks": 0
+    },
+    "canvas_facing": {
+      "query_text": "Canvas ready",
+      "result_count": 1,
+      "results": [
+        {
+          "resource_id": "fake-resource-drive-canvas-both",
+          "reconciliation_status": "drive_and_canvas",
+          "canvas_publish_candidate": true,
+          "canvas_publish_executed": false
+        }
+      ]
+    },
+    "assessment_validation": {
+      "query_text": "fractions",
+      "result_count": 1,
+      "alignment_check_only": true,
+      "answer_content_exposed": false,
+      "teacher_only_metadata_used": true,
+      "leakage_check_required": true
+    },
+    "admin_governance": {
+      "query_text": "needs review",
+      "blocked_count": 1,
+      "approval_required_count": 3,
+      "do_not_scan_blocked_count": 1,
+      "protected_content_exposed": false,
+      "reconciliation_flags": ["canvas_only", "drive_only", "missing_from_canonical_storage"]
+    }
+  },
+  "excluded_resource_ids": ["fake-resource-do-not-scan-blocked"]
+}

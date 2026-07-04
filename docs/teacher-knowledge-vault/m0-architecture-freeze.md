@@ -77,8 +77,9 @@ Details: `docs/teacher-knowledge-vault/canonical-storage-and-taxonomy.md`, `docs
 | **M0** Architecture freeze (expanded) | **complete** |
 | **M1** Fake catalog foundation | **complete** (PR #254) |
 | **M2** Local discovery approval packet | **complete** |
+| **M3** Fake duplicate/search/package foundation | **complete** |
 | M2b Selected-folder metadata prototype | blocked |
-| M3 Duplicate detection/search | blocked |
+| Runtime search/duplicate detection | blocked |
 | M4 Smart Rename suggestions | blocked |
 | M5 Approved organization + rollback | blocked |
 | M6 Native extraction/OCR | blocked |

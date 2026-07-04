@@ -1,0 +1,34 @@
+{
+  "classification": "fake_local_planning_only",
+  "runtime_executed": false,
+  "auto_merge": false,
+  "version_groups": [
+    {
+      "group_id": "fake-ver-group-saxon-lesson-021",
+      "relationship_type": "version_candidate",
+      "resource_ids": ["fake-resource-version-v1", "fake-resource-saxon-lesson-021"],
+      "version_labels": ["v1_draft", "v2_updated"],
+      "source_drift": "drive_newer_than_canvas",
+      "canonical_selection": "requires_teacher_approval",
+      "latest_not_automatically_canonical": true,
+      "review_state": "possible_version"
+    },
+    {
+      "group_id": "fake-ver-group-ai-revision-001",
+      "relationship_type": "version_candidate",
+      "resource_ids": ["fake-resource-ai-generated-adaptation", "fake-resource-student-facing-worksheet"],
+      "version_labels": ["teacher_original", "ai_adapted_revision"],
+      "teacher_only_source_risk": true,
+      "student_facing_leakage_check_required": true,
+      "requires_teacher_approval": true
+    },
+    {
+      "group_id": "fake-ver-group-canvas-drive-001",
+      "relationship_type": "version_candidate",
+      "resource_ids": ["fake-resource-drive-canvas-both", "fake-resource-canvas-only-module"],
+      "version_labels": ["drive_copy", "canvas_copy"],
+      "reconciliation_flag": "canvas_older_than_drive",
+      "requires_teacher_approval": true
+    }
+  ]
+}

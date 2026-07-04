@@ -1,0 +1,60 @@
+{
+  "classification": "fake_local_planning_only",
+  "runtime_executed": false,
+  "auto_merge": false,
+  "duplicate_groups": [
+    {
+      "group_id": "fake-dup-group-filename-001",
+      "level": "filename_duplicate",
+      "candidate_level": 2,
+      "fingerprint_type": "normalized_filename",
+      "resource_ids": ["fake-resource-duplicate-candidate-a", "fake-resource-duplicate-candidate-b"],
+      "similarity_score": 0.92,
+      "requires_teacher_approval": true,
+      "audience_check_required": true,
+      "review_state": "possible_duplicate"
+    },
+    {
+      "group_id": "fake-dup-group-metadata-001",
+      "level": "metadata_duplicate",
+      "candidate_level": 3,
+      "fingerprint_type": "structural_metadata",
+      "resource_ids": ["fake-resource-saxon-lesson-021", "fake-resource-duplicate-candidate-a"],
+      "similarity_score": 0.78,
+      "requires_teacher_approval": true,
+      "review_state": "possible_duplicate"
+    },
+    {
+      "group_id": "fake-dup-group-exact-future-001",
+      "level": "exact_duplicate",
+      "candidate_level": 1,
+      "fingerprint_type": "binary_hash",
+      "status": "future_only_blocked",
+      "hash_calculation_executed": false,
+      "resource_ids": ["fake-resource-drive-canvas-both", "fake-resource-duplicate-candidate-b"],
+      "requires_teacher_approval": true
+    },
+    {
+      "group_id": "fake-dup-group-text-future-001",
+      "level": "text_duplicate",
+      "candidate_level": 4,
+      "fingerprint_type": "text_fingerprint",
+      "status": "future_only_blocked",
+      "ocr_required": false,
+      "requires_teacher_approval": true
+    },
+    {
+      "group_id": "fake-dup-group-semantic-future-001",
+      "level": "semantic_duplicate",
+      "candidate_level": 5,
+      "fingerprint_type": "semantic_fingerprint",
+      "status": "future_only_blocked",
+      "ai_required": true,
+      "requires_teacher_approval": true
+    }
+  ],
+  "excluded_from_duplicate_detection": {
+    "resource_ids": ["fake-resource-do-not-scan-blocked"],
+    "reason": "99_DO_NOT_SCAN absolute exclusion"
+  }
+}

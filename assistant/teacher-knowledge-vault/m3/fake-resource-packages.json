@@ -1,0 +1,56 @@
+{
+  "classification": "fake_local_planning_only",
+  "runtime_executed": false,
+  "packages": [
+    {
+      "package_id": "fake-pkg-saxon-lesson-021",
+      "package_label": "Math Saxon Lesson 21 Package",
+      "subject": "01_MATH",
+      "curriculum": "saxon_im5",
+      "lesson_ref": "lesson_21",
+      "member_resource_ids": [
+        "fake-resource-saxon-lesson-021",
+        "fake-resource-student-facing-worksheet",
+        "fake-resource-teacher-only-assessment-key"
+      ],
+      "member_representation_types": [
+        "student_textbook_section",
+        "homework",
+        "teacher_guide",
+        "answer_key",
+        "canvas_package_placeholder"
+      ],
+      "teacher_only_members_hidden_in_student_mode": true,
+      "canvas_ready": true,
+      "canvas_publish_executed": false
+    },
+    {
+      "package_id": "fake-pkg-reading-mastery-unit-04",
+      "package_label": "Reading Mastery Unit 04 Package",
+      "subject": "02_READING_MASTERY",
+      "member_resource_ids": ["fake-resource-reading-mastery-unit-04"],
+      "member_representation_types": ["student_reader", "teacher_guide", "fluency_sheet"]
+    },
+    {
+      "package_id": "fake-pkg-ckhg-american-revolution",
+      "package_label": "CKHG American Revolution Chapter Package",
+      "subject": "06_HISTORY",
+      "member_resource_ids": ["fake-resource-ckhg-american-revolution"],
+      "member_representation_types": ["student_reader", "teacher_guide", "timeline_activity"]
+    },
+    {
+      "package_id": "fake-pkg-cksci-energy-transfer",
+      "package_label": "CKSci Energy Transfer Unit Package",
+      "subject": "07_SCIENCE",
+      "member_resource_ids": ["fake-resource-cksci-matter-unit"],
+      "member_representation_types": ["student_lab_guide", "teacher_guide", "assessment"]
+    },
+    {
+      "package_id": "fake-pkg-spelling-test-12",
+      "package_label": "Spelling Test 12 Package",
+      "subject": "03_SPELLING",
+      "member_resource_ids": ["fake-resource-student-facing-worksheet"],
+      "member_representation_types": ["spelling_list", "practice_sheet", "test_form"]
+    }
+  ]
+}

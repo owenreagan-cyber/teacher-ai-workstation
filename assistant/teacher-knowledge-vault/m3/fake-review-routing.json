@@ -1,0 +1,62 @@
+{
+  "classification": "fake_local_planning_only",
+  "runtime_executed": false,
+  "review_routing": [
+    {
+      "queue_item_id": "fake-m3-rq-dup-001",
+      "review_state": "possible_duplicate",
+      "duplicate_group_id": "fake-dup-group-filename-001",
+      "requires_teacher_approval": true,
+      "merge_requested": false,
+      "merge_executed": false
+    },
+    {
+      "queue_item_id": "fake-m3-rq-ver-001",
+      "review_state": "possible_version",
+      "version_group_id": "fake-ver-group-saxon-lesson-021",
+      "canonical_selection_requested": true,
+      "canonical_selection_executed": false,
+      "requires_teacher_approval": true
+    },
+    {
+      "queue_item_id": "fake-m3-rq-pkg-001",
+      "review_state": "package_suggested",
+      "package_id": "fake-pkg-saxon-lesson-021",
+      "requires_teacher_approval": true
+    },
+    {
+      "queue_item_id": "fake-m3-rq-reconcile-canvas-001",
+      "review_state": "canvas_only_reconciliation",
+      "resource_id": "fake-resource-canvas-only-module",
+      "reconciliation_flag": "canvas_only",
+      "requires_teacher_approval": true
+    },
+    {
+      "queue_item_id": "fake-m3-rq-reconcile-drive-001",
+      "review_state": "drive_only_publishing_candidate",
+      "resource_id": "fake-resource-drive-only-pacing",
+      "reconciliation_flag": "drive_only",
+      "requires_teacher_approval": true
+    },
+    {
+      "queue_item_id": "fake-m3-rq-missing-canonical-001",
+      "review_state": "missing_from_canonical_storage",
+      "resource_id": "fake-resource-canvas-only-module",
+      "requires_teacher_approval": true
+    },
+    {
+      "queue_item_id": "fake-m3-rq-leakage-001",
+      "review_state": "leakage_check_required",
+      "resource_id": "fake-resource-ai-generated-adaptation",
+      "student_facing_mode_blocked": true,
+      "requires_teacher_approval": true
+    },
+    {
+      "queue_item_id": "fake-m3-rq-blocked-dns-001",
+      "resource_id": "fake-resource-do-not-scan-blocked",
+      "review_state": "blocked",
+      "enters_normal_review": false,
+      "blocked_reason": "99_DO_NOT_SCAN absolute exclusion"
+    }
+  ]
+}

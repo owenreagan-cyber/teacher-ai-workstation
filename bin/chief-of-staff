@@ -210,6 +210,8 @@ Teacher Planning Command Organization (status only; safe sample: fractions-revie
                                        Show read-only Teacher Knowledge Vault M4 smart rename foundation status and exit.
   --teacher-knowledge-vault-m5-organization-rollback-status
                                        Show read-only Teacher Knowledge Vault M5 organization/rollback foundation status and exit.
+  --teacher-knowledge-vault-m6-extraction-ocr-approval-status
+                                       Show read-only Teacher Knowledge Vault M6 extraction/OCR approval packet status and exit.
   --teacher-knowledge-vault-knowledge-entry-v0-validate
                                        Run read-only Teacher Knowledge Vault knowledge entry v0 validator and exit.
   --renderer-foundation-v0-validate
@@ -1847,6 +1849,15 @@ while [[ $# -gt 0 ]]; do
         die "Teacher Knowledge Vault M5 organization/rollback status script is missing: scripts/teacher-knowledge-vault-m5-organization-rollback-status.sh"
       fi
       bash "${teacher_knowledge_vault_m5_organization_rollback_status_script}"
+      exit 0
+      ;;
+    --teacher-knowledge-vault-m6-extraction-ocr-approval-status)
+      repo_root="$(resolve_repo_root)"
+      teacher_knowledge_vault_m6_extraction_ocr_approval_status_script="${repo_root}/scripts/teacher-knowledge-vault-m6-extraction-ocr-approval-status.sh"
+      if [[ ! -f "${teacher_knowledge_vault_m6_extraction_ocr_approval_status_script}" ]]; then
+        die "Teacher Knowledge Vault M6 extraction/OCR approval status script is missing: scripts/teacher-knowledge-vault-m6-extraction-ocr-approval-status.sh"
+      fi
+      bash "${teacher_knowledge_vault_m6_extraction_ocr_approval_status_script}"
       exit 0
       ;;
     --teacher-knowledge-vault-knowledge-entry-v0-validate)

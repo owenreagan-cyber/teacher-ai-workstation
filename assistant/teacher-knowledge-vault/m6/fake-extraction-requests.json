@@ -1,0 +1,53 @@
+{
+  "classification": "fake_local_planning_only",
+  "runtime_executed": false,
+  "requests": [
+    {
+      "request_id": "fake-m6-req-orphan-pdf-001",
+      "source_item_id": "fake-m2-item-staging-001",
+      "current_path_label": "fake-local-staging://TeacherAI-Curriculum-Library/00_INBOX_UNSORTED/placeholder_fraction_worksheet.pdf",
+      "request_type": "native_extraction",
+      "extraction_scope": "metadata_and_first_headings",
+      "teacher_approval_state": "pending",
+      "runtime_executed": false
+    },
+    {
+      "request_id": "fake-m6-req-orphan-scan-001",
+      "source_item_id": "fake-m2-item-scan-placeholder-001",
+      "request_type": "ocr",
+      "ocr_level": "quick_ocr_first_page",
+      "teacher_approval_state": "pending",
+      "runtime_executed": false
+    },
+    {
+      "request_id": "fake-m6-req-teacher-only-001",
+      "source_item_id": "fake-m2-item-teacher-only-001",
+      "request_type": "native_extraction",
+      "folder_policy": "10_TEACHER_ONLY",
+      "restricted_indexable": true,
+      "student_facing_mode_blocked": true,
+      "runtime_executed": false
+    },
+    {
+      "request_id": "fake-m6-req-dns-blocked-001",
+      "source_item_id": "fake-m2-item-dns-blocked-001",
+      "current_path_label": "blocked-placeholder://99_DO_NOT_SCAN/blocked",
+      "request_type": "native_extraction",
+      "blocked_reason": "99_DO_NOT_SCAN extraction blocked",
+      "runtime_executed": false
+    },
+    {
+      "request_id": "fake-m6-req-cloud-ocr-blocked-001",
+      "request_type": "cloud_ocr",
+      "blocked_reason": "cloud OCR blocked by budget gate",
+      "api_cost_estimate_usd": 0.0,
+      "runtime_executed": false
+    },
+    {
+      "request_id": "fake-m6-req-ai-classification-blocked-001",
+      "request_type": "ai_classification",
+      "blocked_reason": "AI classification blocked until later phase",
+      "runtime_executed": false
+    }
+  ]
+}

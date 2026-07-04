@@ -39,10 +39,12 @@ M5 preserves all prior milestones and blocks:
 
 | Milestone | Status |
 | --- | --- |
-| M0–M4 | complete |
-| **M5** Organization/rollback foundation | **complete** (this mission) |
-| M2b / runtime search / runtime rename / runtime organization | blocked |
-| M6+ OCR, connectors, AI | blocked |
+| M0–M5 | complete |
+| **M5** Organization/rollback foundation | **complete** |
+| **M6** Extraction/OCR approval packet | **complete** |
+| M2b / runtime extraction/OCR / search / rename / organization | blocked |
+| M7 Drive/NAS/Canvas connectors | blocked |
+| M8 AI/RAG | blocked |
 
 ## Proof
 

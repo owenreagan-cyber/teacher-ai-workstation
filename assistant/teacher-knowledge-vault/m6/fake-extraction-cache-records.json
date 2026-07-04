@@ -1,0 +1,48 @@
+{
+  "classification": "fake_local_planning_only",
+  "runtime_executed": false,
+  "records": [
+    {
+      "cache_id": "fake-m6-cache-001",
+      "source_item_id": "fake-m2-item-staging-001",
+      "representation_id": "fake-rep-saxon-homework-001",
+      "fingerprint_reference": "fake-fingerprint-placeholder-001",
+      "extraction_method": "native",
+      "extraction_scope": "metadata_and_first_headings",
+      "page_range": "1",
+      "text_snippet_label": "[FAKE_SNIPPET_PLACEHOLDER_title_heading]",
+      "confidence": 0.82,
+      "restricted_indexing_policy": "student_facing",
+      "student_visible": true,
+      "teacher_only_risk": false,
+      "leakage_risk": false,
+      "api_cost_estimate_usd": 0.0,
+      "runtime_executed": false
+    },
+    {
+      "cache_id": "fake-m6-cache-002",
+      "source_item_id": "fake-m2-item-teacher-only-001",
+      "extraction_method": "native",
+      "extraction_scope": "first_page",
+      "text_snippet_label": "[FAKE_SNIPPET_PLACEHOLDER_teacher_manual]",
+      "confidence": 0.75,
+      "restricted_indexing_policy": "10_TEACHER_ONLY",
+      "student_visible": false,
+      "teacher_only_risk": true,
+      "leakage_risk": false,
+      "runtime_executed": false
+    },
+    {
+      "cache_id": "fake-m6-cache-003",
+      "source_item_id": "fake-m2-item-scan-placeholder-001",
+      "extraction_method": "local_ocr",
+      "extraction_scope": "quick_ocr_first_page",
+      "page_range": "1",
+      "text_snippet_label": "[FAKE_SNIPPET_PLACEHOLDER_ocr_page_one]",
+      "confidence": 0.58,
+      "manual_review_reason": "low_confidence_ocr",
+      "runtime_executed": false
+    }
+  ],
+  "dns_cache_records": 0
+}

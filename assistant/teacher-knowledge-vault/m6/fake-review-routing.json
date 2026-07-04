@@ -1,0 +1,76 @@
+{
+  "classification": "fake_local_planning_only",
+  "runtime_executed": false,
+  "routing_items": [
+    {
+      "routing_id": "fake-m6-route-001",
+      "request_id": "fake-m6-req-orphan-pdf-001",
+      "review_state": "extraction_requested",
+      "requires_teacher_approval": true,
+      "runtime_executed": false
+    },
+    {
+      "routing_id": "fake-m6-route-002",
+      "request_id": "fake-m6-req-orphan-pdf-001",
+      "review_state": "native_extraction_eligible",
+      "eligibility_id": "fake-m6-elig-001",
+      "runtime_executed": false
+    },
+    {
+      "routing_id": "fake-m6-route-003",
+      "request_id": "fake-m6-req-orphan-scan-001",
+      "review_state": "ocr_needed",
+      "recommended_ocr_level": "quick_ocr_first_page",
+      "runtime_executed": false
+    },
+    {
+      "routing_id": "fake-m6-route-004",
+      "request_id": "fake-m6-req-orphan-scan-001",
+      "review_state": "quick_ocr_candidate",
+      "ocr_proposed_not_executed": true,
+      "runtime_executed": false
+    },
+    {
+      "routing_id": "fake-m6-route-005",
+      "request_id": "fake-m6-req-teacher-only-001",
+      "review_state": "teacher_only_restricted_extraction",
+      "restricted_indexable": true,
+      "runtime_executed": false
+    },
+    {
+      "routing_id": "fake-m6-route-006",
+      "request_id": "fake-m6-req-teacher-only-001",
+      "review_state": "leakage_review_required",
+      "answer_key_student_facing_blocked": true,
+      "runtime_executed": false
+    },
+    {
+      "routing_id": "fake-m6-route-007",
+      "request_id": "fake-m6-req-dns-blocked-001",
+      "review_state": "extraction_blocked",
+      "blocked_reason": "99_DO_NOT_SCAN extraction blocked",
+      "enters_normal_review": false,
+      "runtime_executed": false
+    },
+    {
+      "routing_id": "fake-m6-route-008",
+      "request_id": "fake-m6-req-cloud-ocr-blocked-001",
+      "review_state": "ocr_blocked",
+      "blocked_reason": "cloud OCR blocked by budget gate",
+      "runtime_executed": false
+    },
+    {
+      "routing_id": "fake-m6-route-009",
+      "evidence_package_id": "fake-m6-evidence-001",
+      "review_state": "extraction_evidence_ready",
+      "runtime_executed": false
+    },
+    {
+      "routing_id": "fake-m6-route-010",
+      "evidence_package_id": "fake-m6-evidence-003",
+      "review_state": "low_confidence_extraction",
+      "review_state_alias": "manual_review_required",
+      "runtime_executed": false
+    }
+  ]
+}

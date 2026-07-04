@@ -86,8 +86,8 @@ check_doc_contains docs/proposals/index.md "Whole-system coherence maintenance" 
 check_doc_contains docs/teacher-workstation-capability-map.md "whole-system-coherence-status" "capability map coherence status"
 
 section 'Stale Count Hardening'
-check_doc_contains "${whole_system_report}" "144 / 0 / 0 PASS" "dashboard count current"
-check_doc_contains "${whole_system_report}" "63 / 0 / 0 PASS" "validate-all count current"
+check_doc_contains "${whole_system_report}" "145 / 0 / 0 PASS" "dashboard count current"
+check_doc_contains "${whole_system_report}" "64 / 0 / 0 PASS" "validate-all count current"
 if grep -Fq -- 'Dashboard 143/0/0' "${whole_system_report}" 2>/dev/null; then
   fail 'whole-system report must not contain stale Dashboard 143/0/0 example'
 else

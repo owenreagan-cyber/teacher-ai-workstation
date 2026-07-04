@@ -1,0 +1,11 @@
+{
+  "fixture_classification": "agent_builder_governance_reference_only",
+  "not_runtime": true,
+  "chief_of_staff_launches_external_agents": false,
+  "tools_classified": ["Cursor", "ChatGPT", "Gemini", "Claude", "Codex", "Claude Code", "Google Antigravity"],
+  "cursor_classification": "approved_external_builder_repo_local",
+  "antigravity_classification": "experimental_agentic_builder",
+  "claude_code_classification": "experimental_agentic_builder",
+  "student_data": "blocked_absolute",
+  "integrations": "blocked"
+}

@@ -1755,6 +1755,27 @@ else
   warn "Whole-system coherence status script missing: scripts/whole-system-coherence-status.sh"
 fi
 
+section "Agent Builder Compatibility Governance"
+if [[ -f scripts/agent-builder-compatibility-governance-status.sh ]]; then
+  agent_builder_governance_result=0
+  agent_builder_governance_output="$(bash scripts/agent-builder-compatibility-governance-status.sh 2>&1)" || agent_builder_governance_result=$?
+  agent_builder_governance_pass="$(summary_count "${agent_builder_governance_output}" "PASS")"
+  agent_builder_governance_warn="$(summary_count "${agent_builder_governance_output}" "WARN")"
+  agent_builder_governance_fail="$(summary_count "${agent_builder_governance_output}" "FAIL")"
+
+  if [[ "${agent_builder_governance_result}" != "0" ]]; then
+    printf '%s\n' "${agent_builder_governance_output}"
+    fail "Agent builder compatibility governance status failed"
+  elif [[ -n "${agent_builder_governance_pass}" && -n "${agent_builder_governance_warn}" && -n "${agent_builder_governance_fail}" ]]; then
+    printf 'Agent Builder Governance: PASS %s / WARN %s / FAIL %s\n' "${agent_builder_governance_pass}" "${agent_builder_governance_warn}" "${agent_builder_governance_fail}"
+    pass "Agent builder compatibility governance status completed"
+  else
+    pass "Agent builder compatibility governance status completed"
+  fi
+else
+  warn "Agent builder compatibility governance status script missing: scripts/agent-builder-compatibility-governance-status.sh"
+fi
+
 section "Curriculum Source Readiness Foundation"
 if [[ -f scripts/curriculum-source-readiness-status.sh ]]; then
   curriculum_source_readiness_result=0

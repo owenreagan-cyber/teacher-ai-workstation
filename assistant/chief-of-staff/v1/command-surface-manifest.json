@@ -15,6 +15,7 @@
         {"flag": "--governance-lane-status", "status": "implemented", "purpose": "Aggregate governance lane status (operating modes + ABE + proposal folders)"},
         {"flag": "--whole-system-master-roadmap-status", "status": "implemented", "purpose": "Whole-system master roadmap build-state report and next safe lane selector (read-only)"},
         {"flag": "--whole-system-coherence-status", "status": "implemented", "purpose": "Whole-system coherence maintenance audit and cross-link proof (read-only)"},
+        {"flag": "--agent-builder-compatibility-governance-status", "status": "implemented", "purpose": "Agent builder compatibility and external tool governance (read-only; no agent launch)"},
         {"flag": "--gemini-discovery-classification-intake-status", "status": "implemented", "purpose": "Gemini discovery/classification external planning intake (classification only; no runtime)"},
         {"flag": "--return-to-core-status", "status": "implemented", "purpose": "Parked tracks and return-to-core map"},
         {"flag": "--chief-of-staff-v1-status", "status": "implemented", "purpose": "Chief of Staff v1 Agent Core foundation status"},

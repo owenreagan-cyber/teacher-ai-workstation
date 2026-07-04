@@ -52,7 +52,8 @@ for closure in \
   complete_gemini_discovery_classification_intake \
   complete_classroom_utility_per_app_mission_templates \
   complete_presentation_engine_renderer_foundation_planning \
-  complete_a4_a7_fixture_optional_field_enrichment; do
+  complete_a4_a7_fixture_optional_field_enrichment \
+  complete_agent_builder_compatibility_governance_program; do
   check_doc_contains "${whole_system_report}" "${closure}" "whole-system report closure: ${closure}"
 done
 check_doc_contains docs/build-queue.md "frontmatter planning" "build queue frontmatter"
@@ -62,8 +63,8 @@ check_doc_contains docs/proposals/index.md "Whole-system coherence maintenance" 
 check_doc_contains docs/teacher-workstation-capability-map.md "whole-system-coherence-status" "capability map coherence status"
 
 section 'Stale Count Hardening'
-check_doc_contains "${whole_system_report}" "134 / 0 / 0 PASS" "dashboard count current"
-check_doc_contains "${whole_system_report}" "52 / 0 / 0 PASS" "validate-all count current"
+check_doc_contains "${whole_system_report}" "135 / 0 / 0 PASS" "dashboard count current"
+check_doc_contains "${whole_system_report}" "53 / 0 / 0 PASS" "validate-all count current"
 if grep -Fq -- 'Dashboard 128/0/0' "${whole_system_report}" 2>/dev/null; then
   fail 'whole-system report must not contain stale Dashboard 128/0/0 example'
 else
@@ -74,12 +75,23 @@ if grep -Fq -- 'dashboard (128/0/0)' "${whole_system_report}" 2>/dev/null; then
 else
   pass 'whole-system report excludes stale dashboard (128/0/0) lane text'
 fi
+if grep -Fq -- 'dashboard (134/0/0)' "${whole_system_report}" 2>/dev/null; then
+  fail 'whole-system report must not contain stale dashboard (134/0/0) lane text'
+else
+  pass 'whole-system report excludes stale dashboard (134/0/0) lane text'
+fi
+if grep -Fq -- 'Dashboard 134/0/0' "${whole_system_report}" 2>/dev/null; then
+  fail 'whole-system report must not contain stale Dashboard 134/0/0 example'
+else
+  pass 'whole-system report excludes stale Dashboard 134/0/0 example'
+fi
 
 section 'Expected WARNs Discoverability'
 check_file docs/curriculum-builder-registry-expected-warns.md
 check_doc_contains docs/curriculum-builder-registry-expected-warns.md "--markdown-frontmatter-planning-status" "expected warns frontmatter status"
 check_doc_contains docs/curriculum-builder-registry-expected-warns.md "--gemini-discovery-classification-intake-status" "expected warns gemini status"
 check_doc_contains docs/curriculum-builder-registry-expected-warns.md "--whole-system-coherence-status" "expected warns coherence status"
+check_doc_contains docs/curriculum-builder-registry-expected-warns.md "--agent-builder-compatibility-governance-status" "expected warns agent builder status"
 
 section 'Production Registry Parked-State Proof'
 if [[ -f "${production_registry_path}" ]] && command -v python3 >/dev/null 2>&1; then

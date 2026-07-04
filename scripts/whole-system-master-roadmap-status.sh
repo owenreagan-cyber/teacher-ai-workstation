@@ -105,6 +105,8 @@ check_doc_contains "${report}" "complete_curriculum_manual_metadata_frontmatter_
 check_doc_contains "${report}" "--markdown-frontmatter-planning-status" "frontmatter planning status command cross-link"
 check_doc_contains "${report}" "complete_whole_system_coherence_maintenance" "coherence maintenance closure"
 check_doc_contains "${report}" "--whole-system-coherence-status" "coherence status command cross-link"
+check_doc_contains "${report}" "complete_agent_builder_compatibility_governance_program" "agent builder governance closure"
+check_doc_contains "${report}" "--agent-builder-compatibility-governance-status" "agent builder governance status command cross-link"
 check_file docs/whole-system-coherence-maintenance-report.md
 
 section 'Production Registry Parked-State Proof'
@@ -204,6 +206,23 @@ if [[ -f scripts/markdown-frontmatter-planning-status.sh ]]; then
   fi
 else
   fail 'markdown frontmatter planning status script missing'
+fi
+
+section 'Dependent Status: Agent Builder Compatibility Governance'
+if [[ -f scripts/agent-builder-compatibility-governance-status.sh ]]; then
+  abg_output="$(bash scripts/agent-builder-compatibility-governance-status.sh 2>&1)" || abg_result=$?
+  abg_result="${abg_result:-0}"
+  if [[ "${abg_result}" != "0" ]]; then
+    fail 'agent builder compatibility governance status script exited nonzero'
+    printf '%s\n' "${abg_output}" | tail -20
+  elif grep -q '^FAIL: [1-9]' <<< "${abg_output}"; then
+    fail 'agent builder compatibility governance status reported FAIL'
+    printf '%s\n' "${abg_output}" | tail -20
+  else
+    pass 'agent builder compatibility governance status component clean'
+  fi
+else
+  fail 'agent builder compatibility governance status script missing'
 fi
 
 section 'Coherence Report Cross-Check (No Nested Run)'

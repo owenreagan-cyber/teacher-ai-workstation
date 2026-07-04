@@ -232,6 +232,8 @@ Developer and Cursor Workflow:
   --governance-lane-status             Show aggregate governance lane status (operating modes + ABE + proposal folders) and exit.
   --whole-system-master-roadmap-status Show whole-system master roadmap build-state report status and next safe lane selector proof and exit.
   --whole-system-coherence-status      Show whole-system coherence maintenance audit and cross-link proof and exit.
+  --agent-builder-compatibility-governance-status
+                                       Show agent builder compatibility and external tool governance status and exit.
   --developer-status                   Show local Developer Mode status and exit.
   --create-developer-project <template> <slug>
                                        Copy a Developer Mode template into local projects.
@@ -2726,6 +2728,15 @@ while [[ $# -gt 0 ]]; do
         die "Whole-system coherence status script is missing: scripts/whole-system-coherence-status.sh"
       fi
       bash "${whole_system_coherence_status_script}"
+      exit 0
+      ;;
+    --agent-builder-compatibility-governance-status)
+      repo_root="$(resolve_repo_root)"
+      agent_builder_governance_status_script="${repo_root}/scripts/agent-builder-compatibility-governance-status.sh"
+      if [[ ! -f "${agent_builder_governance_status_script}" ]]; then
+        die "Agent builder compatibility governance status script is missing: scripts/agent-builder-compatibility-governance-status.sh"
+      fi
+      bash "${agent_builder_governance_status_script}"
       exit 0
       ;;
     --developer-status)

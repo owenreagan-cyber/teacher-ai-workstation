@@ -1130,6 +1130,23 @@ check_doc_contains docs/whole-system-coherence-maintenance-report.md "complete_w
 check_doc_contains docs/whole-system-master-roadmap-build-state-report.md "complete_whole_system_coherence_maintenance" "whole-system report coherence closure"
 grep -Fq -- '--whole-system-coherence-status' bin/chief-of-staff && pass "chief-of-staff exposes --whole-system-coherence-status" || fail "chief-of-staff missing --whole-system-coherence-status"
 
+section "Agent Builder Compatibility Governance Files"
+for path in \
+  docs/agent-builder-compatibility-and-external-tool-governance.md \
+  docs/agent-builder-safe-tool-trial-checklist.md \
+  docs/agent-builder-mission-proof-template.md \
+  docs/proposals/blocked/agent-builder-external-tool-runtime-boundaries.md \
+  assistant/agent-builder-governance/samples/classification-summary.json \
+  scripts/agent-builder-compatibility-governance-status.sh \
+  tests/agent-builder-compatibility-governance-status-test.sh; do
+  check_required_file "${path}"
+done
+check_bash_syntax scripts/agent-builder-compatibility-governance-status.sh
+check_bash_syntax tests/agent-builder-compatibility-governance-status-test.sh
+check_doc_contains docs/agent-builder-compatibility-and-external-tool-governance.md "complete_agent_builder_compatibility_governance_program" "agent builder governance closure"
+check_doc_contains docs/whole-system-master-roadmap-build-state-report.md "complete_agent_builder_compatibility_governance_program" "whole-system report agent builder closure"
+grep -Fq -- '--agent-builder-compatibility-governance-status' bin/chief-of-staff && pass "chief-of-staff exposes --agent-builder-compatibility-governance-status" || fail "chief-of-staff missing --agent-builder-compatibility-governance-status"
+
 section "Presentation Engine Renderer Foundation Planning Files"
 for path in \
   docs/presentation-engine-renderer-foundation.md \

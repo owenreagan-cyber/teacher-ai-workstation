@@ -1,0 +1,23 @@
+{
+  "sample_type": "fake_local_visual_workshop_zones",
+  "safe_status": "fake_fixture_only",
+  "runtime_ui_approved": false,
+  "concepts": [
+    {
+      "concept_name": "Plan Zone",
+      "teacher_use_case": "Collect safe planning notes before a build",
+      "visual_mood": "quiet command desk",
+      "safe_status": "fake_fixture_only",
+      "blocked_runtime_actions": ["build_ui", "launch_app", "generate_content"],
+      "future_approval_needed": "Owen must approve any executable dashboard or AI generation."
+    },
+    {
+      "concept_name": "Verify Zone",
+      "teacher_use_case": "Concept for checking boundaries before classroom use",
+      "visual_mood": "clear safety checklist",
+      "safe_status": "fake_fixture_only",
+      "blocked_runtime_actions": ["scan_files", "run_ocr", "call_api", "execute_app"],
+      "future_approval_needed": "Owen must approve any runtime verification tool."
+    }
+  ]
+}

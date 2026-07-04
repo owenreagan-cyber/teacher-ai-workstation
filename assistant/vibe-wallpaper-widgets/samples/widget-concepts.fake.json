@@ -1,0 +1,23 @@
+{
+  "sample_type": "fake_local_widget_concepts",
+  "safe_status": "fake_fixture_only",
+  "widget_install_approved": false,
+  "concepts": [
+    {
+      "concept_name": "Chief of Staff Glance",
+      "teacher_use_case": "Read-only PASS/WARN/FAIL dashboard summary",
+      "visual_mood": "compact status card",
+      "safe_status": "fake_fixture_only",
+      "blocked_runtime_actions": ["install_widget", "create_widget_bundle", "launch_app", "start_background_job"],
+      "future_approval_needed": "Owen must approve widget platform, install behavior, and rollback."
+    },
+    {
+      "concept_name": "Class Period Glance",
+      "teacher_use_case": "Conceptual class timer status",
+      "visual_mood": "large readable time blocks",
+      "safe_status": "fake_fixture_only",
+      "blocked_runtime_actions": ["install_widget", "launch_timer", "read_live_timer_state"],
+      "future_approval_needed": "Owen must approve any runtime bridge to the Timer app."
+    }
+  ]
+}

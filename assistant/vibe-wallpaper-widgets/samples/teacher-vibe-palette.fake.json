@@ -1,0 +1,24 @@
+{
+  "sample_type": "fake_local_vibe_palette",
+  "safe_status": "fake_fixture_only",
+  "runtime_approved": false,
+  "install_approved": false,
+  "concepts": [
+    {
+      "concept_name": "Morning Chalkline",
+      "teacher_use_case": "Morning setup and status scan",
+      "visual_mood": "calm green, clean whiteboard contrast, warm accent",
+      "safe_status": "fake_fixture_only",
+      "blocked_runtime_actions": ["change_wallpaper", "install_widget", "run_shortcut", "change_mac_settings"],
+      "future_approval_needed": "Owen must approve any runtime visual surface or Mac change."
+    },
+    {
+      "concept_name": "Workshop Desk",
+      "teacher_use_case": "3D workshop and classroom utility planning",
+      "visual_mood": "organized maker table, slate neutral, pencil yellow accent",
+      "safe_status": "fake_fixture_only",
+      "blocked_runtime_actions": ["launch_app", "render_3d_scene", "export_model", "run_local_model"],
+      "future_approval_needed": "Owen must approve any executable UI or 3D runtime."
+    }
+  ]
+}

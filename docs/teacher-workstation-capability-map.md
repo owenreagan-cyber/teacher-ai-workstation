@@ -121,6 +121,7 @@ Cross-references:
 | Workstation ops lane aggregate status | **implemented read-only** | `--workstation-ops-lane-status`; Health H + Updater I |
 | Widget catalog | implemented read-only | `--widget-shortcut-status`; Program F1 foundation |
 | Shortcut catalog | implemented read-only | `--widget-shortcut-status`; Program F1 foundation |
+| Vibe / Wallpaper / Widgets planning gate | implemented read-only | `--vibe-wallpaper-widgets-planning-status`; planning/docs/status/tests only; no install/runtime/Mac changes |
 | Classroom App Lab / Prototype Rescue | implemented read-only | `--classroom-app-lab-status`; CAL1 foundation |
 | Classroom Utility per-app mission templates | implemented read-only (planning) | `--classroom-utility-templates-status`; templates + matrix; no runtime apps |
 | Mac teacher modes | implemented read-only | `--mac-workstation-status`; Program E1 foundation |

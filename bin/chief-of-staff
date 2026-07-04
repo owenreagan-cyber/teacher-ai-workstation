@@ -85,6 +85,8 @@ Mac Workstation Experience (read-only; no Mac changes):
 
 Widget and Shortcut Builder (read-only; no install or automation):
   --widget-shortcut-status             Show read-only widget and shortcut catalog planning status and exit.
+  --vibe-wallpaper-widgets-planning-status
+                                       Show read-only vibe, wallpaper, widget, shortcut, and visual workshop planning gate status and exit.
 
 Classroom App Lab (read-only; no zip/parse/execute):
   --classroom-app-lab-status           Show read-only Classroom App Lab prototype rescue planning status and exit.
@@ -2541,6 +2543,15 @@ while [[ $# -gt 0 ]]; do
         die "Widget and Shortcut Builder status script is missing: scripts/widget-shortcut-builder-status.sh"
       fi
       bash "${widget_shortcut_status_script}"
+      exit 0
+      ;;
+    --vibe-wallpaper-widgets-planning-status)
+      repo_root="$(resolve_repo_root)"
+      vibe_wallpaper_widgets_status_script="${repo_root}/scripts/vibe-wallpaper-widgets-planning-status.sh"
+      if [[ ! -f "${vibe_wallpaper_widgets_status_script}" ]]; then
+        die "Vibe / Wallpaper / Widgets planning status script is missing: scripts/vibe-wallpaper-widgets-planning-status.sh"
+      fi
+      bash "${vibe_wallpaper_widgets_status_script}"
       exit 0
       ;;
     --classroom-app-lab-status)

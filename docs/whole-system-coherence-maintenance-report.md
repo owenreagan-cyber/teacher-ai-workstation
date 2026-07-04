@@ -6,12 +6,12 @@ Last updated: 2026-07-03
 Status: documentation/status only
 Closure: complete_whole_system_coherence_maintenance
 Authority: posture audit — not implementation approval
-Baseline: main after PR #240/#241 (frontmatter planning program)
+Baseline: main after Vibe / Wallpaper / Widgets Planning Gate mission
 ```
 
 ## Purpose
 
-Record the whole-system coherence maintenance pass after recent planning lanes (Gemini intake, frontmatter planning, classroom utility templates, presentation engine, A4–A7 enrichment). This report documents stale-language fixes, discoverability improvements, and safe enhancement classification.
+Record the whole-system coherence maintenance pass after recent planning lanes (Gemini intake, frontmatter planning, classroom utility templates, presentation engine, A4–A7 enrichment, app ecosystem gates, Timer runtime, and Vibe / Wallpaper / Widgets planning). This report documents stale-language fixes, discoverability improvements, and safe enhancement classification.
 
 **PASS on status commands proves documentation coherence only — not runtime activation.**
 
@@ -21,7 +21,7 @@ Record the whole-system coherence maintenance pass after recent planning lanes (
 | --- | --- | --- |
 | Dashboard count stale (`128/0/0` in lane examples) | stale docs | Updated to `133/0/0` in whole-system report (coherence mission) |
 | Phase-1 count stale (`758`) in global state | stale docs | Updated to `814` PASS (coherence mission) |
-| Dashboard/validate-all drift after agent builder governance wiring | stale docs | Section 15 current proof: dashboard `135/0/0`, validate-all `53/0/0`, phase-1 `835/0/0` |
+| Dashboard/validate-all drift after vibe planning-gate wiring | stale docs | Section 15 current proof: dashboard `142/0/0`, validate-all `61/0/0`, phase-1 `920/0/0` |
 | Recent status commands missing from expected WARNs table | discoverability | Added gemini, frontmatter, coherence status rows |
 | No centralized safe enhancement backlog | discoverability | `docs/proposals/backlog/whole-system-safe-enhancement-discovery.md` |
 | Next safe lane selector still listed coherence maintenance as pending | stale roadmap | Updated post-closure recommendations |
@@ -38,15 +38,18 @@ Record the whole-system coherence maintenance pass after recent planning lanes (
 | A4–A7 fixture enrichment | `complete_a4_a7_fixture_optional_field_enrichment` | `--curriculum-registry-a4-a7-fixture-schema-status` | yes | yes | yes |
 | Whole-system coherence | `complete_whole_system_coherence_maintenance` | `--whole-system-coherence-status` | yes | yes | yes |
 | Agent builder governance | `complete_agent_builder_compatibility_governance_program` | `--agent-builder-compatibility-governance-status` | yes | yes | yes |
+| Vibe / Wallpaper / Widgets planning gate | `complete_vibe_wallpaper_widgets_planning_gate_program` | `--vibe-wallpaper-widgets-planning-status` | yes | yes | yes |
 
 ## Current Global State Proof (Post Agent Builder Governance)
 
 ```text
-Dashboard: 137 / 0 / 0 PASS
-Validate-all: 55 / 0 / 0 PASS
-Phase-1: 858 / 0 / 0 PASS
-Whole-system coherence status: 56 / 0 / 0 PASS
-App ecosystem inventory status: 48 / 0 / 0 PASS
+Dashboard: 142 / 0 / 0 PASS
+Validate-all: 61 / 0 / 0 PASS
+Phase-1: 920 / 0 / 0 PASS
+Whole-system roadmap status: 102 / 0 / 0 PASS
+Whole-system coherence status: 81 / 0 / 0 PASS
+Vibe / Wallpaper / Widgets planning status: 95 / 0 / 0 PASS
+App ecosystem inventory status: 51 / 0 / 0 PASS
 Chief of Staff launches external agents: no
 ```
 

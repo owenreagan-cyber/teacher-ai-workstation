@@ -117,6 +117,7 @@ run_track "AI Tool Routing" scripts/ai-tool-routing-status.sh
 run_track "Local LLM Workstation" scripts/local-llm-workstation-status.sh
 run_track "Mac Workstation Experience" scripts/mac-workstation-experience-status.sh
 run_track "Widget and Shortcut Builder" scripts/widget-shortcut-builder-status.sh
+run_track "Vibe / Wallpaper / Widgets Planning Gate" scripts/vibe-wallpaper-widgets-planning-status.sh
 run_track "Classroom App Lab" scripts/classroom-app-lab-status.sh
 run_track "Classroom Utility Templates" scripts/classroom-utility-templates-status.sh
 run_track "Lovable Classroom App Builder" scripts/lovable-classroom-app-builder-status.sh
@@ -165,6 +166,7 @@ run_track "Binding v0 Validator" scripts/curriculum-binding-v0-validator.sh
 
 section 'Test Suites'
 run_test "Curriculum Contract Suite v0" tests/curriculum-contract-suite-v0-test.sh
+run_test "Vibe / Wallpaper / Widgets Planning Status" tests/vibe-wallpaper-widgets-planning-status-test.sh
 if [[ "${COS_VALIDATE_INCLUDE_SMOKE:-}" == "1" ]]; then
   run_test "Smoke Chief of Staff CLI" tests/smoke-chief-of-staff-cli.sh
 else

@@ -1,0 +1,16 @@
+{
+  "classification": "fake_local_planning_only",
+  "intake_item_id": "fake-intake-ref-001",
+  "review_outcome": "approved_after_sanitizing",
+  "promotion_target": "assistant/memory/knowledge/reference-summaries/",
+  "vault_promotion_approved": false,
+  "runtime_approved": false,
+  "vault_entry_id_planned": "sample-knowledge-entry-001",
+  "sanitization_checklist": {
+    "no_student_names": true,
+    "no_parent_contact": true,
+    "no_grades_or_behavior": true,
+    "summary_only": true
+  },
+  "notes": "Fictional intake promotion record for M0 gate planning. No real promotion occurred."
+}

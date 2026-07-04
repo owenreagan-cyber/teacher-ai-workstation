@@ -198,6 +198,10 @@ Teacher Planning Command Organization (status only; safe sample: fractions-revie
                                        Show read-only Renderer Foundation v0 status and exit.
   --presentation-engine-renderer-foundation-status
                                        Show read-only Presentation Engine renderer-foundation planning status and exit.
+  --teacher-knowledge-vault-m0-architecture-freeze-status
+                                       Show read-only Teacher Knowledge Vault M0 architecture freeze status and exit.
+  --teacher-knowledge-vault-knowledge-entry-v0-validate
+                                       Run read-only Teacher Knowledge Vault knowledge entry v0 validator and exit.
   --renderer-foundation-v0-validate
                                        Run read-only Renderer Foundation v0 manifest validator and exit.
   --renderer-input-readiness-v0-validate
@@ -1779,6 +1783,25 @@ while [[ $# -gt 0 ]]; do
         die "Presentation Engine renderer foundation status script is missing: scripts/presentation-engine-renderer-foundation-status.sh"
       fi
       bash "${presentation_engine_renderer_foundation_status_script}"
+      exit 0
+      ;;
+    --teacher-knowledge-vault-m0-architecture-freeze-status)
+      repo_root="$(resolve_repo_root)"
+      teacher_knowledge_vault_m0_architecture_freeze_status_script="${repo_root}/scripts/teacher-knowledge-vault-m0-architecture-freeze-status.sh"
+      if [[ ! -f "${teacher_knowledge_vault_m0_architecture_freeze_status_script}" ]]; then
+        die "Teacher Knowledge Vault M0 architecture freeze status script is missing: scripts/teacher-knowledge-vault-m0-architecture-freeze-status.sh"
+      fi
+      bash "${teacher_knowledge_vault_m0_architecture_freeze_status_script}"
+      exit 0
+      ;;
+    --teacher-knowledge-vault-knowledge-entry-v0-validate)
+      repo_root="$(resolve_repo_root)"
+      teacher_knowledge_vault_knowledge_entry_v0_validator_script="${repo_root}/scripts/teacher-knowledge-vault-knowledge-entry-v0-validator.sh"
+      if [[ ! -f "${teacher_knowledge_vault_knowledge_entry_v0_validator_script}" ]]; then
+        die "Teacher Knowledge Vault knowledge entry v0 validator script is missing: scripts/teacher-knowledge-vault-knowledge-entry-v0-validator.sh"
+      fi
+      shift
+      bash "${teacher_knowledge_vault_knowledge_entry_v0_validator_script}" "$@"
       exit 0
       ;;
     --renderer-foundation-v0-validate)

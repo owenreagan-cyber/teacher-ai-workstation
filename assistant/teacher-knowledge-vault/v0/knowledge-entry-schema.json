@@ -1,0 +1,64 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "teacher-ai-workstation/teacher-knowledge-vault/v0/knowledge-entry-schema.json",
+  "title": "Teacher Knowledge Vault Knowledge Entry v0 Schema",
+  "description": "Placeholder-only knowledge vault entry records. Read-only, summary-only, no auto-load.",
+  "type": "object",
+  "required": [
+    "knowledge_entry_id",
+    "title",
+    "category",
+    "summary_label",
+    "source_intake_ref",
+    "review_status",
+    "metadata_only",
+    "local_first_safety_flags",
+    "notes",
+    "activation_status"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "knowledge_entry_id": {
+      "type": "string",
+      "pattern": "^sample-knowledge-entry-[a-z0-9-]+$"
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1
+    },
+    "category": {
+      "type": "string",
+      "enum": ["reference_summary", "teaching_note", "workflow_guide"]
+    },
+    "summary_label": {
+      "type": "string",
+      "minLength": 1
+    },
+    "source_intake_ref": {
+      "type": "string",
+      "pattern": "^fake-intake-ref-[a-z0-9-]+$"
+    },
+    "review_status": {
+      "type": "string",
+      "enum": ["not_reviewed", "teacher_reviewed", "needs_review", "archived_planning_only"]
+    },
+    "metadata_only": {
+      "type": "boolean",
+      "const": true
+    },
+    "local_first_safety_flags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "minItems": 6
+    },
+    "notes": {
+      "type": "string"
+    },
+    "activation_status": {
+      "type": "string",
+      "enum": ["teacher_knowledge_vault_m0"]
+    }
+  }
+}

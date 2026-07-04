@@ -14,6 +14,8 @@ Memory cannot override safety, privacy, permission, sensitivity, source-verifica
 
 Memory files should not be silently rewritten by automation in this phase.
 
+Knowledge Vault M0 architecture is frozen in `docs/teacher-knowledge-vault-m0-foundation.md`. The planned path `assistant/memory/knowledge/` is not populated by M0 — see intake-to-vault gate before any future promotion.
+
 Do not store sensitive student records, parent records, passwords, API keys, private credentials, medical details, discipline details, or confidential school records here.
 
 ## Intake Sources

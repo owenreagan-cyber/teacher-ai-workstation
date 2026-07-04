@@ -191,6 +191,8 @@
         {"flag": "--lesson-planning-foundation-status", "status": "implemented", "purpose": "Lesson Planning v1 foundation"},
         {"flag": "--renderer-foundation-status", "status": "implemented", "purpose": "Renderer Foundation v1"},
         {"flag": "--presentation-engine-renderer-foundation-status", "status": "implemented", "purpose": "Presentation Engine renderer-foundation planning (read-only; no rendering)"},
+        {"flag": "--teacher-knowledge-vault-m0-architecture-freeze-status", "status": "implemented", "purpose": "Teacher Knowledge Vault M0 architecture freeze (read-only; no vault population)"},
+        {"flag": "--teacher-knowledge-vault-knowledge-entry-v0-validate", "status": "implemented", "purpose": "Teacher Knowledge Vault knowledge entry v0 validator (read-only)"},
         {"flag": "--local-retrieval-foundation-status", "status": "implemented", "purpose": "Local Retrieval Foundation v0"},
         {"flag": "--integration-planning-foundation-status", "status": "implemented", "purpose": "Integration Planning Foundation v0"}
       ]

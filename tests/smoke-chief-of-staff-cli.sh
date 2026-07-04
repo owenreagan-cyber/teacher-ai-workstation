@@ -170,6 +170,8 @@ bin/chief-of-staff --app-runtime-approval-gate-status >/dev/null
 bash tests/app-runtime-approval-gate-status-test.sh >/dev/null
 bin/chief-of-staff --presentation-engine-renderer-foundation-status >/dev/null
 bash tests/presentation-engine-renderer-foundation-status-test.sh >/dev/null
+bin/chief-of-staff --teacher-knowledge-vault-m0-architecture-freeze-status >/dev/null
+bash tests/teacher-knowledge-vault-m0-architecture-freeze-status-test.sh >/dev/null
 bin/chief-of-staff --gemini-discovery-classification-intake-status >/dev/null
 bash tests/gemini-discovery-classification-intake-status-test.sh >/dev/null
 bin/chief-of-staff --markdown-frontmatter-planning-status >/dev/null

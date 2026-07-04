@@ -1371,6 +1371,27 @@ else
   warn "Presentation Engine renderer foundation status script missing: scripts/presentation-engine-renderer-foundation-status.sh"
 fi
 
+section "Teacher Knowledge Vault M0 Architecture Freeze"
+if [[ -f scripts/teacher-knowledge-vault-m0-architecture-freeze-status.sh ]]; then
+  teacher_knowledge_vault_m0_result=0
+  teacher_knowledge_vault_m0_output="$(bash scripts/teacher-knowledge-vault-m0-architecture-freeze-status.sh 2>&1)" || teacher_knowledge_vault_m0_result=$?
+  teacher_knowledge_vault_m0_pass="$(summary_count "${teacher_knowledge_vault_m0_output}" "PASS")"
+  teacher_knowledge_vault_m0_warn="$(summary_count "${teacher_knowledge_vault_m0_output}" "WARN")"
+  teacher_knowledge_vault_m0_fail="$(summary_count "${teacher_knowledge_vault_m0_output}" "FAIL")"
+
+  if [[ "${teacher_knowledge_vault_m0_result}" != "0" ]]; then
+    printf '%s\n' "${teacher_knowledge_vault_m0_output}"
+    fail "Teacher Knowledge Vault M0 architecture freeze status failed"
+  elif [[ -n "${teacher_knowledge_vault_m0_pass}" && -n "${teacher_knowledge_vault_m0_warn}" && -n "${teacher_knowledge_vault_m0_fail}" ]]; then
+    printf 'Teacher Knowledge Vault M0 Architecture Freeze: PASS %s / WARN %s / FAIL %s\n' "${teacher_knowledge_vault_m0_pass}" "${teacher_knowledge_vault_m0_warn}" "${teacher_knowledge_vault_m0_fail}"
+    pass "Teacher Knowledge Vault M0 architecture freeze status completed"
+  else
+    pass "Teacher Knowledge Vault M0 architecture freeze status completed"
+  fi
+else
+  warn "Teacher Knowledge Vault M0 architecture freeze status script missing: scripts/teacher-knowledge-vault-m0-architecture-freeze-status.sh"
+fi
+
 section "Local Retrieval Foundation v0"
 if [[ -f scripts/local-retrieval-foundation-status.sh ]]; then
   local_retrieval_foundation_result=0

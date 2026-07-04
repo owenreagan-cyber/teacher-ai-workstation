@@ -55,8 +55,8 @@ Approved or sanitized material may be promoted to:
 - `assistant/memory/preferences.md`
 - `assistant/memory/decisions.md`
 - `assistant/memory/active-priorities.md`
+- `assistant/memory/knowledge/` (planned — see `docs/teacher-knowledge-vault-m0-foundation.md`; M0 does not populate files)
 - a workflow doc
-- a future knowledge file
 
 ## approved-context.md vs approved-files/
 

@@ -96,11 +96,13 @@ section 'Planning Doc Safety Banners (Spot Checks)'
 for spot in \
   docs/classroom-utilities/interactive-bingo-caller-planning.md \
   docs/classroom-utilities/desk-layout-design-architect-planning.md \
-  docs/classroom-utilities/shurley-chapter-parser-planning.md \
-  docs/classroom-utilities/classroom-timer-stopwatch-planning.md; do
+  docs/classroom-utilities/shurley-chapter-parser-planning.md; do
   check_doc_contains "${spot}" "Runtime classroom app: blocked" "runtime blocked in ${spot}"
   check_doc_contains "${spot}" "Student data: blocked" "student data blocked in ${spot}"
 done
+check_doc_contains docs/classroom-utilities/classroom-timer-stopwatch-planning.md "Level 3 runtime prototype implemented" "timer Level 3 runtime banner"
+check_doc_contains docs/classroom-utilities/classroom-timer-stopwatch-planning.md "Other apps runtime: blocked" "timer other apps runtime blocked"
+check_doc_contains docs/classroom-utilities/classroom-timer-stopwatch-planning.md "Student data: blocked" "timer student data blocked"
 
 section 'Tier 3 Owen Decision Banners'
 for tier3 in \
@@ -131,7 +133,7 @@ done
 section 'Timer Reference Lane Intact'
 check_file scripts/classroom-timer-stopwatch-planning-status.sh
 check_file tests/classroom-timer-stopwatch-planning-status-test.sh
-check_doc_contains docs/classroom-utilities/classroom-timer-stopwatch-planning.md "Owen selected this app for a planning lane only" "timer Owen selection preserved"
+check_doc_contains docs/classroom-utilities/classroom-timer-stopwatch-planning.md "Owen selected this app for the first planning lane" "timer Owen selection preserved"
 
 section 'App Inventory Cross-Link'
 check_file "${inventory_doc}"

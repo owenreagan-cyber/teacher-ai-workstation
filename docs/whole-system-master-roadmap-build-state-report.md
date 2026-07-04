@@ -14,6 +14,7 @@ App ecosystem inventory closure: complete_app_ecosystem_inventory_and_prototype_
 Classroom Timer & Stopwatch planning closure: complete_classroom_timer_stopwatch_planning_lane
 App ecosystem planning lanes closure: complete_app_ecosystem_planning_lanes_program
 App runtime approval gate closure: complete_app_runtime_approval_gate_program
+Classroom Timer Level 3 runtime: level_3_classroom_timer_stopwatch_runtime_prototype
 Presentation Engine planning closure: complete_presentation_engine_renderer_foundation_planning
 A4–A7 fixture enrichment closure: complete_a4_a7_fixture_optional_field_enrichment
 Classroom Utility templates closure: complete_classroom_utility_per_app_mission_templates
@@ -31,7 +32,7 @@ Frontmatter planning closure: complete_curriculum_manual_metadata_frontmatter_pl
 
 | Class | Meaning | Examples in this repo |
 | --- | --- | --- |
-| **repo-backed evidence** | Merged files, status scripts, tests, CLI wiring with PASS proof | Dashboard 140/0/0; runtime approval gate; 0 runtime approved |
+| **repo-backed evidence** | Merged files, status scripts, tests, CLI wiring with PASS proof | Dashboard 141/0/0; runtime approval gate; 1 runtime approved (Timer only) |
 | **planning/proposal-only evidence** | Docs, proposals, lane reviews without runtime activation | Writer tooling design boundary; second-record worksheet; Academic OS external intake |
 | **blocked implementation gates** | Explicit Owen/safety gates; negative tests; sentinel | `BLOCKED-NO-WRITES.sentinel`; no `--write`; Options A/B/C blocked |
 | **future ideas not started** | Named programs with no repo implementation | Live Vibe Panel; Lovable API; NAS crawler |
@@ -122,7 +123,7 @@ Cross-references: `docs/build-queue.md`, `docs/master-build-roadmap.md`, `docs/p
 
 | Marker | Item | Evidence |
 | --- | --- | --- |
-| [x] | CLI, dashboard (140/0/0), Program B daily ops, queues, `--next-action`, validate-all (58/0/0) | repo-backed |
+| [x] | CLI, dashboard (141/0/0), Program B daily ops, queues, `--next-action`, validate-all (59/0/0) | repo-backed |
 | [>] | Unified daily briefing (AI), B4 smoke expansion, B7 closure placeholder | planning/proposal-only |
 | [!] | Automation beyond read-only status | blocked gate |
 | **Proof** | `bin/chief-of-staff --dashboard`, `docs/chief-of-staff-v1-program-b-closure.md` | |
@@ -256,11 +257,12 @@ Cross-references: `docs/build-queue.md`, `docs/master-build-roadmap.md`, `docs/p
 | [x] | Classroom Timer & Stopwatch planning lane complete (Owen selected; Tier 1) | repo-backed — `docs/classroom-utilities/classroom-timer-stopwatch-planning.md`; `--classroom-timer-stopwatch-planning-status` |
 | [x] | App ecosystem planning lanes program complete (Tier 1–3; 27 lanes) | repo-backed — `docs/app-ecosystem-planning-lanes-program.md`; `--app-ecosystem-planning-lanes-status` |
 | [x] | Tier 4–7 high-risk apps blocked summary (no full planning lanes) | repo-backed — `docs/proposals/blocked/high-risk-app-planning-blocked-summary.md` |
-| [x] | App runtime approval gate complete (Level 2 packets; 0 runtime approved) | repo-backed — `docs/app-runtime-approval-gate-program.md`; `--app-runtime-approval-gate-status` |
+| [x] | Classroom Timer & Stopwatch Level 3 runtime prototype (Owen approved; local-only) | repo-backed — `apps/classroom-timer-stopwatch/`; `--classroom-timer-stopwatch-runtime-status` |
+| [x] | App runtime approval gate complete (Timer only Level 3; other apps blocked) | repo-backed — `docs/app-runtime-approval-gate-program.md`; `--app-runtime-approval-gate-status` |
 | [x] | Classroom Timer & Stopwatch recommended first runtime candidate (not approved) | repo-backed — `docs/app-ecosystem/implementation-packets/classroom-timer-stopwatch-runtime-approval-packet.md` |
 | [!] | All named utility apps blocked until per-app Owen **implementation** mission | blocked gate |
 | [!] | Student-data workflows (real rosters, grades, behavior logs) | blocked gate — absolute |
-| **Proof** | `--classroom-app-lab-status`; `--classroom-utility-templates-status`; `--app-ecosystem-inventory-status`; `--classroom-timer-stopwatch-planning-status`; `--app-ecosystem-planning-lanes-status`; `--app-runtime-approval-gate-status` | |
+| **Proof** | `--classroom-app-lab-status`; `--classroom-utility-templates-status`; `--app-ecosystem-inventory-status`; `--classroom-timer-stopwatch-planning-status`; `--classroom-timer-stopwatch-runtime-status`; `--app-ecosystem-planning-lanes-status`; `--app-runtime-approval-gate-status` | |
 
 ---
 
@@ -306,8 +308,8 @@ Cross-references: `docs/build-queue.md`, `docs/master-build-roadmap.md`, `docs/p
 
 | Surface | State |
 | --- | --- |
-| Dashboard | 140 / 0 / 0 PASS |
-| Validate-all | 58 / 0 / 0 PASS |
+| Dashboard | 141 / 0 / 0 PASS |
+| Validate-all | 59 / 0 / 0 PASS |
 | Whole-system coherence maintenance | `--whole-system-coherence-status` |
 | Agent builder compatibility governance | `--agent-builder-compatibility-governance-status` |
 | Owen architecture decision packets | `--owen-architecture-decision-packets-status` |
@@ -315,6 +317,7 @@ Cross-references: `docs/build-queue.md`, `docs/master-build-roadmap.md`, `docs/p
 | App ecosystem planning lanes program | `--app-ecosystem-planning-lanes-status` |
 | App runtime approval gate | `--app-runtime-approval-gate-status` |
 | Classroom Timer & Stopwatch planning | `--classroom-timer-stopwatch-planning-status` |
+| Classroom Timer & Stopwatch runtime | `--classroom-timer-stopwatch-runtime-status` |
 | Whole-system roadmap status | `--whole-system-master-roadmap-status` |
 | Presentation Engine renderer foundation | `--presentation-engine-renderer-foundation-status` |
 | Gemini discovery/classification intake | `--gemini-discovery-classification-intake-status` |
@@ -326,9 +329,9 @@ Cross-references: `docs/build-queue.md`, `docs/master-build-roadmap.md`, `docs/p
 | First-record status | 50 / 0 / 0 PASS |
 | Next-gate status | 34 / 0 / 0 PASS |
 | Empty-file status (historical) | 30 / 0 / 0 PASS |
-| Phase-1 | 868 / 0 / 0 PASS |
+| Phase-1 | 900 / 0 / 0 PASS |
 | Active mission | None |
-| Next step | First Tier 1 planning lane complete (Timer & Stopwatch); pick next Tier 1 app or await runtime mission approval; registry parked (Option D) |
+| Next step | Classroom Timer Level 3 runtime prototype complete; Timer hardening or next Tier 1 planning lane; registry parked (Option D) |
 
 **Safety gates preserved:** First governed production registry record exists (`records` count exactly 1; ID `resource-math-lesson-108-presentation`); `BLOCKED-NO-WRITES.sentinel` intact; no `--write`; no writer scripts; no second production record; real curriculum file access blocked; copied curriculum content blocked; source auto-resolution blocked; integration and runtime gates blocked.
 

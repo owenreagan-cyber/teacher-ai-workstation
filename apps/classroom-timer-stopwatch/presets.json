@@ -1,0 +1,16 @@
+{
+  "fixture_classification": "fake_local_static_presets",
+  "app": "classroom-timer-stopwatch",
+  "presets": [
+    { "label": "1 minute", "seconds": 60, "mode": "countdown" },
+    { "label": "3 minutes", "seconds": 180, "mode": "countdown" },
+    { "label": "5 minutes", "seconds": 300, "mode": "countdown" },
+    { "label": "10 minutes", "seconds": 600, "mode": "countdown" },
+    { "label": "Warmup", "seconds": 180, "mode": "countdown" },
+    { "label": "Transition", "seconds": 120, "mode": "countdown" },
+    { "label": "Exit ticket", "seconds": 120, "mode": "countdown" }
+  ],
+  "student_data": "none",
+  "persistence": "blocked",
+  "network": "none"
+}

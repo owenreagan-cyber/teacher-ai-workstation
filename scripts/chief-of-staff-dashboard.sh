@@ -1839,6 +1839,27 @@ else
   warn "Classroom Timer & Stopwatch planning status script missing: scripts/classroom-timer-stopwatch-planning-status.sh"
 fi
 
+section "Classroom Timer & Stopwatch Runtime Prototype"
+if [[ -f scripts/classroom-timer-stopwatch-runtime-status.sh ]]; then
+  timer_runtime_result=0
+  timer_runtime_output="$(bash scripts/classroom-timer-stopwatch-runtime-status.sh 2>&1)" || timer_runtime_result=$?
+  timer_runtime_pass="$(summary_count "${timer_runtime_output}" "PASS")"
+  timer_runtime_warn="$(summary_count "${timer_runtime_output}" "WARN")"
+  timer_runtime_fail="$(summary_count "${timer_runtime_output}" "FAIL")"
+
+  if [[ "${timer_runtime_result}" != "0" ]]; then
+    printf '%s\n' "${timer_runtime_output}"
+    fail "Classroom Timer & Stopwatch runtime status failed"
+  elif [[ -n "${timer_runtime_pass}" && -n "${timer_runtime_warn}" && -n "${timer_runtime_fail}" ]]; then
+    printf 'Timer & Stopwatch Runtime: PASS %s / WARN %s / FAIL %s\n' "${timer_runtime_pass}" "${timer_runtime_warn}" "${timer_runtime_fail}"
+    pass "Classroom Timer & Stopwatch runtime status completed"
+  else
+    pass "Classroom Timer & Stopwatch runtime status completed"
+  fi
+else
+  warn "Classroom Timer & Stopwatch runtime status script missing: scripts/classroom-timer-stopwatch-runtime-status.sh"
+fi
+
 section "App Ecosystem Planning Lanes Program"
 if [[ -f scripts/app-ecosystem-planning-lanes-status.sh ]]; then
   planning_lanes_result=0

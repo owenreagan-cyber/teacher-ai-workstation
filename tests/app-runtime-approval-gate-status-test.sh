@@ -22,7 +22,8 @@ done
 tmp="$(mktemp "${TMPDIR:-/tmp}/runtime-approval-gate.XXXXXX")"
 bash "${status_script}" >"${tmp}" 2>&1 || { echo "FAIL: status script exited nonzero"; cat "${tmp}"; rm -f "${tmp}"; exit 1; }
 grep -q '^FAIL: 0$' "${tmp}" || { echo "FAIL: status reported failures"; cat "${tmp}"; rm -f "${tmp}"; exit 1; }
-grep -q 'Runtime-approved apps: 0' "${tmp}" || { echo "FAIL: missing zero runtime approved banner"; cat "${tmp}"; rm -f "${tmp}"; exit 1; }
+grep -q 'Runtime-approved apps: 1' "${tmp}" || { echo "FAIL: missing one runtime approved banner"; cat "${tmp}"; rm -f "${tmp}"; exit 1; }
+grep -q 'exactly one app runtime_approved in manifest' "${tmp}" || { echo "FAIL: missing single approved app check"; cat "${tmp}"; rm -f "${tmp}"; exit 1; }
 grep -q 'manifest declares 27 Tier 1–3 packets' "${tmp}" || { echo "FAIL: missing 27 packet count"; cat "${tmp}"; rm -f "${tmp}"; exit 1; }
 rm -f "${tmp}"
 

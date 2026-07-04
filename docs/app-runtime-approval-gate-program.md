@@ -7,7 +7,7 @@ Status: production-readiness documentation — not runtime authorization
 Closure: complete_app_runtime_approval_gate_program
 Proof: bin/chief-of-staff --app-runtime-approval-gate-status
 Manifest: assistant/app-ecosystem/samples/runtime-approval-manifest.json
-Runtime-approved apps: 0
+Runtime-approved apps: 1 (Classroom Timer & Stopwatch only)
 Chief of Staff chooses app priority for Owen: no
 ```
 
@@ -32,10 +32,11 @@ Bridge from **planning lanes complete** (PR #247) to **Owen-safe runtime approva
 | --- | --- | --- |
 | Planning lanes | `complete_app_ecosystem_planning_lanes_program` | Level 1 |
 | Runtime approval gate | `complete_app_runtime_approval_gate_program` | Level 2 |
+| Timer runtime prototype | `level_3_classroom_timer_stopwatch_runtime_prototype` | Level 3 (Timer only) |
 
 ## First Runtime Candidate
 
-**Classroom Timer & Stopwatch** — recommended first candidate; **not approved** until Owen Level 3 mission.
+**Classroom Timer & Stopwatch** — **Level 3 approved and implemented** (2026-07-04 Owen mission). Prototype: `apps/classroom-timer-stopwatch/`; `--classroom-timer-stopwatch-runtime-status`. **All other apps remain runtime-blocked.**
 
 ## Tier 4–7
 
@@ -51,4 +52,4 @@ bin/chief-of-staff --app-ecosystem-planning-lanes-status
 
 ## Non-Activation
 
-No runtime apps built. No app marked `runtime_approved: true`.
+Only Classroom Timer & Stopwatch is marked `runtime_approved: true`. No other app runtime is authorized.

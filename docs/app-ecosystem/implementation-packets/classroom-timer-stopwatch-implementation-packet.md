@@ -3,96 +3,78 @@
 Last updated: 2026-07-04
 
 ```text
-Status: Level 2 — runtime approval packet drafted — NOT runtime approved
-Readiness state: planning_complete_runtime_candidate
-Production readiness level: 2 (packet drafted)
-Runtime approved: no
+Status: Level 3 — Owen-approved local-only prototype implemented
+Readiness state: level_3_runtime_prototype_implemented
+Production readiness level: 3
+Runtime approved: yes — Classroom Timer & Stopwatch only
 Planning lane: complete
 Inventory tier: 1
-Owen approval required: yes — explicit implementation mission
+Owen Level 3 approval: 2026-07-04 explicit mission — Level 3 approved by Owen
 ```
 
 ## Planning Sources
 
 - Planning doc: `docs/classroom-utilities/classroom-timer-stopwatch-planning.md`
-- Fixture: `assistant/classroom-utilities/samples/classroom-timer-stopwatch-planning/`
-- Closure: `complete_classroom_timer_stopwatch_planning_lane`
+- Runtime packet: `docs/app-ecosystem/implementation-packets/classroom-timer-stopwatch-runtime-approval-packet.md`
+- Prototype: `apps/classroom-timer-stopwatch/`
+- Status: `bin/chief-of-staff --classroom-timer-stopwatch-runtime-status`
 
-## Classroom Use Summary
+## Implemented Runtime Surfaces (Level 3)
 
-Teacher-facing classroom utility per planning lane. Fake/local labels only until Owen approves runtime.
+| Surface | Status |
+| --- | --- |
+| `apps/classroom-timer-stopwatch/index.html` | implemented |
+| `apps/classroom-timer-stopwatch/styles.css` | implemented |
+| `apps/classroom-timer-stopwatch/timer.js` | implemented — setInterval countdown/stopwatch |
+| Countdown mode | implemented |
+| Stopwatch mode | implemented |
+| Start / pause / reset | implemented |
+| Static presets | implemented — fake/local labels only |
 
+## Still Blocked Runtime Surfaces
 
+```text
+audio playback
+animations (requestAnimationFrame)
+localStorage / sessionStorage / cookies
+saved user presets / history / analytics
+student names / rosters / grades
+real curriculum ingestion
+database / API / OAuth / network
+widgets / shortcuts / Mac app install
+AI generation / local models / Ollama
+production registry writes / --write
+runtime for any other app
+```
 
 ## Current vs Recommended State
 
 | Field | Value |
 | --- | --- |
-| Current readiness level | 2 — packet drafted |
-| Recommended next state | 3 — Owen-approved runtime implementation mission only |
-| Runtime approved | **no** |
+| Current readiness level | 3 — local prototype merged |
+| Recommended next state | 4 — classroom-safe validation (future Owen mission) |
+| Runtime approved | **yes — this app only** |
 
-## Proposed Local-Only Implementation Surface (If Ever Approved)
+## Required Validation
 
-- Static HTML/CSS/JS page under `docs/classroom-utilities/` or approved local path — **not built**
-- Teacher-controlled display; no student roster binding
-- Offline/local; no network
-
-## Explicitly Blocked Runtime Surfaces
-
-```text
-runtime execution in this repo state
-student names / rosters / grades / behavior logs
-real curriculum ingestion / copied content
-database / API / OAuth / network calls
-localStorage / sessionStorage persistence (unless separately approved)
-audio playback / animations (unless separately approved)
-widgets / shortcuts / Mac app install
-AI generation / local models / Ollama
-production registry writes / --write
+```bash
+bin/chief-of-staff --classroom-timer-stopwatch-runtime-status
+bash tests/classroom-timer-stopwatch-runtime-static-safety-test.sh
+bin/chief-of-staff --app-runtime-approval-gate-status
+bin/chief-of-staff --dashboard
 ```
 
-## Risk Summary
+## Remaining Risks
 
-| Risk | Level |
-| --- | --- |
-| Student data | blocked — absolute |
-| Curriculum data | blocked unless fake labels only |
-| Integration | blocked |
-| AI generation | blocked |
-| Persistence | blocked by default |
-| Audio/animation | blocked unless separately approved |
-| Widget/shortcut/Mac | blocked |
+- Interval drift on background tabs (acceptable for v1 prototype)
+- No audio cue at zero — by design (blocked until separate approval)
+- No persistence — by design
 
-## Required Owen Approval
+## Future Approval Requirements
 
-Owen explicit runtime implementation mission required.
+- Level 4+ validation mission before classroom deployment assumptions
+- Separate Owen missions for audio, persistence, widgets
 
-Owen must use explicit wording in a separate mission prompt, e.g.:
+## Non-Activation Scope
 
-> "I approve runtime implementation for Classroom Timer & Stopwatch local-only prototype per the implementation packet and runtime approval gate."
-
-## Required Validation Before Implementation
-
-- `--app-runtime-approval-gate-status` PASS
-- `--app-ecosystem-planning-lanes-status` PASS
-- App planning status PASS (if per-app command exists)
-- `docs/app-ecosystem/runtime-implementation-approval-gate.md` cited
-
-## Required Validation After Implementation
-
-- Dashboard / validate-all / phase-1 / smoke PASS
-- No student data; no forbidden integrations
-- Status command for app (if added)
-
-## Escalation Triggers
-
-- Any student roster binding request
-- Any network/API/OAuth requirement
-- Any real curriculum file intake
-- Any production registry write
-- Any AI generation path
-
-## Non-Activation
-
-This packet does not authorize runtime implementation.
+This Level 3 approval does **not** authorize any other app runtime implementation.

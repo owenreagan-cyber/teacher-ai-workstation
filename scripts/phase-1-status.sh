@@ -1222,8 +1222,11 @@ for path in \
   assistant/app-ecosystem/samples/runtime-approval-manifest.json \
   docs/app-ecosystem/implementation-packets/classroom-timer-stopwatch-runtime-approval-packet.md \
   docs/app-ecosystem/implementation-packets/interactive-bingo-caller-implementation-packet.md \
-  scripts/app-runtime-approval-gate-status.sh \
-  tests/app-runtime-approval-gate-status-test.sh; do
+  apps/classroom-timer-stopwatch/index.html \
+  apps/classroom-timer-stopwatch/timer.js \
+  scripts/classroom-timer-stopwatch-runtime-status.sh \
+  tests/classroom-timer-stopwatch-runtime-status-test.sh \
+  tests/classroom-timer-stopwatch-runtime-static-safety-test.sh; do
   check_required_file "${path}"
 done
 check_bash_syntax scripts/app-runtime-approval-gate-status.sh
@@ -1231,6 +1234,8 @@ check_bash_syntax tests/app-runtime-approval-gate-status-test.sh
 check_doc_contains docs/app-ecosystem/runtime-implementation-approval-gate.md "complete_app_runtime_approval_gate_program" "runtime approval gate closure"
 check_doc_contains docs/whole-system-master-roadmap-build-state-report.md "complete_app_runtime_approval_gate_program" "whole-system report approval gate closure"
 grep -Fq -- '--app-runtime-approval-gate-status' bin/chief-of-staff && pass "chief-of-staff exposes --app-runtime-approval-gate-status" || fail "chief-of-staff missing --app-runtime-approval-gate-status"
+grep -Fq -- '--classroom-timer-stopwatch-runtime-status' bin/chief-of-staff && pass "chief-of-staff exposes --classroom-timer-stopwatch-runtime-status" || fail "chief-of-staff missing --classroom-timer-stopwatch-runtime-status"
+check_doc_contains docs/app-ecosystem/implementation-packets/classroom-timer-stopwatch-implementation-packet.md "Level 3 approved" "timer implementation packet Level 3"
 
 section "Presentation Engine Renderer Foundation Planning Files"
 for path in \

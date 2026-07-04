@@ -36,13 +36,14 @@ sentinel="assistant/curriculum-builder/registry/candidate-v0-2-production/BLOCKE
 
 section 'App Runtime Approval Gate (Documentation Only)'
 cat <<'EOF'
-Status: production-readiness — not runtime authorization
-Runtime-approved apps: 0
+Status: production-readiness — Timer Level 3 only
+Runtime-approved apps: 1 (Classroom Timer & Stopwatch)
+Other apps runtime-approved: no
 Planning-complete equals runtime-approved: no
 Chief of Staff implements apps: no
-Chief of Staff chooses Owen priority: no
+Chief of Staff launches apps: no
 Student data: blocked — absolute
-PASS does not authorize implementation: yes
+PASS does not authorize other apps: yes
 EOF
 
 section 'Core Gate Artifacts'
@@ -55,8 +56,9 @@ check_file "${matrix_doc}"
 check_file "${program_doc}"
 check_file "${manifest_path}"
 check_file "${timer_candidate}"
-check_doc_contains "${timer_candidate}" "NOT runtime approved" "timer candidate not approved banner"
-check_doc_contains "${timer_candidate}" "Recommended first runtime candidate" "timer first candidate marker"
+check_doc_contains "${timer_candidate}" "Level 3" "timer candidate Level 3 reference"
+check_file apps/classroom-timer-stopwatch/index.html
+check_file scripts/classroom-timer-stopwatch-runtime-status.sh
 
 section 'Planning Lanes Program Cross-Check'
 check_file "${planning_program}"
@@ -75,22 +77,31 @@ entries = m.get("entries", [])
 approved = [e for e in entries if e.get("runtime_approved")]
 print(len(entries))
 print("APPROVED:", len(approved))
+for e in approved:
+    print("SLUG:", e.get("slug"))
 missing_packets = []
 for e in entries:
     if e.get("implementation_packet"):
         if not Path(e["implementation_packet"]).is_file():
             missing_packets.append(e["slug"])
 print("MISSING_PACKETS:", ",".join(missing_packets) if missing_packets else "none")
-if m.get("runtime_approved_count", -1) != 0:
+count = m.get("runtime_approved_count", -1)
+print("APPROVED_COUNT:", count)
+if count != 1:
     print("BAD_APPROVED_COUNT")
 else:
     print("APPROVED_COUNT_OK")
+if len(approved) != 1 or (approved and approved[0].get("slug") != "classroom-timer-stopwatch"):
+    print("BAD_APPROVED_SET")
+else:
+    print("APPROVED_SET_OK")
 PY
 )"
   entry_count="${manifest_report%%$'\n'*}"
   [[ "${entry_count}" == "52" ]] && pass 'manifest lists 52 apps' || fail "manifest must list 52 apps (got ${entry_count})"
-  grep -q 'APPROVED: 0' <<<"${manifest_report}" && pass 'no app marked runtime_approved in manifest' || fail 'manifest must not mark any app runtime_approved'
-  grep -q 'APPROVED_COUNT_OK' <<<"${manifest_report}" && pass 'manifest runtime_approved_count is 0' || fail 'manifest runtime_approved_count must be 0'
+  grep -q 'APPROVED: 1' <<<"${manifest_report}" && pass 'exactly one app runtime_approved in manifest' || fail 'manifest must have exactly one runtime_approved app'
+  grep -q 'APPROVED_SET_OK' <<<"${manifest_report}" && pass 'only classroom-timer-stopwatch runtime approved' || fail 'only classroom-timer-stopwatch may be runtime approved'
+  grep -q 'APPROVED_COUNT_OK' <<<"${manifest_report}" && pass 'manifest runtime_approved_count is 1' || fail 'manifest runtime_approved_count must be 1'
   grep -q 'MISSING_PACKETS: none' <<<"${manifest_report}" && pass 'all listed implementation packets exist' || fail "missing implementation packets: $(grep MISSING_PACKETS <<<"${manifest_report}")"
   packet_count="$(python3 -c "import json; m=json.load(open('${manifest_path}')); print(m.get('tier_1_3_packet_count',0))" 2>/dev/null || echo 0)"
   [[ "${packet_count}" == "27" ]] && pass 'manifest declares 27 Tier 1–3 packets' || fail "Tier 1–3 packet count must be 27 (got ${packet_count})"
@@ -99,23 +110,31 @@ else
 fi
 
 section 'Readiness Matrix Content'
-check_doc_contains "${matrix_doc}" "Runtime-approved apps: 0" "matrix zero runtime approved"
+check_doc_contains "${matrix_doc}" "Runtime-approved apps: 1" "matrix one runtime approved"
+check_doc_contains "${matrix_doc}" "level_3_runtime_prototype_implemented" "matrix Level 3 timer state"
 check_doc_contains "${matrix_doc}" "planning_complete_runtime_candidate" "matrix runtime candidate state"
 check_doc_contains "${matrix_doc}" "proposal_only_blocked_student_data" "matrix student data blocked state"
-check_doc_contains "${matrix_doc}" "Level 2" "matrix level 2 documented"
+check_doc_contains "${matrix_doc}" "Level 3" "matrix level 3 documented"
 
-section 'No Runtime Artifacts'
+section 'Timer Runtime Prototype Only'
+check_file apps/classroom-timer-stopwatch/timer.js
+other_apps=0
+if [[ -d apps ]]; then
+  for d in apps/*/; do
+    [[ "${d}" == "apps/classroom-timer-stopwatch/" ]] && continue
+    other_apps=1
+    fail "unexpected app directory: ${d}"
+  done
+  [[ "${other_apps}" == "0" ]] && pass 'only classroom-timer-stopwatch under apps/'
+fi
+
+section 'No Unauthorized Runtime Artifacts'
 for forbidden in \
   'assistant/classroom-utilities/runtime/classroom-timer-stopwatch' \
   'docs/classroom-utilities/classroom-timer-stopwatch.html' \
   'docs/classroom-utilities/interactive-bingo-caller.js'; do
   [[ -e "${forbidden}" ]] && fail "forbidden runtime artifact exists: ${forbidden}" || pass "no forbidden runtime artifact: ${forbidden}"
 done
-if grep -Rrl 'runtime_approved: true' docs/app-ecosystem assistant/app-ecosystem/samples/runtime-approval-manifest.json 2>/dev/null | grep -qv 'runtime-approval-manifest.json'; then
-  fail 'docs must not contain runtime_approved: true'
-else
-  pass 'no runtime_approved true in docs outside manifest schema'
-fi
 
 section 'Production Registry Parked-State Proof'
 if [[ -f "${production_registry_path}" ]] && command -v python3 >/dev/null 2>&1; then
@@ -137,6 +156,7 @@ check_doc_contains docs/whole-system-master-roadmap-build-state-report.md "compl
 section 'Dashboard and Validate-All Wiring'
 grep -Fq -- 'app-runtime-approval-gate-status.sh' scripts/chief-of-staff-dashboard.sh && pass 'dashboard wires approval gate status' || fail 'dashboard missing approval gate status'
 grep -Fq -- 'app-runtime-approval-gate-status.sh' scripts/chief-of-staff-validate-all.sh && pass 'validate-all wires approval gate status' || fail 'validate-all missing approval gate status'
+grep -Fq -- 'classroom-timer-stopwatch-runtime-status.sh' scripts/chief-of-staff-validate-all.sh && pass 'validate-all wires timer runtime status' || fail 'validate-all missing timer runtime status'
 grep -Fq -- 'app-runtime-approval-gate' tests/smoke-chief-of-staff-cli.sh && pass 'smoke wires approval gate status' || fail 'smoke missing approval gate status'
 
 section 'CLI, Manifest, and Tests'
@@ -150,8 +170,8 @@ section 'Negative Non-Activation Assertions'
 status_script="${BASH_SOURCE[0]}"
 grep -Eq '(^|[;&|[:space:]])curl[[:space:]]' "${status_script}" 2>/dev/null && fail "${status_script} must not shell-invoke curl" || pass "${status_script} does not shell-invoke curl"
 grep -Eq '(^|[;&|[:space:]])ollama[[:space:]]' "${status_script}" 2>/dev/null && fail "${status_script} must not shell-invoke ollama" || pass "${status_script} does not shell-invoke ollama"
-pass 'no classroom app executed'
-pass 'no runtime app approval implied by PASS'
+pass 'no classroom app executed by gate status'
+pass 'Timer Level 3 does not authorize other apps'
 
 section 'Summary'
 printf 'PASS: %s\n' "${PASS_COUNT}"

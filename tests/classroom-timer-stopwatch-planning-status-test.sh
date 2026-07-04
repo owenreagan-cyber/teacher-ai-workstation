@@ -20,7 +20,8 @@ done
 tmp="$(mktemp "${TMPDIR:-/tmp}/timer-planning-status.XXXXXX")"
 bash "${status_script}" >"${tmp}" 2>&1 || { echo "FAIL: status script exited nonzero"; cat "${tmp}"; rm -f "${tmp}"; exit 1; }
 grep -q '^FAIL: 0$' "${tmp}" || { echo "FAIL: status reported failures"; cat "${tmp}"; rm -f "${tmp}"; exit 1; }
-grep -q 'Runtime classroom app: no' "${tmp}" || { echo "FAIL: missing runtime blocked banner"; cat "${tmp}"; rm -f "${tmp}"; exit 1; }
+grep -q 'Runtime classroom app: yes' "${tmp}" || { echo "FAIL: missing Timer runtime approved banner"; cat "${tmp}"; rm -f "${tmp}"; exit 1; }
+grep -q 'Other apps runtime: blocked' "${tmp}" || { echo "FAIL: missing other apps runtime blocked banner"; cat "${tmp}"; rm -f "${tmp}"; exit 1; }
 grep -q 'Owen selected planning lane: yes' "${tmp}" || { echo "FAIL: missing Owen selection banner"; cat "${tmp}"; rm -f "${tmp}"; exit 1; }
 rm -f "${tmp}"
 

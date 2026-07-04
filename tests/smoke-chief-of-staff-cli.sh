@@ -157,6 +157,9 @@ bin/chief-of-staff --app-ecosystem-inventory-status >/dev/null
 bash tests/app-ecosystem-inventory-status-test.sh >/dev/null
 bin/chief-of-staff --classroom-timer-stopwatch-planning-status >/dev/null
 bash tests/classroom-timer-stopwatch-planning-status-test.sh >/dev/null
+bin/chief-of-staff --classroom-timer-stopwatch-runtime-status >/dev/null
+bash tests/classroom-timer-stopwatch-runtime-status-test.sh >/dev/null
+bash tests/classroom-timer-stopwatch-runtime-static-safety-test.sh >/dev/null
 bin/chief-of-staff --app-ecosystem-planning-lanes-status >/dev/null
 bash tests/app-ecosystem-planning-lanes-status-test.sh >/dev/null
 bin/chief-of-staff --app-runtime-approval-gate-status >/dev/null

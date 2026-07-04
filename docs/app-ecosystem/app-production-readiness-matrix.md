@@ -6,7 +6,7 @@ Last updated: 2026-07-04
 Status: documentation/status only — not runtime approval
 Closure: complete_app_runtime_approval_gate_program
 Proof: bin/chief-of-staff --app-runtime-approval-gate-status
-Runtime-approved apps: 0
+Runtime-approved apps: 1 (Classroom Timer & Stopwatch only)
 Chief of Staff chooses app priority for Owen: no
 ```
 
@@ -30,14 +30,15 @@ Chief of Staff chooses app priority for Owen: no
 - `duplicate_or_superseded`: **1**
 - `out_of_scope`: **1**
 - `planning_complete_needs_owen_decision`: **10**
-- `planning_complete_runtime_candidate`: **16**
+- `planning_complete_runtime_candidate`: **15**
 - `proposal_only_blocked_ai_generation`: **3**
 - `proposal_only_blocked_integration`: **5**
 - `proposal_only_blocked_real_curriculum`: **2**
 - `proposal_only_blocked_student_data`: **12**
 - `proposal_only_insufficient_repo_evidence`: **2**
 
-- `runtime_approved`: **0**
+- `level_3_runtime_prototype_implemented`: **1**
+- `runtime_approved`: **1** (Timer only)
 
 ## Full Matrix (52 Apps)
 
@@ -54,7 +55,7 @@ Chief of Staff chooses app priority for Owen: no
 | 9 | Email Responder | 4 | 0 | `proposal_only_blocked_integration` | no | — |
 | 10 | Titanium Realm | 4 | 0 | `proposal_only_blocked_student_data` | no | — |
 | 11 | Glow/Grow App | 4 | 0 | `proposal_only_blocked_ai_generation` | no | — |
-| 12 | Classroom Timer & Stopwatch | 1 | 2 | `planning_complete_runtime_candidate` | no | `classroom-timer-stopwatch-implementation-packet.md` |
+| 12 | Classroom Timer & Stopwatch | 1 | 3 | `level_3_runtime_prototype_implemented` | **yes — Owen Level 3 only** | `classroom-timer-stopwatch-runtime-approval-packet.md` |
 | 13 | AI Coupon Factory | 4 | 0 | `proposal_only_blocked_student_data` | no | — |
 | 14 | Thales Academic OS | 5 | 0 | `proposal_only_blocked_integration` | no | — |
 | 15 | GradeMate | 4 | 0 | `proposal_only_blocked_real_curriculum` | no | — |

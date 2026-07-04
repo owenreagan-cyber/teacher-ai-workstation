@@ -55,9 +55,11 @@ for closure in \
   complete_a4_a7_fixture_optional_field_enrichment \
   complete_agent_builder_compatibility_governance_program \
   complete_owen_architecture_decision_packets_program \
-  complete_app_ecosystem_inventory_and_prototype_build_list; do
+  complete_app_ecosystem_inventory_and_prototype_build_list \
+  complete_classroom_timer_stopwatch_planning_lane; do
   check_doc_contains "${whole_system_report}" "${closure}" "whole-system report closure: ${closure}"
 done
+check_doc_contains docs/build-queue.md "classroom timer" "build queue timer planning"
 check_doc_contains docs/build-queue.md "app ecosystem" "build queue app ecosystem"
 check_doc_contains docs/build-queue.md "decision packet" "build queue decision packets"
 check_doc_contains docs/build-queue.md "frontmatter planning" "build queue frontmatter"
@@ -67,8 +69,8 @@ check_doc_contains docs/proposals/index.md "Whole-system coherence maintenance" 
 check_doc_contains docs/teacher-workstation-capability-map.md "whole-system-coherence-status" "capability map coherence status"
 
 section 'Stale Count Hardening'
-check_doc_contains "${whole_system_report}" "137 / 0 / 0 PASS" "dashboard count current"
-check_doc_contains "${whole_system_report}" "55 / 0 / 0 PASS" "validate-all count current"
+check_doc_contains "${whole_system_report}" "138 / 0 / 0 PASS" "dashboard count current"
+check_doc_contains "${whole_system_report}" "56 / 0 / 0 PASS" "validate-all count current"
 if grep -Fq -- 'Dashboard 128/0/0' "${whole_system_report}" 2>/dev/null; then
   fail 'whole-system report must not contain stale Dashboard 128/0/0 example'
 else
@@ -99,6 +101,11 @@ if grep -Fq -- 'dashboard (136/0/0)' "${whole_system_report}" 2>/dev/null; then
 else
   pass 'whole-system report excludes stale dashboard (136/0/0) lane text'
 fi
+if grep -Fq -- 'dashboard (137/0/0)' "${whole_system_report}" 2>/dev/null; then
+  fail 'whole-system report must not contain stale dashboard (137/0/0) lane text'
+else
+  pass 'whole-system report excludes stale dashboard (137/0/0) lane text'
+fi
 
 section 'Expected WARNs Discoverability'
 check_file docs/curriculum-builder-registry-expected-warns.md
@@ -108,6 +115,7 @@ check_doc_contains docs/curriculum-builder-registry-expected-warns.md "--whole-s
 check_doc_contains docs/curriculum-builder-registry-expected-warns.md "--agent-builder-compatibility-governance-status" "expected warns agent builder status"
 check_doc_contains docs/curriculum-builder-registry-expected-warns.md "--owen-architecture-decision-packets-status" "expected warns decision packets status"
 check_doc_contains docs/curriculum-builder-registry-expected-warns.md "--app-ecosystem-inventory-status" "expected warns app ecosystem status"
+check_doc_contains docs/curriculum-builder-registry-expected-warns.md "--classroom-timer-stopwatch-planning-status" "expected warns timer planning status"
 
 section 'Production Registry Parked-State Proof'
 if [[ -f "${production_registry_path}" ]] && command -v python3 >/dev/null 2>&1; then

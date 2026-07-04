@@ -8,9 +8,13 @@ Classification: prioritization prep — does not implement runtime behavior
 Master inventory: docs/app-ecosystem-inventory-and-prototype-build-list.md (52 apps — authoritative scope)
 Legacy 9-app matrix: docs/classroom-utility-app-candidate-matrix.md (templates built)
 Templates: docs/classroom-utility-templates/ (complete)
-Current default posture: no app selected for next mission
+Current default posture: Owen selected Classroom Timer & Stopwatch for planning lane only; runtime blocked
 Classroom utility app runtime: blocked
 ```
+
+## Owen Selection (Planning Lane Only)
+
+Owen selected **Classroom Timer & Stopwatch** (Tier 1) for the first single-app planning lane. See `docs/classroom-utilities/classroom-timer-stopwatch-planning.md`. **Runtime implementation is not approved.**
 
 ## Purpose
 

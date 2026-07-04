@@ -1,0 +1,13 @@
+{
+  "fixture_classification": "fake_local_planning_only",
+  "app_candidate": "classroom-timer-stopwatch",
+  "display_modes": [
+    {"id": "countdown", "description": "Single target duration with progress ring concept"},
+    {"id": "stopwatch", "description": "Elapsed time with optional lap label placeholders"},
+    {"id": "interval", "description": "Repeating rounds with work/rest duration labels"}
+  ],
+  "smartboard_posture": "large_typography_high_contrast",
+  "teacher_control": "teacher_only_separate_panel_concept",
+  "audio": "blocked",
+  "runtime_app": "blocked"
+}

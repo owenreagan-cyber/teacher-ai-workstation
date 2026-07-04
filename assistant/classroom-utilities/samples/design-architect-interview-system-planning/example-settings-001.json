@@ -1,0 +1,9 @@
+{
+  "fixture_classification": "fake_local_planning_only",
+  "app_candidate": "design-architect-interview-system",
+  "display_label": "example-interview-question-label",
+  "runtime_app": "blocked",
+  "student_data": "none",
+  "persistence": "blocked",
+  "integrations": "blocked"
+}

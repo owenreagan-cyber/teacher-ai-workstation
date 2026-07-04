@@ -1,0 +1,9 @@
+{
+  "fixture_classification": "fake_local_planning_only",
+  "app_candidate": "time-bomb-vocabulary-game",
+  "display_label": "example-vocab-word-label",
+  "runtime_app": "blocked",
+  "student_data": "none",
+  "persistence": "blocked",
+  "integrations": "blocked"
+}

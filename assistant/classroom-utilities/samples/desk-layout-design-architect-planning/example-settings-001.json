@@ -1,0 +1,9 @@
+{
+  "fixture_classification": "fake_local_planning_only",
+  "app_candidate": "desk-layout-design-architect",
+  "display_label": "example-seat-grid-a1",
+  "runtime_app": "blocked",
+  "student_data": "none",
+  "persistence": "blocked",
+  "integrations": "blocked"
+}

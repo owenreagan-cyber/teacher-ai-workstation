@@ -1,0 +1,9 @@
+{
+  "fixture_classification": "fake_local_planning_only",
+  "app_candidate": "constitution-prompts-architect",
+  "display_label": "example-civics-topic-label",
+  "runtime_app": "blocked",
+  "student_data": "none",
+  "persistence": "blocked",
+  "integrations": "blocked"
+}

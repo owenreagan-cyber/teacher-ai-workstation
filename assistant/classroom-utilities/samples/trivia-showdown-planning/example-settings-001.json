@@ -1,0 +1,9 @@
+{
+  "fixture_classification": "fake_local_planning_only",
+  "app_candidate": "trivia-showdown",
+  "display_label": "example-trivia-question-label",
+  "runtime_app": "blocked",
+  "student_data": "none",
+  "persistence": "blocked",
+  "integrations": "blocked"
+}

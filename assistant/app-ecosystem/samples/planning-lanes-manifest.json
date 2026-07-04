@@ -1,0 +1,251 @@
+{
+  "version": "2026-07-04-v1",
+  "program_closure": "complete_app_ecosystem_planning_lanes_program",
+  "full_planning_lane_count": 27,
+  "tier_1_3_lanes": [
+    {
+      "slug": "charades-game",
+      "name": "Charades Game",
+      "tier": 2,
+      "closure": "complete_charades_game_planning_lane",
+      "doc": "docs/classroom-utilities/charades-game-planning.md",
+      "fixture": "assistant/classroom-utilities/samples/charades-game-planning/example-settings-001.json",
+      "owen_selected": false
+    },
+    {
+      "slug": "classroom-arcade",
+      "name": "Classroom Arcade",
+      "tier": 1,
+      "closure": "complete_classroom_arcade_planning_lane",
+      "doc": "docs/classroom-utilities/classroom-arcade-planning.md",
+      "fixture": "assistant/classroom-utilities/samples/classroom-arcade-planning/example-settings-001.json",
+      "owen_selected": false
+    },
+    {
+      "slug": "classroom-timer-stopwatch",
+      "name": "Classroom Timer & Stopwatch",
+      "tier": 1,
+      "closure": "complete_classroom_timer_stopwatch_planning_lane",
+      "doc": "docs/classroom-utilities/classroom-timer-stopwatch-planning.md",
+      "fixture": null,
+      "owen_selected": true
+    },
+    {
+      "slug": "code-cracker",
+      "name": "Code Cracker",
+      "tier": 1,
+      "closure": "complete_code_cracker_planning_lane",
+      "doc": "docs/classroom-utilities/code-cracker-planning.md",
+      "fixture": "assistant/classroom-utilities/samples/code-cracker-planning/example-settings-001.json",
+      "owen_selected": false
+    },
+    {
+      "slug": "constitution-prompts-architect",
+      "name": "Constitution Prompts Architect",
+      "tier": 3,
+      "closure": "complete_constitution_prompts_architect_planning_lane",
+      "doc": "docs/classroom-utilities/constitution-prompts-architect-planning.md",
+      "fixture": "assistant/classroom-utilities/samples/constitution-prompts-architect-planning/example-settings-001.json",
+      "owen_selected": false
+    },
+    {
+      "slug": "daily-agenda-announcement-engine",
+      "name": "Daily Agenda and Announcement Engine",
+      "tier": 2,
+      "closure": "complete_daily_agenda_announcement_engine_planning_lane",
+      "doc": "docs/classroom-utilities/daily-agenda-announcement-engine-planning.md",
+      "fixture": "assistant/classroom-utilities/samples/daily-agenda-announcement-engine-planning/example-settings-001.json",
+      "owen_selected": false
+    },
+    {
+      "slug": "daily-schedule-card-designer",
+      "name": "Daily Schedule Card Designer",
+      "tier": 1,
+      "closure": "complete_daily_schedule_card_designer_planning_lane",
+      "doc": "docs/classroom-utilities/daily-schedule-card-designer-planning.md",
+      "fixture": "assistant/classroom-utilities/samples/daily-schedule-card-designer-planning/example-settings-001.json",
+      "owen_selected": false
+    },
+    {
+      "slug": "design-architect-interview-system",
+      "name": "Design Architect Interview System",
+      "tier": 2,
+      "closure": "complete_design_architect_interview_system_planning_lane",
+      "doc": "docs/classroom-utilities/design-architect-interview-system-planning.md",
+      "fixture": "assistant/classroom-utilities/samples/design-architect-interview-system-planning/example-settings-001.json",
+      "owen_selected": false
+    },
+    {
+      "slug": "desk-layout-design-architect",
+      "name": "Desk Layout Design Architect",
+      "tier": 1,
+      "closure": "complete_desk_layout_design_architect_planning_lane",
+      "doc": "docs/classroom-utilities/desk-layout-design-architect-planning.md",
+      "fixture": "assistant/classroom-utilities/samples/desk-layout-design-architect-planning/example-settings-001.json",
+      "owen_selected": false
+    },
+    {
+      "slug": "interactive-bingo-caller",
+      "name": "Interactive Bingo Caller",
+      "tier": 1,
+      "closure": "complete_interactive_bingo_caller_planning_lane",
+      "doc": "docs/classroom-utilities/interactive-bingo-caller-planning.md",
+      "fixture": "assistant/classroom-utilities/samples/interactive-bingo-caller-planning/example-settings-001.json",
+      "owen_selected": false
+    },
+    {
+      "slug": "ipad-optimizer-prompt-engine",
+      "name": "iPad Optimizer Prompt Generator",
+      "tier": 1,
+      "closure": "complete_ipad_optimizer_prompt_engine_planning_lane",
+      "doc": "docs/classroom-utilities/ipad-optimizer-prompt-engine-planning.md",
+      "fixture": "assistant/classroom-utilities/samples/ipad-optimizer-prompt-engine-planning/example-settings-001.json",
+      "owen_selected": false
+    },
+    {
+      "slug": "lets-make-a-deal-curtain-game",
+      "name": "Let's Make a Deal Curtain Game",
+      "tier": 1,
+      "closure": "complete_lets_make_a_deal_curtain_game_planning_lane",
+      "doc": "docs/classroom-utilities/lets-make-a-deal-curtain-game-planning.md",
+      "fixture": "assistant/classroom-utilities/samples/lets-make-a-deal-curtain-game-planning/example-settings-001.json",
+      "owen_selected": false
+    },
+    {
+      "slug": "live-session-auto-burst-presentation",
+      "name": "Live Session Auto-Burst Presentation Engine",
+      "tier": 2,
+      "closure": "complete_live_session_auto_burst_presentation_planning_lane",
+      "doc": "docs/classroom-utilities/live-session-auto-burst-presentation-planning.md",
+      "fixture": "assistant/classroom-utilities/samples/live-session-auto-burst-presentation-planning/example-settings-001.json",
+      "owen_selected": false
+    },
+    {
+      "slug": "noise-meter",
+      "name": "Noise Meter",
+      "tier": 2,
+      "closure": "complete_noise_meter_planning_lane",
+      "doc": "docs/classroom-utilities/noise-meter-planning.md",
+      "fixture": "assistant/classroom-utilities/samples/noise-meter-planning/example-settings-001.json",
+      "owen_selected": false
+    },
+    {
+      "slug": "note-taking-prompt-engine",
+      "name": "Note-Taking Prompt Engine",
+      "tier": 1,
+      "closure": "complete_note_taking_prompt_engine_planning_lane",
+      "doc": "docs/classroom-utilities/note-taking-prompt-engine-planning.md",
+      "fixture": "assistant/classroom-utilities/samples/note-taking-prompt-engine-planning/example-settings-001.json",
+      "owen_selected": false
+    },
+    {
+      "slug": "power-up-packet-maker",
+      "name": "Power Up Packet Maker",
+      "tier": 3,
+      "closure": "complete_power_up_packet_maker_planning_lane",
+      "doc": "docs/classroom-utilities/power-up-packet-maker-planning.md",
+      "fixture": "assistant/classroom-utilities/samples/power-up-packet-maker-planning/example-settings-001.json",
+      "owen_selected": false
+    },
+    {
+      "slug": "pyramid-game",
+      "name": "Pyramid Game",
+      "tier": 1,
+      "closure": "complete_pyramid_game_planning_lane",
+      "doc": "docs/classroom-utilities/pyramid-game-planning.md",
+      "fixture": "assistant/classroom-utilities/samples/pyramid-game-planning/example-settings-001.json",
+      "owen_selected": false
+    },
+    {
+      "slug": "science-worksheet-portal",
+      "name": "Science Worksheet Portal",
+      "tier": 3,
+      "closure": "complete_science_worksheet_portal_planning_lane",
+      "doc": "docs/classroom-utilities/science-worksheet-portal-planning.md",
+      "fixture": "assistant/classroom-utilities/samples/science-worksheet-portal-planning/example-settings-001.json",
+      "owen_selected": false
+    },
+    {
+      "slug": "shurley-chapter-parser",
+      "name": "Shurley English Chapter Parser",
+      "tier": 3,
+      "closure": "complete_shurley_chapter_parser_planning_lane",
+      "doc": "docs/classroom-utilities/shurley-chapter-parser-planning.md",
+      "fixture": "assistant/classroom-utilities/samples/shurley-chapter-parser-planning/example-settings-001.json",
+      "owen_selected": false
+    },
+    {
+      "slug": "shurley-sentence-diagrammer",
+      "name": "Shurley Sentence Diagrammer",
+      "tier": 3,
+      "closure": "complete_shurley_sentence_diagrammer_planning_lane",
+      "doc": "docs/classroom-utilities/shurley-sentence-diagrammer-planning.md",
+      "fixture": "assistant/classroom-utilities/samples/shurley-sentence-diagrammer-planning/example-settings-001.json",
+      "owen_selected": false
+    },
+    {
+      "slug": "spelling-studio",
+      "name": "Spelling Studio",
+      "tier": 3,
+      "closure": "complete_spelling_studio_planning_lane",
+      "doc": "docs/classroom-utilities/spelling-studio-planning.md",
+      "fixture": "assistant/classroom-utilities/samples/spelling-studio-planning/example-settings-001.json",
+      "owen_selected": false
+    },
+    {
+      "slug": "thales-os-morning-preview-banner",
+      "name": "Thales OS Morning Preview Banner",
+      "tier": 2,
+      "closure": "complete_thales_os_morning_preview_banner_planning_lane",
+      "doc": "docs/classroom-utilities/thales-os-morning-preview-banner-planning.md",
+      "fixture": "assistant/classroom-utilities/samples/thales-os-morning-preview-banner-planning/example-settings-001.json",
+      "owen_selected": false
+    },
+    {
+      "slug": "time-bomb-vocabulary-game",
+      "name": "Time Bomb Vocabulary Game",
+      "tier": 2,
+      "closure": "complete_time_bomb_vocabulary_game_planning_lane",
+      "doc": "docs/classroom-utilities/time-bomb-vocabulary-game-planning.md",
+      "fixture": "assistant/classroom-utilities/samples/time-bomb-vocabulary-game-planning/example-settings-001.json",
+      "owen_selected": false
+    },
+    {
+      "slug": "trivia-showdown",
+      "name": "Trivia Showdown",
+      "tier": 2,
+      "closure": "complete_trivia_showdown_planning_lane",
+      "doc": "docs/classroom-utilities/trivia-showdown-planning.md",
+      "fixture": "assistant/classroom-utilities/samples/trivia-showdown-planning/example-settings-001.json",
+      "owen_selected": false
+    },
+    {
+      "slug": "ultimate-design-architect",
+      "name": "Ultimate Design Architect",
+      "tier": 3,
+      "closure": "complete_ultimate_design_architect_planning_lane",
+      "doc": "docs/classroom-utilities/ultimate-design-architect-planning.md",
+      "fixture": "assistant/classroom-utilities/samples/ultimate-design-architect-planning/example-settings-001.json",
+      "owen_selected": false
+    },
+    {
+      "slug": "valentine-holiday-pass-generator",
+      "name": "Valentine Holiday Pass Generator",
+      "tier": 3,
+      "closure": "complete_valentine_holiday_pass_generator_planning_lane",
+      "doc": "docs/classroom-utilities/valentine-holiday-pass-generator-planning.md",
+      "fixture": "assistant/classroom-utilities/samples/valentine-holiday-pass-generator-planning/example-settings-001.json",
+      "owen_selected": false
+    },
+    {
+      "slug": "word-scramble",
+      "name": "Word Scramble",
+      "tier": 1,
+      "closure": "complete_word_scramble_planning_lane",
+      "doc": "docs/classroom-utilities/word-scramble-planning.md",
+      "fixture": "assistant/classroom-utilities/samples/word-scramble-planning/example-settings-001.json",
+      "owen_selected": false
+    }
+  ],
+  "blocked_summary": "docs/proposals/blocked/high-risk-app-planning-blocked-summary.md"
+}

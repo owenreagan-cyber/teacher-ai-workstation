@@ -1,0 +1,53 @@
+{
+  "classification": "fake_local_planning_only",
+  "runtime_executed": false,
+  "blocked_path_examples": [
+    {
+      "path_label": "blocked-placeholder://99_DO_NOT_SCAN/fake_confidential_placeholder.pdf",
+      "blocked_reason": "do_not_scan_absolute_exclusion",
+      "indexing_policy": "do_not_scan",
+      "enters_normal_review": false
+    },
+    {
+      "path_label": "blocked-placeholder://student-data/fake_roster_placeholder.csv",
+      "blocked_reason": "student_data_folder",
+      "enters_normal_review": false
+    },
+    {
+      "path_label": "fake-local-staging://TeacherAI-Curriculum-Library/.git/config",
+      "blocked_reason": "hidden_system_folder",
+      "folder_class": ".git/"
+    },
+    {
+      "path_label": "fake-local-staging://TeacherAI-Curriculum-Library/node_modules/fake_package/index.js",
+      "blocked_reason": "package_cache_folder",
+      "folder_class": "node_modules/"
+    },
+    {
+      "path_label": "blocked-placeholder://home-directory-recursive-scan/blocked",
+      "blocked_reason": "home_directory_recursive_scan"
+    },
+    {
+      "path_label": "blocked-placeholder://google-drive-root-scan/blocked",
+      "blocked_reason": "google_drive_root_scan"
+    },
+    {
+      "path_label": "blocked-placeholder://icloud-root-scan/blocked",
+      "blocked_reason": "icloud_root_scan"
+    },
+    {
+      "path_label": "blocked-placeholder://nas-root-scan/blocked",
+      "blocked_reason": "nas_root_scan"
+    },
+    {
+      "path_label": "blocked-placeholder://canvas-api-scan/blocked",
+      "blocked_reason": "canvas_api_scan"
+    },
+    {
+      "path_label": "fake-local-staging://TeacherAI-Curriculum-Library/10_TEACHER_ONLY/fake_assessment_placeholder.pdf",
+      "indexing_policy": "restricted_indexable",
+      "teacher_only_risk": "elevated",
+      "student_facing_allowed": false
+    }
+  ]
+}

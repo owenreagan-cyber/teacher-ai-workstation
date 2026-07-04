@@ -202,6 +202,8 @@ Teacher Planning Command Organization (status only; safe sample: fractions-revie
                                        Show read-only Teacher Knowledge Vault M0 architecture freeze status and exit.
   --teacher-knowledge-vault-m1-fake-catalog-status
                                        Show read-only Teacher Knowledge Vault M1 fake catalog foundation status and exit.
+  --teacher-knowledge-vault-m2-local-discovery-approval-status
+                                       Show read-only Teacher Knowledge Vault M2 local discovery approval packet status and exit.
   --teacher-knowledge-vault-knowledge-entry-v0-validate
                                        Run read-only Teacher Knowledge Vault knowledge entry v0 validator and exit.
   --renderer-foundation-v0-validate
@@ -1803,6 +1805,15 @@ while [[ $# -gt 0 ]]; do
         die "Teacher Knowledge Vault M1 fake catalog status script is missing: scripts/teacher-knowledge-vault-m1-fake-catalog-status.sh"
       fi
       bash "${teacher_knowledge_vault_m1_fake_catalog_status_script}"
+      exit 0
+      ;;
+    --teacher-knowledge-vault-m2-local-discovery-approval-status)
+      repo_root="$(resolve_repo_root)"
+      teacher_knowledge_vault_m2_local_discovery_approval_status_script="${repo_root}/scripts/teacher-knowledge-vault-m2-local-discovery-approval-status.sh"
+      if [[ ! -f "${teacher_knowledge_vault_m2_local_discovery_approval_status_script}" ]]; then
+        die "Teacher Knowledge Vault M2 local discovery approval status script is missing: scripts/teacher-knowledge-vault-m2-local-discovery-approval-status.sh"
+      fi
+      bash "${teacher_knowledge_vault_m2_local_discovery_approval_status_script}"
       exit 0
       ;;
     --teacher-knowledge-vault-knowledge-entry-v0-validate)

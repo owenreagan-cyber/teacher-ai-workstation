@@ -29,6 +29,7 @@ Per `docs/cursor-autonomous-build-engine.md` Expected WARN Policy.
 | `--presentation-engine-renderer-foundation-status` | 0 | No — targeted command only |
 | `--teacher-knowledge-vault-m0-architecture-freeze-status` | 0 | No — targeted command only |
 | `--teacher-knowledge-vault-m1-fake-catalog-status` | 0 | No — targeted command only |
+| `--teacher-knowledge-vault-m2-local-discovery-approval-status` | 0 | No — targeted command only |
 | `--curriculum-registry-a4-a7-fixture-schema-status` | **0** (resolved 2026-07-03) | No — targeted command only |
 | `--gemini-discovery-classification-intake-status` | 0 | No — targeted command only |
 | `--markdown-frontmatter-planning-status` | 0 | No — targeted command only |

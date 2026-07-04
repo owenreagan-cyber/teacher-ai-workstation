@@ -1,0 +1,22 @@
+{
+  "classification": "fake_local_planning_only",
+  "runtime_executed": false,
+  "closure_marker": "complete_teacher_knowledge_vault_m2_local_discovery_approval_packet",
+  "m0_architecture_freeze_preserved": true,
+  "m1_fake_catalog_preserved": true,
+  "m2b_prototype_blocked": true,
+  "discovery_run": {
+    "discovery_run_id": "fake-discovery-run-001",
+    "status": "planned_dry_run_only",
+    "source_type": "local_staging",
+    "approved_root_label": "fake-local-staging://TeacherAI-Curriculum-Library/00_INBOX_UNSORTED/",
+    "approved_root_uri": "fake-local-staging://TeacherAI-Curriculum-Library/00_INBOX_UNSORTED/",
+    "metadata_only": true,
+    "content_reads": false,
+    "hash_calculation": false,
+    "max_depth": 3,
+    "max_file_count": 500,
+    "api_cost_estimate_usd": 0.0,
+    "real_files_processed": 0
+  }
+}

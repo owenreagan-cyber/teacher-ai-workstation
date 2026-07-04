@@ -1,0 +1,53 @@
+{
+  "classification": "fake_local_planning_only",
+  "runtime_executed": false,
+  "review_routing": [
+    {
+      "queue_item_id": "fake-m2-rq-001",
+      "discovery_run_id": "fake-discovery-run-001",
+      "source_item_id": "fake-m2-item-staging-001",
+      "review_state": "new_discovery",
+      "requires_teacher_approval": true,
+      "allowed_next_actions": ["review_only", "approve_metadata_record", "reject"]
+    },
+    {
+      "queue_item_id": "fake-m2-rq-002",
+      "source_item_id": "fake-m2-item-teacher-only-001",
+      "review_state": "needs_manual_review",
+      "indexing_policy": "restricted_indexable",
+      "teacher_only_risk": "elevated",
+      "requires_teacher_approval": true
+    },
+    {
+      "queue_item_id": "fake-m2-rq-003",
+      "source_item_id": "fake-m2-item-student-facing-001",
+      "review_state": "leakage_check_required",
+      "audience_risk": "student_facing",
+      "requires_teacher_approval": true
+    },
+    {
+      "queue_item_id": "fake-m2-rq-blocked-001",
+      "source_item_id": "fake-m2-item-do-not-scan-blocked",
+      "path_label": "blocked-placeholder://99_DO_NOT_SCAN/fake_confidential_placeholder.pdf",
+      "review_state": "blocked",
+      "enters_normal_review": false,
+      "blocked_reason": "do_not_scan_absolute_exclusion"
+    },
+    {
+      "queue_item_id": "fake-m2-rq-004",
+      "source_item_id": "fake-m2-item-ocr-later-001",
+      "review_state": "needs_ocr",
+      "ocr_requested": true,
+      "ocr_executed": false,
+      "requires_teacher_approval": true
+    },
+    {
+      "queue_item_id": "fake-m2-rq-005",
+      "source_item_id": "fake-m2-item-large-hash-later-001",
+      "review_state": "hash_approval_required",
+      "hash_requested": true,
+      "hash_executed": false,
+      "requires_teacher_approval": true
+    }
+  ]
+}

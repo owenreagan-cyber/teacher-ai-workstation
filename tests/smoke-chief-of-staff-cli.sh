@@ -174,6 +174,8 @@ bin/chief-of-staff --teacher-knowledge-vault-m0-architecture-freeze-status >/dev
 bash tests/teacher-knowledge-vault-m0-architecture-freeze-status-test.sh >/dev/null
 bin/chief-of-staff --teacher-knowledge-vault-m1-fake-catalog-status >/dev/null
 bash tests/teacher-knowledge-vault-m1-fake-catalog-status-test.sh >/dev/null
+bin/chief-of-staff --teacher-knowledge-vault-m2-local-discovery-approval-status >/dev/null
+bash tests/teacher-knowledge-vault-m2-local-discovery-approval-status-test.sh >/dev/null
 bin/chief-of-staff --gemini-discovery-classification-intake-status >/dev/null
 bash tests/gemini-discovery-classification-intake-status-test.sh >/dev/null
 bin/chief-of-staff --markdown-frontmatter-planning-status >/dev/null

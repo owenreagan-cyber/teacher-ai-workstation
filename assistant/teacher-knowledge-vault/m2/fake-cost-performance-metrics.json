@@ -1,0 +1,23 @@
+{
+  "classification": "fake_local_planning_only",
+  "runtime_executed": false,
+  "api_cost_estimate_usd": 0.0,
+  "ocr_cost_usd": 0.0,
+  "ai_cost_usd": 0.0,
+  "connector_cost_usd": 0.0,
+  "real_files_processed": 0,
+  "background_watch_enabled": false,
+  "chokidar_dependency": false,
+  "limits": {
+    "max_file_count": 500,
+    "max_depth": 3,
+    "progress_reporting_required": true,
+    "cancel_stop_required": true
+  },
+  "blocked_scopes": [
+    "home_directory_recursive_scan",
+    "google_drive_root_scan",
+    "icloud_root_scan",
+    "nas_root_scan"
+  ]
+}

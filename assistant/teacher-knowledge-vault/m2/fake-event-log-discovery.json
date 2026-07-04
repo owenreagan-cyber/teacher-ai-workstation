@@ -1,0 +1,16 @@
+{
+  "classification": "fake_local_planning_only",
+  "runtime_executed": false,
+  "events": [
+    {"event_id": "fake-m2-evt-001", "event_type": "discovery_run_planned", "discovery_run_id": "fake-discovery-run-001", "runtime_executed": false},
+    {"event_id": "fake-m2-evt-002", "event_type": "source_item_discovered", "source_item_id": "fake-m2-item-staging-001", "runtime_executed": false},
+    {"event_id": "fake-m2-evt-003", "event_type": "source_item_blocked", "source_item_id": "fake-m2-item-do-not-scan-blocked", "blocked_reason": "do_not_scan_absolute_exclusion", "runtime_executed": false},
+    {"event_id": "fake-m2-evt-004", "event_type": "source_item_routed_to_review", "queue_item_id": "fake-m2-rq-001", "runtime_executed": false},
+    {"event_id": "fake-m2-evt-005", "event_type": "teacher_only_item_flagged_restricted", "source_item_id": "fake-m2-item-teacher-only-001", "runtime_executed": false},
+    {"event_id": "fake-m2-evt-006", "event_type": "ocr_requested_blocked", "queue_item_id": "fake-m2-rq-004", "runtime_executed": false},
+    {"event_id": "fake-m2-evt-007", "event_type": "hash_requested_blocked", "queue_item_id": "fake-m2-rq-005", "runtime_executed": false},
+    {"event_id": "fake-m2-evt-008", "event_type": "classification_requested_blocked", "source_item_id": "fake-m2-item-ai-generated-001", "runtime_executed": false},
+    {"event_id": "fake-m2-evt-009", "event_type": "organization_requested_blocked", "source_item_id": "fake-m2-item-staging-001", "runtime_executed": false},
+    {"event_id": "fake-m2-evt-010", "event_type": "symlink_escape_blocked", "source_item_id": "fake-m2-item-symlink-escape-001", "runtime_executed": false}
+  ]
+}

@@ -153,6 +153,7 @@ run_track "App Runtime Approval Gate" scripts/app-runtime-approval-gate-status.s
 run_track "Presentation Engine Renderer Foundation" scripts/presentation-engine-renderer-foundation-status.sh
 run_track "Teacher Knowledge Vault M0 Architecture Freeze" scripts/teacher-knowledge-vault-m0-architecture-freeze-status.sh
 run_track "Teacher Knowledge Vault M1 Fake Catalog" scripts/teacher-knowledge-vault-m1-fake-catalog-status.sh
+run_track "Teacher Knowledge Vault M2 Local Discovery Approval" scripts/teacher-knowledge-vault-m2-local-discovery-approval-status.sh
 run_track "Gemini Discovery Classification Intake" scripts/gemini-discovery-classification-intake-status.sh
 run_track "Markdown Frontmatter Planning" scripts/markdown-frontmatter-planning-status.sh
 run_track "Curriculum Source Readiness" scripts/curriculum-source-readiness-status.sh

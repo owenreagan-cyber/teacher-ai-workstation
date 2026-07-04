@@ -71,7 +71,8 @@ Cross-reference expanded M0: `docs/teacher-knowledge-vault/m0-architecture-freez
 | --- | --- |
 | M0 Architecture freeze (expanded) | complete |
 | **M1** Fake catalog foundation | **complete** (PR #254, aligned) |
-| M2 Local filesystem discovery | blocked |
+| **M2** Local discovery approval packet | **complete** |
+| M2b Selected-folder metadata prototype | blocked |
 | M3 Duplicate detection/search runtime | blocked |
 | M4 Smart Rename suggestions | blocked |
 | M5 Approved organization + rollback | blocked |

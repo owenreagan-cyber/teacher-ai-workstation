@@ -197,6 +197,7 @@
         {"flag": "--teacher-knowledge-vault-m3-fake-duplicate-search-status", "status": "implemented", "purpose": "Teacher Knowledge Vault M3 fake duplicate/search/package foundation (read-only; no search runtime)"},
         {"flag": "--teacher-knowledge-vault-m4-smart-rename-status", "status": "implemented", "purpose": "Teacher Knowledge Vault M4 smart rename foundation (read-only; no rename execution)"},
         {"flag": "--teacher-knowledge-vault-m5-organization-rollback-status", "status": "implemented", "purpose": "Teacher Knowledge Vault M5 organization/rollback foundation (read-only; no organization execution)"},
+        {"flag": "--teacher-knowledge-vault-m6-extraction-ocr-approval-status", "status": "implemented", "purpose": "Teacher Knowledge Vault M6 extraction/OCR approval packet (read-only; no extraction/OCR execution)"},
         {"flag": "--teacher-knowledge-vault-knowledge-entry-v0-validate", "status": "implemented", "purpose": "Teacher Knowledge Vault knowledge entry v0 validator (read-only)"},
         {"flag": "--local-retrieval-foundation-status", "status": "implemented", "purpose": "Local Retrieval Foundation v0"},
         {"flag": "--integration-planning-foundation-status", "status": "implemented", "purpose": "Integration Planning Foundation v0"}

@@ -1,0 +1,48 @@
+{
+  "classification": "fake_local_planning_only",
+  "runtime_executed": false,
+  "packages": [
+    {
+      "evidence_package_id": "fake-m6-evidence-001",
+      "source_item_id": "fake-m2-item-staging-001",
+      "extraction_method": "native",
+      "extraction_scope": "metadata_and_first_headings",
+      "extracted_title_candidate": "[FAKE_CANDIDATE_fraction_worksheet_title]",
+      "extracted_heading_candidate": "[FAKE_CANDIDATE_lesson_021_heading]",
+      "extracted_curriculum_marker_candidate": "[FAKE_CANDIDATE_saxon_im5_marker]",
+      "lesson_unit_candidate": "[FAKE_CANDIDATE_lesson_021]",
+      "resource_type_candidate": "homework",
+      "audience_risk": "student_facing",
+      "teacher_only_risk": false,
+      "leakage_risk": false,
+      "confidence_by_stage": {"metadata": 0.9, "headings": 0.82, "final_confidence": 0.82},
+      "allowed_next_actions": ["suggest_rename", "route_review"],
+      "blocked_actions": ["execute_rename", "publish_canvas", "student_facing_export_without_review"],
+      "runtime_executed": false
+    },
+    {
+      "evidence_package_id": "fake-m6-evidence-002",
+      "source_item_id": "fake-m2-item-teacher-only-001",
+      "extraction_method": "native",
+      "extracted_title_candidate": "[FAKE_CANDIDATE_teacher_manual_title]",
+      "resource_type_candidate": "teacher_manual",
+      "audience_risk": "teacher_only",
+      "teacher_only_risk": true,
+      "leakage_risk": true,
+      "manual_review_reason": "teacher_only_restricted_extraction",
+      "blocked_actions": ["student_facing_export", "publish_canvas"],
+      "runtime_executed": false
+    },
+    {
+      "evidence_package_id": "fake-m6-evidence-003",
+      "source_item_id": "fake-m2-item-scan-placeholder-001",
+      "extraction_method": "local_ocr",
+      "extraction_scope": "quick_ocr_first_page",
+      "confidence_by_stage": {"ocr_page_one": 0.58, "final_confidence": 0.58},
+      "manual_review_reason": "low_confidence_ocr",
+      "allowed_next_actions": ["route_manual_review"],
+      "blocked_actions": ["auto_classify", "execute_rename"],
+      "runtime_executed": false
+    }
+  ]
+}

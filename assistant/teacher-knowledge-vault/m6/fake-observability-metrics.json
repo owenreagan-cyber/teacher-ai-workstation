@@ -1,0 +1,20 @@
+{
+  "classification": "fake_local_planning_only",
+  "runtime_executed": false,
+  "api_cost_estimate_usd": 0.0,
+  "real_files_processed": 0,
+  "ocr_jobs_executed": 0,
+  "ai_rag_calls": 0,
+  "file_operations": 0,
+  "metrics": {
+    "extraction_requests": 6,
+    "extraction_blocked": 3,
+    "ocr_requests_blocked": 2,
+    "cloud_ocr_blocked": 1,
+    "ai_classification_blocked": 1,
+    "cache_hits": 1,
+    "cache_misses": 2,
+    "teacher_only_restricted_extraction_candidates": 1,
+    "student_facing_leakage_warnings": 1
+  }
+}

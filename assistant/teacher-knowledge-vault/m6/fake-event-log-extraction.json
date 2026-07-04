@@ -1,0 +1,18 @@
+{
+  "classification": "fake_local_planning_only",
+  "runtime_executed": false,
+  "events": [
+    {"event_id": "fake-m6-evt-001", "event_type": "extraction_requested", "request_id": "fake-m6-req-orphan-pdf-001", "runtime_executed": false},
+    {"event_id": "fake-m6-evt-002", "event_type": "extraction_blocked_by_phase_gate", "request_id": "fake-m6-req-dns-blocked-001", "runtime_executed": false},
+    {"event_id": "fake-m6-evt-003", "event_type": "native_extraction_eligibility_recorded", "eligibility_id": "fake-m6-elig-001", "runtime_executed": false},
+    {"event_id": "fake-m6-evt-004", "event_type": "ocr_requested_but_blocked", "request_id": "fake-m6-req-orphan-scan-001", "runtime_executed": false},
+    {"event_id": "fake-m6-evt-005", "event_type": "quick_ocr_proposed_not_executed", "candidate_id": "fake-m6-ocr-002", "runtime_executed": false},
+    {"event_id": "fake-m6-evt-006", "event_type": "cloud_ocr_blocked_by_budget_gate", "request_id": "fake-m6-req-cloud-ocr-blocked-001", "runtime_executed": false},
+    {"event_id": "fake-m6-evt-007", "event_type": "extraction_cache_lookup_planned", "cache_id": "fake-m6-cache-001", "runtime_executed": false},
+    {"event_id": "fake-m6-evt-008", "event_type": "extraction_evidence_package_created", "evidence_package_id": "fake-m6-evidence-001", "runtime_executed": false},
+    {"event_id": "fake-m6-evt-009", "event_type": "teacher_only_extraction_restricted", "request_id": "fake-m6-req-teacher-only-001", "runtime_executed": false},
+    {"event_id": "fake-m6-evt-010", "event_type": "student_facing_leakage_warning_attached", "evidence_package_id": "fake-m6-evidence-002", "runtime_executed": false},
+    {"event_id": "fake-m6-evt-011", "event_type": "do_not_scan_extraction_blocked", "request_id": "fake-m6-req-dns-blocked-001", "runtime_executed": false},
+    {"event_id": "fake-m6-evt-012", "event_type": "ai_classification_requested_but_blocked", "request_id": "fake-m6-req-ai-classification-blocked-001", "runtime_executed": false}
+  ]
+}

@@ -1,0 +1,51 @@
+{
+  "classification": "fake_local_planning_only",
+  "runtime_executed": false,
+  "ocr_jobs_executed": 0,
+  "candidates": [
+    {
+      "candidate_id": "fake-m6-ocr-001",
+      "source_item_id": "fake-m2-item-scan-placeholder-001",
+      "ocr_level": "ocr_blocked_default",
+      "runtime_executed": false
+    },
+    {
+      "candidate_id": "fake-m6-ocr-002",
+      "source_item_id": "fake-m2-item-scan-placeholder-001",
+      "ocr_level": "quick_ocr",
+      "page_range": "1",
+      "teacher_approval_required": true,
+      "runtime_executed": false
+    },
+    {
+      "candidate_id": "fake-m6-ocr-003",
+      "source_item_id": "fake-m2-item-scan-placeholder-001",
+      "ocr_level": "standard_ocr",
+      "page_range": "1-3",
+      "teacher_approval_required": true,
+      "runtime_executed": false
+    },
+    {
+      "candidate_id": "fake-m6-ocr-004",
+      "source_item_id": "fake-m2-item-scan-placeholder-001",
+      "ocr_level": "full_ocr",
+      "page_range": "all",
+      "high_friction_approval_required": true,
+      "runtime_executed": false
+    },
+    {
+      "candidate_id": "fake-m6-ocr-cloud-blocked",
+      "ocr_level": "cloud_ocr_api",
+      "blocked_reason": "cloud OCR blocked by budget gate",
+      "api_cost_estimate_usd": 0.0,
+      "runtime_executed": false
+    },
+    {
+      "candidate_id": "fake-m6-ocr-dns-blocked",
+      "source_item_id": "fake-m2-item-dns-blocked-001",
+      "ocr_level": "quick_ocr",
+      "blocked_reason": "99_DO_NOT_SCAN OCR blocked",
+      "runtime_executed": false
+    }
+  ]
+}

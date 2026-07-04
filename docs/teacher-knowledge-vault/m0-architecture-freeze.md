@@ -80,10 +80,12 @@ Details: `docs/teacher-knowledge-vault/canonical-storage-and-taxonomy.md`, `docs
 | **M3** Fake duplicate/search/package foundation | **complete** |
 | **M4** Smart rename foundation | **complete** |
 | **M5** Approved organization + rollback | **complete** |
+| **M6** Native extraction/OCR approval packet | **complete** |
 | M2b Selected-folder metadata prototype | blocked |
 | Runtime search/duplicate detection | blocked |
 | Runtime smart rename | blocked |
 | Runtime organization operations | blocked |
+| Runtime extraction/OCR | blocked |
 | M6 Native extraction/OCR | blocked |
 | M7 Drive/NAS/Canvas read-only connectors | blocked |
 | M8 AI/RAG | blocked |

@@ -113,6 +113,8 @@ check_doc_contains "${report}" "complete_app_ecosystem_inventory_and_prototype_b
 check_doc_contains "${report}" "--app-ecosystem-inventory-status" "app ecosystem inventory status command cross-link"
 check_doc_contains "${report}" "complete_classroom_timer_stopwatch_planning_lane" "timer stopwatch planning closure"
 check_doc_contains "${report}" "--classroom-timer-stopwatch-planning-status" "timer planning status command cross-link"
+check_doc_contains "${report}" "complete_app_ecosystem_planning_lanes_program" "planning lanes program closure"
+check_doc_contains "${report}" "--app-ecosystem-planning-lanes-status" "planning lanes status command cross-link"
 check_file docs/whole-system-coherence-maintenance-report.md
 
 section 'Production Registry Parked-State Proof'
@@ -280,6 +282,23 @@ if [[ -f scripts/classroom-timer-stopwatch-planning-status.sh ]]; then
   fi
 else
   fail 'Classroom Timer & Stopwatch planning status script missing'
+fi
+
+section 'Dependent Status: App Ecosystem Planning Lanes Program'
+if [[ -f scripts/app-ecosystem-planning-lanes-status.sh ]]; then
+  aep_output="$(bash scripts/app-ecosystem-planning-lanes-status.sh 2>&1)" || aep_result=$?
+  aep_result="${aep_result:-0}"
+  if [[ "${aep_result}" != "0" ]]; then
+    fail 'App ecosystem planning lanes status script exited nonzero'
+    printf '%s\n' "${aep_output}" | tail -20
+  elif grep -q '^FAIL: [1-9]' <<< "${aep_output}"; then
+    fail 'App ecosystem planning lanes status reported FAIL'
+    printf '%s\n' "${aep_output}" | tail -20
+  else
+    pass 'App ecosystem planning lanes status component clean'
+  fi
+else
+  fail 'App ecosystem planning lanes status script missing'
 fi
 
 section 'Coherence Report Cross-Check (No Nested Run)'

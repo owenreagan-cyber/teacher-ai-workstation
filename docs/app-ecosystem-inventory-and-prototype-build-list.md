@@ -7,6 +7,8 @@ Status: documentation/status only
 Closure: complete_app_ecosystem_inventory_and_prototype_build_list
 Classification: planning inventory — not implementation approval
 Proof: bin/chief-of-staff --app-ecosystem-inventory-status
+Planning lanes program: complete_app_ecosystem_planning_lanes_program — `--app-ecosystem-planning-lanes-status`
+Blocked Tier 4–7 summary: docs/proposals/blocked/high-risk-app-planning-blocked-summary.md
 Source: Owen planning input + repo discovery — not repo authority alone
 Chief of Staff chooses app priority for Owen: no
 Runtime classroom apps: blocked
@@ -60,9 +62,9 @@ Consolidate Owen's full known **app / tool / game ecosystem** (52 canonical conc
 | 2 | Smart Seating | seat map app | classroom management | 4 | med | — | — | — | — | med | — | — | — | — | template ready | fake seat grid labels |
 | 3 | Prize Board | recognition board | reward economy | 4 | med | — | — | — | — | med | — | — | — | — | template ready | reward placeholder labels |
 | 4 | Coin Store Ledger | classroom economy | reward economy | 4 | high | med | — | — | — | high | — | — | — | — | template ready | fake coin labels only |
-| 5 | Noise Meter | UA noise meter | classroom management | 2 | low | — | — | — | — | — | — | — | high | — | template ready | threshold labels; no live mic |
-| 6 | Spelling Studio | literacy shell | curriculum prep | 3 | med | — | — | — | high | — | — | — | — | med | template ready | fake word-list labels |
-| 7 | Classroom Arcade | arcade hub | arcade / game module | 1 | low | — | — | — | low | — | — | — | — | — | template ready | mode labels; no executable games |
+| 5 | Noise Meter | UA noise meter | classroom management | 2 | low | — | — | — | — | — | — | — | high | **planning lane complete** | `--app-ecosystem-planning-lanes-status` | threshold labels; no live mic |
+| 6 | Spelling Studio | literacy shell | curriculum prep | 3 | med | — | — | — | high | — | — | — | — | **planning lane complete** | `--app-ecosystem-planning-lanes-status` | fake word-list labels |
+| 7 | Classroom Arcade | arcade hub | arcade / game module | 1 | low | — | — | — | low | — | — | — | — | **planning lane complete** | `--app-ecosystem-planning-lanes-status` | mode labels; no executable games |
 | 8 | UA Jobs Management | classroom jobs | classroom management | 4 | med | — | — | — | — | med | — | — | — | — | template ready | job role labels only |
 | 9 | Email Responder | parent email automation | Canvas / LMS admin | 4 | high | — | — | high | — | — | high | high | — | high | blocked intake | boundary doc only |
 | 10 | Titanium Realm | Zenith, Sovereign Edition | behavior / discipline | 4 | high | high | — | — | — | high | — | — | — | high | planning input | wireframe labels only |
@@ -73,55 +75,55 @@ Consolidate Owen's full known **app / tool / game ecosystem** (52 canonical conc
 | 15 | GradeMate | worksheet grader | worksheet / assessment | 4 | high | — | high | — | high | med | — | — | high | high | planning input | fake answer key labels |
 | 16 | Student Mystery Draw | Star Student, High Fliers | reward economy | 4 | high | — | — | — | — | med | — | — | — | — | planning input | fake draw placeholders |
 | 17 | Titanium Jackpot | slot reel module | arcade / game module | 5 | med | — | — | — | — | med | — | — | — | med | planning input | game shell labels; no payouts |
-| 18 | Interactive Bingo Caller | bingo randomizer | arcade / game module | 1 | low | — | — | — | low | — | — | — | — | — | planning input | number/card labels only |
-| 19 | Desk Layout Design Architect | classroom layout | 3D / spatial / layout | 1 | — | — | — | — | — | — | — | — | — | — | planning input | grid wireframe; no roster bind |
+| 18 | Interactive Bingo Caller | bingo randomizer | arcade / game module | 1 | low | — | — | — | low | — | — | — | — | **planning lane complete** | `--app-ecosystem-planning-lanes-status` | number/card labels only |
+| 19 | Desk Layout Design Architect | classroom layout | 3D / spatial / layout | 1 | — | — | — | — | — | — | — | — | — | **planning lane complete** | `--app-ecosystem-planning-lanes-status` | grid wireframe; no roster bind |
 | 20 | Codebase Ingestor | ZIP directory auditor | developer utility | 5 | — | — | — | — | — | — | — | — | — | — | planning input | developer boundary doc |
 | 21 | Student Word Cloud Art | word cloud generator | design / print utility | 4 | high | — | — | — | med | — | — | — | — | med | planning input | fake word list only |
-| 22 | Daily Schedule Card Designer | schedule publisher | design / print utility | 1 | — | — | — | — | — | — | — | — | — | — | planning input | schedule card wireframe |
+| 22 | Daily Schedule Card Designer | schedule publisher | design / print utility | 1 | — | — | — | — | — | — | — | — | — | **planning lane complete** | `--app-ecosystem-planning-lanes-status` | schedule card wireframe |
 | 23 | Canvas LMS Link Extractor | link fetcher | Canvas / LMS admin | 5 | — | — | — | — | — | — | high | high | — | — | blocked | integration posture packet only |
-| 24 | Let's Make a Deal Curtain Game | curtain game | arcade / game module | 1 | low | — | — | — | — | — | — | — | — | — | planning input | game show wireframe |
-| 25 | Shurley English Chapter Parser | slide architect | curriculum prep | 3 | — | — | — | — | high | — | — | — | high | high | blocked curriculum | fake chapter outline labels |
-| 26 | Daily Agenda and Announcement Engine | morning agenda | presentation / display | 2 | — | — | — | — | low | — | — | — | — | med | planning input | announcement wireframe |
+| 24 | Let's Make a Deal Curtain Game | curtain game | arcade / game module | 1 | low | — | — | — | — | — | — | — | — | **planning lane complete** | `--app-ecosystem-planning-lanes-status` | game show wireframe |
+| 25 | Shurley English Chapter Parser | slide architect | curriculum prep | 3 | — | — | — | — | high | — | — | — | high | **planning lane complete** | `--app-ecosystem-planning-lanes-status` | fake chapter outline labels |
+| 26 | Daily Agenda and Announcement Engine | morning agenda | presentation / display | 2 | — | — | — | — | low | — | — | — | — | **planning lane complete** | `--app-ecosystem-planning-lanes-status` | announcement wireframe |
 | 27 | Shared AI Common Core Layer | infrastructure master | infrastructure layer | 5 | — | — | — | — | high | high | high | — | — | high | blocked | architecture doc only |
 | 28 | AI Rubric & Writing Grader | GradeMate extension | worksheet / assessment | 4 | high | — | high | med | high | med | — | — | — | high | planning input | rubric template labels |
-| 29 | Time Bomb Vocabulary Game | vocabulary timer game | arcade / game module | 2 | low | — | — | — | med | — | — | — | — | — | planning input | fake vocab list |
-| 30 | Charades Game | gesture randomizer | arcade / game module | 2 | low | — | — | — | — | — | — | — | — | — | planning input | prompt cards wireframe |
-| 31 | Ultimate Design Architect | Omni-Prompt Portal | design / print utility | 3 | — | — | — | — | — | — | — | — | — | med | planning input | prompt template docs |
+| 29 | Time Bomb Vocabulary Game | vocabulary timer game | arcade / game module | 2 | low | — | — | — | med | — | — | — | — | **planning lane complete** | `--app-ecosystem-planning-lanes-status` | fake vocab list |
+| 30 | Charades Game | gesture randomizer | arcade / game module | 2 | low | — | — | — | — | — | — | — | — | **planning lane complete** | `--app-ecosystem-planning-lanes-status` | prompt cards wireframe |
+| 31 | Ultimate Design Architect | Omni-Prompt Portal | design / print utility | 3 | — | — | — | — | — | — | — | — | — | **planning lane complete** | `--app-ecosystem-planning-lanes-status` | prompt template docs |
 | 32 | Custom Mystery Picker | mystery selector | reward economy | 4 | high | — | — | — | — | med | — | — | — | — | planning input | fake picker labels |
-| 33 | Shurley Sentence Diagrammer | blueprint builder | curriculum prep | 3 | — | — | — | — | high | — | — | — | — | med | blocked curriculum | fake sentence labels |
-| 34 | Valentine Holiday Pass Generator | holiday pass | design / print utility | 3 | med | — | — | — | — | — | — | — | — | med | planning input | generic pass art; no student names |
-| 35 | Code Cracker | Vault Cracker Game | arcade / game module | 1 | low | — | — | — | low | — | — | — | — | — | planning input | puzzle wireframe |
-| 36 | Live Session Auto-Burst Presentation Engine | auto-burst slides | presentation / display | 2 | — | — | — | — | med | — | — | — | — | high | related Presentation Engine planning | static slide plan labels |
+| 33 | Shurley Sentence Diagrammer | blueprint builder | curriculum prep | 3 | — | — | — | — | high | — | — | — | — | **planning lane complete** | `--app-ecosystem-planning-lanes-status` | fake sentence labels |
+| 34 | Valentine Holiday Pass Generator | holiday pass | design / print utility | 3 | med | — | — | — | — | — | — | — | — | **planning lane complete** | `--app-ecosystem-planning-lanes-status` | generic pass art; no student names |
+| 35 | Code Cracker | Vault Cracker Game | arcade / game module | 1 | low | — | — | — | low | — | — | — | — | **planning lane complete** | `--app-ecosystem-planning-lanes-status` | puzzle wireframe |
+| 36 | Live Session Auto-Burst Presentation Engine | auto-burst slides | presentation / display | 2 | — | — | — | — | med | — | — | — | — | **planning lane complete** | `--app-ecosystem-planning-lanes-status` | static slide plan labels |
 | 37 | Omni-App System Health Monitor | safety diff analyzer | developer utility | 6 | — | — | — | — | — | — | — | — | — | — | repo partial | cross-link workstation health monitor docs |
-| 38 | Pyramid Game | word association | arcade / game module | 1 | low | — | — | — | low | — | — | — | — | — | planning input | category label cards |
-| 39 | Word Scramble | anagram solver | arcade / game module | 1 | low | — | — | — | med | — | — | — | — | — | planning input | fake scrambled words |
-| 40 | Thales OS Morning Preview Banner | announcement engine | presentation / display | 2 | — | — | — | — | low | — | — | — | — | med | alias of Thales family | banner wireframe |
+| 38 | Pyramid Game | word association | arcade / game module | 1 | low | — | — | — | low | — | — | — | — | **planning lane complete** | `--app-ecosystem-planning-lanes-status` | category label cards |
+| 39 | Word Scramble | anagram solver | arcade / game module | 1 | low | — | — | — | med | — | — | — | — | **planning lane complete** | `--app-ecosystem-planning-lanes-status` | fake scrambled words |
+| 40 | Thales OS Morning Preview Banner | announcement engine | presentation / display | 2 | — | — | — | — | low | — | — | — | — | **planning lane complete** | `--app-ecosystem-planning-lanes-status` | banner wireframe |
 | 41 | Canvas Creator | homework resource sync | Canvas / LMS admin | 5 | med | — | — | — | high | high | high | high | — | high | blocked | manual copy workflow docs only |
-| 42 | Trivia Showdown | trivia game | arcade / game module | 2 | low | — | — | — | med | — | — | — | — | med | planning input | fake question labels |
-| 43 | Power Up Packet Maker | packet builder | curriculum prep | 3 | — | — | — | — | high | — | — | — | — | high | planning input | packet outline wireframe |
-| 44 | iPad Optimizer Prompt Generator | iPad layout prompts | design / print utility | 1 | — | — | — | — | — | — | — | — | — | med | planning input | prompt template doc |
+| 42 | Trivia Showdown | trivia game | arcade / game module | 2 | low | — | — | — | med | — | — | — | — | **planning lane complete** | `--app-ecosystem-planning-lanes-status` | fake question labels |
+| 43 | Power Up Packet Maker | packet builder | curriculum prep | 3 | — | — | — | — | high | — | — | — | — | **planning lane complete** | `--app-ecosystem-planning-lanes-status` | packet outline wireframe |
+| 44 | iPad Optimizer Prompt Generator | iPad layout prompts | design / print utility | 1 | — | — | — | — | — | — | — | — | — | **planning lane complete** | `--app-ecosystem-planning-lanes-status` | prompt template doc |
 | 45 | Reading Test Maker | reading assessment builder | worksheet / assessment | 4 | high | — | high | — | high | med | — | — | — | high | planning input | fake passage labels |
 | 46 | GentleGrader | React security review | developer utility | 4 | med | — | high | — | high | — | — | — | — | med | planning input | security checklist doc; no grading runtime |
-| 47 | Note-Taking Prompt Engine | note app prompts | personal utility | 1 | — | — | — | — | — | — | — | — | — | med | planning input | prompt library doc |
+| 47 | Note-Taking Prompt Engine | note app prompts | personal utility | 1 | — | — | — | — | — | — | — | — | — | **planning lane complete** | `--app-ecosystem-planning-lanes-status` | prompt library doc |
 | 48 | Investment Strategy Calculator | paycheck bridge | personal utility | 6 | — | — | — | — | — | — | — | — | — | — | planning input | personal finance worksheet fake |
-| 49 | Constitution Prompts Architect | civics prompts | curriculum prep | 3 | — | — | — | — | high | — | — | — | — | high | planning input | fake civics topic labels |
+| 49 | Constitution Prompts Architect | civics prompts | curriculum prep | 3 | — | — | — | — | high | — | — | — | — | **planning lane complete** | `--app-ecosystem-planning-lanes-status` | fake civics topic labels |
 | 50 | Class Pass Early Build Archive | early ClassPass archive | legacy archive | 7 | med | — | — | — | — | — | — | — | — | — | archive | reference only; see row 1 |
-| 51 | Science Worksheet Portal | worksheet portal | curriculum prep | 3 | — | — | — | — | high | — | — | — | — | med | planning input | fake science topic labels |
-| 52 | Design Architect Interview System | architect interview | design / print utility | 2 | — | — | — | — | — | — | — | — | — | med | planning input | interview question wireframe |
+| 51 | Science Worksheet Portal | worksheet portal | curriculum prep | 3 | — | — | — | — | high | — | — | — | — | **planning lane complete** | `--app-ecosystem-planning-lanes-status` | fake science topic labels |
+| 52 | Design Architect Interview System | architect interview | design / print utility | 2 | — | — | — | — | — | — | — | — | — | **planning lane complete** | `--app-ecosystem-planning-lanes-status` | interview question wireframe |
 
 **Primary user:** Owen (teacher) for all classroom-facing concepts unless marked personal/dev.
 
 ## Prototype / Build Priority Tiers
 
-### Tier 1 — Safest planning-only candidates
+### Tier 1 — Safest planning-only candidates (planning lanes complete)
 
 Classroom Timer & Stopwatch · Interactive Bingo Caller · Desk Layout Design Architect · Daily Schedule Card Designer · Pyramid Game · Word Scramble · Code Cracker · Let's Make a Deal Curtain Game · Classroom Arcade · Note-Taking Prompt Engine · iPad Optimizer Prompt Generator
 
-### Tier 2 — Safe planning; careful boundary wording
+### Tier 2 — Safe planning; careful boundary wording (planning lanes complete)
 
 Noise Meter · Time Bomb Vocabulary Game · Charades Game · Trivia Showdown · Thales OS Morning Preview Banner · Live Session Auto-Burst (presentation labels) · Design Architect Interview System · Daily Agenda Engine
 
-### Tier 3 — Valuable; blocked pending Owen decision
+### Tier 3 — Valuable; planning lanes complete; Owen decision required before implementation
 
 Spelling Studio · Shurley Chapter Parser · Shurley Sentence Diagrammer · Power Up Packet Maker · Constitution Prompts Architect · Science Worksheet Portal · Ultimate Design Architect · Valentine/Holiday Pass Generator
 
@@ -153,10 +155,11 @@ Class Pass Early Build Archive (→ ClassPass) · AI Coupon Factory aliases (→
 
 ## Recommended Next App Planning Missions (Owen Chooses)
 
-1. Owen picks **next Tier 1** app for planning (Timer & Stopwatch **complete** — see `docs/classroom-utilities/classroom-timer-stopwatch-planning.md`) or defers runtime.
-2. Or Owen picks from **Tier 2** with explicit student-data boundary review.
-3. **Do not** start Tier 4–5 without decision packet + dedicated safety mission.
+1. **Tier 1–3 planning lanes complete** — see `docs/app-ecosystem-planning-lanes-program.md`; `--app-ecosystem-planning-lanes-status` (27 lanes incl. Timer).
+2. Owen picks **which app** receives a **runtime implementation mission** next — not implied by planning closure.
+3. **Do not** start Tier 4–7 without decision packet + `docs/proposals/blocked/high-risk-app-planning-blocked-summary.md` review.
 4. Cross-link: `docs/proposals/blocked/classroom-utility-app-priority-decision-packet.md`
+
 
 ## Relationship to Prior Docs
 
@@ -171,6 +174,8 @@ Class Pass Early Build Archive (→ ClassPass) · AI Coupon Factory aliases (→
 ```bash
 bin/chief-of-staff --app-ecosystem-inventory-status
 bash tests/app-ecosystem-inventory-status-test.sh
+bin/chief-of-staff --app-ecosystem-planning-lanes-status
+bash tests/app-ecosystem-planning-lanes-status-test.sh
 ```
 
 ## Non-Activation

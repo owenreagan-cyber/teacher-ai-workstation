@@ -1839,6 +1839,27 @@ else
   warn "Classroom Timer & Stopwatch planning status script missing: scripts/classroom-timer-stopwatch-planning-status.sh"
 fi
 
+section "App Ecosystem Planning Lanes Program"
+if [[ -f scripts/app-ecosystem-planning-lanes-status.sh ]]; then
+  planning_lanes_result=0
+  planning_lanes_output="$(bash scripts/app-ecosystem-planning-lanes-status.sh 2>&1)" || planning_lanes_result=$?
+  planning_lanes_pass="$(summary_count "${planning_lanes_output}" "PASS")"
+  planning_lanes_warn="$(summary_count "${planning_lanes_output}" "WARN")"
+  planning_lanes_fail="$(summary_count "${planning_lanes_output}" "FAIL")"
+
+  if [[ "${planning_lanes_result}" != "0" ]]; then
+    printf '%s\n' "${planning_lanes_output}"
+    fail "App ecosystem planning lanes status failed"
+  elif [[ -n "${planning_lanes_pass}" && -n "${planning_lanes_warn}" && -n "${planning_lanes_fail}" ]]; then
+    printf 'App Ecosystem Planning Lanes: PASS %s / WARN %s / FAIL %s\n' "${planning_lanes_pass}" "${planning_lanes_warn}" "${planning_lanes_fail}"
+    pass "App ecosystem planning lanes status completed"
+  else
+    pass "App ecosystem planning lanes status completed"
+  fi
+else
+  warn "App ecosystem planning lanes status script missing: scripts/app-ecosystem-planning-lanes-status.sh"
+fi
+
 section "Curriculum Source Readiness Foundation"
 if [[ -f scripts/curriculum-source-readiness-status.sh ]]; then
   curriculum_source_readiness_result=0

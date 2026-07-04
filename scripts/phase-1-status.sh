@@ -1195,6 +1195,24 @@ check_doc_contains docs/classroom-utilities/classroom-timer-stopwatch-planning.m
 check_doc_contains docs/whole-system-master-roadmap-build-state-report.md "complete_classroom_timer_stopwatch_planning_lane" "whole-system report timer planning closure"
 grep -Fq -- '--classroom-timer-stopwatch-planning-status' bin/chief-of-staff && pass "chief-of-staff exposes --classroom-timer-stopwatch-planning-status" || fail "chief-of-staff missing --classroom-timer-stopwatch-planning-status"
 
+section "App Ecosystem Planning Lanes Program Files"
+for path in \
+  docs/app-ecosystem-planning-lanes-program.md \
+  docs/proposals/blocked/high-risk-app-planning-blocked-summary.md \
+  assistant/app-ecosystem/samples/planning-lanes-manifest.json \
+  docs/classroom-utilities/interactive-bingo-caller-planning.md \
+  docs/classroom-utilities/desk-layout-design-architect-planning.md \
+  assistant/classroom-utilities/samples/interactive-bingo-caller-planning/example-settings-001.json \
+  scripts/app-ecosystem-planning-lanes-status.sh \
+  tests/app-ecosystem-planning-lanes-status-test.sh; do
+  check_required_file "${path}"
+done
+check_bash_syntax scripts/app-ecosystem-planning-lanes-status.sh
+check_bash_syntax tests/app-ecosystem-planning-lanes-status-test.sh
+check_doc_contains docs/app-ecosystem-planning-lanes-program.md "complete_app_ecosystem_planning_lanes_program" "planning lanes program closure"
+check_doc_contains docs/whole-system-master-roadmap-build-state-report.md "complete_app_ecosystem_planning_lanes_program" "whole-system report planning lanes program closure"
+grep -Fq -- '--app-ecosystem-planning-lanes-status' bin/chief-of-staff && pass "chief-of-staff exposes --app-ecosystem-planning-lanes-status" || fail "chief-of-staff missing --app-ecosystem-planning-lanes-status"
+
 section "Presentation Engine Renderer Foundation Planning Files"
 for path in \
   docs/presentation-engine-renderer-foundation.md \

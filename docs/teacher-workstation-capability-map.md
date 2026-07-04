@@ -85,6 +85,7 @@ Cross-references:
 | Owen architecture decision packets | implemented read-only | `--owen-architecture-decision-packets-status`; six decision packets; Owen owns choices |
 | App ecosystem inventory | implemented read-only | `--app-ecosystem-inventory-status`; 52-app inventory; prototype build tiers |
 | Classroom Timer & Stopwatch planning | implemented read-only | `--classroom-timer-stopwatch-planning-status`; Tier 1 planning lane; runtime blocked |
+| App ecosystem planning lanes program | implemented read-only | `--app-ecosystem-planning-lanes-status`; Tier 1–3 aggregate (27 lanes); runtime blocked |
 | Markdown frontmatter / manual metadata planning | implemented read-only (planning) | `--markdown-frontmatter-planning-status`; field ideas only; no parser/validator |
 | Gemini discovery/classification external planning intake | implemented read-only | `--gemini-discovery-classification-intake-status`; filed memo + classification; no runtime discovery |
 | Production registry writes / real records | planned | Approval-gated — Owen checklist required; `--curriculum-registry-write` blocked |

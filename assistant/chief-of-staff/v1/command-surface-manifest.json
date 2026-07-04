@@ -19,6 +19,7 @@
         {"flag": "--owen-architecture-decision-packets-status", "status": "implemented", "purpose": "Owen architecture decision packet index and boundary proof (read-only; Owen owns decisions)"},
         {"flag": "--app-ecosystem-inventory-status", "status": "implemented", "purpose": "App ecosystem inventory and prototype build list (read-only; 52 apps; Owen owns priority)"},
         {"flag": "--classroom-timer-stopwatch-planning-status", "status": "implemented", "purpose": "Classroom Timer & Stopwatch planning lane (read-only; Owen selected; no runtime)"},
+        {"flag": "--app-ecosystem-planning-lanes-status", "status": "implemented", "purpose": "App ecosystem planning lanes program — Tier 1–3 aggregate (read-only; no runtime)"},
         {"flag": "--gemini-discovery-classification-intake-status", "status": "implemented", "purpose": "Gemini discovery/classification external planning intake (classification only; no runtime)"},
         {"flag": "--return-to-core-status", "status": "implemented", "purpose": "Parked tracks and return-to-core map"},
         {"flag": "--chief-of-staff-v1-status", "status": "implemented", "purpose": "Chief of Staff v1 Agent Core foundation status"},

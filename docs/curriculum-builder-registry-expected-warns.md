@@ -28,6 +28,9 @@ Per `docs/cursor-autonomous-build-engine.md` Expected WARN Policy.
 | `--curriculum-production-registry-metadata-pilot-plan-status` | 0 | No — targeted command only |
 | `--presentation-engine-renderer-foundation-status` | 0 | No — targeted command only |
 | `--curriculum-registry-a4-a7-fixture-schema-status` | **0** (resolved 2026-07-03) | No — targeted command only |
+| `--gemini-discovery-classification-intake-status` | 0 | No — targeted command only |
+| `--markdown-frontmatter-planning-status` | 0 | No — targeted command only |
+| `--whole-system-coherence-status` | 0 | No — targeted command only |
 | `--curriculum-registry-lane-status` | 0 on aggregate script summary | Yes — component lines may show 0 WARN after enrichment |
 
 The lane aggregate script reports **PASS on its own summary** while component scripts may emit documented WARNs. Do not hide component WARNs or weaken checks to make dashboard show them.

@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # Read-only whole-system master roadmap build-state status. Documentation/status only.
+# Must not execute scripts/whole-system-coherence-status.sh (validate-all/dashboard call both separately).
 set -euo pipefail
 
 PASS_COUNT=0
@@ -102,6 +103,9 @@ check_doc_contains "${report}" "docs/external-planning/discovery-classification-
 check_doc_contains "${report}" "--gemini-discovery-classification-intake-status" "gemini intake status command cross-link"
 check_doc_contains "${report}" "complete_curriculum_manual_metadata_frontmatter_planning" "frontmatter planning closure"
 check_doc_contains "${report}" "--markdown-frontmatter-planning-status" "frontmatter planning status command cross-link"
+check_doc_contains "${report}" "complete_whole_system_coherence_maintenance" "coherence maintenance closure"
+check_doc_contains "${report}" "--whole-system-coherence-status" "coherence status command cross-link"
+check_file docs/whole-system-coherence-maintenance-report.md
 
 section 'Production Registry Parked-State Proof'
 check_file "${production_registry_path}"
@@ -200,6 +204,16 @@ if [[ -f scripts/markdown-frontmatter-planning-status.sh ]]; then
   fi
 else
   fail 'markdown frontmatter planning status script missing'
+fi
+
+section 'Coherence Report Cross-Check (No Nested Run)'
+check_file docs/whole-system-coherence-maintenance-report.md
+check_doc_contains docs/whole-system-coherence-maintenance-report.md "complete_whole_system_coherence_maintenance" "coherence report closure"
+check_file scripts/whole-system-coherence-status.sh
+if grep -Eq 'bash[[:space:]]+scripts/whole-system-coherence-status\.sh' "${status_script}" 2>/dev/null; then
+  fail 'master roadmap status must not execute whole-system-coherence-status.sh'
+else
+  pass 'master roadmap status does not execute whole-system-coherence-status.sh'
 fi
 
 section 'CLI, Manifest, and Tests'

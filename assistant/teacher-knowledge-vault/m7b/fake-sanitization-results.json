@@ -1,0 +1,16 @@
+{
+  "classification": "fake_local_planning_only",
+  "runtime_ingested": false,
+  "results": [
+    {"result_id": "fake-m7b-san-001", "manual_inventory_id": "fake-m7b-man-001", "check": "no_real_drive_ids", "status": "pass", "runtime_ingested": false},
+    {"result_id": "fake-m7b-san-002", "manual_inventory_id": "fake-m7b-man-001", "check": "no_urls_except_placeholders", "status": "pass", "runtime_ingested": false},
+    {"result_id": "fake-m7b-san-003", "manual_inventory_id": "fake-m7b-man-001", "check": "no_local_absolute_paths", "status": "pass", "runtime_ingested": false},
+    {"result_id": "fake-m7b-san-004", "manual_inventory_id": "fake-m7b-man-student-risk-blocked", "check": "student_data_exclusion", "status": "fail", "blocked_reason": "student data risk", "runtime_ingested": false},
+    {"result_id": "fake-m7b-san-005", "manual_inventory_id": "fake-m7b-man-dns", "check": "99_DO_NOT_SCAN_policy", "status": "blocked", "runtime_ingested": false},
+    {"result_id": "fake-m7b-san-006", "manual_inventory_id": "fake-m7b-man-007", "check": "10_TEACHER_ONLY_policy", "status": "pass", "runtime_ingested": false},
+    {"result_id": "fake-m7b-san-007", "manual_inventory_id": "fake-m7b-man-001", "check": "no_oauth_secrets_tokens", "status": "pass", "runtime_ingested": false},
+    {"result_id": "fake-m7b-san-008", "manual_inventory_id": "fake-m7b-man-001", "check": "no_extracted_text", "status": "pass", "runtime_ingested": false},
+    {"result_id": "fake-m7b-san-009", "manual_inventory_id": "fake-m7b-man-001", "check": "runtime_connected_false", "status": "pass", "runtime_ingested": false},
+    {"result_id": "fake-m7b-san-010", "manual_inventory_id": "fake-m7b-man-001", "check": "runtime_ingested_false", "status": "pass", "runtime_ingested": false}
+  ]
+}

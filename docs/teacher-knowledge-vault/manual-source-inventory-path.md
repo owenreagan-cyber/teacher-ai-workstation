@@ -17,4 +17,4 @@ A safe pre-connector path that may be a better first runtime step than API conne
 - Manual entries should use labels, not sensitive raw paths
 - Manual entries remain reviewable and editable
 
-Fixture: `assistant/teacher-knowledge-vault/m7/fake-manual-source-inventory.json`
+Fixture: `assistant/teacher-knowledge-vault/m7b/fake-manual-inventory.json`

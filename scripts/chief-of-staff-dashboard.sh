@@ -1536,6 +1536,26 @@ else
   warn "Teacher Knowledge Vault M7 connector approval status script missing: scripts/teacher-knowledge-vault-m7-connector-approval-status.sh"
 fi
 
+if [[ -f scripts/teacher-knowledge-vault-m7b-manual-source-inventory-status.sh ]]; then
+  teacher_knowledge_vault_m7b_result=0
+  teacher_knowledge_vault_m7b_output="$(bash scripts/teacher-knowledge-vault-m7b-manual-source-inventory-status.sh 2>&1)" || teacher_knowledge_vault_m7b_result=$?
+  teacher_knowledge_vault_m7b_pass="$(summary_count "${teacher_knowledge_vault_m7b_output}" "PASS")"
+  teacher_knowledge_vault_m7b_warn="$(summary_count "${teacher_knowledge_vault_m7b_output}" "WARN")"
+  teacher_knowledge_vault_m7b_fail="$(summary_count "${teacher_knowledge_vault_m7b_output}" "FAIL")"
+
+  if [[ "${teacher_knowledge_vault_m7b_result}" != "0" ]]; then
+    printf '%s\n' "${teacher_knowledge_vault_m7b_output}"
+    fail "Teacher Knowledge Vault M7b manual source inventory status failed"
+  elif [[ -n "${teacher_knowledge_vault_m7b_pass}" && -n "${teacher_knowledge_vault_m7b_warn}" && -n "${teacher_knowledge_vault_m7b_fail}" ]]; then
+    printf 'Teacher Knowledge Vault M7b Manual Source Inventory: PASS %s / WARN %s / FAIL %s\n' "${teacher_knowledge_vault_m7b_pass}" "${teacher_knowledge_vault_m7b_warn}" "${teacher_knowledge_vault_m7b_fail}"
+    pass "Teacher Knowledge Vault M7b manual source inventory status completed"
+  else
+    pass "Teacher Knowledge Vault M7b manual source inventory status completed"
+  fi
+else
+  warn "Teacher Knowledge Vault M7b manual source inventory status script missing: scripts/teacher-knowledge-vault-m7b-manual-source-inventory-status.sh"
+fi
+
 section "Local Retrieval Foundation v0"
 if [[ -f scripts/local-retrieval-foundation-status.sh ]]; then
   local_retrieval_foundation_result=0

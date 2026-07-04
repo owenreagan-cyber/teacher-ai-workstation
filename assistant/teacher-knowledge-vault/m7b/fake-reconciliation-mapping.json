@@ -1,0 +1,15 @@
+{
+  "classification": "fake_local_planning_only",
+  "runtime_ingested": false,
+  "mappings": [
+    {"mapping_id": "fake-m7b-map-001", "manual_inventory_id": "fake-m7b-man-drive-only", "reconciliation_type": "only_in_drive", "target": "canonical_storage_candidate", "runtime_ingested": false},
+    {"mapping_id": "fake-m7b-map-002", "manual_inventory_id": "fake-m7b-man-canvas-only", "reconciliation_type": "only_in_canvas", "target": "deployment_reconciliation_candidate", "runtime_ingested": false},
+    {"mapping_id": "fake-m7b-map-003", "manual_inventory_id": "fake-m7b-man-drive-canvas", "reconciliation_type": "drive_and_canvas", "runtime_ingested": false},
+    {"mapping_id": "fake-m7b-map-004", "manual_inventory_id": "fake-m7b-man-002", "reconciliation_type": "nas_mirror_candidate", "target": "mirror_backup", "runtime_ingested": false},
+    {"mapping_id": "fake-m7b-map-005", "manual_inventory_id": "fake-m7b-man-006", "reconciliation_type": "planning_source_candidate", "target": "notebooklm_planning", "runtime_ingested": false},
+    {"mapping_id": "fake-m7b-map-006", "manual_inventory_id": "fake-m7b-man-005", "reconciliation_type": "staging_source_candidate", "target": "local_staging", "runtime_ingested": false},
+    {"mapping_id": "fake-m7b-map-007", "manual_inventory_id": "fake-m7b-man-007", "reconciliation_type": "teacher_only_restricted_indexable", "indexing_policy": "10_TEACHER_ONLY", "runtime_ingested": false},
+    {"mapping_id": "fake-m7b-map-008", "manual_inventory_id": "fake-m7b-man-dns", "reconciliation_type": "do_not_scan_blocked", "target": "non_indexable_non_discoverable", "runtime_ingested": false},
+    {"mapping_id": "fake-m7b-map-009", "manual_inventory_id": "fake-m7b-man-001", "maps_to_resource_candidate": "fake-resource-drive-fraction-worksheet", "maps_to_representation_candidate": "fake-rep-pdf-fraction-worksheet", "runtime_ingested": false}
+  ]
+}

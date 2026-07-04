@@ -1,0 +1,16 @@
+{
+  "classification": "fake_local_planning_only",
+  "runtime_ingested": false,
+  "routing_items": [
+    {"routing_id": "fake-m7b-route-001", "manual_inventory_id": "fake-m7b-man-001", "review_state": "manual_inventory_draft", "runtime_ingested": false},
+    {"routing_id": "fake-m7b-route-002", "manual_inventory_id": "fake-m7b-man-001", "review_state": "ready_for_fake_catalog_mapping", "runtime_ingested": false},
+    {"routing_id": "fake-m7b-route-003", "manual_inventory_id": "fake-m7b-man-007", "review_state": "possible_teacher_only", "teacher_only_risk": true, "runtime_ingested": false},
+    {"routing_id": "fake-m7b-route-004", "manual_inventory_id": "fake-m7b-man-007", "review_state": "needs_indexing_policy", "runtime_ingested": false},
+    {"routing_id": "fake-m7b-route-005", "manual_inventory_id": "fake-m7b-man-dns", "review_state": "do_not_scan_blocked", "blocked_reason": "99_DO_NOT_SCAN", "runtime_ingested": false},
+    {"routing_id": "fake-m7b-route-006", "manual_inventory_id": "fake-m7b-man-student-risk-blocked", "review_state": "possible_student_data_risk", "runtime_ingested": false},
+    {"routing_id": "fake-m7b-route-007", "manual_inventory_id": "fake-m7b-man-001", "review_state": "approved_for_future_import", "approval_note": "modeling only not runtime ingestion", "runtime_ingested": false},
+    {"routing_id": "fake-m7b-route-008", "manual_inventory_id": "fake-m7b-man-canvas-only", "review_state": "mapped_to_resource_candidate", "resource_candidate_id": "fake-resource-canvas-only-module", "runtime_ingested": false},
+    {"routing_id": "fake-m7b-route-009", "manual_inventory_id": "fake-m7b-man-002", "review_state": "needs_source_role", "runtime_ingested": false},
+    {"routing_id": "fake-m7b-route-010", "manual_inventory_id": "fake-m7b-man-006", "review_state": "needs_sanitization", "runtime_ingested": false}
+  ]
+}

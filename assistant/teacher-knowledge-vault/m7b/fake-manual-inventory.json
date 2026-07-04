@@ -1,0 +1,133 @@
+{
+  "classification": "fake_local_planning_only",
+  "approval_level": 1,
+  "runtime_connected": false,
+  "runtime_ingested": false,
+  "records": [
+    {
+      "manual_inventory_id": "fake-m7b-man-001",
+      "source_label": "fake-manual://drive-folder-label-math-g5/",
+      "source_type": "google_drive",
+      "source_role": "canonical_storage",
+      "resource_label": "fake-resource-drive-fraction-worksheet",
+      "representation_label": "fake-rep-pdf-fraction-worksheet",
+      "display_name_label": "placeholder_fraction_worksheet.pdf",
+      "path_label": "fake-drive://TeacherAI-Curriculum-Library/01_MATH/",
+      "parent_label": "fake-drive://TeacherAI-Curriculum-Library/01_MATH/saxon_im5/",
+      "item_type": "file",
+      "extension_label": "pdf",
+      "estimated_size_label": "~100KB",
+      "modified_date_label": "2026-01-01",
+      "audience": "student_facing",
+      "indexing_policy": "student_facing",
+      "teacher_only_risk": false,
+      "student_data_risk": false,
+      "do_not_scan_flag": false,
+      "canonical_storage_candidate": true,
+      "canvas_deployment_candidate": false,
+      "nas_mirror_candidate": false,
+      "needs_review": false,
+      "allowed_next_actions": ["map_to_fake_catalog"],
+      "blocked_next_actions": ["runtime_ingest", "connector_sync", "content_read"],
+      "runtime_connected": false,
+      "runtime_ingested": false
+    },
+    {
+      "manual_inventory_id": "fake-m7b-man-007",
+      "source_label": "fake-manual://teacher-only-manual-label/",
+      "source_type": "google_drive",
+      "source_role": "canonical_storage",
+      "display_name_label": "placeholder_teacher_manual.pdf",
+      "path_label": "fake-drive://TeacherAI-Curriculum-Library/10_TEACHER_ONLY/",
+      "audience": "teacher_only",
+      "indexing_policy": "10_TEACHER_ONLY",
+      "teacher_only_risk": true,
+      "student_data_risk": false,
+      "do_not_scan_flag": false,
+      "canonical_storage_candidate": true,
+      "needs_review": true,
+      "allowed_next_actions": ["route_manual_review"],
+      "blocked_next_actions": ["student_facing_export", "runtime_ingest"],
+      "runtime_connected": false,
+      "runtime_ingested": false
+    },
+    {
+      "manual_inventory_id": "fake-m7b-man-dns",
+      "source_label": "fake-manual://do-not-scan-blocked/",
+      "source_type": "google_drive",
+      "path_label": "blocked-placeholder://99_DO_NOT_SCAN/",
+      "do_not_scan_flag": true,
+      "indexing_policy": "blocked",
+      "blocked_next_actions": ["index", "discover", "runtime_ingest"],
+      "runtime_connected": false,
+      "runtime_ingested": false
+    },
+    {
+      "manual_inventory_id": "fake-m7b-man-canvas-only",
+      "source_label": "fake-manual://canvas-only-reconcile/",
+      "source_type": "canvas",
+      "source_role": "deployment_target",
+      "canvas_deployment_candidate": true,
+      "reconciliation_type": "only_in_canvas",
+      "runtime_connected": false,
+      "runtime_ingested": false
+    },
+    {
+      "manual_inventory_id": "fake-m7b-man-drive-only",
+      "source_label": "fake-manual://drive-only-reconcile/",
+      "source_type": "google_drive",
+      "canonical_storage_candidate": true,
+      "reconciliation_type": "only_in_drive",
+      "runtime_connected": false,
+      "runtime_ingested": false
+    },
+    {
+      "manual_inventory_id": "fake-m7b-man-drive-canvas",
+      "source_label": "fake-manual://drive-canvas-reconcile/",
+      "source_type": "google_drive",
+      "canonical_storage_candidate": true,
+      "canvas_deployment_candidate": true,
+      "reconciliation_type": "drive_and_canvas",
+      "runtime_connected": false,
+      "runtime_ingested": false
+    },
+    {
+      "manual_inventory_id": "fake-m7b-man-002",
+      "source_label": "fake-manual://nas-share-label-curriculum-mirror/",
+      "source_type": "ugreen_nas",
+      "source_role": "mirror_backup",
+      "nas_mirror_candidate": true,
+      "runtime_connected": false,
+      "runtime_ingested": false
+    },
+    {
+      "manual_inventory_id": "fake-m7b-man-006",
+      "source_label": "fake-manual://notebooklm-planning-export/",
+      "source_type": "notebooklm_planning",
+      "source_role": "planning_source",
+      "indexing_policy": "restricted_indexable",
+      "runtime_connected": false,
+      "runtime_ingested": false
+    },
+    {
+      "manual_inventory_id": "fake-m7b-man-009",
+      "source_label": "fake-manual://ai-generated-adaptation/",
+      "source_type": "local_staging",
+      "source_role": "staging_source",
+      "path_label": "fake-local-staging://TeacherAI-Curriculum-Library/12_AI_GENERATED/",
+      "audience": "teacher_only",
+      "indexing_policy": "approval_gated",
+      "runtime_connected": false,
+      "runtime_ingested": false
+    },
+    {
+      "manual_inventory_id": "fake-m7b-man-student-risk-blocked",
+      "source_label": "fake-manual://student-data-risk-blocked/",
+      "student_data_risk": true,
+      "blocked_reason": "student data field blocked",
+      "blocked_next_actions": ["approve", "runtime_ingest"],
+      "runtime_connected": false,
+      "runtime_ingested": false
+    }
+  ]
+}

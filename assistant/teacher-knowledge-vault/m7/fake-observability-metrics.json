@@ -1,0 +1,19 @@
+{
+  "classification": "fake_local_planning_only",
+  "runtime_implemented": false,
+  "api_cost_estimate_usd": 0.0,
+  "metrics": {
+    "connector_implementations": 0,
+    "oauth_flows_started": 0,
+    "api_calls_made": 0,
+    "network_calls_made": 0,
+    "real_sources_connected": 0,
+    "real_metadata_records_ingested": 0,
+    "real_files_read": 0,
+    "student_records_read": 0,
+    "write_operations": 0,
+    "fake_source_inventories": 5,
+    "connector_approval_requests": 3,
+    "blocked_connector_actions": 8
+  }
+}

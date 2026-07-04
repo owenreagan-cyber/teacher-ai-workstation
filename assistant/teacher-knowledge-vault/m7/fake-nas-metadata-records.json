@@ -1,0 +1,29 @@
+{
+  "classification": "fake_local_planning_only",
+  "runtime_implemented": false,
+  "records": [
+    {
+      "record_id": "fake-nas-meta-001",
+      "share_label": "fake-nas-share-curriculum",
+      "folder_label": "fake-nas://curriculum-mirror/01_MATH/",
+      "display_name": "placeholder_fraction_worksheet.pdf",
+      "extension": "pdf",
+      "size_bytes_placeholder": 102400,
+      "modified_time_placeholder": "2026-01-01T00:00:00Z",
+      "availability_status": "disconnected",
+      "metadata_only": true,
+      "content_read_blocked": true,
+      "runtime_implemented": false
+    },
+    {
+      "record_id": "fake-nas-meta-root-scan-blocked",
+      "blocked_reason": "scanning NAS root blocked",
+      "runtime_implemented": false
+    },
+    {
+      "record_id": "fake-nas-meta-private-share-blocked",
+      "blocked_reason": "accessing private/non-curriculum shares blocked",
+      "runtime_implemented": false
+    }
+  ]
+}

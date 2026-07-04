@@ -1,0 +1,64 @@
+{
+  "classification": "fake_local_planning_only",
+  "runtime_implemented": false,
+  "effects": [
+    {
+      "effect_id": "fake-m7-reconcile-001",
+      "reconciliation_type": "only_in_drive",
+      "resource_id": "fake-resource-drive-only-pacing",
+      "requires_teacher_approval": true,
+      "runtime_implemented": false
+    },
+    {
+      "effect_id": "fake-m7-reconcile-002",
+      "reconciliation_type": "only_in_canvas",
+      "resource_id": "fake-resource-canvas-only-module",
+      "requires_teacher_approval": true,
+      "runtime_implemented": false
+    },
+    {
+      "effect_id": "fake-m7-reconcile-003",
+      "reconciliation_type": "drive_and_canvas",
+      "resource_id": "fake-resource-drive-canvas-both",
+      "runtime_implemented": false
+    },
+    {
+      "effect_id": "fake-m7-reconcile-004",
+      "reconciliation_type": "drive_missing_canonical_copy",
+      "resource_id": "fake-m2-item-staging-001",
+      "runtime_implemented": false
+    },
+    {
+      "effect_id": "fake-m7-reconcile-005",
+      "reconciliation_type": "nas_mirror_missing",
+      "source_id": "fake-source-nas-mirror-001",
+      "runtime_implemented": false
+    },
+    {
+      "effect_id": "fake-m7-reconcile-006",
+      "reconciliation_type": "canvas_deployment_outdated",
+      "source_id": "fake-source-canvas-deploy-001",
+      "runtime_implemented": false
+    },
+    {
+      "effect_id": "fake-m7-reconcile-007",
+      "reconciliation_type": "planning_note_no_file_representation",
+      "source_type": "notebooklm_planning",
+      "runtime_implemented": false
+    },
+    {
+      "effect_id": "fake-m7-reconcile-008",
+      "reconciliation_type": "teacher_only_wrong_source",
+      "resource_id": "fake-resource-teacher-only-assessment-key",
+      "teacher_only_risk": true,
+      "runtime_implemented": false
+    },
+    {
+      "effect_id": "fake-m7-reconcile-009",
+      "reconciliation_type": "student_facing_canvas_review_required",
+      "package_id": "fake-pkg-saxon-lesson-021",
+      "leakage_check_required": true,
+      "runtime_implemented": false
+    }
+  ]
+}

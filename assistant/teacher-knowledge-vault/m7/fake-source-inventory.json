@@ -1,0 +1,57 @@
+{
+  "classification": "fake_local_planning_only",
+  "runtime_connected": false,
+  "sources": [
+    {
+      "source_id": "fake-source-drive-canonical-001",
+      "source_type": "google_drive",
+      "source_label": "fake-drive://TeacherAI-Curriculum-Library/",
+      "canonical_role": "canonical_storage",
+      "connection_status": "disconnected",
+      "approval_level": 2,
+      "auth_status": "blocked",
+      "content_read_allowed": false,
+      "write_allowed": false,
+      "runtime_connected": false
+    },
+    {
+      "source_id": "fake-source-nas-mirror-001",
+      "source_type": "ugreen_nas",
+      "source_label": "fake-nas://curriculum-mirror/",
+      "canonical_role": "mirror_backup",
+      "connection_status": "disconnected",
+      "content_read_allowed": false,
+      "write_allowed": false,
+      "runtime_connected": false
+    },
+    {
+      "source_id": "fake-source-canvas-deploy-001",
+      "source_type": "canvas",
+      "source_label": "fake-canvas://course-placeholder-math-g5/",
+      "canonical_role": "deployment_target",
+      "connection_status": "disconnected",
+      "content_read_allowed": false,
+      "write_allowed": false,
+      "runtime_connected": false
+    },
+    {
+      "source_id": "fake-source-manual-001",
+      "source_type": "manual",
+      "source_label": "fake-manual://owen-entered-label-only/",
+      "canonical_role": "planning_source",
+      "connection_status": "manual_only",
+      "auth_status": "not_required",
+      "content_read_allowed": false,
+      "write_allowed": false,
+      "runtime_connected": false
+    },
+    {
+      "source_id": "fake-source-staging-001",
+      "source_type": "local_staging",
+      "source_label": "fake-local-staging://TeacherAI-Curriculum-Library/",
+      "canonical_role": "staging_source",
+      "connection_status": "disconnected",
+      "runtime_connected": false
+    }
+  ]
+}

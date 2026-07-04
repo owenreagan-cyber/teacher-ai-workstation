@@ -1,0 +1,61 @@
+{
+  "classification": "fake_local_planning_only",
+  "approval_level_m7": 0,
+  "runtime_implemented": false,
+  "connectors": [
+    {
+      "connector_id": "fake-connector-google-drive-001",
+      "connector_type": "google_drive",
+      "display_name": "Google Drive (planned)",
+      "read_metadata_supported": true,
+      "read_content_supported": false,
+      "write_supported": false,
+      "watch_supported": false,
+      "auth_required": true,
+      "secrets_required": true,
+      "network_required": true,
+      "approval_level_required": 2,
+      "blocked_by_default": true,
+      "runtime_implemented": false
+    },
+    {
+      "connector_id": "fake-connector-ugreen-nas-001",
+      "connector_type": "ugreen_nas",
+      "display_name": "UGREEN NAS (planned)",
+      "read_metadata_supported": true,
+      "read_content_supported": false,
+      "write_supported": false,
+      "auth_required": true,
+      "network_required": true,
+      "approval_level_required": 2,
+      "blocked_by_default": true,
+      "runtime_implemented": false
+    },
+    {
+      "connector_id": "fake-connector-canvas-001",
+      "connector_type": "canvas",
+      "display_name": "Canvas LMS (planned)",
+      "read_metadata_supported": true,
+      "read_content_supported": false,
+      "write_supported": false,
+      "approval_level_required": 2,
+      "blocked_by_default": true,
+      "runtime_implemented": false
+    },
+    {
+      "connector_id": "fake-connector-icloud-001",
+      "connector_type": "icloud",
+      "display_name": "iCloud (future)",
+      "blocked_by_default": true,
+      "runtime_implemented": false
+    },
+    {
+      "connector_id": "fake-connector-notebooklm-001",
+      "connector_type": "notebooklm_planning",
+      "display_name": "NotebookLM planning source",
+      "canonical_role": "planning_source",
+      "write_supported": false,
+      "runtime_implemented": false
+    }
+  ]
+}

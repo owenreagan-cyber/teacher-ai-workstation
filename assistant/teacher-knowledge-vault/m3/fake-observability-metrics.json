@@ -1,0 +1,33 @@
+{
+  "classification": "fake_local_planning_only",
+  "runtime_executed": false,
+  "api_cost_estimate_usd": 0.0,
+  "real_files_processed": 0,
+  "ocr_jobs": 0,
+  "ai_rag_calls": 0,
+  "file_operations": 0,
+  "search_runtime_executed": false,
+  "duplicate_detection_runtime_executed": false,
+  "metrics": {
+    "duplicate_candidates_by_level": {
+      "exact_duplicate": 1,
+      "filename_duplicate": 1,
+      "metadata_duplicate": 1,
+      "text_duplicate": 1,
+      "semantic_duplicate": 1
+    },
+    "version_candidates": 3,
+    "packages_suggested": 5,
+    "fake_search_queries": 15,
+    "teacher_only_filtered_results": 2,
+    "student_facing_leakage_blocks": 1,
+    "source_reconciliation_flags": {
+      "canvas_only": 1,
+      "drive_only": 1,
+      "drive_and_canvas": 1,
+      "missing_from_canonical_storage": 1
+    },
+    "approval_required_actions": 8,
+    "do_not_scan_excluded_count": 1
+  }
+}

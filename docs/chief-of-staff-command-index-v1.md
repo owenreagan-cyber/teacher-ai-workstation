@@ -130,6 +130,7 @@ These flags exist in `bin/chief-of-staff` and work as read-only local status sur
 | `bin/chief-of-staff --teacher-knowledge-vault-m0-architecture-freeze-status` | Teacher Knowledge Vault M0 architecture freeze (read-only; no vault population) |
 | `bin/chief-of-staff --teacher-knowledge-vault-m1-fake-catalog-status` | Teacher Knowledge Vault M1 fake catalog foundation (read-only; no SQLite runtime) |
 | `bin/chief-of-staff --teacher-knowledge-vault-m2-local-discovery-approval-status` | Teacher Knowledge Vault M2 local discovery approval packet (read-only; no scanning) |
+| `bin/chief-of-staff --teacher-knowledge-vault-m3-fake-duplicate-search-status` | Teacher Knowledge Vault M3 fake duplicate/search/package foundation (read-only; no search runtime) |
 | `bin/chief-of-staff --teacher-knowledge-vault-knowledge-entry-v0-validate` | Teacher Knowledge Vault knowledge entry v0 validator (read-only) |
 | `bin/chief-of-staff --local-retrieval-foundation-status` | Local Retrieval v0 |
 | `bin/chief-of-staff --integration-planning-foundation-status` | Integration Planning v0 |

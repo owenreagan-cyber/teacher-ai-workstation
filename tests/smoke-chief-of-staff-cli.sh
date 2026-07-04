@@ -176,6 +176,8 @@ bin/chief-of-staff --teacher-knowledge-vault-m1-fake-catalog-status >/dev/null
 bash tests/teacher-knowledge-vault-m1-fake-catalog-status-test.sh >/dev/null
 bin/chief-of-staff --teacher-knowledge-vault-m2-local-discovery-approval-status >/dev/null
 bash tests/teacher-knowledge-vault-m2-local-discovery-approval-status-test.sh >/dev/null
+bin/chief-of-staff --teacher-knowledge-vault-m3-fake-duplicate-search-status >/dev/null
+bash tests/teacher-knowledge-vault-m3-fake-duplicate-search-status-test.sh >/dev/null
 bin/chief-of-staff --gemini-discovery-classification-intake-status >/dev/null
 bash tests/gemini-discovery-classification-intake-status-test.sh >/dev/null
 bin/chief-of-staff --markdown-frontmatter-planning-status >/dev/null

@@ -44,9 +44,10 @@ M2 preserves:
 | --- | --- |
 | M0 Architecture freeze (expanded) | complete |
 | M1 Fake catalog foundation | complete |
-| **M2** Local discovery approval packet | **complete** (this mission) |
+| **M2** Local discovery approval packet | **complete** |
+| **M3** Fake duplicate/search/package foundation | **complete** |
 | M2b Selected-folder metadata prototype | blocked — requires Owen approval |
-| M3 Duplicate detection/search | blocked |
+| Runtime search/duplicate detection | blocked |
 | M4 Smart Rename suggestions | blocked |
 | M5+ Organization, OCR, connectors, AI | blocked |
 

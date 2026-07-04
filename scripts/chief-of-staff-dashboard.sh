@@ -1734,6 +1734,27 @@ else
   warn "Whole-system master roadmap status script missing: scripts/whole-system-master-roadmap-status.sh"
 fi
 
+section "Whole-System Coherence Maintenance"
+if [[ -f scripts/whole-system-coherence-status.sh ]]; then
+  whole_system_coherence_result=0
+  whole_system_coherence_output="$(bash scripts/whole-system-coherence-status.sh 2>&1)" || whole_system_coherence_result=$?
+  whole_system_coherence_pass="$(summary_count "${whole_system_coherence_output}" "PASS")"
+  whole_system_coherence_warn="$(summary_count "${whole_system_coherence_output}" "WARN")"
+  whole_system_coherence_fail="$(summary_count "${whole_system_coherence_output}" "FAIL")"
+
+  if [[ "${whole_system_coherence_result}" != "0" ]]; then
+    printf '%s\n' "${whole_system_coherence_output}"
+    fail "Whole-system coherence status failed"
+  elif [[ -n "${whole_system_coherence_pass}" && -n "${whole_system_coherence_warn}" && -n "${whole_system_coherence_fail}" ]]; then
+    printf 'Whole-System Coherence: PASS %s / WARN %s / FAIL %s\n' "${whole_system_coherence_pass}" "${whole_system_coherence_warn}" "${whole_system_coherence_fail}"
+    pass "Whole-system coherence status completed"
+  else
+    pass "Whole-system coherence status completed"
+  fi
+else
+  warn "Whole-system coherence status script missing: scripts/whole-system-coherence-status.sh"
+fi
+
 section "Curriculum Source Readiness Foundation"
 if [[ -f scripts/curriculum-source-readiness-status.sh ]]; then
   curriculum_source_readiness_result=0

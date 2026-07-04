@@ -1116,6 +1116,20 @@ grep -Fq -- '--autonomous-build-engine-status' bin/chief-of-staff && pass "chief
 check_doc_contains docs/whole-system-master-roadmap-build-state-report.md "whole_system_master_roadmap_status_complete" "whole-system report closure"
 grep -Fq -- '--whole-system-master-roadmap-status' bin/chief-of-staff && pass "chief-of-staff exposes --whole-system-master-roadmap-status" || fail "chief-of-staff missing --whole-system-master-roadmap-status"
 
+section "Whole-System Coherence Maintenance Files"
+for path in \
+  docs/whole-system-coherence-maintenance-report.md \
+  docs/proposals/backlog/whole-system-safe-enhancement-discovery.md \
+  scripts/whole-system-coherence-status.sh \
+  tests/whole-system-coherence-status-test.sh; do
+  check_required_file "${path}"
+done
+check_bash_syntax scripts/whole-system-coherence-status.sh
+check_bash_syntax tests/whole-system-coherence-status-test.sh
+check_doc_contains docs/whole-system-coherence-maintenance-report.md "complete_whole_system_coherence_maintenance" "coherence maintenance closure"
+check_doc_contains docs/whole-system-master-roadmap-build-state-report.md "complete_whole_system_coherence_maintenance" "whole-system report coherence closure"
+grep -Fq -- '--whole-system-coherence-status' bin/chief-of-staff && pass "chief-of-staff exposes --whole-system-coherence-status" || fail "chief-of-staff missing --whole-system-coherence-status"
+
 section "Presentation Engine Renderer Foundation Planning Files"
 for path in \
   docs/presentation-engine-renderer-foundation.md \

@@ -8,9 +8,9 @@ Phase 0E Vibe Engine.
 
 ## Current Focus
 
-**Curriculum manual metadata / markdown frontmatter planning complete — production registry parked (Option D recommended).**
+**Whole-system coherence maintenance complete — production registry parked (Option D recommended).**
 
-Planning program for manual metadata field ideas (`docs/curriculum-manual-metadata-frontmatter-planning.md`; `--markdown-frontmatter-planning-status`). Active schema, parser, validator, and runtime remain blocked. first governed production registry record complete.
+Coherence audit and safe enhancement discovery (`docs/whole-system-coherence-maintenance-report.md`; `--whole-system-coherence-status`). Owen architecture decisions next. first governed production registry record complete.
 
 Master program roadmap: `docs/master-build-roadmap.md` — Program Readiness Audit and mission sequencing for v1.0. Whole-system report: `docs/whole-system-master-roadmap-build-state-report.md`. Implementation does not proceed automatically from the roadmap.
 
@@ -18,7 +18,9 @@ Handoff and status clarity. Start from `docs/phase-1-chief-of-staff-status-audit
 
 ## Recently Completed
 
-- Curriculum Manual Metadata / Markdown Frontmatter Planning Program (2026-07-03): `docs/curriculum-manual-metadata-frontmatter-planning.md`; field idea table; fake illustrations; `--markdown-frontmatter-planning-status`. No schema, parser, or validator.
+- Whole-System Coherence Maintenance (2026-07-03): stale count fixes; expected WARNs discoverability; safe enhancement backlog; `--whole-system-coherence-status`. No runtime activation.
+
+- Curriculum Manual Metadata / Markdown Frontmatter Planning Program (2026-07-03): frontmatter planning complete — `docs/curriculum-manual-metadata-frontmatter-planning.md`; field idea table; fake illustrations; `--markdown-frontmatter-planning-status`. No schema, parser, or validator.
 
 - Gemini Discovery & Classification External Planning Intake (2026-07-03): filed memo at `docs/external-planning/discovery-classification-memo.md`; theme classification; blocked runtime boundaries; `--gemini-discovery-classification-intake-status`. No schemas, discovery runtime, or Gemini API.
 

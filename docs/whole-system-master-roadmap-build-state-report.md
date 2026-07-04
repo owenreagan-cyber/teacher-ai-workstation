@@ -7,14 +7,17 @@ Status: documentation/status only
 Authority: whole-system posture snapshot — not implementation approval
 Baseline: main after Whole-System Master Roadmap Build-State Report mission
 Closure: whole_system_master_roadmap_status_complete
+Coherence maintenance closure: complete_whole_system_coherence_maintenance
 Presentation Engine planning closure: complete_presentation_engine_renderer_foundation_planning
 A4–A7 fixture enrichment closure: complete_a4_a7_fixture_optional_field_enrichment
 Classroom Utility templates closure: complete_classroom_utility_per_app_mission_templates
+Gemini intake closure: complete_gemini_discovery_classification_intake
+Frontmatter planning closure: complete_curriculum_manual_metadata_frontmatter_planning
 ```
 
 **Status key:** `[x]` Built/merged · `[~]` Currently being built · `[>]` Ready for safe planning/build · `[!]` Blocked pending Owen/safety gate · `[ ]` Future / not started · `[?]` Insufficient repo evidence
 
-**Status command:** `bin/chief-of-staff --whole-system-master-roadmap-status`
+**Status commands:** `bin/chief-of-staff --whole-system-master-roadmap-status`, `bin/chief-of-staff --whole-system-coherence-status`
 
 ---
 
@@ -22,7 +25,7 @@ Classroom Utility templates closure: complete_classroom_utility_per_app_mission_
 
 | Class | Meaning | Examples in this repo |
 | --- | --- | --- |
-| **repo-backed evidence** | Merged files, status scripts, tests, CLI wiring with PASS proof | Dashboard 128/0/0; `--governance-lane-status`; first governed record in `production-registry.json` |
+| **repo-backed evidence** | Merged files, status scripts, tests, CLI wiring with PASS proof | Dashboard 134/0/0; `--whole-system-coherence-status`; first governed record in `production-registry.json` |
 | **planning/proposal-only evidence** | Docs, proposals, lane reviews without runtime activation | Writer tooling design boundary; second-record worksheet; Academic OS external intake |
 | **blocked implementation gates** | Explicit Owen/safety gates; negative tests; sentinel | `BLOCKED-NO-WRITES.sentinel`; no `--write`; Options A/B/C blocked |
 | **future ideas not started** | Named programs with no repo implementation | Live Vibe Panel; Lovable API; NAS crawler |
@@ -82,9 +85,9 @@ Closure: next_safe_lane_selector_complete
 
 Ranked recommendations (safest first):
 
-1. **safest next docs/status build lane** — Whole-system roadmap coherence maintenance, proposal index sync, capability-map cross-links, aggregate status hardening. No runtime risk. Command: `--whole-system-master-roadmap-status`.
-2. **strongest classroom-value planning lane** — Classroom Utility per-app mission templates **complete** (`docs/classroom-utility-per-app-mission-template.md`; `--classroom-utility-templates-status`); per-app Owen-gated implementation missions remain blocked.
-3. **blocked high-value lane requiring Owen decision** — Production registry Option A (writer/`--write`), Option B (second record), or Option C (metadata pilot expansion). Any single classroom utility app runtime. All blocked until explicit Owen mission.
+1. **safest next docs/status build lane** — Owen architecture decisions (production registry A/B/C; manual text asset directory tree). Coherence maintenance **complete** (`docs/whole-system-coherence-maintenance-report.md`; `--whole-system-coherence-status`).
+2. **strongest classroom-value planning lane** — Per-app classroom utility Owen-gated missions from candidate matrix; templates **complete** (`--classroom-utility-templates-status`).
+3. **blocked high-value lane requiring Owen decision** — Production registry Option A (writer/`--write`), Option B (second record), or Option C (metadata pilot expansion). Any single classroom utility app runtime.
 4. **future lane needing more repo evidence** — Academic OS beyond external intake map; unified daily AI briefing; live Vibe Panel / wallpaper apply.
 
 **Recommended default:** Maintain **Option D (parked)** for production registry. Proceed with safe docs/status lanes until Owen selects A, B, or C.
@@ -111,7 +114,7 @@ Cross-references: `docs/build-queue.md`, `docs/master-build-roadmap.md`, `docs/p
 
 | Marker | Item | Evidence |
 | --- | --- | --- |
-| [x] | CLI, dashboard (128/0/0), Program B daily ops, queues, `--next-action`, validate-all | repo-backed |
+| [x] | CLI, dashboard (134/0/0), Program B daily ops, queues, `--next-action`, validate-all | repo-backed |
 | [>] | Unified daily briefing (AI), B4 smoke expansion, B7 closure placeholder | planning/proposal-only |
 | [!] | Automation beyond read-only status | blocked gate |
 | **Proof** | `bin/chief-of-staff --dashboard`, `docs/chief-of-staff-v1-program-b-closure.md` | |
@@ -289,8 +292,9 @@ Cross-references: `docs/build-queue.md`, `docs/master-build-roadmap.md`, `docs/p
 
 | Surface | State |
 | --- | --- |
-| Dashboard | 133 / 0 / 0 PASS |
-| Validate-all | 51 / 0 / 0 PASS |
+| Dashboard | 134 / 0 / 0 PASS |
+| Validate-all | 52 / 0 / 0 PASS |
+| Whole-system coherence maintenance | `--whole-system-coherence-status` |
 | Whole-system roadmap status | `--whole-system-master-roadmap-status` |
 | Presentation Engine renderer foundation | `--presentation-engine-renderer-foundation-status` |
 | Gemini discovery/classification intake | `--gemini-discovery-classification-intake-status` |
@@ -302,15 +306,16 @@ Cross-references: `docs/build-queue.md`, `docs/master-build-roadmap.md`, `docs/p
 | First-record status | 50 / 0 / 0 PASS |
 | Next-gate status | 34 / 0 / 0 PASS |
 | Empty-file status (historical) | 30 / 0 / 0 PASS |
-| Phase-1 | 758 / 0 / 0 PASS |
+| Phase-1 | 823 / 0 / 0 PASS |
 | Active mission | None |
-| Next step | Safe docs/status lanes; production registry parked (Option D); frontmatter planning complete — parser/schema blocked |
+| Next step | Owen architecture decisions; production registry parked (Option D); coherence maintenance complete |
 
 **Safety gates preserved:** First governed production registry record exists (`records` count exactly 1; ID `resource-math-lesson-108-presentation`); `BLOCKED-NO-WRITES.sentinel` intact; no `--write`; no writer scripts; no second production record; real curriculum file access blocked; copied curriculum content blocked; source auto-resolution blocked; integration and runtime gates blocked.
 
 ### Proposal / Backlog Index Coherence
 
-- Proposal ledger: `docs/proposals/index.md` — production registry missions through next-gate decision packet marked `implemented`
+- Proposal ledger: `docs/proposals/index.md` — through whole-system coherence maintenance marked `implemented`
+- Safe enhancement backlog: `docs/proposals/backlog/whole-system-safe-enhancement-discovery.md`
 - Build queue: `docs/build-queue.md` — product-decision wall; Option D parked default
 - Capability map: `docs/teacher-workstation-capability-map.md` — production registry read-only surfaces
 - Master roadmap: `docs/master-build-roadmap.md` — program lane status `reviewed` for governance lanes

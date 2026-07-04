@@ -80,6 +80,7 @@ Cross-references:
 | Governance-first production registry (CB-PROD-GOV) | implemented read-only | `--curriculum-production-registry-governance-status`; blocked-write proof; candidate skeleton |
 | Curriculum Builder Registry authority map + lane hardening | implemented read-only | `--curriculum-registry-lane-status` (includes source readiness + Owen checklist); `--curriculum-registry-a4-a7-fixture-schema-status` (0 targeted WARN); see authority map + A4–A7 evidence doc |
 | Curriculum Source Readiness (fake metadata inventory) | implemented read-only | `--curriculum-source-readiness-status`; fake fixtures only; no real ingestion |
+| Whole-system coherence maintenance | implemented read-only | `--whole-system-coherence-status`; audit + safe enhancement backlog |
 | Markdown frontmatter / manual metadata planning | implemented read-only (planning) | `--markdown-frontmatter-planning-status`; field ideas only; no parser/validator |
 | Gemini discovery/classification external planning intake | implemented read-only | `--gemini-discovery-classification-intake-status`; filed memo + classification; no runtime discovery |
 | Production registry writes / real records | planned | Approval-gated — Owen checklist required; `--curriculum-registry-write` blocked |

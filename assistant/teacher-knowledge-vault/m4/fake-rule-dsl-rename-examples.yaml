@@ -1,0 +1,95 @@
+# Fake smart rename rule examples — data only, not executed
+classification: fake_local_planning_only
+runtime_executed: false
+
+rules:
+  - id: saxon_homework_odds
+    version: 1
+    detect:
+      contains:
+        - "homework"
+        - "odds"
+        - "lesson"
+    extract:
+      fields:
+        lesson_number: "[0-9]{3}"
+    rename:
+      pattern: "math_g5_saxon_lesson_{lesson_number}_homework_odds_v1.pdf"
+    destination:
+      path: "01_MATH/saxon_im5/lesson_{lesson_number}/"
+    confidence:
+      rule: 0.94
+    requires_review: true
+    blocked_actions:
+      - execute_rename_now
+
+  - id: saxon_power_up_letter
+    version: 1
+    detect:
+      contains:
+        - "Power Up"
+    extract:
+      fields:
+        power_up_letter: "[A-K]"
+    rename:
+      pattern: "math_g5_saxon_power_up_{power_up_letter}_v1.pdf"
+    destination:
+      path: "01_MATH/03_power_ups/individual_power_up_letters/"
+    confidence:
+      rule: 0.98
+    requires_review: true
+
+  - id: teacher_guide_manual
+    version: 1
+    detect:
+      contains:
+        - "teacher"
+        - "manual"
+    rename:
+      pattern: "math_g5_saxon_lesson_{lesson_number}_teacher_guide_v1.pdf"
+    destination:
+      path: "10_TEACHER_ONLY/01_math/saxon_im5/"
+    indexing_policy: restricted_indexable
+    teacher_only_risk: elevated
+    student_facing_mode_blocked: true
+    requires_review: true
+
+  - id: ckhg_study_guide
+    version: 1
+    detect:
+      contains:
+        - "study guide"
+        - "CKHG"
+    rename:
+      pattern: "history_g5_ckhg_{unit_slug}_study_guide_blank_v1.pdf"
+    destination:
+      path: "06_HISTORY/ckhg/"
+    requires_review: true
+
+  - id: cksci_assessment_teacher_key
+    version: 1
+    detect:
+      contains:
+        - "assessment"
+        - "teacher key"
+    destination:
+      path: "10_TEACHER_ONLY/07_science/cksci/"
+    indexing_policy: restricted_indexable
+    leakage_risk: high_if_student_facing
+    requires_review: true
+    blocked_actions:
+      - execute_rename_now
+      - publish_now
+
+  - id: ai_generated_review_game
+    version: 1
+    detect:
+      contains:
+        - "review game"
+        - "AI"
+    rename:
+      pattern: "ai_generated_math_g5_lesson_{lesson_number}_review_game_v1.html"
+    destination:
+      path: "12_AI_GENERATED/01_math/"
+    leakage_check_required: true
+    requires_review: true

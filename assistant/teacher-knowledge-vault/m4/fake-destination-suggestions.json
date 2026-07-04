@@ -1,0 +1,51 @@
+{
+  "classification": "fake_local_planning_only",
+  "runtime_executed": false,
+  "directory_creation_executed": false,
+  "file_move_executed": false,
+  "suggestions": [
+    {
+      "destination_id": "fake-m4-dest-001",
+      "artifact_type": "math_homework",
+      "suggested_path": "01_MATH/saxon_im5/lesson_021/",
+      "taxonomy_folder": "01_MATH",
+      "package_id": "fake-pkg-saxon-lesson-021"
+    },
+    {
+      "destination_id": "fake-m4-dest-002",
+      "artifact_type": "teacher_guide",
+      "suggested_path": "10_TEACHER_ONLY/01_math/saxon_im5/",
+      "indexing_policy": "restricted_indexable",
+      "student_facing_allowed": false
+    },
+    {
+      "destination_id": "fake-m4-dest-003",
+      "artifact_type": "student_worksheet",
+      "suggested_path": "11_STUDENT_FACING/01_worksheets_handouts/",
+      "leakage_check_required": true
+    },
+    {
+      "destination_id": "fake-m4-dest-004",
+      "artifact_type": "canvas_package",
+      "suggested_path": "11_STUDENT_FACING/04_canvas_packages/",
+      "canvas_publish_candidate": true,
+      "canvas_publish_executed": false
+    },
+    {
+      "destination_id": "fake-m4-dest-005",
+      "artifact_type": "ai_generated_review_game",
+      "suggested_path": "12_AI_GENERATED/01_math/"
+    },
+    {
+      "destination_id": "fake-m4-dest-006",
+      "artifact_type": "archive_candidate",
+      "suggested_path": "90_ARCHIVE/"
+    },
+    {
+      "destination_id": "fake-m4-dest-blocked",
+      "artifact_type": "do_not_scan",
+      "suggested_path": null,
+      "blocked_reason": "99_DO_NOT_SCAN never suggested into normal taxonomy"
+    }
+  ]
+}

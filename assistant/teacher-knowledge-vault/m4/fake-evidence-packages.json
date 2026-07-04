@@ -1,0 +1,36 @@
+{
+  "classification": "fake_local_planning_only",
+  "runtime_executed": false,
+  "packages": [
+    {
+      "evidence_package_id": "fake-m4-evidence-001",
+      "suggestion_id": "fake-m4-rename-001",
+      "evidence_sources": {
+        "filename_evidence": {"match": "fraction", "confidence": 0.72},
+        "path_label_evidence": {"inbox_unsorted": true, "confidence": 0.85},
+        "source_label_evidence": {"source": "fake-local-staging", "confidence": 0.90},
+        "package_relationship_evidence": {"package_id": "fake-pkg-saxon-lesson-021", "confidence": 0.88},
+        "duplicate_version_evidence": {"duplicate_group_id": "fake-dup-group-filename-001", "confidence": 0.65},
+        "rule_dsl_evidence": {"rule_id": "saxon_homework_odds", "confidence": 0.94},
+        "native_extraction_evidence": {"status": "future_only", "confidence": 0.0},
+        "ocr_evidence": {"status": "future_only", "used": false},
+        "ai_evidence": {"status": "future_only", "used": false},
+        "teacher_only_risk_evidence": {"risk": "low"},
+        "leakage_risk_evidence": {"risk": "low"}
+      },
+      "final_confidence": 0.86,
+      "requires_manual_review": false
+    },
+    {
+      "evidence_package_id": "fake-m4-evidence-002",
+      "suggestion_id": "fake-m4-rename-002",
+      "evidence_sources": {
+        "rule_dsl_evidence": {"rule_id": "teacher_guide_manual", "confidence": 0.91},
+        "teacher_only_risk_evidence": {"risk": "elevated", "restricted_indexable": true}
+      },
+      "final_confidence": 0.91,
+      "requires_manual_review": true,
+      "conflicting_evidence": false
+    }
+  ]
+}

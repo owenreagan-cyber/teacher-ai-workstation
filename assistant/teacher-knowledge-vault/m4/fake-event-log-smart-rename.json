@@ -1,0 +1,19 @@
+{
+  "classification": "fake_local_planning_only",
+  "runtime_executed": false,
+  "events": [
+    {"event_id": "fake-m4-evt-001", "event_type": "smart_rename_suggestion_created", "suggestion_id": "fake-m4-rename-001", "runtime_executed": false},
+    {"event_id": "fake-m4-evt-002", "event_type": "rule_matched", "rule_id": "saxon_homework_odds", "runtime_executed": false},
+    {"event_id": "fake-m4-evt-003", "event_type": "evidence_package_attached", "evidence_package_id": "fake-m4-evidence-001", "runtime_executed": false},
+    {"event_id": "fake-m4-evt-004", "event_type": "confidence_calculated", "final_confidence": 0.86, "runtime_executed": false},
+    {"event_id": "fake-m4-evt-005", "event_type": "duplicate_warning_attached", "duplicate_group_id": "fake-dup-group-filename-001", "runtime_executed": false},
+    {"event_id": "fake-m4-evt-006", "event_type": "version_warning_attached", "version_group_id": "fake-ver-group-saxon-lesson-021", "runtime_executed": false},
+    {"event_id": "fake-m4-evt-007", "event_type": "teacher_only_warning_attached", "suggestion_id": "fake-m4-rename-002", "runtime_executed": false},
+    {"event_id": "fake-m4-evt-008", "event_type": "student_facing_leakage_warning_attached", "suggestion_id": "fake-m4-rename-002", "runtime_executed": false},
+    {"event_id": "fake-m4-evt-009", "event_type": "suggestion_edited_by_teacher_planned", "suggestion_id": "fake-m4-rename-001", "runtime_executed": false},
+    {"event_id": "fake-m4-evt-010", "event_type": "suggestion_approved_by_teacher_planned", "suggestion_id": "fake-m4-rename-001", "runtime_executed": false},
+    {"event_id": "fake-m4-evt-011", "event_type": "execution_requested_blocked", "suggestion_id": "fake-m4-rename-001", "blocked_action": "execute_rename_now", "runtime_executed": false},
+    {"event_id": "fake-m4-evt-012", "event_type": "organization_operation_blocked", "suggestion_id": "fake-m4-rename-001", "runtime_executed": false},
+    {"event_id": "fake-m4-evt-013", "event_type": "do_not_scan_excluded_from_suggestion", "resource_id": "fake-resource-do-not-scan-blocked", "runtime_executed": false}
+  ]
+}

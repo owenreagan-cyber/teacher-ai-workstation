@@ -1455,6 +1455,27 @@ else
   warn "Teacher Knowledge Vault M3 fake duplicate search status script missing: scripts/teacher-knowledge-vault-m3-fake-duplicate-search-status.sh"
 fi
 
+section "Teacher Knowledge Vault M4 Smart Rename Foundation"
+if [[ -f scripts/teacher-knowledge-vault-m4-smart-rename-status.sh ]]; then
+  teacher_knowledge_vault_m4_result=0
+  teacher_knowledge_vault_m4_output="$(bash scripts/teacher-knowledge-vault-m4-smart-rename-status.sh 2>&1)" || teacher_knowledge_vault_m4_result=$?
+  teacher_knowledge_vault_m4_pass="$(summary_count "${teacher_knowledge_vault_m4_output}" "PASS")"
+  teacher_knowledge_vault_m4_warn="$(summary_count "${teacher_knowledge_vault_m4_output}" "WARN")"
+  teacher_knowledge_vault_m4_fail="$(summary_count "${teacher_knowledge_vault_m4_output}" "FAIL")"
+
+  if [[ "${teacher_knowledge_vault_m4_result}" != "0" ]]; then
+    printf '%s\n' "${teacher_knowledge_vault_m4_output}"
+    fail "Teacher Knowledge Vault M4 smart rename status failed"
+  elif [[ -n "${teacher_knowledge_vault_m4_pass}" && -n "${teacher_knowledge_vault_m4_warn}" && -n "${teacher_knowledge_vault_m4_fail}" ]]; then
+    printf 'Teacher Knowledge Vault M4 Smart Rename: PASS %s / WARN %s / FAIL %s\n' "${teacher_knowledge_vault_m4_pass}" "${teacher_knowledge_vault_m4_warn}" "${teacher_knowledge_vault_m4_fail}"
+    pass "Teacher Knowledge Vault M4 smart rename status completed"
+  else
+    pass "Teacher Knowledge Vault M4 smart rename status completed"
+  fi
+else
+  warn "Teacher Knowledge Vault M4 smart rename status script missing: scripts/teacher-knowledge-vault-m4-smart-rename-status.sh"
+fi
+
 section "Local Retrieval Foundation v0"
 if [[ -f scripts/local-retrieval-foundation-status.sh ]]; then
   local_retrieval_foundation_result=0

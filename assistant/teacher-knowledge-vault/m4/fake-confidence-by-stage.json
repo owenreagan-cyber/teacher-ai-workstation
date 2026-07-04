@@ -1,0 +1,17 @@
+{
+  "classification": "fake_local_planning_only",
+  "runtime_executed": false,
+  "stages": [
+    {"stage": "filesystem_path", "confidence": 0.85, "label": "path_label_confidence"},
+    {"stage": "source_label", "confidence": 0.90, "label": "source_label_confidence"},
+    {"stage": "rule_dsl", "confidence": 0.94, "label": "rule_confidence"},
+    {"stage": "duplicate_version", "confidence": 0.65, "label": "duplicate_version_confidence"},
+    {"stage": "package", "confidence": 0.88, "label": "package_confidence"},
+    {"stage": "native_extraction", "confidence": 0.0, "status": "future_only"},
+    {"stage": "ocr", "confidence": 0.0, "status": "future_only"},
+    {"stage": "ai", "confidence": 0.0, "status": "future_only"},
+    {"stage": "final", "confidence": 0.86, "label": "final_confidence"}
+  ],
+  "low_confidence_threshold": 0.70,
+  "low_confidence_routes_to_manual_review": true
+}

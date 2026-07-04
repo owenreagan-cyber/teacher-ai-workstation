@@ -1,0 +1,13 @@
+{
+  "classification": "fake_local_planning_only",
+  "runtime_executed": false,
+  "examples": [
+    {"canonical_filename": "math_g5_saxon_lesson_021_homework_odds_v1.pdf", "artifact_type": "homework", "audience": "student"},
+    {"canonical_filename": "math_g5_saxon_lesson_021_teacher_guide_v1.pdf", "artifact_type": "teacher_guide", "audience": "teacher_only"},
+    {"canonical_filename": "math_g5_saxon_power_up_h_v1.pdf", "artifact_type": "power_up", "audience": "student"},
+    {"canonical_filename": "reading_g4_rm_lesson_042_reader_section_v1.pdf", "artifact_type": "reader_section", "audience": "student"},
+    {"canonical_filename": "history_g5_ckhg_american_revolution_ch03_study_guide_blank_v1.pdf", "artifact_type": "study_guide", "audience": "student"},
+    {"canonical_filename": "science_g5_cksci_energy_transfer_unit01_assessment_teacher_key_v1.pdf", "artifact_type": "teacher_key", "audience": "teacher_only", "teacher_only_marker": true},
+    {"canonical_filename": "ai_generated_math_g5_lesson_021_review_game_v1.html", "artifact_type": "review_game", "audience": "student", "ai_generated": true}
+  ]
+}

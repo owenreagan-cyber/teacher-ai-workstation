@@ -1,0 +1,8 @@
+{
+  "classification": "fake_local_planning_only",
+  "fingerprint_set_id": "fake-fp-sample-001",
+  "binary_hash_placeholder": "fake-sha256-placeholder-hash",
+  "filename_fingerprint_placeholder": "math_g5_saxon_lesson_021_placeholder",
+  "structural_metadata_fingerprint_placeholder": "pdf-placeholder-metadata-only",
+  "semantic_fingerprint": "blocked_future_only"
+}

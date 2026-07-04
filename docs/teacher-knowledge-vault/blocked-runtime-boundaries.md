@@ -20,7 +20,8 @@ M0 architecture freeze does not authorize any runtime below
 | Connectors | Drive API, Gmail API, Obsidian sync, OAuth, network calls |
 | Student data | Rosters, grades, names, parent info, confidential records |
 | Background jobs | Schedulers, watchers, or autonomous memory writers |
-| Generation | AI-generated vault content without human review |
+| SQLite runtime | Creating or opening live `.db` catalog files |
+| M2+ from M1 fixtures | M1 fake catalog does not authorize discovery, connectors, or search runtime |
 
 ## Allowed in M0 (Documentation/Status Only)
 

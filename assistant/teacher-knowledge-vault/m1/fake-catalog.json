@@ -7,6 +7,9 @@
   "runtime_executed": false,
   "sqlite_database_created": false,
   "closure_marker": "complete_teacher_knowledge_vault_m1_fake_catalog_foundation",
+  "m0_architecture_freeze_preserved": true,
+  "m0_expansion_m1_alignment": "complete_teacher_knowledge_vault_m0_expansion_m1_alignment",
+  "m2_plus_runtime_blocked": true,
   "entity_counts": {
     "resources": 14,
     "representations": 18,

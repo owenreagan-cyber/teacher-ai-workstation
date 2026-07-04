@@ -1,0 +1,14 @@
+{
+  "classification": "fake_local_planning_only",
+  "metrics_snapshot_label": "fake_m0_observability_sample",
+  "runtime_executed": false,
+  "sources_configured": 0,
+  "ocr_jobs_requested": 0,
+  "ocr_jobs_blocked": 0,
+  "ai_classifications_requested": 0,
+  "ai_classifications_blocked": 0,
+  "api_cost_estimate_usd": 0.0,
+  "real_files_processed": 0,
+  "teacher_only_risks_flagged": 0,
+  "student_facing_leakage_risks_flagged": 0
+}

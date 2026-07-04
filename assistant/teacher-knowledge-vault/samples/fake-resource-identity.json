@@ -1,0 +1,14 @@
+{
+  "classification": "fake_local_planning_only",
+  "resource_id": "fake-resource-saxon-lesson-021",
+  "title": "Placeholder Math Lesson 21 Homework",
+  "principle": "a file is not the resource",
+  "representations": [
+    "fake-rep-saxon-textbook-021",
+    "fake-rep-saxon-teacher-guide-021",
+    "fake-rep-saxon-homework-021",
+    "fake-rep-saxon-answer-key-021",
+    "fake-rep-saxon-canvas-package-021"
+  ],
+  "metadata_only": true
+}

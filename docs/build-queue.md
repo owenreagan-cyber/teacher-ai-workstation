@@ -8,7 +8,7 @@ Phase 0E Vibe Engine.
 
 ## Current Focus
 
-**curriculum library setup and manual registry foundation complete — planning/docs/fake fixtures only; no real folders; `~/TeacherAI-Curriculum-Library/` blocked until Owen-approved creation mission. Teacher Knowledge Vault M0 architecture freeze complete (PR #253). Teacher Knowledge Vault M1 fake catalog foundation — SQLite schema direction and fake fixtures only; no scanning, connectors, or file operations.**
+**curriculum library setup and manual registry foundation complete. Teacher Knowledge Vault M0 expansion and M1-aligned freeze complete. Teacher Knowledge Vault M1 fake catalog foundation complete (PR #254). M2+ blocked.**
 
 | Master inventory (app ecosystem): `docs/app-ecosystem-inventory-and-prototype-build-list.md`; `--app-ecosystem-inventory-status`. **Curriculum Library setup foundation** (`docs/curriculum-library/`; `--curriculum-library-foundation-status`; no real folders). **Teacher Knowledge Vault M0** (`--teacher-knowledge-vault-m0-architecture-freeze-status`). **Teacher Knowledge Vault M1 fake catalog** (`docs/teacher-knowledge-vault/m1-fake-catalog-foundation.md`; `--teacher-knowledge-vault-m1-fake-catalog-status`; no SQLite runtime). **Classroom Timer Level 3 prototype** (`apps/classroom-timer-stopwatch/`; `--classroom-timer-stopwatch-runtime-status`). **runtime approval gate** (`docs/app-runtime-approval-gate-program.md`; `--app-runtime-approval-gate-status`): 1 app approved (Timer only). app ecosystem planning lanes program complete (Tier 1–3). Tier 4–7 blocked summary: `docs/proposals/blocked/high-risk-app-planning-blocked-summary.md`. agent builder governance complete. first governed production registry record complete (Option D parked). No runtime activation beyond Timer local prototype.
 
@@ -18,7 +18,9 @@ Handoff and status clarity. Start from `docs/phase-1-chief-of-staff-status-audit
 
 ## Recently Completed
 
-- Teacher Knowledge Vault M1 Fake Catalog Foundation (2026-07-04): `docs/teacher-knowledge-vault/m1-fake-catalog-foundation.md`; `assistant/teacher-knowledge-vault/m1/`; `--teacher-knowledge-vault-m1-fake-catalog-status`; fake catalog/event log/review queue/search fixtures; SQL schema draft not executed; M2–M8 blocked.
+- Teacher Knowledge Vault M0 Expansion and M1 Alignment (2026-07-04): full ADR set, expanded architecture docs, M0 sample fixtures; M1 catalog M1 aligned to expanded M0; `complete_teacher_knowledge_vault_m0_expansion_m1_alignment`; M2+ blocked.
+
+- Teacher Knowledge Vault M1 Fake Catalog Foundation (2026-07-04): PR #254; `assistant/teacher-knowledge-vault/m1/`; `--teacher-knowledge-vault-m1-fake-catalog-status`.
 
 - Teacher Knowledge Vault M0 Architecture Freeze (2026-07-04): `docs/teacher-knowledge-vault/`; fake fixtures; `--teacher-knowledge-vault-m0-architecture-freeze-status`; planning only — no `assistant/memory/knowledge/` population; auto-load blocked.
 

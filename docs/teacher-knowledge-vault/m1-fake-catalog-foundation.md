@@ -45,7 +45,20 @@ M0 froze architecture intent (`docs/teacher-knowledge-vault-m0-foundation.md`, `
 
 Closure marker: `complete_teacher_knowledge_vault_m1_fake_catalog_foundation`
 
-## Chief of Staff Commands
+Expansion alignment: `complete_teacher_knowledge_vault_m0_expansion_m1_alignment` (M1 aligned to expanded M0 — PR #254 + this mission)
+
+## M0 → M1 Alignment
+
+M1 fake catalog fixtures implement the expanded M0 architecture:
+
+- Resources are canonical objects; representations and source items are separate (`fake-resources.json`, `fake-representations.json`, `fake-source-items.json`)
+- Connector concepts appear as blocked placeholders — not implementations
+- `10_TEACHER_ONLY` uses `restricted_indexable`; `99_DO_NOT_SCAN` is blocked from review and search
+- All events and operations use `runtime_executed: false`
+- `api_cost_estimate_usd: 0.00` and `real_files_processed: 0`
+- M2–M8 remain blocked pending explicit approval
+
+Cross-reference expanded M0: `docs/teacher-knowledge-vault/m0-architecture-freeze.md`
 
 | Command | Purpose |
 | --- | --- |
@@ -56,8 +69,8 @@ Closure marker: `complete_teacher_knowledge_vault_m1_fake_catalog_foundation`
 
 | Milestone | Status |
 | --- | --- |
-| M0 Architecture freeze | complete (PR #253) |
-| **M1** Fake catalog foundation | **complete** (this mission) |
+| M0 Architecture freeze (expanded) | complete |
+| **M1** Fake catalog foundation | **complete** (PR #254, aligned) |
 | M2 Local filesystem discovery | blocked |
 | M3 Duplicate detection/search runtime | blocked |
 | M4 Smart Rename suggestions | blocked |

@@ -1,0 +1,9 @@
+{
+  "classification": "fake_local_planning_only",
+  "source_item_id": "fake-source-item-drive-placeholder-001",
+  "source_id": "fake-source-google-drive",
+  "placeholder_uri": "drive-placeholder://TeacherAI-Curriculum-Library/01_MATH/lesson-021/",
+  "scan_policy": "normal",
+  "connector_implemented": false,
+  "metadata_only": true
+}

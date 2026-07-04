@@ -1,0 +1,25 @@
+{
+  "classification": "fake_local_planning_only",
+  "planned_root": "TeacherAI-Curriculum-Library/",
+  "local_root_created": false,
+  "canonical_storage": ["google_drive", "ugreen_nas"],
+  "top_level_folders": [
+    "00_INBOX_UNSORTED",
+    "00_TEMPLATES",
+    "01_MATH",
+    "02_READING_MASTERY",
+    "03_SPELLING",
+    "04_LANGUAGE_ARTS",
+    "05_WRITING",
+    "06_HISTORY",
+    "07_SCIENCE",
+    "08_CLASSROOM_APPS",
+    "09_PACING_GUIDES",
+    "10_TEACHER_ONLY",
+    "11_STUDENT_FACING",
+    "12_AI_GENERATED",
+    "90_ARCHIVE",
+    "99_DO_NOT_SCAN"
+  ],
+  "note": "Use 10_TEACHER_ONLY not 09_TEACHER_ONLY"
+}

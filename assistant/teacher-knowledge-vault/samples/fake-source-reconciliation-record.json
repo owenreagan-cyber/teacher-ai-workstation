@@ -1,0 +1,11 @@
+{
+  "classification": "fake_local_planning_only",
+  "reconciliation_id": "fake-reconcile-001",
+  "resource_id": "fake-resource-drive-canvas-both",
+  "drive_present": true,
+  "canvas_present": true,
+  "nas_present": false,
+  "canonical_authority": "google_drive_and_ugreen_nas",
+  "drift_detected": false,
+  "runtime_executed": false
+}

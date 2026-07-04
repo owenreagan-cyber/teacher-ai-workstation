@@ -1,0 +1,14 @@
+{
+  "classification": "fake_local_planning_only",
+  "connector_status": "blocked",
+  "connectors": [
+    {"connector_id": "fake-connector-local-fs", "label": "Local Filesystem Connector", "status": "blocked"},
+    {"connector_id": "fake-connector-google-drive", "label": "Google Drive Connector", "status": "blocked"},
+    {"connector_id": "fake-connector-ugreen-nas", "label": "UGREEN NAS Connector", "status": "blocked"},
+    {"connector_id": "fake-connector-canvas", "label": "Canvas Connector", "status": "blocked"},
+    {"connector_id": "fake-connector-icloud", "label": "iCloud Connector", "status": "blocked"},
+    {"connector_id": "fake-connector-notebooklm", "label": "NotebookLM Planning Connector", "status": "blocked"},
+    {"connector_id": "fake-connector-gemini", "label": "Gemini Planning Connector", "status": "blocked"}
+  ],
+  "interface_methods": ["discover", "listFolders", "listFiles", "getMetadata", "getContentPreview", "download", "supportsHash", "supportsWatch", "capabilities"]
+}

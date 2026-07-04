@@ -1,0 +1,19 @@
+classification: fake_local_planning_only
+rule:
+  id: saxon_power_up_placeholder
+  version: 1
+detect:
+  contains:
+    - "Power Up"
+    - "Intermediate 5"
+extract:
+  fields:
+    power_up_letter: "[A-K]"
+rename:
+  pattern: "math_g5_saxon_power_up_{power_up_letter}_v1.pdf"
+destination:
+  path: "01_MATH/03_power_ups/individual_power_up_letters/"
+confidence:
+  rule: 0.98
+requires_review: true
+runtime_approved: false

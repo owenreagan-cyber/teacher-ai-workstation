@@ -16,6 +16,7 @@ App ecosystem planning lanes closure: complete_app_ecosystem_planning_lanes_prog
 App runtime approval gate closure: complete_app_runtime_approval_gate_program
 Classroom Timer Level 3 runtime: level_3_classroom_timer_stopwatch_runtime_prototype
 Vibe / Wallpaper / Widgets planning gate closure: complete_vibe_wallpaper_widgets_planning_gate_program
+Curriculum Library setup foundation closure: complete_curriculum_library_setup_and_manual_registry_foundation
 Presentation Engine planning closure: complete_presentation_engine_renderer_foundation_planning
 A4–A7 fixture enrichment closure: complete_a4_a7_fixture_optional_field_enrichment
 Classroom Utility templates closure: complete_classroom_utility_per_app_mission_templates
@@ -322,6 +323,7 @@ Cross-references: `docs/build-queue.md`, `docs/master-build-roadmap.md`, `docs/p
 | App runtime approval gate | `--app-runtime-approval-gate-status` |
 | Classroom Timer & Stopwatch planning | `--classroom-timer-stopwatch-planning-status` |
 | Classroom Timer & Stopwatch runtime | `--classroom-timer-stopwatch-runtime-status` |
+| Curriculum Library foundation | `--curriculum-library-foundation-status`; `docs/curriculum-library/` |
 | Vibe / Wallpaper / Widgets planning status | 95 / 0 / 0 PASS |
 | Presentation Engine renderer foundation | `--presentation-engine-renderer-foundation-status` |
 | Gemini discovery/classification intake | `--gemini-discovery-classification-intake-status` |
@@ -335,7 +337,7 @@ Cross-references: `docs/build-queue.md`, `docs/master-build-roadmap.md`, `docs/p
 | Empty-file status (historical) | 30 / 0 / 0 PASS |
 | Phase-1 | 920 / 0 / 0 PASS |
 | Active mission | None |
-| Next step | Vibe / Wallpaper / Widgets planning gate complete; Timer hardening or next planning-only approval packet; registry parked (Option D) |
+| Next step | Curriculum Library setup foundation complete; next Owen-approved local folder creation script mission; Timer remains only runtime app; registry parked (Option D) |
 
 **Safety gates preserved:** First governed production registry record exists (`records` count exactly 1; ID `resource-math-lesson-108-presentation`); `BLOCKED-NO-WRITES.sentinel` intact; no `--write`; no writer scripts; no second production record; real curriculum file access blocked; copied curriculum content blocked; source auto-resolution blocked; integration and runtime gates blocked.
 

@@ -10,8 +10,9 @@ echo "Running Classroom Timer runtime static safety tests..."
 app_dir="apps/classroom-timer-stopwatch"
 timer_js="${app_dir}/timer.js"
 index_html="${app_dir}/index.html"
+styles_css="${app_dir}/styles.css"
 
-for f in "${timer_js}" "${index_html}"; do
+for f in "${timer_js}" "${index_html}" "${styles_css}"; do
   [[ -f "${f}" ]] || { echo "FAIL: missing ${f}"; exit 1; }
 done
 
@@ -26,6 +27,17 @@ done
 
 for required in 'function start' 'function pause' 'function reset' 'setInterval' 'countdown' 'stopwatch'; do
   grep -Fq "${required}" "${timer_js}" || { echo "FAIL: missing required pattern: ${required}"; exit 1; }
+done
+
+for a11y in 'function announceStatus' 'Preset applied:' 'applyPreset(' 'sr-announcer' \
+  'aria-live="polite"' 'keyboard-hints' ':focus-visible' 'if (running)'; do
+  if [[ "${a11y}" == ':focus-visible' ]]; then
+    grep -Fq "${a11y}" "${styles_css}" || { echo "FAIL: missing accessibility pattern: ${a11y}"; exit 1; }
+  elif [[ "${a11y}" == 'keyboard-hints' || "${a11y}" == 'sr-announcer' || "${a11y}" == 'aria-live="polite"' ]]; then
+    grep -Fq "${a11y}" "${index_html}" || { echo "FAIL: missing accessibility pattern: ${a11y}"; exit 1; }
+  else
+    grep -Fq "${a11y}" "${timer_js}" || { echo "FAIL: missing accessibility pattern: ${a11y}"; exit 1; }
+  fi
 done
 
 grep -Fq '<script src="timer.js">' "${index_html}" || { echo "FAIL: local script only"; exit 1; }

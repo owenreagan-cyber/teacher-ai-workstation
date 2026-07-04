@@ -30,8 +30,20 @@ Owen Level 3 approval: 2026-07-04 explicit mission — Level 3 approved by Owen
 | Stopwatch mode | implemented |
 | Start / pause / reset | implemented |
 | Static presets | implemented — fake/local labels only |
+| Accessibility hardening (2026-07-04) | focus-visible rings, skip link, sr announcer, keyboard presets 1–7, duplicate-interval guards |
 
-## Still Blocked Runtime Surfaces
+## Level 3 Hardening (Not Level 4)
+
+Post-PR #249 polish within approved Level 3 scope only:
+
+- Visible `:focus-visible` rings on all controls
+- Screen-reader `sr-announcer` region with text announcements on preset apply, mode switch, start/pause/reset, countdown complete
+- Keyboard preset selection (keys 1–7) when focus is not on a button
+- Skip link to main timer panel
+- High-contrast smartboard typography and disabled-button clarity
+- Duplicate interval protection in `startInterval`
+
+Does **not** approve audio, persistence, widgets, shortcuts, or other apps.
 
 ```text
 audio playback

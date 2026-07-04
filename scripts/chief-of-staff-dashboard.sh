@@ -1797,6 +1797,27 @@ else
   warn "Owen architecture decision packets status script missing: scripts/owen-architecture-decision-packets-status.sh"
 fi
 
+section "App Ecosystem Inventory"
+if [[ -f scripts/app-ecosystem-inventory-status.sh ]]; then
+  app_ecosystem_result=0
+  app_ecosystem_output="$(bash scripts/app-ecosystem-inventory-status.sh 2>&1)" || app_ecosystem_result=$?
+  app_ecosystem_pass="$(summary_count "${app_ecosystem_output}" "PASS")"
+  app_ecosystem_warn="$(summary_count "${app_ecosystem_output}" "WARN")"
+  app_ecosystem_fail="$(summary_count "${app_ecosystem_output}" "FAIL")"
+
+  if [[ "${app_ecosystem_result}" != "0" ]]; then
+    printf '%s\n' "${app_ecosystem_output}"
+    fail "App ecosystem inventory status failed"
+  elif [[ -n "${app_ecosystem_pass}" && -n "${app_ecosystem_warn}" && -n "${app_ecosystem_fail}" ]]; then
+    printf 'App Ecosystem Inventory: PASS %s / WARN %s / FAIL %s\n' "${app_ecosystem_pass}" "${app_ecosystem_warn}" "${app_ecosystem_fail}"
+    pass "App ecosystem inventory status completed"
+  else
+    pass "App ecosystem inventory status completed"
+  fi
+else
+  warn "App ecosystem inventory status script missing: scripts/app-ecosystem-inventory-status.sh"
+fi
+
 section "Curriculum Source Readiness Foundation"
 if [[ -f scripts/curriculum-source-readiness-status.sh ]]; then
   curriculum_source_readiness_result=0

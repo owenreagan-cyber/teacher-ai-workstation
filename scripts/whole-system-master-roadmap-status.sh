@@ -109,6 +109,8 @@ check_doc_contains "${report}" "complete_agent_builder_compatibility_governance_
 check_doc_contains "${report}" "--agent-builder-compatibility-governance-status" "agent builder governance status command cross-link"
 check_doc_contains "${report}" "complete_owen_architecture_decision_packets_program" "decision packets closure"
 check_doc_contains "${report}" "--owen-architecture-decision-packets-status" "decision packets status command cross-link"
+check_doc_contains "${report}" "complete_app_ecosystem_inventory_and_prototype_build_list" "app ecosystem inventory closure"
+check_doc_contains "${report}" "--app-ecosystem-inventory-status" "app ecosystem inventory status command cross-link"
 check_file docs/whole-system-coherence-maintenance-report.md
 
 section 'Production Registry Parked-State Proof'
@@ -242,6 +244,23 @@ if [[ -f scripts/owen-architecture-decision-packets-status.sh ]]; then
   fi
 else
   fail 'Owen architecture decision packets status script missing'
+fi
+
+section 'Dependent Status: App Ecosystem Inventory'
+if [[ -f scripts/app-ecosystem-inventory-status.sh ]]; then
+  aei_output="$(bash scripts/app-ecosystem-inventory-status.sh 2>&1)" || aei_result=$?
+  aei_result="${aei_result:-0}"
+  if [[ "${aei_result}" != "0" ]]; then
+    fail 'app ecosystem inventory status script exited nonzero'
+    printf '%s\n' "${aei_output}" | tail -20
+  elif grep -q '^FAIL: [1-9]' <<< "${aei_output}"; then
+    fail 'app ecosystem inventory status reported FAIL'
+    printf '%s\n' "${aei_output}" | tail -20
+  else
+    pass 'app ecosystem inventory status component clean'
+  fi
+else
+  fail 'app ecosystem inventory status script missing'
 fi
 
 section 'Coherence Report Cross-Check (No Nested Run)'

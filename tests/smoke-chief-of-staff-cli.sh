@@ -153,6 +153,8 @@ bin/chief-of-staff --agent-builder-compatibility-governance-status >/dev/null
 bash tests/agent-builder-compatibility-governance-status-test.sh >/dev/null
 bin/chief-of-staff --owen-architecture-decision-packets-status >/dev/null
 bash tests/owen-architecture-decision-packets-status-test.sh >/dev/null
+bin/chief-of-staff --app-ecosystem-inventory-status >/dev/null
+bash tests/app-ecosystem-inventory-status-test.sh >/dev/null
 bin/chief-of-staff --presentation-engine-renderer-foundation-status >/dev/null
 bash tests/presentation-engine-renderer-foundation-status-test.sh >/dev/null
 bin/chief-of-staff --gemini-discovery-classification-intake-status >/dev/null

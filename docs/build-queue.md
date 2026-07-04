@@ -8,15 +8,17 @@ Phase 0E Vibe Engine.
 
 ## Current Focus
 
-**Owen architecture decision packets complete — Owen owns all blocked-gate choices; production registry parked (Option D).**
+**App ecosystem inventory complete — 52 canonical apps classified; Owen owns app priority; production registry parked (Option D).**
 
-Decision packet index: `docs/owen-architecture-decision-packets.md`; `--owen-architecture-decision-packets-status`. Six packets ready for Owen review (registry, directory layout, classroom priority, external builder trial, local LLM, integrations). Chief of Staff does not choose options for Owen. agent builder governance complete. first governed production registry record complete (Option D parked). No runtime activation.
+Master inventory (app ecosystem): `docs/app-ecosystem-inventory-and-prototype-build-list.md`; `--app-ecosystem-inventory-status`. 52-app deduplicated prototype build list with risk tiers 1–7. Classroom utility priority decisions use full inventory (9-app matrix superseded for scope). Chief of Staff does not choose app priority for Owen. agent builder governance complete. first governed production registry record complete (Option D parked). No runtime activation.
 
 Master program roadmap: `docs/master-build-roadmap.md` — Program Readiness Audit and mission sequencing for v1.0. Whole-system report: `docs/whole-system-master-roadmap-build-state-report.md`. Implementation does not proceed automatically from the roadmap.
 
 Handoff and status clarity. Start from `docs/phase-1-chief-of-staff-status-audit.md` — Repo-Wide Parked Tracks and Active Status Map and `docs/build-queue.md`.
 
 ## Recently Completed
+
+- App Ecosystem Inventory and Prototype Build List Program (2026-07-03): 52-app inventory; risk tiers; `--app-ecosystem-inventory-status`; classroom priority packet updated. No runtime activation.
 
 - Owen Architecture Decision Packet Program (2026-07-03): six decision packets; main index; `--owen-architecture-decision-packets-status`. Owen owns decisions; no runtime activation.
 

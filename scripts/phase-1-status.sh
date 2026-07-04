@@ -1166,6 +1166,20 @@ check_doc_contains docs/owen-architecture-decision-packets.md "complete_owen_arc
 check_doc_contains docs/whole-system-master-roadmap-build-state-report.md "complete_owen_architecture_decision_packets_program" "whole-system report decision packets closure"
 grep -Fq -- '--owen-architecture-decision-packets-status' bin/chief-of-staff && pass "chief-of-staff exposes --owen-architecture-decision-packets-status" || fail "chief-of-staff missing --owen-architecture-decision-packets-status"
 
+section "App Ecosystem Inventory Files"
+for path in \
+  docs/app-ecosystem-inventory-and-prototype-build-list.md \
+  assistant/app-ecosystem/samples/canonical-inventory-ids.json \
+  scripts/app-ecosystem-inventory-status.sh \
+  tests/app-ecosystem-inventory-status-test.sh; do
+  check_required_file "${path}"
+done
+check_bash_syntax scripts/app-ecosystem-inventory-status.sh
+check_bash_syntax tests/app-ecosystem-inventory-status-test.sh
+check_doc_contains docs/app-ecosystem-inventory-and-prototype-build-list.md "complete_app_ecosystem_inventory_and_prototype_build_list" "app ecosystem inventory closure"
+check_doc_contains docs/whole-system-master-roadmap-build-state-report.md "complete_app_ecosystem_inventory_and_prototype_build_list" "whole-system report app ecosystem closure"
+grep -Fq -- '--app-ecosystem-inventory-status' bin/chief-of-staff && pass "chief-of-staff exposes --app-ecosystem-inventory-status" || fail "chief-of-staff missing --app-ecosystem-inventory-status"
+
 section "Presentation Engine Renderer Foundation Planning Files"
 for path in \
   docs/presentation-engine-renderer-foundation.md \

@@ -42,12 +42,11 @@ Record the whole-system coherence maintenance pass after recent planning lanes (
 ## Current Global State Proof (Post Agent Builder Governance)
 
 ```text
-Dashboard: 136 / 0 / 0 PASS
-Validate-all: 54 / 0 / 0 PASS
-Phase-1: 849 / 0 / 0 PASS
-Whole-system coherence status: 52 / 0 / 0 PASS
-Agent builder governance status: 44 / 0 / 0 PASS
-Owen architecture decision packets status: 65 / 0 / 0 PASS
+Dashboard: 137 / 0 / 0 PASS
+Validate-all: 55 / 0 / 0 PASS
+Phase-1: 858 / 0 / 0 PASS
+Whole-system coherence status: 56 / 0 / 0 PASS
+App ecosystem inventory status: 48 / 0 / 0 PASS
 Chief of Staff launches external agents: no
 ```
 

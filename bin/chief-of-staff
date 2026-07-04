@@ -236,6 +236,7 @@ Developer and Cursor Workflow:
                                        Show agent builder compatibility and external tool governance status and exit.
   --owen-architecture-decision-packets-status
                                        Show Owen architecture decision packet index and boundary proof and exit.
+  --app-ecosystem-inventory-status     Show app ecosystem inventory and prototype build list status and exit.
   --developer-status                   Show local Developer Mode status and exit.
   --create-developer-project <template> <slug>
                                        Copy a Developer Mode template into local projects.
@@ -2748,6 +2749,15 @@ while [[ $# -gt 0 ]]; do
         die "Owen architecture decision packets status script is missing: scripts/owen-architecture-decision-packets-status.sh"
       fi
       bash "${decision_packets_status_script}"
+      exit 0
+      ;;
+    --app-ecosystem-inventory-status)
+      repo_root="$(resolve_repo_root)"
+      app_ecosystem_inventory_status_script="${repo_root}/scripts/app-ecosystem-inventory-status.sh"
+      if [[ ! -f "${app_ecosystem_inventory_status_script}" ]]; then
+        die "App ecosystem inventory status script is missing: scripts/app-ecosystem-inventory-status.sh"
+      fi
+      bash "${app_ecosystem_inventory_status_script}"
       exit 0
       ;;
     --developer-status)

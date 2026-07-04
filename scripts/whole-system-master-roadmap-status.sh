@@ -115,6 +115,8 @@ check_doc_contains "${report}" "complete_classroom_timer_stopwatch_planning_lane
 check_doc_contains "${report}" "--classroom-timer-stopwatch-planning-status" "timer planning status command cross-link"
 check_doc_contains "${report}" "complete_app_ecosystem_planning_lanes_program" "planning lanes program closure"
 check_doc_contains "${report}" "--app-ecosystem-planning-lanes-status" "planning lanes status command cross-link"
+check_doc_contains "${report}" "complete_app_runtime_approval_gate_program" "runtime approval gate closure"
+check_doc_contains "${report}" "--app-runtime-approval-gate-status" "runtime approval gate status command cross-link"
 check_file docs/whole-system-coherence-maintenance-report.md
 
 section 'Production Registry Parked-State Proof'
@@ -299,6 +301,23 @@ if [[ -f scripts/app-ecosystem-planning-lanes-status.sh ]]; then
   fi
 else
   fail 'App ecosystem planning lanes status script missing'
+fi
+
+section 'Dependent Status: App Runtime Approval Gate'
+if [[ -f scripts/app-runtime-approval-gate-status.sh ]]; then
+  ara_output="$(bash scripts/app-runtime-approval-gate-status.sh 2>&1)" || ara_result=$?
+  ara_result="${ara_result:-0}"
+  if [[ "${ara_result}" != "0" ]]; then
+    fail 'App runtime approval gate status script exited nonzero'
+    printf '%s\n' "${ara_output}" | tail -20
+  elif grep -q '^FAIL: [1-9]' <<< "${ara_output}"; then
+    fail 'App runtime approval gate status reported FAIL'
+    printf '%s\n' "${ara_output}" | tail -20
+  else
+    pass 'App runtime approval gate status component clean'
+  fi
+else
+  fail 'App runtime approval gate status script missing'
 fi
 
 section 'Coherence Report Cross-Check (No Nested Run)'

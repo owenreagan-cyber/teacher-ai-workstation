@@ -1860,6 +1860,27 @@ else
   warn "App ecosystem planning lanes status script missing: scripts/app-ecosystem-planning-lanes-status.sh"
 fi
 
+section "App Runtime Approval Gate"
+if [[ -f scripts/app-runtime-approval-gate-status.sh ]]; then
+  approval_gate_result=0
+  approval_gate_output="$(bash scripts/app-runtime-approval-gate-status.sh 2>&1)" || approval_gate_result=$?
+  approval_gate_pass="$(summary_count "${approval_gate_output}" "PASS")"
+  approval_gate_warn="$(summary_count "${approval_gate_output}" "WARN")"
+  approval_gate_fail="$(summary_count "${approval_gate_output}" "FAIL")"
+
+  if [[ "${approval_gate_result}" != "0" ]]; then
+    printf '%s\n' "${approval_gate_output}"
+    fail "App runtime approval gate status failed"
+  elif [[ -n "${approval_gate_pass}" && -n "${approval_gate_warn}" && -n "${approval_gate_fail}" ]]; then
+    printf 'App Runtime Approval Gate: PASS %s / WARN %s / FAIL %s\n' "${approval_gate_pass}" "${approval_gate_warn}" "${approval_gate_fail}"
+    pass "App runtime approval gate status completed"
+  else
+    pass "App runtime approval gate status completed"
+  fi
+else
+  warn "App runtime approval gate status script missing: scripts/app-runtime-approval-gate-status.sh"
+fi
+
 section "Curriculum Source Readiness Foundation"
 if [[ -f scripts/curriculum-source-readiness-status.sh ]]; then
   curriculum_source_readiness_result=0

@@ -147,6 +147,7 @@ run_track "Owen Decision Packets" scripts/owen-architecture-decision-packets-sta
 run_track "App Ecosystem Inventory" scripts/app-ecosystem-inventory-status.sh
 run_track "Timer Stopwatch Planning" scripts/classroom-timer-stopwatch-planning-status.sh
 run_track "App Ecosystem Planning Lanes" scripts/app-ecosystem-planning-lanes-status.sh
+run_track "App Runtime Approval Gate" scripts/app-runtime-approval-gate-status.sh
 run_track "Presentation Engine Renderer Foundation" scripts/presentation-engine-renderer-foundation-status.sh
 run_track "Gemini Discovery Classification Intake" scripts/gemini-discovery-classification-intake-status.sh
 run_track "Markdown Frontmatter Planning" scripts/markdown-frontmatter-planning-status.sh

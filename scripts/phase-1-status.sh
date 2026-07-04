@@ -1213,6 +1213,25 @@ check_doc_contains docs/app-ecosystem-planning-lanes-program.md "complete_app_ec
 check_doc_contains docs/whole-system-master-roadmap-build-state-report.md "complete_app_ecosystem_planning_lanes_program" "whole-system report planning lanes program closure"
 grep -Fq -- '--app-ecosystem-planning-lanes-status' bin/chief-of-staff && pass "chief-of-staff exposes --app-ecosystem-planning-lanes-status" || fail "chief-of-staff missing --app-ecosystem-planning-lanes-status"
 
+section "App Runtime Approval Gate Program Files"
+for path in \
+  docs/app-runtime-approval-gate-program.md \
+  docs/app-ecosystem/runtime-implementation-approval-gate.md \
+  docs/app-ecosystem/runtime-app-boundary-checklist.md \
+  docs/app-ecosystem/app-production-readiness-matrix.md \
+  assistant/app-ecosystem/samples/runtime-approval-manifest.json \
+  docs/app-ecosystem/implementation-packets/classroom-timer-stopwatch-runtime-approval-packet.md \
+  docs/app-ecosystem/implementation-packets/interactive-bingo-caller-implementation-packet.md \
+  scripts/app-runtime-approval-gate-status.sh \
+  tests/app-runtime-approval-gate-status-test.sh; do
+  check_required_file "${path}"
+done
+check_bash_syntax scripts/app-runtime-approval-gate-status.sh
+check_bash_syntax tests/app-runtime-approval-gate-status-test.sh
+check_doc_contains docs/app-ecosystem/runtime-implementation-approval-gate.md "complete_app_runtime_approval_gate_program" "runtime approval gate closure"
+check_doc_contains docs/whole-system-master-roadmap-build-state-report.md "complete_app_runtime_approval_gate_program" "whole-system report approval gate closure"
+grep -Fq -- '--app-runtime-approval-gate-status' bin/chief-of-staff && pass "chief-of-staff exposes --app-runtime-approval-gate-status" || fail "chief-of-staff missing --app-runtime-approval-gate-status"
+
 section "Presentation Engine Renderer Foundation Planning Files"
 for path in \
   docs/presentation-engine-renderer-foundation.md \

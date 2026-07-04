@@ -45,6 +45,7 @@ These flags exist in `bin/chief-of-staff` and work as read-only local status sur
 | `bin/chief-of-staff --app-ecosystem-inventory-status` | App ecosystem inventory and prototype build list (52 apps; Owen owns priority) |
 | `bin/chief-of-staff --classroom-timer-stopwatch-planning-status` | Classroom Timer & Stopwatch planning lane (Owen selected; no runtime) |
 | `bin/chief-of-staff --app-ecosystem-planning-lanes-status` | App ecosystem planning lanes program — Tier 1–3 aggregate (27 lanes; no runtime) |
+| `bin/chief-of-staff --app-runtime-approval-gate-status` | App runtime approval gate and production-readiness matrix (0 runtime approved) |
 | `bin/chief-of-staff --gemini-discovery-classification-intake-status` | Gemini discovery/classification external planning intake (classification only) |
 | `bin/chief-of-staff --markdown-frontmatter-planning-status` | Markdown frontmatter / manual metadata planning (read-only; no parser) |
 | `bin/chief-of-staff --return-to-core-status` | Parked tracks / return-to-core map |

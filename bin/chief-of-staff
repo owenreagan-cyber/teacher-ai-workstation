@@ -241,6 +241,8 @@ Developer and Cursor Workflow:
                                        Show Classroom Timer & Stopwatch planning lane status and exit.
   --app-ecosystem-planning-lanes-status
                                        Show app ecosystem planning lanes program status (Tier 1–3) and exit.
+  --app-runtime-approval-gate-status
+                                       Show app runtime approval gate and production-readiness status and exit.
   --developer-status                   Show local Developer Mode status and exit.
   --create-developer-project <template> <slug>
                                        Copy a Developer Mode template into local projects.
@@ -2780,6 +2782,15 @@ while [[ $# -gt 0 ]]; do
         die "App ecosystem planning lanes status script is missing: scripts/app-ecosystem-planning-lanes-status.sh"
       fi
       bash "${planning_lanes_status_script}"
+      exit 0
+      ;;
+    --app-runtime-approval-gate-status)
+      repo_root="$(resolve_repo_root)"
+      approval_gate_status_script="${repo_root}/scripts/app-runtime-approval-gate-status.sh"
+      if [[ ! -f "${approval_gate_status_script}" ]]; then
+        die "App runtime approval gate status script is missing: scripts/app-runtime-approval-gate-status.sh"
+      fi
+      bash "${approval_gate_status_script}"
       exit 0
       ;;
     --developer-status)

@@ -159,6 +159,8 @@ bin/chief-of-staff --classroom-timer-stopwatch-planning-status >/dev/null
 bash tests/classroom-timer-stopwatch-planning-status-test.sh >/dev/null
 bin/chief-of-staff --app-ecosystem-planning-lanes-status >/dev/null
 bash tests/app-ecosystem-planning-lanes-status-test.sh >/dev/null
+bin/chief-of-staff --app-runtime-approval-gate-status >/dev/null
+bash tests/app-runtime-approval-gate-status-test.sh >/dev/null
 bin/chief-of-staff --presentation-engine-renderer-foundation-status >/dev/null
 bash tests/presentation-engine-renderer-foundation-status-test.sh >/dev/null
 bin/chief-of-staff --gemini-discovery-classification-intake-status >/dev/null

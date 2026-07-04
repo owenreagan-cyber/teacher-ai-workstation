@@ -60,6 +60,8 @@ High-risk inventory rows (student data, grades, behavior, integrations, generati
 2. Mission must cite the app planning doc + `--app-ecosystem-planning-lanes-status` PASS.
 3. Tier 3 apps require explicit Owen decision before implementation mission.
 4. Tier 4–7 require decision packet + dedicated safety mission.
+5. Level 2 runtime approval packet must exist — see `docs/app-runtime-approval-gate-program.md`.
+6. `--app-runtime-approval-gate-status` PASS required before any Level 3 mission.
 
 ## Proof
 

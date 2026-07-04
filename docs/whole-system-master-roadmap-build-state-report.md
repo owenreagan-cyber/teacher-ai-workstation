@@ -13,6 +13,7 @@ Decision packets closure: complete_owen_architecture_decision_packets_program
 App ecosystem inventory closure: complete_app_ecosystem_inventory_and_prototype_build_list
 Classroom Timer & Stopwatch planning closure: complete_classroom_timer_stopwatch_planning_lane
 App ecosystem planning lanes closure: complete_app_ecosystem_planning_lanes_program
+App runtime approval gate closure: complete_app_runtime_approval_gate_program
 Presentation Engine planning closure: complete_presentation_engine_renderer_foundation_planning
 A4–A7 fixture enrichment closure: complete_a4_a7_fixture_optional_field_enrichment
 Classroom Utility templates closure: complete_classroom_utility_per_app_mission_templates
@@ -30,7 +31,7 @@ Frontmatter planning closure: complete_curriculum_manual_metadata_frontmatter_pl
 
 | Class | Meaning | Examples in this repo |
 | --- | --- | --- |
-| **repo-backed evidence** | Merged files, status scripts, tests, CLI wiring with PASS proof | Dashboard 139/0/0; Timer & Stopwatch planning lane; App ecosystem planning lanes program |
+| **repo-backed evidence** | Merged files, status scripts, tests, CLI wiring with PASS proof | Dashboard 140/0/0; runtime approval gate; 0 runtime approved |
 | **planning/proposal-only evidence** | Docs, proposals, lane reviews without runtime activation | Writer tooling design boundary; second-record worksheet; Academic OS external intake |
 | **blocked implementation gates** | Explicit Owen/safety gates; negative tests; sentinel | `BLOCKED-NO-WRITES.sentinel`; no `--write`; Options A/B/C blocked |
 | **future ideas not started** | Named programs with no repo implementation | Live Vibe Panel; Lovable API; NAS crawler |
@@ -121,7 +122,7 @@ Cross-references: `docs/build-queue.md`, `docs/master-build-roadmap.md`, `docs/p
 
 | Marker | Item | Evidence |
 | --- | --- | --- |
-| [x] | CLI, dashboard (139/0/0), Program B daily ops, queues, `--next-action`, validate-all (57/0/0) | repo-backed |
+| [x] | CLI, dashboard (140/0/0), Program B daily ops, queues, `--next-action`, validate-all (58/0/0) | repo-backed |
 | [>] | Unified daily briefing (AI), B4 smoke expansion, B7 closure placeholder | planning/proposal-only |
 | [!] | Automation beyond read-only status | blocked gate |
 | **Proof** | `bin/chief-of-staff --dashboard`, `docs/chief-of-staff-v1-program-b-closure.md` | |
@@ -255,9 +256,11 @@ Cross-references: `docs/build-queue.md`, `docs/master-build-roadmap.md`, `docs/p
 | [x] | Classroom Timer & Stopwatch planning lane complete (Owen selected; Tier 1) | repo-backed — `docs/classroom-utilities/classroom-timer-stopwatch-planning.md`; `--classroom-timer-stopwatch-planning-status` |
 | [x] | App ecosystem planning lanes program complete (Tier 1–3; 27 lanes) | repo-backed — `docs/app-ecosystem-planning-lanes-program.md`; `--app-ecosystem-planning-lanes-status` |
 | [x] | Tier 4–7 high-risk apps blocked summary (no full planning lanes) | repo-backed — `docs/proposals/blocked/high-risk-app-planning-blocked-summary.md` |
+| [x] | App runtime approval gate complete (Level 2 packets; 0 runtime approved) | repo-backed — `docs/app-runtime-approval-gate-program.md`; `--app-runtime-approval-gate-status` |
+| [x] | Classroom Timer & Stopwatch recommended first runtime candidate (not approved) | repo-backed — `docs/app-ecosystem/implementation-packets/classroom-timer-stopwatch-runtime-approval-packet.md` |
 | [!] | All named utility apps blocked until per-app Owen **implementation** mission | blocked gate |
 | [!] | Student-data workflows (real rosters, grades, behavior logs) | blocked gate — absolute |
-| **Proof** | `--classroom-app-lab-status`; `--classroom-utility-templates-status`; `--app-ecosystem-inventory-status`; `--classroom-timer-stopwatch-planning-status`; `--app-ecosystem-planning-lanes-status` | |
+| **Proof** | `--classroom-app-lab-status`; `--classroom-utility-templates-status`; `--app-ecosystem-inventory-status`; `--classroom-timer-stopwatch-planning-status`; `--app-ecosystem-planning-lanes-status`; `--app-runtime-approval-gate-status` | |
 
 ---
 
@@ -303,13 +306,14 @@ Cross-references: `docs/build-queue.md`, `docs/master-build-roadmap.md`, `docs/p
 
 | Surface | State |
 | --- | --- |
-| Dashboard | 139 / 0 / 0 PASS |
-| Validate-all | 57 / 0 / 0 PASS |
+| Dashboard | 140 / 0 / 0 PASS |
+| Validate-all | 58 / 0 / 0 PASS |
 | Whole-system coherence maintenance | `--whole-system-coherence-status` |
 | Agent builder compatibility governance | `--agent-builder-compatibility-governance-status` |
 | Owen architecture decision packets | `--owen-architecture-decision-packets-status` |
 | App ecosystem inventory | `--app-ecosystem-inventory-status` |
 | App ecosystem planning lanes program | `--app-ecosystem-planning-lanes-status` |
+| App runtime approval gate | `--app-runtime-approval-gate-status` |
 | Classroom Timer & Stopwatch planning | `--classroom-timer-stopwatch-planning-status` |
 | Whole-system roadmap status | `--whole-system-master-roadmap-status` |
 | Presentation Engine renderer foundation | `--presentation-engine-renderer-foundation-status` |

@@ -57,9 +57,11 @@ for closure in \
   complete_owen_architecture_decision_packets_program \
   complete_app_ecosystem_inventory_and_prototype_build_list \
   complete_classroom_timer_stopwatch_planning_lane \
-  complete_app_ecosystem_planning_lanes_program; do
+  complete_app_ecosystem_planning_lanes_program \
+  complete_app_runtime_approval_gate_program; do
   check_doc_contains "${whole_system_report}" "${closure}" "whole-system report closure: ${closure}"
 done
+check_doc_contains docs/build-queue.md "runtime approval gate" "build queue approval gate"
 check_doc_contains docs/build-queue.md "planning lanes program" "build queue planning lanes program"
 check_doc_contains docs/build-queue.md "classroom timer" "build queue timer planning"
 check_doc_contains docs/build-queue.md "app ecosystem" "build queue app ecosystem"
@@ -71,12 +73,22 @@ check_doc_contains docs/proposals/index.md "Whole-system coherence maintenance" 
 check_doc_contains docs/teacher-workstation-capability-map.md "whole-system-coherence-status" "capability map coherence status"
 
 section 'Stale Count Hardening'
-check_doc_contains "${whole_system_report}" "139 / 0 / 0 PASS" "dashboard count current"
-check_doc_contains "${whole_system_report}" "57 / 0 / 0 PASS" "validate-all count current"
+check_doc_contains "${whole_system_report}" "140 / 0 / 0 PASS" "dashboard count current"
+check_doc_contains "${whole_system_report}" "58 / 0 / 0 PASS" "validate-all count current"
 if grep -Fq -- 'Dashboard 128/0/0' "${whole_system_report}" 2>/dev/null; then
   fail 'whole-system report must not contain stale Dashboard 128/0/0 example'
 else
   pass 'whole-system report excludes stale Dashboard 128/0/0'
+fi
+if grep -Fq -- 'dashboard (139/0/0)' "${whole_system_report}" 2>/dev/null; then
+  fail 'whole-system report must not contain stale dashboard (139/0/0) lane text'
+else
+  pass 'whole-system report excludes stale dashboard (139/0/0) lane text'
+fi
+if grep -Fq -- 'Dashboard 139/0/0' "${whole_system_report}" 2>/dev/null; then
+  fail 'whole-system report must not contain stale Dashboard 139/0/0 example'
+else
+  pass 'whole-system report excludes stale Dashboard 139/0/0 example'
 fi
 if grep -Fq -- 'dashboard (138/0/0)' "${whole_system_report}" 2>/dev/null; then
   fail 'whole-system report must not contain stale dashboard (138/0/0) lane text'
@@ -129,6 +141,7 @@ check_doc_contains docs/curriculum-builder-registry-expected-warns.md "--owen-ar
 check_doc_contains docs/curriculum-builder-registry-expected-warns.md "--app-ecosystem-inventory-status" "expected warns app ecosystem status"
 check_doc_contains docs/curriculum-builder-registry-expected-warns.md "--classroom-timer-stopwatch-planning-status" "expected warns timer planning status"
 check_doc_contains docs/curriculum-builder-registry-expected-warns.md "--app-ecosystem-planning-lanes-status" "expected warns planning lanes status"
+check_doc_contains docs/curriculum-builder-registry-expected-warns.md "--app-runtime-approval-gate-status" "expected warns approval gate status"
 
 section 'Production Registry Parked-State Proof'
 if [[ -f "${production_registry_path}" ]] && command -v python3 >/dev/null 2>&1; then

@@ -7,7 +7,8 @@ Status: documentation/status only
 Closure: complete_app_ecosystem_inventory_and_prototype_build_list
 Classification: planning inventory — not implementation approval
 Proof: bin/chief-of-staff --app-ecosystem-inventory-status
-Planning lanes program: complete_app_ecosystem_planning_lanes_program — `--app-ecosystem-planning-lanes-status`
+Planning lanes program: complete_app_ecosystem_planning_lanes_program
+Runtime approval gate: complete_app_runtime_approval_gate_program — `--app-runtime-approval-gate-status` — `--app-ecosystem-planning-lanes-status`
 Blocked Tier 4–7 summary: docs/proposals/blocked/high-risk-app-planning-blocked-summary.md
 Source: Owen planning input + repo discovery — not repo authority alone
 Chief of Staff chooses app priority for Owen: no
@@ -176,6 +177,8 @@ bin/chief-of-staff --app-ecosystem-inventory-status
 bash tests/app-ecosystem-inventory-status-test.sh
 bin/chief-of-staff --app-ecosystem-planning-lanes-status
 bash tests/app-ecosystem-planning-lanes-status-test.sh
+bin/chief-of-staff --app-runtime-approval-gate-status
+bash tests/app-runtime-approval-gate-status-test.sh
 ```
 
 ## Non-Activation

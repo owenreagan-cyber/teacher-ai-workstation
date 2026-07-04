@@ -4,3 +4,4 @@ Fake/local metadata for app ecosystem inventory status proof. Not consumed by an
 
 - `canonical-inventory-ids.json` — 52 known canonical app concepts for status verification
 - `planning-lanes-manifest.json` — Tier 1–3 planning lane index (27 lanes); `complete_app_ecosystem_planning_lanes_program`
+- `runtime-approval-manifest.json` — 52-app readiness matrix; Level 2 packets; `complete_app_runtime_approval_gate_program`

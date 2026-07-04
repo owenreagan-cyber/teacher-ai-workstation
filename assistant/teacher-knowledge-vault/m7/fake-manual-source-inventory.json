@@ -1,0 +1,29 @@
+{
+  "classification": "fake_local_planning_only",
+  "approval_level": 1,
+  "runtime_connected": false,
+  "entries": [
+    {
+      "entry_id": "fake-manual-entry-001",
+      "source_label": "fake-manual://drive-folder-label-math-g5/",
+      "entered_by": "teacher_manual",
+      "canonical_role": "canonical_storage",
+      "notes": "Owen-entered label only; no OAuth/API",
+      "student_data_included": false,
+      "runtime_connected": false
+    },
+    {
+      "entry_id": "fake-manual-entry-002",
+      "source_label": "fake-manual://canvas-module-label-fractions/",
+      "canonical_role": "deployment_target",
+      "student_data_included": false,
+      "runtime_connected": false
+    },
+    {
+      "entry_id": "fake-manual-entry-003",
+      "source_label": "fake-manual://nas-share-label-curriculum-mirror/",
+      "canonical_role": "mirror_backup",
+      "runtime_connected": false
+    }
+  ]
+}

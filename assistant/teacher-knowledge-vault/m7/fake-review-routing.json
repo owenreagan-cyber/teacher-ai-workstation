@@ -1,0 +1,75 @@
+{
+  "classification": "fake_local_planning_only",
+  "runtime_implemented": false,
+  "routing_items": [
+    {
+      "routing_id": "fake-m7-route-001",
+      "review_state": "connector_approval_requested",
+      "connector_id": "fake-connector-google-drive-001",
+      "requires_teacher_approval": true,
+      "runtime_implemented": false
+    },
+    {
+      "routing_id": "fake-m7-route-002",
+      "review_state": "connector_blocked_pending_approval",
+      "connector_id": "fake-connector-google-drive-001",
+      "blocked_reason": "Level 0 only in M7",
+      "runtime_implemented": false
+    },
+    {
+      "routing_id": "fake-m7-route-003",
+      "review_state": "oauth_requested_but_blocked",
+      "connector_id": "fake-connector-google-drive-001",
+      "runtime_implemented": false
+    },
+    {
+      "routing_id": "fake-m7-route-004",
+      "review_state": "api_call_requested_but_blocked",
+      "connector_id": "fake-connector-canvas-001",
+      "runtime_implemented": false
+    },
+    {
+      "routing_id": "fake-m7-route-005",
+      "entry_id": "fake-manual-entry-001",
+      "review_state": "source_inventory_manually_added",
+      "runtime_implemented": false
+    },
+    {
+      "routing_id": "fake-m7-route-006",
+      "record_id": "fake-drive-meta-001",
+      "review_state": "fake_drive_source_item_discovered",
+      "fake_only": true,
+      "runtime_implemented": false
+    },
+    {
+      "routing_id": "fake-m7-route-007",
+      "record_id": "fake-canvas-meta-reconcile-001",
+      "review_state": "fake_canvas_only_resource_flagged",
+      "runtime_implemented": false
+    },
+    {
+      "routing_id": "fake-m7-route-008",
+      "source_id": "fake-source-nas-mirror-001",
+      "review_state": "fake_nas_mirror_status_pending",
+      "runtime_implemented": false
+    },
+    {
+      "routing_id": "fake-m7-route-009",
+      "review_state": "content_preview_requested_but_blocked",
+      "blocked_reason": "content read separate from metadata",
+      "runtime_implemented": false
+    },
+    {
+      "routing_id": "fake-m7-route-010",
+      "review_state": "write_sync_requested_but_blocked",
+      "blocked_reason": "Level 5 write requires separate approval",
+      "runtime_implemented": false
+    },
+    {
+      "routing_id": "fake-m7-route-011",
+      "review_state": "student_data_risk_blocked",
+      "blocked_reason": "student submissions grades rosters blocked",
+      "runtime_implemented": false
+    }
+  ]
+}

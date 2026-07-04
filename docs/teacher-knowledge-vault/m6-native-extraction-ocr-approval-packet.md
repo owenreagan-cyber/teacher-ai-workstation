@@ -55,10 +55,11 @@ Cross-reference: ADR `0008-document-understanding-escalation-ladder.md`
 
 | Milestone | Status |
 | --- | --- |
-| M0–M5 | complete |
-| **M6** Extraction/OCR approval packet | **complete** (this mission) |
-| M2b / runtime extraction/OCR / search / rename / organization | blocked |
-| M7 Drive/NAS/Canvas connectors | blocked |
+| M0–M6 | complete |
+| **M6** Extraction/OCR approval packet | **complete** |
+| **M7** Read-only connector approval packet | **complete** |
+| M2b / Drive/NAS/Canvas connector implementation | blocked |
+| Runtime extraction/OCR / organization / search / rename | blocked |
 | M8 AI/RAG | blocked |
 
 ## Proof

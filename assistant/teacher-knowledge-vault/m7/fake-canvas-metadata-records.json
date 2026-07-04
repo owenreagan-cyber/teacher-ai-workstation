@@ -1,0 +1,37 @@
+{
+  "classification": "fake_local_planning_only",
+  "runtime_implemented": false,
+  "student_data_read_blocked": true,
+  "records": [
+    {
+      "record_id": "fake-canvas-meta-001",
+      "course_label": "fake-canvas://course-placeholder-math-g5/",
+      "module_label": "Module 3 — Fractions",
+      "item_label": "Lesson 021 Homework Handout",
+      "canvas_item_type": "file",
+      "updated_timestamp_placeholder": "2026-01-01T00:00:00Z",
+      "published_status": "published",
+      "linked_file_placeholder": "fake-canvas-file-placeholder-001",
+      "metadata_only": true,
+      "content_read_blocked": true,
+      "runtime_implemented": false
+    },
+    {
+      "record_id": "fake-canvas-meta-reconcile-001",
+      "course_label": "fake-canvas://course-placeholder-math-g5/",
+      "reconciliation_role": "canvas_only_resource",
+      "runtime_implemented": false
+    },
+    {
+      "record_id": "fake-canvas-meta-student-data-blocked",
+      "blocked_reason": "student submissions grades rosters blocked",
+      "student_data_risk": true,
+      "runtime_implemented": false
+    },
+    {
+      "record_id": "fake-canvas-meta-oauth-blocked",
+      "blocked_reason": "OAuth developer token setup blocked",
+      "runtime_implemented": false
+    }
+  ]
+}

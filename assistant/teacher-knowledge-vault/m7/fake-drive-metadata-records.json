@@ -1,0 +1,31 @@
+{
+  "classification": "fake_local_planning_only",
+  "runtime_implemented": false,
+  "content_read_executed": false,
+  "records": [
+    {
+      "record_id": "fake-drive-meta-001",
+      "file_id_placeholder": "fake-drive-file-placeholder-001",
+      "display_name": "placeholder_fraction_worksheet.pdf",
+      "mime_type": "application/pdf",
+      "parent_folder_label": "fake-drive://TeacherAI-Curriculum-Library/00_INBOX_UNSORTED/",
+      "modified_time_placeholder": "2026-01-01T00:00:00Z",
+      "size_bytes_placeholder": 102400,
+      "shortcut_status": false,
+      "metadata_only": true,
+      "content_read_blocked": true,
+      "runtime_implemented": false
+    },
+    {
+      "record_id": "fake-drive-meta-dns-blocked",
+      "parent_folder_label": "blocked-placeholder://99_DO_NOT_SCAN/",
+      "blocked_reason": "99_DO_NOT_SCAN Drive path blocked",
+      "runtime_implemented": false
+    },
+    {
+      "record_id": "fake-drive-meta-scan-root-blocked",
+      "blocked_reason": "scanning entire Drive root blocked",
+      "runtime_implemented": false
+    }
+  ]
+}

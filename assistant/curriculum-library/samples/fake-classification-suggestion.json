@@ -1,0 +1,38 @@
+{
+  "fixture_version": "0.1.0",
+  "classification": "fake_local_planning_only",
+  "metadata_only": true,
+  "runtime_approved": false,
+  "repo_authority": false,
+  "classification_status": "suggestion_planning_only",
+  "gate_level": 1,
+  "notes": "Fictional classification suggestion for approval-gate planning. Not applied to any real file.",
+  "suggestion": {
+    "file_id": "fake-file-001",
+    "path_placeholder": "local://fake/planning/by-subject/science/SM5/unit-03/lesson-02-slides.pptx",
+    "suggested_resource_type": "slides",
+    "suggested_subject": "science",
+    "suggested_grade_band": "SM5",
+    "suggested_course": "physical_science",
+    "suggested_unit": "unit_03",
+    "suggested_lesson": "lesson_02",
+    "confidence": "planning_fixture_only",
+    "requires_human_review": true,
+    "auto_apply_blocked": true
+  },
+  "blocked_runtime": [
+    "ocr",
+    "embeddings",
+    "ai_generation",
+    "folder_scanning",
+    "canvas_api",
+    "drive_api"
+  ],
+  "local_first_safety_flags": [
+    "fake_local_planning_only",
+    "metadata_only",
+    "no_student_data",
+    "not_scanned",
+    "suggestion_not_applied"
+  ]
+}

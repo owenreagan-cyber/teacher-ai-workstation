@@ -1,0 +1,87 @@
+{
+  "fixture_version": "0.1.0",
+  "classification": "fake_local_planning_only",
+  "metadata_only": true,
+  "runtime_app": "blocked",
+  "repo_authority": false,
+  "local_root_planned": "~/TeacherAI-Curriculum-Library/",
+  "local_root_created": false,
+  "notes": "Fictional folder tree for Curriculum Library setup planning. No real directories created.",
+  "tree": {
+    "name": "TeacherAI-Curriculum-Library",
+    "path_placeholder": "local://fake/planning/TeacherAI-Curriculum-Library",
+    "children": [
+      {
+        "name": "_inbox",
+        "role": "unsorted_triage",
+        "children": []
+      },
+      {
+        "name": "_staging",
+        "role": "canvas_export_prep",
+        "children": []
+      },
+      {
+        "name": "by-subject",
+        "role": "subject_organization",
+        "children": [
+          {
+            "name": "science",
+            "children": [
+              {
+                "name": "SM5",
+                "children": [
+                  { "name": "unit-01", "children": [] },
+                  { "name": "unit-02", "children": [] },
+                  { "name": "unit-03", "children": [] }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "history",
+            "children": [
+              {
+                "name": "grade-7",
+                "children": [
+                  { "name": "unit-04", "children": [] }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "teacher-only",
+        "role": "assessments_and_keys",
+        "children": []
+      },
+      {
+        "name": "canvas-ready",
+        "role": "manual_canvas_export_staging",
+        "children": [
+          {
+            "name": "science-sm5-unit-03-lesson-02",
+            "canvas_ready": true,
+            "children": [
+              { "name": "student-facing", "children": [] },
+              { "name": "teacher-only", "children": [] }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "registry",
+        "role": "manual_registry_files",
+        "children": [
+          { "name": "fake-manual-registry.csv", "file": true, "fictional": true }
+        ]
+      },
+      {
+        "name": "archive",
+        "role": "retired_references",
+        "children": []
+      }
+    ]
+  }
+}

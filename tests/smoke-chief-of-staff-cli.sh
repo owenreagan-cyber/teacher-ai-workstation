@@ -74,6 +74,9 @@ bin/chief-of-staff --curriculum-binding-v0-status >/dev/null
 bin/chief-of-staff --curriculum-binding-v0-validate >/dev/null
 bin/chief-of-staff --curriculum-binding-v0-lookup sample-sm5-textbook-001 >/dev/null
 bash tests/curriculum-binding-v0-test.sh >/dev/null
+bin/chief-of-staff --curriculum-library-foundation-status >/dev/null
+bash tests/curriculum-library-foundation-status-test.sh >/dev/null
+bin/chief-of-staff --curriculum-library-reference-v0-validate >/dev/null
 bash tests/curriculum-teacher-script-contract-v0-test.sh >/dev/null
 bash tests/curriculum-worksheet-contract-v0-test.sh >/dev/null
 bash tests/curriculum-review-game-contract-v0-test.sh >/dev/null

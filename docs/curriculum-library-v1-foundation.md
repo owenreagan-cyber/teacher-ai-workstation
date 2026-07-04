@@ -36,10 +36,19 @@ The library stores references and status. The builder validates structured regis
 | --- | --- | --- |
 | Storage strategy | `docs/curriculum-source-storage-strategy.md` | Drive/NAS/iCloud/local reference rules |
 | Resource registry plan | `docs/curriculum-resource-registry-plan.md` | Future manual registry planning |
+| **Setup and manual registry foundation** | `docs/curriculum-library/curriculum-library-setup-plan.md` | Folder taxonomy, manual registry, Canvas-ready, classification gate — **planning only** |
+| Manual registry plan | `docs/curriculum-library/manual-registry-plan.md` | CSV manual entry model |
+| Folder taxonomy | `docs/curriculum-library/folder-taxonomy.md` | Planned `~/TeacherAI-Curriculum-Library/` layout (not created) |
+| Canvas-ready definition | `docs/curriculum-library/canvas-ready-folder-definition.md` | Export staging rules (no Canvas API) |
+| Classification approval gate | `docs/curriculum-library/file-classification-approval-gate.md` | Gate before any classification runtime |
+| Fake planning fixtures | `assistant/curriculum-library/samples/` | Fictional tree, CSV, classification suggestion |
 | Reference schema v0 | `assistant/curriculum-library/v0/library-reference-schema.json` | Placeholder reference model schema |
 | Sample references | `assistant/curriculum-library/v0/sample-library-references.json` | Fictional reference fixtures |
-| Foundation status | `scripts/curriculum-library-foundation-status.sh` | Read-only v1 foundation closure proof |
+| Foundation status | `scripts/curriculum-library-foundation-status.sh` | Read-only foundation + setup closure proof |
+| Foundation status test | `tests/curriculum-library-foundation-status-test.sh` | Status command tests |
 | Reference validator | `scripts/curriculum-library-reference-v0-validator.sh` | Deterministic read-only JSON validation |
+
+Closure marker for setup foundation: `complete_curriculum_library_setup_and_manual_registry_foundation`
 
 ## Chief of Staff Command Surface
 
@@ -55,6 +64,7 @@ The library stores references and status. The builder validates structured regis
 ```bash
 bash scripts/curriculum-library-reference-v0-validator.sh
 bash scripts/curriculum-library-foundation-status.sh
+bash tests/curriculum-library-foundation-status-test.sh
 bin/chief-of-staff --dashboard
 bash tests/smoke-chief-of-staff-cli.sh
 ```

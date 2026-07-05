@@ -47,6 +47,10 @@ Per `docs/cursor-autonomous-build-engine.md` Expected WARN Policy.
 | `--teacher-knowledge-vault-m7g-persistent-working-catalog-backup` | 0 | No — targeted command only |
 | `--teacher-knowledge-vault-m7g-persistent-working-catalog-cleanup` | 0 | No — targeted command only |
 | `--teacher-knowledge-vault-m7g-persistent-working-catalog-status` | 0 | No — targeted command only |
+| `--teacher-knowledge-vault-m2b-repo-staging-metadata-discovery` | 0 | No — targeted command only |
+| `--teacher-knowledge-vault-m2b-repo-staging-metadata-import` | 0 | No — targeted command only |
+| `--teacher-knowledge-vault-m2b-repo-staging-metadata-cleanup` | 0 | No — targeted command only |
+| `--teacher-knowledge-vault-m2b-repo-staging-metadata-status` | 0 | No — targeted command only |
 | `--curriculum-registry-a4-a7-fixture-schema-status` | **0** (resolved 2026-07-03) | No — targeted command only |
 | `--gemini-discovery-classification-intake-status` | 0 | No — targeted command only |
 | `--markdown-frontmatter-planning-status` | 0 | No — targeted command only |

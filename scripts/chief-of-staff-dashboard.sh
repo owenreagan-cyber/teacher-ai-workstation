@@ -1660,6 +1660,27 @@ else
   warn "Teacher Knowledge Vault M7g persistent working catalog prototype status script missing: scripts/teacher-knowledge-vault-m7g-persistent-working-catalog-status.sh"
 fi
 
+section "Teacher Knowledge Vault M2b Repo-Owned Staging Metadata Prototype"
+if [[ -f scripts/teacher-knowledge-vault-m2b-repo-staging-metadata-status.sh ]]; then
+  teacher_knowledge_vault_m2b_result=0
+  teacher_knowledge_vault_m2b_output="$(bash scripts/teacher-knowledge-vault-m2b-repo-staging-metadata-status.sh 2>&1)" || teacher_knowledge_vault_m2b_result=$?
+  teacher_knowledge_vault_m2b_pass="$(summary_count "${teacher_knowledge_vault_m2b_output}" "PASS")"
+  teacher_knowledge_vault_m2b_warn="$(summary_count "${teacher_knowledge_vault_m2b_output}" "WARN")"
+  teacher_knowledge_vault_m2b_fail="$(summary_count "${teacher_knowledge_vault_m2b_output}" "FAIL")"
+
+  if [[ "${teacher_knowledge_vault_m2b_result}" != "0" ]]; then
+    printf '%s\n' "${teacher_knowledge_vault_m2b_output}"
+    fail "Teacher Knowledge Vault M2b repo staging metadata prototype status failed"
+  elif [[ -n "${teacher_knowledge_vault_m2b_pass}" && -n "${teacher_knowledge_vault_m2b_warn}" && -n "${teacher_knowledge_vault_m2b_fail}" ]]; then
+    printf 'Teacher Knowledge Vault M2b Repo Staging Metadata Prototype: PASS %s / WARN %s / FAIL %s\n' "${teacher_knowledge_vault_m2b_pass}" "${teacher_knowledge_vault_m2b_warn}" "${teacher_knowledge_vault_m2b_fail}"
+    pass "Teacher Knowledge Vault M2b repo staging metadata prototype status completed"
+  else
+    pass "Teacher Knowledge Vault M2b repo staging metadata prototype status completed"
+  fi
+else
+  warn "Teacher Knowledge Vault M2b repo staging metadata prototype status script missing: scripts/teacher-knowledge-vault-m2b-repo-staging-metadata-status.sh"
+fi
+
 section "Local Retrieval Foundation v0"
 if [[ -f scripts/local-retrieval-foundation-status.sh ]]; then
   local_retrieval_foundation_result=0

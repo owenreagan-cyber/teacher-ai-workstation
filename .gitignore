@@ -42,4 +42,4 @@ assistant/lesson-planning/drafts/*.md
 .tmp/teacher-knowledge-vault/m7e/
 
 # Teacher Knowledge Vault M7g persistent local working catalog prototype (generated only)
-.local/teacher-knowledge-vault/working-catalog/
+.local/teacher-knowledge-vault/

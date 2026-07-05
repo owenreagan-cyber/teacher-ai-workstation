@@ -142,6 +142,11 @@ These flags exist in `bin/chief-of-staff` and work as read-only local status sur
 | `bin/chief-of-staff --teacher-knowledge-vault-m7e-local-test-catalog-import` | Teacher Knowledge Vault M7e local test catalog import (fixed fixtures/path; disposable test catalog) |
 | `bin/chief-of-staff --teacher-knowledge-vault-m7e-local-test-catalog-cleanup` | Teacher Knowledge Vault M7e local test catalog cleanup (fixed generated path only) |
 | `bin/chief-of-staff --teacher-knowledge-vault-m7e-local-test-catalog-status` | Teacher Knowledge Vault M7e local test catalog status (bounded runtime-write proof) |
+| `bin/chief-of-staff --teacher-knowledge-vault-m7f-persistent-working-catalog-approval-gate-status` | Teacher Knowledge Vault M7f persistent local working catalog approval gate (read-only) |
+| `bin/chief-of-staff --teacher-knowledge-vault-m7g-persistent-working-catalog-import` | Teacher Knowledge Vault M7g persistent working catalog import (fixed fixtures/path; prototype catalog) |
+| `bin/chief-of-staff --teacher-knowledge-vault-m7g-persistent-working-catalog-backup` | Teacher Knowledge Vault M7g persistent working catalog backup (fixed generated path only) |
+| `bin/chief-of-staff --teacher-knowledge-vault-m7g-persistent-working-catalog-cleanup` | Teacher Knowledge Vault M7g persistent working catalog cleanup (fixed generated path only) |
+| `bin/chief-of-staff --teacher-knowledge-vault-m7g-persistent-working-catalog-status` | Teacher Knowledge Vault M7g persistent working catalog prototype status (bounded runtime-write proof) |
 | `bin/chief-of-staff --teacher-knowledge-vault-knowledge-entry-v0-validate` | Teacher Knowledge Vault knowledge entry v0 validator (read-only) |
 | `bin/chief-of-staff --local-retrieval-foundation-status` | Local Retrieval v0 |
 | `bin/chief-of-staff --integration-planning-foundation-status` | Integration Planning v0 |

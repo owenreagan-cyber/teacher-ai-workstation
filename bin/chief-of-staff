@@ -230,6 +230,14 @@ Teacher Planning Command Organization (status only; safe sample: fractions-revie
                                        Show read-only Teacher Knowledge Vault M7e local test catalog import status and exit.
   --teacher-knowledge-vault-m7f-persistent-working-catalog-approval-gate-status
                                        Show read-only Teacher Knowledge Vault M7f persistent local working catalog approval gate status and exit.
+  --teacher-knowledge-vault-m7g-persistent-working-catalog-import
+                                       Import committed fake/sanitized fixtures into persistent local working catalog prototype (fixed path only) and exit.
+  --teacher-knowledge-vault-m7g-persistent-working-catalog-backup
+                                       Backup persistent local working catalog prototype (fixed generated path only) and exit.
+  --teacher-knowledge-vault-m7g-persistent-working-catalog-cleanup
+                                       Remove persistent local working catalog prototype generated output (fixed path only) and exit.
+  --teacher-knowledge-vault-m7g-persistent-working-catalog-status
+                                       Show read-only Teacher Knowledge Vault M7g persistent local working catalog prototype status and exit.
   --teacher-knowledge-vault-knowledge-entry-v0-validate
                                        Run read-only Teacher Knowledge Vault knowledge entry v0 validator and exit.
   --renderer-foundation-v0-validate
@@ -1957,6 +1965,42 @@ while [[ $# -gt 0 ]]; do
         die "Teacher Knowledge Vault M7f persistent working catalog approval gate status script is missing: scripts/teacher-knowledge-vault-m7f-persistent-working-catalog-approval-gate-status.sh"
       fi
       bash "${teacher_knowledge_vault_m7f_persistent_working_catalog_approval_gate_status_script}"
+      exit 0
+      ;;
+    --teacher-knowledge-vault-m7g-persistent-working-catalog-import)
+      repo_root="$(resolve_repo_root)"
+      teacher_knowledge_vault_m7g_persistent_working_catalog_import_script="${repo_root}/scripts/teacher-knowledge-vault-m7g-persistent-working-catalog-import.sh"
+      if [[ ! -f "${teacher_knowledge_vault_m7g_persistent_working_catalog_import_script}" ]]; then
+        die "Teacher Knowledge Vault M7g persistent working catalog import script is missing: scripts/teacher-knowledge-vault-m7g-persistent-working-catalog-import.sh"
+      fi
+      bash "${teacher_knowledge_vault_m7g_persistent_working_catalog_import_script}"
+      exit 0
+      ;;
+    --teacher-knowledge-vault-m7g-persistent-working-catalog-backup)
+      repo_root="$(resolve_repo_root)"
+      teacher_knowledge_vault_m7g_persistent_working_catalog_backup_script="${repo_root}/scripts/teacher-knowledge-vault-m7g-persistent-working-catalog-backup.sh"
+      if [[ ! -f "${teacher_knowledge_vault_m7g_persistent_working_catalog_backup_script}" ]]; then
+        die "Teacher Knowledge Vault M7g persistent working catalog backup script is missing: scripts/teacher-knowledge-vault-m7g-persistent-working-catalog-backup.sh"
+      fi
+      bash "${teacher_knowledge_vault_m7g_persistent_working_catalog_backup_script}"
+      exit 0
+      ;;
+    --teacher-knowledge-vault-m7g-persistent-working-catalog-cleanup)
+      repo_root="$(resolve_repo_root)"
+      teacher_knowledge_vault_m7g_persistent_working_catalog_cleanup_script="${repo_root}/scripts/teacher-knowledge-vault-m7g-persistent-working-catalog-cleanup.sh"
+      if [[ ! -f "${teacher_knowledge_vault_m7g_persistent_working_catalog_cleanup_script}" ]]; then
+        die "Teacher Knowledge Vault M7g persistent working catalog cleanup script is missing: scripts/teacher-knowledge-vault-m7g-persistent-working-catalog-cleanup.sh"
+      fi
+      bash "${teacher_knowledge_vault_m7g_persistent_working_catalog_cleanup_script}"
+      exit 0
+      ;;
+    --teacher-knowledge-vault-m7g-persistent-working-catalog-status)
+      repo_root="$(resolve_repo_root)"
+      teacher_knowledge_vault_m7g_persistent_working_catalog_status_script="${repo_root}/scripts/teacher-knowledge-vault-m7g-persistent-working-catalog-status.sh"
+      if [[ ! -f "${teacher_knowledge_vault_m7g_persistent_working_catalog_status_script}" ]]; then
+        die "Teacher Knowledge Vault M7g persistent working catalog status script is missing: scripts/teacher-knowledge-vault-m7g-persistent-working-catalog-status.sh"
+      fi
+      bash "${teacher_knowledge_vault_m7g_persistent_working_catalog_status_script}"
       exit 0
       ;;
     --teacher-knowledge-vault-knowledge-entry-v0-validate)

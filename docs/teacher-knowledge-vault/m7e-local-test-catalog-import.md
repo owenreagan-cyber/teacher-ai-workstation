@@ -53,8 +53,8 @@ bash tests/teacher-knowledge-vault-m7e-local-test-catalog-import-test.sh
 | M0–M7d | complete |
 | **M7e** Local test catalog import | **complete** (this mission) |
 | **M7f** Persistent local working catalog approval gate | **complete** |
-| M7g persistent local working catalog runtime | blocked |
-| M2b / connectors / extraction / organization | blocked |
+| **M7g** Persistent local working catalog prototype | **complete** |
+| M2b / connectors / extraction / organization / production catalog | blocked |
 
 ## Non-Activation
 

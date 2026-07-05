@@ -1639,6 +1639,27 @@ else
   warn "Teacher Knowledge Vault M7f persistent working catalog approval gate status script missing: scripts/teacher-knowledge-vault-m7f-persistent-working-catalog-approval-gate-status.sh"
 fi
 
+section "Teacher Knowledge Vault M7g Persistent Local Working Catalog Prototype"
+if [[ -f scripts/teacher-knowledge-vault-m7g-persistent-working-catalog-status.sh ]]; then
+  teacher_knowledge_vault_m7g_result=0
+  teacher_knowledge_vault_m7g_output="$(bash scripts/teacher-knowledge-vault-m7g-persistent-working-catalog-status.sh 2>&1)" || teacher_knowledge_vault_m7g_result=$?
+  teacher_knowledge_vault_m7g_pass="$(summary_count "${teacher_knowledge_vault_m7g_output}" "PASS")"
+  teacher_knowledge_vault_m7g_warn="$(summary_count "${teacher_knowledge_vault_m7g_output}" "WARN")"
+  teacher_knowledge_vault_m7g_fail="$(summary_count "${teacher_knowledge_vault_m7g_output}" "FAIL")"
+
+  if [[ "${teacher_knowledge_vault_m7g_result}" != "0" ]]; then
+    printf '%s\n' "${teacher_knowledge_vault_m7g_output}"
+    fail "Teacher Knowledge Vault M7g persistent working catalog prototype status failed"
+  elif [[ -n "${teacher_knowledge_vault_m7g_pass}" && -n "${teacher_knowledge_vault_m7g_warn}" && -n "${teacher_knowledge_vault_m7g_fail}" ]]; then
+    printf 'Teacher Knowledge Vault M7g Persistent Working Catalog Prototype: PASS %s / WARN %s / FAIL %s\n' "${teacher_knowledge_vault_m7g_pass}" "${teacher_knowledge_vault_m7g_warn}" "${teacher_knowledge_vault_m7g_fail}"
+    pass "Teacher Knowledge Vault M7g persistent working catalog prototype status completed"
+  else
+    pass "Teacher Knowledge Vault M7g persistent working catalog prototype status completed"
+  fi
+else
+  warn "Teacher Knowledge Vault M7g persistent working catalog prototype status script missing: scripts/teacher-knowledge-vault-m7g-persistent-working-catalog-status.sh"
+fi
+
 section "Local Retrieval Foundation v0"
 if [[ -f scripts/local-retrieval-foundation-status.sh ]]; then
   local_retrieval_foundation_result=0

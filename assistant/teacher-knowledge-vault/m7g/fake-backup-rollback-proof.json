@@ -1,0 +1,19 @@
+{
+  "classification": "fake_local_planning_only",
+  "catalog_mode": "persistent_working_prototype",
+  "rollback_plan_id": "fake-m7g-rollback-001",
+  "rollback_id": "fake-m7g-rollback-cleanup-001",
+  "import_batch_id": "fake-m7g-batch-001",
+  "backup_id": "fake-m7g-backup-export-001",
+  "catalog_id": "fake-m7g-working-catalog-001",
+  "catalog_path": ".local/teacher-knowledge-vault/working-catalog/working-catalog.sqlite",
+  "backup_path": ".local/teacher-knowledge-vault/working-catalog/backups/",
+  "cleanup_removes_only_fixed_path": true,
+  "no_source_file_deletion": true,
+  "batch_removal_supported": true,
+  "production_write": false,
+  "backups_created": 1,
+  "rollback_runs": 1,
+  "runtime_external_accesses": 0,
+  "api_cost_estimate_usd": "0.00"
+}

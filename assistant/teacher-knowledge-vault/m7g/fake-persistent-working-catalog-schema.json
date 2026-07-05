@@ -1,0 +1,38 @@
+{
+  "classification": "fake_local_planning_only",
+  "catalog_mode": "persistent_working_prototype",
+  "production_catalog": false,
+  "production_write": false,
+  "tables": [
+    "schema_version",
+    "catalog_metadata",
+    "import_batches",
+    "sources",
+    "resources",
+    "representations",
+    "source_items",
+    "source_reconciliation",
+    "review_queue_items",
+    "event_log",
+    "blocked_records",
+    "backup_records",
+    "rollback_records"
+  ],
+  "required_metadata": [
+    "catalog_id",
+    "catalog_mode",
+    "production_catalog",
+    "real_curriculum_allowed",
+    "student_data_allowed",
+    "external_sources_allowed",
+    "created_from_fixture_only",
+    "source_fixture_reference",
+    "import_batch_id",
+    "backup_id",
+    "rollback_id",
+    "restricted_indexable",
+    "indexable",
+    "discoverable",
+    "created_at"
+  ]
+}

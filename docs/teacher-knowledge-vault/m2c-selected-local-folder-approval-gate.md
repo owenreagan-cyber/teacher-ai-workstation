@@ -61,7 +61,8 @@ bash tests/teacher-knowledge-vault-m2c-selected-local-folder-approval-gate-statu
 | --- | --- |
 | M0–M7g, M2b | complete |
 | **M2c** Selected local folder approval gate | **complete** (this mission) |
-| M2d first Owen-selected tiny local metadata scan | blocked |
+| M2d first Owen-selected tiny local metadata scan | complete (fixed path only) |
+| M2e M7g import from M2d preview | blocked |
 | Connectors / extraction / organization / production catalog | blocked |
 
 ## Non-Activation

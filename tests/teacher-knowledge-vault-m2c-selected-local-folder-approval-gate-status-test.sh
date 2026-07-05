@@ -31,7 +31,7 @@ grep -q 'M7g status still passes' "${tmp}" || { echo "FAIL: M7g preservation mis
 grep -q 'dashboard includes M2c section' "${tmp}" || { echo "FAIL: dashboard wiring check missing"; cat "${tmp}"; rm -f "${tmp}"; exit 1; }
 grep -q 'validate-all includes M2c track' "${tmp}" || { echo "FAIL: validate-all wiring check missing"; cat "${tmp}"; rm -f "${tmp}"; exit 1; }
 grep -q 'coherence checks M2c closure marker' "${tmp}" || { echo "FAIL: coherence wiring check missing"; cat "${tmp}"; rm -f "${tmp}"; exit 1; }
-grep -q 'manifest has no M2d runtime commands' "${tmp}" || { echo "FAIL: manifest M2d block check missing"; cat "${tmp}"; rm -f "${tmp}"; exit 1; }
+grep -q 'manifest lists fixed-path M2d preflight' "${tmp}" || { echo "FAIL: manifest M2d fixed-path check missing"; cat "${tmp}"; rm -f "${tmp}"; exit 1; }
 rm -f "${tmp}"
 
 cli_tmp="$(mktemp "${TMPDIR:-/tmp}/tkv-m2c-cli.XXXXXX")"
@@ -52,7 +52,7 @@ grep -Fq -- 'home_directory' "${denials_fixture}" || { echo "FAIL: denial rules 
 grep -Fq -- 'file_content_reads' "${denials_fixture}" || { echo "FAIL: denial rules must include content reads"; exit 1; }
 grep -Fq -- 'organization_operations' "${denials_fixture}" || { echo "FAIL: denial rules must include organization operations"; exit 1; }
 grep -Fq -- '"no_content_read_proof_required": true' "${rollback_fixture}" || { echo "FAIL: rollback plan must require no-content-read proof"; exit 1; }
-grep -Fq -- 'M2d runtime blocked' "${readiness_doc}" || { echo "FAIL: readiness checklist must state M2d blocked"; exit 1; }
+grep -Fq -- 'General folder scanning' "${readiness_doc}" || { echo "FAIL: readiness checklist must note general scan blocked"; exit 1; }
 
 if grep -rqiE 'https?://' assistant/teacher-knowledge-vault/m2c --include='*.json' 2>/dev/null; then
   echo "FAIL: M2c fixtures must not contain URLs"

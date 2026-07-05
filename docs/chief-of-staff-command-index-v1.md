@@ -152,6 +152,11 @@ These flags exist in `bin/chief-of-staff` and work as read-only local status sur
 | `bin/chief-of-staff --teacher-knowledge-vault-m2b-repo-staging-metadata-cleanup` | Teacher Knowledge Vault M2b repo staging metadata cleanup (fixed generated paths only) |
 | `bin/chief-of-staff --teacher-knowledge-vault-m2b-repo-staging-metadata-status` | Teacher Knowledge Vault M2b repo staging metadata prototype status (metadata-only proof) |
 | `bin/chief-of-staff --teacher-knowledge-vault-m2c-selected-local-folder-approval-gate-status` | Teacher Knowledge Vault M2c selected local folder metadata scan approval gate status (approval gate only; no real scan) |
+| `bin/chief-of-staff --teacher-knowledge-vault-m2d-selected-folder-preflight` | Teacher Knowledge Vault M2d Step 1 preflight (fixed Owen-approved tiny test folder only) |
+| `bin/chief-of-staff --teacher-knowledge-vault-m2d-selected-folder-metadata-scan` | Teacher Knowledge Vault M2d Step 2 metadata scan (fixed path only; stat metadata only) |
+| `bin/chief-of-staff --teacher-knowledge-vault-m2d-selected-folder-metadata-preview` | Teacher Knowledge Vault M2d M7g import preview (no catalog import) |
+| `bin/chief-of-staff --teacher-knowledge-vault-m2d-selected-folder-cleanup` | Teacher Knowledge Vault M2d cleanup (fixed generated paths only) |
+| `bin/chief-of-staff --teacher-knowledge-vault-m2d-selected-folder-status` | Teacher Knowledge Vault M2d first selected folder metadata scan status |
 | `bin/chief-of-staff --teacher-knowledge-vault-knowledge-entry-v0-validate` | Teacher Knowledge Vault knowledge entry v0 validator (read-only) |
 | `bin/chief-of-staff --local-retrieval-foundation-status` | Local Retrieval v0 |
 | `bin/chief-of-staff --integration-planning-foundation-status` | Integration Planning v0 |

@@ -68,7 +68,8 @@ bin/chief-of-staff --teacher-knowledge-vault-m2b-repo-staging-metadata-status
 | M0–M7g | complete |
 | **M2b** Repo-owned staging metadata prototype | **complete** |
 | **M2c** Selected local folder metadata scan approval gate | **complete** (approval gate only — no real scan) |
-| **M2d** First Owen-selected tiny local metadata scan | blocked pending explicit Owen approval and named path |
+| **M2d** First Owen-selected tiny local metadata scan | **complete** (fixed path only) |
+| **M2e** M7g import from M2d preview | blocked pending explicit approval |
 | Real selected local folder metadata scan (general) | blocked |
 | Drive/NAS/Canvas connectors | blocked |
 | Content extraction/indexing | blocked |

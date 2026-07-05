@@ -57,9 +57,10 @@ Content reads: 0
 Production catalog writes: 0
 OAuth/API/network execution: no
 api_cost_estimate_usd: 0.00
-PASS does not authorize real folder scanning or M2d runtime: yes
+PASS does not authorize arbitrary folder scanning or general path input: yes
 M2c approval gate is not selected-folder scan runtime: yes
-Future M2d remains blocked pending explicit Owen approval: yes
+M2d fixed-path scan authorized for one Owen-approved folder only: yes
+General folder scanning remains blocked: yes
 EOF
 
 section 'M2c Foundation Documentation'
@@ -86,13 +87,13 @@ check_doc_contains "docs/teacher-knowledge-vault/selected-local-folder-denial-ru
 check_doc_contains "docs/teacher-knowledge-vault/selected-local-folder-denial-rules.md" "organization operations" "organization denial"
 check_doc_contains "docs/teacher-knowledge-vault/selected-local-folder-preflight.md" "No-content-read proof" "no-content-read proof section"
 check_doc_contains "docs/teacher-knowledge-vault/selected-local-folder-preflight.md" "rollback/cleanup" "rollback cleanup requirement"
-check_doc_contains "docs/teacher-knowledge-vault/m2d-readiness-checklist.md" "M2d runtime blocked" "M2d readiness blocked header"
+check_doc_contains "docs/teacher-knowledge-vault/m2d-readiness-checklist.md" "M2d fixed-path scan complete" "M2d readiness complete header"
 check_doc_contains "docs/teacher-knowledge-vault/m2d-readiness-checklist.md" "Step 1" "M2d readiness step 1"
 check_doc_contains "docs/teacher-knowledge-vault/m2d-readiness-checklist.md" "Step 2" "M2d readiness step 2"
 check_doc_contains "docs/teacher-knowledge-vault/m2d-readiness-checklist.md" "no content reads" "M2d readiness no content reads"
 check_doc_contains "docs/teacher-knowledge-vault/m2d-readiness-checklist.md" "rollback/cleanup" "M2d readiness cleanup"
 check_doc_contains "docs/teacher-knowledge-vault/m2c-governance-status.md" "Approval gate only" "governance gate only"
-check_doc_contains "docs/teacher-knowledge-vault/m2c-governance-status.md" "Future M2d" "governance M2d blocked"
+check_doc_contains "docs/teacher-knowledge-vault/m2c-governance-status.md" "General folder scanning" "governance general scan blocked"
 check_doc_contains "docs/teacher-knowledge-vault/m2c-governance-status.md" "M2d readiness checklist" "governance M2d readiness link"
 
 section 'M2c Fake Approval Gate Fixtures'
@@ -148,13 +149,14 @@ check_file "assistant/teacher-knowledge-vault/m2b/fake-staging-folder/99_DO_NOT_
 check_file scripts/teacher-knowledge-vault-m2b-repo-staging-metadata-discovery.sh
 
 section 'No Real Folder Scan Import Connector Runtime'
-grep -Fq -- '--teacher-knowledge-vault-m2d-' bin/chief-of-staff 2>/dev/null && fail 'CLI must not expose M2d runtime commands in M2c gate' || pass 'CLI has no M2d runtime commands'
 grep -Fq -- '--teacher-knowledge-vault-scan-real-folder)' bin/chief-of-staff 2>/dev/null && fail 'CLI must not expose real folder scan' || pass 'CLI has no real folder scan command'
 grep -Fq -- '--teacher-knowledge-vault-selected-folder-scan)' bin/chief-of-staff 2>/dev/null && fail 'CLI must not expose selected folder scan' || pass 'CLI has no selected folder scan command'
 grep -Fq -- '--teacher-knowledge-vault-scan)' bin/chief-of-staff 2>/dev/null && fail 'CLI must not expose vault scan' || pass 'CLI has no vault scan command'
+grep -Fq -- '--teacher-knowledge-vault-m2d-selected-folder-preflight' bin/chief-of-staff 2>/dev/null && pass 'CLI exposes fixed-path M2d preflight only' || fail 'CLI missing fixed-path M2d preflight'
+grep -Fq -- '--teacher-knowledge-vault-m2d-selected-folder-metadata-scan' bin/chief-of-staff 2>/dev/null && pass 'CLI exposes fixed-path M2d metadata scan only' || fail 'CLI missing fixed-path M2d metadata scan'
 grep -Fq -- '--teacher-knowledge-vault-connect-drive)' bin/chief-of-staff 2>/dev/null && fail 'no vault connect drive' || pass 'no vault connect drive command'
 grep -Fq -- '--curriculum-registry-write)' bin/chief-of-staff 2>/dev/null && fail 'no --curriculum-registry-write' || pass 'no --curriculum-registry-write handler'
-grep -Fq -- '--teacher-knowledge-vault-m2d-' assistant/chief-of-staff/v1/command-surface-manifest.json 2>/dev/null && fail 'manifest must not list M2d runtime commands yet' || pass 'manifest has no M2d runtime commands'
+grep -Fq -- '--teacher-knowledge-vault-m2d-selected-folder-preflight' assistant/chief-of-staff/v1/command-surface-manifest.json 2>/dev/null && pass 'manifest lists fixed-path M2d preflight' || fail 'manifest missing fixed-path M2d preflight'
 grep -Fq -- '--teacher-knowledge-vault-scan-real-folder' assistant/chief-of-staff/v1/command-surface-manifest.json 2>/dev/null && fail 'manifest must not list real folder scan' || pass 'manifest has no real folder scan command'
 grep -Fq -- '--teacher-knowledge-vault-selected-folder-scan' assistant/chief-of-staff/v1/command-surface-manifest.json 2>/dev/null && fail 'manifest must not list selected folder scan' || pass 'manifest has no selected folder scan command'
 m2c_runtime_scripts=()
@@ -201,7 +203,7 @@ fi
 section 'Roadmap and Build Queue Cross-Links'
 check_doc_contains docs/build-queue.md "M2c" "build queue M2c"
 check_doc_contains docs/build-queue.md "approval gate" "build queue approval gate"
-check_doc_contains docs/build-queue.md "M2d" "build queue M2d blocked"
+check_doc_contains docs/build-queue.md "M2d" "build queue M2d"
 check_doc_contains assistant/memory/active-priorities.md "M2c" "active priorities M2c"
 check_doc_contains docs/teacher-knowledge-vault/m2b-repo-owned-staging-metadata-prototype.md "M2c" "M2b roadmap M2c reference"
 check_doc_contains docs/teacher-knowledge-vault/m2c-selected-local-folder-approval-gate.md "m2d-readiness-checklist.md" "M2c links M2d readiness checklist"

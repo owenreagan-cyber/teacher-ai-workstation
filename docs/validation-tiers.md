@@ -44,6 +44,9 @@ bin/chief-of-staff --teacher-knowledge-vault-m2b-repo-staging-metadata-status
 bash tests/teacher-knowledge-vault-m2b-repo-staging-metadata-status-test.sh
 bin/chief-of-staff --teacher-knowledge-vault-m2c-selected-local-folder-approval-gate-status
 bash tests/teacher-knowledge-vault-m2c-selected-local-folder-approval-gate-status-test.sh
+bin/chief-of-staff --teacher-knowledge-vault-m2d-selected-folder-status
+bash tests/teacher-knowledge-vault-m2d-selected-folder-metadata-scan-test.sh
+bash tests/teacher-knowledge-vault-m2d-selected-folder-preflight-test.sh
 bash tests/curriculum-contract-suite-v0-test.sh
 ```
 
@@ -107,6 +110,7 @@ bin/chief-of-staff --teacher-knowledge-vault-m0-architecture-freeze-status
 bash tests/teacher-knowledge-vault-m7e-local-test-catalog-import-test.sh
 bash tests/teacher-knowledge-vault-m7g-persistent-working-catalog-import-test.sh
 bash tests/teacher-knowledge-vault-m2b-repo-staging-metadata-discovery-test.sh
+bash tests/teacher-knowledge-vault-m2d-selected-folder-metadata-scan-test.sh
 ```
 
 Run individually or via dashboard / validate-all — not during fast smoke.

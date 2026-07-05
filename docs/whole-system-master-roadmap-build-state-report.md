@@ -25,6 +25,7 @@ Teacher Knowledge Vault M7e local test catalog import closure: complete_teacher_
 Teacher Knowledge Vault M7f persistent local working catalog approval gate closure: complete_teacher_knowledge_vault_m7f_persistent_working_catalog_approval_gate
 Teacher Knowledge Vault M7g persistent local working catalog prototype closure: complete_teacher_knowledge_vault_m7g_persistent_working_catalog_prototype
 Teacher Knowledge Vault M2b repo-owned staging metadata prototype closure: complete_teacher_knowledge_vault_m2b_repo_owned_staging_metadata_prototype
+Teacher Knowledge Vault M2c selected local folder metadata scan approval gate closure: complete_teacher_knowledge_vault_m2c_selected_local_folder_approval_gate
 Teacher Knowledge Vault M7 read-only connector closure: complete_teacher_knowledge_vault_m7_read_only_connector_approval_packet
 Teacher Knowledge Vault M6 extraction OCR closure: complete_teacher_knowledge_vault_m6_extraction_ocr_approval_packet
 Teacher Knowledge Vault M5 organization rollback closure: complete_teacher_knowledge_vault_m5_organization_rollback_foundation
@@ -328,10 +329,10 @@ Cross-references: `docs/build-queue.md`, `docs/master-build-roadmap.md`, `docs/p
 
 | Surface | State |
 | --- | --- |
-| Dashboard | 157 / 0 / 0 PASS |
-| Validate-all | 76 / 0 / 0 PASS |
+| Dashboard | 158 / 0 / 0 PASS |
+| Validate-all | 77 / 0 / 0 PASS |
 | Whole-system roadmap status | 102 / 0 / 0 PASS |
-| Whole-system coherence maintenance | 108 / 0 / 0 PASS |
+| Whole-system coherence maintenance | 111 / 0 / 0 PASS |
 | Agent builder compatibility governance | `--agent-builder-compatibility-governance-status` |
 | Owen architecture decision packets | `--owen-architecture-decision-packets-status` |
 | App ecosystem inventory | 51 / 0 / 0 PASS |
@@ -345,6 +346,7 @@ Cross-references: `docs/build-queue.md`, `docs/master-build-roadmap.md`, `docs/p
 | Teacher Knowledge Vault M7f persistent local working catalog approval gate | `--teacher-knowledge-vault-m7f-persistent-working-catalog-approval-gate-status`; `docs/teacher-knowledge-vault/m7f-persistent-working-catalog-approval-gate.md` |
 | Teacher Knowledge Vault M7g persistent local working catalog prototype | `--teacher-knowledge-vault-m7g-persistent-working-catalog-import`; `docs/teacher-knowledge-vault/m7g-persistent-working-catalog-prototype.md` |
 | Teacher Knowledge Vault M2b repo-owned staging metadata prototype | `--teacher-knowledge-vault-m2b-repo-staging-metadata-discovery`; `docs/teacher-knowledge-vault/m2b-repo-owned-staging-metadata-prototype.md` |
+| Teacher Knowledge Vault M2c selected local folder metadata scan approval gate | `--teacher-knowledge-vault-m2c-selected-local-folder-approval-gate-status`; `docs/teacher-knowledge-vault/m2c-selected-local-folder-approval-gate.md` |
 | Teacher Knowledge Vault M7d runtime manual import approval gate | `--teacher-knowledge-vault-m7d-runtime-import-approval-gate-status`; `docs/teacher-knowledge-vault/m7d-runtime-manual-import-approval-gate.md` |
 | Teacher Knowledge Vault M7c manual inventory import preview | `--teacher-knowledge-vault-m7c-manual-inventory-import-preview-status`; `docs/teacher-knowledge-vault/m7c-manual-inventory-import-preview.md` |
 | Teacher Knowledge Vault M7b manual source inventory | `--teacher-knowledge-vault-m7b-manual-source-inventory-status`; `docs/teacher-knowledge-vault/m7b-manual-source-inventory-level-1.md` |

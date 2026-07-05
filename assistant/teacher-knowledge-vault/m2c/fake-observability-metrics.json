@@ -1,0 +1,18 @@
+{
+  "classification": "fake_local_planning_only",
+  "approval_gates_opened": 1,
+  "path_preflights_requested": 0,
+  "paths_approved": 0,
+  "paths_denied": 0,
+  "real_scans_executed": 0,
+  "metadata_imports_from_real_folders": 0,
+  "content_reads": 0,
+  "ocr_jobs": 0,
+  "ai_rag_calls": 0,
+  "external_accesses": 0,
+  "real_files_read": 0,
+  "student_records_read": 0,
+  "production_writes": 0,
+  "source_folder_writes": 0,
+  "api_cost_estimate_usd": "0.00"
+}

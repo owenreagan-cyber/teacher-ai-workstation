@@ -1681,6 +1681,27 @@ else
   warn "Teacher Knowledge Vault M2b repo staging metadata prototype status script missing: scripts/teacher-knowledge-vault-m2b-repo-staging-metadata-status.sh"
 fi
 
+section "Teacher Knowledge Vault M2c Selected Local Folder Approval Gate"
+if [[ -f scripts/teacher-knowledge-vault-m2c-selected-local-folder-approval-gate-status.sh ]]; then
+  teacher_knowledge_vault_m2c_result=0
+  teacher_knowledge_vault_m2c_output="$(bash scripts/teacher-knowledge-vault-m2c-selected-local-folder-approval-gate-status.sh 2>&1)" || teacher_knowledge_vault_m2c_result=$?
+  teacher_knowledge_vault_m2c_pass="$(summary_count "${teacher_knowledge_vault_m2c_output}" "PASS")"
+  teacher_knowledge_vault_m2c_warn="$(summary_count "${teacher_knowledge_vault_m2c_output}" "WARN")"
+  teacher_knowledge_vault_m2c_fail="$(summary_count "${teacher_knowledge_vault_m2c_output}" "FAIL")"
+
+  if [[ "${teacher_knowledge_vault_m2c_result}" != "0" ]]; then
+    printf '%s\n' "${teacher_knowledge_vault_m2c_output}"
+    fail "Teacher Knowledge Vault M2c selected local folder approval gate status failed"
+  elif [[ -n "${teacher_knowledge_vault_m2c_pass}" && -n "${teacher_knowledge_vault_m2c_warn}" && -n "${teacher_knowledge_vault_m2c_fail}" ]]; then
+    printf 'Teacher Knowledge Vault M2c Selected Local Folder Approval Gate: PASS %s / WARN %s / FAIL %s\n' "${teacher_knowledge_vault_m2c_pass}" "${teacher_knowledge_vault_m2c_warn}" "${teacher_knowledge_vault_m2c_fail}"
+    pass "Teacher Knowledge Vault M2c selected local folder approval gate status completed"
+  else
+    pass "Teacher Knowledge Vault M2c selected local folder approval gate status completed"
+  fi
+else
+  warn "Teacher Knowledge Vault M2c selected local folder approval gate status script missing: scripts/teacher-knowledge-vault-m2c-selected-local-folder-approval-gate-status.sh"
+fi
+
 section "Local Retrieval Foundation v0"
 if [[ -f scripts/local-retrieval-foundation-status.sh ]]; then
   local_retrieval_foundation_result=0

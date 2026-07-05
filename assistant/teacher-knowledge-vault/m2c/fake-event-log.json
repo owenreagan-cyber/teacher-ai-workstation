@@ -1,0 +1,32 @@
+{
+  "classification": "fake_local_planning_only",
+  "events": [
+    {
+      "event_id": "fake-m2c-evt-gate-opened",
+      "event_type": "m2c_approval_gate_documented",
+      "runtime_executed": false
+    },
+    {
+      "event_id": "fake-m2c-evt-preflight-requested",
+      "event_type": "preflight_requested_but_blocked_in_m2c",
+      "runtime_executed": false
+    },
+    {
+      "event_id": "fake-m2c-evt-scan-blocked",
+      "event_type": "real_folder_scan_requested_but_blocked",
+      "runtime_executed": false
+    },
+    {
+      "event_id": "fake-m2c-evt-content-read-blocked",
+      "event_type": "content_read_requested_but_blocked",
+      "runtime_executed": false
+    },
+    {
+      "event_id": "fake-m2c-evt-m2d-blocked",
+      "event_type": "m2d_runtime_blocked_pending_owen_approval",
+      "runtime_executed": false
+    }
+  ],
+  "real_scans_executed": 0,
+  "content_reads": 0
+}

@@ -42,6 +42,8 @@ bin/chief-of-staff --teacher-knowledge-vault-m7g-persistent-working-catalog-stat
 bash tests/teacher-knowledge-vault-m7g-persistent-working-catalog-status-test.sh
 bin/chief-of-staff --teacher-knowledge-vault-m2b-repo-staging-metadata-status
 bash tests/teacher-knowledge-vault-m2b-repo-staging-metadata-status-test.sh
+bin/chief-of-staff --teacher-knowledge-vault-m2c-selected-local-folder-approval-gate-status
+bash tests/teacher-knowledge-vault-m2c-selected-local-folder-approval-gate-status-test.sh
 bash tests/curriculum-contract-suite-v0-test.sh
 ```
 

@@ -46,7 +46,7 @@ grep -Fq -- '"blocked_count": 2' "${m7g_out}/import-summary.json" || { echo "FAI
 grep -Fq -- '"production_write": false' "${m7g_out}/import-summary.json" || { echo "FAIL: production_write must be false"; exit 1; }
 grep -Fq -- '"catalog_mode": "persistent_working_prototype"' "${m7g_out}/import-summary.json" || { echo "FAIL: catalog_mode must be persistent_working_prototype"; exit 1; }
 
-grep -Fq -- '.local/teacher-knowledge-vault/working-catalog/' .gitignore || { echo "FAIL: generated path must be gitignored"; exit 1; }
+grep -Fq -- '.local/teacher-knowledge-vault/' .gitignore || { echo "FAIL: generated path must be gitignored"; exit 1; }
 echo "PASS: generated path is gitignored"
 
 if command -v python3 >/dev/null 2>&1; then

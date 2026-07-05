@@ -79,7 +79,7 @@ check_doc_contains "${m7g_dir}/fake-persistent-working-catalog-import-summary.js
 check_doc_contains "${m7g_dir}/fake-persistent-working-catalog-import-summary.json" '"production_write": false' "example no production"
 check_doc_contains "${m7g_dir}/fake-persistent-working-catalog-import-summary.json" '"catalog_mode": "persistent_working_prototype"' "example catalog mode"
 check_doc_contains "${m7g_dir}/fake-backup-rollback-proof.json" "cleanup_removes_only_fixed_path" "rollback fixed path"
-grep -Fq -- '.local/teacher-knowledge-vault/working-catalog/' .gitignore && pass 'gitignore covers M7g generated path' || fail 'gitignore must cover .local/teacher-knowledge-vault/working-catalog/'
+grep -Fq -- '.local/teacher-knowledge-vault/' .gitignore && pass 'gitignore covers M7g generated path' || fail 'gitignore must cover .local/teacher-knowledge-vault/'
 
 section 'M7g Import Backup Cleanup Scripts'
 check_file "${import_script}"

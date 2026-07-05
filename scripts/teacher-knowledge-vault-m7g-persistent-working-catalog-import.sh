@@ -56,7 +56,7 @@ for f in "${M7B_INVENTORY}" "${M7C_PREVIEW}"; do
   [[ -f "${f}" ]] && pass "fixture exists: ${f}" || fail "fixture missing: ${f}"
 done
 
-grep -Fq -- '.local/teacher-knowledge-vault/working-catalog/' .gitignore && pass 'generated path is gitignored' || fail 'generated path must be gitignored'
+grep -Fq -- '.local/teacher-knowledge-vault/' .gitignore && pass 'generated path is gitignored' || fail 'generated path must be gitignored'
 
 section 'Persistent Working Catalog Import'
 import_output="$(python3 - "${repo_root}" "${M7G_OUT_DIR}" "${M7G_DB}" "${M7G_BACKUP_DIR}" "${M7G_SUMMARY}" "${M7G_ROLLBACK}" "${M7B_INVENTORY}" "${M7C_PREVIEW}" <<'PY'

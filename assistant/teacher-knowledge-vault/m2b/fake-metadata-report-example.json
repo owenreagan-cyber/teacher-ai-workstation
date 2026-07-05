@@ -1,0 +1,16 @@
+{
+  "classification": "fake_local_planning_only",
+  "source_label": "repo_owned_fake_staging",
+  "staging_fixture_root": "assistant/teacher-knowledge-vault/m2b/fake-staging-folder",
+  "fixture_files_discovered": 8,
+  "metadata_records_created": 8,
+  "blocked_do_not_scan_count": 1,
+  "teacher_only_restricted_count": 1,
+  "content_reads": 0,
+  "ocr_jobs": 0,
+  "ai_rag_calls": 0,
+  "external_accesses": 0,
+  "real_files_read": 0,
+  "production_writes": 0,
+  "api_cost_estimate_usd": "0.00"
+}

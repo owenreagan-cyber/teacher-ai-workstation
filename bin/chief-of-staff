@@ -238,6 +238,14 @@ Teacher Planning Command Organization (status only; safe sample: fractions-revie
                                        Remove persistent local working catalog prototype generated output (fixed path only) and exit.
   --teacher-knowledge-vault-m7g-persistent-working-catalog-status
                                        Show read-only Teacher Knowledge Vault M7g persistent local working catalog prototype status and exit.
+  --teacher-knowledge-vault-m2b-repo-staging-metadata-discovery
+                                       Discover stat metadata from fixed repo-owned staging fixture folder only and exit.
+  --teacher-knowledge-vault-m2b-repo-staging-metadata-import
+                                       Import M2b staging metadata into M7g prototype catalog (fixed paths only) and exit.
+  --teacher-knowledge-vault-m2b-repo-staging-metadata-cleanup
+                                       Remove M2b generated metadata outputs and M2b import batch (fixed paths only) and exit.
+  --teacher-knowledge-vault-m2b-repo-staging-metadata-status
+                                       Show read-only Teacher Knowledge Vault M2b repo staging metadata prototype status and exit.
   --teacher-knowledge-vault-knowledge-entry-v0-validate
                                        Run read-only Teacher Knowledge Vault knowledge entry v0 validator and exit.
   --renderer-foundation-v0-validate
@@ -2001,6 +2009,42 @@ while [[ $# -gt 0 ]]; do
         die "Teacher Knowledge Vault M7g persistent working catalog status script is missing: scripts/teacher-knowledge-vault-m7g-persistent-working-catalog-status.sh"
       fi
       bash "${teacher_knowledge_vault_m7g_persistent_working_catalog_status_script}"
+      exit 0
+      ;;
+    --teacher-knowledge-vault-m2b-repo-staging-metadata-discovery)
+      repo_root="$(resolve_repo_root)"
+      teacher_knowledge_vault_m2b_repo_staging_metadata_discovery_script="${repo_root}/scripts/teacher-knowledge-vault-m2b-repo-staging-metadata-discovery.sh"
+      if [[ ! -f "${teacher_knowledge_vault_m2b_repo_staging_metadata_discovery_script}" ]]; then
+        die "Teacher Knowledge Vault M2b repo staging metadata discovery script is missing: scripts/teacher-knowledge-vault-m2b-repo-staging-metadata-discovery.sh"
+      fi
+      bash "${teacher_knowledge_vault_m2b_repo_staging_metadata_discovery_script}"
+      exit 0
+      ;;
+    --teacher-knowledge-vault-m2b-repo-staging-metadata-import)
+      repo_root="$(resolve_repo_root)"
+      teacher_knowledge_vault_m2b_repo_staging_metadata_import_script="${repo_root}/scripts/teacher-knowledge-vault-m2b-repo-staging-metadata-import.sh"
+      if [[ ! -f "${teacher_knowledge_vault_m2b_repo_staging_metadata_import_script}" ]]; then
+        die "Teacher Knowledge Vault M2b repo staging metadata import script is missing: scripts/teacher-knowledge-vault-m2b-repo-staging-metadata-import.sh"
+      fi
+      bash "${teacher_knowledge_vault_m2b_repo_staging_metadata_import_script}"
+      exit 0
+      ;;
+    --teacher-knowledge-vault-m2b-repo-staging-metadata-cleanup)
+      repo_root="$(resolve_repo_root)"
+      teacher_knowledge_vault_m2b_repo_staging_metadata_cleanup_script="${repo_root}/scripts/teacher-knowledge-vault-m2b-repo-staging-metadata-cleanup.sh"
+      if [[ ! -f "${teacher_knowledge_vault_m2b_repo_staging_metadata_cleanup_script}" ]]; then
+        die "Teacher Knowledge Vault M2b repo staging metadata cleanup script is missing: scripts/teacher-knowledge-vault-m2b-repo-staging-metadata-cleanup.sh"
+      fi
+      bash "${teacher_knowledge_vault_m2b_repo_staging_metadata_cleanup_script}"
+      exit 0
+      ;;
+    --teacher-knowledge-vault-m2b-repo-staging-metadata-status)
+      repo_root="$(resolve_repo_root)"
+      teacher_knowledge_vault_m2b_repo_staging_metadata_status_script="${repo_root}/scripts/teacher-knowledge-vault-m2b-repo-staging-metadata-status.sh"
+      if [[ ! -f "${teacher_knowledge_vault_m2b_repo_staging_metadata_status_script}" ]]; then
+        die "Teacher Knowledge Vault M2b repo staging metadata status script is missing: scripts/teacher-knowledge-vault-m2b-repo-staging-metadata-status.sh"
+      fi
+      bash "${teacher_knowledge_vault_m2b_repo_staging_metadata_status_script}"
       exit 0
       ;;
     --teacher-knowledge-vault-knowledge-entry-v0-validate)

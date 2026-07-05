@@ -1,0 +1,14 @@
+{
+  "classification": "fake_local_planning_only",
+  "import_batch_id": "fake-m2b-batch-001",
+  "catalog_mode": "persistent_working_prototype",
+  "production_write": false,
+  "metadata_records_imported": 7,
+  "blocked_count": 1,
+  "teacher_only_restricted_count": 1,
+  "do_not_scan_blocked_count": 1,
+  "content_reads": 0,
+  "production_writes": 0,
+  "external_accesses": 0,
+  "api_cost_estimate_usd": "0.00"
+}

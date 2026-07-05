@@ -147,6 +147,10 @@ These flags exist in `bin/chief-of-staff` and work as read-only local status sur
 | `bin/chief-of-staff --teacher-knowledge-vault-m7g-persistent-working-catalog-backup` | Teacher Knowledge Vault M7g persistent working catalog backup (fixed generated path only) |
 | `bin/chief-of-staff --teacher-knowledge-vault-m7g-persistent-working-catalog-cleanup` | Teacher Knowledge Vault M7g persistent working catalog cleanup (fixed generated path only) |
 | `bin/chief-of-staff --teacher-knowledge-vault-m7g-persistent-working-catalog-status` | Teacher Knowledge Vault M7g persistent working catalog prototype status (bounded runtime-write proof) |
+| `bin/chief-of-staff --teacher-knowledge-vault-m2b-repo-staging-metadata-discovery` | Teacher Knowledge Vault M2b repo staging metadata discovery (fixed fixture folder; stat metadata only) |
+| `bin/chief-of-staff --teacher-knowledge-vault-m2b-repo-staging-metadata-import` | Teacher Knowledge Vault M2b repo staging metadata import to M7g prototype catalog (fixed paths only) |
+| `bin/chief-of-staff --teacher-knowledge-vault-m2b-repo-staging-metadata-cleanup` | Teacher Knowledge Vault M2b repo staging metadata cleanup (fixed generated paths only) |
+| `bin/chief-of-staff --teacher-knowledge-vault-m2b-repo-staging-metadata-status` | Teacher Knowledge Vault M2b repo staging metadata prototype status (metadata-only proof) |
 | `bin/chief-of-staff --teacher-knowledge-vault-knowledge-entry-v0-validate` | Teacher Knowledge Vault knowledge entry v0 validator (read-only) |
 | `bin/chief-of-staff --local-retrieval-foundation-status` | Local Retrieval v0 |
 | `bin/chief-of-staff --integration-planning-foundation-status` | Integration Planning v0 |

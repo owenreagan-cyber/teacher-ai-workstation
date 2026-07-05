@@ -95,6 +95,7 @@ if [[ -n "${COS_VALIDATE_ALREADY_RUNNING:-}" ]]; then
   exit 1
 fi
 export COS_VALIDATE_ALREADY_RUNNING=1
+export COS_TKV_SKIP_PRESERVATION=1
 
 section 'Chief of Staff Validate All'
 cat <<'EOF'

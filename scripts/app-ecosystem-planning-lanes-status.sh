@@ -162,7 +162,8 @@ check_doc_contains docs/teacher-workstation-capability-map.md "app-ecosystem-pla
 section 'Dashboard and Validate-All Wiring'
 grep -Fq -- 'app-ecosystem-planning-lanes-status.sh' scripts/chief-of-staff-dashboard.sh && pass 'dashboard wires planning lanes status' || fail 'dashboard missing planning lanes status'
 grep -Fq -- 'app-ecosystem-planning-lanes-status.sh' scripts/chief-of-staff-validate-all.sh && pass 'validate-all wires planning lanes status' || fail 'validate-all missing planning lanes status'
-grep -Fq -- 'app-ecosystem-planning-lanes' tests/smoke-chief-of-staff-cli.sh && pass 'smoke wires planning lanes status' || fail 'smoke missing planning lanes status'
+source scripts/validation-smoke-tier-boundary.sh
+check_smoke_excludes_deep_validation 'app-ecosystem-planning-lanes' 'App ecosystem planning lanes'
 
 section 'CLI, Manifest, and Tests'
 bash -n "${BASH_SOURCE[0]}" && pass "bash syntax ok: ${BASH_SOURCE[0]}" || fail "bash syntax failed: status script"

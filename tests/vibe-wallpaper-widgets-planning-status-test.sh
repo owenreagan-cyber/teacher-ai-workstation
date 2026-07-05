@@ -73,9 +73,10 @@ grep -q 'vibe-wallpaper-widgets-planning-status.sh' scripts/chief-of-staff-valid
   echo "FAIL: validate-all missing vibe/wallpaper/widgets status"
   exit 1
 }
-grep -q 'vibe-wallpaper-widgets-planning' tests/smoke-chief-of-staff-cli.sh || {
-  echo "FAIL: smoke missing vibe/wallpaper/widgets status"
+if grep -q 'vibe-wallpaper-widgets-planning' tests/smoke-chief-of-staff-cli.sh; then
+  echo "FAIL: smoke must not invoke deep vibe/wallpaper/widgets validation"
   exit 1
-}
+fi
+echo "PASS: smoke excludes vibe/wallpaper/widgets deep validation"
 
 echo "PASS: Vibe / Wallpaper / Widgets planning status tests passed."

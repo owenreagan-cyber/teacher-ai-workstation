@@ -53,6 +53,14 @@ bin/chief-of-staff --dashboard
 
 **Purpose:** Aggregate local health across tracks with PASS/WARN/FAIL section summaries.
 
+**Performance notes:**
+
+- Runs many individual status scripts sequentially (~100 subchecks).
+- Sets `COS_TKV_SKIP_PRESERVATION=1` so Teacher Knowledge Vault M0–M7e scripts do not re-run nested preservation chains (each milestone is invoked once by the dashboard).
+- Still includes `scripts/phase-1-status.sh` by design; use focused validation when changing a single lane.
+
+**Exit code semantics:** Dashboard exits `0` when the script completes, even if the Summary reports non-zero FAIL rows. Only `CRITICAL_FAILURE` (for example, missing repo root) forces exit `1`. Read the Summary block; exit `0` is not a green-all-clear signal.
+
 ## Validate-all
 
 **Command:**
@@ -62,6 +70,15 @@ bin/chief-of-staff --validate-all
 ```
 
 **Purpose:** Deeper project validation across foundation scripts, validators, and optional smoke (`COS_VALIDATE_INCLUDE_SMOKE=1`).
+
+**Performance notes:**
+
+- Orchestrates foundation/status tracks plus direct validators and test suites.
+- Sets `COS_TKV_SKIP_PRESERVATION=1` for the same vault deduplication as dashboard.
+- Skips `scripts/phase-1-status.sh` unless `COS_VALIDATE_INCLUDE_PHASE1=1`.
+- Does not re-run dashboard; overlaps on many of the same status scripts.
+
+**Exit code semantics:** Validate-all exits non-zero when any orchestrated track or test suite fails (`TRACK_FAILURE`).
 
 ## Coherence
 

@@ -153,12 +153,16 @@ grep -Fq -- '--teacher-knowledge-vault-sqlite)' bin/chief-of-staff 2>/dev/null &
 grep -Fq -- '--curriculum-registry-write)' bin/chief-of-staff 2>/dev/null && fail 'chief-of-staff must not implement --curriculum-registry-write' || pass 'no --curriculum-registry-write handler'
 
 section 'M0 Preservation'
+if [[ -n "${COS_TKV_SKIP_PRESERVATION:-}" ]]; then
+  pass 'prior milestone preservation skipped (aggregate context)'
+else
 if [[ -f scripts/teacher-knowledge-vault-m0-architecture-freeze-status.sh ]]; then
-  bash scripts/teacher-knowledge-vault-m0-architecture-freeze-status.sh >/dev/null 2>&1 && pass 'M0 architecture freeze status still passes' || fail 'M0 architecture freeze status regressed'
+  COS_TKV_SKIP_PRESERVATION=1 bash scripts/teacher-knowledge-vault-m0-architecture-freeze-status.sh >/dev/null 2>&1 && pass 'M0 architecture freeze status still passes' || fail 'M0 architecture freeze status regressed'
 else
   fail 'M0 status script missing'
 fi
 
+fi
 section 'Production Registry Parked-State Proof'
 if [[ -f "${production_registry_path}" ]] && command -v python3 >/dev/null 2>&1; then
   record_count="$(python3 -c "import json; d=json.load(open('${production_registry_path}')); print(len(d.get('records',[])))" 2>/dev/null || echo 0)"
@@ -180,7 +184,8 @@ check_help_contains "--teacher-knowledge-vault-m0-architecture-freeze-status"
 check_bash_syntax "bin/chief-of-staff"
 check_file tests/teacher-knowledge-vault-m1-fake-catalog-status-test.sh
 check_bash_syntax tests/teacher-knowledge-vault-m1-fake-catalog-status-test.sh
-grep -Fq -- 'teacher-knowledge-vault-m1-fake-catalog-status' tests/smoke-chief-of-staff-cli.sh && pass 'smoke wires M1 catalog test' || fail 'smoke missing M1 catalog test'
+source scripts/validation-smoke-tier-boundary.sh
+check_smoke_excludes_deep_validation 'teacher-knowledge-vault-m1' 'Teacher Knowledge Vault M1'
 pass 'no write action attempted'
 pass 'no folder scanning attempted'
 pass 'no network call attempted'

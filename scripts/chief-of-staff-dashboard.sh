@@ -124,6 +124,8 @@ else
   cd "${repo_root}"
 fi
 
+export COS_TKV_SKIP_PRESERVATION=1
+
 branch="$(git branch --show-current 2>/dev/null || true)"
 commit="$(git rev-parse --short HEAD 2>/dev/null || true)"
 run_at="$(date '+%Y-%m-%d %H:%M:%S')"

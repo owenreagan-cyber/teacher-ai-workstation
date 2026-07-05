@@ -235,7 +235,8 @@ grep -Fq -- '--vibe-wallpaper-widgets-planning-status' bin/chief-of-staff && pas
 grep -Fq -- '"--vibe-wallpaper-widgets-planning-status"' assistant/chief-of-staff/v1/command-surface-manifest.json && pass 'manifest lists --vibe-wallpaper-widgets-planning-status' || fail 'manifest missing --vibe-wallpaper-widgets-planning-status'
 grep -Fq -- 'vibe-wallpaper-widgets-planning-status.sh' scripts/chief-of-staff-dashboard.sh && pass 'dashboard wires vibe/wallpaper/widgets status' || fail 'dashboard missing vibe/wallpaper/widgets status'
 grep -Fq -- 'vibe-wallpaper-widgets-planning-status.sh' scripts/chief-of-staff-validate-all.sh && pass 'validate-all wires vibe/wallpaper/widgets status' || fail 'validate-all missing vibe/wallpaper/widgets status'
-grep -Fq -- 'vibe-wallpaper-widgets-planning' tests/smoke-chief-of-staff-cli.sh && pass 'smoke wires vibe/wallpaper/widgets status' || fail 'smoke missing vibe/wallpaper/widgets status'
+source scripts/validation-smoke-tier-boundary.sh
+check_smoke_excludes_deep_validation 'vibe-wallpaper-widgets-planning' 'Vibe / Wallpaper / Widgets planning'
 check_file tests/vibe-wallpaper-widgets-planning-status-test.sh
 
 section 'Roadmap and Coherence Cross-Links'

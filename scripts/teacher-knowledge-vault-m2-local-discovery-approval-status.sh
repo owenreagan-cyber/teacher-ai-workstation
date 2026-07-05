@@ -139,13 +139,16 @@ done
 grep -Fq -- '--curriculum-registry-write)' bin/chief-of-staff 2>/dev/null && fail 'no --curriculum-registry-write handler' || pass 'no --curriculum-registry-write handler'
 
 section 'M0 and M1 Preservation'
+if [[ -n "${COS_TKV_SKIP_PRESERVATION:-}" ]]; then
+  pass 'prior milestone preservation skipped (aggregate context)'
+else
 if [[ -f scripts/teacher-knowledge-vault-m0-architecture-freeze-status.sh ]]; then
-  bash scripts/teacher-knowledge-vault-m0-architecture-freeze-status.sh >/dev/null 2>&1 && pass 'M0 architecture freeze status still passes' || fail 'M0 architecture freeze status regressed'
+  COS_TKV_SKIP_PRESERVATION=1 bash scripts/teacher-knowledge-vault-m0-architecture-freeze-status.sh >/dev/null 2>&1 && pass 'M0 architecture freeze status still passes' || fail 'M0 architecture freeze status regressed'
 else
   fail 'M0 status script missing'
 fi
 if [[ -f scripts/teacher-knowledge-vault-m1-fake-catalog-status.sh ]]; then
-  bash scripts/teacher-knowledge-vault-m1-fake-catalog-status.sh >/dev/null 2>&1 && pass 'M1 fake catalog status still passes' || fail 'M1 fake catalog status regressed'
+  COS_TKV_SKIP_PRESERVATION=1 bash scripts/teacher-knowledge-vault-m1-fake-catalog-status.sh >/dev/null 2>&1 && pass 'M1 fake catalog status still passes' || fail 'M1 fake catalog status regressed'
 else
   fail 'M1 status script missing'
 fi
@@ -153,6 +156,7 @@ check_doc_contains "${m2_dir}/fake-discovery-run.json" "m0_architecture_freeze_p
 check_doc_contains "${m2_dir}/fake-discovery-run.json" "m1_fake_catalog_preserved" "M2 M1 preserved flag"
 check_doc_contains "${m2_dir}/fake-discovery-run.json" "m2b_prototype_blocked" "M2b blocked flag"
 
+fi
 section 'Production Registry Parked-State Proof'
 if [[ -f "${production_registry_path}" ]] && command -v python3 >/dev/null 2>&1; then
   record_count="$(python3 -c "import json; d=json.load(open('${production_registry_path}')); print(len(d.get('records',[])))" 2>/dev/null || echo 0)"
@@ -176,7 +180,8 @@ check_help_contains "--teacher-knowledge-vault-m1-fake-catalog-status"
 check_bash_syntax "bin/chief-of-staff"
 check_file tests/teacher-knowledge-vault-m2-local-discovery-approval-status-test.sh
 check_bash_syntax tests/teacher-knowledge-vault-m2-local-discovery-approval-status-test.sh
-grep -Fq -- 'teacher-knowledge-vault-m2-local-discovery-approval-status' tests/smoke-chief-of-staff-cli.sh && pass 'smoke wires M2 approval test' || fail 'smoke missing M2 approval test'
+source scripts/validation-smoke-tier-boundary.sh
+check_smoke_excludes_deep_validation 'teacher-knowledge-vault-m2' 'Teacher Knowledge Vault M2'
 pass 'no write action attempted'
 pass 'no folder scanning attempted'
 pass 'no network call attempted'

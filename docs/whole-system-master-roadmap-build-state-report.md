@@ -20,6 +20,7 @@ Curriculum Library setup foundation closure: complete_curriculum_library_setup_a
 Teacher Knowledge Vault M0 architecture freeze closure: complete_teacher_knowledge_vault_m0_architecture_freeze
 Teacher Knowledge Vault M7b manual source inventory closure: complete_teacher_knowledge_vault_m7b_manual_source_inventory_level_1
 Teacher Knowledge Vault M7c manual inventory import preview closure: complete_teacher_knowledge_vault_m7c_manual_inventory_import_preview
+Teacher Knowledge Vault M7d runtime manual import approval gate closure: complete_teacher_knowledge_vault_m7d_runtime_manual_import_approval_gate
 Teacher Knowledge Vault M7 read-only connector closure: complete_teacher_knowledge_vault_m7_read_only_connector_approval_packet
 Teacher Knowledge Vault M6 extraction OCR closure: complete_teacher_knowledge_vault_m6_extraction_ocr_approval_packet
 Teacher Knowledge Vault M5 organization rollback closure: complete_teacher_knowledge_vault_m5_organization_rollback_foundation
@@ -323,8 +324,8 @@ Cross-references: `docs/build-queue.md`, `docs/master-build-roadmap.md`, `docs/p
 
 | Surface | State |
 | --- | --- |
-| Dashboard | 152 / 0 / 0 PASS |
-| Validate-all | 71 / 0 / 0 PASS |
+| Dashboard | 153 / 0 / 0 PASS |
+| Validate-all | 72 / 0 / 0 PASS |
 | Whole-system roadmap status | 102 / 0 / 0 PASS |
 | Whole-system coherence maintenance | 81 / 0 / 0 PASS |
 | Agent builder compatibility governance | `--agent-builder-compatibility-governance-status` |
@@ -336,6 +337,7 @@ Cross-references: `docs/build-queue.md`, `docs/master-build-roadmap.md`, `docs/p
 | Classroom Timer & Stopwatch runtime | `--classroom-timer-stopwatch-runtime-status` |
 | Curriculum Library foundation | `--curriculum-library-foundation-status`; `docs/curriculum-library/` |
 | Teacher Knowledge Vault M0 architecture freeze | `--teacher-knowledge-vault-m0-architecture-freeze-status`; `docs/teacher-knowledge-vault/` |
+| Teacher Knowledge Vault M7d runtime manual import approval gate | `--teacher-knowledge-vault-m7d-runtime-import-approval-gate-status`; `docs/teacher-knowledge-vault/m7d-runtime-manual-import-approval-gate.md` |
 | Teacher Knowledge Vault M7c manual inventory import preview | `--teacher-knowledge-vault-m7c-manual-inventory-import-preview-status`; `docs/teacher-knowledge-vault/m7c-manual-inventory-import-preview.md` |
 | Teacher Knowledge Vault M7b manual source inventory | `--teacher-knowledge-vault-m7b-manual-source-inventory-status`; `docs/teacher-knowledge-vault/m7b-manual-source-inventory-level-1.md` |
 | Teacher Knowledge Vault M7 connector approval | `--teacher-knowledge-vault-m7-connector-approval-status`; `docs/teacher-knowledge-vault/m7-read-only-connector-approval-packet.md` |

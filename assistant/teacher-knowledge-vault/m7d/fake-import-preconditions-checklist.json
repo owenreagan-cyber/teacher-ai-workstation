@@ -1,0 +1,26 @@
+{
+  "classification": "fake_local_planning_only",
+  "runtime_import_executed": false,
+  "checklist": [
+    {"id": "owen_mission_approval", "required": true, "status": "pending_future_mission", "satisfied": false},
+    {"id": "fixed_input_path", "required": true, "status": "documented", "satisfied": true},
+    {"id": "sanitized_input", "required": true, "status": "m7b_m7c_fixtures_only", "satisfied": true},
+    {"id": "m7c_fixture_validator_pass", "required": true, "status": "pass_on_fake_fixtures", "satisfied": true},
+    {"id": "no_student_data", "required": true, "status": "enforced", "satisfied": true},
+    {"id": "no_secrets_tokens_ids", "required": true, "status": "enforced", "satisfied": true},
+    {"id": "no_extracted_text", "required": true, "status": "enforced", "satisfied": true},
+    {"id": "do_not_scan_blocked", "required": true, "status": "enforced", "satisfied": true},
+    {"id": "teacher_only_restricted", "required": true, "status": "enforced", "satisfied": true},
+    {"id": "import_preview_first", "required": true, "status": "m7c_preview_required", "satisfied": true},
+    {"id": "teacher_reviews_counts", "required": true, "status": "pending_future_mission", "satisfied": false},
+    {"id": "local_first_catalog_target", "required": true, "status": "documented", "satisfied": true},
+    {"id": "catalog_backup_exists", "required": true, "status": "pending_future_mission", "satisfied": false},
+    {"id": "rollback_plan_exists", "required": true, "status": "fake_plan_attached", "satisfied": true},
+    {"id": "event_log_plan_exists", "required": true, "status": "fake_plan_attached", "satisfied": true},
+    {"id": "no_network_api_oauth", "required": true, "status": "enforced", "satisfied": true},
+    {"id": "no_file_content_reads", "required": true, "status": "enforced", "satisfied": true},
+    {"id": "no_bundled_organization", "required": true, "status": "enforced", "satisfied": true}
+  ],
+  "all_preconditions_met": false,
+  "runtime_import_executed": false
+}

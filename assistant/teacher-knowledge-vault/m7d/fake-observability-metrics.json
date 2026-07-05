@@ -1,0 +1,25 @@
+{
+  "classification": "fake_local_planning_only",
+  "runtime_import_executed": false,
+  "api_cost_estimate_usd": 0.0,
+  "metrics": {
+    "approval_packets_created": 2,
+    "preview_runs_attached": 2,
+    "validator_results_attached": 2,
+    "blockers_detected": 14,
+    "rollback_plans_required": 1,
+    "future_runtime_imports_approved": 0,
+    "runtime_imports_executed": 0,
+    "catalog_writes": 0,
+    "production_writes": 0,
+    "connector_implementations": 0,
+    "oauth_flows_started": 0,
+    "api_calls_made": 0,
+    "network_calls_made": 0,
+    "real_sources_connected": 0,
+    "real_metadata_records_ingested": 0,
+    "real_files_read": 0,
+    "student_records_read": 0,
+    "write_operations": 0
+  }
+}

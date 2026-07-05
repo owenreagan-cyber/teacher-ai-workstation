@@ -1,0 +1,20 @@
+{
+  "classification": "fake_local_planning_only",
+  "runtime_import_executed": false,
+  "blockers": [
+    {"blocker_id": "student_data", "example_record": "fake-m7b-man-student-risk-blocked", "action": "deny_import"},
+    {"blocker_id": "secrets_tokens_oauth", "example_record": "fake-m7d-blocker-token-field", "action": "deny_import"},
+    {"blocker_id": "real_drive_canvas_ids", "example_record": "fake-m7c-reject-drive-id", "action": "deny_import"},
+    {"blocker_id": "private_urls", "example_record": "fake-m7c-reject-private-url", "action": "deny_import"},
+    {"blocker_id": "raw_local_paths", "example_record": "fake-m7c-reject-raw-path", "action": "deny_import"},
+    {"blocker_id": "extracted_text", "example_record": "fake-m7c-reject-extracted-text", "action": "deny_import"},
+    {"blocker_id": "do_not_scan_normal_import", "example_record": "fake-m7b-man-dns", "action": "block_normal_mapping"},
+    {"blocker_id": "import_without_preview", "example_record": null, "action": "deny_import"},
+    {"blocker_id": "import_without_rollback_plan", "example_record": null, "action": "deny_import"},
+    {"blocker_id": "production_catalog_without_approval", "example_record": null, "action": "deny_import"},
+    {"blocker_id": "connector_output_without_approval", "example_record": null, "action": "deny_import"},
+    {"blocker_id": "bundled_organization", "example_record": null, "action": "deny_import"},
+    {"blocker_id": "network_api_oauth_required", "example_record": null, "action": "deny_import"},
+    {"blocker_id": "file_reads_scanning_ocr_ai", "example_record": null, "action": "deny_import"}
+  ]
+}

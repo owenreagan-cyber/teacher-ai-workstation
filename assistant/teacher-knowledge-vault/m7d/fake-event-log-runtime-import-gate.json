@@ -1,0 +1,20 @@
+{
+  "classification": "fake_local_planning_only",
+  "runtime_import_executed": false,
+  "catalog_writes": 0,
+  "events": [
+    {"event_id": "fake-m7d-evt-001", "event_type": "import_approval_gate_opened", "runtime_executed": false},
+    {"event_id": "fake-m7d-evt-002", "event_type": "m7c_fixture_validator_result_attached", "runtime_executed": false},
+    {"event_id": "fake-m7d-evt-003", "event_type": "import_preview_attached", "runtime_executed": false},
+    {"event_id": "fake-m7d-evt-004", "event_type": "approval_packet_created", "runtime_executed": false},
+    {"event_id": "fake-m7d-evt-005", "event_type": "student_data_blocker_detected", "runtime_executed": false},
+    {"event_id": "fake-m7d-evt-006", "event_type": "do_not_scan_blocker_detected", "runtime_executed": false},
+    {"event_id": "fake-m7d-evt-007", "event_type": "rollback_plan_required", "runtime_executed": false},
+    {"event_id": "fake-m7d-evt-008", "event_type": "backup_requirement_attached", "runtime_executed": false},
+    {"event_id": "fake-m7d-evt-009", "event_type": "runtime_import_requested_but_blocked", "runtime_executed": false},
+    {"event_id": "fake-m7d-evt-010", "event_type": "catalog_write_requested_but_blocked", "runtime_executed": false},
+    {"event_id": "fake-m7d-evt-011", "event_type": "production_write_requested_but_blocked", "runtime_executed": false},
+    {"event_id": "fake-m7d-evt-012", "event_type": "approval_denied", "runtime_executed": false},
+    {"event_id": "fake-m7d-evt-013", "event_type": "approval_deferred", "runtime_executed": false}
+  ]
+}

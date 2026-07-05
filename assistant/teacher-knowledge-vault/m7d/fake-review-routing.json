@@ -1,0 +1,17 @@
+{
+  "classification": "fake_local_planning_only",
+  "runtime_import_executed": false,
+  "routing": [
+    {"approval_packet_id": "fake-m7d-packet-001", "review_state": "import_approval_requested", "catalog_write_executed": false},
+    {"approval_packet_id": "fake-m7d-packet-missing-validator", "review_state": "validator_evidence_missing", "catalog_write_executed": false},
+    {"approval_packet_id": "fake-m7d-packet-missing-preview", "review_state": "preview_evidence_missing", "catalog_write_executed": false},
+    {"approval_packet_id": "fake-m7d-packet-002", "review_state": "blocker_detected", "catalog_write_executed": false},
+    {"approval_packet_id": "fake-m7d-packet-backup", "review_state": "backup_plan_required", "catalog_write_executed": false},
+    {"approval_packet_id": "fake-m7d-packet-rollback", "review_state": "rollback_plan_required", "catalog_write_executed": false},
+    {"approval_packet_id": "fake-m7d-packet-001", "review_state": "teacher_review_required", "catalog_write_executed": false},
+    {"approval_packet_id": "fake-m7d-packet-001", "review_state": "approved_for_future_runtime_import_not_executed", "catalog_write_executed": false},
+    {"approval_packet_id": "fake-m7d-packet-002", "review_state": "denied", "catalog_write_executed": false},
+    {"approval_packet_id": "fake-m7d-packet-deferred", "review_state": "deferred", "catalog_write_executed": false},
+    {"approval_packet_id": "fake-m7d-packet-blocked", "review_state": "blocked", "catalog_write_executed": false}
+  ]
+}

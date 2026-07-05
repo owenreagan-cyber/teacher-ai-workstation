@@ -1576,6 +1576,26 @@ else
   warn "Teacher Knowledge Vault M7c manual inventory import preview status script missing: scripts/teacher-knowledge-vault-m7c-manual-inventory-import-preview-status.sh"
 fi
 
+if [[ -f scripts/teacher-knowledge-vault-m7d-runtime-import-approval-gate-status.sh ]]; then
+  teacher_knowledge_vault_m7d_result=0
+  teacher_knowledge_vault_m7d_output="$(bash scripts/teacher-knowledge-vault-m7d-runtime-import-approval-gate-status.sh 2>&1)" || teacher_knowledge_vault_m7d_result=$?
+  teacher_knowledge_vault_m7d_pass="$(summary_count "${teacher_knowledge_vault_m7d_output}" "PASS")"
+  teacher_knowledge_vault_m7d_warn="$(summary_count "${teacher_knowledge_vault_m7d_output}" "WARN")"
+  teacher_knowledge_vault_m7d_fail="$(summary_count "${teacher_knowledge_vault_m7d_output}" "FAIL")"
+
+  if [[ "${teacher_knowledge_vault_m7d_result}" != "0" ]]; then
+    printf '%s\n' "${teacher_knowledge_vault_m7d_output}"
+    fail "Teacher Knowledge Vault M7d runtime import approval gate status failed"
+  elif [[ -n "${teacher_knowledge_vault_m7d_pass}" && -n "${teacher_knowledge_vault_m7d_warn}" && -n "${teacher_knowledge_vault_m7d_fail}" ]]; then
+    printf 'Teacher Knowledge Vault M7d Runtime Import Approval Gate: PASS %s / WARN %s / FAIL %s\n' "${teacher_knowledge_vault_m7d_pass}" "${teacher_knowledge_vault_m7d_warn}" "${teacher_knowledge_vault_m7d_fail}"
+    pass "Teacher Knowledge Vault M7d runtime import approval gate status completed"
+  else
+    pass "Teacher Knowledge Vault M7d runtime import approval gate status completed"
+  fi
+else
+  warn "Teacher Knowledge Vault M7d runtime import approval gate status script missing: scripts/teacher-knowledge-vault-m7d-runtime-import-approval-gate-status.sh"
+fi
+
 section "Local Retrieval Foundation v0"
 if [[ -f scripts/local-retrieval-foundation-status.sh ]]; then
   local_retrieval_foundation_result=0

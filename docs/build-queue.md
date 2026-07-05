@@ -18,6 +18,8 @@ Handoff and status clarity. Start from `docs/phase-1-chief-of-staff-status-audit
 
 ## Recently Completed
 
+- Teacher Knowledge Vault M2c Selected Local Folder Metadata Scan Approval Gate hardening (2026-07-05): `docs/teacher-knowledge-vault/m2d-readiness-checklist.md`; expanded M2c denial/rollback fixtures; stronger status/test wiring checks; M2d runtime remains blocked.
+
 - Teacher Knowledge Vault M2c Selected Local Folder Metadata Scan Approval Gate (2026-07-05): `docs/teacher-knowledge-vault/m2c-selected-local-folder-approval-gate.md`; `assistant/teacher-knowledge-vault/m2c/`; `--teacher-knowledge-vault-m2c-selected-local-folder-approval-gate-status`; `complete_teacher_knowledge_vault_m2c_selected_local_folder_approval_gate`; approval gate only — M2d real selected-folder scan blocked pending explicit Owen approval and named path.
 
 - Teacher Knowledge Vault M2b Repo-Owned Staging Metadata-Only Prototype (2026-07-05): `docs/teacher-knowledge-vault/m2b-repo-owned-staging-metadata-prototype.md`; `assistant/teacher-knowledge-vault/m2b/`; `--teacher-knowledge-vault-m2b-repo-staging-metadata-discovery`; `complete_teacher_knowledge_vault_m2b_repo_owned_staging_metadata_prototype`; repo-owned fixture staging metadata only — real selected-folder scan blocked.

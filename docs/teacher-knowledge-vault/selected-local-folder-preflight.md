@@ -38,4 +38,16 @@ Future M2d preflight must verify before any metadata scan:
 - approval packet produced before import
 - Owen must explicitly approve import after preview (second approval)
 
+## No-content-read proof (required before any M2d import)
+
+Future M2d must prove:
+
+- only stat metadata collected (size, mtime, extension, relative path)
+- no `open(..., 'r')`, parsers, `pdftotext`, `tesseract`, or similar
+- no hashing of file contents unless separately approved
+- approval packet includes `content_reads_disabled: true`
+- cleanup plan confirms zero content reads occurred
+
+See `m2d-readiness-checklist.md` and `assistant/teacher-knowledge-vault/m2c/fake-rollback-cleanup-plan.json`.
+
 M2c implements policy and fake examples only — no preflight runtime on real paths.

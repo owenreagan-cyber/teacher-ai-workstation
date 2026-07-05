@@ -83,8 +83,17 @@ check_doc_contains "docs/teacher-knowledge-vault/selected-local-folder-approval-
 check_doc_contains "docs/teacher-knowledge-vault/selected-local-folder-approval-packet.md" "catalog_import_blocked_until_second_approval" "second approval required"
 check_doc_contains "docs/teacher-knowledge-vault/selected-local-folder-denial-rules.md" "student-data-likely" "student data denial"
 check_doc_contains "docs/teacher-knowledge-vault/selected-local-folder-denial-rules.md" "file content reads" "content read denial"
+check_doc_contains "docs/teacher-knowledge-vault/selected-local-folder-denial-rules.md" "organization operations" "organization denial"
+check_doc_contains "docs/teacher-knowledge-vault/selected-local-folder-preflight.md" "No-content-read proof" "no-content-read proof section"
+check_doc_contains "docs/teacher-knowledge-vault/selected-local-folder-preflight.md" "rollback/cleanup" "rollback cleanup requirement"
+check_doc_contains "docs/teacher-knowledge-vault/m2d-readiness-checklist.md" "M2d runtime blocked" "M2d readiness blocked header"
+check_doc_contains "docs/teacher-knowledge-vault/m2d-readiness-checklist.md" "Step 1" "M2d readiness step 1"
+check_doc_contains "docs/teacher-knowledge-vault/m2d-readiness-checklist.md" "Step 2" "M2d readiness step 2"
+check_doc_contains "docs/teacher-knowledge-vault/m2d-readiness-checklist.md" "no content reads" "M2d readiness no content reads"
+check_doc_contains "docs/teacher-knowledge-vault/m2d-readiness-checklist.md" "rollback/cleanup" "M2d readiness cleanup"
 check_doc_contains "docs/teacher-knowledge-vault/m2c-governance-status.md" "Approval gate only" "governance gate only"
 check_doc_contains "docs/teacher-knowledge-vault/m2c-governance-status.md" "Future M2d" "governance M2d blocked"
+check_doc_contains "docs/teacher-knowledge-vault/m2c-governance-status.md" "M2d readiness checklist" "governance M2d readiness link"
 
 section 'M2c Fake Approval Gate Fixtures'
 check_file "${m2c_dir}/README.md"
@@ -95,13 +104,22 @@ check_file "${m2c_dir}/fake-risk-register.json"
 check_file "${m2c_dir}/fake-review-queue-items.json"
 check_file "${m2c_dir}/fake-event-log.json"
 check_file "${m2c_dir}/fake-observability-metrics.json"
+check_file "${m2c_dir}/fake-rollback-cleanup-plan.json"
+check_file "docs/teacher-knowledge-vault/m2d-readiness-checklist.md"
 check_doc_contains "${m2c_dir}/fake-selected-folder-approval-packet.json" '"owen_approval": false' "packet owen approval false"
 check_doc_contains "${m2c_dir}/fake-selected-folder-approval-packet.json" '"real_folder_scan_executed": false' "packet no real scan"
 check_doc_contains "${m2c_dir}/fake-selected-folder-approval-packet.json" '"catalog_import_blocked_until_second_approval": true' "import blocked until second approval"
 check_doc_contains "${m2c_dir}/fake-selected-folder-approval-packet.json" "LOCAL_TEST_FOLDER_PLACEHOLDER" "placeholder path only"
 check_doc_contains "${m2c_dir}/fake-path-preflight-denials.json" "home_directory" "denial home directory"
 check_doc_contains "${m2c_dir}/fake-path-preflight-denials.json" "google_drive" "denial google drive"
+check_doc_contains "${m2c_dir}/fake-path-preflight-denials.json" "icloud_drive" "denial icloud drive"
+check_doc_contains "${m2c_dir}/fake-path-preflight-denials.json" "canvas_export" "denial canvas export"
+check_doc_contains "${m2c_dir}/fake-path-preflight-denials.json" "file_content_reads" "denial content reads"
+check_doc_contains "${m2c_dir}/fake-path-preflight-denials.json" "organization_operations" "denial organization ops"
 check_doc_contains "${m2c_dir}/fake-path-preflight-denials.json" "99_DO_NOT_SCAN" "denial do not scan"
+check_doc_contains "${m2c_dir}/fake-rollback-cleanup-plan.json" '"no_content_read_proof_required": true' "rollback no-content-read proof"
+check_doc_contains "${m2c_dir}/fake-rollback-cleanup-plan.json" '"real_cleanup_executed": false' "rollback not executed in M2c"
+check_doc_contains "${m2c_dir}/fake-rollback-cleanup-plan.json" ".local/teacher-knowledge-vault/m2d/" "rollback m2d gitignored path"
 check_doc_contains "${m2c_dir}/fake-safe-test-folder-preflight.json" '"content_reads_allowed": false' "preflight no content reads"
 check_doc_contains "${m2c_dir}/fake-safe-test-folder-preflight.json" '"owen_second_approval_required": true' "preflight second approval"
 check_doc_contains "${m2c_dir}/fake-risk-register.json" "student_data_exposure" "risk student data"
@@ -136,6 +154,9 @@ grep -Fq -- '--teacher-knowledge-vault-selected-folder-scan)' bin/chief-of-staff
 grep -Fq -- '--teacher-knowledge-vault-scan)' bin/chief-of-staff 2>/dev/null && fail 'CLI must not expose vault scan' || pass 'CLI has no vault scan command'
 grep -Fq -- '--teacher-knowledge-vault-connect-drive)' bin/chief-of-staff 2>/dev/null && fail 'no vault connect drive' || pass 'no vault connect drive command'
 grep -Fq -- '--curriculum-registry-write)' bin/chief-of-staff 2>/dev/null && fail 'no --curriculum-registry-write' || pass 'no --curriculum-registry-write handler'
+grep -Fq -- '--teacher-knowledge-vault-m2d-' assistant/chief-of-staff/v1/command-surface-manifest.json 2>/dev/null && fail 'manifest must not list M2d runtime commands yet' || pass 'manifest has no M2d runtime commands'
+grep -Fq -- '--teacher-knowledge-vault-scan-real-folder' assistant/chief-of-staff/v1/command-surface-manifest.json 2>/dev/null && fail 'manifest must not list real folder scan' || pass 'manifest has no real folder scan command'
+grep -Fq -- '--teacher-knowledge-vault-selected-folder-scan' assistant/chief-of-staff/v1/command-surface-manifest.json 2>/dev/null && fail 'manifest must not list selected folder scan' || pass 'manifest has no selected folder scan command'
 m2c_runtime_scripts=()
 for candidate in scripts/teacher-knowledge-vault-m2c-*; do
   [[ -f "${candidate}" && "${candidate}" != *-status.sh ]] && m2c_runtime_scripts+=("${candidate}")
@@ -183,6 +204,17 @@ check_doc_contains docs/build-queue.md "approval gate" "build queue approval gat
 check_doc_contains docs/build-queue.md "M2d" "build queue M2d blocked"
 check_doc_contains assistant/memory/active-priorities.md "M2c" "active priorities M2c"
 check_doc_contains docs/teacher-knowledge-vault/m2b-repo-owned-staging-metadata-prototype.md "M2c" "M2b roadmap M2c reference"
+check_doc_contains docs/teacher-knowledge-vault/m2c-selected-local-folder-approval-gate.md "m2d-readiness-checklist.md" "M2c links M2d readiness checklist"
+
+section 'Aggregate Wiring and Discoverability'
+grep -Fq -- '"--teacher-knowledge-vault-m2c-selected-local-folder-approval-gate-status"' assistant/chief-of-staff/v1/command-surface-manifest.json && pass 'manifest lists M2c status command' || fail 'manifest missing M2c status command'
+grep -Fq -- 'Teacher Knowledge Vault M2c Selected Local Folder Approval Gate' scripts/chief-of-staff-validate-all.sh && pass 'validate-all includes M2c track' || fail 'validate-all missing M2c track'
+grep -Fq -- 'Teacher Knowledge Vault M2c Selected Local Folder Approval Gate' scripts/chief-of-staff-dashboard.sh && pass 'dashboard includes M2c section' || fail 'dashboard missing M2c section'
+grep -Fq -- '--teacher-knowledge-vault-m2c-selected-local-folder-approval-gate-status' docs/validation-tiers.md && pass 'validation tiers mention M2c status' || fail 'validation tiers missing M2c status'
+grep -Fq -- 'teacher-knowledge-vault-m2c-selected-local-folder-approval-gate-status-test.sh' docs/validation-tiers.md && pass 'validation tiers mention M2c test' || fail 'validation tiers missing M2c test'
+grep -Fq -- '--teacher-knowledge-vault-m2c-selected-local-folder-approval-gate-status' docs/chief-of-staff-command-index-v1.md && pass 'command index lists M2c status' || fail 'command index missing M2c status'
+grep -Fq -- '--teacher-knowledge-vault-m2c-selected-local-folder-approval-gate-status' docs/curriculum-builder-registry-expected-warns.md && pass 'expected warns lists M2c status' || fail 'expected warns missing M2c status'
+grep -Fq -- 'complete_teacher_knowledge_vault_m2c_selected_local_folder_approval_gate' scripts/whole-system-coherence-status.sh && pass 'coherence checks M2c closure marker' || fail 'coherence missing M2c closure marker'
 
 section 'Chief of Staff Integration'
 check_help_contains "--teacher-knowledge-vault-m2c-selected-local-folder-approval-gate-status"

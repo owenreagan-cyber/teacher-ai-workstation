@@ -7,3 +7,5 @@ bin/chief-of-staff --teacher-knowledge-vault-m2c-selected-local-folder-approval-
 ```
 
 Approval gate only. Future M2d real Owen-selected tiny local metadata scan remains blocked pending explicit Owen approval and named path.
+
+Fixtures include rollback/cleanup plan and expanded preflight denial examples. See `docs/teacher-knowledge-vault/m2d-readiness-checklist.md`.

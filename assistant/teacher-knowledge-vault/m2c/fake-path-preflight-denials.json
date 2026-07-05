@@ -19,7 +19,11 @@
     "broad_curriculum_root",
     "arbitrary_path",
     "symlink_escape",
-    "archive_expansion"
+    "archive_expansion",
+    "file_content_reads",
+    "ocr_extraction",
+    "ai_rag",
+    "organization_operations"
   ],
   "example_denials": [
     {
@@ -31,16 +35,67 @@
       "reason": "desktop_blocked_by_default"
     },
     {
+      "path_placeholder": "/DOCUMENTS_PLACEHOLDER/",
+      "reason": "documents_blocked_by_default"
+    },
+    {
+      "path_placeholder": "/DOWNLOADS_PLACEHOLDER/",
+      "reason": "downloads_blocked_by_default"
+    },
+    {
       "path_placeholder": "/GOOGLE_DRIVE_PLACEHOLDER/My Drive/",
       "reason": "cloud_sync_folder_blocked"
     },
     {
+      "path_placeholder": "/ICLOUD_DRIVE_PLACEHOLDER/",
+      "reason": "icloud_drive_blocked_by_default"
+    },
+    {
+      "path_placeholder": "/NAS_MOUNT_PLACEHOLDER/volume1/",
+      "reason": "nas_mount_blocked_by_default"
+    },
+    {
+      "path_placeholder": "/CANVAS_EXPORT_PLACEHOLDER/",
+      "reason": "canvas_export_blocked_by_default"
+    },
+    {
+      "path_placeholder": "/EXTERNAL_DRIVE_PLACEHOLDER/",
+      "reason": "external_drive_blocked_by_default"
+    },
+    {
       "path_placeholder": "/LOCAL_TEST_FOLDER_PLACEHOLDER/99_DO_NOT_SCAN/",
       "reason": "do_not_scan_blocked"
+    },
+    {
+      "path_placeholder": "/CURRICULUM_ROOT_PLACEHOLDER/",
+      "reason": "broad_curriculum_root_blocked"
+    },
+    {
+      "path_placeholder": "/ARBITRARY_PATH_PLACEHOLDER/",
+      "reason": "arbitrary_path_input_blocked"
+    },
+    {
+      "path_placeholder": "/SYMLINK_ESCAPE_PLACEHOLDER/",
+      "reason": "symlink_traversal_blocked"
+    },
+    {
+      "path_placeholder": "/ARCHIVE_PLACEHOLDER/fake.zip",
+      "reason": "archive_expansion_blocked"
+    },
+    {
+      "path_placeholder": "/CONTENT_READ_PLACEHOLDER/fake.pdf",
+      "reason": "file_content_reads_blocked"
+    },
+    {
+      "path_placeholder": "/ORGANIZATION_RUNTIME_PLACEHOLDER/",
+      "reason": "organization_operations_blocked"
     }
   ],
   "paths_approved": 0,
-  "paths_denied": 4,
+  "paths_denied": 16,
   "content_reads": 0,
+  "ocr_jobs": 0,
+  "ai_rag_calls": 0,
+  "organization_operations": 0,
   "real_scans_executed": 0
 }

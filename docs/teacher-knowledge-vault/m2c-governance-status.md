@@ -25,7 +25,8 @@ Closure: complete_teacher_knowledge_vault_m2c_selected_local_folder_approval_gat
 | Content reads | 0 |
 | Production writes | 0 |
 | External accesses | 0 |
-| Future M2d | blocked pending Owen approval |
+| M2d readiness checklist | `docs/teacher-knowledge-vault/m2d-readiness-checklist.md` |
+| Future M2d | blocked pending explicit Owen approval |
 
 ## Proof
 

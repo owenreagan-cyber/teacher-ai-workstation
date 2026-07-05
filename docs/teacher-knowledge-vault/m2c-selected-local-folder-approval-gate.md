@@ -38,6 +38,7 @@ M2c clarifies:
 | Approval packet | `docs/teacher-knowledge-vault/selected-local-folder-approval-packet.md` |
 | Denial rules | `docs/teacher-knowledge-vault/selected-local-folder-denial-rules.md` |
 | M2c governance | `docs/teacher-knowledge-vault/m2c-governance-status.md` |
+| M2d readiness checklist | `docs/teacher-knowledge-vault/m2d-readiness-checklist.md` |
 | M2c fixtures | `assistant/teacher-knowledge-vault/m2c/` |
 
 ## Commands

@@ -1,0 +1,30 @@
+{
+  "classification": "fake_local_planning_only",
+  "approval_gate_only": true,
+  "real_cleanup_executed": false,
+  "plan_id": "fake-m2c-rollback-cleanup-plan-001",
+  "applies_to": "future_m2d_selected_folder_metadata_scan",
+  "generated_report_path": ".local/teacher-knowledge-vault/m2d/selected-folder-metadata-report.json",
+  "optional_m7g_import_batch_placeholder": "fake-m2d-batch-001",
+  "cleanup_steps": [
+    "delete generated metadata report under .local/teacher-knowledge-vault/m2d/",
+    "remove optional M7g import batch if explicitly approved and executed",
+    "verify source folder unchanged (no writes during scan)",
+    "verify no content reads occurred (stat metadata only)",
+    "record cleanup proof in fake event log only until M2d runtime exists"
+  ],
+  "rollback_triggers": [
+    "preflight scope exceeded",
+    "unexpected symlink or archive expansion detected",
+    "content read attempted",
+    "student-data-likely path detected",
+    "99_DO_NOT_SCAN path encountered"
+  ],
+  "no_content_read_proof_required": true,
+  "source_folder_writes_allowed": false,
+  "production_writes_allowed": false,
+  "owen_approval_required_before_cleanup_execution": true,
+  "real_scans_executed": 0,
+  "real_files_deleted": 0,
+  "production_writes": 0
+}

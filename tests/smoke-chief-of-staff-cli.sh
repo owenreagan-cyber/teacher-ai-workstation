@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
-# CLI smoke tests. Must never call proof-run, validate-all, or operating tests.
+# Fast CLI smoke tests: boot, refusal gates, lightweight routing only.
+# Must never call dashboard, validate-all, whole-system coherence, or deep
+# status/preservation chains. See docs/validation-tiers.md.
 #
 # COS_SMOKE_ALREADY_RUNNING: set internally; nested smoke fails immediately.
 set -euo pipefail
@@ -9,6 +11,23 @@ if [[ -n "${COS_SMOKE_ALREADY_RUNNING:-}" ]]; then
   exit 1
 fi
 export COS_SMOKE_ALREADY_RUNNING=1
+
+# Boundary guard: fail fast if smoke regresses into deep validation tiers.
+_smoke_invocations="$(grep -v '^[[:space:]]*#' "${BASH_SOURCE[0]}" \
+  | grep -E 'bin/chief-of-staff|bash (scripts|tests)/' \
+  | grep -v 'Boundary guard')"
+for _forbidden in \
+  '--dashboard' \
+  '--validate-all' \
+  'whole-system-coherence' \
+  'teacher-knowledge-vault-m' \
+  'chief-of-staff-dashboard.sh' \
+  'validate-all.sh'; do
+  if printf '%s\n' "${_smoke_invocations}" | grep -q -F -e "${_forbidden}"; then
+    echo "FAIL: smoke-chief-of-staff-cli.sh must not invoke deep validation entry points"
+    exit 1
+  fi
+done
 
 echo "Running Chief of Staff CLI smoke tests..."
 
@@ -22,6 +41,7 @@ printf '%s\n' "sample raw intake test file" > "${raw_intake_test_file}"
 bin/chief-of-staff --help >/dev/null
 bin/chief-of-staff --version >/dev/null
 bin/chief-of-staff --status >/dev/null
+bin/chief-of-staff --commands >/dev/null
 bin/chief-of-staff --list-workflows >/dev/null
 bin/chief-of-staff --show-context --workflow request-training-materials >/dev/null
 bin/chief-of-staff --workflow request-training-materials --question "What do you need from me?" --dry-run >/dev/null
@@ -56,167 +76,7 @@ if grep -q "SOURCE: assistant/memory/memory-log.md" /tmp/chief-of-staff-memory.t
 fi
 bin/chief-of-staff --memory-status >/dev/null
 bin/chief-of-staff --validate-memory >/dev/null
-bash scripts/lesson-planning-template-readiness-status.sh > /tmp/chief-of-staff-lesson-template-readiness-script.txt
-grep -q "Placeholder Registry Checks" /tmp/chief-of-staff-lesson-template-readiness-script.txt
-grep -q "PASS: placeholder registry safety contract is intact" /tmp/chief-of-staff-lesson-template-readiness-script.txt
-grep -q '^WARN: 0$' /tmp/chief-of-staff-lesson-template-readiness-script.txt
-grep -q '^FAIL: 0$' /tmp/chief-of-staff-lesson-template-readiness-script.txt
-bin/chief-of-staff --lesson-planning-template-readiness-status > /tmp/chief-of-staff-lesson-template-readiness.txt
-grep -q "Placeholder Registry Checks" /tmp/chief-of-staff-lesson-template-readiness.txt
-grep -q "PASS: placeholder registry safety contract is intact" /tmp/chief-of-staff-lesson-template-readiness.txt
-bin/chief-of-staff --curriculum-registry-v0-status >/dev/null
-bin/chief-of-staff --curriculum-registry-v0-validate >/dev/null
-bash tests/curriculum-registry-v0-test.sh >/dev/null
-bin/chief-of-staff --curriculum-output-contract-v0-status >/dev/null
-bin/chief-of-staff --curriculum-output-contract-v0-validate >/dev/null
-bash tests/curriculum-output-contract-v0-test.sh >/dev/null
-bin/chief-of-staff --curriculum-binding-v0-status >/dev/null
-bin/chief-of-staff --curriculum-binding-v0-validate >/dev/null
-bin/chief-of-staff --curriculum-binding-v0-lookup sample-sm5-textbook-001 >/dev/null
-bash tests/curriculum-binding-v0-test.sh >/dev/null
-bin/chief-of-staff --curriculum-library-foundation-status >/dev/null
-bash tests/curriculum-library-foundation-status-test.sh >/dev/null
-bin/chief-of-staff --curriculum-library-reference-v0-validate >/dev/null
-bash tests/curriculum-teacher-script-contract-v0-test.sh >/dev/null
-bash tests/curriculum-worksheet-contract-v0-test.sh >/dev/null
-bash tests/curriculum-review-game-contract-v0-test.sh >/dev/null
-bash tests/curriculum-canvas-package-contract-v0-test.sh >/dev/null
-bash tests/curriculum-contract-suite-v0-test.sh >/dev/null
-bash tests/chief-of-staff-next-action-test.sh >/dev/null
-bin/chief-of-staff --chief-of-staff-command-index-v1-status >/dev/null
-bin/chief-of-staff --chief-of-staff-v1-status >/dev/null
-bin/chief-of-staff --commands >/dev/null
-bin/chief-of-staff --daily-status >/dev/null
-bin/chief-of-staff --closeout >/dev/null
-bin/chief-of-staff --approval-queue >/dev/null
-bin/chief-of-staff --blocker-queue >/dev/null
-bin/chief-of-staff --mode-status >/dev/null
-bin/chief-of-staff --system-health >/dev/null
-bin/chief-of-staff --workstation-health >/dev/null
-bin/chief-of-staff --system-update-check >/dev/null
-bin/chief-of-staff --system-update-plan >/dev/null
-bin/chief-of-staff --model-routing-status >/dev/null
-bin/chief-of-staff --local-llm-workstation-status >/dev/null
-bin/chief-of-staff --mac-workstation-status >/dev/null
-bin/chief-of-staff --widget-shortcut-status >/dev/null
-bin/chief-of-staff --vibe-wallpaper-widgets-planning-status >/dev/null
-bin/chief-of-staff --classroom-app-lab-status >/dev/null
-bin/chief-of-staff --lovable-status >/dev/null
-bin/chief-of-staff --3d-builder-status >/dev/null
-bin/chief-of-staff --curriculum-contracts-status >/dev/null
-bash tests/curriculum-builder-contract-schemas-status-test.sh >/dev/null
-bin/chief-of-staff --curriculum-registry-dry-run-status >/dev/null
-bash scripts/curriculum-builder-registry-v0-2-dry-run.sh >/dev/null
-bash tests/curriculum-builder-registry-v0-2-dry-run-test.sh >/dev/null
-bash tests/curriculum-builder-registry-v0-2-status-test.sh >/dev/null
-bin/chief-of-staff --curriculum-registry-records-status >/dev/null
-bash scripts/curriculum-builder-registry-v0-2-local-records-validate.sh >/dev/null
-bash tests/curriculum-builder-registry-v0-2-local-records-test.sh >/dev/null
-bin/chief-of-staff --curriculum-registry-renderer-status >/dev/null
-bash scripts/curriculum-builder-registry-v0-2-render-preview.sh >/dev/null
-bash tests/curriculum-builder-registry-v0-2-renderer-test.sh >/dev/null
-bin/chief-of-staff --curriculum-registry-retrieval-status >/dev/null
-bash scripts/curriculum-builder-registry-v0-2-retrieval-check.sh >/dev/null
-bash tests/curriculum-builder-registry-v0-2-retrieval-test.sh >/dev/null
-bin/chief-of-staff --curriculum-production-registry-planning-status >/dev/null
-bash tests/curriculum-builder-production-registry-planning-status-test.sh >/dev/null
-bin/chief-of-staff --curriculum-production-registry-owen-checklist-status >/dev/null
-bash tests/curriculum-builder-production-registry-owen-checklist-status-test.sh >/dev/null
-bin/chief-of-staff --curriculum-production-registry-governance-status >/dev/null
-bash tests/curriculum-builder-production-registry-governance-status-test.sh >/dev/null
-bash tests/curriculum-builder-production-registry-governance-guardrails-test.sh >/dev/null
-bin/chief-of-staff --curriculum-production-registry-phase-2-preflight-status >/dev/null
-bash tests/curriculum-builder-production-registry-phase-2-preflight-status-test.sh >/dev/null
-bin/chief-of-staff --curriculum-production-registry-metadata-boundary-status >/dev/null
-bash tests/curriculum-builder-production-registry-metadata-boundary-status-test.sh >/dev/null
-bin/chief-of-staff --curriculum-production-registry-empty-file-status >/dev/null
-bash tests/curriculum-builder-production-registry-empty-file-status-test.sh >/dev/null
-bin/chief-of-staff --curriculum-production-registry-metadata-pilot-plan-status >/dev/null
-bash tests/curriculum-builder-production-registry-metadata-pilot-plan-status-test.sh >/dev/null
-bin/chief-of-staff --curriculum-production-registry-first-record-status >/dev/null
-bash tests/curriculum-builder-production-registry-first-record-status-test.sh >/dev/null
-bin/chief-of-staff --curriculum-production-registry-next-gate-status >/dev/null
-bash tests/curriculum-builder-production-registry-next-gate-status-test.sh >/dev/null
-bash tests/curriculum-builder-production-registry-first-record-validate-test.sh >/dev/null
-bin/chief-of-staff --curriculum-source-readiness-status >/dev/null
-bash tests/curriculum-source-readiness-status-test.sh >/dev/null
-bin/chief-of-staff --curriculum-registry-lane-status >/dev/null
-bash tests/curriculum-builder-registry-lane-status-test.sh >/dev/null
-bin/chief-of-staff --curriculum-registry-a4-a7-fixture-schema-status >/dev/null
-bash tests/curriculum-builder-registry-a4-a7-fixture-schema-status-test.sh >/dev/null
-bin/chief-of-staff --cursor-operating-modes-status >/dev/null
-bin/chief-of-staff --autonomous-build-engine-status >/dev/null
-bash tests/autonomous-build-engine-status-test.sh >/dev/null
-bin/chief-of-staff --governance-lane-status >/dev/null
-bash tests/governance-lane-status-test.sh >/dev/null
-bin/chief-of-staff --whole-system-master-roadmap-status >/dev/null
-bash tests/whole-system-master-roadmap-status-test.sh >/dev/null
-bin/chief-of-staff --whole-system-coherence-status >/dev/null
-bash tests/whole-system-coherence-status-test.sh >/dev/null
-bin/chief-of-staff --agent-builder-compatibility-governance-status >/dev/null
-bash tests/agent-builder-compatibility-governance-status-test.sh >/dev/null
-bin/chief-of-staff --owen-architecture-decision-packets-status >/dev/null
-bash tests/owen-architecture-decision-packets-status-test.sh >/dev/null
-bin/chief-of-staff --app-ecosystem-inventory-status >/dev/null
-bash tests/app-ecosystem-inventory-status-test.sh >/dev/null
-bin/chief-of-staff --classroom-timer-stopwatch-planning-status >/dev/null
-bash tests/classroom-timer-stopwatch-planning-status-test.sh >/dev/null
-bin/chief-of-staff --classroom-timer-stopwatch-runtime-status >/dev/null
-bash tests/classroom-timer-stopwatch-runtime-status-test.sh >/dev/null
-bash tests/classroom-timer-stopwatch-runtime-static-safety-test.sh >/dev/null
-bin/chief-of-staff --app-ecosystem-planning-lanes-status >/dev/null
-bash tests/app-ecosystem-planning-lanes-status-test.sh >/dev/null
-bin/chief-of-staff --app-runtime-approval-gate-status >/dev/null
-bash tests/app-runtime-approval-gate-status-test.sh >/dev/null
-bin/chief-of-staff --presentation-engine-renderer-foundation-status >/dev/null
-bash tests/presentation-engine-renderer-foundation-status-test.sh >/dev/null
-bin/chief-of-staff --teacher-knowledge-vault-m0-architecture-freeze-status >/dev/null
-bash tests/teacher-knowledge-vault-m0-architecture-freeze-status-test.sh >/dev/null
-bin/chief-of-staff --teacher-knowledge-vault-m1-fake-catalog-status >/dev/null
-bash tests/teacher-knowledge-vault-m1-fake-catalog-status-test.sh >/dev/null
-bin/chief-of-staff --teacher-knowledge-vault-m2-local-discovery-approval-status >/dev/null
-bash tests/teacher-knowledge-vault-m2-local-discovery-approval-status-test.sh >/dev/null
-bin/chief-of-staff --teacher-knowledge-vault-m3-fake-duplicate-search-status >/dev/null
-bash tests/teacher-knowledge-vault-m3-fake-duplicate-search-status-test.sh >/dev/null
-bin/chief-of-staff --teacher-knowledge-vault-m4-smart-rename-status >/dev/null
-bash tests/teacher-knowledge-vault-m4-smart-rename-status-test.sh >/dev/null
-bin/chief-of-staff --teacher-knowledge-vault-m5-organization-rollback-status >/dev/null
-bash tests/teacher-knowledge-vault-m5-organization-rollback-status-test.sh >/dev/null
-bin/chief-of-staff --teacher-knowledge-vault-m6-extraction-ocr-approval-status >/dev/null
-bash tests/teacher-knowledge-vault-m6-extraction-ocr-approval-status-test.sh >/dev/null
-bin/chief-of-staff --teacher-knowledge-vault-m7-connector-approval-status >/dev/null
-bash tests/teacher-knowledge-vault-m7-connector-approval-status-test.sh >/dev/null
-bin/chief-of-staff --teacher-knowledge-vault-m7b-manual-source-inventory-status >/dev/null
-bash tests/teacher-knowledge-vault-m7b-manual-source-inventory-status-test.sh >/dev/null
-bin/chief-of-staff --teacher-knowledge-vault-m7c-manual-inventory-import-preview-status >/dev/null
-bash tests/teacher-knowledge-vault-m7c-manual-inventory-import-preview-status-test.sh >/dev/null
-bin/chief-of-staff --teacher-knowledge-vault-m7d-runtime-import-approval-gate-status >/dev/null
-bash tests/teacher-knowledge-vault-m7d-runtime-import-approval-gate-status-test.sh >/dev/null
-bin/chief-of-staff --teacher-knowledge-vault-m7e-local-test-catalog-status >/dev/null
-bash tests/teacher-knowledge-vault-m7e-local-test-catalog-import-test.sh >/dev/null
-bash tests/teacher-knowledge-vault-m7e-local-test-catalog-status-test.sh >/dev/null
-bin/chief-of-staff --gemini-discovery-classification-intake-status >/dev/null
-bash tests/gemini-discovery-classification-intake-status-test.sh >/dev/null
-bin/chief-of-staff --markdown-frontmatter-planning-status >/dev/null
-bash tests/markdown-frontmatter-planning-status-test.sh >/dev/null
-bin/chief-of-staff --workstation-ops-lane-status >/dev/null
-bash tests/workstation-ops-lane-status-test.sh >/dev/null
-bash tests/backlog-non-mutation-guardrails-test.sh >/dev/null
-bash tests/lane-review-hardening-guardrails-test.sh >/dev/null
-bash tests/ai-tool-routing-status-test.sh >/dev/null
-bash tests/local-llm-workstation-status-test.sh >/dev/null
-bash tests/mac-workstation-experience-status-test.sh >/dev/null
-bash tests/widget-shortcut-builder-status-test.sh >/dev/null
-bash tests/vibe-wallpaper-widgets-planning-status-test.sh >/dev/null
-bash tests/classroom-app-lab-status-test.sh >/dev/null
-bin/chief-of-staff --classroom-utility-templates-status >/dev/null
-bash tests/classroom-utility-templates-status-test.sh >/dev/null
-bash tests/lovable-classroom-app-builder-status-test.sh >/dev/null
-bash tests/3d-builder-workshop-agent-status-test.sh >/dev/null
-bash tests/cursor-operating-modes-status-test.sh >/dev/null
-bash tests/teacher-workstation-system-updater-test.sh >/dev/null
-bash tests/teacher-workstation-health-monitor-test.sh >/dev/null
-bash tests/chief-of-staff-daily-operations-test.sh >/dev/null
+
 bin/chief-of-staff --intake-status >/dev/null
 bin/chief-of-staff --intake-summary >/dev/null
 bin/chief-of-staff --intake-diff >/dev/null

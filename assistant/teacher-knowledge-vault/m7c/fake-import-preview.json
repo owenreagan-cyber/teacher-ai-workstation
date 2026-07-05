@@ -1,0 +1,67 @@
+{
+  "classification": "fake_local_planning_only",
+  "approval_level": "m7c_import_preview",
+  "runtime_connected": false,
+  "runtime_ingested": false,
+  "runtime_imported": false,
+  "summary": {
+    "total_fixture_rows": 13,
+    "accepted_preview_candidates": 8,
+    "blocked_records": 5,
+    "records_needing_review": 4,
+    "student_data_blocks": 1,
+    "secret_token_blocks": 0,
+    "api_network_actions": 0,
+    "runtime_imports": 0,
+    "source_connections": 0,
+    "file_reads": 0
+  },
+  "preview_categories": {
+    "resource_candidates": [
+      "fake-m7b-man-001"
+    ],
+    "source_inventory_candidates": [
+      "fake-m7b-man-002",
+      "fake-m7b-man-canvas-only",
+      "fake-m7b-man-drive-only"
+    ],
+    "review_routed": [
+      "fake-m7b-man-007",
+      "fake-m7b-man-009",
+      "fake-m7b-man-006"
+    ],
+    "blocked": [
+      "fake-m7b-man-dns",
+      "fake-m7b-man-student-risk-blocked"
+    ],
+    "sanitization_needed": [
+      "fake-m7c-reject-drive-id",
+      "fake-m7c-reject-canvas-id",
+      "fake-m7c-reject-extracted-text"
+    ],
+    "teacher_only_restricted": [
+      "fake-m7b-man-007",
+      "fake-m7b-man-009"
+    ],
+    "do_not_scan_blocked": [
+      "fake-m7b-man-dns"
+    ],
+    "reconciliation_candidates": [
+      "fake-m7b-man-canvas-only",
+      "fake-m7b-man-drive-only",
+      "fake-m7b-man-drive-canvas",
+      "fake-m7b-man-002"
+    ],
+    "planning_source_candidates": [
+      "fake-m7b-man-006",
+      "fake-m7c-reject-gemini-planning"
+    ],
+    "planning_source_types": ["notebooklm_planning", "gemini_planning"]
+  },
+  "governance": {
+    "import_preview_only": true,
+    "catalog_write": false,
+    "sqlite_write": false,
+    "connector_runtime": false
+  }
+}

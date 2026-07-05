@@ -1,0 +1,104 @@
+{
+  "classification": "fake_local_planning_only",
+  "runtime_connected": false,
+  "runtime_ingested": false,
+  "runtime_imported": false,
+  "candidates": [
+    {
+      "preview_id": "fake-m7c-prev-001",
+      "source_manual_inventory_id": "fake-m7b-man-001",
+      "source_label": "fake-manual://drive-folder-label-math-g5/",
+      "candidate_type": "ResourceCandidate",
+      "status": "preview_only",
+      "review_requirement": "fixture_valid",
+      "blocked_actions": ["runtime_ingest", "connector_sync", "content_read"],
+      "runtime_imported": false,
+      "runtime_connected": false,
+      "runtime_ingested": false
+    },
+    {
+      "preview_id": "fake-m7c-prev-002",
+      "source_manual_inventory_id": "fake-m7b-man-001",
+      "source_label": "fake-manual://drive-folder-label-math-g5/",
+      "candidate_type": "RepresentationCandidate",
+      "status": "preview_only",
+      "review_requirement": "fixture_valid",
+      "blocked_actions": ["runtime_ingest", "content_read"],
+      "runtime_imported": false,
+      "runtime_connected": false,
+      "runtime_ingested": false
+    },
+    {
+      "preview_id": "fake-m7c-prev-003",
+      "source_manual_inventory_id": "fake-m7b-man-002",
+      "source_label": "fake-manual://nas-share-label-curriculum-mirror/",
+      "candidate_type": "SourceInventoryCandidate",
+      "status": "preview_only",
+      "review_requirement": "ready_for_future_import_approval",
+      "blocked_actions": ["runtime_ingest", "connector_sync"],
+      "runtime_imported": false,
+      "runtime_connected": false,
+      "runtime_ingested": false
+    },
+    {
+      "preview_id": "fake-m7c-prev-004",
+      "source_manual_inventory_id": "fake-m7b-man-007",
+      "source_label": "fake-manual://teacher-only-manual-label/",
+      "candidate_type": "ResourceCandidate",
+      "status": "preview_only",
+      "review_requirement": "teacher_only_restricted_preview",
+      "blocked_actions": ["student_facing_export", "runtime_ingest"],
+      "runtime_imported": false,
+      "runtime_connected": false,
+      "runtime_ingested": false
+    },
+    {
+      "preview_id": "fake-m7c-prev-005",
+      "source_manual_inventory_id": "fake-m7b-man-canvas-only",
+      "source_label": "fake-manual://canvas-only-reconcile/",
+      "candidate_type": "SourceReconciliationPreview",
+      "status": "preview_only",
+      "review_requirement": "fixture_valid",
+      "blocked_actions": ["runtime_ingest", "connector_sync"],
+      "runtime_imported": false,
+      "runtime_connected": false,
+      "runtime_ingested": false
+    },
+    {
+      "preview_id": "fake-m7c-prev-006",
+      "source_manual_inventory_id": "fake-m7b-man-drive-canvas",
+      "source_label": "fake-manual://drive-canvas-reconcile/",
+      "candidate_type": "SourceReconciliationPreview",
+      "status": "preview_only",
+      "review_requirement": "fixture_valid",
+      "blocked_actions": ["runtime_ingest"],
+      "runtime_imported": false,
+      "runtime_connected": false,
+      "runtime_ingested": false
+    },
+    {
+      "preview_id": "fake-m7c-prev-007",
+      "source_manual_inventory_id": "fake-m7b-man-006",
+      "source_label": "fake-manual://notebooklm-planning-export/",
+      "candidate_type": "SourceItemCandidate",
+      "status": "preview_only",
+      "review_requirement": "needs_source_role",
+      "blocked_actions": ["runtime_ingest", "content_read"],
+      "runtime_imported": false,
+      "runtime_connected": false,
+      "runtime_ingested": false
+    },
+    {
+      "preview_id": "fake-m7c-prev-008",
+      "source_manual_inventory_id": "fake-m7b-man-009",
+      "source_label": "fake-manual://ai-generated-adaptation/",
+      "candidate_type": "ReviewQueuePreview",
+      "status": "preview_only",
+      "review_requirement": "needs_audience_label",
+      "blocked_actions": ["runtime_ingest", "publish"],
+      "runtime_imported": false,
+      "runtime_connected": false,
+      "runtime_ingested": false
+    }
+  ]
+}

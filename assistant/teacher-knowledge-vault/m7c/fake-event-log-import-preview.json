@@ -1,0 +1,96 @@
+{
+  "classification": "fake_local_planning_only",
+  "runtime_connected": false,
+  "runtime_ingested": false,
+  "runtime_imported": false,
+  "events": [
+    {
+      "event_id": "fake-m7c-evt-001",
+      "event_type": "manual_fixture_validation_started",
+      "source_manual_inventory_id": null,
+      "runtime_executed": false,
+      "runtime_connected": false,
+      "runtime_ingested": false
+    },
+    {
+      "event_id": "fake-m7c-evt-002",
+      "event_type": "manual_fixture_validation_completed",
+      "source_manual_inventory_id": null,
+      "runtime_executed": false,
+      "runtime_connected": false,
+      "runtime_ingested": false
+    },
+    {
+      "event_id": "fake-m7c-evt-003",
+      "event_type": "record_rejected",
+      "source_manual_inventory_id": "fake-m7c-reject-drive-id",
+      "runtime_executed": false,
+      "runtime_connected": false,
+      "runtime_ingested": false
+    },
+    {
+      "event_id": "fake-m7c-evt-004",
+      "event_type": "record_sanitized",
+      "source_manual_inventory_id": "fake-m7c-reject-extracted-text",
+      "runtime_executed": false,
+      "runtime_connected": false,
+      "runtime_ingested": false
+    },
+    {
+      "event_id": "fake-m7c-evt-005",
+      "event_type": "preview_candidate_created",
+      "source_manual_inventory_id": "fake-m7b-man-001",
+      "runtime_executed": false,
+      "runtime_connected": false,
+      "runtime_ingested": false
+    },
+    {
+      "event_id": "fake-m7c-evt-006",
+      "event_type": "teacher_only_restricted_preview_created",
+      "source_manual_inventory_id": "fake-m7b-man-007",
+      "runtime_executed": false,
+      "runtime_connected": false,
+      "runtime_ingested": false
+    },
+    {
+      "event_id": "fake-m7c-evt-007",
+      "event_type": "do_not_scan_blocked",
+      "source_manual_inventory_id": "fake-m7b-man-dns",
+      "runtime_executed": false,
+      "runtime_connected": false,
+      "runtime_ingested": false
+    },
+    {
+      "event_id": "fake-m7c-evt-008",
+      "event_type": "future_import_requested_but_blocked",
+      "source_manual_inventory_id": "fake-m7c-reject-runtime-ingest",
+      "runtime_executed": false,
+      "runtime_connected": false,
+      "runtime_ingested": false
+    },
+    {
+      "event_id": "fake-m7c-evt-009",
+      "event_type": "connector_access_requested_but_blocked",
+      "source_manual_inventory_id": "fake-m7b-man-002",
+      "runtime_executed": false,
+      "runtime_connected": false,
+      "runtime_ingested": false
+    },
+    {
+      "event_id": "fake-m7c-evt-010",
+      "event_type": "api_network_call_requested_but_blocked",
+      "source_manual_inventory_id": null,
+      "runtime_executed": false,
+      "runtime_connected": false,
+      "runtime_ingested": false
+    },
+    {
+      "event_id": "fake-m7c-evt-011",
+      "event_type": "content_read_requested_but_blocked",
+      "source_manual_inventory_id": "fake-m7b-man-001",
+      "runtime_executed": false,
+      "runtime_connected": false,
+      "runtime_ingested": false
+    }
+  ]
+}

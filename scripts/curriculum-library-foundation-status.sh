@@ -144,7 +144,8 @@ check_help_contains "--curriculum-library-reference-v0-validate"
 check_bash_syntax "bin/chief-of-staff"
 check_file tests/curriculum-library-foundation-status-test.sh
 check_bash_syntax tests/curriculum-library-foundation-status-test.sh
-grep -Fq -- 'curriculum-library-foundation-status' tests/smoke-chief-of-staff-cli.sh && pass 'smoke wires curriculum library foundation test' || fail 'smoke missing curriculum library foundation test'
+source scripts/validation-smoke-tier-boundary.sh
+check_smoke_excludes_deep_validation 'curriculum-library-foundation' 'Curriculum library foundation'
 pass 'no write action attempted'
 pass 'no folder scanning attempted'
 pass 'no network call attempted'

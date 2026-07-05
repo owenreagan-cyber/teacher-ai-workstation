@@ -118,18 +118,22 @@ grep -Fq -- '--curriculum-registry-write)' bin/chief-of-staff 2>/dev/null && fai
 grep -Fq -- '--teacher-knowledge-vault-connect-drive)' bin/chief-of-staff 2>/dev/null && fail 'no vault connect drive' || pass 'no vault connect drive command'
 
 section 'M0 M1 M2 M3 M4 M5 M6 M7 M7b M7c M7d Preservation'
-bash scripts/teacher-knowledge-vault-m0-architecture-freeze-status.sh >/dev/null 2>&1 && pass 'M0 status still passes' || fail 'M0 status regressed'
-bash scripts/teacher-knowledge-vault-m1-fake-catalog-status.sh >/dev/null 2>&1 && pass 'M1 status still passes' || fail 'M1 status regressed'
-bash scripts/teacher-knowledge-vault-m2-local-discovery-approval-status.sh >/dev/null 2>&1 && pass 'M2 status still passes' || fail 'M2 status regressed'
-bash scripts/teacher-knowledge-vault-m3-fake-duplicate-search-status.sh >/dev/null 2>&1 && pass 'M3 status still passes' || fail 'M3 status regressed'
-bash scripts/teacher-knowledge-vault-m4-smart-rename-status.sh >/dev/null 2>&1 && pass 'M4 status still passes' || fail 'M4 status regressed'
-bash scripts/teacher-knowledge-vault-m5-organization-rollback-status.sh >/dev/null 2>&1 && pass 'M5 status still passes' || fail 'M5 status regressed'
-bash scripts/teacher-knowledge-vault-m6-extraction-ocr-approval-status.sh >/dev/null 2>&1 && pass 'M6 status still passes' || fail 'M6 status regressed'
-bash scripts/teacher-knowledge-vault-m7-connector-approval-status.sh >/dev/null 2>&1 && pass 'M7 status still passes' || fail 'M7 status regressed'
-bash scripts/teacher-knowledge-vault-m7b-manual-source-inventory-status.sh >/dev/null 2>&1 && pass 'M7b status still passes' || fail 'M7b status regressed'
-bash scripts/teacher-knowledge-vault-m7c-manual-inventory-import-preview-status.sh >/dev/null 2>&1 && pass 'M7c status still passes' || fail 'M7c status regressed'
-bash scripts/teacher-knowledge-vault-m7d-runtime-import-approval-gate-status.sh >/dev/null 2>&1 && pass 'M7d status still passes' || fail 'M7d status regressed'
+if [[ -n "${COS_TKV_SKIP_PRESERVATION:-}" ]]; then
+  pass 'prior milestone preservation skipped (aggregate context)'
+else
+COS_TKV_SKIP_PRESERVATION=1 bash scripts/teacher-knowledge-vault-m0-architecture-freeze-status.sh >/dev/null 2>&1 && pass 'M0 status still passes' || fail 'M0 status regressed'
+COS_TKV_SKIP_PRESERVATION=1 bash scripts/teacher-knowledge-vault-m1-fake-catalog-status.sh >/dev/null 2>&1 && pass 'M1 status still passes' || fail 'M1 status regressed'
+COS_TKV_SKIP_PRESERVATION=1 bash scripts/teacher-knowledge-vault-m2-local-discovery-approval-status.sh >/dev/null 2>&1 && pass 'M2 status still passes' || fail 'M2 status regressed'
+COS_TKV_SKIP_PRESERVATION=1 bash scripts/teacher-knowledge-vault-m3-fake-duplicate-search-status.sh >/dev/null 2>&1 && pass 'M3 status still passes' || fail 'M3 status regressed'
+COS_TKV_SKIP_PRESERVATION=1 bash scripts/teacher-knowledge-vault-m4-smart-rename-status.sh >/dev/null 2>&1 && pass 'M4 status still passes' || fail 'M4 status regressed'
+COS_TKV_SKIP_PRESERVATION=1 bash scripts/teacher-knowledge-vault-m5-organization-rollback-status.sh >/dev/null 2>&1 && pass 'M5 status still passes' || fail 'M5 status regressed'
+COS_TKV_SKIP_PRESERVATION=1 bash scripts/teacher-knowledge-vault-m6-extraction-ocr-approval-status.sh >/dev/null 2>&1 && pass 'M6 status still passes' || fail 'M6 status regressed'
+COS_TKV_SKIP_PRESERVATION=1 bash scripts/teacher-knowledge-vault-m7-connector-approval-status.sh >/dev/null 2>&1 && pass 'M7 status still passes' || fail 'M7 status regressed'
+COS_TKV_SKIP_PRESERVATION=1 bash scripts/teacher-knowledge-vault-m7b-manual-source-inventory-status.sh >/dev/null 2>&1 && pass 'M7b status still passes' || fail 'M7b status regressed'
+COS_TKV_SKIP_PRESERVATION=1 bash scripts/teacher-knowledge-vault-m7c-manual-inventory-import-preview-status.sh >/dev/null 2>&1 && pass 'M7c status still passes' || fail 'M7c status regressed'
+COS_TKV_SKIP_PRESERVATION=1 bash scripts/teacher-knowledge-vault-m7d-runtime-import-approval-gate-status.sh >/dev/null 2>&1 && pass 'M7d status still passes' || fail 'M7d status regressed'
 
+fi
 section 'Production Registry Parked-State Proof'
 if [[ -f "${production_registry_path}" ]] && command -v python3 >/dev/null 2>&1; then
   record_count="$(python3 -c "import json; d=json.load(open('${production_registry_path}')); print(len(d.get('records',[])))" 2>/dev/null || echo 0)"
@@ -155,7 +159,8 @@ check_file tests/teacher-knowledge-vault-m7e-local-test-catalog-import-test.sh
 check_file tests/teacher-knowledge-vault-m7e-local-test-catalog-status-test.sh
 check_bash_syntax tests/teacher-knowledge-vault-m7e-local-test-catalog-import-test.sh
 check_bash_syntax tests/teacher-knowledge-vault-m7e-local-test-catalog-status-test.sh
-grep -Fq -- 'teacher-knowledge-vault-m7e-local-test-catalog-status' tests/smoke-chief-of-staff-cli.sh && pass 'smoke wires M7e test' || fail 'smoke missing M7e test'
+source scripts/validation-smoke-tier-boundary.sh
+check_smoke_excludes_deep_validation 'teacher-knowledge-vault-m7e' 'Teacher Knowledge Vault M7e'
 pass 'no production catalog write attempted'
 pass 'no production registry write attempted'
 pass 'no source file operations attempted'

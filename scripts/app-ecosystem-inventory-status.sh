@@ -117,7 +117,8 @@ check_doc_contains docs/teacher-workstation-capability-map.md "app-ecosystem-inv
 section 'Dashboard and Validate-All Wiring'
 grep -Fq -- 'app-ecosystem-inventory-status.sh' scripts/chief-of-staff-dashboard.sh && pass 'dashboard wires app ecosystem inventory status' || fail 'dashboard missing app ecosystem inventory status'
 grep -Fq -- 'app-ecosystem-inventory-status.sh' scripts/chief-of-staff-validate-all.sh && pass 'validate-all wires app ecosystem inventory status' || fail 'validate-all missing app ecosystem inventory status'
-grep -Fq -- 'app-ecosystem-inventory' tests/smoke-chief-of-staff-cli.sh && pass 'smoke wires app ecosystem inventory status' || fail 'smoke missing app ecosystem inventory status'
+source scripts/validation-smoke-tier-boundary.sh
+check_smoke_excludes_deep_validation 'app-ecosystem-inventory' 'App ecosystem inventory'
 if grep -Eq 'bash[[:space:]]+scripts/(whole-system-coherence|owen-architecture-decision-packets)-status\.sh' "${BASH_SOURCE[0]}" 2>/dev/null; then
   fail 'inventory status must not execute other aggregate status scripts'
 else

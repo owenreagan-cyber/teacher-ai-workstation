@@ -173,7 +173,8 @@ section 'Chief of Staff Integration'
 check_help_contains "--teacher-knowledge-vault-m0-architecture-freeze-status"
 check_help_contains "--teacher-knowledge-vault-m1-fake-catalog-status"
 check_file tests/teacher-knowledge-vault-m0-architecture-freeze-status-test.sh
-grep -Fq -- 'teacher-knowledge-vault-m0-architecture-freeze-status' tests/smoke-chief-of-staff-cli.sh && pass 'smoke wires M0 test' || fail 'smoke missing M0 test'
+source scripts/validation-smoke-tier-boundary.sh
+check_smoke_excludes_deep_validation 'teacher-knowledge-vault-m0' 'Teacher Knowledge Vault M0'
 pass 'no write action attempted'
 pass 'no folder scanning attempted'
 pass 'no network call attempted'

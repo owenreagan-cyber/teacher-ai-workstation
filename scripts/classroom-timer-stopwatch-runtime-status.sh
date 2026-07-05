@@ -150,7 +150,8 @@ check_doc_contains "${matrix_doc}" "Runtime-approved apps: 1" "matrix one runtim
 section 'Dashboard and Validate-All Wiring'
 grep -Fq -- 'classroom-timer-stopwatch-runtime-status.sh' scripts/chief-of-staff-dashboard.sh && pass 'dashboard wires timer runtime status' || fail 'dashboard missing timer runtime status'
 grep -Fq -- 'classroom-timer-stopwatch-runtime-status.sh' scripts/chief-of-staff-validate-all.sh && pass 'validate-all wires timer runtime status' || fail 'validate-all missing timer runtime status'
-grep -Fq -- 'classroom-timer-stopwatch-runtime' tests/smoke-chief-of-staff-cli.sh && pass 'smoke wires timer runtime status' || fail 'smoke missing timer runtime status'
+source scripts/validation-smoke-tier-boundary.sh
+check_smoke_excludes_deep_validation 'classroom-timer-stopwatch-runtime' 'Classroom timer stopwatch runtime'
 
 section 'CLI, Manifest, and Tests'
 bash -n "${BASH_SOURCE[0]}" && pass "bash syntax ok: ${BASH_SOURCE[0]}" || fail "bash syntax failed: status script"

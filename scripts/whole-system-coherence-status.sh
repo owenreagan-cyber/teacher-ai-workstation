@@ -199,10 +199,11 @@ check_doc_contains "${whole_system_report}" "next_safe_lane_selector_complete" "
 section 'Dashboard and Validate-All Wiring'
 grep -Fq -- 'whole-system-coherence-status.sh' scripts/chief-of-staff-dashboard.sh && pass 'dashboard wires whole-system-coherence-status' || fail 'dashboard missing whole-system-coherence-status'
 grep -Fq -- 'whole-system-coherence-status.sh' scripts/chief-of-staff-validate-all.sh && pass 'validate-all wires whole-system-coherence-status' || fail 'validate-all missing whole-system-coherence-status'
-grep -Fq -- 'whole-system-coherence' tests/smoke-chief-of-staff-cli.sh && pass 'smoke wires whole-system-coherence-status' || fail 'smoke missing whole-system-coherence-status'
+source scripts/validation-smoke-tier-boundary.sh
+check_smoke_excludes_deep_validation 'whole-system-coherence' 'Whole-system coherence status'
 grep -Fq -- 'vibe-wallpaper-widgets-planning-status.sh' scripts/chief-of-staff-dashboard.sh && pass 'dashboard wires vibe-wallpaper-widgets-planning-status' || fail 'dashboard missing vibe-wallpaper-widgets-planning-status'
 grep -Fq -- 'vibe-wallpaper-widgets-planning-status.sh' scripts/chief-of-staff-validate-all.sh && pass 'validate-all wires vibe-wallpaper-widgets-planning-status' || fail 'validate-all missing vibe-wallpaper-widgets-planning-status'
-grep -Fq -- 'vibe-wallpaper-widgets-planning' tests/smoke-chief-of-staff-cli.sh && pass 'smoke wires vibe-wallpaper-widgets-planning-status' || fail 'smoke missing vibe-wallpaper-widgets-planning-status'
+check_smoke_excludes_deep_validation 'vibe-wallpaper-widgets-planning' 'Vibe / Wallpaper / Widgets planning status'
 if grep -Eq 'bash[[:space:]]+scripts/whole-system-master-roadmap-status\.sh' "${BASH_SOURCE[0]}" 2>/dev/null; then
   fail 'coherence status must not execute whole-system-master-roadmap-status.sh'
 else

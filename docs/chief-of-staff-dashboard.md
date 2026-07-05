@@ -79,6 +79,8 @@ FAIL: 0
 Health: <passing>/<total> checks passing
 ```
 
+**Exit code:** The dashboard exits `0` when it completes successfully, even if the Summary shows FAIL rows. Only critical failures (such as an unresolvable repo root) exit non-zero. Treat non-zero FAIL counts in the Summary as actionable status, not as implied by the process exit code.
+
 Warnings are not always blockers. Missing future/planned items, missing `llm`, or stale memory may be warnings that Owen can review manually.
 
 ## Troubleshooting

@@ -99,7 +99,8 @@ check_doc_contains docs/teacher-workstation-capability-map.md "agent-builder-com
 section 'Dashboard and Validate-All Wiring'
 grep -Fq -- 'agent-builder-compatibility-governance-status.sh' scripts/chief-of-staff-dashboard.sh && pass 'dashboard wires agent builder governance status' || fail 'dashboard missing agent builder governance status'
 grep -Fq -- 'agent-builder-compatibility-governance-status.sh' scripts/chief-of-staff-validate-all.sh && pass 'validate-all wires agent builder governance status' || fail 'validate-all missing agent builder governance status'
-grep -Fq -- 'agent-builder-compatibility' tests/smoke-chief-of-staff-cli.sh && pass 'smoke wires agent builder governance status' || fail 'smoke missing agent builder governance status'
+source scripts/validation-smoke-tier-boundary.sh
+check_smoke_excludes_deep_validation 'agent-builder-compatibility' 'Agent builder compatibility governance'
 if grep -Eq 'bash[[:space:]]+scripts/(whole-system-coherence|whole-system-master-roadmap|ai-tool-routing)-status\.sh' "${BASH_SOURCE[0]}" 2>/dev/null; then
   fail 'governance status must not execute other aggregate status scripts'
 else

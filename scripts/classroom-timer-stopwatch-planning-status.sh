@@ -106,7 +106,8 @@ section 'Dashboard and Validate-All Wiring'
 grep -Fq -- 'classroom-timer-stopwatch-planning-status.sh' scripts/chief-of-staff-dashboard.sh && pass 'dashboard wires timer planning status' || fail 'dashboard missing timer planning status'
 grep -Fq -- 'classroom-timer-stopwatch-planning-status.sh' scripts/chief-of-staff-validate-all.sh && pass 'validate-all wires timer planning status' || fail 'validate-all missing timer planning status'
 grep -Fq -- 'classroom-timer-stopwatch-runtime-status.sh' scripts/chief-of-staff-validate-all.sh && pass 'validate-all wires timer runtime status' || fail 'validate-all missing timer runtime status'
-grep -Fq -- 'classroom-timer-stopwatch' tests/smoke-chief-of-staff-cli.sh && pass 'smoke wires timer planning/runtime' || fail 'smoke missing timer wiring'
+source scripts/validation-smoke-tier-boundary.sh
+check_smoke_excludes_deep_validation 'classroom-timer-stopwatch' 'Classroom timer stopwatch planning'
 
 section 'CLI, Manifest, and Tests'
 bash -n "${BASH_SOURCE[0]}" && pass "bash syntax ok: ${BASH_SOURCE[0]}" || fail "bash syntax failed: status script"

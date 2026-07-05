@@ -115,7 +115,8 @@ check_doc_contains docs/teacher-workstation-capability-map.md "owen-architecture
 section 'Dashboard and Validate-All Wiring'
 grep -Fq -- 'owen-architecture-decision-packets-status.sh' scripts/chief-of-staff-dashboard.sh && pass 'dashboard wires decision packets status' || fail 'dashboard missing decision packets status'
 grep -Fq -- 'owen-architecture-decision-packets-status.sh' scripts/chief-of-staff-validate-all.sh && pass 'validate-all wires decision packets status' || fail 'validate-all missing decision packets status'
-grep -Fq -- 'owen-architecture-decision-packets' tests/smoke-chief-of-staff-cli.sh && pass 'smoke wires decision packets status' || fail 'smoke missing decision packets status'
+source scripts/validation-smoke-tier-boundary.sh
+check_smoke_excludes_deep_validation 'owen-architecture-decision-packets' 'Owen architecture decision packets'
 if grep -Eq 'bash[[:space:]]+scripts/(whole-system-coherence|whole-system-master-roadmap|agent-builder-compatibility-governance)-status\.sh' "${BASH_SOURCE[0]}" 2>/dev/null; then
   fail 'decision packets status must not execute other aggregate status scripts'
 else

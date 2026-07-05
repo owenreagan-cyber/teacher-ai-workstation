@@ -39,6 +39,9 @@ Per `docs/cursor-autonomous-build-engine.md` Expected WARN Policy.
 | `--teacher-knowledge-vault-m7c-manual-inventory-import-preview-status` | 0 | No — targeted command only |
 | `--teacher-knowledge-vault-m7c-manual-inventory-fixture-validator` | 0 | No — targeted command only |
 | `--teacher-knowledge-vault-m7d-runtime-import-approval-gate-status` | 0 | No — targeted command only |
+| `--teacher-knowledge-vault-m7e-local-test-catalog-import` | 0 | No — targeted command only |
+| `--teacher-knowledge-vault-m7e-local-test-catalog-cleanup` | 0 | No — targeted command only |
+| `--teacher-knowledge-vault-m7e-local-test-catalog-status` | 0 | No — targeted command only |
 | `--curriculum-registry-a4-a7-fixture-schema-status` | **0** (resolved 2026-07-03) | No — targeted command only |
 | `--gemini-discovery-classification-intake-status` | 0 | No — targeted command only |
 | `--markdown-frontmatter-planning-status` | 0 | No — targeted command only |

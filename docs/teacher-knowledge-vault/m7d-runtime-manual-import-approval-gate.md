@@ -51,11 +51,10 @@ M7d blocks:
 | Milestone | Status |
 | --- | --- |
 | M0–M7c | complete |
-| **M7d** Runtime manual import approval gate | **complete** (this mission) |
-| M7e runtime manual import into local test catalog | blocked |
-| M2b / Drive/NAS/Canvas connector implementation | blocked |
-| Runtime extraction/OCR / organization | blocked |
-| M8 AI/RAG | blocked |
+| **M7d** Runtime manual import approval gate | complete |
+| **M7e** Local test catalog import | complete |
+| M7f persistent local working catalog | blocked |
+| M2b / connectors / extraction / organization | blocked |
 
 ## Proof
 

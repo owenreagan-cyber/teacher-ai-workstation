@@ -1596,6 +1596,26 @@ else
   warn "Teacher Knowledge Vault M7d runtime import approval gate status script missing: scripts/teacher-knowledge-vault-m7d-runtime-import-approval-gate-status.sh"
 fi
 
+if [[ -f scripts/teacher-knowledge-vault-m7e-local-test-catalog-status.sh ]]; then
+  teacher_knowledge_vault_m7e_result=0
+  teacher_knowledge_vault_m7e_output="$(bash scripts/teacher-knowledge-vault-m7e-local-test-catalog-status.sh 2>&1)" || teacher_knowledge_vault_m7e_result=$?
+  teacher_knowledge_vault_m7e_pass="$(summary_count "${teacher_knowledge_vault_m7e_output}" "PASS")"
+  teacher_knowledge_vault_m7e_warn="$(summary_count "${teacher_knowledge_vault_m7e_output}" "WARN")"
+  teacher_knowledge_vault_m7e_fail="$(summary_count "${teacher_knowledge_vault_m7e_output}" "FAIL")"
+
+  if [[ "${teacher_knowledge_vault_m7e_result}" != "0" ]]; then
+    printf '%s\n' "${teacher_knowledge_vault_m7e_output}"
+    fail "Teacher Knowledge Vault M7e local test catalog status failed"
+  elif [[ -n "${teacher_knowledge_vault_m7e_pass}" && -n "${teacher_knowledge_vault_m7e_warn}" && -n "${teacher_knowledge_vault_m7e_fail}" ]]; then
+    printf 'Teacher Knowledge Vault M7e Local Test Catalog: PASS %s / WARN %s / FAIL %s\n' "${teacher_knowledge_vault_m7e_pass}" "${teacher_knowledge_vault_m7e_warn}" "${teacher_knowledge_vault_m7e_fail}"
+    pass "Teacher Knowledge Vault M7e local test catalog status completed"
+  else
+    pass "Teacher Knowledge Vault M7e local test catalog status completed"
+  fi
+else
+  warn "Teacher Knowledge Vault M7e local test catalog status script missing: scripts/teacher-knowledge-vault-m7e-local-test-catalog-status.sh"
+fi
+
 section "Local Retrieval Foundation v0"
 if [[ -f scripts/local-retrieval-foundation-status.sh ]]; then
   local_retrieval_foundation_result=0

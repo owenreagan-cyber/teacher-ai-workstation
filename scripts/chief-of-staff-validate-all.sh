@@ -162,6 +162,7 @@ run_track "Teacher Knowledge Vault M7 Connector Approval" scripts/teacher-knowle
 run_track "Teacher Knowledge Vault M7b Manual Source Inventory" scripts/teacher-knowledge-vault-m7b-manual-source-inventory-status.sh
 run_track "Teacher Knowledge Vault M7c Manual Inventory Import Preview" scripts/teacher-knowledge-vault-m7c-manual-inventory-import-preview-status.sh
 run_track "Teacher Knowledge Vault M7d Runtime Import Approval Gate" scripts/teacher-knowledge-vault-m7d-runtime-import-approval-gate-status.sh
+run_track "Teacher Knowledge Vault M7e Local Test Catalog" scripts/teacher-knowledge-vault-m7e-local-test-catalog-status.sh
 run_track "Gemini Discovery Classification Intake" scripts/gemini-discovery-classification-intake-status.sh
 run_track "Markdown Frontmatter Planning" scripts/markdown-frontmatter-planning-status.sh
 run_track "Curriculum Source Readiness" scripts/curriculum-source-readiness-status.sh

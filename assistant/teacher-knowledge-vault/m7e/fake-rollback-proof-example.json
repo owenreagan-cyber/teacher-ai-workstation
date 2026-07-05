@@ -1,0 +1,12 @@
+{
+  "classification": "fake_local_planning_only",
+  "runtime_test_catalog_only": true,
+  "rollback_plan_id": "fake-m7e-rollback-001",
+  "import_batch_id": "fake-m7e-batch-001",
+  "catalog_path": ".tmp/teacher-knowledge-vault/m7e/test-catalog.sqlite",
+  "backup_path": ".tmp/teacher-knowledge-vault/m7e/test-catalog-backup.sqlite",
+  "cleanup_removes_only_fixed_path": true,
+  "no_source_file_deletion": true,
+  "batch_removal_supported": true,
+  "production_write": false
+}

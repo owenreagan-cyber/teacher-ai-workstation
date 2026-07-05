@@ -216,6 +216,10 @@ Teacher Planning Command Organization (status only; safe sample: fractions-revie
                                        Show read-only Teacher Knowledge Vault M7 connector approval packet status and exit.
   --teacher-knowledge-vault-m7b-manual-source-inventory-status
                                        Show read-only Teacher Knowledge Vault M7b manual source inventory Level 1 status and exit.
+  --teacher-knowledge-vault-m7c-manual-inventory-import-preview-status
+                                       Show read-only Teacher Knowledge Vault M7c manual inventory validator and import preview status and exit.
+  --teacher-knowledge-vault-m7c-manual-inventory-fixture-validator
+                                       Run read-only Teacher Knowledge Vault M7c manual inventory fixture validator (fixed paths only) and exit.
   --teacher-knowledge-vault-knowledge-entry-v0-validate
                                        Run read-only Teacher Knowledge Vault knowledge entry v0 validator and exit.
   --renderer-foundation-v0-validate
@@ -1880,6 +1884,24 @@ while [[ $# -gt 0 ]]; do
         die "Teacher Knowledge Vault M7b manual source inventory status script is missing: scripts/teacher-knowledge-vault-m7b-manual-source-inventory-status.sh"
       fi
       bash "${teacher_knowledge_vault_m7b_manual_source_inventory_status_script}"
+      exit 0
+      ;;
+    --teacher-knowledge-vault-m7c-manual-inventory-import-preview-status)
+      repo_root="$(resolve_repo_root)"
+      teacher_knowledge_vault_m7c_manual_inventory_import_preview_status_script="${repo_root}/scripts/teacher-knowledge-vault-m7c-manual-inventory-import-preview-status.sh"
+      if [[ ! -f "${teacher_knowledge_vault_m7c_manual_inventory_import_preview_status_script}" ]]; then
+        die "Teacher Knowledge Vault M7c manual inventory import preview status script is missing: scripts/teacher-knowledge-vault-m7c-manual-inventory-import-preview-status.sh"
+      fi
+      bash "${teacher_knowledge_vault_m7c_manual_inventory_import_preview_status_script}"
+      exit 0
+      ;;
+    --teacher-knowledge-vault-m7c-manual-inventory-fixture-validator)
+      repo_root="$(resolve_repo_root)"
+      teacher_knowledge_vault_m7c_manual_inventory_fixture_validator_script="${repo_root}/scripts/teacher-knowledge-vault-m7c-manual-inventory-fixture-validator.sh"
+      if [[ ! -f "${teacher_knowledge_vault_m7c_manual_inventory_fixture_validator_script}" ]]; then
+        die "Teacher Knowledge Vault M7c manual inventory fixture validator script is missing: scripts/teacher-knowledge-vault-m7c-manual-inventory-fixture-validator.sh"
+      fi
+      bash "${teacher_knowledge_vault_m7c_manual_inventory_fixture_validator_script}"
       exit 0
       ;;
     --teacher-knowledge-vault-knowledge-entry-v0-validate)

@@ -1,0 +1,78 @@
+{
+  "classification": "fake_local_planning_only",
+  "runtime_connected": false,
+  "runtime_ingested": false,
+  "runtime_imported": false,
+  "routing": [
+    {
+      "manual_inventory_id": "fake-m7b-man-001",
+      "review_state": "fixture_valid",
+      "ready_for_future_import_approval": false,
+      "future_import_blocked": true,
+      "notes": "Valid fixture; preview candidate created — not approval to import"
+    },
+    {
+      "manual_inventory_id": "fake-m7c-reject-drive-id",
+      "review_state": "fixture_rejected",
+      "ready_for_future_import_approval": false,
+      "future_import_blocked": true,
+      "notes": "Real-looking Drive ID pattern rejected"
+    },
+    {
+      "manual_inventory_id": "fake-m7c-reject-extracted-text",
+      "review_state": "needs_sanitization",
+      "ready_for_future_import_approval": false,
+      "future_import_blocked": true,
+      "notes": "Extracted text field must be removed before preview"
+    },
+    {
+      "manual_inventory_id": "fake-m7b-man-009",
+      "review_state": "needs_audience_label",
+      "ready_for_future_import_approval": false,
+      "future_import_blocked": true,
+      "notes": "Audience label review required"
+    },
+    {
+      "manual_inventory_id": "fake-m7b-man-006",
+      "review_state": "needs_source_role",
+      "ready_for_future_import_approval": false,
+      "future_import_blocked": true,
+      "notes": "Planning source needs source role confirmation"
+    },
+    {
+      "manual_inventory_id": "fake-m7b-man-007",
+      "review_state": "teacher_only_restricted_preview",
+      "ready_for_future_import_approval": false,
+      "future_import_blocked": true,
+      "notes": "10_TEACHER_ONLY restricted-indexable preview only"
+    },
+    {
+      "manual_inventory_id": "fake-m7b-man-dns",
+      "review_state": "do_not_scan_blocked",
+      "ready_for_future_import_approval": false,
+      "future_import_blocked": true,
+      "notes": "99_DO_NOT_SCAN absolute exclusion"
+    },
+    {
+      "manual_inventory_id": "fake-m7b-man-002",
+      "review_state": "ready_for_future_import_approval",
+      "ready_for_future_import_approval": false,
+      "future_import_blocked": true,
+      "notes": "Ready for future import approval is not approval to import"
+    },
+    {
+      "manual_inventory_id": "fake-m7b-man-student-risk-blocked",
+      "review_state": "fixture_rejected",
+      "ready_for_future_import_approval": false,
+      "future_import_blocked": true,
+      "notes": "Student data risk — future import blocked pending Owen approval"
+    },
+    {
+      "manual_inventory_id": "fake-m7c-reject-runtime-ingest",
+      "review_state": "future_import_blocked_pending_owen_approval",
+      "ready_for_future_import_approval": false,
+      "future_import_blocked": true,
+      "notes": "Runtime ingestion action requested but blocked"
+    }
+  ]
+}

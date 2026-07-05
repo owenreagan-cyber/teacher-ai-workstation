@@ -1,0 +1,98 @@
+{
+  "classification": "fake_local_planning_only",
+  "runtime_connected": false,
+  "runtime_ingested": false,
+  "runtime_imported": false,
+  "rejections": [
+    {
+      "rejection_id": "fake-m7c-reject-001",
+      "source_manual_inventory_id": "fake-m7c-reject-drive-id",
+      "rejection_reason": "blocked_placeholder_drive_id_pattern",
+      "rejection_detail": "Fake record contained a real-looking Drive ID pattern; replaced with blocked placeholder",
+      "blocked_actions": ["runtime_ingest", "connector_sync", "content_read"],
+      "runtime_imported": false,
+      "runtime_connected": false,
+      "runtime_ingested": false
+    },
+    {
+      "rejection_id": "fake-m7c-reject-002",
+      "source_manual_inventory_id": "fake-m7c-reject-canvas-id",
+      "rejection_reason": "blocked_placeholder_canvas_id_pattern",
+      "rejection_detail": "Fake record contained a real-looking Canvas course ID pattern; blocked from preview mapping",
+      "blocked_actions": ["runtime_ingest", "connector_sync"],
+      "runtime_imported": false,
+      "runtime_connected": false,
+      "runtime_ingested": false
+    },
+    {
+      "rejection_id": "fake-m7c-reject-003",
+      "source_manual_inventory_id": "fake-m7b-man-student-risk-blocked",
+      "rejection_reason": "student_data_field_blocked",
+      "rejection_detail": "Student data risk flag set; record blocked from import preview",
+      "blocked_actions": ["approve", "runtime_ingest", "index"],
+      "runtime_imported": false,
+      "runtime_connected": false,
+      "runtime_ingested": false
+    },
+    {
+      "rejection_id": "fake-m7c-reject-004",
+      "source_manual_inventory_id": "fake-m7c-reject-private-url",
+      "rejection_reason": "private_url_blocked",
+      "rejection_detail": "Private URL pattern detected in fake fixture; rejected",
+      "blocked_actions": ["runtime_ingest", "connector_sync"],
+      "runtime_imported": false,
+      "runtime_connected": false,
+      "runtime_ingested": false
+    },
+    {
+      "rejection_id": "fake-m7c-reject-005",
+      "source_manual_inventory_id": "fake-m7c-reject-raw-path",
+      "rejection_reason": "raw_local_path_blocked",
+      "rejection_detail": "Raw absolute local path pattern detected; rejected",
+      "blocked_actions": ["content_read", "runtime_ingest"],
+      "runtime_imported": false,
+      "runtime_connected": false,
+      "runtime_ingested": false
+    },
+    {
+      "rejection_id": "fake-m7c-reject-006",
+      "source_manual_inventory_id": "fake-m7c-reject-extracted-text",
+      "rejection_reason": "extracted_text_field_blocked",
+      "rejection_detail": "Extracted text field not allowed in manual inventory; rejected",
+      "blocked_actions": ["runtime_ingest", "index"],
+      "runtime_imported": false,
+      "runtime_connected": false,
+      "runtime_ingested": false
+    },
+    {
+      "rejection_id": "fake-m7c-reject-007",
+      "source_manual_inventory_id": "fake-m7b-man-dns",
+      "rejection_reason": "do_not_scan_blocked_from_normal_mapping",
+      "rejection_detail": "99_DO_NOT_SCAN record blocked from normal resource/source mapping",
+      "blocked_actions": ["index", "discover", "runtime_ingest"],
+      "runtime_imported": false,
+      "runtime_connected": false,
+      "runtime_ingested": false
+    },
+    {
+      "rejection_id": "fake-m7c-reject-008",
+      "source_manual_inventory_id": "fake-m7b-man-007",
+      "rejection_reason": "teacher_only_restricted_indexable_preview_only",
+      "rejection_detail": "10_TEACHER_ONLY record allowed only as restricted-indexable preview",
+      "blocked_actions": ["student_facing_export", "runtime_ingest"],
+      "runtime_imported": false,
+      "runtime_connected": false,
+      "runtime_ingested": false
+    },
+    {
+      "rejection_id": "fake-m7c-reject-009",
+      "source_manual_inventory_id": "fake-m7c-reject-runtime-ingest",
+      "rejection_reason": "runtime_ingestion_action_blocked",
+      "rejection_detail": "allowed_next_actions contained runtime_ingest; action blocked",
+      "blocked_actions": ["runtime_ingest", "connector_sync", "scan"],
+      "runtime_imported": false,
+      "runtime_connected": false,
+      "runtime_ingested": false
+    }
+  ]
+}

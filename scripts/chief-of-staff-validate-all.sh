@@ -160,6 +160,7 @@ run_track "Teacher Knowledge Vault M5 Organization Rollback" scripts/teacher-kno
 run_track "Teacher Knowledge Vault M6 Extraction OCR Approval" scripts/teacher-knowledge-vault-m6-extraction-ocr-approval-status.sh
 run_track "Teacher Knowledge Vault M7 Connector Approval" scripts/teacher-knowledge-vault-m7-connector-approval-status.sh
 run_track "Teacher Knowledge Vault M7b Manual Source Inventory" scripts/teacher-knowledge-vault-m7b-manual-source-inventory-status.sh
+run_track "Teacher Knowledge Vault M7c Manual Inventory Import Preview" scripts/teacher-knowledge-vault-m7c-manual-inventory-import-preview-status.sh
 run_track "Gemini Discovery Classification Intake" scripts/gemini-discovery-classification-intake-status.sh
 run_track "Markdown Frontmatter Planning" scripts/markdown-frontmatter-planning-status.sh
 run_track "Curriculum Source Readiness" scripts/curriculum-source-readiness-status.sh

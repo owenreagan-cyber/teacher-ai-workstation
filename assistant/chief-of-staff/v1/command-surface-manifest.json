@@ -200,6 +200,8 @@
         {"flag": "--teacher-knowledge-vault-m6-extraction-ocr-approval-status", "status": "implemented", "purpose": "Teacher Knowledge Vault M6 extraction/OCR approval packet (read-only; no extraction/OCR execution)"},
         {"flag": "--teacher-knowledge-vault-m7-connector-approval-status", "status": "implemented", "purpose": "Teacher Knowledge Vault M7 connector approval packet (read-only; no connector/OAuth/API execution)"},
         {"flag": "--teacher-knowledge-vault-m7b-manual-source-inventory-status", "status": "implemented", "purpose": "Teacher Knowledge Vault M7b manual source inventory Level 1 (read-only; no ingestion/OAuth/API)"},
+        {"flag": "--teacher-knowledge-vault-m7c-manual-inventory-import-preview-status", "status": "implemented", "purpose": "Teacher Knowledge Vault M7c manual inventory validator and import preview (read-only; no catalog import/OAuth/API)"},
+        {"flag": "--teacher-knowledge-vault-m7c-manual-inventory-fixture-validator", "status": "implemented", "purpose": "Teacher Knowledge Vault M7c manual inventory fixture validator (fixed paths only; read-only)"},
         {"flag": "--teacher-knowledge-vault-knowledge-entry-v0-validate", "status": "implemented", "purpose": "Teacher Knowledge Vault knowledge entry v0 validator (read-only)"},
         {"flag": "--local-retrieval-foundation-status", "status": "implemented", "purpose": "Local Retrieval Foundation v0"},
         {"flag": "--integration-planning-foundation-status", "status": "implemented", "purpose": "Integration Planning Foundation v0"}

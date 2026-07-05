@@ -45,7 +45,8 @@ Approving a manual inventory record does not scan or ingest files. Approval only
 | Milestone | Status |
 | --- | --- |
 | M0–M7 | complete |
-| **M7b** Manual source inventory Level 1 | **complete** (this mission) |
+| **M7b** Manual source inventory Level 1 | complete |
+| **M7c** Manual inventory validator and import preview | complete |
 | M2b / Drive/NAS/Canvas connector implementation | blocked |
 | Runtime manual import into SQLite/catalog | blocked |
 | Runtime extraction/OCR / organization | blocked |

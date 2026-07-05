@@ -136,6 +136,8 @@ These flags exist in `bin/chief-of-staff` and work as read-only local status sur
 | `bin/chief-of-staff --teacher-knowledge-vault-m6-extraction-ocr-approval-status` | Teacher Knowledge Vault M6 extraction/OCR approval packet (read-only; no extraction/OCR execution) |
 | `bin/chief-of-staff --teacher-knowledge-vault-m7-connector-approval-status` | Teacher Knowledge Vault M7 connector approval packet (read-only; no connector/OAuth/API execution) |
 | `bin/chief-of-staff --teacher-knowledge-vault-m7b-manual-source-inventory-status` | Teacher Knowledge Vault M7b manual source inventory Level 1 (read-only; no ingestion/OAuth/API) |
+| `bin/chief-of-staff --teacher-knowledge-vault-m7c-manual-inventory-import-preview-status` | Teacher Knowledge Vault M7c manual inventory validator and import preview (read-only; no catalog import/OAuth/API) |
+| `bin/chief-of-staff --teacher-knowledge-vault-m7c-manual-inventory-fixture-validator` | Teacher Knowledge Vault M7c manual inventory fixture validator (fixed paths only; read-only) |
 | `bin/chief-of-staff --teacher-knowledge-vault-knowledge-entry-v0-validate` | Teacher Knowledge Vault knowledge entry v0 validator (read-only) |
 | `bin/chief-of-staff --local-retrieval-foundation-status` | Local Retrieval v0 |
 | `bin/chief-of-staff --integration-planning-foundation-status` | Integration Planning v0 |

@@ -61,9 +61,10 @@ M7c blocks:
 | Milestone | Status |
 | --- | --- |
 | M0–M7b | complete |
-| **M7c** Manual inventory validator and import preview | **complete** (this mission) |
+| **M7c** Manual inventory validator and import preview | complete |
+| **M7d** Runtime manual import approval gate | complete |
+| M7e runtime manual import into local test catalog | blocked |
 | M2b / Drive/NAS/Canvas connector implementation | blocked |
-| Runtime manual import into SQLite/catalog | blocked |
 | Runtime extraction/OCR / organization | blocked |
 | M8 AI/RAG | blocked |
 

@@ -1,0 +1,20 @@
+{
+  "classification": "fake_local_planning_only",
+  "runtime_import_executed": false,
+  "plans": [
+    {
+      "rollback_plan_id": "fake-m7d-rollback-001",
+      "import_batch_id": "fake-m7d-batch-pending-001",
+      "catalog_backup_label": "fake-catalog-backup-before-import-label",
+      "backup_required": true,
+      "backup_exists": false,
+      "records_created_by_batch": [],
+      "batch_removal_supported": true,
+      "event_log_entries_required": ["import_batch_created", "import_batch_removed", "rollback_verified"],
+      "no_source_file_deletion": true,
+      "teacher_only_restrictions_preserved": true,
+      "import_blocked_if_rollback_unavailable": true,
+      "runtime_import_executed": false
+    }
+  ]
+}

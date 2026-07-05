@@ -190,6 +190,8 @@ bin/chief-of-staff --teacher-knowledge-vault-m7b-manual-source-inventory-status 
 bash tests/teacher-knowledge-vault-m7b-manual-source-inventory-status-test.sh >/dev/null
 bin/chief-of-staff --teacher-knowledge-vault-m7c-manual-inventory-import-preview-status >/dev/null
 bash tests/teacher-knowledge-vault-m7c-manual-inventory-import-preview-status-test.sh >/dev/null
+bin/chief-of-staff --teacher-knowledge-vault-m7d-runtime-import-approval-gate-status >/dev/null
+bash tests/teacher-knowledge-vault-m7d-runtime-import-approval-gate-status-test.sh >/dev/null
 bin/chief-of-staff --gemini-discovery-classification-intake-status >/dev/null
 bash tests/gemini-discovery-classification-intake-status-test.sh >/dev/null
 bin/chief-of-staff --markdown-frontmatter-planning-status >/dev/null

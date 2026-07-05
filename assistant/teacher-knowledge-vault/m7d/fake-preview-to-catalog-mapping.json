@@ -1,0 +1,52 @@
+{
+  "classification": "fake_local_planning_only",
+  "runtime_import_executed": false,
+  "mapping_contract": "future_only_not_execution",
+  "mappings": [
+    {
+      "preview_type": "SourceInventoryCandidate",
+      "future_catalog_record": "Source",
+      "generates_new_local_id": true,
+      "blocked_if": ["student_data_risk", "do_not_scan_flag", "fixture_rejected"]
+    },
+    {
+      "preview_type": "ResourceCandidate",
+      "future_catalog_record": "Resource",
+      "generates_new_local_id": true,
+      "teacher_only_maps_restricted_indexable": true,
+      "blocked_if": ["student_data_risk", "do_not_scan_flag"]
+    },
+    {
+      "preview_type": "RepresentationCandidate",
+      "future_catalog_record": "Representation",
+      "generates_new_local_id": true,
+      "blocked_if": ["student_data_risk", "do_not_scan_flag"]
+    },
+    {
+      "preview_type": "SourceItemCandidate",
+      "future_catalog_record": "SourceItem",
+      "generates_new_local_id": true,
+      "blocked_if": ["student_data_risk", "do_not_scan_flag"]
+    },
+    {
+      "preview_type": "SourceReconciliationPreview",
+      "future_catalog_record": "SourceReconciliation",
+      "generates_new_local_id": true,
+      "blocked_if": ["do_not_scan_flag"]
+    },
+    {
+      "preview_type": "ReviewQueuePreview",
+      "future_catalog_record": "ReviewQueueItem",
+      "generates_new_local_id": true,
+      "blocked_if": []
+    },
+    {
+      "preview_type": "EventLogPreview",
+      "future_catalog_record": "EventLogEntry",
+      "generates_new_local_id": true,
+      "blocked_if": []
+    }
+  ],
+  "do_not_scan_must_not_map_searchable": true,
+  "preview_ids_are_not_final_ids": true
+}

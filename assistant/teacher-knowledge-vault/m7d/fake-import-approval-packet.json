@@ -1,0 +1,45 @@
+{
+  "classification": "fake_local_planning_only",
+  "approval_level": 1,
+  "runtime_import_executed": false,
+  "catalog_writes": 0,
+  "packets": [
+    {
+      "approval_packet_id": "fake-m7d-packet-001",
+      "source_preview_run_id": "fake-m7c-preview-run-001",
+      "fixture_validator_result": "PASS",
+      "import_preview_result": "8 accepted, 5 blocked, 4 needs review",
+      "accepted_candidate_count": 8,
+      "blocked_record_count": 5,
+      "needs_review_count": 4,
+      "teacher_only_restricted_count": 2,
+      "do_not_scan_blocked_count": 1,
+      "student_data_block_count": 1,
+      "target_catalog_label": "fake-local-test-catalog-label-only",
+      "backup_required": true,
+      "rollback_plan_required": true,
+      "event_log_required": true,
+      "allowed_actions": ["attach_validator_evidence", "attach_preview_evidence", "route_teacher_review"],
+      "blocked_actions": ["runtime_import", "catalog_write", "production_write", "connector_sync", "content_read"],
+      "approval_state": "approved_for_future_runtime_import_not_executed",
+      "runtime_import_executed": false
+    },
+    {
+      "approval_packet_id": "fake-m7d-packet-002",
+      "source_preview_run_id": "fake-m7c-preview-run-002",
+      "fixture_validator_result": "PASS",
+      "import_preview_result": "blocked — student data risk",
+      "accepted_candidate_count": 0,
+      "blocked_record_count": 1,
+      "student_data_block_count": 1,
+      "target_catalog_label": "fake-local-test-catalog-label-only",
+      "backup_required": true,
+      "rollback_plan_required": true,
+      "event_log_required": true,
+      "allowed_actions": ["deny_import"],
+      "blocked_actions": ["runtime_import", "catalog_write"],
+      "approval_state": "denied",
+      "runtime_import_executed": false
+    }
+  ]
+}

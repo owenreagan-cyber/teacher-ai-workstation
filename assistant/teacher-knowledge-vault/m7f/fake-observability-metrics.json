@@ -1,0 +1,19 @@
+{
+  "classification": "fake_local_planning_only",
+  "approval_gates_opened": 1,
+  "target_paths_proposed": 1,
+  "target_paths_blocked": 1,
+  "backup_plans_required": 1,
+  "rollback_plans_required": 1,
+  "persistent_catalog_writes": 0,
+  "production_catalog_writes": 0,
+  "production_registry_writes": 0,
+  "connector_implementations": 0,
+  "oauth_api_network_calls": 0,
+  "real_files_read": 0,
+  "student_records_read": 0,
+  "source_file_operations": 0,
+  "m7e_test_catalog_imports_preserved": true,
+  "api_cost_estimate_usd": "0.00",
+  "runtime_external_accesses": 0
+}

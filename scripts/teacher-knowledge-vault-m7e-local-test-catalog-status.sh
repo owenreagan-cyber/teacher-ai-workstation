@@ -146,7 +146,7 @@ fi
 section 'Roadmap and Build Queue Cross-Links'
 check_doc_contains docs/build-queue.md "M7e" "build queue M7e"
 check_doc_contains docs/build-queue.md "local test catalog" "build queue test catalog"
-check_doc_contains docs/build-queue.md "M7f" "build queue M7f blocked"
+check_doc_contains docs/build-queue.md "M7g" "build queue M7g blocked"
 check_doc_contains assistant/memory/active-priorities.md "M7e" "active priorities M7e"
 check_doc_contains docs/teacher-knowledge-vault/m7d-runtime-manual-import-approval-gate.md "M7e" "M7d roadmap M7e reference"
 

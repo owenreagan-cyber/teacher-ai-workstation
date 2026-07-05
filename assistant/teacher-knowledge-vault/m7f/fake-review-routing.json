@@ -1,0 +1,23 @@
+{
+  "classification": "fake_local_planning_only",
+  "review_states": [
+    "persistent_catalog_requested",
+    "target_path_review_required",
+    "backup_plan_required",
+    "rollback_plan_required",
+    "schema_review_required",
+    "m7c_evidence_required",
+    "m7d_approval_packet_required",
+    "m7e_test_import_proof_required",
+    "approved_for_future_runtime_mission_not_executed",
+    "blocked",
+    "deferred",
+    "denied"
+  ],
+  "current_state": "approved_for_future_runtime_mission_not_executed",
+  "approval_gate_executes_writes": false,
+  "review_queue_creates_persistent_catalog": false,
+  "future_runtime_mission_still_required": true,
+  "persistent_catalog_write_executed": false,
+  "catalog_writes": 0
+}

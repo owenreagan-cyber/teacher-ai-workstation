@@ -206,6 +206,7 @@
         {"flag": "--teacher-knowledge-vault-m7e-local-test-catalog-import", "status": "implemented", "purpose": "Teacher Knowledge Vault M7e local test catalog import (fixed fixtures/path only; disposable test catalog)"},
         {"flag": "--teacher-knowledge-vault-m7e-local-test-catalog-cleanup", "status": "implemented", "purpose": "Teacher Knowledge Vault M7e local test catalog cleanup (fixed generated path only)"},
         {"flag": "--teacher-knowledge-vault-m7e-local-test-catalog-status", "status": "implemented", "purpose": "Teacher Knowledge Vault M7e local test catalog status (bounded runtime-write proof)"},
+        {"flag": "--teacher-knowledge-vault-m7f-persistent-working-catalog-approval-gate-status", "status": "implemented", "purpose": "Teacher Knowledge Vault M7f persistent local working catalog approval gate (read-only)"},
         {"flag": "--teacher-knowledge-vault-knowledge-entry-v0-validate", "status": "implemented", "purpose": "Teacher Knowledge Vault knowledge entry v0 validator (read-only)"},
         {"flag": "--local-retrieval-foundation-status", "status": "implemented", "purpose": "Local Retrieval Foundation v0"},
         {"flag": "--integration-planning-foundation-status", "status": "implemented", "purpose": "Integration Planning Foundation v0"}

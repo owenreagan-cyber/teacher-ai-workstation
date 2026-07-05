@@ -1,0 +1,18 @@
+{
+  "classification": "fake_local_planning_only",
+  "persistent_catalog_write_executed": false,
+  "backup_before_import_required": true,
+  "import_batch_id_required": true,
+  "batch_tracking_required": true,
+  "rollback_by_batch_required": true,
+  "verify_rollback_required": true,
+  "event_log_backup_import_rollback_required": true,
+  "no_source_file_operations": true,
+  "no_curriculum_file_deletion_on_rollback": true,
+  "backup_location_fixed_and_reviewed": true,
+  "backup_retention_policy_documented": true,
+  "failed_import_known_state_required": true,
+  "example_batch_id": "fake-m7f-batch-001",
+  "catalog_writes": 0,
+  "source_file_operations": 0
+}

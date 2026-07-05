@@ -1,0 +1,25 @@
+{
+  "classification": "fake_local_planning_only",
+  "schema_readiness_only": true,
+  "database_created": false,
+  "required_tables": [
+    "sources",
+    "resources",
+    "representations",
+    "source_items",
+    "source_reconciliation",
+    "review_queue_items",
+    "event_log",
+    "import_batches",
+    "blocked_records",
+    "schema_migrations",
+    "catalog_metadata",
+    "backup_records",
+    "rollback_records"
+  ],
+  "schema_version_field_required": true,
+  "migration_runtime_in_m7f": false,
+  "do_not_scan_non_indexable": true,
+  "teacher_only_restricted_indexable": true,
+  "m7e_schema_alignment": "builds_from_disposable_test_catalog"
+}

@@ -139,6 +139,9 @@ These flags exist in `bin/chief-of-staff` and work as read-only local status sur
 | `bin/chief-of-staff --teacher-knowledge-vault-m7c-manual-inventory-import-preview-status` | Teacher Knowledge Vault M7c manual inventory validator and import preview (read-only; no catalog import/OAuth/API) |
 | `bin/chief-of-staff --teacher-knowledge-vault-m7c-manual-inventory-fixture-validator` | Teacher Knowledge Vault M7c manual inventory fixture validator (fixed paths only; read-only) |
 | `bin/chief-of-staff --teacher-knowledge-vault-m7d-runtime-import-approval-gate-status` | Teacher Knowledge Vault M7d runtime manual import approval gate (read-only; no catalog import/write) |
+| `bin/chief-of-staff --teacher-knowledge-vault-m7e-local-test-catalog-import` | Teacher Knowledge Vault M7e local test catalog import (fixed fixtures/path; disposable test catalog) |
+| `bin/chief-of-staff --teacher-knowledge-vault-m7e-local-test-catalog-cleanup` | Teacher Knowledge Vault M7e local test catalog cleanup (fixed generated path only) |
+| `bin/chief-of-staff --teacher-knowledge-vault-m7e-local-test-catalog-status` | Teacher Knowledge Vault M7e local test catalog status (bounded runtime-write proof) |
 | `bin/chief-of-staff --teacher-knowledge-vault-knowledge-entry-v0-validate` | Teacher Knowledge Vault knowledge entry v0 validator (read-only) |
 | `bin/chief-of-staff --local-retrieval-foundation-status` | Local Retrieval v0 |
 | `bin/chief-of-staff --integration-planning-foundation-status` | Integration Planning v0 |

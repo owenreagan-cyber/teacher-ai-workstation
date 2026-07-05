@@ -222,6 +222,12 @@ Teacher Planning Command Organization (status only; safe sample: fractions-revie
                                        Run read-only Teacher Knowledge Vault M7c manual inventory fixture validator (fixed paths only) and exit.
   --teacher-knowledge-vault-m7d-runtime-import-approval-gate-status
                                        Show read-only Teacher Knowledge Vault M7d runtime manual import approval gate status and exit.
+  --teacher-knowledge-vault-m7e-local-test-catalog-import
+                                       Import committed fake/sanitized fixtures into disposable local test catalog (fixed path only) and exit.
+  --teacher-knowledge-vault-m7e-local-test-catalog-cleanup
+                                       Remove disposable local test catalog generated output (fixed path only) and exit.
+  --teacher-knowledge-vault-m7e-local-test-catalog-status
+                                       Show read-only Teacher Knowledge Vault M7e local test catalog import status and exit.
   --teacher-knowledge-vault-knowledge-entry-v0-validate
                                        Run read-only Teacher Knowledge Vault knowledge entry v0 validator and exit.
   --renderer-foundation-v0-validate
@@ -1913,6 +1919,33 @@ while [[ $# -gt 0 ]]; do
         die "Teacher Knowledge Vault M7d runtime import approval gate status script is missing: scripts/teacher-knowledge-vault-m7d-runtime-import-approval-gate-status.sh"
       fi
       bash "${teacher_knowledge_vault_m7d_runtime_import_approval_gate_status_script}"
+      exit 0
+      ;;
+    --teacher-knowledge-vault-m7e-local-test-catalog-import)
+      repo_root="$(resolve_repo_root)"
+      teacher_knowledge_vault_m7e_local_test_catalog_import_script="${repo_root}/scripts/teacher-knowledge-vault-m7e-local-test-catalog-import.sh"
+      if [[ ! -f "${teacher_knowledge_vault_m7e_local_test_catalog_import_script}" ]]; then
+        die "Teacher Knowledge Vault M7e local test catalog import script is missing: scripts/teacher-knowledge-vault-m7e-local-test-catalog-import.sh"
+      fi
+      bash "${teacher_knowledge_vault_m7e_local_test_catalog_import_script}"
+      exit 0
+      ;;
+    --teacher-knowledge-vault-m7e-local-test-catalog-cleanup)
+      repo_root="$(resolve_repo_root)"
+      teacher_knowledge_vault_m7e_local_test_catalog_cleanup_script="${repo_root}/scripts/teacher-knowledge-vault-m7e-local-test-catalog-cleanup.sh"
+      if [[ ! -f "${teacher_knowledge_vault_m7e_local_test_catalog_cleanup_script}" ]]; then
+        die "Teacher Knowledge Vault M7e local test catalog cleanup script is missing: scripts/teacher-knowledge-vault-m7e-local-test-catalog-cleanup.sh"
+      fi
+      bash "${teacher_knowledge_vault_m7e_local_test_catalog_cleanup_script}"
+      exit 0
+      ;;
+    --teacher-knowledge-vault-m7e-local-test-catalog-status)
+      repo_root="$(resolve_repo_root)"
+      teacher_knowledge_vault_m7e_local_test_catalog_status_script="${repo_root}/scripts/teacher-knowledge-vault-m7e-local-test-catalog-status.sh"
+      if [[ ! -f "${teacher_knowledge_vault_m7e_local_test_catalog_status_script}" ]]; then
+        die "Teacher Knowledge Vault M7e local test catalog status script is missing: scripts/teacher-knowledge-vault-m7e-local-test-catalog-status.sh"
+      fi
+      bash "${teacher_knowledge_vault_m7e_local_test_catalog_status_script}"
       exit 0
       ;;
     --teacher-knowledge-vault-knowledge-entry-v0-validate)

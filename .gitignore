@@ -37,3 +37,6 @@ assistant/lesson-planning/briefs/*.md
 # Local lesson activity, assessment, and materials drafts
 assistant/lesson-planning/drafts/*.md
 !assistant/lesson-planning/drafts/README.md
+
+# Teacher Knowledge Vault M7e disposable local test catalog (generated only)
+.tmp/teacher-knowledge-vault/m7e/

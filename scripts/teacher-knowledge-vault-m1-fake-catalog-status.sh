@@ -140,7 +140,7 @@ for f in scripts/*knowledge-vault* assistant/teacher-knowledge-vault/m1/*; do
   [[ -f "${f}" ]] || continue
   [[ "${f}" == *status* ]] && continue
   if grep -qiE '(sqlite3|\.db"|CREATE TABLE.*EXECUTE)' "${f}" 2>/dev/null; then
-    if [[ "${f}" != *catalog-schema-direction* ]] && [[ "${f}" != *.md ]]; then
+    if [[ "${f}" != *catalog-schema-direction* ]] && [[ "${f}" != *.md ]] && [[ "${f}" != *m7e-local-test-catalog-import* ]]; then
       sqlite_hits=1
       fail "must not execute SQLite: ${f}"
     fi

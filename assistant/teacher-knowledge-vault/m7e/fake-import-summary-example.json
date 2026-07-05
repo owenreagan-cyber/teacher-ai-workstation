@@ -1,0 +1,33 @@
+{
+  "classification": "fake_local_planning_only",
+  "runtime_test_catalog_only": true,
+  "production_write": false,
+  "import_batch_id": "fake-m7e-batch-001",
+  "fixture_files_read": [
+    "assistant/teacher-knowledge-vault/m7b/fake-manual-inventory.json",
+    "assistant/teacher-knowledge-vault/m7c/fake-normalized-preview-candidates.json"
+  ],
+  "fixture_rows_checked": 13,
+  "preview_candidates_imported": 8,
+  "rejected_count": 0,
+  "blocked_count": 2,
+  "teacher_only_restricted_count": 1,
+  "do_not_scan_blocked_count": 1,
+  "catalog_records_created": {
+    "import_batches": 1,
+    "sources": 1,
+    "resources": 2,
+    "representations": 1,
+    "source_items": 1,
+    "source_reconciliation": 2,
+    "review_queue_items": 1,
+    "event_log": 4,
+    "blocked_records": 2
+  },
+  "runtime_external_accesses": 0,
+  "api_calls": 0,
+  "network_calls": 0,
+  "real_files_read": 0,
+  "student_records_read": 0,
+  "source_file_operations": 0
+}

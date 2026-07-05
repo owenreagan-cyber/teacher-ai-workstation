@@ -1,0 +1,26 @@
+{
+  "classification": "fake_local_planning_only",
+  "runtime_test_catalog_only": true,
+  "production_write": false,
+  "tables": [
+    "import_batches",
+    "sources",
+    "resources",
+    "representations",
+    "source_items",
+    "source_reconciliation",
+    "review_queue_items",
+    "event_log",
+    "blocked_records"
+  ],
+  "required_metadata": [
+    "import_batch_id",
+    "fixture_source_ref",
+    "restricted_indexable",
+    "indexable",
+    "discoverable",
+    "created_at",
+    "runtime_test_catalog_only",
+    "production_write"
+  ]
+}

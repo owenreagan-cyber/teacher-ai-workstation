@@ -228,6 +228,8 @@ Teacher Planning Command Organization (status only; safe sample: fractions-revie
                                        Remove disposable local test catalog generated output (fixed path only) and exit.
   --teacher-knowledge-vault-m7e-local-test-catalog-status
                                        Show read-only Teacher Knowledge Vault M7e local test catalog import status and exit.
+  --teacher-knowledge-vault-m7f-persistent-working-catalog-approval-gate-status
+                                       Show read-only Teacher Knowledge Vault M7f persistent local working catalog approval gate status and exit.
   --teacher-knowledge-vault-knowledge-entry-v0-validate
                                        Run read-only Teacher Knowledge Vault knowledge entry v0 validator and exit.
   --renderer-foundation-v0-validate
@@ -1946,6 +1948,15 @@ while [[ $# -gt 0 ]]; do
         die "Teacher Knowledge Vault M7e local test catalog status script is missing: scripts/teacher-knowledge-vault-m7e-local-test-catalog-status.sh"
       fi
       bash "${teacher_knowledge_vault_m7e_local_test_catalog_status_script}"
+      exit 0
+      ;;
+    --teacher-knowledge-vault-m7f-persistent-working-catalog-approval-gate-status)
+      repo_root="$(resolve_repo_root)"
+      teacher_knowledge_vault_m7f_persistent_working_catalog_approval_gate_status_script="${repo_root}/scripts/teacher-knowledge-vault-m7f-persistent-working-catalog-approval-gate-status.sh"
+      if [[ ! -f "${teacher_knowledge_vault_m7f_persistent_working_catalog_approval_gate_status_script}" ]]; then
+        die "Teacher Knowledge Vault M7f persistent working catalog approval gate status script is missing: scripts/teacher-knowledge-vault-m7f-persistent-working-catalog-approval-gate-status.sh"
+      fi
+      bash "${teacher_knowledge_vault_m7f_persistent_working_catalog_approval_gate_status_script}"
       exit 0
       ;;
     --teacher-knowledge-vault-knowledge-entry-v0-validate)

@@ -1,0 +1,17 @@
+{
+  "classification": "fake_local_planning_only",
+  "review_state": "target_path_review_required",
+  "persistent_catalog_write_executed": false,
+  "candidate_storage_rules": {
+    "local_first": true,
+    "not_in_drive_icloud_nas_sync_by_default": true,
+    "not_in_curriculum_source_folders": true,
+    "not_in_teacher_ai_curriculum_library_until_approved": true,
+    "separate_from_m7e_disposable_test_catalog": true,
+    "separate_from_future_production_catalog": true
+  },
+  "proposed_future_path": "future-candidate-app-data/teacher-knowledge-vault/working-catalog.sqlite",
+  "path_created_in_m7f": false,
+  "synced_folder_check": "blocked_default",
+  "backup_before_first_write_required": true
+}

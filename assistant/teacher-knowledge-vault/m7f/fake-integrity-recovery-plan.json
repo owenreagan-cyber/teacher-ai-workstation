@@ -1,0 +1,14 @@
+{
+  "classification": "fake_local_planning_only",
+  "integrity_runtime_in_m7f": false,
+  "schema_version_check_required": true,
+  "integrity_check_before_after_import": true,
+  "backup_restore_plan_required": true,
+  "failed_migration_handling_required": true,
+  "partial_import_recovery_by_batch": true,
+  "duplicate_batch_detection_required": true,
+  "concurrent_write_loops_blocked": true,
+  "dashboard_validate_all_write_to_persistent_catalog": false,
+  "status_checks_read_only_default": true,
+  "persistent_catalog_writes": 0
+}

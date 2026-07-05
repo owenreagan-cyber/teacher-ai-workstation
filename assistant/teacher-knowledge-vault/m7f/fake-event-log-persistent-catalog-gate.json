@@ -1,0 +1,69 @@
+{
+  "classification": "fake_local_planning_only",
+  "events": [
+    {
+      "event_type": "persistent_catalog_approval_gate_opened",
+      "runtime_executed": false,
+      "catalog_writes": 0
+    },
+    {
+      "event_type": "target_path_proposed",
+      "runtime_executed": false,
+      "catalog_writes": 0
+    },
+    {
+      "event_type": "target_path_rejected",
+      "runtime_executed": false,
+      "catalog_writes": 0
+    },
+    {
+      "event_type": "backup_requirement_attached",
+      "runtime_executed": false,
+      "catalog_writes": 0
+    },
+    {
+      "event_type": "rollback_requirement_attached",
+      "runtime_executed": false,
+      "catalog_writes": 0
+    },
+    {
+      "event_type": "m7e_proof_attached",
+      "runtime_executed": false,
+      "catalog_writes": 0
+    },
+    {
+      "event_type": "m7c_validator_evidence_attached",
+      "runtime_executed": false,
+      "catalog_writes": 0
+    },
+    {
+      "event_type": "m7d_approval_packet_attached",
+      "runtime_executed": false,
+      "catalog_writes": 0
+    },
+    {
+      "event_type": "persistent_write_requested_but_blocked",
+      "runtime_executed": false,
+      "catalog_writes": 0
+    },
+    {
+      "event_type": "production_write_requested_but_blocked",
+      "runtime_executed": false,
+      "catalog_writes": 0
+    },
+    {
+      "event_type": "approval_deferred",
+      "runtime_executed": false,
+      "catalog_writes": 0
+    },
+    {
+      "event_type": "approval_denied",
+      "runtime_executed": false,
+      "catalog_writes": 0
+    }
+  ],
+  "all_runtime_execution_fields_false": true,
+  "production_writes": 0,
+  "api_calls": 0,
+  "network_calls": 0
+}

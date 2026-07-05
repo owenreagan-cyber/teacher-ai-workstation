@@ -248,6 +248,16 @@ Teacher Planning Command Organization (status only; safe sample: fractions-revie
                                        Show read-only Teacher Knowledge Vault M2b repo staging metadata prototype status and exit.
   --teacher-knowledge-vault-m2c-selected-local-folder-approval-gate-status
                                        Show read-only Teacher Knowledge Vault M2c selected local folder metadata scan approval gate status and exit.
+  --teacher-knowledge-vault-m2d-selected-folder-preflight
+                                       Run M2d Step 1 preflight on fixed Owen-approved tiny test folder only and exit.
+  --teacher-knowledge-vault-m2d-selected-folder-metadata-scan
+                                       Run M2d Step 2 metadata-only scan on fixed Owen-approved tiny test folder only and exit.
+  --teacher-knowledge-vault-m2d-selected-folder-metadata-preview
+                                       Generate M7g import preview from M2d scan report (preview only; no import) and exit.
+  --teacher-knowledge-vault-m2d-selected-folder-cleanup
+                                       Remove M2d generated outputs only (fixed paths; source folder untouched) and exit.
+  --teacher-knowledge-vault-m2d-selected-folder-status
+                                       Show read-only Teacher Knowledge Vault M2d first selected folder metadata scan status and exit.
   --teacher-knowledge-vault-knowledge-entry-v0-validate
                                        Run read-only Teacher Knowledge Vault knowledge entry v0 validator and exit.
   --renderer-foundation-v0-validate
@@ -2056,6 +2066,51 @@ while [[ $# -gt 0 ]]; do
         die "Teacher Knowledge Vault M2c selected local folder approval gate status script is missing: scripts/teacher-knowledge-vault-m2c-selected-local-folder-approval-gate-status.sh"
       fi
       bash "${teacher_knowledge_vault_m2c_selected_local_folder_approval_gate_status_script}"
+      exit 0
+      ;;
+    --teacher-knowledge-vault-m2d-selected-folder-preflight)
+      repo_root="$(resolve_repo_root)"
+      teacher_knowledge_vault_m2d_selected_folder_preflight_script="${repo_root}/scripts/teacher-knowledge-vault-m2d-selected-folder-preflight.sh"
+      if [[ ! -f "${teacher_knowledge_vault_m2d_selected_folder_preflight_script}" ]]; then
+        die "Teacher Knowledge Vault M2d selected folder preflight script is missing: scripts/teacher-knowledge-vault-m2d-selected-folder-preflight.sh"
+      fi
+      bash "${teacher_knowledge_vault_m2d_selected_folder_preflight_script}"
+      exit 0
+      ;;
+    --teacher-knowledge-vault-m2d-selected-folder-metadata-scan)
+      repo_root="$(resolve_repo_root)"
+      teacher_knowledge_vault_m2d_selected_folder_metadata_scan_script="${repo_root}/scripts/teacher-knowledge-vault-m2d-selected-folder-metadata-scan.sh"
+      if [[ ! -f "${teacher_knowledge_vault_m2d_selected_folder_metadata_scan_script}" ]]; then
+        die "Teacher Knowledge Vault M2d selected folder metadata scan script is missing: scripts/teacher-knowledge-vault-m2d-selected-folder-metadata-scan.sh"
+      fi
+      bash "${teacher_knowledge_vault_m2d_selected_folder_metadata_scan_script}"
+      exit 0
+      ;;
+    --teacher-knowledge-vault-m2d-selected-folder-metadata-preview)
+      repo_root="$(resolve_repo_root)"
+      teacher_knowledge_vault_m2d_selected_folder_metadata_preview_script="${repo_root}/scripts/teacher-knowledge-vault-m2d-selected-folder-metadata-preview.sh"
+      if [[ ! -f "${teacher_knowledge_vault_m2d_selected_folder_metadata_preview_script}" ]]; then
+        die "Teacher Knowledge Vault M2d selected folder metadata preview script is missing: scripts/teacher-knowledge-vault-m2d-selected-folder-metadata-preview.sh"
+      fi
+      bash "${teacher_knowledge_vault_m2d_selected_folder_metadata_preview_script}"
+      exit 0
+      ;;
+    --teacher-knowledge-vault-m2d-selected-folder-cleanup)
+      repo_root="$(resolve_repo_root)"
+      teacher_knowledge_vault_m2d_selected_folder_cleanup_script="${repo_root}/scripts/teacher-knowledge-vault-m2d-selected-folder-cleanup.sh"
+      if [[ ! -f "${teacher_knowledge_vault_m2d_selected_folder_cleanup_script}" ]]; then
+        die "Teacher Knowledge Vault M2d selected folder cleanup script is missing: scripts/teacher-knowledge-vault-m2d-selected-folder-cleanup.sh"
+      fi
+      bash "${teacher_knowledge_vault_m2d_selected_folder_cleanup_script}"
+      exit 0
+      ;;
+    --teacher-knowledge-vault-m2d-selected-folder-status)
+      repo_root="$(resolve_repo_root)"
+      teacher_knowledge_vault_m2d_selected_folder_status_script="${repo_root}/scripts/teacher-knowledge-vault-m2d-selected-folder-status.sh"
+      if [[ ! -f "${teacher_knowledge_vault_m2d_selected_folder_status_script}" ]]; then
+        die "Teacher Knowledge Vault M2d selected folder status script is missing: scripts/teacher-knowledge-vault-m2d-selected-folder-status.sh"
+      fi
+      bash "${teacher_knowledge_vault_m2d_selected_folder_status_script}"
       exit 0
       ;;
     --teacher-knowledge-vault-knowledge-entry-v0-validate)

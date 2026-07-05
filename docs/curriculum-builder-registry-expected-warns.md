@@ -52,6 +52,11 @@ Per `docs/cursor-autonomous-build-engine.md` Expected WARN Policy.
 | `--teacher-knowledge-vault-m2b-repo-staging-metadata-cleanup` | 0 | No — targeted command only |
 | `--teacher-knowledge-vault-m2b-repo-staging-metadata-status` | 0 | No — targeted command only |
 | `--teacher-knowledge-vault-m2c-selected-local-folder-approval-gate-status` | 0 | No — targeted command only |
+| `--teacher-knowledge-vault-m2d-selected-folder-preflight` | 0 | No — targeted command only |
+| `--teacher-knowledge-vault-m2d-selected-folder-metadata-scan` | 0 | No — targeted command only |
+| `--teacher-knowledge-vault-m2d-selected-folder-metadata-preview` | 0 | No — targeted command only |
+| `--teacher-knowledge-vault-m2d-selected-folder-cleanup` | 0 | No — targeted command only |
+| `--teacher-knowledge-vault-m2d-selected-folder-status` | 0 | No — targeted command only |
 | `--curriculum-registry-a4-a7-fixture-schema-status` | **0** (resolved 2026-07-03) | No — targeted command only |
 | `--gemini-discovery-classification-intake-status` | 0 | No — targeted command only |
 | `--markdown-frontmatter-planning-status` | 0 | No — targeted command only |

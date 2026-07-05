@@ -2,16 +2,15 @@
 
 Last updated: 2026-07-05
 
-**Status: planning gate only — M2d runtime blocked.** This checklist prepares for a future M2d mission. Completing M2c or passing M2c status does **not** authorize M2d.
+**Status: M2d fixed-path scan complete for Owen-approved tiny test folder.** General folder scanning and arbitrary path input remain blocked.
 
 ## Before Owen Names a Path
 
-- [ ] M2c approval gate docs and fake fixtures reviewed
-- [ ] M2b repo-owned fixture scan remains the only selected-folder-style scan
-- [ ] M7g prototype catalog remains gitignored and fixture-only
-- [ ] No M2d CLI commands exist yet
-- [ ] No arbitrary path scanner exists
-- [ ] Production registry parked (`BLOCKED-NO-WRITES.sentinel` intact)
+- [x] M2c approval gate docs and fake fixtures reviewed
+- [x] M2b repo-owned fixture scan preserved
+- [x] M7g prototype catalog remains gitignored
+- [x] M2d fixed-path CLI commands exist (no arbitrary path scanner)
+- [x] Production registry parked (`BLOCKED-NO-WRITES.sentinel` intact)
 
 ## Owen Preconditions (explicit, written)
 
@@ -57,22 +56,15 @@ Last updated: 2026-07-05
 - Production or canonical catalog writes
 - Arbitrary path input or recursive deep scan
 
-## Proof Commands (M2c gate — not M2d runtime)
+## Proof Commands (M2d fixed path)
 
 ```bash
+bin/chief-of-staff --teacher-knowledge-vault-m2d-selected-folder-preflight
+bin/chief-of-staff --teacher-knowledge-vault-m2d-selected-folder-metadata-scan
+bin/chief-of-staff --teacher-knowledge-vault-m2d-selected-folder-metadata-preview
+bin/chief-of-staff --teacher-knowledge-vault-m2d-selected-folder-cleanup
+bin/chief-of-staff --teacher-knowledge-vault-m2d-selected-folder-status
 bin/chief-of-staff --teacher-knowledge-vault-m2c-selected-local-folder-approval-gate-status
-bash tests/teacher-knowledge-vault-m2c-selected-local-folder-approval-gate-status-test.sh
-bin/chief-of-staff --teacher-knowledge-vault-m2b-repo-staging-metadata-status
-bin/chief-of-staff --teacher-knowledge-vault-m7g-persistent-working-catalog-status
 ```
 
-## Fake Examples
-
-| Artifact | Location |
-| --- | --- |
-| Approval packet | `assistant/teacher-knowledge-vault/m2c/fake-selected-folder-approval-packet.json` |
-| Preflight denials | `assistant/teacher-knowledge-vault/m2c/fake-path-preflight-denials.json` |
-| Safe preflight example | `assistant/teacher-knowledge-vault/m2c/fake-safe-test-folder-preflight.json` |
-| Rollback/cleanup plan | `assistant/teacher-knowledge-vault/m2c/fake-rollback-cleanup-plan.json` |
-
-PASS on this checklist being documented does **not** mean M2d is approved or implemented.
+PASS on M2d status proves metadata-only scan of the fixed Owen-approved folder only — not permission for arbitrary paths or general scanning.

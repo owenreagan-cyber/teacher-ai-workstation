@@ -26,7 +26,8 @@ Closure: complete_teacher_knowledge_vault_m2c_selected_local_folder_approval_gat
 | Production writes | 0 |
 | External accesses | 0 |
 | M2d readiness checklist | `docs/teacher-knowledge-vault/m2d-readiness-checklist.md` |
-| Future M2d | blocked pending explicit Owen approval |
+| M2d fixed-path scan | complete for Owen-approved tiny test folder (separate milestone) |
+| General folder scanning | blocked |
 
 ## Proof
 

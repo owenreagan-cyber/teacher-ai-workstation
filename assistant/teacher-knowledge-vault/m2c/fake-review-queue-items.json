@@ -1,0 +1,20 @@
+{
+  "classification": "fake_local_planning_only",
+  "items": [
+    {
+      "review_id": "fake-m2c-review-001",
+      "review_type": "selected_folder_preflight_packet",
+      "review_state": "pending_owen_approval",
+      "owen_approval": false,
+      "catalog_import_allowed": false,
+      "path_placeholder": "/LOCAL_TEST_FOLDER_PLACEHOLDER/OwenSelectedTinyTestFolder"
+    },
+    {
+      "review_id": "fake-m2c-review-002",
+      "review_type": "m2d_metadata_scan_import",
+      "review_state": "blocked_until_second_approval",
+      "owen_approval": false,
+      "catalog_import_allowed": false
+    }
+  ]
+}

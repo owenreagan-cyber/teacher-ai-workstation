@@ -167,6 +167,7 @@ run_track "Teacher Knowledge Vault M7e Local Test Catalog" scripts/teacher-knowl
 run_track "Teacher Knowledge Vault M7f Persistent Working Catalog Approval Gate" scripts/teacher-knowledge-vault-m7f-persistent-working-catalog-approval-gate-status.sh
 run_track "Teacher Knowledge Vault M7g Persistent Working Catalog Prototype" scripts/teacher-knowledge-vault-m7g-persistent-working-catalog-status.sh
 run_track "Teacher Knowledge Vault M2b Repo Staging Metadata Prototype" scripts/teacher-knowledge-vault-m2b-repo-staging-metadata-status.sh
+run_track "Teacher Knowledge Vault M2c Selected Local Folder Approval Gate" scripts/teacher-knowledge-vault-m2c-selected-local-folder-approval-gate-status.sh
 run_track "Gemini Discovery Classification Intake" scripts/gemini-discovery-classification-intake-status.sh
 run_track "Markdown Frontmatter Planning" scripts/markdown-frontmatter-planning-status.sh
 run_track "Curriculum Source Readiness" scripts/curriculum-source-readiness-status.sh

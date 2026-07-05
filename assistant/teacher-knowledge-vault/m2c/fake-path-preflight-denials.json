@@ -1,0 +1,46 @@
+{
+  "classification": "fake_local_planning_only",
+  "preflight_only": true,
+  "real_path_scan_executed": false,
+  "denied_path_classes": [
+    "home_directory",
+    "desktop",
+    "documents",
+    "downloads",
+    "google_drive",
+    "icloud_drive",
+    "nas_mount",
+    "canvas_export",
+    "external_drive",
+    "system_folder",
+    "hidden_dotfolder",
+    "99_DO_NOT_SCAN",
+    "student_data_likely",
+    "broad_curriculum_root",
+    "arbitrary_path",
+    "symlink_escape",
+    "archive_expansion"
+  ],
+  "example_denials": [
+    {
+      "path_placeholder": "/HOME_DIRECTORY_PLACEHOLDER/",
+      "reason": "home_directory_blocked_by_default"
+    },
+    {
+      "path_placeholder": "/DESKTOP_PLACEHOLDER/",
+      "reason": "desktop_blocked_by_default"
+    },
+    {
+      "path_placeholder": "/GOOGLE_DRIVE_PLACEHOLDER/My Drive/",
+      "reason": "cloud_sync_folder_blocked"
+    },
+    {
+      "path_placeholder": "/LOCAL_TEST_FOLDER_PLACEHOLDER/99_DO_NOT_SCAN/",
+      "reason": "do_not_scan_blocked"
+    }
+  ],
+  "paths_approved": 0,
+  "paths_denied": 4,
+  "content_reads": 0,
+  "real_scans_executed": 0
+}

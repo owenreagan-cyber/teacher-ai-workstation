@@ -1,0 +1,32 @@
+{
+  "classification": "fake_local_planning_only",
+  "risks": [
+    {
+      "risk_id": "student_data_exposure",
+      "default_state": "blocked",
+      "mitigation": "deny student-data-likely folders; no content reads"
+    },
+    {
+      "risk_id": "teacher_only_leakage",
+      "default_state": "restricted_indexable",
+      "mitigation": "10_TEACHER_ONLY path policy flags"
+    },
+    {
+      "risk_id": "do_not_scan_violation",
+      "default_state": "blocked_non_indexable",
+      "mitigation": "99_DO_NOT_SCAN absolute exclusion"
+    },
+    {
+      "risk_id": "cloud_sync_accidental_scan",
+      "default_state": "blocked",
+      "mitigation": "deny Drive/iCloud/NAS by default"
+    },
+    {
+      "risk_id": "content_read_escalation",
+      "default_state": "blocked",
+      "mitigation": "stat metadata only; no parsers/OCR/AI"
+    }
+  ],
+  "real_scans_executed": 0,
+  "student_records_read": 0
+}

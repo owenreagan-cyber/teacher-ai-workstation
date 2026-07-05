@@ -215,6 +215,7 @@
         {"flag": "--teacher-knowledge-vault-m2b-repo-staging-metadata-import", "status": "implemented", "purpose": "Teacher Knowledge Vault M2b repo staging metadata import to M7g prototype catalog (fixed paths only)"},
         {"flag": "--teacher-knowledge-vault-m2b-repo-staging-metadata-cleanup", "status": "implemented", "purpose": "Teacher Knowledge Vault M2b repo staging metadata cleanup (fixed generated paths only)"},
         {"flag": "--teacher-knowledge-vault-m2b-repo-staging-metadata-status", "status": "implemented", "purpose": "Teacher Knowledge Vault M2b repo staging metadata prototype status (metadata-only proof)"},
+        {"flag": "--teacher-knowledge-vault-m2c-selected-local-folder-approval-gate-status", "status": "implemented", "purpose": "Teacher Knowledge Vault M2c selected local folder metadata scan approval gate status (approval gate only; no real scan)"},
         {"flag": "--teacher-knowledge-vault-knowledge-entry-v0-validate", "status": "implemented", "purpose": "Teacher Knowledge Vault knowledge entry v0 validator (read-only)"},
         {"flag": "--local-retrieval-foundation-status", "status": "implemented", "purpose": "Local Retrieval Foundation v0"},
         {"flag": "--integration-planning-foundation-status", "status": "implemented", "purpose": "Integration Planning Foundation v0"}

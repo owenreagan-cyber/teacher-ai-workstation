@@ -246,6 +246,8 @@ Teacher Planning Command Organization (status only; safe sample: fractions-revie
                                        Remove M2b generated metadata outputs and M2b import batch (fixed paths only) and exit.
   --teacher-knowledge-vault-m2b-repo-staging-metadata-status
                                        Show read-only Teacher Knowledge Vault M2b repo staging metadata prototype status and exit.
+  --teacher-knowledge-vault-m2c-selected-local-folder-approval-gate-status
+                                       Show read-only Teacher Knowledge Vault M2c selected local folder metadata scan approval gate status and exit.
   --teacher-knowledge-vault-knowledge-entry-v0-validate
                                        Run read-only Teacher Knowledge Vault knowledge entry v0 validator and exit.
   --renderer-foundation-v0-validate
@@ -2045,6 +2047,15 @@ while [[ $# -gt 0 ]]; do
         die "Teacher Knowledge Vault M2b repo staging metadata status script is missing: scripts/teacher-knowledge-vault-m2b-repo-staging-metadata-status.sh"
       fi
       bash "${teacher_knowledge_vault_m2b_repo_staging_metadata_status_script}"
+      exit 0
+      ;;
+    --teacher-knowledge-vault-m2c-selected-local-folder-approval-gate-status)
+      repo_root="$(resolve_repo_root)"
+      teacher_knowledge_vault_m2c_selected_local_folder_approval_gate_status_script="${repo_root}/scripts/teacher-knowledge-vault-m2c-selected-local-folder-approval-gate-status.sh"
+      if [[ ! -f "${teacher_knowledge_vault_m2c_selected_local_folder_approval_gate_status_script}" ]]; then
+        die "Teacher Knowledge Vault M2c selected local folder approval gate status script is missing: scripts/teacher-knowledge-vault-m2c-selected-local-folder-approval-gate-status.sh"
+      fi
+      bash "${teacher_knowledge_vault_m2c_selected_local_folder_approval_gate_status_script}"
       exit 0
       ;;
     --teacher-knowledge-vault-knowledge-entry-v0-validate)

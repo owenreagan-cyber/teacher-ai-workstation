@@ -1,12 +1,14 @@
 # Medical Center / System Health Program
 
 ```text
-Status: planned/read-only status track
+Status: PARTIAL read-only status track
 Classification: documentation/status only
 Runtime monitoring: blocked unless approved
 ```
 
 Medical Center is the planned health, readiness, and system-status surface for Teacher AI Workstation. The approved posture is observe/report planning and read-only status proof.
+
+Reality audit: `docs/master-plan/build-state-checklist.md` classifies this track as **PARTIAL** because Health Monitor read-only foundations and `--system-health` exist, while runtime monitoring, background jobs, and repair behavior remain blocked.
 
 Safe work:
 

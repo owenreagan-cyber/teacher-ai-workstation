@@ -1,12 +1,14 @@
 # Lesson Builder Program
 
 ```text
-Status: planned/read-only foundations
+Status: PARTIAL read-only foundations
 Classification: teacher-reviewed workflow support
 Generation/runtime behavior: blocked unless approved
 ```
 
 Lesson Builder should support teacher-reviewed planning and safe local drafts. It must remain bounded by existing lesson workflow docs and approval gates.
+
+Reality audit: `docs/master-plan/build-state-checklist.md` classifies this track as **PARTIAL** because local lesson planning/review helpers exist, while AI generation, Canvas publishing, student data, and live integrations remain blocked.
 
 Blocked unless separately approved:
 

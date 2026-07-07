@@ -13,6 +13,7 @@ Classification: documentation/status only
 | 2026-07-06 | Supabase and Firebase are deprecated for new Teacher AI Workstation work. | Active block. |
 | 2026-07-06 | Canvas LLM must learn Canvas standards before generation/deployment; Canvas API/OAuth/live writes remain blocked. | Active block. |
 | 2026-07-06 | Credit-conserving validation is preferred: targeted checks before smoke or validate-all. | Active. |
+| 2026-07-06 | Build-state checklist must classify major tracks by repo evidence, not folder existence alone. | Active. |
 
 ## Open Owen Decisions
 

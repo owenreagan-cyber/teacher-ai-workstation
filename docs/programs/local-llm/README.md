@@ -1,11 +1,13 @@
 # Local LLM Program
 
 ```text
-Status: read-only planning/status
+Status: DOCS-ONLY read-only planning/status
 Classification: no install, no download, no inference
 ```
 
 Local LLM/Ollama work is limited to planning and read-only status unless Owen approves install, download, or inference.
+
+Reality audit: `docs/master-plan/build-state-checklist.md` classifies this track as **DOCS-ONLY**. The status command is a boundary/readiness proof, not model execution.
 
 Blocked unless separately approved:
 

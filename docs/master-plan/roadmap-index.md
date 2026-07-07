@@ -3,6 +3,7 @@
 ```text
 Status: active index
 Classification: documentation/status only
+Reality audit: docs/master-plan/build-state-checklist.md
 ```
 
 Canonical roadmap references:
@@ -23,3 +24,5 @@ Program folders:
 - `docs/programs/classroom-apps/`
 - `docs/programs/local-llm/`
 - `docs/programs/widgets-and-workshop/`
+
+Evidence-backed track statuses live in `docs/master-plan/build-state-checklist.md`. This index lists entrypoints; it does not by itself mark a track built or runtime-active.

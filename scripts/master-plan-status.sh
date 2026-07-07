@@ -92,6 +92,29 @@ check_doc_contains docs/programs/local-llm/README.md "no install, no download, n
 check_doc_contains docs/programs/widgets-and-workshop/README.md "no install, no Mac changes" "widgets/workshop non-activation"
 
 section 'Boundaries And Architecture'
+check_doc_contains docs/master-plan/build-state-checklist.md "Reality audit status: evidence-backed as of 2026-07-06" "evidence-backed checklist banner"
+check_doc_contains docs/master-plan/build-state-checklist.md "master_plan_reality_audit_build_state_complete" "reality audit closure marker"
+check_doc_contains docs/master-plan/build-state-checklist.md "## Status Legend" "status legend"
+check_doc_contains docs/master-plan/build-state-checklist.md "## Major Track Reality Audit" "major track reality audit"
+check_doc_contains docs/master-plan/build-state-checklist.md "BUILT" "BUILT status label"
+check_doc_contains docs/master-plan/build-state-checklist.md "PARTIAL" "PARTIAL status label"
+check_doc_contains docs/master-plan/build-state-checklist.md "DOCS-ONLY" "DOCS-ONLY status label"
+check_doc_contains docs/master-plan/build-state-checklist.md "PLANNED" "PLANNED status label"
+check_doc_contains docs/master-plan/build-state-checklist.md "BLOCKED" "BLOCKED status label"
+check_doc_contains docs/master-plan/build-state-checklist.md "DEPRECATED" "DEPRECATED status label"
+check_doc_contains docs/master-plan/build-state-checklist.md "UNKNOWN / NEEDS REPO AUDIT" "UNKNOWN status label"
+check_doc_contains docs/master-plan/build-state-checklist.md "Chief of Staff | **PARTIAL**" "Chief of Staff reality status"
+check_doc_contains docs/master-plan/build-state-checklist.md "Teacher Knowledge Vault / Curriculum Library | **PARTIAL**" "Teacher Knowledge Vault reality status"
+check_doc_contains docs/master-plan/build-state-checklist.md "Canvas LLM | **DOCS-ONLY**" "Canvas LLM reality status"
+check_doc_contains docs/master-plan/build-state-checklist.md "Canvas self-healing | **PLANNED**" "Canvas self-healing reality status"
+check_doc_contains docs/master-plan/build-state-checklist.md "Lesson Builder / Lesson Planning | **PARTIAL**" "Lesson Builder reality status"
+check_doc_contains docs/master-plan/build-state-checklist.md "Medical Center / System Health | **PARTIAL**" "Medical Center reality status"
+check_doc_contains docs/master-plan/build-state-checklist.md "Morning Brief / Morning Updates | **PLANNED**" "Morning Brief reality status"
+check_doc_contains docs/master-plan/build-state-checklist.md "Classroom Apps | **PARTIAL**" "Classroom Apps reality status"
+check_doc_contains docs/master-plan/build-state-checklist.md "Local LLM | **DOCS-ONLY**" "Local LLM reality status"
+check_doc_contains docs/master-plan/build-state-checklist.md "Widgets / Workshop / 3D workspace | **PARTIAL**" "Widgets workshop reality status"
+check_doc_contains docs/master-plan/build-state-checklist.md "Supabase / Firebase | **DEPRECATED**" "Supabase Firebase deprecated status"
+check_doc_contains docs/master-plan/build-state-checklist.md "Credit conservation / validation discipline | **BUILT**" "credit conservation built status"
 check_doc_contains docs/master-plan/approved-boundaries.md "Production registry writes or active \`--write\`" "blocked production writes"
 check_doc_contains docs/master-plan/approved-boundaries.md "Canvas API/OAuth/live reads/writes/publishing" "blocked Canvas integration"
 check_doc_contains docs/master-plan/approved-boundaries.md "Student data" "student data boundary"
@@ -101,6 +124,9 @@ check_doc_contains docs/master-plan/local-first-data-architecture.md "local JSON
 check_doc_contains docs/master-plan/credit-conservation-plan.md "targeted repo inspection" "credit-conserving inspection"
 check_doc_contains docs/master-plan/credit-conservation-plan.md "validate-all only when required" "validate-all conservation"
 check_doc_contains docs/master-plan/build-state-checklist.md "PASS output does not authorize implementation" "PASS semantics"
+check_doc_contains docs/master-plan/current-focus.md "Reality Snapshot" "current focus reality snapshot"
+check_doc_contains docs/master-plan/roadmap-index.md "Evidence-backed track statuses live in" "roadmap index evidence-backed note"
+check_doc_contains docs/master-plan/backlog-and-parking-lot.md "Canvas self-healing runtime" "parking lot Canvas self-healing blocked"
 
 section 'Command Integration'
 check_file scripts/master-plan-status.sh
@@ -108,7 +134,9 @@ bash -n scripts/master-plan-status.sh && pass "bash syntax ok: scripts/master-pl
 check_help_contains "--master-plan-status"
 check_doc_contains assistant/chief-of-staff/v1/command-surface-manifest.json '"--master-plan-status"' "manifest master plan status command"
 check_doc_contains docs/build-queue.md "master_plan_persistence_status_complete" "build queue master plan closure"
+check_doc_contains docs/build-queue.md "master_plan_reality_audit_build_state_complete" "build queue reality audit closure"
 check_doc_contains assistant/memory/active-priorities.md "Master plan persistence and program roadmap consolidation: complete" "active priorities master plan closure"
+check_doc_contains assistant/memory/active-priorities.md "Master plan reality audit and build-state checklist hardening: complete" "active priorities reality audit closure"
 
 section 'Summary'
 printf 'PASS: %s\n' "${PASS_COUNT}"; printf 'WARN: %s\n' "${WARN_COUNT}"; printf 'FAIL: %s\n' "${FAIL_COUNT}"

@@ -1,7 +1,7 @@
 # Canvas LLM Program
 
 ```text
-Status: planned/frozen for runtime
+Status: DOCS-ONLY / frozen for runtime
 Classification: documentation/status only
 Canvas API/OAuth/live writes: blocked
 Generation/deployment: blocked
@@ -17,6 +17,8 @@ Current safe work is planning/status only:
 - keep self-healing as a planned track only.
 
 Runtime exporter, package generation, Canvas API/OAuth, live reads/writes, browser automation, scheduler, and student data are blocked unless separately approved.
+
+Reality audit: `docs/master-plan/build-state-checklist.md` classifies Canvas LLM as **DOCS-ONLY** and Canvas self-healing as **PLANNED**.
 
 Key references:
 

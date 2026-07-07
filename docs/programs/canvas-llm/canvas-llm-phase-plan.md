@@ -51,4 +51,8 @@ Status: read-only Canvas API approval packet complete as docs/status approval pa
 
 Status: sandbox/demo Canvas API fetch gate complete as docs/status gate only. No Canvas API/OAuth/live reads, access token use, Canvas writes/publishing, student data, real curriculum ingestion, runtime SQLite/database writes, generation, embeddings, RAG, network integrations, or production writes. Current implementation: `docs/programs/canvas-llm/canvas-phase-8-sandbox-api-fetch-gate.md`, `scripts/canvas-llm-phase-8-status.sh`, and `bin/chief-of-staff --canvas-llm-phase-8-status`.
 
-## Phase 9 - Separately Approved Read-Only Sandbox/Demo Metadata Fetch
+## Phase 9A - Sandbox Metadata Fetch Scaffold
+
+Status: sandbox/demo Canvas metadata fetch scaffold complete as dry-run-first gated implementation only. No live fetch is implemented, and no Canvas API/OAuth/live reads occur. Current implementation: `docs/programs/canvas-llm/canvas-phase-9a-sandbox-metadata-fetch-scaffold.md`, `scripts/canvas-llm-sandbox-metadata-fetch-scaffold.py`, `scripts/canvas-llm-phase-9a-status.sh`, and `bin/chief-of-staff --canvas-llm-phase-9a-status`.
+
+## Phase 9B - Separately Approved Read-Only Sandbox/Demo Metadata Fetch Execution

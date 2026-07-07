@@ -19,6 +19,7 @@ Current focus is master-plan reality audit, local-first curriculum/library coher
 - Maintain Canvas LLM Phase 1 as fixed-path fake/local fixture validation only.
 - Maintain Canvas LLM Phase 2 as manual/exported redacted evidence intake boundaries only.
 - Maintain Canvas LLM Phase 3 as manual/redacted packet normalization only for explicit fake/local fixtures.
+- Maintain Canvas LLM Phase 9A as a dry-run sandbox metadata fetch scaffold only with no live fetch implemented.
 - Maintain Canvas LLM Phase 8 as a sandbox/demo API fetch gate only with no API/OAuth/live reads or token use.
 - Maintain Canvas LLM Phase 7 as a read-only Canvas API approval packet only with no API/OAuth/live reads.
 - Maintain Canvas LLM Phase 6 as a read-only fake/local knowledge DB relationship validator only.
@@ -28,6 +29,7 @@ Current focus is master-plan reality audit, local-first curriculum/library coher
 ## Parked Or Blocked
 
 - Canvas LLM runtime/export/API work remains frozen.
+- Canvas LLM Phase 9A does not authorize live Canvas fetch execution, Canvas writes/publishing, real curriculum body ingestion, student data, runtime SQLite/database writes, generation, embeddings, or RAG.
 - Canvas LLM Phase 8 does not authorize Canvas API/OAuth/live reads, access token use, Canvas writes/publishing, real curriculum ingestion, student data, runtime SQLite/database writes, generation, embeddings, or RAG.
 - Canvas LLM Phase 7 does not authorize Canvas API/OAuth/live reads, access tokens, Canvas writes/publishing, real curriculum ingestion, student data, runtime SQLite/database writes, generation, embeddings, or RAG.
 - Canvas LLM Phase 6 does not authorize real Canvas course IDs, Canvas API/OAuth/live reads, Canvas writes/publishing, real curriculum ingestion, student data, runtime SQLite/database writes, generation, embeddings, or RAG.

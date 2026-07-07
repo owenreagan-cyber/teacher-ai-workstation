@@ -39,7 +39,11 @@ Inactive historical Canvas courses, including 2024-2025 and 2025-2026, are futur
 
 Status: fake/local knowledge DB prototype complete as docs/status/fake-local JSON fixtures only. No Canvas API/OAuth/live reads, Canvas writes/publishing, real curriculum ingestion, student data, runtime SQLite/database writes, generation, embeddings, RAG, or production writes. Current implementation: `docs/programs/canvas-llm/canvas-phase-5-fake-local-knowledge-db.md`, `docs/programs/canvas-llm/canvas-knowledge-db-query-patterns.md`, `fixtures/canvas-llm/knowledge-db/`, `scripts/canvas-llm-phase-5-status.sh`, and `bin/chief-of-staff --canvas-llm-phase-5-status`.
 
-## Phase 6 - Self-Healing Planning
+## Phase 6 - Fake/Local Knowledge DB Validator
+
+Status: fake/local knowledge DB relationship validator complete as read-only fixture validation only. No Canvas API/OAuth/live reads, Canvas writes/publishing, real curriculum ingestion, student data, runtime SQLite/database writes, generation, embeddings, RAG, network integrations, or production writes. Current implementation: `docs/programs/canvas-llm/canvas-phase-6-knowledge-db-validator.md`, `scripts/canvas-llm-knowledge-db-validator.py`, `scripts/canvas-llm-phase-6-status.sh`, and `bin/chief-of-staff --canvas-llm-phase-6-status`.
+
+## Phase 7 - Read-Only Canvas API Approval Packet
 
 Document possible self-healing checks as a future approval-gated track. No automated repair, live read, live write, or scheduler.
 

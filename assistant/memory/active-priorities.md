@@ -4,6 +4,7 @@
 
 ### Recently Completed (workflow polish)
 
+- Canvas LLM Phase 6 fake/local knowledge DB validator: complete
 - Canvas LLM Phase 5 fake/local knowledge DB prototype: complete
 - Canvas LLM Phase 4 knowledge architecture and pattern catalog: complete
 - Canvas LLM Phase 3 manual evidence normalizer: complete

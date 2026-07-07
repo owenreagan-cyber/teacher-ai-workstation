@@ -45,8 +45,8 @@ Status: fake/local knowledge DB relationship validator complete as read-only fix
 
 ## Phase 7 - Read-Only Canvas API Approval Packet
 
-Document possible self-healing checks as a future approval-gated track. No automated repair, live read, live write, or scheduler.
+Status: read-only Canvas API approval packet complete as docs/status approval packet only. No Canvas API/OAuth/live reads, Canvas writes/publishing, real curriculum ingestion, student data, runtime SQLite/database writes, generation, embeddings, RAG, network integrations, or production writes. Current implementation: `docs/programs/canvas-llm/canvas-phase-7-read-only-api-approval-packet.md`, `scripts/canvas-llm-phase-7-status.sh`, and `bin/chief-of-staff --canvas-llm-phase-7-status`.
 
-## Phase 6 - Reopen Gate
+## Phase 8 - First Read-Only Sandbox/Demo Canvas API Fetch Gate
 
 Any runtime phase requires an explicit Owen approval statement, named scope, allowed inputs/outputs, rollback plan, test plan, and API/OAuth/network approval if applicable.

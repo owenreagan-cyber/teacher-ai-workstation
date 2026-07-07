@@ -49,4 +49,6 @@ Status: read-only Canvas API approval packet complete as docs/status approval pa
 
 ## Phase 8 - First Read-Only Sandbox/Demo Canvas API Fetch Gate
 
-Any runtime phase requires an explicit Owen approval statement, named scope, allowed inputs/outputs, rollback plan, test plan, and API/OAuth/network approval if applicable.
+Status: sandbox/demo Canvas API fetch gate complete as docs/status gate only. No Canvas API/OAuth/live reads, access token use, Canvas writes/publishing, student data, real curriculum ingestion, runtime SQLite/database writes, generation, embeddings, RAG, network integrations, or production writes. Current implementation: `docs/programs/canvas-llm/canvas-phase-8-sandbox-api-fetch-gate.md`, `scripts/canvas-llm-phase-8-status.sh`, and `bin/chief-of-staff --canvas-llm-phase-8-status`.
+
+## Phase 9 - Separately Approved Read-Only Sandbox/Demo Metadata Fetch

@@ -4,6 +4,7 @@
 
 ### Recently Completed (workflow polish)
 
+- Canvas LLM Phase 8 sandbox/demo API fetch gate: complete
 - Canvas LLM Phase 7 read-only API approval packet: complete
 - Canvas LLM Phase 6 fake/local knowledge DB validator: complete
 - Canvas LLM Phase 5 fake/local knowledge DB prototype: complete

@@ -291,6 +291,7 @@ Teacher Planning Command Organization (status only; safe sample: fractions-revie
                                        Show read-only Teacher App Designer / Canvas LLM foundation status proof and exit (planning only).
   --canvas-llm-phase-0-status          Show Canvas LLM Phase 0 standards foundation status and exit.
   --canvas-llm-phase-1-status          Show Canvas LLM Phase 1 fake/local validator status and exit.
+  --canvas-llm-phase-2-status          Show Canvas LLM Phase 2 manual evidence intake status and exit.
 
 Developer and Cursor Workflow:
   --cursor-workflow-status             Show local Cursor workflow status and exit.
@@ -2465,6 +2466,15 @@ while [[ $# -gt 0 ]]; do
         die "Canvas LLM Phase 1 status script is missing: scripts/canvas-llm-phase-1-status.sh"
       fi
       bash "${canvas_llm_phase_1_status_script}"
+      exit 0
+      ;;
+    --canvas-llm-phase-2-status)
+      repo_root="$(resolve_repo_root)"
+      canvas_llm_phase_2_status_script="${repo_root}/scripts/canvas-llm-manual-evidence-intake-status.sh"
+      if [[ ! -f "${canvas_llm_phase_2_status_script}" ]]; then
+        die "Canvas LLM Phase 2 status script is missing: scripts/canvas-llm-manual-evidence-intake-status.sh"
+      fi
+      bash "${canvas_llm_phase_2_status_script}"
       exit 0
       ;;
     --teacher-planning-command-detail-status)

@@ -265,3 +265,5 @@ When that checkpoint arrives, the assistant should provide literal step-by-step 
 3. Follow Apple Setup Assistant screen by screen.
 
 Do not provide the full first-boot walkthrough yet in this file.
+
+- Active priorities Canvas Phase 2 closure: Canvas LLM Phase 2 manual/exported/redacted evidence intake scaffold is complete as local/manual docs/status/checking only; no Canvas API/OAuth/live reads, Canvas writes, student data, automatic scanning, network access, generation/runtime behavior, Supabase, or Firebase.

@@ -1,0 +1,13 @@
+{
+  "example_status": "artificial_redacted_example",
+  "source_type": "manual_exported_redacted_assignment",
+  "canvas_area": "assignment",
+  "student_data_status": "blocked",
+  "live_canvas_status": "blocked",
+  "credentials_status": "blocked",
+  "title": "[REDACTED ASSIGNMENT TITLE]",
+  "points_possible": "[REDACTED OR GENERIC]",
+  "submission_type": "[REDACTED OR GENERIC]",
+  "review_status": "example_only",
+  "safe_next_step": "Use as manual evidence shape only."
+}

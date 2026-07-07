@@ -376,3 +376,7 @@ Future lesson-planning follow-ons are documentation/status-only unless explicitl
 ## Rule
 
 This build queue should be updated after major PRs merge.
+
+## Canvas Phase 2 Closure
+
+Build queue Canvas Phase 2 closure: manual/exported/redacted evidence intake scaffold added for local-only Canvas LLM evidence preparation. No Canvas API/OAuth/live reads, Canvas writes, student data, automatic scanning, network access, generation/runtime behavior, Supabase, or Firebase.

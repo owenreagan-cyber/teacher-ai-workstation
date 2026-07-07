@@ -233,6 +233,7 @@
       "commands": [
         {"flag": "--canvas-llm-phase-0-status", "status": "implemented", "purpose": "Canvas LLM Phase 0 standards foundation status (docs/status/fake-local only)"},
         {"flag": "--canvas-llm-phase-1-status", "status": "implemented", "purpose": "Canvas LLM Phase 1 fake/local validator status (fixed fixtures only; no live Canvas)"},
+        {"flag": "--canvas-llm-phase-2-status", "status": "implemented", "purpose": "Canvas LLM Phase 2 manual evidence intake status (manual/redacted scaffold only; no scanning/live Canvas)"},
         {"flag": "--teacher-app-designer-canvas-llm-status", "status": "implemented", "purpose": "Canvas LLM frozen foundation status"},
         {"flag": "--canvas-restart-status", "status": "blocked", "purpose": "Canvas restart blocked by stop marker"}
       ]

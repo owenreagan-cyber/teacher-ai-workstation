@@ -1,0 +1,18 @@
+{
+  "example_status": "artificial_redacted_example",
+  "source_type": "manual_exported_redacted_module",
+  "canvas_area": "module",
+  "student_data_status": "blocked",
+  "live_canvas_status": "blocked",
+  "credentials_status": "blocked",
+  "module_title": "[REDACTED MODULE TITLE]",
+  "items": [
+    {
+      "item_type": "page",
+      "title": "[REDACTED ITEM TITLE]",
+      "position": 1
+    }
+  ],
+  "review_status": "example_only",
+  "safe_next_step": "Use as manual evidence shape only."
+}

@@ -20,6 +20,8 @@ Current implementation: `scripts/canvas-llm-fake-local-validator.sh` validates o
 
 Human-reviewed reports summarize candidate standards and blocked gaps. Planned only.
 
+Current scaffold: `evidence/canvas-llm/` defines a manual/exported redacted intake location and `bin/chief-of-staff --canvas-llm-phase-2-status` verifies the scaffold and committed redacted examples. This is not automatic scanning or live Canvas validation.
+
 ## Tier 3 - Runtime Validation
 
 Runtime validation of Canvas content is blocked. It would require separate approval, defined inputs, safe outputs, rollback/deletion expectations, and explicit Canvas/API/OAuth decisions.

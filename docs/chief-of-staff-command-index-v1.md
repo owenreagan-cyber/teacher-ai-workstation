@@ -168,6 +168,7 @@ These flags exist in `bin/chief-of-staff` and work as read-only local status sur
 | `bin/chief-of-staff --canvas-llm-phase-3-status` | Canvas LLM Phase 3 manual evidence normalizer (explicit fake/redacted packets only; no live Canvas) |
 | `bin/chief-of-staff --canvas-llm-phase-4-status` | Canvas LLM Phase 4 knowledge architecture and pattern catalog (docs/status/schema/fake-local only; no live Canvas) |
 | `bin/chief-of-staff --canvas-llm-phase-5-status` | Canvas LLM Phase 5 fake/local knowledge DB prototype (docs/status/fake-local JSON only; no live Canvas) |
+| `bin/chief-of-staff --canvas-llm-phase-6-status` | Canvas LLM Phase 6 fake/local knowledge DB relationship validator (read-only fake/local fixtures only; no live Canvas) |
 | `bin/chief-of-staff --antigravity-evaluation-status` | Antigravity 2.0 candidate/sandbox-only policy status (read-only; no install or execution) |
 
 ### AI Tool Routing (Operational Surface)

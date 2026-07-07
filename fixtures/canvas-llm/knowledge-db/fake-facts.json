@@ -1,0 +1,15 @@
+[
+  {
+    "fact_id": "fact_fake_banner_001",
+    "fact_text": "Fake local Canvas pages may use a centered banner pattern in examples.",
+    "fact_kind": "fake_style_pattern",
+    "source_reference_ids": ["src_fake_canvas_style_001"],
+    "evidence_ids": ["ev_fake_banner_pattern_001"],
+    "pattern_ids": ["pat_fake_banner_001"],
+    "source_class": "fake_local_fixture",
+    "evidence_level": "Level 0",
+    "approval_status": "fixture_approved",
+    "verification_status": "fake_local_verified",
+    "confidence_level": "fixture_only"
+  }
+]

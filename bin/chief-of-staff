@@ -295,6 +295,7 @@ Teacher Planning Command Organization (status only; safe sample: fractions-revie
   --canvas-llm-phase-2-status          Show Canvas LLM Phase 2 manual evidence intake status and exit.
   --canvas-llm-phase-3-status          Show Canvas LLM Phase 3 manual evidence normalizer status and exit.
   --canvas-llm-phase-4-status          Show Canvas LLM Phase 4 knowledge architecture status and exit.
+  --canvas-llm-phase-5-status          Show Canvas LLM Phase 5 fake/local knowledge DB status and exit.
 
 Developer and Cursor Workflow:
   --cursor-workflow-status             Show local Cursor workflow status and exit.
@@ -2506,6 +2507,15 @@ while [[ $# -gt 0 ]]; do
       fi
       bash "${canvas_llm_phase_4_status_script}"
       exit 0
+      ;;
+    --canvas-llm-phase-5-status)
+      shift
+      canvas_llm_phase_5_repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd -P)"
+      canvas_llm_phase_5_status_script="${canvas_llm_phase_5_repo_root}/scripts/canvas-llm-phase-5-status.sh"
+      if [[ ! -x "${canvas_llm_phase_5_status_script}" ]]; then
+        die "Canvas LLM Phase 5 status script is missing: scripts/canvas-llm-phase-5-status.sh"
+      fi
+      exec "${canvas_llm_phase_5_status_script}" "$@"
       ;;
     --teacher-planning-command-detail-status)
       repo_root="$(resolve_repo_root)"

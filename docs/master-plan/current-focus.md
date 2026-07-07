@@ -19,11 +19,13 @@ Current focus is master-plan reality audit, local-first curriculum/library coher
 - Maintain Canvas LLM Phase 1 as fixed-path fake/local fixture validation only.
 - Maintain Canvas LLM Phase 2 as manual/exported redacted evidence intake boundaries only.
 - Maintain Canvas LLM Phase 3 as manual/redacted packet normalization only for explicit fake/local fixtures.
+- Maintain Canvas LLM Phase 5 as a fake/local JSON knowledge DB prototype only.
 - Maintain Canvas LLM Phase 4 as knowledge architecture and pattern catalog schema only.
 
 ## Parked Or Blocked
 
 - Canvas LLM runtime/export/API work remains frozen.
+- Canvas LLM Phase 5 does not authorize Canvas API/OAuth/live reads, Canvas writes/publishing, real curriculum ingestion, student data, runtime SQLite/database writes, generation, embeddings, or RAG.
 - Canvas LLM Phase 4 does not authorize Canvas API/OAuth/live reads, Canvas writes/publishing, real curriculum ingestion, student data, runtime JSON/SQLite writes, generation, embeddings, or RAG.
 - Canvas self-healing is a planned track only.
 - Morning Brief / Morning Updates are planned only.

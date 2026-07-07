@@ -35,7 +35,11 @@ Status: knowledge architecture and pattern catalog complete as docs/status/schem
 
 Inactive historical Canvas courses, including 2024-2025 and 2025-2026, are future approval-gated sources that require student/private-data screening. Sandbox/demo Canvas courses are the preferred future API-testing source because they can contain no student data and no historical data. Current production courses remain blocked unless separately approved later.
 
-## Phase 5 - Self-Healing Planning
+## Phase 5 - Fake/Local Knowledge DB Prototype
+
+Status: fake/local knowledge DB prototype complete as docs/status/fake-local JSON fixtures only. No Canvas API/OAuth/live reads, Canvas writes/publishing, real curriculum ingestion, student data, runtime SQLite/database writes, generation, embeddings, RAG, or production writes. Current implementation: `docs/programs/canvas-llm/canvas-phase-5-fake-local-knowledge-db.md`, `docs/programs/canvas-llm/canvas-knowledge-db-query-patterns.md`, `fixtures/canvas-llm/knowledge-db/`, `scripts/canvas-llm-phase-5-status.sh`, and `bin/chief-of-staff --canvas-llm-phase-5-status`.
+
+## Phase 6 - Self-Healing Planning
 
 Document possible self-healing checks as a future approval-gated track. No automated repair, live read, live write, or scheduler.
 

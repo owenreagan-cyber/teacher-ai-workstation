@@ -1,0 +1,14 @@
+[
+  {
+    "pattern_id": "pat_fake_banner_001",
+    "pattern_category": "canvas_page_banner",
+    "pattern_name": "Fake centered page banner",
+    "source_reference_ids": ["src_fake_canvas_style_001"],
+    "evidence_ids": ["ev_fake_banner_pattern_001"],
+    "source_class": "fake_local_fixture",
+    "evidence_level": "Level 0",
+    "approval_status": "fixture_approved",
+    "verification_status": "fake_local_verified",
+    "confidence_level": "fixture_only"
+  }
+]

@@ -13,7 +13,11 @@ Keep existing Canvas LLM planning foundation frozen for runtime. Confirm no Canv
 
 ## Phase 1 - Canvas Knowledge Sweep
 
+Status: fake/local validator complete; live knowledge sweep not started.
+
 Collect and summarize Canvas standards, export expectations, review states, and safety requirements as local planning docs only. No live Canvas access.
+
+Phase 1 currently validates fake/local fixture evidence only through `scripts/canvas-llm-fake-local-validator.sh` and `bin/chief-of-staff --canvas-llm-phase-1-status`.
 
 ## Phase 2 - Manual Package Planning
 

@@ -163,6 +163,7 @@ These flags exist in `bin/chief-of-staff` and work as read-only local status sur
 | `bin/chief-of-staff --integration-planning-foundation-status` | Integration Planning v0 |
 | `bin/chief-of-staff --teacher-app-designer-canvas-llm-status` | Canvas LLM frozen foundation |
 | `bin/chief-of-staff --canvas-llm-phase-0-status` | Canvas LLM Phase 0 standards foundation (docs/status/fake-local only) |
+| `bin/chief-of-staff --canvas-llm-phase-1-status` | Canvas LLM Phase 1 fake/local validator (fixed fixtures only; no live Canvas) |
 
 ### AI Tool Routing (Operational Surface)
 

@@ -16,6 +16,7 @@ Current focus is master-plan reality audit, local-first curriculum/library coher
 - Keep Chief of Staff as the status, readiness, approval, and safety layer.
 - Keep validation credit-conserving: targeted checks first, broader validation only when repo convention requires it.
 - Maintain Canvas LLM Phase 0 as standards/evidence/report/fake-local scaffolding only.
+- Maintain Canvas LLM Phase 1 as fixed-path fake/local fixture validation only.
 
 ## Parked Or Blocked
 

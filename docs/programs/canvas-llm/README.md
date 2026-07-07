@@ -1,7 +1,7 @@
 # Canvas LLM Program
 
 ```text
-Status: DOCS-ONLY / Phase 3 manual evidence normalizer complete / frozen for runtime
+Status: DOCS-ONLY / Phase 4 knowledge architecture and pattern catalog complete / frozen for runtime
 Classification: documentation/status only
 Canvas API/OAuth/live writes: blocked
 Generation/deployment: blocked
@@ -15,6 +15,7 @@ Current safe work is planning/status only:
 - maintain Phase 1 fake/local fixture validation.
 - maintain Phase 2 manual/exported redacted evidence intake boundaries.
 - maintain Phase 3 manual evidence normalizer for explicit fake/local/redacted packets only.
+- maintain Phase 4 knowledge architecture and pattern catalog as docs/status/schema/fake-local only.
 - maintain freeze boundaries.
 - document Canvas knowledge sweep requirements.
 - document manual review and approval states.
@@ -31,6 +32,11 @@ Key references:
 - `docs/programs/canvas-llm/canvas-phase-1-fake-local-validator.md`
 - `docs/programs/canvas-llm/canvas-phase-2-manual-evidence-intake.md`
 - `docs/programs/canvas-llm/canvas-phase-3-manual-evidence-normalizer.md`
+- `docs/programs/canvas-llm/canvas-phase-4-knowledge-architecture.md`
+- `docs/programs/canvas-llm/canvas-knowledge-object-model.md`
+- `docs/programs/canvas-llm/canvas-pattern-catalog-schema.md`
+- `docs/programs/canvas-llm/canvas-evidence-levels-and-source-classes.md`
+- `docs/programs/canvas-llm/canvas-local-storage-schema-plan.md`
 - `docs/programs/canvas-llm/canvas-manual-evidence-packet-format.md`
 - `docs/programs/canvas-llm/canvas-future-knowledge-domains.md`
 - `docs/canvas-llm-planning-foundation-freeze.md`

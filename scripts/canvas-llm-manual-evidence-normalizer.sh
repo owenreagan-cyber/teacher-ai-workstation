@@ -38,7 +38,7 @@ if find "${packet_dir}" -type f ! \( -name '*.json' -o -name '*.md' \) | grep -q
   fail "unsupported evidence file type found; only .json and .md are allowed"
 fi
 
-unsafe_patterns='access_token|api_key|client_secret|canvas_token|student_name|student_id|roster|student_submission|submission_body|submission_text|accommodation|analytics|canvas\.instructure\.com|supabase|firebase|credential_secret|session_token'
+unsafe_patterns='access_token|api_key|client_secret|canvas_token|student_name|student_id|student name|student id|roster|student_submission|submission_body|submission_text|accommodation|analytics|canvas\.instructure\.com|supabase|firebase|credential_secret|session_token'
 if find "${packet_dir}" -type f \( -name '*.json' -o -name '*.md' \) -print0 | xargs -0 grep -Eiq "${unsafe_patterns}"; then
   fail "packet contains prohibited student-data, credential, integration, or production-write marker"
 fi
@@ -79,6 +79,15 @@ for key in ["no_student_data", "no_live_canvas_api_oauth", "no_real_curriculum_i
     if data.get(key) is not True:
         print(f"FAIL: {key} must be true", file=sys.stderr)
         sys.exit(1)
+if data.get("redacted") is False:
+    print("FAIL: redacted must not be false", file=sys.stderr)
+    sys.exit(1)
+if data.get("live_canvas_api_access") is True:
+    print("FAIL: live_canvas_api_access must not be true", file=sys.stderr)
+    sys.exit(1)
+if data.get("real_curriculum_ingested") is True:
+    print("FAIL: real_curriculum_ingested must not be true", file=sys.stderr)
+    sys.exit(1)
 files = data.get("evidence_files")
 if not isinstance(files, list) or not files:
     print("FAIL: evidence_files must be a non-empty list", file=sys.stderr)

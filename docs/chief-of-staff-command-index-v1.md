@@ -165,6 +165,7 @@ These flags exist in `bin/chief-of-staff` and work as read-only local status sur
 | `bin/chief-of-staff --canvas-llm-phase-0-status` | Canvas LLM Phase 0 standards foundation (docs/status/fake-local only) |
 | `bin/chief-of-staff --canvas-llm-phase-1-status` | Canvas LLM Phase 1 fake/local validator (fixed fixtures only; no live Canvas) |
 | `bin/chief-of-staff --canvas-llm-phase-2-status` | Canvas LLM Phase 2 manual/redacted evidence intake scaffold (no automatic scanning/live Canvas) |
+| `bin/chief-of-staff --canvas-llm-phase-3-status` | Canvas LLM Phase 3 manual evidence normalizer (explicit fake/redacted packets only; no live Canvas) |
 | `bin/chief-of-staff --antigravity-evaluation-status` | Antigravity 2.0 candidate/sandbox-only policy status (read-only; no install or execution) |
 
 ### AI Tool Routing (Operational Surface)

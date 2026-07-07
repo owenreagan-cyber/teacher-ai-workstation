@@ -25,10 +25,14 @@ Status: manual/exported redacted evidence intake scaffold complete; no live Canv
 
 Define manual review and export concepts using fake/local examples and Owen-provided redacted evidence only. No package generator, exporter, automatic scanner, live Canvas read, or Canvas write path. Current implementation: `evidence/canvas-llm/`, `docs/programs/canvas-llm/canvas-phase-2-manual-evidence-intake.md`, and `bin/chief-of-staff --canvas-llm-phase-2-status`.
 
-## Phase 3 - Self-Healing Planning
+## Phase 3 - Manual Evidence Normalizer
+
+Status: manual evidence normalizer complete for explicit fake/local/redacted packet fixtures only. No live Canvas access, OAuth, automatic export, broad scanning, student data, real curriculum ingestion, generation, indexing, embeddings, RAG, or production writes. Current implementation: `scripts/canvas-llm-manual-evidence-normalizer.sh`, `scripts/canvas-llm-phase-3-status.sh`, `fixtures/canvas-llm/manual-evidence-packets/`, and `bin/chief-of-staff --canvas-llm-phase-3-status`.
+
+## Phase 4 - Self-Healing Planning
 
 Document possible self-healing checks as a future approval-gated track. No automated repair, live read, live write, or scheduler.
 
-## Phase 4 - Reopen Gate
+## Phase 5 - Reopen Gate
 
 Any runtime phase requires an explicit Owen approval statement, named scope, allowed inputs/outputs, rollback plan, test plan, and API/OAuth/network approval if applicable.

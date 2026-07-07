@@ -17,6 +17,8 @@ Current focus is master-plan reality audit, local-first curriculum/library coher
 - Keep validation credit-conserving: targeted checks first, broader validation only when repo convention requires it.
 - Maintain Canvas LLM Phase 0 as standards/evidence/report/fake-local scaffolding only.
 - Maintain Canvas LLM Phase 1 as fixed-path fake/local fixture validation only.
+- Maintain Canvas LLM Phase 2 as manual/exported redacted evidence intake boundaries only.
+- Maintain Canvas LLM Phase 3 as manual/redacted packet normalization only for explicit fake/local fixtures.
 
 ## Parked Or Blocked
 

@@ -13,7 +13,7 @@ Supabase/Firebase: blocked
 
 This folder is the local/manual intake home for future Owen-provided, redacted Canvas evidence examples. It is not connected to Canvas and is not an automatic scanner target.
 
-Student data is prohibited.
+Student data is prohibited. This means student data is prohibited and student data prohibited for every manual intake example.
 
 ## Intake Rule
 

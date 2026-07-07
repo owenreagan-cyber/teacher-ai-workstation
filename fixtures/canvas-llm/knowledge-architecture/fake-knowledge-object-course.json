@@ -1,0 +1,36 @@
+{
+  "object_id": "fake-course-001",
+  "object_type": "course",
+  "title": "Fake Local Canvas Course",
+  "school_year": {
+    "object_id": "fake-school-year-001",
+    "label": "2099-2100 fake school year",
+    "historical_status": "fake_local_only"
+  },
+  "course_source_class": {
+    "source_class": "fake_local_fixture",
+    "evidence_level": "level_0_fake_local_fixture",
+    "phase_4_authorization": "static_schema_example_only"
+  },
+  "source_reference_ids": ["fake-source-reference-001"],
+  "evidence_ids": ["fake-evidence-001"],
+  "verification_status": "fake_local_example",
+  "approval_status": "fixture_approved",
+  "confidence_level": "schema_example_only",
+  "blocked_data_flags": {
+    "student_data": "blocked",
+    "real_curriculum_ingestion": "blocked",
+    "canvas_api_oauth_live_reads": "blocked",
+    "canvas_writes_publishing": "blocked",
+    "rag_embeddings_generation": "blocked",
+    "runtime_database_writes": "blocked"
+  },
+  "knowledge_links": [
+    {
+      "relationship_type": "contains_module",
+      "target_object_id": "fake-module-001"
+    }
+  ],
+  "created_at": "2026-07-07",
+  "updated_at": "2026-07-07"
+}

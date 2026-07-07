@@ -1,0 +1,23 @@
+{
+  "pattern_id": "fake-pattern-001",
+  "pattern_category": "page_banners",
+  "pattern_name": "Fake local banner schema example",
+  "description": "A fictional banner entry used only to demonstrate the Phase 4 pattern catalog shape.",
+  "source_reference_ids": ["fake-source-reference-001"],
+  "evidence_ids": ["fake-evidence-001"],
+  "source_class": "fake_local_fixture",
+  "evidence_level": "level_0_fake_local_fixture",
+  "verification_status": "fake_local_example",
+  "approval_status": "fixture_approved",
+  "confidence_level": "schema_example_only",
+  "example_status": "fake_local_schema_example",
+  "not_authority_reason": "This is fictional fixture data and is not official Canvas styling or an official Mr. Reagan voice/style pattern.",
+  "blocked_data_flags": {
+    "student_data": "blocked",
+    "real_curriculum_ingestion": "blocked",
+    "canvas_api_oauth_live_reads": "blocked",
+    "canvas_writes_publishing": "blocked",
+    "rag_embeddings_generation": "blocked",
+    "runtime_database_writes": "blocked"
+  }
+}

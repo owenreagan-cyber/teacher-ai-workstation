@@ -1,0 +1,58 @@
+{
+  "question": {
+    "object_id": "fake-question-001",
+    "object_type": "question",
+    "question_text": "What source supports this fake local course fact?",
+    "source_reference_ids": ["fake-source-reference-001"],
+    "evidence_ids": ["fake-evidence-001"],
+    "verification_status": "fake_local_example",
+    "approval_status": "fixture_approved"
+  },
+  "answer": {
+    "object_id": "fake-answer-001",
+    "object_type": "answer",
+    "answer_text": "This fake answer is supported only by fake-evidence-001 and is not an authoritative course answer.",
+    "fact_ids": ["fake-fact-001"],
+    "source_reference_ids": ["fake-source-reference-001"],
+    "evidence_ids": ["fake-evidence-001"],
+    "confidence_level": "schema_example_only",
+    "verification_status": "fake_local_example",
+    "approval_status": "fixture_approved"
+  },
+  "facts": [
+    {
+      "object_id": "fake-fact-001",
+      "object_type": "fact",
+      "fact_text": "Fake local course fact for schema demonstration only.",
+      "source_reference_ids": ["fake-source-reference-001"],
+      "evidence_ids": ["fake-evidence-001"],
+      "confidence_level": "schema_example_only",
+      "verification_status": "fake_local_example",
+      "approval_status": "fixture_approved"
+    }
+  ],
+  "evidence": [
+    {
+      "evidence_id": "fake-evidence-001",
+      "source_reference_id": "fake-source-reference-001",
+      "source_class": "fake_local_fixture",
+      "evidence_level": "level_0_fake_local_fixture",
+      "evidence_kind": "fake_local_fixture_note",
+      "redaction_status": "not_applicable_fake_local",
+      "contains_student_data": false,
+      "contains_real_curriculum": false,
+      "verification_status": "fake_local_example",
+      "approval_status": "fixture_approved"
+    }
+  ],
+  "source_references": [
+    {
+      "source_reference_id": "fake-source-reference-001",
+      "source_class": "fake_local_fixture",
+      "evidence_level": "level_0_fake_local_fixture",
+      "source_label": "Fake local Phase 4 fixture",
+      "approval_status": "fixture_approved"
+    }
+  ],
+  "phase_4_note": "Generated answers, RAG, embeddings, and AI runtime behavior are not approved in Phase 4."
+}

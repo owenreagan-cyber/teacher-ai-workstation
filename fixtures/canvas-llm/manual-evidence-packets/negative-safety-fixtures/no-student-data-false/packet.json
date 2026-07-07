@@ -1,0 +1,18 @@
+{
+  "packet_id": "phase-3-negative-no-student-data-false",
+  "course_label": "Fake Local Negative Packet",
+  "school_year_label": "2099-2100 fake",
+  "export_type": "manual_fake_local",
+  "redaction_status": "redacted_fake_local",
+  "source_type": "manual_exported_redacted_fake_local",
+  "no_student_data": false,
+  "no_live_canvas_api_oauth": true,
+  "no_real_curriculum_ingestion": true,
+  "no_production_write": true,
+  "evidence_files": ["source-notes.md"],
+  "allowed_use": "negative test only",
+  "blocked_use": "runtime use",
+  "review_status": "fixture_reviewed",
+  "created_date": "2026-07-07",
+  "updated_date": "2026-07-07"
+}

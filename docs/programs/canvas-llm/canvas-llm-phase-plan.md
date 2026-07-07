@@ -29,10 +29,16 @@ Define manual review and export concepts using fake/local examples and Owen-prov
 
 Status: manual evidence normalizer complete for explicit fake/local/redacted packet fixtures only. No live Canvas access, OAuth, automatic export, broad scanning, student data, real curriculum ingestion, generation, indexing, embeddings, RAG, or production writes. Current implementation: `scripts/canvas-llm-manual-evidence-normalizer.sh`, `scripts/canvas-llm-phase-3-status.sh`, `fixtures/canvas-llm/manual-evidence-packets/`, and `bin/chief-of-staff --canvas-llm-phase-3-status`.
 
-## Phase 4 - Self-Healing Planning
+## Phase 4 - Canvas Knowledge Architecture And Pattern Catalog
+
+Status: knowledge architecture and pattern catalog complete as docs/status/schema/fake-local fixtures only. No Canvas API/OAuth/live reads, Canvas writes/publishing, real curriculum ingestion, student data, runtime JSON/SQLite writes, generation, embeddings, RAG, or AI runtime behavior. Current implementation: `docs/programs/canvas-llm/canvas-phase-4-knowledge-architecture.md`, `docs/programs/canvas-llm/canvas-knowledge-object-model.md`, `docs/programs/canvas-llm/canvas-pattern-catalog-schema.md`, `docs/programs/canvas-llm/canvas-evidence-levels-and-source-classes.md`, `docs/programs/canvas-llm/canvas-local-storage-schema-plan.md`, `fixtures/canvas-llm/knowledge-architecture/`, `scripts/canvas-llm-phase-4-status.sh`, and `bin/chief-of-staff --canvas-llm-phase-4-status`.
+
+Inactive historical Canvas courses, including 2024-2025 and 2025-2026, are future approval-gated sources that require student/private-data screening. Sandbox/demo Canvas courses are the preferred future API-testing source because they can contain no student data and no historical data. Current production courses remain blocked unless separately approved later.
+
+## Phase 5 - Self-Healing Planning
 
 Document possible self-healing checks as a future approval-gated track. No automated repair, live read, live write, or scheduler.
 
-## Phase 5 - Reopen Gate
+## Phase 6 - Reopen Gate
 
 Any runtime phase requires an explicit Owen approval statement, named scope, allowed inputs/outputs, rollback plan, test plan, and API/OAuth/network approval if applicable.

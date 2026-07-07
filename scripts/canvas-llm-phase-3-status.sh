@@ -57,6 +57,15 @@ tmp_packet="$(mktemp -d "${TMPDIR:-/tmp}/canvas-phase-3-missing.XXXXXX")"
 if scripts/canvas-llm-manual-evidence-normalizer.sh "$tmp_packet" >/tmp/canvas-phase-3-outside.out 2>&1; then fail 'normalizer must reject outside temp packet'; else pass 'normalizer rejects outside packet path'; fi
 rm -rf "$tmp_packet"
 
+negative_root="fixtures/canvas-llm/manual-evidence-packets/negative-safety-fixtures"
+if scripts/canvas-llm-manual-evidence-normalizer.sh "${negative_root}/redacted-false" >/tmp/canvas-phase-3-redacted-false.out 2>&1; then fail 'normalizer must reject redacted false'; else pass 'normalizer rejects redacted false'; fi
+if scripts/canvas-llm-manual-evidence-normalizer.sh "${negative_root}/no-student-data-false" >/tmp/canvas-phase-3-no-student-data-false.out 2>&1; then fail 'normalizer must reject no_student_data false'; else pass 'normalizer rejects no_student_data false'; fi
+if scripts/canvas-llm-manual-evidence-normalizer.sh "${negative_root}/live-canvas-api-access-true" >/tmp/canvas-phase-3-live-canvas-api.out 2>&1; then fail 'normalizer must reject live_canvas_api_access true'; else pass 'normalizer rejects live_canvas_api_access true'; fi
+if scripts/canvas-llm-manual-evidence-normalizer.sh "${negative_root}/real-curriculum-ingested-true" >/tmp/canvas-phase-3-real-curriculum.out 2>&1; then fail 'normalizer must reject real_curriculum_ingested true'; else pass 'normalizer rejects real_curriculum_ingested true'; fi
+if scripts/canvas-llm-manual-evidence-normalizer.sh "${negative_root}/canvas-token-content" >/tmp/canvas-phase-3-canvas-token.out 2>&1; then fail 'normalizer must reject canvas_token content'; else pass 'normalizer rejects canvas_token content'; fi
+if scripts/canvas-llm-manual-evidence-normalizer.sh "${negative_root}/student-name-content" >/tmp/canvas-phase-3-student-name.out 2>&1; then fail 'normalizer must reject student name content'; else pass 'normalizer rejects student name content'; fi
+if scripts/canvas-llm-manual-evidence-normalizer.sh "${negative_root}/student-id-content" >/tmp/canvas-phase-3-student-id.out 2>&1; then fail 'normalizer must reject student id content'; else pass 'normalizer rejects student id content'; fi
+
 section 'Documentation And Wiring'
 check_help '--canvas-llm-phase-3-status'
 check_contains assistant/chief-of-staff/v1/command-surface-manifest.json '"--canvas-llm-phase-3-status"' 'manifest Canvas Phase 3 command'

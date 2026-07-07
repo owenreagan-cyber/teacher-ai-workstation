@@ -9,6 +9,8 @@
   "canvas_area": "page",
   "claim": "A Canvas page should use clear headings and teacher-reviewed links.",
   "evidence_summary": "Invented page metadata for Phase 0 standards scaffolding.",
+  "student_data_status": "blocked",
+  "live_canvas_status": "blocked",
   "review_status": "draft",
   "safe_next_step": "Use as fake fixture only."
 }

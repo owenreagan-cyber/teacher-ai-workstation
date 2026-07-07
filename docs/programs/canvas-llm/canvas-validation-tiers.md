@@ -14,6 +14,8 @@ Checks that standards, boundaries, templates, and fake fixture guidance exist. A
 
 Checks fake/local example structure against the evidence schema. Approved only as static fixture validation, not live Canvas validation.
 
+Current implementation: `scripts/canvas-llm-fake-local-validator.sh` validates only fixed fixtures under `fixtures/canvas-llm/`.
+
 ## Tier 2 - Manual Review Readiness
 
 Human-reviewed reports summarize candidate standards and blocked gaps. Planned only.

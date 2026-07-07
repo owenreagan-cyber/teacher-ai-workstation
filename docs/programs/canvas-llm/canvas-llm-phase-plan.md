@@ -56,3 +56,7 @@ Status: sandbox/demo Canvas API fetch gate complete as docs/status gate only. No
 Status: sandbox/demo Canvas metadata fetch scaffold complete as dry-run-first gated implementation only. No live fetch is implemented, and no Canvas API/OAuth/live reads occur. Current implementation: `docs/programs/canvas-llm/canvas-phase-9a-sandbox-metadata-fetch-scaffold.md`, `scripts/canvas-llm-sandbox-metadata-fetch-scaffold.py`, `scripts/canvas-llm-phase-9a-status.sh`, and `bin/chief-of-staff --canvas-llm-phase-9a-status`.
 
 ## Phase 9B - Separately Approved Read-Only Sandbox/Demo Metadata Fetch Execution
+
+Status: sandbox/demo Canvas API metadata fetch execution complete for course 24399 only. Implementation uses local-only `CANVAS_BASE_URL` and `CANVAS_API_TOKEN`, writes sanitized metadata only to ignored `.local/canvas-llm/sandbox-metadata/course-24399/`, and does not commit fetched metadata. Current implementation: `docs/programs/canvas-llm/canvas-phase-9b-sandbox-api-metadata-fetch.md`, `scripts/canvas-llm-sandbox-metadata-fetch.py`, `scripts/canvas-llm-phase-9b-status.sh`, and `bin/chief-of-staff --canvas-llm-phase-9b-status`.
+
+## Phase 10 - Sandbox Metadata Review And Import Gate

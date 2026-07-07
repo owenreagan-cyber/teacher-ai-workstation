@@ -43,3 +43,6 @@ assistant/lesson-planning/drafts/*.md
 
 # Teacher Knowledge Vault M7g persistent local working catalog prototype (generated only)
 .local/teacher-knowledge-vault/
+
+# Local Canvas LLM staging outputs; never commit fetched metadata.
+.local/canvas-llm/

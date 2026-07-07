@@ -1,7 +1,7 @@
 # Canvas LLM Program
 
 ```text
-Status: DOCS-ONLY / Phase 2 manual evidence intake scaffold complete / frozen for runtime
+Status: DOCS-ONLY / Phase 3 manual evidence normalizer complete / frozen for runtime
 Classification: documentation/status only
 Canvas API/OAuth/live writes: blocked
 Generation/deployment: blocked
@@ -14,6 +14,7 @@ Current safe work is planning/status only:
 - maintain Phase 0 standards, evidence, boundary, and fake-local fixture scaffolds.
 - maintain Phase 1 fake/local fixture validation.
 - maintain Phase 2 manual/exported redacted evidence intake boundaries.
+- maintain Phase 3 manual evidence normalizer for explicit fake/local/redacted packets only.
 - maintain freeze boundaries.
 - document Canvas knowledge sweep requirements.
 - document manual review and approval states.
@@ -29,6 +30,9 @@ Key references:
 - `docs/programs/canvas-llm/canvas-phase-0-readiness.md`
 - `docs/programs/canvas-llm/canvas-phase-1-fake-local-validator.md`
 - `docs/programs/canvas-llm/canvas-phase-2-manual-evidence-intake.md`
+- `docs/programs/canvas-llm/canvas-phase-3-manual-evidence-normalizer.md`
+- `docs/programs/canvas-llm/canvas-manual-evidence-packet-format.md`
+- `docs/programs/canvas-llm/canvas-future-knowledge-domains.md`
 - `docs/canvas-llm-planning-foundation-freeze.md`
 - `docs/canvas-llm-local-first-drive-first-architecture.md`
 - `docs/programs/canvas-llm/canvas-llm-phase-plan.md`

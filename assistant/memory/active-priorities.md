@@ -4,6 +4,8 @@
 
 ### Recently Completed (workflow polish)
 
+- Canvas LLM Phase 3 manual evidence normalizer: complete
+- Canvas LLM Phase 2 manual evidence intake: complete
 - Antigravity 2.0 toolchain evaluation policy: complete
 - Canvas LLM Phase 1 fake/local validator: complete
 - Canvas LLM Phase 0 standards foundation: complete

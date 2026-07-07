@@ -1,0 +1,25 @@
+{
+  "packet_id": "sample-redacted-packet",
+  "course_label": "FAKE-COURSE-PSEUDONYM",
+  "school_year_label": "FAKE-2026-2027",
+  "export_type": "manual_redacted_fixture",
+  "redaction_status": "redacted_fake_local",
+  "source_type": "manual_exported_redacted_fake_local",
+  "no_student_data": true,
+  "no_live_canvas_api_oauth": true,
+  "no_real_curriculum_ingestion": true,
+  "no_production_write": true,
+  "evidence_files": [
+    "source-notes.md",
+    "redacted-announcements/announcement-001.md",
+    "redacted-assignments/assignment-001.json",
+    "redacted-files/file-001.json",
+    "redacted-modules/module-001.json",
+    "redacted-pages/page-001.md"
+  ],
+  "allowed_use": "Phase 3 fixture-only packet shape and local normalizer validation.",
+  "blocked_use": "No live Canvas/API/OAuth, student data, real curriculum ingestion, generation, embeddings, RAG, or production writes.",
+  "review_status": "fixture_reviewed",
+  "created_date": "2026-07-07",
+  "updated_date": "2026-07-07"
+}

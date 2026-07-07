@@ -241,6 +241,7 @@
         {"flag": "--canvas-llm-phase-6-status", "status": "implemented", "purpose": "Canvas LLM Phase 6 fake/local knowledge DB relationship validator status (read-only fake/local fixtures only; no live Canvas)"},
         {"flag": "--canvas-llm-phase-7-status", "status": "implemented", "purpose": "Canvas LLM Phase 7 read-only Canvas API approval packet status (approval packet only; no API/OAuth/live reads)"},
         {"flag": "--canvas-llm-phase-8-status", "status": "implemented", "purpose": "Canvas LLM Phase 8 sandbox/demo API fetch gate status (gate only; no API/OAuth/live reads)"},
+        {"flag": "--canvas-llm-phase-9a-status", "status": "implemented", "purpose": "Canvas LLM Phase 9A sandbox metadata fetch scaffold status (dry-run scaffold only; no live fetch implemented)"},
         {"flag": "--teacher-app-designer-canvas-llm-status", "status": "implemented", "purpose": "Canvas LLM frozen foundation status"},
         {"flag": "--canvas-restart-status", "status": "blocked", "purpose": "Canvas restart blocked by stop marker"}
       ]

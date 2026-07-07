@@ -243,6 +243,7 @@
         {"flag": "--canvas-llm-phase-8-status", "status": "implemented", "purpose": "Canvas LLM Phase 8 sandbox/demo API fetch gate status (gate only; no API/OAuth/live reads)"},
         {"flag": "--canvas-llm-phase-9a-status", "status": "implemented", "purpose": "Canvas LLM Phase 9A sandbox metadata fetch scaffold status (dry-run scaffold only; no live fetch implemented)"},
         {"flag": "--canvas-llm-phase-9b-status", "status": "implemented", "purpose": "Canvas LLM Phase 9B read-only sandbox API metadata fetch status (approved course 24399 only; local env only; no tracked metadata)"},
+        {"flag": "--canvas-llm-phase-10-status", "status": "implemented", "purpose": "Canvas LLM Phase 10 sandbox metadata review/import gate status (local ignored metadata review only; no import)"},
         {"flag": "--teacher-app-designer-canvas-llm-status", "status": "implemented", "purpose": "Canvas LLM frozen foundation status"},
         {"flag": "--canvas-restart-status", "status": "blocked", "purpose": "Canvas restart blocked by stop marker"}
       ]

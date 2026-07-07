@@ -60,3 +60,7 @@ Status: sandbox/demo Canvas metadata fetch scaffold complete as dry-run-first ga
 Status: sandbox/demo Canvas API metadata fetch execution complete for course 24399 only. Implementation uses local-only `CANVAS_BASE_URL` and `CANVAS_API_TOKEN`, writes sanitized metadata only to ignored `.local/canvas-llm/sandbox-metadata/course-24399/`, and does not commit fetched metadata. Current implementation: `docs/programs/canvas-llm/canvas-phase-9b-sandbox-api-metadata-fetch.md`, `scripts/canvas-llm-sandbox-metadata-fetch.py`, `scripts/canvas-llm-phase-9b-status.sh`, and `bin/chief-of-staff --canvas-llm-phase-9b-status`.
 
 ## Phase 10 - Sandbox Metadata Review And Import Gate
+
+Status: sandbox metadata review/import gate complete as local ignored metadata review only. It validates the local Phase 9B staging manifest and staged metadata for course 24399, preserves the expected announcements_metadata=0 warning, and blocks import. Current implementation: `docs/programs/canvas-llm/canvas-phase-10-sandbox-metadata-review-gate.md`, `scripts/canvas-llm-sandbox-metadata-review.py`, `scripts/canvas-llm-phase-10-status.sh`, and `bin/chief-of-staff --canvas-llm-phase-10-status`.
+
+## Phase 11 - Sandbox Metadata Import Preview Gate

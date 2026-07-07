@@ -173,6 +173,7 @@ These flags exist in `bin/chief-of-staff` and work as read-only local status sur
 | `bin/chief-of-staff --canvas-llm-phase-8-status` | Canvas LLM Phase 8 sandbox/demo API fetch gate (gate only; no API/OAuth/live reads) |
 | `bin/chief-of-staff --canvas-llm-phase-9a-status` | Canvas LLM Phase 9A sandbox metadata fetch scaffold (dry-run scaffold only; no live fetch implemented) |
 | `bin/chief-of-staff --canvas-llm-phase-9b-status` | Canvas LLM Phase 9B read-only sandbox API metadata fetch status (approved course 24399 only; local env only; no tracked metadata) |
+| `bin/chief-of-staff --canvas-llm-phase-10-status` | Canvas LLM Phase 10 sandbox metadata review/import gate status (local ignored metadata review only; no import) |
 | `bin/chief-of-staff --antigravity-evaluation-status` | Antigravity 2.0 candidate/sandbox-only policy status (read-only; no install or execution) |
 
 ### AI Tool Routing (Operational Surface)

@@ -1,0 +1,12 @@
+[
+  {
+    "evidence_id": "ev_fake_banner_pattern_001",
+    "source_reference_id": "src_fake_canvas_style_001",
+    "evidence_kind": "fake_pattern_evidence",
+    "evidence_level": "Level 0",
+    "source_class": "fake_local_fixture",
+    "approval_status": "fixture_approved",
+    "verification_status": "fake_local_verified",
+    "summary": "Fake local evidence for a centered Canvas banner pattern."
+  }
+]

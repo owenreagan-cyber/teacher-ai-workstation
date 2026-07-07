@@ -1,0 +1,16 @@
+[
+  {
+    "question_id": "q_fake_banner_001",
+    "question_text": "What banner pattern should a fake Canvas page use?",
+    "answer_id": "a_fake_banner_001",
+    "answer_text": "Use the fake local centered banner pattern only as a fixture example, not as official Canvas style authority.",
+    "fact_ids": ["fact_fake_banner_001"],
+    "evidence_ids": ["ev_fake_banner_pattern_001"],
+    "source_reference_ids": ["src_fake_canvas_style_001"],
+    "source_class": "fake_local_fixture",
+    "evidence_level": "Level 0",
+    "approval_status": "fixture_approved",
+    "verification_status": "fake_local_verified",
+    "confidence_level": "fixture_only"
+  }
+]

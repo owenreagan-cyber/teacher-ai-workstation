@@ -237,6 +237,7 @@
         {"flag": "--canvas-llm-phase-2-status", "status": "implemented", "purpose": "Canvas LLM Phase 2 manual evidence intake status (manual/redacted scaffold only; no scanning/live Canvas)"},
         {"flag": "--canvas-llm-phase-3-status", "status": "implemented", "purpose": "Canvas LLM Phase 3 manual evidence normalizer status (explicit fake/redacted packets only; no live Canvas)"},
         {"flag": "--canvas-llm-phase-4-status", "status": "implemented", "purpose": "Canvas LLM Phase 4 knowledge architecture and pattern catalog status (docs/status/schema/fake-local only; no live Canvas)"},
+        {"flag": "--canvas-llm-phase-5-status", "status": "implemented", "purpose": "Canvas LLM Phase 5 fake/local knowledge DB prototype status (docs/status/fake-local JSON only; no live Canvas)"},
         {"flag": "--teacher-app-designer-canvas-llm-status", "status": "implemented", "purpose": "Canvas LLM frozen foundation status"},
         {"flag": "--canvas-restart-status", "status": "blocked", "purpose": "Canvas restart blocked by stop marker"}
       ]

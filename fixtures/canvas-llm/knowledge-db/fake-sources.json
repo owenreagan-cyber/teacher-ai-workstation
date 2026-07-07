@@ -1,0 +1,18 @@
+[
+  {
+    "source_reference_id": "src_fake_canvas_style_001",
+    "source_label": "Fake local Canvas style example",
+    "source_class": "fake_local_fixture",
+    "evidence_level": "Level 0",
+    "approval_status": "fixture_approved",
+    "verification_status": "fake_local_verified",
+    "blocked_data_flags": {
+      "student_data": false,
+      "real_curriculum_ingestion": false,
+      "canvas_api_oauth_live_reads": false,
+      "canvas_writes_publishing": false,
+      "runtime_database_writes": false,
+      "rag_embeddings_generation": false
+    }
+  }
+]

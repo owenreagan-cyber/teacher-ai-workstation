@@ -1,0 +1,16 @@
+[
+  {
+    "page_id": "page_fake_001",
+    "course_id": "course_fake_001",
+    "module_id": "module_fake_001",
+    "page_title": "Fake Canvas Welcome Page",
+    "pattern_ids": ["pat_fake_banner_001"],
+    "fact_ids": ["fact_fake_banner_001"],
+    "source_reference_ids": ["src_fake_canvas_style_001"],
+    "evidence_ids": ["ev_fake_banner_pattern_001"],
+    "source_class": "fake_local_fixture",
+    "evidence_level": "Level 0",
+    "approval_status": "fixture_approved",
+    "verification_status": "fake_local_verified"
+  }
+]

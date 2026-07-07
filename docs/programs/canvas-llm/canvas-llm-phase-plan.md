@@ -5,9 +5,11 @@ Status: planned/frozen for runtime
 Classification: documentation/status only
 ```
 
-## Phase 0 - Freeze And Boundaries
+## Phase 0 - Standards Foundation
 
-Keep existing Canvas LLM planning foundation frozen for runtime. Confirm no Canvas API, OAuth, live reads/writes, generation, deployment, or student data.
+Status: complete as docs/status/fake-local scaffold.
+
+Keep existing Canvas LLM planning foundation frozen for runtime. Confirm no Canvas API, OAuth, live reads/writes, generation, deployment, or student data. Maintain standards, evidence schema, safe data boundaries, authority/conflict policy, validation tiers, report templates, and fake/local fixture guidance.
 
 ## Phase 1 - Canvas Knowledge Sweep
 

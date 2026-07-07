@@ -1,7 +1,7 @@
 # Canvas LLM Program
 
 ```text
-Status: DOCS-ONLY / frozen for runtime
+Status: DOCS-ONLY / Phase 0 standards scaffold complete / frozen for runtime
 Classification: documentation/status only
 Canvas API/OAuth/live writes: blocked
 Generation/deployment: blocked
@@ -11,6 +11,7 @@ Canvas LLM must learn Canvas standards and repo-approved boundaries before gener
 
 Current safe work is planning/status only:
 
+- maintain Phase 0 standards, evidence, boundary, and fake-local fixture scaffolds.
 - maintain freeze boundaries.
 - document Canvas knowledge sweep requirements.
 - document manual review and approval states.
@@ -22,6 +23,8 @@ Reality audit: `docs/master-plan/build-state-checklist.md` classifies Canvas LLM
 
 Key references:
 
+- `docs/programs/canvas-llm/THALES_CANVAS_STANDARD.md`
+- `docs/programs/canvas-llm/canvas-phase-0-readiness.md`
 - `docs/canvas-llm-planning-foundation-freeze.md`
 - `docs/canvas-llm-local-first-drive-first-architecture.md`
 - `docs/programs/canvas-llm/canvas-llm-phase-plan.md`

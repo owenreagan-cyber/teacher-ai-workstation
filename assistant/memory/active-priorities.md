@@ -4,6 +4,7 @@
 
 ### Recently Completed (workflow polish)
 
+- Canvas LLM Phase 0 standards foundation: complete
 - Master plan reality audit and build-state checklist hardening: complete
 - Master plan persistence and program roadmap consolidation: complete
 - Review notes workflow polish: complete

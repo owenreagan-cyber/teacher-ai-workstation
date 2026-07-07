@@ -1,0 +1,105 @@
+{
+  "phase": "canvas_llm_phase_12_fake_local_sandbox_import_artifact_gate",
+  "course_id": 24399,
+  "course_scope": {
+    "approved_course_ids": [
+      24399
+    ],
+    "course_24399_only": true,
+    "exact_real_non_demo_course_ids_allowed": [
+      24399
+    ]
+  },
+  "source_class": "sandbox_demo_canvas_course",
+  "artifact_class": "fake_local_import_preview_artifact",
+  "based_on_reviewed_phase_11_shape": true,
+  "real_metadata_copied": false,
+  "import_performed": false,
+  "knowledge_db_write": false,
+  "runtime_database_write": false,
+  "canvas_api_call": false,
+  "production_write": false,
+  "canonical_catalog_write": false,
+  "student_data": false,
+  "real_curriculum_body_ingestion": false,
+  "generation_rag_embeddings": false,
+  "local_model_ollama_execution": false,
+  "tracked_school_canvas_url": false,
+  "tracked_tokens_or_secrets": false,
+  "local_staging_committed": false,
+  "entity_counts": {
+    "course_metadata": 1,
+    "modules": 3,
+    "pages_metadata": 48,
+    "assignments_metadata": 115,
+    "announcements_metadata": 0,
+    "files_metadata": 220,
+    "module_items": 185
+  },
+  "expected_warnings": [
+    "announcements_metadata has 0 records in sandbox staging"
+  ],
+  "fake_entities": {
+    "course_metadata": [
+      {
+        "fake_id": "fake-course-24399",
+        "fake_title": "Fake Local Sandbox Course",
+        "source_reference": "fake-local://canvas-llm/course-24399/course"
+      }
+    ],
+    "modules": [
+      {
+        "fake_id": "fake-module-001",
+        "fake_title": "Fake Local Module 1",
+        "source_reference": "fake-local://canvas-llm/course-24399/modules/fake-module-001"
+      },
+      {
+        "fake_id": "fake-module-002",
+        "fake_title": "Fake Local Module 2",
+        "source_reference": "fake-local://canvas-llm/course-24399/modules/fake-module-002"
+      },
+      {
+        "fake_id": "fake-module-003",
+        "fake_title": "Fake Local Module 3",
+        "source_reference": "fake-local://canvas-llm/course-24399/modules/fake-module-003"
+      }
+    ],
+    "sample_pages_metadata": [
+      {
+        "fake_id": "fake-page-001",
+        "fake_title": "Fake Local Page Metadata Sample",
+        "source_reference": "fake-local://canvas-llm/course-24399/pages/fake-page-001",
+        "body_copied": false
+      }
+    ],
+    "sample_assignments_metadata": [
+      {
+        "fake_id": "fake-assignment-001",
+        "fake_title": "Fake Local Assignment Metadata Sample",
+        "source_reference": "fake-local://canvas-llm/course-24399/assignments/fake-assignment-001",
+        "body_copied": false
+      }
+    ],
+    "sample_files_metadata": [
+      {
+        "fake_id": "fake-file-001",
+        "fake_title": "Fake Local File Metadata Sample",
+        "source_reference": "fake-local://canvas-llm/course-24399/files/fake-file-001",
+        "file_body_copied": false,
+        "file_downloaded": false
+      }
+    ],
+    "sample_module_items": [
+      {
+        "fake_id": "fake-module-item-001",
+        "fake_title": "Fake Local Module Item Metadata Sample",
+        "source_reference": "fake-local://canvas-llm/course-24399/module-items/fake-module-item-001"
+      }
+    ]
+  },
+  "validation_notes": [
+    "This fixture is tracked and safe because it contains fake IDs, fake titles, fake source references, counts, and safety flags only.",
+    "This fixture must not contain copied Canvas metadata records from .local staging.",
+    "This fixture does not authorize import, database writes, production writes, Canvas API calls, generation, RAG, embeddings, or curriculum body ingestion."
+  ]
+}

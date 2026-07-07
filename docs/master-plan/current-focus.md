@@ -30,6 +30,8 @@ Current focus is master-plan reality audit, local-first curriculum/library coher
 
 ## Reality Snapshot
 
+- Antigravity 2.0 toolchain evaluation policy is documentation/status only: [CANDIDATE], [SANDBOX-ONLY], [BLOCKED-IN-PRIMARY], and [MANUAL-COPY-ONLY]. Primary repo install/execution and active `.antigravity` config remain blocked.
+
 - Chief of Staff, Curriculum Library / Teacher Knowledge Vault, Lesson Builder, Medical Center/System Health, Classroom Apps, and Widgets/Workshop are **partial** foundations or prototypes with explicit blocked runtime edges.
 - Canvas LLM and Local LLM are **docs-only** / read-only status foundations.
 - Canvas self-healing and Morning Brief are **planned** tracks.

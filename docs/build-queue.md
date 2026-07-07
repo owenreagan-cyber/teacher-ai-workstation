@@ -18,6 +18,9 @@ Handoff and status clarity. Start from `docs/phase-1-chief-of-staff-status-audit
 
 ## Recently Completed
 
+- Antigravity 2.0 Toolchain Evaluation Policy (2026-07-07): `docs/programs/toolchain/`; `--antigravity-evaluation-status`; `antigravity_2_evaluation_policy_complete`; documentation/status only — Antigravity remains [CANDIDATE], [SANDBOX-ONLY], [BLOCKED-IN-PRIMARY], and [MANUAL-COPY-ONLY]; no install, `agy`, active `.antigravity` config, runtime agent behavior, credentials, Canvas API/OAuth/live reads/writes, Drive/NAS/iCloud, Supabase/Firebase, production writes, or direct sandbox-to-main merge.
+
+
 - Canvas LLM Phase 1 Fake/Local Validator (2026-07-07): `scripts/canvas-llm-fake-local-validator.sh`; `docs/programs/canvas-llm/canvas-phase-1-fake-local-validator.md`; `--canvas-llm-phase-1-status`; `canvas_llm_phase_1_fake_local_validator_complete`; validates only fixed fake/local fixtures under `fixtures/canvas-llm/` — no Canvas API/OAuth/live reads, Canvas writes, real Canvas validation, self-healing runtime, student data, generation, network integrations, or Supabase/Firebase.
 
 - Canvas LLM Phase 0 Standards Foundation (2026-07-06): `docs/programs/canvas-llm/THALES_CANVAS_STANDARD.md`; `docs/programs/canvas-llm/canvas-phase-0-readiness.md`; `fixtures/canvas-llm/`; `--canvas-llm-phase-0-status`; `canvas_llm_phase_0_standards_foundation_complete`; docs/status/fake-local only — no Canvas API/OAuth/live reads, Canvas writes, self-healing runtime, student data, generation, real curriculum ingestion, network integrations, or Supabase/Firebase.

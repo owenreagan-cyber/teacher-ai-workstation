@@ -72,3 +72,7 @@ Closure marker: master_plan_reality_audit_build_state_complete
 - [x] Real curriculum ingestion and student data are blocked.
 - [x] PASS output does not authorize implementation.
 - [x] Evidence-backed status labels distinguish built, partial, docs-only, planned, blocked, deprecated, candidate, and unknown work.
+
+## Canvas Phase 2 Build-State Closure
+
+Build-state Canvas Phase 2: PARTIAL / LOCAL-MANUAL evidence intake scaffold. Evidence: `evidence/canvas-llm/`, `scripts/canvas-llm-manual-evidence-intake-status.sh`, and `bin/chief-of-staff --canvas-llm-phase-2-status`. This does not authorize Canvas API/OAuth/live reads, Canvas writes, student data, automatic scanning, network access, or generation/runtime behavior.

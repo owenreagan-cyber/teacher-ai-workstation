@@ -19,9 +19,11 @@ Collect and summarize Canvas standards, export expectations, review states, and 
 
 Phase 1 currently validates fake/local fixture evidence only through `scripts/canvas-llm-fake-local-validator.sh` and `bin/chief-of-staff --canvas-llm-phase-1-status`.
 
-## Phase 2 - Manual Package Planning
+## Phase 2 - Manual Evidence Intake
 
-Define manual review and export concepts using fake/local examples only. No package generator, exporter, or Canvas write path.
+Status: manual/exported redacted evidence intake scaffold complete; no live Canvas access.
+
+Define manual review and export concepts using fake/local examples and Owen-provided redacted evidence only. No package generator, exporter, automatic scanner, live Canvas read, or Canvas write path. Current implementation: `evidence/canvas-llm/`, `docs/programs/canvas-llm/canvas-phase-2-manual-evidence-intake.md`, and `bin/chief-of-staff --canvas-llm-phase-2-status`.
 
 ## Phase 3 - Self-Healing Planning
 

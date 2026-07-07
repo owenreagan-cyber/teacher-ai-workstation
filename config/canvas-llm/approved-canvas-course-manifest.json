@@ -1,0 +1,213 @@
+{
+  "manifest": "approved_canvas_course_manifest",
+  "phase": "canvas_llm_phase_14a_course_approval_manifest",
+  "purpose": "Tracked approval manifest for future read-only Canvas metadata fetches across current operational, historical academic, Homeroom/newsletter, and demo sandbox courses.",
+  "safety": {
+    "api_fetch_performed_by_this_manifest": false,
+    "canvas_write_approved": false,
+    "file_download_approved": false,
+    "body_ingestion_approved": false,
+    "student_data_approved": false,
+    "tracked_school_canvas_url": false,
+    "tracked_tokens_or_secrets": false,
+    "committed_local_fetched_metadata": false
+  },
+  "canonical_prefix_notes": {
+    "SM5": "Saxon Math 5",
+    "RM4": "Reading Mastery 4",
+    "ELA4": "Shurley English",
+    "SPELL": "Spelling, merged with Reading where course IDs overlap",
+    "Newsletter": "Homeroom newsletter/reminder course",
+    "N/A": "No assignment prefix expected"
+  },
+  "courses": [
+    {
+      "school_year": "2026-2027",
+      "course_role": "current_operational_course",
+      "subject": "Math",
+      "course_id": 26404,
+      "canonical_prefixes": ["SM5"],
+      "notes": "Saxon Math 5"
+    },
+    {
+      "school_year": "2026-2027",
+      "course_role": "current_operational_course",
+      "subject": "Reading",
+      "course_id": 26442,
+      "canonical_prefixes": ["RM4", "SPELL"],
+      "notes": "Reading Mastery 4 and Spelling share the same Canvas course."
+    },
+    {
+      "school_year": "2026-2027",
+      "course_role": "current_operational_course",
+      "subject": "Language Arts",
+      "course_id": 26495,
+      "canonical_prefixes": ["ELA4"],
+      "notes": "Shurley English"
+    },
+    {
+      "school_year": "2026-2027",
+      "course_role": "current_operational_course",
+      "subject": "History",
+      "course_id": 26493,
+      "canonical_prefixes": ["N/A"],
+      "notes": "No assignments expected."
+    },
+    {
+      "school_year": "2026-2027",
+      "course_role": "current_operational_course",
+      "subject": "Science",
+      "course_id": 26496,
+      "canonical_prefixes": ["N/A"],
+      "notes": "No assignments expected."
+    },
+    {
+      "school_year": "2026-2027",
+      "course_role": "current_homeroom_newsletter_course",
+      "subject": "Homeroom",
+      "course_id": 26427,
+      "canonical_prefixes": ["Newsletter"],
+      "notes": "Homeroom newsletter/reminder course."
+    },
+    {
+      "school_year": "demo",
+      "course_role": "demo_sandbox_course",
+      "subject": "Math Automation Sandbox",
+      "course_id": 24399,
+      "canonical_prefixes": ["SM5"],
+      "notes": "Approved sandbox/demo course used by prior Canvas LLM phases."
+    },
+    {
+      "school_year": "2025-2026",
+      "course_role": "historical_academic_course",
+      "subject": "Math",
+      "course_id": 21957,
+      "canonical_prefixes": ["SM5"],
+      "notes": "Saxon Math 5"
+    },
+    {
+      "school_year": "2025-2026",
+      "course_role": "historical_academic_course",
+      "subject": "Reading",
+      "course_id": 21919,
+      "canonical_prefixes": ["RM4", "SPELL"],
+      "notes": "Reading Mastery 4 and Spelling share the same Canvas course."
+    },
+    {
+      "school_year": "2025-2026",
+      "course_role": "historical_academic_course",
+      "subject": "Language Arts",
+      "course_id": 21944,
+      "canonical_prefixes": ["ELA4"],
+      "notes": "Shurley English"
+    },
+    {
+      "school_year": "2025-2026",
+      "course_role": "historical_academic_course",
+      "subject": "History",
+      "course_id": 21934,
+      "canonical_prefixes": ["N/A"],
+      "notes": "No assignments expected."
+    },
+    {
+      "school_year": "2025-2026",
+      "course_role": "historical_academic_course",
+      "subject": "Science",
+      "course_id": 21970,
+      "canonical_prefixes": ["N/A"],
+      "notes": "No assignments expected."
+    },
+    {
+      "school_year": "2025-2026",
+      "course_role": "historical_homeroom_newsletter_course",
+      "subject": "Homeroom",
+      "course_id": 22254,
+      "canonical_prefixes": ["Newsletter"],
+      "notes": "Historical Homeroom newsletter/reminder course."
+    },
+    {
+      "school_year": "2024-2025",
+      "course_role": "historical_academic_course",
+      "subject": "Math",
+      "course_id": 19428,
+      "canonical_prefixes": ["SM5"],
+      "notes": "Saxon Math 5"
+    },
+    {
+      "school_year": "2024-2025",
+      "course_role": "historical_academic_course",
+      "subject": "Reading",
+      "course_id": 19419,
+      "canonical_prefixes": ["RM4", "SPELL"],
+      "notes": "Reading Mastery 4 and Spelling share the same Canvas course."
+    },
+    {
+      "school_year": "2024-2025",
+      "course_role": "historical_academic_course",
+      "subject": "Language Arts",
+      "course_id": 19426,
+      "canonical_prefixes": ["ELA4"],
+      "notes": "Shurley English"
+    },
+    {
+      "school_year": "2024-2025",
+      "course_role": "historical_academic_course",
+      "subject": "History A",
+      "course_id": 19422,
+      "canonical_prefixes": ["N/A"],
+      "notes": "One of two historical History courses."
+    },
+    {
+      "school_year": "2024-2025",
+      "course_role": "historical_academic_course",
+      "subject": "History B",
+      "course_id": 19423,
+      "canonical_prefixes": ["N/A"],
+      "notes": "Second historical History course."
+    },
+    {
+      "school_year": "2024-2025",
+      "course_role": "historical_homeroom_newsletter_course",
+      "subject": "Homeroom",
+      "course_id": 19424,
+      "canonical_prefixes": ["Newsletter"],
+      "notes": "Historical Homeroom newsletter/reminder course."
+    }
+  ],
+  "future_fetch_scope": {
+    "allowed_metadata_categories": [
+      "course_metadata",
+      "folders_metadata",
+      "files_metadata",
+      "modules_metadata",
+      "module_items_metadata",
+      "pages_metadata",
+      "announcements_metadata",
+      "assignments_metadata_for_relationship_mapping"
+    ],
+    "blocked_data_classes": [
+      "student_data",
+      "users",
+      "enrollments",
+      "rosters",
+      "submissions",
+      "grades",
+      "analytics",
+      "attendance",
+      "conversations",
+      "discussion_entries",
+      "quiz_responses",
+      "file_downloads",
+      "file_contents",
+      "page_bodies",
+      "announcement_bodies",
+      "assignment_bodies",
+      "canvas_writes",
+      "renames",
+      "moves",
+      "deletes",
+      "uploads",
+      "publish_changes"
+    ]
+  }
+}

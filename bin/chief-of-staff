@@ -49,6 +49,7 @@ Core Dashboard and Health:
 Return to Core / Roadmap:
   --return-to-core-status              Show read-only paused-tracks / return-to-core status proof and exit.
   --master-plan-status                 Show durable master plan persistence status proof and exit.
+  --antigravity-evaluation-status       Show Antigravity 2.0 candidate/sandbox-only policy status and exit.
 
 Chief of Staff v1 Operating (read-only):
   --commands                           Show deterministic command surface index and exit.
@@ -1468,6 +1469,15 @@ while [[ $# -gt 0 ]]; do
         die "Master plan status script is missing: scripts/master-plan-status.sh"
       fi
       bash "${master_plan_status_script}"
+      exit 0
+      ;;
+    --antigravity-evaluation-status)
+      repo_root="$(resolve_repo_root)"
+      antigravity_status_script="${repo_root}/scripts/antigravity-evaluation-status.sh"
+      if [[ ! -f "${antigravity_status_script}" ]]; then
+        die "Antigravity evaluation status script is missing: scripts/antigravity-evaluation-status.sh"
+      fi
+      bash "${antigravity_status_script}"
       exit 0
       ;;
     --lesson-brief-status)

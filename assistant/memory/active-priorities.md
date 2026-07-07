@@ -4,6 +4,7 @@
 
 ### Recently Completed (workflow polish)
 
+- Antigravity 2.0 toolchain evaluation policy: complete
 - Canvas LLM Phase 1 fake/local validator: complete
 - Canvas LLM Phase 0 standards foundation: complete
 - Master plan reality audit and build-state checklist hardening: complete

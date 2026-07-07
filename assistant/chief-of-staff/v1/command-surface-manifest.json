@@ -25,6 +25,7 @@
         {"flag": "--gemini-discovery-classification-intake-status", "status": "implemented", "purpose": "Gemini discovery/classification external planning intake (classification only; no runtime)"},
         {"flag": "--return-to-core-status", "status": "implemented", "purpose": "Parked tracks and return-to-core map"},
         {"flag": "--master-plan-status", "status": "implemented", "purpose": "Durable master plan persistence and program roadmap consolidation status proof (read-only)"},
+        {"flag": "--antigravity-evaluation-status", "status": "implemented", "purpose": "Antigravity 2.0 candidate/sandbox-only policy status proof (read-only; no install or execution)"},
         {"flag": "--chief-of-staff-v1-status", "status": "implemented", "purpose": "Chief of Staff v1 Agent Core foundation status"},
         {"flag": "--chief-of-staff-command-index-v1-status", "status": "implemented", "purpose": "Command index v1 status proof"},
         {"flag": "--teacher-workstation-foundation-status", "status": "implemented", "purpose": "Phase 3 foundation orchestration status"},

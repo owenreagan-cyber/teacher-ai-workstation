@@ -4,6 +4,7 @@
 
 ### Recently Completed (workflow polish)
 
+- Master plan persistence and program roadmap consolidation: complete
 - Review notes workflow polish: complete
 - Lesson review workflow polish: complete
 - Teacher planning command organization: complete

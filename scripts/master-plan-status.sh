@@ -106,6 +106,7 @@ check_doc_contains docs/master-plan/build-state-checklist.md "UNKNOWN / NEEDS RE
 check_doc_contains docs/master-plan/build-state-checklist.md "Chief of Staff | **PARTIAL**" "Chief of Staff reality status"
 check_doc_contains docs/master-plan/build-state-checklist.md "Teacher Knowledge Vault / Curriculum Library | **PARTIAL**" "Teacher Knowledge Vault reality status"
 check_doc_contains docs/master-plan/build-state-checklist.md "Canvas LLM | **DOCS-ONLY**" "Canvas LLM reality status"
+check_doc_contains docs/master-plan/build-state-checklist.md "Canvas LLM Phase 0 standards foundation" "Canvas LLM Phase 0 reality note"
 check_doc_contains docs/master-plan/build-state-checklist.md "Canvas self-healing | **PLANNED**" "Canvas self-healing reality status"
 check_doc_contains docs/master-plan/build-state-checklist.md "Lesson Builder / Lesson Planning | **PARTIAL**" "Lesson Builder reality status"
 check_doc_contains docs/master-plan/build-state-checklist.md "Medical Center / System Health | **PARTIAL**" "Medical Center reality status"
@@ -135,8 +136,10 @@ check_help_contains "--master-plan-status"
 check_doc_contains assistant/chief-of-staff/v1/command-surface-manifest.json '"--master-plan-status"' "manifest master plan status command"
 check_doc_contains docs/build-queue.md "master_plan_persistence_status_complete" "build queue master plan closure"
 check_doc_contains docs/build-queue.md "master_plan_reality_audit_build_state_complete" "build queue reality audit closure"
+check_doc_contains docs/build-queue.md "canvas_llm_phase_0_standards_foundation_complete" "build queue Canvas Phase 0 closure"
 check_doc_contains assistant/memory/active-priorities.md "Master plan persistence and program roadmap consolidation: complete" "active priorities master plan closure"
 check_doc_contains assistant/memory/active-priorities.md "Master plan reality audit and build-state checklist hardening: complete" "active priorities reality audit closure"
+check_doc_contains assistant/memory/active-priorities.md "Canvas LLM Phase 0 standards foundation: complete" "active priorities Canvas Phase 0 closure"
 
 section 'Summary'
 printf 'PASS: %s\n' "${PASS_COUNT}"; printf 'WARN: %s\n' "${WARN_COUNT}"; printf 'FAIL: %s\n' "${FAIL_COUNT}"

@@ -8,6 +8,8 @@ Live Canvas access: blocked
 
 Purpose: prepare Canvas LLM to understand Canvas standards before any generation, export, or deployment work.
 
+Phase 0 scaffold: `docs/programs/canvas-llm/THALES_CANVAS_STANDARD.md`, `canvas-evidence-schema.md`, `canvas-safe-data-boundaries.md`, and `canvas-report-templates.md`.
+
 Allowed:
 
 - local documentation notes.

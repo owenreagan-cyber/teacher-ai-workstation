@@ -15,6 +15,7 @@ Current focus is master-plan reality audit, local-first curriculum/library coher
 - Keep Teacher Knowledge Vault and Curriculum Library local-first and metadata/reference-based.
 - Keep Chief of Staff as the status, readiness, approval, and safety layer.
 - Keep validation credit-conserving: targeted checks first, broader validation only when repo convention requires it.
+- Maintain Canvas LLM Phase 0 as standards/evidence/report/fake-local scaffolding only.
 
 ## Parked Or Blocked
 

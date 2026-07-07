@@ -231,6 +231,7 @@
       "id": "program_canvas",
       "name": "Program Status — Canvas",
       "commands": [
+        {"flag": "--canvas-llm-phase-0-status", "status": "implemented", "purpose": "Canvas LLM Phase 0 standards foundation status (docs/status/fake-local only)"},
         {"flag": "--teacher-app-designer-canvas-llm-status", "status": "implemented", "purpose": "Canvas LLM frozen foundation status"},
         {"flag": "--canvas-restart-status", "status": "blocked", "purpose": "Canvas restart blocked by stop marker"}
       ]

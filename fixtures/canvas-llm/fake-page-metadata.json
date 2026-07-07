@@ -1,0 +1,14 @@
+{
+  "fixture_status": "fake_local_only",
+  "runtime_activation": false,
+  "canvas_api": "blocked",
+  "student_data": "blocked",
+  "evidence_id": "fake-canvas-page-001",
+  "source_type": "fake_page",
+  "authority_level": "fake_local_example",
+  "canvas_area": "page",
+  "claim": "A Canvas page should use clear headings and teacher-reviewed links.",
+  "evidence_summary": "Invented page metadata for Phase 0 standards scaffolding.",
+  "review_status": "draft",
+  "safe_next_step": "Use as fake fixture only."
+}

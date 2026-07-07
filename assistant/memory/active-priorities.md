@@ -4,6 +4,7 @@
 
 ### Recently Completed (workflow polish)
 
+- Canvas LLM Phase 11 sandbox metadata import preview gate: complete
 - Canvas LLM Phase 10 sandbox metadata review/import gate: complete
 - Canvas LLM Phase 9B sandbox API metadata fetch execution: complete
 - Canvas LLM Phase 9A sandbox metadata fetch scaffold: complete

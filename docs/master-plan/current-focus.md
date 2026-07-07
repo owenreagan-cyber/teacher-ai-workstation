@@ -19,6 +19,7 @@ Current focus is master-plan reality audit, local-first curriculum/library coher
 - Maintain Canvas LLM Phase 1 as fixed-path fake/local fixture validation only.
 - Maintain Canvas LLM Phase 2 as manual/exported redacted evidence intake boundaries only.
 - Maintain Canvas LLM Phase 3 as manual/redacted packet normalization only for explicit fake/local fixtures.
+- Maintain Canvas LLM Phase 11 as a course-24399-only preview-only metadata import gate with import/database writes blocked.
 - Maintain Canvas LLM Phase 10 as a course-24399-only local ignored metadata review/import gate with import blocked.
 - Maintain Canvas LLM Phase 9B as a course-24399-only read-only metadata fetch execution with local ignored staging only.
 - Maintain Canvas LLM Phase 9A as a dry-run sandbox metadata fetch scaffold only with no live fetch implemented.

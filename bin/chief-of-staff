@@ -307,6 +307,7 @@ Teacher Planning Command Organization (status only; safe sample: fractions-revie
   --canvas-llm-phase-13-status         Show Canvas LLM Phase 13 historical academic and Homeroom fetch approval gate status and exit.
   --canvas-llm-phase-14a-status        Show Canvas LLM Phase 14A approved course manifest status and exit.
   --canvas-llm-phase-14b-status        Show Canvas LLM Phase 14B read-only approved course metadata fetch status and exit.
+  --canvas-llm-phase-15-status         Show Canvas LLM Phase 15 readiness and relationship report status and exit.
 
 Developer and Cursor Workflow:
   --cursor-workflow-status             Show local Cursor workflow status and exit.
@@ -2627,6 +2628,16 @@ while [[ $# -gt 0 ]]; do
       fi
       exec "${canvas_llm_phase_14b_status_script}" "$@"
       ;;
+    --canvas-llm-phase-15-status)
+      shift
+      canvas_llm_phase_15_repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd -P)"
+      canvas_llm_phase_15_status_script="${canvas_llm_phase_15_repo_root}/scripts/canvas-llm-phase-15-status.sh"
+      if [[ ! -x "${canvas_llm_phase_15_status_script}" ]]; then
+        die "Canvas LLM Phase 15 status script is missing: scripts/canvas-llm-phase-15-status.sh"
+      fi
+      exec "${canvas_llm_phase_15_status_script}" "$@"
+      ;;
+
     --teacher-planning-command-detail-status)
       repo_root="$(resolve_repo_root)"
       teacher_planning_command_detail_status_script="${repo_root}/scripts/teacher-planning-command-detail-status.sh"

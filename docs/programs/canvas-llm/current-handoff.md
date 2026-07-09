@@ -2,7 +2,7 @@
 
 ## Current Phase
 
-Phase 19F — Title Cleaner Deterministic Prototype Preview
+Phase 19G-I — Review Packet, Medical Center Diagnostics, and Minimum Write Gate Design
 
 ## Current Production State
 
@@ -15,59 +15,41 @@ Latest merged PR: #305 — Add Canvas LLM Phase 19E title cleaner validator
 
 ## Current Work
 
-Create a preview-only deterministic prototype for title cleaning using the committed Phase 19D fixtures and rules.
-
-Current Phase 19F directory:
+Complete the remaining Phase 19 preview chain in one bundled phase:
 
 ```text
-docs/programs/canvas-llm/phase-19f-title-cleaner-deterministic-prototype-preview/
+Phase 19G — Title Cleaner Review Packet Preview
+Phase 19H — Medical Center Diagnostic Expansion Preview
+Phase 19I — Minimum Write Gate Design Packet
 ```
 
-Current Phase 19F outputs:
+Current Phase 19G-I directories:
 
 ```text
-README.md
-title-cleaner-deterministic-prototype-spec.md
-title-cleaner-deterministic-prototype-report.md
-preview-only-boundary.md
-phase-19f-next-step-recommendation.md
-scripts/canvas-llm-phase-19f-title-cleaner-deterministic-prototype-preview.py
-scripts/canvas-llm-phase-19f-title-cleaner-deterministic-prototype-preview-status.sh
+docs/programs/canvas-llm/phase-19g-title-cleaner-review-packet-preview/
+docs/programs/canvas-llm/phase-19h-medical-center-diagnostic-expansion-preview/
+docs/programs/canvas-llm/phase-19i-minimum-write-gate-design-packet/
+```
+
+Current Phase 19G-I status command:
+
+```text
+bin/chief-of-staff --canvas-llm-phase-19g-19i-completion-status
 ```
 
 ## Current Recommendation
 
-Do not implement Canvas LLM Center yet.
+Phase 19 should close with Canvas writes still blocked.
 
-After Phase 19F, the next safe phase should be preview-only:
-
-```text
-Phase 19G — Title Cleaner Review Packet Preview
-```
-
-Alternative:
+Recommended next phase:
 
 ```text
-Phase 19G — Medical Center Diagnostic Spec Expansion
+Phase 20 — Canvas LLM Minimum Write Gate Approval Packet
 ```
+
+Phase 20 should begin preview-only and may only prepare an approval packet for one possible Canvas write.
 
 No Canvas writes are approved.
-
-### Phase 19E Title Cleaner Validator Historical Baseline
-
-```text
-Phase 19F — Title Cleaner Deterministic Prototype Preview
-PR #305 — Add Canvas LLM Phase 19E title cleaner validator
-Commit: 375b649
-```
-
-Phase 19E validator directory:
-
-```text
-docs/programs/canvas-llm/phase-19e-title-cleaner-validator-preview/
-```
-
-This historical marker is preserved for Phase 19E regression status continuity.
 
 ## Historical Baselines Required For Regression Status
 
@@ -143,6 +125,20 @@ Phase 19E validator directory:
 docs/programs/canvas-llm/phase-19e-title-cleaner-validator-preview/
 ```
 
+### Phase 19F Title Cleaner Prototype Historical Baseline
+
+```text
+Phase 19F — Title Cleaner Deterministic Prototype Preview
+PR #306 — Add Canvas LLM Phase 19F title cleaner prototype
+Commit: 004aa88
+```
+
+Phase 19F prototype directory:
+
+```text
+docs/programs/canvas-llm/phase-19f-title-cleaner-deterministic-prototype-preview/
+```
+
 ### Handoff Regression Rule
 
 ```text
@@ -157,7 +153,7 @@ Preserve historical handoff breadcrumbs required by prior phase status scripts.
 Phase 19B — Canonical Rule Constitution
 ```
 
-This preserves the earlier Phase 19A recommendation marker while Phase 19F remains the current active phase.
+This preserves the earlier Phase 19A recommendation marker while Phase 19G-I remains the current active phase.
 
 ## Boundaries
 

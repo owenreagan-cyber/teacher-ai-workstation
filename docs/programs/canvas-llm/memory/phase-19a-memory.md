@@ -925,3 +925,86 @@ Phase 19F does not authorize:
 - RAG
 - embeddings
 - local model/Ollama execution
+
+
+---
+
+## Phase 19G-I Completion Update
+
+A bundled Phase 19G-I branch was created:
+
+```text
+canvas-llm-phase-19g-19i-title-cleaner-review-medical-write-gate
+```
+
+Baseline main:
+
+```text
+004aa88 Merge pull request #306 from owenreagan-cyber/canvas-llm-phase-19f-title-cleaner-deterministic-prototype-preview
+```
+
+## Phase 19G
+
+Create a title-cleaner review packet preview.
+
+Directory:
+
+```text
+docs/programs/canvas-llm/phase-19g-title-cleaner-review-packet-preview/
+```
+
+## Phase 19H
+
+Create Medical Center title-cleaner diagnostic expansion preview.
+
+Directory:
+
+```text
+docs/programs/canvas-llm/phase-19h-medical-center-diagnostic-expansion-preview/
+```
+
+## Phase 19I
+
+Create minimum Canvas write gate design packet and close Phase 19.
+
+Directory:
+
+```text
+docs/programs/canvas-llm/phase-19i-minimum-write-gate-design-packet/
+```
+
+## Phase 19 Final Decision
+
+```text
+CANVAS_WRITES_REMAIN_BLOCKED
+```
+
+## Recommended Next Phase
+
+```text
+Phase 20 — Canvas LLM Minimum Write Gate Approval Packet
+```
+
+## Phase 19G-I Boundary
+
+Phase 19G-I does not authorize:
+
+- Canvas API calls
+- Canvas writes
+- live Canvas fetches
+- page creation
+- assignment creation
+- announcement creation
+- file movement
+- file upload
+- publishing
+- body ingestion
+- student data access
+- raw `.local` metadata reads or commits
+- school Canvas URL commits
+- token exposure
+- app behavior implementation
+- database creation
+- RAG
+- embeddings
+- local model/Ollama execution

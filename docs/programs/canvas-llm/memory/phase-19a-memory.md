@@ -583,3 +583,98 @@ If a prior status fails because a breadcrumb moved, restore the historical bread
 ```
 
 This rule is documentation/governance only and authorizes no Canvas/API/write/student-data behavior.
+
+
+---
+
+## Phase 19C Evidence Vault + Rule Catalog Schema Update
+
+A Phase 19C branch was created:
+
+```text
+canvas-llm-phase-19c-evidence-vault-rule-catalog-schema
+```
+
+Baseline main:
+
+```text
+f2d99a9 Merge pull request #302 from owenreagan-cyber/canvas-llm-phase-19b-canonical-rule-constitution
+```
+
+## Phase 19C Purpose
+
+Define preview-only Evidence Vault and Rule Catalog schemas before implementation.
+
+Phase 19C remains documentation/status only.
+
+## Phase 19C Schema Directory
+
+```text
+docs/programs/canvas-llm/phase-19c-evidence-vault-rule-catalog/
+```
+
+## Phase 19C Schema Specs Created
+
+```text
+evidence-vault-schema.md
+evidence-classification-schema.md
+rule-catalog-schema.md
+rule-review-workflow.md
+rule-source-linking-schema.md
+diagnostic-readiness-schema.md
+preview-only-boundary.md
+phase-19c-next-step-recommendation.md
+```
+
+## Phase 19C Decisions Captured
+
+Phase 19C formalizes:
+
+- Evidence Vault record schema
+- evidence classification lifecycle
+- Rule Catalog record schema
+- rule review workflow
+- rule source linking schema
+- diagnostic readiness levels
+- preview-only safety boundary
+- Phase 19D recommendation
+
+## Phase 19C Boundary
+
+Phase 19C does not authorize:
+
+- Canvas API calls
+- Canvas writes
+- live Canvas fetches
+- page creation
+- assignment creation
+- announcement creation
+- file movement
+- file upload
+- publishing
+- body ingestion
+- student data access
+- raw `.local` metadata commits
+- school Canvas URL commits
+- token exposure
+- app behavior implementation
+- refactors
+- migrations
+- database creation
+- RAG
+- embeddings
+- local model/Ollama execution
+
+## Updated Handoff Summary
+
+Start future chats with:
+
+```text
+Teacher AI Workstation / Canvas LLM Center is on Phase 19C.
+Production main is at least f2d99a9 after PR #302.
+Current Phase 19C branch is canvas-llm-phase-19c-evidence-vault-rule-catalog-schema.
+Use docs/programs/canvas-llm/current-handoff.md and docs/programs/canvas-llm/memory/phase-19a-memory.md as active source of truth.
+Preserve historical handoff breadcrumbs required by prior phase status scripts.
+Do not write to Canvas, call APIs, scan broadly, commit raw local metadata, or implement app behavior.
+Phase 19C schemas live in docs/programs/canvas-llm/phase-19c-evidence-vault-rule-catalog/.
+```

@@ -2,7 +2,7 @@
 
 ## Current Phase
 
-Phase 19G-I — Review Packet, Medical Center Diagnostics, and Minimum Write Gate Design
+Phase 20 — Demo Sandbox Write Gate Approval Packet
 
 ## Current Production State
 
@@ -15,41 +15,50 @@ Latest merged PR: #305 — Add Canvas LLM Phase 19E title cleaner validator
 
 ## Current Work
 
-Complete the remaining Phase 19 preview chain in one bundled phase:
+Prepare the Phase 20 demo sandbox write gate approval packet.
+
+Current Phase 20 directory:
 
 ```text
-Phase 19G — Title Cleaner Review Packet Preview
-Phase 19H — Medical Center Diagnostic Expansion Preview
-Phase 19I — Minimum Write Gate Design Packet
+docs/programs/canvas-llm/phase-20-demo-sandbox-write-gate-approval-packet/
 ```
 
-Current Phase 19G-I directories:
+Current Phase 20 status command:
 
 ```text
-docs/programs/canvas-llm/phase-19g-title-cleaner-review-packet-preview/
-docs/programs/canvas-llm/phase-19h-medical-center-diagnostic-expansion-preview/
-docs/programs/canvas-llm/phase-19i-minimum-write-gate-design-packet/
+bin/chief-of-staff --canvas-llm-phase-20-demo-sandbox-write-gate-approval-packet-status
 ```
 
-Current Phase 19G-I status command:
+Owner-designated demo sandbox:
 
 ```text
-bin/chief-of-staff --canvas-llm-phase-19g-19i-completion-status
+course_id: 24399
+classification: OWNER_DESIGNATED_DEMO_SANDBOX
+```
+
+Approved requested operation, recorded but not executed in Phase 20:
+
+```text
+create one unpublished Canvas page titled Math Automation Sandbox
 ```
 
 ## Current Recommendation
 
-Phase 19 should close with Canvas writes still blocked.
+Phase 20 prepares the approval packet but does not execute the write.
 
 Recommended next phase:
 
 ```text
-Phase 20 — Canvas LLM Minimum Write Gate Approval Packet
+Phase 21 — Execute One Approved Demo Sandbox Canvas Write
 ```
 
-Phase 20 should begin preview-only and may only prepare an approval packet for one possible Canvas write.
+Phase 21 must execute only the approved operation:
 
-No Canvas writes are approved.
+```text
+Create one unpublished Canvas page in course 24399 titled Math Automation Sandbox.
+```
+
+No Canvas write is executed in Phase 20.
 
 ## Historical Baselines Required For Regression Status
 
@@ -139,6 +148,22 @@ Phase 19F prototype directory:
 docs/programs/canvas-llm/phase-19f-title-cleaner-deterministic-prototype-preview/
 ```
 
+### Phase 19G-I Completion Historical Baseline
+
+```text
+Phase 19G-I — Review Packet, Medical Center Diagnostics, and Minimum Write Gate Design
+PR #307 — Complete Canvas LLM Phase 19 review and write gate design
+Commit: 42d4077
+```
+
+Phase 19G-I directories:
+
+```text
+docs/programs/canvas-llm/phase-19g-title-cleaner-review-packet-preview/
+docs/programs/canvas-llm/phase-19h-medical-center-diagnostic-expansion-preview/
+docs/programs/canvas-llm/phase-19i-minimum-write-gate-design-packet/
+```
+
 ### Handoff Regression Rule
 
 ```text
@@ -153,7 +178,15 @@ Preserve historical handoff breadcrumbs required by prior phase status scripts.
 Phase 19B — Canonical Rule Constitution
 ```
 
-This preserves the earlier Phase 19A recommendation marker while Phase 19G-I remains the current active phase.
+This preserves the earlier Phase 19A recommendation marker while Phase 20 remains the current active phase.
+
+### Phase 19G-I Forward Recommendation Breadcrumb
+
+```text
+Phase 20 — Canvas LLM Minimum Write Gate Approval Packet
+```
+
+This preserves the Phase 19 closure recommendation marker while Phase 20 uses the owner-designated demo sandbox approval packet.
 
 ## Boundaries
 

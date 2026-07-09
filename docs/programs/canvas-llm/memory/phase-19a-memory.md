@@ -1008,3 +1008,61 @@ Phase 19G-I does not authorize:
 - RAG
 - embeddings
 - local model/Ollama execution
+
+
+---
+
+## Phase 20 Demo Sandbox Write Gate Approval Packet Update
+
+A Phase 20 branch was created:
+
+```text
+canvas-llm-phase-20-demo-sandbox-write-gate-approval-packet
+```
+
+Baseline main:
+
+```text
+42d4077 Merge pull request #307 from owenreagan-cyber/canvas-llm-phase-19g-19i-title-cleaner-review-medical-write-gate
+```
+
+## Owner Correction
+
+Owen clarified that course `24399` is an owner-created demo sandbox course intended for safe Canvas automation testing.
+
+## Owner Safety Statement
+
+```text
+Course 24399 is a sandbox demo course.
+It has never had students.
+It has no grades.
+It has no personal information.
+It contains copied sample math data, pages, files, announcements, assignments, and modules for testing.
+It is safe for controlled edit, delete, write, and automation testing.
+```
+
+## Phase 20 Approval Phrase Recorded
+
+```text
+I APPROVE THIS ONE CANVAS WRITE FOR COURSE <24399>: create one unpublished test page titled <Math Automation Sandbox>
+```
+
+## Phase 20 Decision
+
+```text
+APPROVAL_PACKET_PREPARED_WRITE_NOT_EXECUTED
+```
+
+## Recommended Next Phase
+
+```text
+Phase 21 — Execute One Approved Demo Sandbox Canvas Write
+```
+
+Phase 21 may execute only:
+
+```text
+Create one unpublished Canvas page in course 24399 titled Math Automation Sandbox.
+```
+
+Phase 20 itself does not call Canvas APIs and does not write to Canvas.

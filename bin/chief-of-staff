@@ -318,6 +318,7 @@ Teacher Planning Command Organization (status only; safe sample: fractions-revie
   --canvas-llm-phase-19e-title-cleaner-validator-preview-status Show Canvas LLM Phase 19E title cleaner validator preview status and exit.
   --canvas-llm-phase-19f-title-cleaner-deterministic-prototype-preview-status Show Canvas LLM Phase 19F title cleaner deterministic prototype preview status and exit.
   --canvas-llm-phase-19g-19i-completion-status Show Canvas LLM Phase 19G-I completion status and exit.
+  --canvas-llm-phase-20-demo-sandbox-write-gate-approval-packet-status Show Canvas LLM Phase 20 demo sandbox write gate approval packet status and exit.
 
 Developer and Cursor Workflow:
   --cursor-workflow-status             Show local Cursor workflow status and exit.
@@ -2746,6 +2747,16 @@ while [[ $# -gt 0 ]]; do
         die "Canvas LLM Phase 19G-I completion status script is missing: scripts/canvas-llm-phase-19g-19i-completion-status.sh"
       fi
       exec "${canvas_llm_phase_19g_19i_completion_status_script}" "$@"
+      ;;
+
+    --canvas-llm-phase-20-demo-sandbox-write-gate-approval-packet-status)
+      shift
+      canvas_llm_phase_20_demo_sandbox_write_gate_approval_packet_repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd -P)"
+      canvas_llm_phase_20_demo_sandbox_write_gate_approval_packet_status_script="${canvas_llm_phase_20_demo_sandbox_write_gate_approval_packet_repo_root}/scripts/canvas-llm-phase-20-demo-sandbox-write-gate-approval-packet-status.sh"
+      if [[ ! -x "${canvas_llm_phase_20_demo_sandbox_write_gate_approval_packet_status_script}" ]]; then
+        die "Canvas LLM Phase 20 demo sandbox write gate approval packet status script is missing: scripts/canvas-llm-phase-20-demo-sandbox-write-gate-approval-packet-status.sh"
+      fi
+      exec "${canvas_llm_phase_20_demo_sandbox_write_gate_approval_packet_status_script}" "$@"
       ;;
 
     --teacher-planning-command-detail-status)

@@ -2,21 +2,21 @@
 
 ## Current Phase
 
-Phase 19B — Canonical Rule Constitution
+Phase 19C — Evidence Vault + Rule Catalog Schema
 
 ## Current Production State
 
 ```text
 Repo: ~/Projects/teacher-ai-workstation
 Branch: main
-Commit: f61dae2
-Latest merged PR: #301 — Add Canvas LLM Phase 19A archaeology report
+Commit: f2d99a9
+Latest merged PR: #302 — Add Canvas LLM Phase 19B canonical rules
 ```
 
 ## Current Working Branch
 
 ```text
-canvas-llm-phase-19b-canonical-rule-constitution
+canvas-llm-phase-19c-evidence-vault-rule-catalog-schema
 ```
 
 ## Handoff Regression Rule
@@ -46,8 +46,8 @@ docs/programs/canvas-llm/memory/phase-19a-memory.md
 ## Latest Completed Phase
 
 ```text
-Phase 19A — Legacy Intelligence Extraction / Archaeology Report
-PR #301
+Phase 19B — Canonical Rule Constitution
+PR #302
 Status: merged
 ```
 
@@ -62,44 +62,76 @@ Commit: 5af1ecd
 
 This historical marker is preserved for Phase 19A regression status continuity.
 
+## Phase 19A Archaeology Historical Baseline
 
-## Current Work
+Phase 19A archaeology report used this merged PR baseline:
 
-Convert owner-approved Phase 19A archaeology decisions into canonical rule tables before any implementation.
+```text
+PR #301 — Add Canvas LLM Phase 19A archaeology report
+Commit: f61dae2
+```
 
-Current rule directory:
+This historical marker is preserved for Phase 19B regression status continuity.
+
+## Phase 19B Rule Directory Historical Breadcrumb
+
+Phase 19B canonical rules directory:
 
 ```text
 docs/programs/canvas-llm/phase-19b-canonical-rules/
 ```
 
-Current canonical rule specs:
+This historical marker is preserved for Phase 19B regression status continuity.
+
+## Phase 19B Historical Baseline
+
+Phase 19B canonical rules used this baseline:
 
 ```text
-canonical-rule-constitution.md
-canonical-subject-prefixes.md
-canonical-assignment-title-rules.md
-canonical-study-guide-grading.md
-canonical-reading-spelling-together.md
-canonical-friday-rules.md
-canonical-newsletter-rules.md
-canonical-file-management-policy.md
-canonical-source-authority-policy.md
-canonical-medical-center-diagnostics.md
-canonical-write-gate-policy.md
+PR #302 — Add Canvas LLM Phase 19B canonical rules
+Commit: f2d99a9
+```
+
+This historical marker is preserved for Phase 19B regression status continuity.
+
+
+## Current Work
+
+Define preview-only Evidence Vault and Rule Catalog schemas before implementation.
+
+Current schema directory:
+
+```text
+docs/programs/canvas-llm/phase-19c-evidence-vault-rule-catalog/
+```
+
+Current Phase 19C schema specs:
+
+```text
+evidence-vault-schema.md
+evidence-classification-schema.md
+rule-catalog-schema.md
+rule-review-workflow.md
+rule-source-linking-schema.md
+diagnostic-readiness-schema.md
+preview-only-boundary.md
+phase-19c-next-step-recommendation.md
 ```
 
 ## Current Recommendation
 
 Do not implement Canvas LLM Center yet.
 
-After Phase 19B, the next safe phase should be a preview-only planning phase for one of:
+After Phase 19C, the next safe phase should be preview-only:
 
 ```text
-Evidence Vault table specs
-Rule Catalog machine-readable schema
-Medical Center diagnostic spec expansion
-Minimum write gate design packet
+Phase 19D — Machine-Readable Seed Rule Catalog Preview
+```
+
+Alternative:
+
+```text
+Phase 19D — Medical Center Diagnostic Spec Expansion
 ```
 
 No Canvas writes are approved.

@@ -362,3 +362,101 @@ Phase 19A is analysis only.
 Do not write to Canvas, call APIs, scan folders broadly, or commit raw local metadata.
 Use docs/programs/canvas-llm/memory/phase-19a-memory.md as the active source of truth.
 ```
+
+---
+
+## Phase 19A Archaeology Report Update
+
+A Phase 19A archaeology branch was created:
+
+```text
+canvas-llm-phase-19a-legacy-archaeology-report
+```
+
+Baseline main:
+
+```text
+5af1ecd Merge pull request #300 from owenreagan-cyber/canvas-llm-phase-19a-memory-foundation
+```
+
+## Verified Source Availability Update
+
+Available legacy sources:
+
+```text
+~/Projects/Thalescanvasgemini
+main @ b75ce84
+
+~/Projects/pacing-sync-pilot-8c50be47
+main @ ea6ecbc
+```
+
+Missing or unavailable source:
+
+```text
+~/Projects/pacing-sync-pilot
+```
+
+Decision:
+
+```text
+Treat ~/Projects/pacing-sync-pilot as unavailable evidence for Phase 19A unless Owen provides a checkout or archive.
+Use pacing-sync-pilot-8c50be47 as the available pacing-sync evidence source.
+```
+
+## Phase 19A Archaeology Reports Created
+
+Current report directory:
+
+```text
+docs/programs/canvas-llm/phase-19a-archaeology/
+```
+
+Reports:
+
+```text
+source-availability.md
+owner-canonical-decisions.md
+legacy-feature-survival-matrix.md
+business-rules-catalog.md
+legacy-risks.md
+unanswered-questions.md
+future-architecture-recommendation.md
+```
+
+## Verified Findings Added
+
+The Phase 19A archaeology reports capture:
+
+- source availability and missing evidence
+- owner-approved canonical decisions
+- legacy feature survival recommendations
+- business rules separated by authority level
+- legacy risk register
+- unanswered decision queue
+- future architecture recommendation
+
+## Updated Recommendation
+
+Do not implement Canvas LLM Center yet.
+
+Next phase:
+
+```text
+Phase 19B — Canonical Rule Constitution
+```
+
+Phase 19B should convert approved decisions into canonical rule tables before any generator, preview builder, Medical Center, or write adapter implementation.
+
+## Updated Handoff Summary
+
+Start future chats with:
+
+```text
+Teacher AI Workstation / Canvas LLM Center is on Phase 19A.
+Production main is at least 5af1ecd after PR #300.
+Current Phase 19A archaeology branch is canvas-llm-phase-19a-legacy-archaeology-report.
+Use docs/programs/canvas-llm/current-handoff.md and docs/programs/canvas-llm/memory/phase-19a-memory.md as active source of truth.
+Do not write to Canvas, call APIs, scan broadly, commit raw local metadata, or implement app behavior.
+Next recommended phase is Phase 19B — Canonical Rule Constitution.
+```

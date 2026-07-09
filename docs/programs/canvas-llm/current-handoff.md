@@ -2,15 +2,21 @@
 
 ## Current Phase
 
-Phase 19A — Legacy Intelligence Extraction / Memory Foundation
+Phase 19A — Legacy Intelligence Extraction / Archaeology Report
 
 ## Current Production State
 
 ```text
 Repo: ~/Projects/teacher-ai-workstation
 Branch: main
-Commit: 154b47a
-Latest merged PR: #299 — Add Canvas LLM Phase 18 write gate readiness review
+Commit: 5af1ecd
+Latest merged PR: #300 — Add Canvas LLM phase memory foundation
+```
+
+## Current Working Branch
+
+```text
+canvas-llm-phase-19a-legacy-archaeology-report
 ```
 
 ## Current Rule
@@ -32,19 +38,65 @@ Phase 18 — Canvas Setup Write Gate Readiness Review
 Decision: NEEDS_ONE_MORE_PREVIEW_REFINEMENT
 ```
 
+## Latest Continuity PR
+
+```text
+PR #300 — Add Canvas LLM phase memory foundation
+```
+
 ## Current Work
 
-Create a durable Phase 19A memory foundation, then continue verified legacy archaeology.
+Create Phase 19A archaeology reports from verified evidence.
 
-## Next Recommended Action
+Current report directory:
 
-Inspect the remaining legacy repository:
+```text
+docs/programs/canvas-llm/phase-19a-archaeology/
+```
+
+Current reports:
+
+```text
+source-availability.md
+owner-canonical-decisions.md
+legacy-feature-survival-matrix.md
+business-rules-catalog.md
+legacy-risks.md
+unanswered-questions.md
+future-architecture-recommendation.md
+```
+
+## Verified Source Availability
+
+Available:
+
+```text
+~/Projects/Thalescanvasgemini
+main @ b75ce84
+
+~/Projects/pacing-sync-pilot-8c50be47
+main @ ea6ecbc
+```
+
+Unavailable:
 
 ```text
 ~/Projects/pacing-sync-pilot
 ```
 
-Then build the Phase 19A archaeology report from verified evidence only.
+Treat the missing repo as an evidence gap, not a blocker.
+
+## Current Recommendation
+
+Do not implement Canvas LLM Center yet.
+
+Next phase should be:
+
+```text
+Phase 19B — Canonical Rule Constitution
+```
+
+Phase 19B should convert owner-approved archaeology decisions into durable canonical rule tables before code implementation.
 
 ## Boundaries
 
@@ -59,3 +111,5 @@ Do not:
 - expose tokens
 - access student data
 - enable generation or automation
+- implement app behavior
+- refactor legacy code

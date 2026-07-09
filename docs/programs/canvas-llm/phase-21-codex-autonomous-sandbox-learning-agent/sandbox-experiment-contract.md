@@ -26,6 +26,12 @@ Every artifact must be recorded in:
 
 The ledger must include course ID, artifact type, title, ID or slug, creation timestamp, and cleanup status.
 
+## Announcements
+
+Sandbox announcements must be temporary, clearly labeled, and deleted during cleanup.
+
+Do not send student-facing notifications. Do not publish announcements unless a later explicit approval names that exact behavior.
+
 ## Cleanup
 
 Cleanup is attempted for temporary artifacts. Cleanup failures are `WARN` or `BLOCKED`, never silent success.

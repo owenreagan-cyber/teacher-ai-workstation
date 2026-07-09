@@ -4,6 +4,8 @@
 
 Phase 22 should run a human-approved read-only inventory against sandbox course `24399` and reference courses `21944`, `21957`, and `21919`, then review the sanitized `findings.json`, `questions.json`, and `next-actions.json`.
 
+The approved runtime target is `https://thalesacademy.instructure.com`. The token must be supplied locally only and must never be printed or committed.
+
 ## Do Not Start With Writes
 
 The next phase should first validate that the inventory answers:
@@ -18,3 +20,5 @@ The next phase should first validate that the inventory answers:
 ## Optional Later Step
 
 After read-only findings are reviewed, Owen may approve a single experiment-mode run in course `24399` to create, publish/unpublish, delete, and ledger temporary artifacts.
+
+Announcement notification behavior remains blocked unless a later explicit approval names that exact action.

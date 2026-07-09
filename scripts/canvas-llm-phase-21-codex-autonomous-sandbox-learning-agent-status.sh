@@ -6,6 +6,7 @@ PHASE_DIR="${ROOT_DIR}/docs/programs/canvas-llm/phase-21-codex-autonomous-sandbo
 AGENT="${ROOT_DIR}/scripts/canvas-llm/canvas_learning_agent.py"
 SAFETY="${ROOT_DIR}/scripts/canvas-llm/canvas_safety.py"
 SANITIZER="${ROOT_DIR}/scripts/canvas-llm/canvas_sanitizer.py"
+CHIEF="${ROOT_DIR}/bin/chief-of-staff"
 
 PASS_COUNT=0
 WARN_COUNT=0
@@ -58,6 +59,16 @@ check_contains() {
   fi
 }
 
+check_command() {
+  local label="$1"
+  shift
+  if "$@" >/dev/null 2>&1; then
+    emit PASS "${label}"
+  else
+    emit FAIL "${label}"
+  fi
+}
+
 echo "Canvas LLM Phase 21 Codex Autonomous Sandbox Learning Agent Status"
 echo "------------------------------------------------------------------"
 
@@ -76,11 +87,13 @@ check_executable "${AGENT}" "agent script"
 check_file "${ROOT_DIR}/scripts/canvas-llm/canvas_api_client.py" "Canvas API client"
 check_file "${SAFETY}" "Canvas safety module"
 check_file "${SANITIZER}" "Canvas sanitizer module"
+check_file "${CHIEF}" "Chief of Staff CLI"
 
 check_contains "${PHASE_DIR}/reference-course-map.md" "21944" "reference course map includes 21944"
 check_contains "${PHASE_DIR}/reference-course-map.md" "21957" "reference course map includes 21957"
 check_contains "${PHASE_DIR}/reference-course-map.md" "21919" "reference course map includes 21919"
 check_contains "${PHASE_DIR}/sandbox-permission-map.md" "24399" "sandbox map includes 24399"
+check_contains "${PHASE_DIR}/README.md" "https://thalesacademy.instructure.com" "Canvas base domain is documented as approved runtime target"
 check_contains "${PHASE_DIR}/production-weekly-page-doctrine.md" "preloaded" "production doctrine says real weekly pages are preloaded"
 check_contains "${PHASE_DIR}/production-weekly-page-doctrine.md" "updated, not created" "production doctrine says pages are updated, not created"
 check_contains "${PHASE_DIR}/autonomous-learning-loop.md" "questions.json" "learning loop writes questions.json"
@@ -93,18 +106,29 @@ check_contains "${SAFETY}" "BLOCKED_ENDPOINT_MARKERS" "blocked endpoint markers 
 check_contains "${SAFETY}" "grades" "grades are blocked"
 check_contains "${SAFETY}" "users" "users/people are blocked"
 check_contains "${SAFETY}" "settings" "settings are blocked"
-check_contains "${AGENT}" "choices=[\"inventory\", \"questions\", \"experiment\", \"existing-page-dry-run\", \"cleanup\"]" "agent supports all required modes"
+check_contains "${SAFETY}" "submissions" "submissions are blocked"
+check_contains "${SAFETY}" "gradebook" "gradebook is blocked"
+check_contains "${SAFETY}" "analytics" "analytics are blocked"
+check_contains "${SAFETY}" "student" "student data markers are blocked"
+check_contains "${SAFETY}" "require_announcement_notifications_blocked" "agent blocks announcement notification behavior unless approved"
+check_contains "${SAFETY}" "external" "external Thales Website mutation markers are blocked"
+check_contains "${AGENT}" "choices=[\"inventory\", \"reference-inventory\", \"questions\", \"experiment\", \"existing-page-dry-run\", \"cleanup\"]" "agent supports inventory/questions/experiment/existing-page-dry-run/cleanup/reference-inventory"
+check_contains "${AGENT}" "reference_course_ids" "agent has reference-inventory course selector"
+check_contains "${AGENT}" "result = run_inventory(client, reference_course_ids(), \"reference-inventory\")" "reference-inventory does not include sandbox course 24399"
 check_contains "${AGENT}" "default=\"inventory\"" "agent default mode is inventory"
 check_contains "${AGENT}" "CANVAS_BASE_URL" "agent requires CANVAS_BASE_URL"
 check_contains "${AGENT}" "CANVAS_TOKEN" "agent requires CANVAS_TOKEN"
 check_contains "${AGENT}" "BLOCKED: --mode experiment/cleanup requires --allow-writes" "experiment/cleanup require allow-writes"
 check_contains "${AGENT}" ".local/canvas-llm/sandbox-learning-runs/phase-21" "agent writes raw output under .local"
 check_contains "${AGENT}" "artifact-ledger.json" "agent has artifact ledger"
+check_contains "${AGENT}" "elif args.mode == \"cleanup\"" "agent has cleanup mode"
 check_contains "${SANITIZER}" "TOKEN_REMOVED" "sanitizer removes token-like strings"
 check_contains "${SANITIZER}" "URL_REMOVED" "sanitizer removes URLs"
 check_contains "${SANITIZER}" "EMAIL_REMOVED" "sanitizer removes emails"
+check_contains "${SANITIZER}" "SENSITIVE_METADATA_REMOVED" "sanitizer removes account/user/enrollment/student metadata"
+check_contains "${CHIEF}" "--canvas-llm-phase-21-codex-autonomous-sandbox-learning-agent-status" "Chief of Staff flag is wired"
 
-if grep -R "CANVAS_TOKEN=.*" "${PHASE_DIR}" "${ROOT_DIR}/scripts/canvas-llm" 2>/dev/null | grep -v "CANVAS_TOKEN are required" >/dev/null; then
+if grep -R "CANVAS_TOKEN=.*" "${PHASE_DIR}" "${ROOT_DIR}/scripts/canvas-llm" 2>/dev/null | grep -v "CANVAS_TOKEN are required" | grep -v "CANVAS_TOKEN=\"<set locally only; never paste into chat>\"" >/dev/null; then
   emit FAIL "committed files appear to contain a CANVAS_TOKEN assignment"
 else
   emit PASS "committed files do not contain a CANVAS_TOKEN assignment"
@@ -115,6 +139,10 @@ if git -C "${ROOT_DIR}" ls-files ".local/*" | grep -q .; then
 else
   emit PASS ".local output is not tracked by git"
 fi
+
+check_command "bin/chief-of-staff syntax check passes" bash -n "${CHIEF}"
+check_command "Phase 21 status script syntax check passes" bash -n "${BASH_SOURCE[0]}"
+check_command "Phase 21 Python syntax checks pass" env PYTHONPYCACHEPREFIX="/tmp/teacher-ai-phase-21-status-pycache" python3 -m py_compile "${AGENT}" "${ROOT_DIR}/scripts/canvas-llm/canvas_api_client.py" "${SAFETY}" "${SANITIZER}"
 
 echo
 echo "Safety Boundary"

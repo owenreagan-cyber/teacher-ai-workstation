@@ -1,0 +1,256 @@
+{
+  "schema_version": "phase-19d-preview",
+  "phase": "19D",
+  "status": "preview_only",
+  "normalizer_name": "canonical_title_cleaner_preview",
+  "global_behavior": {
+    "action": "preview_only",
+    "never_silently_mutate_canvas": true,
+    "ambiguous_input_requires_review": true,
+    "preserve_detected_number": true,
+    "allowed_confidence": ["high", "medium", "needs_review"],
+    "blocked_actions": ["canvas_write", "automatic_publish", "silent_rename", "student_data_access"]
+  },
+  "rules": [
+    {
+      "normalizer_id": "NORM-CANVAS-MATH-TEST-001",
+      "rule_ref": "RULE-CANVAS-TITLE-MATH-TEST-001",
+      "subject_area": "Math",
+      "detected_type": "math_test",
+      "canonical_prefix": "SM5",
+      "canonical_pattern": "SM5: Test {number}",
+      "accepted_alias_patterns": [
+        "SM5 Test {number}",
+        "SM 5 Test {number}",
+        "SM 5: Test {number}",
+        "SM5 - Test {number}",
+        "SM5_Test_{number}",
+        "Saxon Math 5 Test {number}",
+        "Math Test {number}"
+      ],
+      "blocked_outputs": [
+        "SM 5: Test {number}",
+        "SM5 Test {number}",
+        "Math: Test {number}"
+      ],
+      "examples": [
+        {
+          "input": "SM5 Test 1",
+          "output": "SM5: Test 1",
+          "confidence": "high",
+          "review_required": false
+        },
+        {
+          "input": "SM 5: Test 2",
+          "output": "SM5: Test 2",
+          "confidence": "high",
+          "review_required": false
+        },
+        {
+          "input": "Math Test 3",
+          "output": "SM5: Test 3",
+          "confidence": "medium",
+          "review_required": true
+        }
+      ]
+    },
+    {
+      "normalizer_id": "NORM-CANVAS-MATH-FACT-TEST-001",
+      "rule_ref": "RULE-CANVAS-TITLE-MATH-FACT-TEST-001",
+      "subject_area": "Math",
+      "detected_type": "math_fact_test",
+      "canonical_prefix": "SM5",
+      "canonical_pattern": "SM5: Fact Test {number}",
+      "accepted_alias_patterns": [
+        "SM5 Fact Test {number}",
+        "SM 5 Fact Test {number}",
+        "SM 5: Fact Test {number}",
+        "SM5 - Fact Test {number}",
+        "Math Fact Test {number}",
+        "Fact Test {number}"
+      ],
+      "blocked_outputs": [
+        "SM 5: Fact Test {number}",
+        "SM5 Fact Test {number}",
+        "Math: Fact Test {number}"
+      ],
+      "examples": [
+        {
+          "input": "SM5 Fact Test 1",
+          "output": "SM5: Fact Test 1",
+          "confidence": "high",
+          "review_required": false
+        },
+        {
+          "input": "Fact Test 2",
+          "output": "SM5: Fact Test 2",
+          "confidence": "medium",
+          "review_required": true
+        }
+      ]
+    },
+    {
+      "normalizer_id": "NORM-CANVAS-MATH-STUDY-GUIDE-001",
+      "rule_ref": "RULE-CANVAS-TITLE-MATH-STUDY-GUIDE-001",
+      "subject_area": "Math",
+      "detected_type": "math_study_guide",
+      "canonical_prefix": "SM5",
+      "canonical_pattern": "SM5: Study Guide {number}",
+      "accepted_alias_patterns": [
+        "SM5 Study Guide {number}",
+        "SM 5 Study Guide {number}",
+        "SM 5: Study Guide {number}",
+        "SM5 - Study Guide {number}",
+        "Math Study Guide {number}",
+        "Study Guide {number}"
+      ],
+      "blocked_outputs": [
+        "SM 5: Study Guide {number}",
+        "SM5 Study Guide {number}",
+        "Math: Study Guide {number}"
+      ],
+      "examples": [
+        {
+          "input": "SM5 Study Guide 1",
+          "output": "SM5: Study Guide 1",
+          "confidence": "high",
+          "review_required": false
+        },
+        {
+          "input": "Study Guide 2",
+          "output": "SM5: Study Guide 2",
+          "confidence": "medium",
+          "review_required": true
+        }
+      ]
+    },
+    {
+      "normalizer_id": "NORM-CANVAS-ELA-TEST-001",
+      "rule_ref": "RULE-CANVAS-PREFIX-ELA-001",
+      "subject_area": "ELA",
+      "detected_type": "ela_test",
+      "canonical_prefix": "ELA4",
+      "canonical_pattern": "ELA4: Test {number}",
+      "accepted_alias_patterns": [
+        "ELA4 Test {number}",
+        "ELA 4 Test {number}",
+        "ELA 4: Test {number}",
+        "Language Arts Test {number}",
+        "Shurley Test {number}"
+      ],
+      "blocked_outputs": [
+        "ELA 4: Test {number}",
+        "ELA4 Test {number}",
+        "LA4: Test {number}"
+      ],
+      "examples": [
+        {
+          "input": "ELA4 Test 1",
+          "output": "ELA4: Test 1",
+          "confidence": "high",
+          "review_required": false
+        },
+        {
+          "input": "Shurley Test 2",
+          "output": "ELA4: Test 2",
+          "confidence": "medium",
+          "review_required": true
+        }
+      ]
+    },
+    {
+      "normalizer_id": "NORM-CANVAS-READING-TEST-001",
+      "rule_ref": "RULE-CANVAS-PREFIX-READING-001",
+      "subject_area": "Reading",
+      "detected_type": "reading_test",
+      "canonical_prefix": "RM4",
+      "canonical_pattern": "RM4: Test {number}",
+      "accepted_alias_patterns": [
+        "RM4 Test {number}",
+        "RM 4 Test {number}",
+        "RM 4: Test {number}",
+        "Reading Test {number}",
+        "Reading Mastery 4 Test {number}"
+      ],
+      "blocked_outputs": [
+        "RM 4: Test {number}",
+        "RM4 Test {number}",
+        "Reading: Test {number}"
+      ],
+      "examples": [
+        {
+          "input": "RM4 Test 1",
+          "output": "RM4: Test 1",
+          "confidence": "high",
+          "review_required": false
+        },
+        {
+          "input": "Reading Test 2",
+          "output": "RM4: Test 2",
+          "confidence": "medium",
+          "review_required": true
+        }
+      ]
+    },
+    {
+      "normalizer_id": "NORM-CANVAS-SPELLING-TEST-001",
+      "rule_ref": "RULE-CANVAS-PREFIX-SPELLING-001",
+      "subject_area": "Spelling",
+      "detected_type": "spelling_test",
+      "canonical_prefix": "RM4",
+      "canonical_pattern": "RM4: Spelling Test {number}",
+      "accepted_alias_patterns": [
+        "Spelling Test {number}",
+        "Spell Test {number}",
+        "RM4 Spelling Test {number}",
+        "RM 4 Spelling Test {number}",
+        "RM 4: Spelling Test {number}",
+        "Spelling: Test {number}",
+        "SP4 Spelling Test {number}",
+        "SPELL4 Spelling Test {number}"
+      ],
+      "blocked_outputs": [
+        "SP4: Spelling Test {number}",
+        "SPELL4: Spelling Test {number}",
+        "Spelling: Test {number}",
+        "RM4 Spelling Test {number}"
+      ],
+      "examples": [
+        {
+          "input": "Spelling Test 1",
+          "output": "RM4: Spelling Test 1",
+          "confidence": "high",
+          "review_required": false
+        },
+        {
+          "input": "RM4 Spelling Test 2",
+          "output": "RM4: Spelling Test 2",
+          "confidence": "high",
+          "review_required": false
+        },
+        {
+          "input": "SP4 Spelling Test 3",
+          "output": "RM4: Spelling Test 3",
+          "confidence": "high",
+          "review_required": false
+        }
+      ]
+    }
+  ],
+  "ambiguous_examples": [
+    {
+      "input": "Test 4",
+      "possible_outputs": ["SM5: Test 4", "RM4: Test 4", "ELA4: Test 4"],
+      "confidence": "needs_review",
+      "review_required": true,
+      "reason": "Missing subject prefix or subject words."
+    },
+    {
+      "input": "Chapter 4 Test",
+      "possible_outputs": ["ELA4: Test 4", "HIST4: Chapter 4 Test", "SCI4: Chapter 4 Test"],
+      "confidence": "needs_review",
+      "review_required": true,
+      "reason": "Chapter test could belong to multiple subjects."
+    }
+  ]
+}

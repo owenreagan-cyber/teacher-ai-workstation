@@ -678,3 +678,106 @@ Preserve historical handoff breadcrumbs required by prior phase status scripts.
 Do not write to Canvas, call APIs, scan broadly, commit raw local metadata, or implement app behavior.
 Phase 19C schemas live in docs/programs/canvas-llm/phase-19c-evidence-vault-rule-catalog/.
 ```
+
+
+---
+
+## Phase 19D Machine-Readable Seed Rule Catalog + Title Cleaner Preview Update
+
+A Phase 19D branch was created:
+
+```text
+canvas-llm-phase-19d-seed-rule-catalog-title-cleaner
+```
+
+Baseline main:
+
+```text
+3e04771 Merge pull request #303 from owenreagan-cyber/canvas-llm-phase-19c-evidence-vault-rule-catalog-schema
+```
+
+## Phase 19D Purpose
+
+Create preview-only machine-readable seed data for the Evidence Vault, Rule Catalog, source links, and Canonical Title Cleaner.
+
+Phase 19D remains documentation/data/status only.
+
+## Phase 19D Directory
+
+```text
+docs/programs/canvas-llm/phase-19d-seed-rule-catalog-title-cleaner/
+```
+
+## Phase 19D Files Created
+
+```text
+README.md
+evidence.json
+rules.json
+links.json
+title-normalization-rules.json
+title-normalization-fixtures.md
+preview-only-boundary.md
+phase-19d-next-step-recommendation.md
+```
+
+## Title Cleaner Rule Captured
+
+The system should identify and preview normalized canonical titles for close or mislabeled inputs.
+
+Examples:
+
+```text
+SM5 Test 1 -> SM5: Test 1
+SM 5: Test 1 -> SM5: Test 1
+SM5 - Test 1 -> SM5: Test 1
+SM5 Fact Test 1 -> SM5: Fact Test 1
+SM5 Study Guide 1 -> SM5: Study Guide 1
+ELA4 Test 1 -> ELA4: Test 1
+RM4 Test 1 -> RM4: Test 1
+Spelling Test 1 -> RM4: Spelling Test 1
+RM4 Spelling Test 1 -> RM4: Spelling Test 1
+SP4 Spelling Test 1 -> RM4: Spelling Test 1
+```
+
+Ambiguous inputs, such as `Test 4`, require review.
+
+## Phase 19D Boundary
+
+Phase 19D does not authorize:
+
+- Canvas API calls
+- Canvas writes
+- live Canvas fetches
+- page creation
+- assignment creation
+- announcement creation
+- file movement
+- file upload
+- publishing
+- body ingestion
+- student data access
+- raw `.local` metadata commits
+- school Canvas URL commits
+- token exposure
+- app behavior implementation
+- refactors
+- migrations
+- database creation
+- RAG
+- embeddings
+- local model/Ollama execution
+
+## Updated Handoff Summary
+
+Start future chats with:
+
+```text
+Teacher AI Workstation / Canvas LLM Center is on Phase 19D.
+Production main is at least 3e04771 after PR #303.
+Current Phase 19D branch is canvas-llm-phase-19d-seed-rule-catalog-title-cleaner.
+Use docs/programs/canvas-llm/current-handoff.md and docs/programs/canvas-llm/memory/phase-19a-memory.md as active source of truth.
+Preserve historical handoff breadcrumbs required by prior phase status scripts.
+Do not write to Canvas, call APIs, scan broadly, commit raw local metadata, or implement app behavior.
+Phase 19D preview data lives in docs/programs/canvas-llm/phase-19d-seed-rule-catalog-title-cleaner/.
+```

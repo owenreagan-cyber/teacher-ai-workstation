@@ -1,0 +1,84 @@
+{
+  "schema_version": "phase-19c-preview",
+  "phase": "19D",
+  "status": "preview_only",
+  "links": [
+    {
+      "link_id": "LINK-CANVAS-0001",
+      "from_type": "evidence",
+      "from_id": "EV-CANVAS-0001",
+      "link_type": "supports",
+      "to_type": "rule",
+      "to_id": "RULE-CANVAS-PREFIX-MATH-001",
+      "reason": "Canonical prefix evidence supports Math prefix rule.",
+      "created_in_phase": "19D",
+      "review_status": "approved"
+    },
+    {
+      "link_id": "LINK-CANVAS-0002",
+      "from_type": "evidence",
+      "from_id": "EV-CANVAS-0002",
+      "link_type": "supports",
+      "to_type": "rule",
+      "to_id": "RULE-CANVAS-PREFIX-READING-001",
+      "reason": "Canonical RM4 evidence supports Reading prefix rule.",
+      "created_in_phase": "19D",
+      "review_status": "approved"
+    },
+    {
+      "link_id": "LINK-CANVAS-0003",
+      "from_type": "evidence",
+      "from_id": "EV-CANVAS-0002",
+      "link_type": "supports",
+      "to_type": "rule",
+      "to_id": "RULE-CANVAS-PREFIX-SPELLING-001",
+      "reason": "Canonical RM4 evidence supports Spelling using Reading course identity.",
+      "created_in_phase": "19D",
+      "review_status": "approved"
+    },
+    {
+      "link_id": "LINK-CANVAS-0004",
+      "from_type": "evidence",
+      "from_id": "EV-CANVAS-0004",
+      "link_type": "supports",
+      "to_type": "rule",
+      "to_id": "RULE-CANVAS-TITLE-MATH-TEST-001",
+      "reason": "Canonical Math title evidence supports Math Test normalizer rule.",
+      "created_in_phase": "19D",
+      "review_status": "approved"
+    },
+    {
+      "link_id": "LINK-CANVAS-0005",
+      "from_type": "evidence",
+      "from_id": "EV-CANVAS-0004",
+      "link_type": "supports",
+      "to_type": "rule",
+      "to_id": "RULE-CANVAS-TITLE-MATH-FACT-TEST-001",
+      "reason": "Canonical Math title evidence supports Fact Test normalizer rule.",
+      "created_in_phase": "19D",
+      "review_status": "approved"
+    },
+    {
+      "link_id": "LINK-CANVAS-0006",
+      "from_type": "evidence",
+      "from_id": "EV-CANVAS-0004",
+      "link_type": "supports",
+      "to_type": "rule",
+      "to_id": "RULE-CANVAS-TITLE-MATH-STUDY-GUIDE-001",
+      "reason": "Canonical Math title evidence supports Study Guide normalizer rule.",
+      "created_in_phase": "19D",
+      "review_status": "approved"
+    },
+    {
+      "link_id": "LINK-CANVAS-0007",
+      "from_type": "evidence",
+      "from_id": "EV-CANVAS-0006",
+      "link_type": "supports",
+      "to_type": "rule",
+      "to_id": "RULE-CANVAS-NORMALIZER-TITLE-001",
+      "reason": "Owner cleaner requirement supports title normalizer preview rule.",
+      "created_in_phase": "19D",
+      "review_status": "approved"
+    }
+  ]
+}

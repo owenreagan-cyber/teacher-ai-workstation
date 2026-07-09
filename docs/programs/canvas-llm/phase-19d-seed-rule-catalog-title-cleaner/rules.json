@@ -1,0 +1,372 @@
+{
+  "schema_version": "phase-19c-preview",
+  "phase": "19D",
+  "status": "preview_only",
+  "rules": [
+    {
+      "rule_id": "RULE-CANVAS-PREFIX-MATH-001",
+      "title": "Math prefix is SM5",
+      "status": "approved",
+      "rule_type": "prefix",
+      "subject_area": "Math",
+      "statement": "Future Math assignment and page title previews use canonical prefix SM5.",
+      "rationale": "Owner-approved canonical prefix table.",
+      "evidence_refs": [
+        "EV-CANVAS-0001"
+      ],
+      "source_authority_level": "owner_approved_canonical_rule",
+      "allowed_actions": [
+        "preview",
+        "normalization",
+        "validation",
+        "diagnostic"
+      ],
+      "blocked_actions": [
+        "canvas_write",
+        "silent_mutation",
+        "unreviewed_publish"
+      ],
+      "validation_requirements": [
+        "Generated Math titles must begin with SM5:"
+      ],
+      "examples": [
+        "SM5: Test 1",
+        "SM5: Fact Test 1",
+        "SM5: Study Guide 1"
+      ],
+      "aliases": [
+        "SM 5",
+        "Saxon Math 5",
+        "Math"
+      ],
+      "unresolved_questions": [],
+      "supersedes": [],
+      "created_in_phase": "19D",
+      "last_reviewed_in_phase": "19D"
+    },
+    {
+      "rule_id": "RULE-CANVAS-PREFIX-READING-001",
+      "title": "Reading prefix is RM4",
+      "status": "approved",
+      "rule_type": "prefix",
+      "subject_area": "Reading",
+      "statement": "Future Reading assignment and page title previews use canonical prefix RM4.",
+      "rationale": "Owner-approved canonical prefix table.",
+      "evidence_refs": [
+        "EV-CANVAS-0002"
+      ],
+      "source_authority_level": "owner_approved_canonical_rule",
+      "allowed_actions": [
+        "preview",
+        "normalization",
+        "validation",
+        "diagnostic"
+      ],
+      "blocked_actions": [
+        "canvas_write",
+        "silent_mutation",
+        "unreviewed_publish"
+      ],
+      "validation_requirements": [
+        "Generated Reading titles must begin with RM4:"
+      ],
+      "examples": [
+        "RM4: Test 1"
+      ],
+      "aliases": [
+        "RM 4",
+        "Reading Mastery 4",
+        "Reading"
+      ],
+      "unresolved_questions": [
+        "Exact Reading homework and checkout title conventions require future review."
+      ],
+      "supersedes": [],
+      "created_in_phase": "19D",
+      "last_reviewed_in_phase": "19D"
+    },
+    {
+      "rule_id": "RULE-CANVAS-PREFIX-SPELLING-001",
+      "title": "Spelling prefix is RM4",
+      "status": "approved",
+      "rule_type": "prefix",
+      "subject_area": "Spelling",
+      "statement": "Future Spelling Test title previews use canonical prefix RM4, not a standalone spelling prefix.",
+      "rationale": "Spelling shares Reading course identity.",
+      "evidence_refs": [
+        "EV-CANVAS-0002"
+      ],
+      "source_authority_level": "owner_approved_canonical_rule",
+      "allowed_actions": [
+        "preview",
+        "normalization",
+        "validation",
+        "diagnostic"
+      ],
+      "blocked_actions": [
+        "canvas_write",
+        "silent_mutation",
+        "standalone_spelling_announcement",
+        "unreviewed_publish"
+      ],
+      "validation_requirements": [
+        "Generated Spelling Test titles must begin with RM4:"
+      ],
+      "examples": [
+        "RM4: Spelling Test {number}",
+        "RM4: Spelling Test 1"
+      ],
+      "aliases": [
+        "Spelling",
+        "Spell",
+        "SPELL4",
+        "SP4",
+        "RM 4"
+      ],
+      "unresolved_questions": [
+        "Exact spelling test numbering/coverage requires future review."
+      ],
+      "supersedes": [],
+      "created_in_phase": "19D",
+      "last_reviewed_in_phase": "19D",
+      "canonical_pattern": "RM4: Spelling Test {number}"
+    },
+    {
+      "rule_id": "RULE-CANVAS-PREFIX-ELA-001",
+      "title": "Language Arts / Shurley prefix is ELA4",
+      "status": "approved",
+      "rule_type": "prefix",
+      "subject_area": "ELA",
+      "statement": "Future Language Arts / Shurley title previews use canonical prefix ELA4.",
+      "rationale": "Owner-approved canonical prefix table.",
+      "evidence_refs": [
+        "EV-CANVAS-0003"
+      ],
+      "source_authority_level": "owner_approved_canonical_rule",
+      "allowed_actions": [
+        "preview",
+        "normalization",
+        "validation",
+        "diagnostic"
+      ],
+      "blocked_actions": [
+        "canvas_write",
+        "silent_mutation",
+        "unreviewed_publish"
+      ],
+      "validation_requirements": [
+        "Generated ELA titles must begin with ELA4:"
+      ],
+      "examples": [
+        "ELA4: Test 1"
+      ],
+      "aliases": [
+        "ELA 4",
+        "Language Arts",
+        "Shurley",
+        "LA4"
+      ],
+      "unresolved_questions": [
+        "Exact Shurley/ELA assessment naming requires future review."
+      ],
+      "supersedes": [],
+      "created_in_phase": "19D",
+      "last_reviewed_in_phase": "19D"
+    },
+    {
+      "rule_id": "RULE-CANVAS-TITLE-MATH-TEST-001",
+      "title": "Canonical Math Test title",
+      "status": "approved",
+      "rule_type": "title",
+      "subject_area": "Math",
+      "statement": "Math Test titles normalize to SM5: Test {number}.",
+      "rationale": "Owner-approved canonical title pattern.",
+      "evidence_refs": [
+        "EV-CANVAS-0004"
+      ],
+      "source_authority_level": "owner_approved_canonical_rule",
+      "allowed_actions": [
+        "preview",
+        "normalization",
+        "validation",
+        "diagnostic"
+      ],
+      "blocked_actions": [
+        "canvas_write",
+        "silent_mutation",
+        "unreviewed_publish"
+      ],
+      "validation_requirements": [
+        "Title cleaner must preserve the test number and output SM5: Test {number}."
+      ],
+      "examples": [
+        "SM5: Test 1"
+      ],
+      "aliases": [
+        "SM5 Test 1",
+        "SM 5: Test 1",
+        "SM5 - Test 1",
+        "Math Test 1"
+      ],
+      "unresolved_questions": [],
+      "supersedes": [],
+      "created_in_phase": "19D",
+      "last_reviewed_in_phase": "19D"
+    },
+    {
+      "rule_id": "RULE-CANVAS-TITLE-MATH-FACT-TEST-001",
+      "title": "Canonical Math Fact Test title",
+      "status": "approved",
+      "rule_type": "title",
+      "subject_area": "Math",
+      "statement": "Math Fact Test titles normalize to SM5: Fact Test {number}.",
+      "rationale": "Owner-approved canonical title pattern.",
+      "evidence_refs": [
+        "EV-CANVAS-0004"
+      ],
+      "source_authority_level": "owner_approved_canonical_rule",
+      "allowed_actions": [
+        "preview",
+        "normalization",
+        "validation",
+        "diagnostic"
+      ],
+      "blocked_actions": [
+        "canvas_write",
+        "silent_mutation",
+        "unreviewed_publish"
+      ],
+      "validation_requirements": [
+        "Title cleaner must preserve the fact test number and output SM5: Fact Test {number}."
+      ],
+      "examples": [
+        "SM5: Fact Test 1"
+      ],
+      "aliases": [
+        "SM5 Fact Test 1",
+        "SM 5: Fact Test 1",
+        "Math Fact Test 1"
+      ],
+      "unresolved_questions": [
+        "Fact Test number source may require future review in edge cases."
+      ],
+      "supersedes": [],
+      "created_in_phase": "19D",
+      "last_reviewed_in_phase": "19D"
+    },
+    {
+      "rule_id": "RULE-CANVAS-TITLE-MATH-STUDY-GUIDE-001",
+      "title": "Canonical Math Study Guide title",
+      "status": "approved",
+      "rule_type": "title",
+      "subject_area": "Math",
+      "statement": "Math Study Guide titles normalize to SM5: Study Guide {number}.",
+      "rationale": "Owner-approved canonical title pattern.",
+      "evidence_refs": [
+        "EV-CANVAS-0004"
+      ],
+      "source_authority_level": "owner_approved_canonical_rule",
+      "allowed_actions": [
+        "preview",
+        "normalization",
+        "validation",
+        "diagnostic"
+      ],
+      "blocked_actions": [
+        "canvas_write",
+        "silent_mutation",
+        "unreviewed_publish"
+      ],
+      "validation_requirements": [
+        "Title cleaner must preserve the study guide number and output SM5: Study Guide {number}."
+      ],
+      "examples": [
+        "SM5: Study Guide 1"
+      ],
+      "aliases": [
+        "SM5 Study Guide 1",
+        "SM 5: Study Guide 1",
+        "Math Study Guide 1",
+        "SM5: Study Guide - 1"
+      ],
+      "unresolved_questions": [],
+      "supersedes": [],
+      "created_in_phase": "19D",
+      "last_reviewed_in_phase": "19D"
+    },
+    {
+      "rule_id": "RULE-CANVAS-GRADING-MATH-STUDY-GUIDE-001",
+      "title": "Math Study Guides do not count toward final grade",
+      "status": "approved",
+      "rule_type": "grading",
+      "subject_area": "Math",
+      "statement": "Math Study Guides use 0 points and exclude_from_final_grade = true.",
+      "rationale": "Study Guides are prep/review artifacts.",
+      "evidence_refs": [
+        "EV-CANVAS-0005"
+      ],
+      "source_authority_level": "owner_approved_canonical_rule",
+      "allowed_actions": [
+        "preview",
+        "validation",
+        "diagnostic"
+      ],
+      "blocked_actions": [
+        "canvas_write",
+        "silent_mutation",
+        "graded_study_guide_without_review"
+      ],
+      "validation_requirements": [
+        "Study Guide preview must show points_possible = 0 and exclude_from_final_grade = true."
+      ],
+      "examples": [
+        "points_possible = 0",
+        "exclude_from_final_grade = true"
+      ],
+      "aliases": [],
+      "unresolved_questions": [],
+      "supersedes": [],
+      "created_in_phase": "19D",
+      "last_reviewed_in_phase": "19D"
+    },
+    {
+      "rule_id": "RULE-CANVAS-NORMALIZER-TITLE-001",
+      "title": "Canonical Title Cleaner previews normalized Canvas-safe titles",
+      "status": "approved",
+      "rule_type": "diagnostic",
+      "subject_area": "Cross-Course",
+      "statement": "The title cleaner identifies close/mislabeled teacher inputs and previews canonical Canvas-safe title rewrites.",
+      "rationale": "Owner requested cleaner for mislabeled inputs.",
+      "evidence_refs": [
+        "EV-CANVAS-0006"
+      ],
+      "source_authority_level": "owner_approved_canonical_rule",
+      "allowed_actions": [
+        "preview",
+        "normalization",
+        "validation",
+        "diagnostic"
+      ],
+      "blocked_actions": [
+        "canvas_write",
+        "silent_mutation",
+        "automatic_publish",
+        "student_data_access"
+      ],
+      "validation_requirements": [
+        "Ambiguous input must require review instead of forced normalization."
+      ],
+      "examples": [
+        "SM5 Test 1 -> SM5: Test 1",
+        "Spelling Test 1 -> RM4: Spelling Test 1"
+      ],
+      "aliases": [],
+      "unresolved_questions": [
+        "Future implementation must define confidence scoring and exact regex behavior."
+      ],
+      "supersedes": [],
+      "created_in_phase": "19D",
+      "last_reviewed_in_phase": "19D"
+    }
+  ]
+}

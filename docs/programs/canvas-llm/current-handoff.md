@@ -2,78 +2,83 @@
 
 ## Current Phase
 
-Phase 19C — Evidence Vault + Rule Catalog Schema
+Phase 19D — Machine-Readable Seed Rule Catalog + Title Cleaner Preview
 
 ## Current Production State
 
 ```text
 Repo: ~/Projects/teacher-ai-workstation
 Branch: main
-Commit: f2d99a9
-Latest merged PR: #302 — Add Canvas LLM Phase 19B canonical rules
+Commit: 3e04771
+Latest merged PR: #303 — Add Canvas LLM Phase 19C evidence vault schema
 ```
 
-## Current Working Branch
+## Current Work
+
+Create preview-only machine-readable seed data for the Evidence Vault, Rule Catalog, source links, and Canonical Title Cleaner.
+
+Current Phase 19D directory:
 
 ```text
-canvas-llm-phase-19c-evidence-vault-rule-catalog-schema
+docs/programs/canvas-llm/phase-19d-seed-rule-catalog-title-cleaner/
 ```
 
-## Handoff Regression Rule
-
-Future phases must preserve historical handoff breadcrumbs required by prior phase status scripts.
-
-Rule file:
+Current Phase 19D preview data/specs:
 
 ```text
-docs/programs/canvas-llm/handoff-regression-rule.md
+README.md
+evidence.json
+rules.json
+links.json
+title-normalization-rules.json
+title-normalization-fixtures.md
+preview-only-boundary.md
+phase-19d-next-step-recommendation.md
 ```
 
-When updating current handoff, move the current phase forward but keep older PR/commit markers in a historical baseline section if regressions validate them.
+## Current Recommendation
 
-## Current Rule
+Do not implement Canvas LLM Center yet.
 
-Use repo-tracked memory files as the active handoff source.
-
-Do not rely on archived chats, temporary Codex folders, assistant memory, or pasted inventories unless the contents have been converted into a repo-tracked memory or rule file.
-
-## Active Memory File
+After Phase 19D, the next safe phase should be preview-only:
 
 ```text
-docs/programs/canvas-llm/memory/phase-19a-memory.md
+Phase 19E — Title Cleaner Validator Preview
 ```
 
-## Latest Completed Phase
+Alternative:
 
 ```text
-Phase 19B — Canonical Rule Constitution
-PR #302
-Status: merged
+Phase 19E — Medical Center Diagnostic Spec Expansion
 ```
 
-## Phase 19A Historical Baseline
+No Canvas writes are approved.
 
-Phase 19A archaeology originally used this baseline:
+## Historical Baselines Required For Regression Status
+
+These breadcrumbs must remain in current handoff so older phase status scripts continue to pass.
+
+### Phase 19A Memory Foundation Historical Baseline
 
 ```text
 PR #300 — Canvas LLM Phase 19A memory foundation
 Commit: 5af1ecd
 ```
 
-This historical marker is preserved for Phase 19A regression status continuity.
-
-## Phase 19A Archaeology Historical Baseline
-
-Phase 19A archaeology report used this merged PR baseline:
+### Phase 19A Archaeology Historical Baseline
 
 ```text
 PR #301 — Add Canvas LLM Phase 19A archaeology report
 Commit: f61dae2
 ```
 
-This historical marker is preserved for Phase 19B regression status continuity.
+### Phase 19B Canonical Rules Historical Baseline
 
-## Phase 19B Rule Directory Historical Breadcrumb
+```text
+Phase 19B — Canonical Rule Constitution
+PR #302 — Add Canvas LLM Phase 19B canonical rules
+Commit: f2d99a9
+```
 
 Phase 19B canonical rules directory:
 
@@ -81,60 +86,37 @@ Phase 19B canonical rules directory:
 docs/programs/canvas-llm/phase-19b-canonical-rules/
 ```
 
-This historical marker is preserved for Phase 19B regression status continuity.
+### Phase 19C Evidence Vault Historical Baseline
 
-## Phase 19B Historical Baseline
-
-Phase 19B canonical rules used this baseline:
+Phase 19C — Evidence Vault + Rule Catalog Schema
 
 ```text
-PR #302 — Add Canvas LLM Phase 19B canonical rules
-Commit: f2d99a9
+Phase 19D — Machine-Readable Seed Rule Catalog + Title Cleaner Preview
+PR #303 — Add Canvas LLM Phase 19C evidence vault schema
+Commit: 3e04771
 ```
 
-This historical marker is preserved for Phase 19B regression status continuity.
-
-
-## Current Work
-
-Define preview-only Evidence Vault and Rule Catalog schemas before implementation.
-
-Current schema directory:
+Phase 19C schema directory:
 
 ```text
 docs/programs/canvas-llm/phase-19c-evidence-vault-rule-catalog/
 ```
 
-Current Phase 19C schema specs:
+### Handoff Regression Rule
 
 ```text
-evidence-vault-schema.md
-evidence-classification-schema.md
-rule-catalog-schema.md
-rule-review-workflow.md
-rule-source-linking-schema.md
-diagnostic-readiness-schema.md
-preview-only-boundary.md
-phase-19c-next-step-recommendation.md
+docs/programs/canvas-llm/handoff-regression-rule.md
 ```
 
-## Current Recommendation
+Preserve historical handoff breadcrumbs required by prior phase status scripts.
 
-Do not implement Canvas LLM Center yet.
-
-After Phase 19C, the next safe phase should be preview-only:
+### Phase 19A Forward Recommendation Breadcrumb
 
 ```text
-Phase 19D — Machine-Readable Seed Rule Catalog Preview
+Phase 19B — Canonical Rule Constitution
 ```
 
-Alternative:
-
-```text
-Phase 19D — Medical Center Diagnostic Spec Expansion
-```
-
-No Canvas writes are approved.
+This preserves the earlier Phase 19A recommendation marker while Phase 19D remains the current active phase.
 
 ## Boundaries
 

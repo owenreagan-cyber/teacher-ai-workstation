@@ -854,3 +854,74 @@ Phase 19E does not authorize:
 - RAG
 - embeddings
 - local model/Ollama execution
+
+
+---
+
+## Phase 19F Title Cleaner Deterministic Prototype Preview Update
+
+A Phase 19F branch was created:
+
+```text
+canvas-llm-phase-19f-title-cleaner-deterministic-prototype-preview
+```
+
+Baseline main:
+
+```text
+375b649 Merge pull request #305 from owenreagan-cyber/canvas-llm-phase-19e-title-cleaner-validator-preview
+```
+
+## Phase 19F Purpose
+
+Create a local deterministic prototype that proves committed Phase 19D title-cleaner fixture examples can normalize into preview-only canonical outputs.
+
+## Phase 19F Directory
+
+```text
+docs/programs/canvas-llm/phase-19f-title-cleaner-deterministic-prototype-preview/
+```
+
+## Phase 19F Prototype
+
+```text
+scripts/canvas-llm-phase-19f-title-cleaner-deterministic-prototype-preview.py
+```
+
+The prototype checks:
+
+```text
+SM5 Test 1 -> SM5: Test 1
+SM 5: Test 1 -> SM5: Test 1
+SM5 Fact Test 2 -> SM5: Fact Test 2
+SM5 Study Guide 3 -> SM5: Study Guide 3
+ELA4 Test 4 -> ELA4: Test 4
+RM4 Test 5 -> RM4: Test 5
+Spelling Test 6 -> RM4: Spelling Test 6
+SP4 Spelling Test 6 -> RM4: Spelling Test 6
+Test 7 -> needs_review
+```
+
+## Phase 19F Boundary
+
+Phase 19F does not authorize:
+
+- Canvas API calls
+- Canvas writes
+- live Canvas fetches
+- page creation
+- assignment creation
+- announcement creation
+- file movement
+- file upload
+- publishing
+- body ingestion
+- student data access
+- raw `.local` metadata reads or commits
+- school Canvas URL commits
+- token exposure
+- app behavior implementation
+- database creation
+- RAG
+- embeddings
+- local model/Ollama execution

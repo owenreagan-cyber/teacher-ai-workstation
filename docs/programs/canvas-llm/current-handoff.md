@@ -2,57 +2,72 @@
 
 ## Current Phase
 
-Phase 19D — Machine-Readable Seed Rule Catalog + Title Cleaner Preview
+Phase 19E — Title Cleaner Validator Preview
 
 ## Current Production State
 
 ```text
 Repo: ~/Projects/teacher-ai-workstation
 Branch: main
-Commit: 3e04771
-Latest merged PR: #303 — Add Canvas LLM Phase 19C evidence vault schema
+Commit: ed52100
+Latest merged PR: #304 — Add Canvas LLM Phase 19D seed rule catalog
 ```
 
 ## Current Work
 
-Create preview-only machine-readable seed data for the Evidence Vault, Rule Catalog, source links, and Canonical Title Cleaner.
+Create a preview-only local validator for the Phase 19D machine-readable title cleaner seed data.
 
-Current Phase 19D directory:
+Current Phase 19E directory:
 
 ```text
-docs/programs/canvas-llm/phase-19d-seed-rule-catalog-title-cleaner/
+docs/programs/canvas-llm/phase-19e-title-cleaner-validator-preview/
 ```
 
-Current Phase 19D preview data/specs:
+Current Phase 19E outputs:
 
 ```text
 README.md
-evidence.json
-rules.json
-links.json
-title-normalization-rules.json
-title-normalization-fixtures.md
+title-cleaner-validator-spec.md
+title-cleaner-validator-report.md
 preview-only-boundary.md
-phase-19d-next-step-recommendation.md
+phase-19e-next-step-recommendation.md
+scripts/canvas-llm-phase-19e-title-cleaner-validator-preview.py
+scripts/canvas-llm-phase-19e-title-cleaner-validator-preview-status.sh
 ```
 
 ## Current Recommendation
 
 Do not implement Canvas LLM Center yet.
 
-After Phase 19D, the next safe phase should be preview-only:
+After Phase 19E, the next safe phase should be preview-only:
 
 ```text
-Phase 19E — Title Cleaner Validator Preview
+Phase 19F — Title Cleaner Deterministic Prototype Preview
 ```
 
 Alternative:
 
 ```text
-Phase 19E — Medical Center Diagnostic Spec Expansion
+Phase 19F — Medical Center Diagnostic Spec Expansion
 ```
 
 No Canvas writes are approved.
+
+### Phase 19D Seed Rule Catalog Historical Baseline
+
+```text
+Phase 19E — Title Cleaner Validator Preview
+PR #304 — Add Canvas LLM Phase 19D seed rule catalog
+Commit: ed52100
+```
+
+Phase 19D seed catalog directory:
+
+```text
+docs/programs/canvas-llm/phase-19d-seed-rule-catalog-title-cleaner/
+```
+
+This historical marker is preserved for Phase 19D regression status continuity.
 
 ## Historical Baselines Required For Regression Status
 
@@ -88,10 +103,8 @@ docs/programs/canvas-llm/phase-19b-canonical-rules/
 
 ### Phase 19C Evidence Vault Historical Baseline
 
-Phase 19C — Evidence Vault + Rule Catalog Schema
-
 ```text
-Phase 19D — Machine-Readable Seed Rule Catalog + Title Cleaner Preview
+Phase 19C — Evidence Vault + Rule Catalog Schema
 PR #303 — Add Canvas LLM Phase 19C evidence vault schema
 Commit: 3e04771
 ```
@@ -100,6 +113,20 @@ Phase 19C schema directory:
 
 ```text
 docs/programs/canvas-llm/phase-19c-evidence-vault-rule-catalog/
+```
+
+### Phase 19D Seed Rule Catalog Historical Baseline
+
+```text
+Phase 19D — Machine-Readable Seed Rule Catalog + Title Cleaner Preview
+PR #304 — Add Canvas LLM Phase 19D seed rule catalog
+Commit: ed52100
+```
+
+Phase 19D seed catalog directory:
+
+```text
+docs/programs/canvas-llm/phase-19d-seed-rule-catalog-title-cleaner/
 ```
 
 ### Handoff Regression Rule
@@ -116,7 +143,7 @@ Preserve historical handoff breadcrumbs required by prior phase status scripts.
 Phase 19B — Canonical Rule Constitution
 ```
 
-This preserves the earlier Phase 19A recommendation marker while Phase 19D remains the current active phase.
+This preserves the earlier Phase 19A recommendation marker while Phase 19E remains the current active phase.
 
 ## Boundaries
 

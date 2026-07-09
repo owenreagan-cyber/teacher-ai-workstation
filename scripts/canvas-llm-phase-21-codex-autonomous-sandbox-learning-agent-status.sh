@@ -144,6 +144,32 @@ check_command "bin/chief-of-staff syntax check passes" bash -n "${CHIEF}"
 check_command "Phase 21 status script syntax check passes" bash -n "${BASH_SOURCE[0]}"
 check_command "Phase 21 Python syntax checks pass" env PYTHONPYCACHEPREFIX="/tmp/teacher-ai-phase-21-status-pycache" python3 -m py_compile "${AGENT}" "${ROOT_DIR}/scripts/canvas-llm/canvas_api_client.py" "${SAFETY}" "${SANITIZER}"
 
+
+check_file "${PHASE_DIR}/calendar-disruption-doctrine.md" "calendar disruption doctrine"
+check_file "${PHASE_DIR}/nontraditional-lesson-doctrine.md" "non-traditional lesson doctrine"
+
+check_contains "${PHASE_DIR}/qw-week-page-doctrine.md" "Q4W10" "Q4W10 true week 10 doctrine exists"
+check_contains "${PHASE_DIR}/qw-week-page-doctrine.md" "Q1END" "Q1END end-of-track page doctrine exists"
+check_contains "${PHASE_DIR}/qw-week-page-doctrine.md" "Q3END" "Q3END end-of-track page doctrine exists"
+check_contains "${PHASE_DIR}/qw-week-page-doctrine.md" "end_of_track_special_page" "end-of-track special page classification exists"
+check_contains "${PHASE_DIR}/qw-week-page-doctrine.md" "Q1W10 -> unknown_or_needs_review" "Q1W10 is not auto-treated as normal week"
+check_contains "${PHASE_DIR}/qw-week-page-doctrine.md" "The app must never invent extra weekly pages from calendar math alone." "calendar math cannot invent weekly pages"
+
+check_contains "${PHASE_DIR}/calendar-disruption-doctrine.md" "Snow Day Protocol" "snow day protocol exists"
+check_contains "${PHASE_DIR}/calendar-disruption-doctrine.md" "In Class: Snow Day" "snow day writes in-class lesson"
+check_contains "${PHASE_DIR}/calendar-disruption-doctrine.md" "Homework: none / removed for that day" "snow day removes homework"
+check_contains "${PHASE_DIR}/calendar-disruption-doctrine.md" "cascade forward one school day" "snow day cascades future lessons"
+check_contains "${PHASE_DIR}/calendar-disruption-doctrine.md" "Friday test is pushed forward, it should move to Tuesday" "Friday test routes to Tuesday"
+check_contains "${PHASE_DIR}/calendar-disruption-doctrine.md" "notifies parents of changed test dates" "snow day announcement update is required"
+check_contains "${PHASE_DIR}/calendar-disruption-doctrine.md" "requires_owner_approval_before_canvas_write" "snow day requires owner approval before Canvas write"
+
+check_contains "${PHASE_DIR}/nontraditional-lesson-doctrine.md" "Science Lab: Earthquakes" "non-traditional science lab example exists"
+check_contains "${PHASE_DIR}/nontraditional-lesson-doctrine.md" "Writing Activity on Expository Writing Unit" "non-traditional writing activity example exists"
+check_contains "${PHASE_DIR}/nontraditional-lesson-doctrine.md" "preserve the exact wording" "non-traditional lesson preserves exact wording"
+check_contains "${PHASE_DIR}/nontraditional-lesson-doctrine.md" "must not automatically pull resources" "non-traditional lesson blocks auto resource pull"
+check_contains "${PHASE_DIR}/nontraditional-lesson-doctrine.md" "must not automatically create a Canvas assignment" "non-traditional lesson blocks auto assignment creation"
+check_contains "${PHASE_DIR}/nontraditional-lesson-doctrine.md" "exact_text_in_class_entry" "non-traditional lesson classification exists"
+
 echo
 echo "Safety Boundary"
 echo "---------------"

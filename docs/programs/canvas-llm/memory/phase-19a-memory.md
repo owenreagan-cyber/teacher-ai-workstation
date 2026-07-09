@@ -1134,3 +1134,49 @@ No CANVAS_TOKEN, raw Canvas object URL, token-bearing URL, or raw Canvas respons
 ```
 
 Phase 21 does not need to call Canvas during implementation. The operator must supply credentials locally before any inventory run, and experiment/cleanup mode must be intentionally invoked with `--allow-writes`.
+
+---
+
+## Phase 21A Calendar, Q/W, Snow Day, and Non-Traditional Lesson Doctrine
+
+Owner clarified the weekly page sequence:
+
+```text
+Q4W10 is the only true normal Week 10 class page currently expected.
+Q1W10, Q2W10, and Q3W10 must not be inferred automatically.
+```
+
+Owner may create special end-of-track pages, especially near Track/Quarter 1 and Track/Quarter 3 conference transitions.
+
+Expected examples:
+
+```text
+Q1END
+Q3END
+```
+
+These are special owner-created end-of-track pages, not normal weekly pages and not automatic W10 pages.
+
+Owner also clarified Snow Day Protocol:
+
+```text
+In Class becomes Snow Day.
+Homework for the snow day is deleted/removed.
+The displaced lesson and homework move forward one school day.
+Later lessons and homework cascade forward one school day.
+Friday lessons move to Monday.
+Friday tests move to Tuesday.
+Parent announcements should notify about changed test dates.
+Canvas writes require preview and approval.
+```
+
+Owner also clarified non-traditional lesson behavior:
+
+```text
+Science Lab: Earthquakes
+Writing Activity on Expository Writing Unit
+```
+
+Entries like these should be copied exactly into the In Class field.
+
+The app must not auto-pull resources or auto-create assignments for these entries unless Owen explicitly adds/approves them in the lesson planner.

@@ -2,22 +2,34 @@
 
 ## Current Phase
 
-Phase 19A — Legacy Intelligence Extraction / Archaeology Report
+Phase 19B — Canonical Rule Constitution
 
 ## Current Production State
 
 ```text
 Repo: ~/Projects/teacher-ai-workstation
 Branch: main
-Commit: 5af1ecd
-Latest merged PR: #300 — Add Canvas LLM phase memory foundation
+Commit: f61dae2
+Latest merged PR: #301 — Add Canvas LLM Phase 19A archaeology report
 ```
 
 ## Current Working Branch
 
 ```text
-canvas-llm-phase-19a-legacy-archaeology-report
+canvas-llm-phase-19b-canonical-rule-constitution
 ```
+
+## Handoff Regression Rule
+
+Future phases must preserve historical handoff breadcrumbs required by prior phase status scripts.
+
+Rule file:
+
+```text
+docs/programs/canvas-llm/handoff-regression-rule.md
+```
+
+When updating current handoff, move the current phase forward but keep older PR/commit markers in a historical baseline section if regressions validate them.
 
 ## Current Rule
 
@@ -34,69 +46,63 @@ docs/programs/canvas-llm/memory/phase-19a-memory.md
 ## Latest Completed Phase
 
 ```text
-Phase 18 — Canvas Setup Write Gate Readiness Review
-Decision: NEEDS_ONE_MORE_PREVIEW_REFINEMENT
+Phase 19A — Legacy Intelligence Extraction / Archaeology Report
+PR #301
+Status: merged
 ```
 
-## Latest Continuity PR
+## Phase 19A Historical Baseline
+
+Phase 19A archaeology originally used this baseline:
 
 ```text
-PR #300 — Add Canvas LLM phase memory foundation
+PR #300 — Canvas LLM Phase 19A memory foundation
+Commit: 5af1ecd
 ```
+
+This historical marker is preserved for Phase 19A regression status continuity.
+
 
 ## Current Work
 
-Create Phase 19A archaeology reports from verified evidence.
+Convert owner-approved Phase 19A archaeology decisions into canonical rule tables before any implementation.
 
-Current report directory:
-
-```text
-docs/programs/canvas-llm/phase-19a-archaeology/
-```
-
-Current reports:
+Current rule directory:
 
 ```text
-source-availability.md
-owner-canonical-decisions.md
-legacy-feature-survival-matrix.md
-business-rules-catalog.md
-legacy-risks.md
-unanswered-questions.md
-future-architecture-recommendation.md
+docs/programs/canvas-llm/phase-19b-canonical-rules/
 ```
 
-## Verified Source Availability
-
-Available:
+Current canonical rule specs:
 
 ```text
-~/Projects/Thalescanvasgemini
-main @ b75ce84
-
-~/Projects/pacing-sync-pilot-8c50be47
-main @ ea6ecbc
+canonical-rule-constitution.md
+canonical-subject-prefixes.md
+canonical-assignment-title-rules.md
+canonical-study-guide-grading.md
+canonical-reading-spelling-together.md
+canonical-friday-rules.md
+canonical-newsletter-rules.md
+canonical-file-management-policy.md
+canonical-source-authority-policy.md
+canonical-medical-center-diagnostics.md
+canonical-write-gate-policy.md
 ```
-
-Unavailable:
-
-```text
-~/Projects/pacing-sync-pilot
-```
-
-Treat the missing repo as an evidence gap, not a blocker.
 
 ## Current Recommendation
 
 Do not implement Canvas LLM Center yet.
 
-Next phase should be:
+After Phase 19B, the next safe phase should be a preview-only planning phase for one of:
 
 ```text
-Phase 19B — Canonical Rule Constitution
+Evidence Vault table specs
+Rule Catalog machine-readable schema
+Medical Center diagnostic spec expansion
+Minimum write gate design packet
 ```
 
-Phase 19B should convert owner-approved archaeology decisions into durable canonical rule tables before code implementation.
+No Canvas writes are approved.
 
 ## Boundaries
 

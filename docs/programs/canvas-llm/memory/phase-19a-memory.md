@@ -460,3 +460,126 @@ Use docs/programs/canvas-llm/current-handoff.md and docs/programs/canvas-llm/mem
 Do not write to Canvas, call APIs, scan broadly, commit raw local metadata, or implement app behavior.
 Next recommended phase is Phase 19B — Canonical Rule Constitution.
 ```
+
+---
+
+## Phase 19B Canonical Rule Constitution Update
+
+A Phase 19B branch was created:
+
+```text
+canvas-llm-phase-19b-canonical-rule-constitution
+```
+
+Baseline main:
+
+```text
+f61dae2 Merge pull request #301 from owenreagan-cyber/canvas-llm-phase-19a-legacy-archaeology-report
+```
+
+## Phase 19B Purpose
+
+Convert owner-approved Phase 19A archaeology decisions into canonical rule tables before any implementation.
+
+Phase 19B remains documentation/status only.
+
+## Phase 19B Canonical Rule Specs Created
+
+Current rule directory:
+
+```text
+docs/programs/canvas-llm/phase-19b-canonical-rules/
+```
+
+Specs:
+
+```text
+canonical-rule-constitution.md
+canonical-subject-prefixes.md
+canonical-assignment-title-rules.md
+canonical-study-guide-grading.md
+canonical-reading-spelling-together.md
+canonical-friday-rules.md
+canonical-newsletter-rules.md
+canonical-file-management-policy.md
+canonical-source-authority-policy.md
+canonical-medical-center-diagnostics.md
+canonical-write-gate-policy.md
+```
+
+## Phase 19B Decisions Captured
+
+Phase 19B formalizes:
+
+- source authority order
+- evidence classification labels
+- canonical subject prefixes
+- Math assessment title rules
+- Math Study Guide grading rule
+- Reading/Spelling Together rule
+- Friday rule
+- newsletter page-first rule
+- file management safety policy
+- Medical Center diagnostic model
+- write gate policy
+
+## Phase 19B Boundary
+
+Phase 19B does not authorize:
+
+- Canvas API calls
+- Canvas writes
+- live Canvas fetches
+- page creation
+- assignment creation
+- announcement creation
+- file movement
+- file upload
+- publishing
+- body ingestion
+- student data access
+- raw `.local` metadata commits
+- school Canvas URL commits
+- token exposure
+- app behavior implementation
+- refactors
+- migrations
+
+## Updated Handoff Summary
+
+Start future chats with:
+
+```text
+Teacher AI Workstation / Canvas LLM Center is on Phase 19B.
+Production main is at least f61dae2 after PR #301.
+Current Phase 19B branch is canvas-llm-phase-19b-canonical-rule-constitution.
+Use docs/programs/canvas-llm/current-handoff.md and docs/programs/canvas-llm/memory/phase-19a-memory.md as active source of truth.
+Do not write to Canvas, call APIs, scan broadly, commit raw local metadata, or implement app behavior.
+Phase 19B canonical rules live in docs/programs/canvas-llm/phase-19b-canonical-rules/.
+```
+
+---
+
+## Handoff Regression Rule Added During Phase 19B
+
+A recurring problem was identified:
+
+```text
+New phases update current-handoff.md and accidentally remove historical breadcrumbs required by older status scripts.
+```
+
+A governance rule was added:
+
+```text
+docs/programs/canvas-llm/handoff-regression-rule.md
+```
+
+Future prompts should include:
+
+```text
+Preserve historical handoff breadcrumbs required by prior phase status scripts.
+When updating current-handoff.md, move the current phase forward but do not delete older PR/commit markers that regressions validate.
+If a prior status fails because a breadcrumb moved, restore the historical breadcrumb in a dedicated Historical Baselines section rather than weakening the status script.
+```
+
+This rule is documentation/governance only and authorizes no Canvas/API/write/student-data behavior.

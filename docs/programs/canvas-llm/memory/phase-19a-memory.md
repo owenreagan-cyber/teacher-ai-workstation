@@ -781,3 +781,76 @@ Preserve historical handoff breadcrumbs required by prior phase status scripts.
 Do not write to Canvas, call APIs, scan broadly, commit raw local metadata, or implement app behavior.
 Phase 19D preview data lives in docs/programs/canvas-llm/phase-19d-seed-rule-catalog-title-cleaner/.
 ```
+
+
+---
+
+## Phase 19E Title Cleaner Validator Preview Update
+
+A Phase 19E branch was created:
+
+```text
+canvas-llm-phase-19e-title-cleaner-validator-preview
+```
+
+Baseline main:
+
+```text
+ed52100 Merge pull request #304 from owenreagan-cyber/canvas-llm-phase-19d-seed-rule-catalog-title-cleaner
+```
+
+## Phase 19E Purpose
+
+Create a local preview validator that proves Phase 19D title cleaner rules and fixtures are machine-checkable.
+
+## Phase 19E Directory
+
+```text
+docs/programs/canvas-llm/phase-19e-title-cleaner-validator-preview/
+```
+
+## Phase 19E Validator
+
+```text
+scripts/canvas-llm-phase-19e-title-cleaner-validator-preview.py
+```
+
+The validator checks:
+
+```text
+SM5: Test {number}
+SM5: Fact Test {number}
+SM5: Study Guide {number}
+ELA4: Test {number}
+RM4: Test {number}
+RM4: Spelling Test {number}
+never_silently_mutate_canvas
+ambiguous_input_requires_review
+known rule references
+known evidence references
+known source links
+```
+
+## Phase 19E Boundary
+
+Phase 19E does not authorize:
+
+- Canvas API calls
+- Canvas writes
+- live Canvas fetches
+- page creation
+- assignment creation
+- announcement creation
+- file movement
+- file upload
+- publishing
+- body ingestion
+- student data access
+- raw `.local` metadata commits
+- school Canvas URL commits
+- token exposure
+- app behavior implementation
+- database creation
+- RAG
+- embeddings
+- local model/Ollama execution

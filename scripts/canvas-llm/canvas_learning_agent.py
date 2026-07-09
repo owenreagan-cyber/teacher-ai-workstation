@@ -49,6 +49,10 @@ def safe_course_ids() -> list[str]:
     return [SANDBOX_COURSE_ID, *sorted(REFERENCE_COURSE_IDS)]
 
 
+def reference_course_ids() -> list[str]:
+    return sorted(REFERENCE_COURSE_IDS)
+
+
 def course_label(course_id: str) -> str:
     labels = {
         "24399": "Owen-designated demo sandbox",
@@ -90,10 +94,22 @@ def qxwy_candidates(pages: list[dict[str, Any]]) -> list[dict[str, Any]]:
     return candidates
 
 
-def run_inventory(client: CanvasApiClient) -> dict[str, Any]:
-    inventory: dict[str, Any] = {"generated_at": now_stamp(), "courses": {}}
+def run_inventory(client: CanvasApiClient, course_ids: list[str] | None = None, mode: str = "inventory") -> dict[str, Any]:
+    selected_course_ids = course_ids or safe_course_ids()
+    inventory: dict[str, Any] = {
+        "generated_at": now_stamp(),
+        "mode": mode,
+        "stable_rules": [
+            "Canvas writes are locked to course 24399.",
+            "Reference courses 21944, 21957, and 21919 are read-only.",
+            "Q/W weeks reset each quarter and track.",
+            "Production weekly pages are preloaded and updated, not created.",
+        ],
+        "hypotheses": [],
+        "courses": {},
+    }
     raw_dir = RAW_ROOT / now_stamp()
-    for course_id in safe_course_ids():
+    for course_id in selected_course_ids:
         course: dict[str, Any] = {"course_id": course_id, "label": course_label(course_id)}
         course["tabs"] = client.get_paginated("tabs", f"/api/v1/courses/{course_id}/tabs", course_id=course_id)
         course["pages"] = client.get_paginated(
@@ -153,6 +169,12 @@ def run_inventory(client: CanvasApiClient) -> dict[str, Any]:
             "qxwy_page_candidates": candidates,
             "weekly_page_html_hints": weekly_details,
         }
+        if weekly_details:
+            inventory["hypotheses"].append({
+                "course_id": course_id,
+                "hypothesis": "Weekly page editable regions may be inferred from repeated shell wrappers.",
+                "support": "safe HTML feature summaries from candidate QxWy pages",
+            })
     write_json(RUN_ROOT / "findings.json", inventory, client.base_url)
     build_learning_loop(inventory, client.base_url)
     return inventory
@@ -168,9 +190,13 @@ def build_learning_loop(findings: dict[str, Any], canvas_base_url: str | None) -
             question(course_id, "Which page shells share common HTML wrappers?", "answered" if course.get("weekly_page_html_hints") else "needs_probe", course.get("weekly_page_html_hints")),
             question(course_id, "Which module items point to QxWy pages?", "needs_probe", "Cross-check module item page_url against QxWy candidates."),
             question(course_id, "Are pages published?", "answered" if candidates else "unanswered", [{"title": item.get("title"), "published": item.get("published")} for item in candidates]),
+            question(course_id, "Are there subject-specific shells for ELA, Math, Reading?", "needs_probe", "Compare reference-course shell hints without inventing unsupported findings."),
+            question(course_id, "Are there repeated placeholder phrases?", "needs_probe", "Search only sanitized page body summaries or approved local inventory."),
+            question(course_id, "What should be tested next in sandbox?", "needs_probe", "Recommend only safe probes in course 24399."),
         ])
     next_actions = [
         {"level": "PASS", "action": "Run --mode inventory to refresh safe course structure."},
+        {"level": "PASS", "action": "Run --mode reference-inventory to refresh read-only reference course structure only."},
         {"level": "PASS", "action": "Run --mode questions to regenerate the backlog from findings."},
         {"level": "WARN", "action": "Run --mode existing-page-dry-run before any sandbox page update experiment."},
         {"level": "BLOCKED", "action": "Do not run --mode experiment unless CANVAS_BASE_URL, CANVAS_TOKEN, and --allow-writes are intentionally supplied."},
@@ -330,7 +356,7 @@ def run_cleanup(client: CanvasApiClient, allow_writes: bool) -> dict[str, Any]:
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Canvas LLM Phase 21 autonomous sandbox learning agent")
-    parser.add_argument("--mode", choices=["inventory", "questions", "experiment", "existing-page-dry-run", "cleanup"], default="inventory")
+    parser.add_argument("--mode", choices=["inventory", "reference-inventory", "questions", "experiment", "existing-page-dry-run", "cleanup"], default="inventory")
     parser.add_argument("--allow-writes", action="store_true", help="Required for experiment and cleanup Canvas writes")
     return parser.parse_args()
 
@@ -346,7 +372,9 @@ def main() -> int:
     else:
         client = CanvasApiClient.from_env()
         if args.mode == "inventory":
-            result = run_inventory(client)
+            result = run_inventory(client, safe_course_ids(), "inventory")
+        elif args.mode == "reference-inventory":
+            result = run_inventory(client, reference_course_ids(), "reference-inventory")
         elif args.mode == "experiment":
             result = run_experiment(client, args.allow_writes)
         elif args.mode == "cleanup":

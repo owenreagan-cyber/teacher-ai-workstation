@@ -12,6 +12,7 @@ BLOCKED_ENDPOINT_MARKERS = {
     "gradebook",
     "submissions",
     "analytics",
+    "student",
     "users",
     "people",
     "enrollments",
@@ -22,6 +23,8 @@ BLOCKED_ENDPOINT_MARKERS = {
     "item_banks",
     "collaborations",
     "conferences",
+    "external_tools",
+    "external",
 }
 ALLOWED_READ_ENDPOINTS = {
     "course",
@@ -63,6 +66,27 @@ def require_write_allowed(course_id: str, artifact_type: str, allow_writes: bool
         raise PermissionError("BLOCKED: Canvas writes are locked to sandbox course 24399")
     if artifact_type not in ALLOWED_WRITE_ARTIFACTS:
         raise PermissionError(f"BLOCKED: unsupported write artifact type: {artifact_type}")
+
+
+def require_announcement_notifications_blocked(data: dict | None) -> None:
+    if not data:
+        return
+    publish_keys = {"discussion_topic[published]", "announcement[published]"}
+    notification_keys = {
+        "discussion_topic[delayed_post_at]",
+        "discussion_topic[podcast_enabled]",
+        "discussion_topic[require_initial_post]",
+        "discussion_topic[notify_of_update]",
+        "announcement[delayed_post_at]",
+        "announcement[notify_of_update]",
+    }
+    for key, value in data.items():
+        lowered_key = str(key).lower()
+        lowered_value = str(value).strip().lower()
+        if lowered_key in publish_keys and lowered_value not in {"false", "0", "no", ""}:
+            raise PermissionError("BLOCKED: announcement publish behavior requires later explicit approval")
+        if lowered_key in notification_keys and lowered_value not in {"false", "0", "no", ""}:
+            raise PermissionError("BLOCKED: announcement notification behavior requires later explicit approval")
 
 
 def require_reference_read_only(course_id: str, method: str) -> None:

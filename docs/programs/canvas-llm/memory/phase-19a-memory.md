@@ -22,7 +22,7 @@ Current verified main:
 
 ```text
 main
-154b47a Merge pull request #299 from owenreagan-cyber/canvas-llm-phase-18-write-gate-readiness-review
+8275c77 Merge pull request #309 from owenreagan-cyber/canvas-llm-phase-21-codex-autonomous-sandbox-learning-agent
 ```
 
 Phase 18 feature commit:
@@ -40,13 +40,13 @@ Previous Phase 17 main commit:
 Latest completed production phase:
 
 ```text
-Phase 18 — Canvas Setup Write Gate Readiness Review
+Phase 21 — Codex Autonomous Sandbox Learning Agent
 ```
 
 Latest completed PR:
 
 ```text
-PR #299 — Add Canvas LLM Phase 18 write gate readiness review
+PR #309 — Add Canvas LLM Phase 21 autonomous sandbox learning agent
 ```
 
 Phase 18 decision:
@@ -1066,3 +1066,71 @@ Create one unpublished Canvas page in course 24399 titled Math Automation Sandbo
 ```
 
 Phase 20 itself does not call Canvas APIs and does not write to Canvas.
+
+---
+
+## Phase 21 Codex Autonomous Sandbox Learning Agent Update
+
+A Phase 21 branch was created:
+
+```text
+canvas-llm-phase-21-codex-autonomous-sandbox-learning-agent
+```
+
+Baseline main:
+
+```text
+96d9ed5 Merge pull request #308 from owenreagan-cyber/canvas-llm-phase-20-demo-sandbox-write-gate-approval-packet
+```
+
+Phase 21 merged through:
+
+```text
+PR #309 — Add Canvas LLM Phase 21 autonomous sandbox learning agent
+8275c77 Merge pull request #309 from owenreagan-cyber/canvas-llm-phase-21-codex-autonomous-sandbox-learning-agent
+```
+
+Phase 21 directory:
+
+```text
+docs/programs/canvas-llm/phase-21-codex-autonomous-sandbox-learning-agent/
+```
+
+Phase 21 status command:
+
+```text
+bin/chief-of-staff --canvas-llm-phase-21-codex-autonomous-sandbox-learning-agent-status
+```
+
+Approved runtime Canvas base domain:
+
+```text
+https://thalesacademy.instructure.com
+```
+
+Future local operator commands:
+
+```bash
+export CANVAS_BASE_URL="https://thalesacademy.instructure.com"
+export CANVAS_TOKEN="<set locally only; never paste into chat>"
+
+python3 scripts/canvas-llm/canvas_learning_agent.py --mode inventory
+python3 scripts/canvas-llm/canvas_learning_agent.py --mode reference-inventory
+python3 scripts/canvas-llm/canvas_learning_agent.py --mode questions
+python3 scripts/canvas-llm/canvas_learning_agent.py --mode existing-page-dry-run
+python3 scripts/canvas-llm/canvas_learning_agent.py --mode experiment --allow-writes
+python3 scripts/canvas-llm/canvas_learning_agent.py --mode cleanup --allow-writes
+```
+
+Phase 21 safety state:
+
+```text
+Default mode is read-only inventory.
+Reference-inventory mode reads only courses 21944, 21957, and 21919.
+Canvas writes are locked to course 24399 and require --allow-writes.
+Announcement notification behavior remains blocked unless a later explicit approval names the exact action.
+Raw Canvas output remains under .local/canvas-llm/sandbox-learning-runs/phase-21/.
+No CANVAS_TOKEN, raw Canvas object URL, token-bearing URL, or raw Canvas response may be committed.
+```
+
+Phase 21 does not need to call Canvas during implementation. The operator must supply credentials locally before any inventory run, and experiment/cleanup mode must be intentionally invoked with `--allow-writes`.

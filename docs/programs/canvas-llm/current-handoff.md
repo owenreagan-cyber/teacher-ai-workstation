@@ -2,31 +2,56 @@
 
 ## Current Phase
 
-Phase 20 — Demo Sandbox Write Gate Approval Packet
+Phase 21 — Codex Autonomous Sandbox Learning Agent
 
 ## Current Production State
 
 ```text
 Repo: ~/Projects/teacher-ai-workstation
 Branch: main
-Commit: 375b649
-Latest merged PR: #305 — Add Canvas LLM Phase 19E title cleaner validator
+Commit: 8275c77
+Latest merged PR: #309 — Add Canvas LLM Phase 21 autonomous sandbox learning agent
 ```
 
 ## Current Work
 
-Prepare the Phase 20 demo sandbox write gate approval packet.
+Tighten the Phase 21 autonomous Canvas learning agent framework with the revised owner contract:
 
-Current Phase 20 directory:
+- approved runtime Canvas base domain
+- reference-only inventory mode
+- announcement notification blocking
+- handoff and memory continuity
+
+Current Phase 21 directory:
 
 ```text
-docs/programs/canvas-llm/phase-20-demo-sandbox-write-gate-approval-packet/
+docs/programs/canvas-llm/phase-21-codex-autonomous-sandbox-learning-agent/
 ```
 
-Current Phase 20 status command:
+Current Phase 21 status command:
 
 ```text
-bin/chief-of-staff --canvas-llm-phase-20-demo-sandbox-write-gate-approval-packet-status
+bin/chief-of-staff --canvas-llm-phase-21-codex-autonomous-sandbox-learning-agent-status
+```
+
+Approved runtime Canvas base domain:
+
+```text
+https://thalesacademy.instructure.com
+```
+
+Future local operator commands:
+
+```bash
+export CANVAS_BASE_URL="https://thalesacademy.instructure.com"
+export CANVAS_TOKEN="<set locally only; never paste into chat>"
+
+python3 scripts/canvas-llm/canvas_learning_agent.py --mode inventory
+python3 scripts/canvas-llm/canvas_learning_agent.py --mode reference-inventory
+python3 scripts/canvas-llm/canvas_learning_agent.py --mode questions
+python3 scripts/canvas-llm/canvas_learning_agent.py --mode existing-page-dry-run
+python3 scripts/canvas-llm/canvas_learning_agent.py --mode experiment --allow-writes
+python3 scripts/canvas-llm/canvas_learning_agent.py --mode cleanup --allow-writes
 ```
 
 Owner-designated demo sandbox:
@@ -36,29 +61,27 @@ course_id: 24399
 classification: OWNER_DESIGNATED_DEMO_SANDBOX
 ```
 
-Approved requested operation, recorded but not executed in Phase 20:
+Sandbox write boundary:
 
 ```text
-create one unpublished Canvas page titled Math Automation Sandbox
+Writes are allowed only in course 24399, only with --allow-writes, and only for approved learning experiments.
+Reference courses 21944, 21957, and 21919 remain read-only.
+Announcement notification behavior remains blocked unless a later explicit approval names the exact action.
 ```
 
 ## Current Recommendation
 
-Phase 20 prepares the approval packet but does not execute the write.
+Run Phase 21 read-only inventory first, then review sanitized `.local` findings before any experiment-mode run.
 
 Recommended next phase:
 
 ```text
-Phase 21 — Execute One Approved Demo Sandbox Canvas Write
+Phase 22 — Review Phase 21 read-only findings and choose the next safe sandbox probe
 ```
 
-Phase 21 must execute only the approved operation:
+No Canvas write is executed by status checks or documentation.
 
-```text
-Create one unpublished Canvas page in course 24399 titled Math Automation Sandbox.
-```
-
-No Canvas write is executed in Phase 20.
+The Phase 20 approval packet remains preserved as historical context; Phase 21 supersedes the earlier "execute one approved page write" recommendation with a broader autonomous sandbox learning framework.
 
 ## Historical Baselines Required For Regression Status
 
@@ -162,6 +185,26 @@ Phase 19G-I directories:
 docs/programs/canvas-llm/phase-19g-title-cleaner-review-packet-preview/
 docs/programs/canvas-llm/phase-19h-medical-center-diagnostic-expansion-preview/
 docs/programs/canvas-llm/phase-19i-minimum-write-gate-design-packet/
+```
+
+### Phase 20 Demo Sandbox Write Gate Historical Baseline
+
+```text
+Phase 20 — Demo Sandbox Write Gate Approval Packet
+PR #308 — Add Canvas LLM Phase 20 demo sandbox approval packet
+Commit: 96d9ed5
+```
+
+Phase 20 directory:
+
+```text
+docs/programs/canvas-llm/phase-20-demo-sandbox-write-gate-approval-packet/
+```
+
+Phase 20 status command:
+
+```text
+bin/chief-of-staff --canvas-llm-phase-20-demo-sandbox-write-gate-approval-packet-status
 ```
 
 ### Handoff Regression Rule

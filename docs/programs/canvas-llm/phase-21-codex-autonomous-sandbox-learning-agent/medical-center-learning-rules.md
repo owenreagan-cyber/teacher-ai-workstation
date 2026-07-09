@@ -6,6 +6,7 @@
 - Sanitized summaries that remove URLs, emails, names, and token-like strings.
 - Local learning outputs under `.local/canvas-llm/sandbox-learning-runs/phase-21/`.
 - Experiment writes that target only course `24399` and use `--allow-writes`.
+- Reference-only inventory that inspects `21944`, `21957`, and `21919` without touching `24399`.
 
 ## WARN
 
@@ -29,5 +30,9 @@
 - A request would touch grades, people, users, enrollments, settings, submissions, gradebook, analytics, or student data.
 - A request would commit raw `.local` outputs.
 - A token would be printed.
+- A token would be written to disk.
 - A school Canvas URL would be committed.
+- A full Canvas object URL would be committed.
 - A deletion target is not recognized as a temporary Phase 21 test artifact.
+- Announcement notification behavior would be triggered without later explicit approval.
+- External Thales Website mutation is attempted.

@@ -30,6 +30,9 @@ def sanitize_value(value: Any, canvas_base_url: str | None = None) -> Any:
         sanitized: dict[str, Any] = {}
         for key, item in value.items():
             lowered = str(key).lower()
+            if any(marker in lowered for marker in ("student", "user", "account", "enrollment")):
+                sanitized[key] = "[SENSITIVE_METADATA_REMOVED]" if item else item
+                continue
             if lowered in {"url", "html_url", "avatar_url", "preview_url", "api_url"}:
                 sanitized[key] = "[URL_REMOVED]" if item else item
             elif lowered in {"name", "display_name", "short_name", "sortable_name", "email", "login_id"}:

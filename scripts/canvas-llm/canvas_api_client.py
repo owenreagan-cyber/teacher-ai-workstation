@@ -8,7 +8,11 @@ import urllib.request
 from dataclasses import dataclass
 from typing import Any
 
-from canvas_safety import require_reference_read_only, require_safe_endpoint
+from canvas_safety import (
+    require_announcement_notifications_blocked,
+    require_reference_read_only,
+    require_safe_endpoint,
+)
 
 
 @dataclass
@@ -35,6 +39,8 @@ class CanvasApiClient:
         course_id: str | None = None,
     ) -> Any:
         require_safe_endpoint(kind, path)
+        if kind == "announcements" and method.upper() != "GET":
+            require_announcement_notifications_blocked(data)
         if course_id:
             require_reference_read_only(course_id, method)
         url = f"{self.base_url}{path}"

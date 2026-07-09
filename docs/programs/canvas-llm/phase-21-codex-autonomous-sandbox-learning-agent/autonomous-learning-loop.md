@@ -23,6 +23,8 @@ Required learning files:
 5. Mark questions as `answered`, `unanswered`, or `needs_probe`.
 6. Recommend the next safe probe.
 7. Keep Canvas writes blocked unless experiment mode is explicitly enabled.
+8. Distinguish stable rules from hypotheses.
+9. Never invent findings that are not supported by inventory data.
 
 ## Probe Boundary
 

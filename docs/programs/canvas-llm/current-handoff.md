@@ -635,3 +635,33 @@ Actual Canvas writes remain blocked unless the target is course `24399`, the pag
 ```text
 PHASE_21C_SANDBOX_EXISTING_PAGE_WRITE_APPROVED
 ```
+
+---
+
+## Phase 21D Sandbox Week Render Write + Assignment Creation
+
+Phase 21D prepares the first gated sandbox write to existing Canvas page `Q1W1` / slug `q1w1` in course `24399`.
+
+Test week logic:
+
+```text
+Monday: Lesson 1, odd homework
+Tuesday: Lesson 2, even homework
+Wednesday: Lesson 3, odd homework
+Thursday: Lesson 4, even homework
+Friday: Lesson 5, no homework
+```
+
+Phase 21D also adds a read-only People sandbox verification gate. The write must block with `BLOCKED_UNEXPECTED_PEOPLE_IN_SANDBOX_COURSE` unless course `24399` is empty or contains only Owen Reagan / owen.reagan@thalesacademy.com.
+
+Write approval phrase:
+
+```text
+PHASE_21D_SANDBOX_WEEK_WRITE_APPROVED
+```
+
+Rollback approval phrase:
+
+```text
+PHASE_21D_SANDBOX_WEEK_ROLLBACK_APPROVED
+```

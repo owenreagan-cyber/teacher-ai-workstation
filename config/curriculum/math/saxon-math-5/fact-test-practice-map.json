@@ -1,0 +1,102 @@
+{
+  "schemaVersion": 1,
+  "status": "owner-approved",
+  "approvedAt": "2026-07-10",
+  "source": "canvas-maps-owner-source-2026-07-10.pdf",
+  "curriculum": "Saxon Math 5",
+  "mapPurpose": "fact-test-announcement-and-practice-resource-selection",
+  "tests": {
+    "1": {
+      "powerUpCode": "A",
+      "practiceDescription": "Addition facts starting with 5+5, 2+9"
+    },
+    "2": {
+      "powerUpCode": "A",
+      "practiceDescription": "Addition facts starting with 5+5, 2+9"
+    },
+    "3": {
+      "powerUpCode": "B",
+      "practiceDescription": "Subtraction facts starting with 9-8, 8-5"
+    },
+    "4": {
+      "powerUpCode": "C",
+      "practiceDescription": "Multiplication facts starting with 9x6, 7x1"
+    },
+    "5": {
+      "powerUpCode": "A",
+      "practiceDescription": "Addition facts starting with 5+5, 2+9"
+    },
+    "6": {
+      "powerUpCode": "B",
+      "practiceDescription": "Subtraction facts starting with 9-8, 8-5"
+    },
+    "7": {
+      "powerUpCode": "B",
+      "practiceDescription": "Subtraction facts starting with 9-8, 8-5"
+    },
+    "8": {
+      "powerUpCode": "C",
+      "practiceDescription": "Multiplication facts starting with 9x6, 7x1"
+    },
+    "9": {
+      "powerUpCode": "D",
+      "practiceDescription": "Division facts starting with 49/7, 25/5"
+    },
+    "10": {
+      "powerUpCode": "C",
+      "practiceDescription": "Multiplication facts starting with 9x6, 7x1"
+    },
+    "11": {
+      "powerUpCode": "D",
+      "practiceDescription": "Division facts starting with 49/7, 25/5"
+    },
+    "12": {
+      "powerUpCode": "E",
+      "practiceDescription": "Division facts starting with 81/9, 48/8"
+    },
+    "13": {
+      "powerUpCode": "E",
+      "practiceDescription": "Division facts starting with 81/9, 48/8"
+    },
+    "14": {
+      "powerUpCode": "F",
+      "practiceDescription": "Multiplication facts starting with 7x9, 4x4"
+    },
+    "15": {
+      "powerUpCode": "F",
+      "practiceDescription": "Multiplication facts starting with 7x9, 4x4"
+    },
+    "16": {
+      "powerUpCode": "F",
+      "practiceDescription": "Multiplication facts starting with 7x9, 4x4"
+    },
+    "17": {
+      "powerUpCode": "H",
+      "practiceDescription": "Improper fractions starting with 8/3, 12/4"
+    },
+    "18": {
+      "powerUpCode": "G",
+      "practiceDescription": "Division with remainders starting with 7/2, 16/3"
+    },
+    "19": {
+      "powerUpCode": "H",
+      "practiceDescription": "Improper fractions starting with 8/3, 12/4"
+    },
+    "20": {
+      "powerUpCode": "I",
+      "practiceDescription": "Reducing fractions to lowest terms starting with 2/10, 3/9"
+    },
+    "21": {
+      "powerUpCode": "H",
+      "practiceDescription": "Improper fractions starting with 8/3, 12/4"
+    },
+    "22": {
+      "powerUpCode": "J",
+      "practiceDescription": "Simplifying fractions starting with 6/4, 10/8"
+    },
+    "23": {
+      "powerUpCode": "I",
+      "practiceDescription": "Reducing fractions to lowest terms starting with 2/10, 3/9"
+    }
+  }
+}

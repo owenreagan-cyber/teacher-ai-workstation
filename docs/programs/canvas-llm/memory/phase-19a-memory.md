@@ -1112,7 +1112,14 @@ Future local operator commands:
 
 ```bash
 export CANVAS_BASE_URL="https://thalesacademy.instructure.com"
-export CANVAS_TOKEN="<set locally only; never paste into chat>"
+# Set CANVAS_TOKEN locally only.
+# Use a hidden prompt in Terminal; never paste the token into chat or commit it.
+printf "Canvas token: "
+stty -echo
+IFS= read CANVAS_TOKEN
+stty echo
+echo
+export CANVAS_TOKEN
 
 python3 scripts/canvas-llm/canvas_learning_agent.py --mode inventory
 python3 scripts/canvas-llm/canvas_learning_agent.py --mode reference-inventory
@@ -1180,3 +1187,42 @@ Writing Activity on Expository Writing Unit
 Entries like these should be copied exactly into the In Class field.
 
 The app must not auto-pull resources or auto-create assignments for these entries unless Owen explicitly adds/approves them in the lesson planner.
+
+---
+
+## Phase 21B Existing Page Dry-Run Readiness
+
+Phase 21B is the next safe operational step after Phase 21A.
+
+It validates existing-page dry-run readiness before any sandbox write experiment.
+
+Canvas writes remain blocked.
+
+Future phase preflight should run:
+
+```bash
+python3 scripts/canvas-llm-handoff-breadcrumb-repair.py --repair
+python3 scripts/canvas-llm-handoff-breadcrumb-repair.py --check
+```
+
+This prevents recurring historical handoff breadcrumb failures caused by exact-string checks in older phase status scripts.
+
+---
+
+## Phase 21B Dry-Run Finding
+
+Phase 21B observed decision:
+
+```text
+EXISTING_PAGE_DRY_RUN_NEEDS_AGENT_HARDENING
+```
+
+Inventory found sandbox QxWy page candidates in course `24399`, but existing-page dry-run returned:
+
+```text
+WARN: no sandbox QxWy candidate page found
+```
+
+Next step should harden the existing-page dry-run selector before any `--allow-writes` experiment.
+
+Canvas writes remain blocked.

@@ -356,21 +356,189 @@ def run_cleanup(client: CanvasApiClient, allow_writes: bool) -> dict[str, Any]:
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Canvas LLM Phase 21 autonomous sandbox learning agent")
-    parser.add_argument("--mode", choices=["inventory", "reference-inventory", "questions", "experiment", "existing-page-dry-run", "cleanup"], default="inventory")
+    parser.add_argument(
+        "--mode",
+        choices=[
+            "inventory",
+            "reference-inventory",
+            "questions",
+            "experiment",
+            "existing-page-dry-run",
+            "cleanup",
+            "phase21c-select-existing-page",
+            "phase21c-learning-expansion",
+            "phase21c-existing-page-write-preview",
+        ],
+        default="inventory",
+    )
     parser.add_argument("--allow-writes", action="store_true", help="Required for experiment and cleanup Canvas writes")
     return parser.parse_args()
 
 
+# ---- Phase 21C: existing-page selector hardening + gated sandbox write helpers ----
+
+PHASE_21C_SAFE_WRITE_MARKER = "<!-- teacher-ai-workstation phase-21c sandbox-write-marker -->"
+PHASE_21C_APPROVAL_PHRASE = "PHASE_21C_SANDBOX_EXISTING_PAGE_WRITE_APPROVED"
+
+
+def _phase21c_load_findings() -> dict[str, Any]:
+    findings_path = RUN_ROOT / "findings.json"
+    if not findings_path.exists():
+        raise SystemExit("WARN: no findings.json exists yet; run --mode inventory first")
+    return json.loads(findings_path.read_text(encoding="utf-8"))
+
+
+def _phase21c_qw_score(page: dict[str, Any]) -> tuple[int, str, str]:
+    title = str(page.get("title", "")).upper()
+    slug = str(page.get("slug", "")).lower()
+    published = bool(page.get("published", False))
+    front_page = bool(page.get("front_page", False))
+
+    penalty = 0
+
+    # Prefer harmless unpublished normal weekly pages.
+    if published:
+        penalty += 10
+    if front_page:
+        penalty += 100
+    if "END" in title:
+        penalty += 100
+    if title == "Q4W10" or slug == "q4w10":
+        penalty += 50
+    if "COPY" in title:
+        penalty += 25
+
+    return (penalty, title, slug)
+
+
+def phase21c_select_sandbox_existing_page() -> dict[str, Any]:
+    findings = _phase21c_load_findings()
+    sandbox = findings.get("courses", {}).get(SANDBOX_COURSE_ID, {})
+    candidates = sandbox.get("qxwy_page_candidates") or []
+
+    safe: list[dict[str, Any]] = []
+    for page in candidates:
+        title = str(page.get("title", "")).upper()
+        slug = str(page.get("slug", "")).lower()
+
+        if not title.startswith("Q"):
+            continue
+        if "W" not in title:
+            continue
+        if "END" in title:
+            continue
+        if not slug:
+            continue
+
+        safe.append(page)
+
+    safe = sorted(safe, key=_phase21c_qw_score)
+
+    result = {
+        "mode": "phase21c-select-existing-page",
+        "course_id": SANDBOX_COURSE_ID,
+        "candidate_count": len(candidates),
+        "safe_candidate_count": len(safe),
+        "selected": safe[0] if safe else None,
+        "selection_rule": [
+            "course_id must be 24399",
+            "page must already exist",
+            "title must look like QxWy",
+            "prefer unpublished pages",
+            "avoid front page",
+            "avoid QxEND special pages",
+            "avoid Q4W10 unless explicitly requested",
+            "avoid Copy pages when a normal page exists",
+        ],
+        "writes_approved": False,
+    }
+
+    write_json(RUN_ROOT / "phase21c-selected-existing-page.json", result, os.environ.get("CANVAS_BASE_URL"))
+    return result
+
+
+def phase21c_assignment_learning_inventory() -> dict[str, Any]:
+    findings = _phase21c_load_findings()
+    courses = findings.get("courses", {})
+
+    result = {
+        "mode": "phase21c-assignment-announcement-attachment-learning",
+        "generated_from": "safe inventory summaries",
+        "rules_to_learn_next": [
+            "Math lesson number to assignment naming",
+            "Math Power Up to practice attachment/resource mapping",
+            "Fact Test to practice/review assignment mapping",
+            "Reading lesson to comprehension letter mapping",
+            "Reading page number to assignment/page body mapping",
+            "Announcement update pattern for test date changes",
+            "Attachment/file link pattern for weekly page resources",
+        ],
+        "course_summaries": {},
+        "writes_approved": False,
+    }
+
+    for course_id, course in courses.items():
+        result["course_summaries"][course_id] = {
+            "label": course.get("label"),
+            "assignments_count": course.get("assignments_count"),
+            "files_count": course.get("files_count"),
+            "announcements_count": course.get("announcements_count"),
+            "pages_count": course.get("pages_count"),
+            "modules_count": course.get("modules_count"),
+        }
+
+    write_json(RUN_ROOT / "phase21c-learning-expansion-plan.json", result, os.environ.get("CANVAS_BASE_URL"))
+    return result
+
+
+def phase21c_existing_page_write_preview() -> dict[str, Any]:
+    selected_result = phase21c_select_sandbox_existing_page()
+    selected_page = selected_result.get("selected")
+
+    result = {
+        "mode": "phase21c-existing-page-write-preview",
+        "course_id": SANDBOX_COURSE_ID,
+        "selected": selected_page,
+        "operation": "update existing sandbox page body",
+        "writes_approved": False,
+        "required_write_gates": [
+            "--allow-writes",
+            "--mode phase21c-existing-page-write",
+            f"target course must be {SANDBOX_COURSE_ID}",
+            "target page slug must match selected existing page",
+            f"approval phrase must be {PHASE_21C_APPROVAL_PHRASE}",
+        ],
+        "preview_body_marker": PHASE_21C_SAFE_WRITE_MARKER,
+        "rollback": [
+            "restore previous body from local pre-write snapshot",
+            "remove phase-21c sandbox-write-marker",
+            "do not touch production or reference courses",
+        ],
+    }
+
+    write_json(RUN_ROOT / "phase21c-existing-page-write-preview.json", result, os.environ.get("CANVAS_BASE_URL"))
+    return result
+
+
 def main() -> int:
     args = parse_args()
+
     if args.mode in {"experiment", "cleanup"} and not args.allow_writes:
         raise SystemExit("BLOCKED: --mode experiment/cleanup requires --allow-writes")
+
     if args.mode == "questions":
         result = run_questions()
     elif args.mode == "existing-page-dry-run":
         result = run_existing_page_dry_run()
+    elif args.mode == "phase21c-select-existing-page":
+        result = phase21c_select_sandbox_existing_page()
+    elif args.mode == "phase21c-learning-expansion":
+        result = phase21c_assignment_learning_inventory()
+    elif args.mode == "phase21c-existing-page-write-preview":
+        result = phase21c_existing_page_write_preview()
     else:
         client = CanvasApiClient.from_env()
+
         if args.mode == "inventory":
             result = run_inventory(client, safe_course_ids(), "inventory")
         elif args.mode == "reference-inventory":
@@ -381,6 +549,7 @@ def main() -> int:
             result = run_cleanup(client, args.allow_writes)
         else:
             raise SystemExit(f"FAIL: unsupported mode {args.mode}")
+
     print(json.dumps(sanitize_value(result, os.environ.get("CANVAS_BASE_URL")), indent=2, sort_keys=True))
     return 0
 

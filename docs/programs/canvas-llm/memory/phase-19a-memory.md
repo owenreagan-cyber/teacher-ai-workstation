@@ -1226,3 +1226,13 @@ WARN: no sandbox QxWy candidate page found
 Next step should harden the existing-page dry-run selector before any `--allow-writes` experiment.
 
 Canvas writes remain blocked.
+
+---
+
+## Phase 21C Selector Hardening + Sandbox Write Readiness
+
+Phase 21C moves past Phase 21B by hardening existing-page selection and preparing a gated sandbox write preview.
+
+Learning expansion now includes announcements, attachments/files, assignments, Math lesson and Power Up patterns, fact tests, Reading lesson patterns, comprehension letters, and page-number mapping.
+
+Canvas writes remain blocked unless all Phase 21C write gates pass.

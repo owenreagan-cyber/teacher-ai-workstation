@@ -42,6 +42,7 @@ These flags exist in `bin/chief-of-staff` and work as read-only local status sur
 | `bin/chief-of-staff --whole-system-master-roadmap-status` | Whole-system master roadmap build-state report and next safe lane selector proof |
 | `bin/chief-of-staff --whole-system-coherence-status` | Whole-system coherence maintenance audit and cross-link proof |
 | `bin/chief-of-staff --agent-builder-compatibility-governance-status` | Agent builder compatibility and external tool governance (no agent launch) |
+| `bin/chief-of-staff --agents-governance-status` | Repo-wide AGENTS.md governance quick-start proof (not implementation approval) |
 | `bin/chief-of-staff --owen-architecture-decision-packets-status` | Owen architecture decision packet index and boundary proof (Owen owns decisions) |
 | `bin/chief-of-staff --app-ecosystem-inventory-status` | App ecosystem inventory and prototype build list (52 apps; Owen owns priority) |
 | `bin/chief-of-staff --classroom-timer-stopwatch-planning-status` | Classroom Timer & Stopwatch planning lane (Owen selected; no runtime) |

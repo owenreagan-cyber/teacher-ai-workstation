@@ -1176,6 +1176,19 @@ check_doc_contains docs/agent-builder-compatibility-and-external-tool-governance
 check_doc_contains docs/whole-system-master-roadmap-build-state-report.md "complete_agent_builder_compatibility_governance_program" "whole-system report agent builder closure"
 grep -Fq -- '--agent-builder-compatibility-governance-status' bin/chief-of-staff && pass "chief-of-staff exposes --agent-builder-compatibility-governance-status" || fail "chief-of-staff missing --agent-builder-compatibility-governance-status"
 
+section "AGENTS.md Governance Files"
+for path in \
+  AGENTS.md \
+  scripts/agents-governance-status.sh \
+  tests/agents-governance-status-test.sh; do
+  check_required_file "${path}"
+done
+check_bash_syntax scripts/agents-governance-status.sh
+check_bash_syntax tests/agents-governance-status-test.sh
+check_doc_contains AGENTS.md "Global guidance is not implementation approval" "AGENTS.md global guidance disclaimer"
+check_doc_contains AGENTS.md "Phase-Specific Instructions (Not Global Rules)" "AGENTS.md phase-specific exclusion"
+grep -Fq -- '--agents-governance-status' bin/chief-of-staff && pass "chief-of-staff exposes --agents-governance-status" || fail "chief-of-staff missing --agents-governance-status"
+
 section "Owen Architecture Decision Packets Files"
 for path in \
   docs/owen-architecture-decision-packets.md \

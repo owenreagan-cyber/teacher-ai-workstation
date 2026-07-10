@@ -62,6 +62,7 @@ Per `docs/cursor-autonomous-build-engine.md` Expected WARN Policy.
 | `--markdown-frontmatter-planning-status` | 0 | No — targeted command only |
 | `--whole-system-coherence-status` | 0 | No — targeted command only |
 | `--agent-builder-compatibility-governance-status` | 0 | No — targeted command only |
+| `--agents-governance-status` | 0 | No — targeted command only |
 | `--owen-architecture-decision-packets-status` | 0 | No — targeted command only |
 | `--app-ecosystem-inventory-status` | 0 | No — targeted command only |
 | `--classroom-timer-stopwatch-planning-status` | 0 | No — targeted command only |

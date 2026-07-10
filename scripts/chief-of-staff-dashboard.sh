@@ -2149,6 +2149,27 @@ else
   warn "Agent builder compatibility governance status script missing: scripts/agent-builder-compatibility-governance-status.sh"
 fi
 
+section "AGENTS.md Governance"
+if [[ -f scripts/agents-governance-status.sh ]]; then
+  agents_governance_result=0
+  agents_governance_output="$(bash scripts/agents-governance-status.sh 2>&1)" || agents_governance_result=$?
+  agents_governance_pass="$(summary_count "${agents_governance_output}" "PASS")"
+  agents_governance_warn="$(summary_count "${agents_governance_output}" "WARN")"
+  agents_governance_fail="$(summary_count "${agents_governance_output}" "FAIL")"
+
+  if [[ "${agents_governance_result}" != "0" ]]; then
+    printf '%s\n' "${agents_governance_output}"
+    fail "AGENTS.md governance status failed"
+  elif [[ -n "${agents_governance_pass}" && -n "${agents_governance_warn}" && -n "${agents_governance_fail}" ]]; then
+    printf 'AGENTS.md Governance: PASS %s / WARN %s / FAIL %s\n' "${agents_governance_pass}" "${agents_governance_warn}" "${agents_governance_fail}"
+    pass "AGENTS.md governance status completed"
+  else
+    pass "AGENTS.md governance status completed"
+  fi
+else
+  warn "AGENTS.md governance status script missing: scripts/agents-governance-status.sh"
+fi
+
 section "Owen Architecture Decision Packets"
 if [[ -f scripts/owen-architecture-decision-packets-status.sh ]]; then
   decision_packets_result=0

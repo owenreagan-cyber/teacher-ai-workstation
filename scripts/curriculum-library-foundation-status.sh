@@ -134,7 +134,7 @@ else
 fi
 
 section 'Roadmap and Build Queue Cross-Links'
-check_doc_contains docs/build-queue.md "curriculum library" "build queue curriculum library"
+check_doc_contains docs/build-queue.md "Curriculum Library" "build queue curriculum library"
 check_doc_contains docs/whole-system-master-roadmap-build-state-report.md "curriculum-library" "whole-system report curriculum library"
 check_doc_contains assistant/memory/active-priorities.md "Curriculum Library setup" "active priorities curriculum library"
 

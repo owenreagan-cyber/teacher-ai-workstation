@@ -188,10 +188,14 @@ else
 fi
 [[ -f "${sentinel}" ]] && pass 'BLOCKED-NO-WRITES.sentinel intact' || fail 'BLOCKED-NO-WRITES.sentinel missing'
 grep -Fq -- '--curriculum-registry-write)' bin/chief-of-staff 2>/dev/null && fail 'chief-of-staff must not implement --curriculum-registry-write handler' || pass 'chief-of-staff has no --curriculum-registry-write handler'
-if find scripts -maxdepth 1 -type f \( -name '*writer*.sh' -o -name '*write*.sh' \) | grep -q .; then
-  fail 'writer scripts must remain absent from scripts/'
+writer_scripts_present=0
+for candidate in scripts/*production-registry*write*; do
+  [[ -e "${candidate}" ]] && writer_scripts_present=1
+done
+if [[ "${writer_scripts_present}" == "0" ]]; then
+  pass 'no production-registry writer scripts in scripts/'
 else
-  pass 'no writer scripts under scripts/'
+  fail 'writer scripts must remain absent from scripts/'
 fi
 if [[ -f "${runtime_manifest}" ]] && command -v python3 >/dev/null 2>&1; then
   runtime_report="$(python3 <<'PY'

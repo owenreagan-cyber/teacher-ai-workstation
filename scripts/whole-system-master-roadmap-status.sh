@@ -107,6 +107,9 @@ check_doc_contains "${report}" "complete_whole_system_coherence_maintenance" "co
 check_doc_contains "${report}" "--whole-system-coherence-status" "coherence status command cross-link"
 check_doc_contains "${report}" "complete_agent_builder_compatibility_governance_program" "agent builder governance closure"
 check_doc_contains "${report}" "--agent-builder-compatibility-governance-status" "agent builder governance status command cross-link"
+check_doc_contains "${report}" "complete_agents_md_governance_rules_program" "AGENTS.md governance closure"
+check_doc_contains "${report}" "--agents-governance-status" "AGENTS.md governance status command cross-link"
+check_doc_contains "${report}" "AGENTS.md" "whole-system report AGENTS.md cross-link"
 check_doc_contains "${report}" "complete_owen_architecture_decision_packets_program" "decision packets closure"
 check_doc_contains "${report}" "--owen-architecture-decision-packets-status" "decision packets status command cross-link"
 check_doc_contains "${report}" "complete_app_ecosystem_inventory_and_prototype_build_list" "app ecosystem inventory closure"
@@ -237,6 +240,23 @@ if [[ -f scripts/agent-builder-compatibility-governance-status.sh ]]; then
   fi
 else
   fail 'agent builder compatibility governance status script missing'
+fi
+
+section 'Dependent Status: AGENTS.md Governance'
+if [[ -f scripts/agents-governance-status.sh ]]; then
+  agents_gov_output="$(bash scripts/agents-governance-status.sh 2>&1)" || agents_gov_result=$?
+  agents_gov_result="${agents_gov_result:-0}"
+  if [[ "${agents_gov_result}" != "0" ]]; then
+    fail 'AGENTS.md governance status script exited nonzero'
+    printf '%s\n' "${agents_gov_output}" | tail -20
+  elif grep -q '^FAIL: [1-9]' <<< "${agents_gov_output}"; then
+    fail 'AGENTS.md governance status reported FAIL'
+    printf '%s\n' "${agents_gov_output}" | tail -20
+  else
+    pass 'AGENTS.md governance status component clean'
+  fi
+else
+  fail 'AGENTS.md governance status script missing'
 fi
 
 section 'Dependent Status: Owen Architecture Decision Packets'

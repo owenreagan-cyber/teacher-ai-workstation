@@ -6,6 +6,7 @@ Agent quick-start: `AGENTS.md`
 
 ### Recently Completed (workflow polish)
 
+- Repo-wide AGENTS.md governance rules program: complete
 - Canvas LLM Phase 11 sandbox metadata import preview gate: complete
 - Canvas LLM Phase 10 sandbox metadata review/import gate: complete
 - Canvas LLM Phase 9B sandbox API metadata fetch execution: complete

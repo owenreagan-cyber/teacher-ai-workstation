@@ -1236,3 +1236,11 @@ Phase 21C moves past Phase 21B by hardening existing-page selection and preparin
 Learning expansion now includes announcements, attachments/files, assignments, Math lesson and Power Up patterns, fact tests, Reading lesson patterns, comprehension letters, and page-number mapping.
 
 Canvas writes remain blocked unless all Phase 21C write gates pass.
+
+---
+
+## Phase 21D Sandbox Week Render Write + Assignment Creation
+
+Phase 21D prepares a rendered weekly page write and sandbox assignment creation for course `24399`, page `q1w1`.
+
+The phase includes Lesson 1-5 Monday-Friday test logic, odd/even homework mapping, Friday no-homework behavior, idempotent sandbox assignment creation, prewrite snapshot/rollback, and a read-only People sandbox verification gate.

@@ -368,10 +368,18 @@ def parse_args() -> argparse.Namespace:
             "phase21c-select-existing-page",
             "phase21c-learning-expansion",
             "phase21c-existing-page-write-preview",
+            "phase21d-sandbox-people-verify",
+            "phase21d-sandbox-week-render-preview",
+            "phase21d-sandbox-week-write",
+            "phase21d-sandbox-week-rollback-preview",
+            "phase21d-sandbox-week-rollback",
         ],
         default="inventory",
     )
-    parser.add_argument("--allow-writes", action="store_true", help="Required for experiment and cleanup Canvas writes")
+    parser.add_argument("--allow-writes", action="store_true", help="Required for Canvas write modes")
+    parser.add_argument("--target-course-id", default="", help="Required exact target course id for gated writes")
+    parser.add_argument("--target-page-slug", default="", help="Required exact target page slug for gated writes")
+    parser.add_argument("--approval-phrase", default="", help="Required exact approval phrase for gated writes")
     return parser.parse_args()
 
 
@@ -395,8 +403,6 @@ def _phase21c_qw_score(page: dict[str, Any]) -> tuple[int, str, str]:
     front_page = bool(page.get("front_page", False))
 
     penalty = 0
-
-    # Prefer harmless unpublished normal weekly pages.
     if published:
         penalty += 10
     if front_page:
@@ -520,6 +526,414 @@ def phase21c_existing_page_write_preview() -> dict[str, Any]:
     return result
 
 
+# ---- Phase 21D: rendered sandbox week write + assignment creation ----
+
+PHASE_21D_TARGET_COURSE_ID = "24399"
+PHASE_21D_TARGET_PAGE_SLUG = "q1w1"
+PHASE_21D_WRITE_MARKER = "<!-- teacher-ai-workstation phase-21d sandbox-week-write -->"
+PHASE_21D_WRITE_APPROVAL = "PHASE_21D_SANDBOX_WEEK_WRITE_APPROVED"
+PHASE_21D_ROLLBACK_APPROVAL = "PHASE_21D_SANDBOX_WEEK_ROLLBACK_APPROVED"
+PHASE_21D_ALLOWED_OWNER_EMAIL = "owen.reagan@thalesacademy.com"
+PHASE_21D_ALLOWED_OWNER_NAME = "owen reagan"
+PHASE_21D_ASSIGNMENT_NAME_EXAMPLES = [
+    "Phase 21D Sandbox Math Lesson 1 Homework Odd",
+    "Phase 21D Sandbox Math Lesson 2 Homework Even",
+]
+
+
+def _phase21d_week_plan() -> list[dict[str, Any]]:
+    return [
+        {"day": "Monday", "lesson": 1, "homework": "odd", "no_homework": False},
+        {"day": "Tuesday", "lesson": 2, "homework": "even", "no_homework": False},
+        {"day": "Wednesday", "lesson": 3, "homework": "odd", "no_homework": False},
+        {"day": "Thursday", "lesson": 4, "homework": "even", "no_homework": False},
+        {"day": "Friday", "lesson": 5, "homework": None, "no_homework": True},
+    ]
+
+
+def _phase21d_assignment_plan() -> list[dict[str, Any]]:
+    assignments: list[dict[str, Any]] = []
+    for item in _phase21d_week_plan():
+        day = item["day"]
+        lesson = item["lesson"]
+
+        assignments.append({
+            "name": f"Phase 21D Sandbox Math Lesson {lesson}",
+            "day": day,
+            "lesson": lesson,
+            "kind": "lesson",
+            "points_possible": 0,
+            "published": False,
+        })
+
+        assignments.append({
+            "name": f"Phase 21D Sandbox Math Lesson {lesson} Practice",
+            "day": day,
+            "lesson": lesson,
+            "kind": "practice",
+            "points_possible": 0,
+            "published": False,
+        })
+
+        if item["no_homework"]:
+            continue
+
+        homework = item["homework"]
+        assignments.append({
+            "name": f"Phase 21D Sandbox Math Lesson {lesson} Homework {str(homework).title()}",
+            "day": day,
+            "lesson": lesson,
+            "kind": f"homework_{homework}",
+            "points_possible": 0,
+            "published": False,
+        })
+
+    return assignments
+
+
+def _phase21d_render_week_html() -> str:
+    rows = []
+    for item in _phase21d_week_plan():
+        lesson = item["lesson"]
+        homework = "No homework" if item["no_homework"] else f"{str(item['homework']).title()} homework problems"
+        rows.append(
+            "<tr>"
+            f"<td><strong>{item['day']}</strong></td>"
+            f"<td>Math Lesson {lesson}</td>"
+            f"<td>{homework}</td>"
+            f"<td>Phase 21D sandbox resource placeholder for Lesson {lesson}</td>"
+            "</tr>"
+        )
+
+    assignment_items = "\n".join(
+        f"<li>{assignment['name']} - sandbox only, 0 points, unpublished when supported</li>"
+        for assignment in _phase21d_assignment_plan()
+    )
+
+    return f'''{PHASE_21D_WRITE_MARKER}
+<div class="kl_wrapper_3 teacher-ai-phase-21d-sandbox">
+  <div id="kl_banner" class="kl_banner">
+    <h2>Phase 21D Sandbox Weekly Test Render - Q1W1</h2>
+  </div>
+
+  <div id="kl_custom_block_0" class="kl_custom_block_0">
+    <h3>Sandbox Safety</h3>
+    <p>This page render is a sandbox-only Teacher AI Workstation test for course 24399, existing page Q1W1 / q1w1.</p>
+    <p>No production course, reference course, People, gradebook, student data, modules, or announcements are modified.</p>
+  </div>
+
+  <div id="kl_custom_block_1" class="kl_custom_block_1">
+    <h3>Weekly Lesson Plan</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Day</th>
+          <th>In Class</th>
+          <th>Homework</th>
+          <th>Files / URLs</th>
+        </tr>
+      </thead>
+      <tbody>
+        {''.join(rows)}
+      </tbody>
+    </table>
+  </div>
+
+  <div id="kl_custom_block_2" class="kl_custom_block_2">
+    <h3>Sandbox Assignment Preview</h3>
+    <ul>
+      {assignment_items}
+    </ul>
+  </div>
+
+  <div id="kl_custom_block_3" class="kl_custom_block_3">
+    <h3>Rule Being Tested</h3>
+    <p>Odd lessons use odd homework. Even lessons use even homework. Friday has no homework.</p>
+  </div>
+</div>
+'''
+
+
+def _phase21d_assert_target(target_course_id: str, target_page_slug: str) -> None:
+    if target_course_id != PHASE_21D_TARGET_COURSE_ID:
+        raise SystemExit("BLOCKED: Phase 21D target course must be 24399")
+    if target_page_slug != PHASE_21D_TARGET_PAGE_SLUG:
+        raise SystemExit("BLOCKED: Phase 21D target page slug must be q1w1")
+
+
+def _phase21d_people_summary(client: CanvasApiClient) -> dict[str, Any]:
+    import json as _json
+    import urllib.parse
+    import urllib.request
+
+    course_id = PHASE_21D_TARGET_COURSE_ID
+    base_url = client.base_url.rstrip("/")
+    token = os.environ.get("CANVAS_TOKEN", "")
+    if not token:
+        raise SystemExit("BLOCKED: CANVAS_TOKEN is required for People sandbox verification")
+
+    query = urllib.parse.urlencode({"per_page": "100"})
+    url = f"{base_url}/api/v1/courses/{course_id}/users?{query}"
+    request = urllib.request.Request(url, headers={"Authorization": f"Bearer {token}"})
+
+    with urllib.request.urlopen(request, timeout=30) as response:
+        payload = response.read().decode("utf-8")
+
+    users = _json.loads(payload)
+
+    unexpected_count = 0
+    allowed_owner_present = False
+
+    for user in users:
+        safe_name = str(user.get("name") or user.get("sortable_name") or "").strip().lower()
+        safe_email = str(user.get("email") or user.get("login_id") or "").strip().lower()
+
+        is_allowed = (
+            safe_name == PHASE_21D_ALLOWED_OWNER_NAME
+            or safe_email == PHASE_21D_ALLOWED_OWNER_EMAIL
+        )
+
+        if is_allowed:
+            allowed_owner_present = True
+        else:
+            unexpected_count += 1
+
+    status = "PASS_EMPTY_OR_OWNER_ONLY" if unexpected_count == 0 else "BLOCKED_UNEXPECTED_PEOPLE_IN_SANDBOX_COURSE"
+
+    result = {
+        "mode": "phase21d-sandbox-people-verify",
+        "course_id": course_id,
+        "people_count": len(users),
+        "owner_user_present": allowed_owner_present,
+        "unexpected_people_count": unexpected_count,
+        "sandbox_people_gate_status": status,
+        "raw_people_data_committed": False,
+        "people_write_allowed": False,
+    }
+
+    write_json(RUN_ROOT / "phase21d-people-safety-summary.json", result, os.environ.get("CANVAS_BASE_URL"))
+    return result
+
+
+def phase21d_sandbox_people_verify(client: CanvasApiClient) -> dict[str, Any]:
+    return _phase21d_people_summary(client)
+
+
+def _phase21d_require_people_gate_passed(client: CanvasApiClient) -> dict[str, Any]:
+    summary = _phase21d_people_summary(client)
+    if summary.get("sandbox_people_gate_status") != "PASS_EMPTY_OR_OWNER_ONLY":
+        raise SystemExit("BLOCKED_UNEXPECTED_PEOPLE_IN_SANDBOX_COURSE")
+    return summary
+
+
+def phase21d_sandbox_week_render_preview() -> dict[str, Any]:
+    week_plan = _phase21d_week_plan()
+    assignments = _phase21d_assignment_plan()
+    html = _phase21d_render_week_html()
+
+    write_json(RUN_ROOT / "phase21d-week-plan.json", {"week_plan": week_plan}, os.environ.get("CANVAS_BASE_URL"))
+    write_json(RUN_ROOT / "phase21d-assignment-preview.json", {"assignments": assignments}, os.environ.get("CANVAS_BASE_URL"))
+    write_json(
+        RUN_ROOT / "phase21d-write-preview.json",
+        {
+            "mode": "phase21d-sandbox-week-render-preview",
+            "course_id": PHASE_21D_TARGET_COURSE_ID,
+            "target_page_slug": PHASE_21D_TARGET_PAGE_SLUG,
+            "writes_approved": False,
+            "write_marker": PHASE_21D_WRITE_MARKER,
+            "required_write_approval": PHASE_21D_WRITE_APPROVAL,
+            "required_rollback_approval": PHASE_21D_ROLLBACK_APPROVAL,
+            "people_gate_required_before_write": True,
+        },
+        os.environ.get("CANVAS_BASE_URL"),
+    )
+    (RUN_ROOT / "phase21d-rendered-page-preview.html").write_text(
+        str(sanitize_value(html, os.environ.get("CANVAS_BASE_URL"))),
+        encoding="utf-8",
+    )
+
+    return {
+        "mode": "phase21d-sandbox-week-render-preview",
+        "course_id": PHASE_21D_TARGET_COURSE_ID,
+        "target_page_slug": PHASE_21D_TARGET_PAGE_SLUG,
+        "week_plan": week_plan,
+        "assignment_count": len(assignments),
+        "writes_approved": False,
+    }
+
+
+def _phase21d_find_existing_assignment(client: CanvasApiClient, name: str) -> dict[str, Any] | None:
+    assignments = client.get_paginated(
+        "assignments",
+        f"/api/v1/courses/{PHASE_21D_TARGET_COURSE_ID}/assignments",
+        params={"per_page": "100"},
+        course_id=PHASE_21D_TARGET_COURSE_ID,
+    )
+    for assignment in assignments:
+        if assignment.get("name") == name:
+            return assignment
+    return None
+
+
+def _phase21d_create_or_reuse_assignment(client: CanvasApiClient, assignment: dict[str, Any]) -> dict[str, Any]:
+    existing = _phase21d_find_existing_assignment(client, assignment["name"])
+    if existing:
+        return {
+            "status": "reused_existing_assignment",
+            "name": assignment["name"],
+            "id": existing.get("id"),
+        }
+
+    created = client.request(
+        "POST",
+        "assignments",
+        f"/api/v1/courses/{PHASE_21D_TARGET_COURSE_ID}/assignments",
+        data={
+            "assignment[name]": assignment["name"],
+            "assignment[description]": f"Sandbox-only Phase 21D test assignment for {assignment['day']} Lesson {assignment['lesson']}.",
+            "assignment[points_possible]": "0",
+            "assignment[published]": "false",
+        },
+        course_id=PHASE_21D_TARGET_COURSE_ID,
+    )
+
+    return {
+        "status": "created_assignment",
+        "name": assignment["name"],
+        "id": created.get("id"),
+    }
+
+
+def phase21d_sandbox_week_write(client: CanvasApiClient, allow_writes: bool, target_course_id: str, target_page_slug: str, approval_phrase: str) -> dict[str, Any]:
+    if not allow_writes:
+        raise SystemExit("BLOCKED: Phase 21D write requires --allow-writes")
+    if approval_phrase != PHASE_21D_WRITE_APPROVAL:
+        raise SystemExit("BLOCKED: Phase 21D write requires exact approval phrase")
+    _phase21d_assert_target(target_course_id, target_page_slug)
+    people_gate = _phase21d_require_people_gate_passed(client)
+
+    page = client.request(
+        "GET",
+        "page",
+        f"/api/v1/courses/{target_course_id}/pages/{target_page_slug}",
+        course_id=target_course_id,
+    )
+
+    snapshot = {
+        "mode": "phase21d-prewrite-page-snapshot",
+        "course_id": target_course_id,
+        "target_page_slug": target_page_slug,
+        "title": page.get("title"),
+        "url": page.get("url"),
+        "published": page.get("published"),
+        "front_page": page.get("front_page"),
+        "body": page.get("body") or "",
+        "captured_at": now_stamp(),
+    }
+    write_json(RUN_ROOT / "phase21d-prewrite-page-snapshot.json", snapshot, os.environ.get("CANVAS_BASE_URL"))
+
+    rendered_html = _phase21d_render_week_html()
+
+    updated = client.request(
+        "PUT",
+        "page",
+        f"/api/v1/courses/{target_course_id}/pages/{target_page_slug}",
+        data={"wiki_page[body]": rendered_html},
+        course_id=target_course_id,
+    )
+
+    assignment_results = []
+    for assignment in _phase21d_assignment_plan():
+        assignment_results.append(_phase21d_create_or_reuse_assignment(client, assignment))
+
+    verify_page = client.request(
+        "GET",
+        "page",
+        f"/api/v1/courses/{target_course_id}/pages/{target_page_slug}",
+        course_id=target_course_id,
+    )
+    marker_present = PHASE_21D_WRITE_MARKER in str(verify_page.get("body") or "")
+
+    ledger = {
+        "mode": "phase21d-sandbox-week-write",
+        "course_id": target_course_id,
+        "target_page_slug": target_page_slug,
+        "people_gate": people_gate,
+        "page_updated": bool(updated),
+        "marker_present_after_write": marker_present,
+        "assignments": assignment_results,
+        "production_write_allowed": False,
+        "reference_write_allowed": False,
+        "announcement_send_allowed": False,
+        "written_at": now_stamp(),
+    }
+    write_json(RUN_ROOT / "phase21d-write-ledger.json", ledger, os.environ.get("CANVAS_BASE_URL"))
+
+    if not marker_present:
+        raise SystemExit("FAIL: page write verification marker missing after update")
+
+    return ledger
+
+
+def phase21d_sandbox_week_rollback_preview() -> dict[str, Any]:
+    snapshot_path = RUN_ROOT / "phase21d-prewrite-page-snapshot.json"
+    ledger_path = RUN_ROOT / "phase21d-write-ledger.json"
+
+    if not snapshot_path.exists():
+        raise SystemExit("BLOCKED: rollback preview requires phase21d-prewrite-page-snapshot.json")
+
+    snapshot = json.loads(snapshot_path.read_text(encoding="utf-8"))
+    ledger = json.loads(ledger_path.read_text(encoding="utf-8")) if ledger_path.exists() else {}
+
+    result = {
+        "mode": "phase21d-sandbox-week-rollback-preview",
+        "course_id": snapshot.get("course_id"),
+        "target_page_slug": snapshot.get("target_page_slug"),
+        "would_restore_page_body": True,
+        "would_delete_assignments": False,
+        "assignment_cleanup": "not approved in Phase 21D rollback",
+        "ledger_available": bool(ledger),
+        "required_approval": PHASE_21D_ROLLBACK_APPROVAL,
+    }
+
+    write_json(RUN_ROOT / "phase21d-rollback-preview.json", result, os.environ.get("CANVAS_BASE_URL"))
+    return result
+
+
+def phase21d_sandbox_week_rollback(client: CanvasApiClient, allow_writes: bool, target_course_id: str, target_page_slug: str, approval_phrase: str) -> dict[str, Any]:
+    if not allow_writes:
+        raise SystemExit("BLOCKED: Phase 21D rollback requires --allow-writes")
+    if approval_phrase != PHASE_21D_ROLLBACK_APPROVAL:
+        raise SystemExit("BLOCKED: Phase 21D rollback requires exact rollback approval phrase")
+    _phase21d_assert_target(target_course_id, target_page_slug)
+
+    snapshot_path = RUN_ROOT / "phase21d-prewrite-page-snapshot.json"
+    if not snapshot_path.exists():
+        raise SystemExit("BLOCKED: rollback requires phase21d-prewrite-page-snapshot.json")
+
+    snapshot = json.loads(snapshot_path.read_text(encoding="utf-8"))
+
+    client.request(
+        "PUT",
+        "page",
+        f"/api/v1/courses/{target_course_id}/pages/{target_page_slug}",
+        data={"wiki_page[body]": snapshot.get("body") or ""},
+        course_id=target_course_id,
+    )
+
+    result = {
+        "mode": "phase21d-sandbox-week-rollback",
+        "course_id": target_course_id,
+        "target_page_slug": target_page_slug,
+        "page_body_restored": True,
+        "assignments_deleted": False,
+        "rolled_back_at": now_stamp(),
+    }
+
+    write_json(RUN_ROOT / "phase21d-rollback-ledger.json", result, os.environ.get("CANVAS_BASE_URL"))
+    return result
+
+
 def main() -> int:
     args = parse_args()
 
@@ -536,6 +950,10 @@ def main() -> int:
         result = phase21c_assignment_learning_inventory()
     elif args.mode == "phase21c-existing-page-write-preview":
         result = phase21c_existing_page_write_preview()
+    elif args.mode == "phase21d-sandbox-week-render-preview":
+        result = phase21d_sandbox_week_render_preview()
+    elif args.mode == "phase21d-sandbox-week-rollback-preview":
+        result = phase21d_sandbox_week_rollback_preview()
     else:
         client = CanvasApiClient.from_env()
 
@@ -547,6 +965,24 @@ def main() -> int:
             result = run_experiment(client, args.allow_writes)
         elif args.mode == "cleanup":
             result = run_cleanup(client, args.allow_writes)
+        elif args.mode == "phase21d-sandbox-people-verify":
+            result = phase21d_sandbox_people_verify(client)
+        elif args.mode == "phase21d-sandbox-week-write":
+            result = phase21d_sandbox_week_write(
+                client,
+                args.allow_writes,
+                args.target_course_id,
+                args.target_page_slug,
+                args.approval_phrase,
+            )
+        elif args.mode == "phase21d-sandbox-week-rollback":
+            result = phase21d_sandbox_week_rollback(
+                client,
+                args.allow_writes,
+                args.target_course_id,
+                args.target_page_slug,
+                args.approval_phrase,
+            )
         else:
             raise SystemExit(f"FAIL: unsupported mode {args.mode}")
 

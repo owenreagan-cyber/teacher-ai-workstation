@@ -3,6 +3,11 @@ set -euo pipefail
 
 
 
+
+if [ "${1:-}" = "--canvas-llm-phase-21d-sandbox-week-render-write-status" ]; then
+  exec bash "scripts/canvas-llm-phase-21d-sandbox-week-render-write-status.sh"
+fi
+
 if [ "${1:-}" = "--canvas-llm-phase-21c-selector-hardening-sandbox-write-status" ]; then
   exec bash "scripts/canvas-llm-phase-21c-selector-hardening-sandbox-write-status.sh"
 fi

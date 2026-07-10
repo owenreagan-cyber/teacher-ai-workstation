@@ -440,6 +440,7 @@ bin/chief-of-staff --workflow-docs-cross-link-status
 ```
 
 ```text
+Agent operating rules (start here): AGENTS.md
 Cursor workflow operating system: docs/cursor-workflow-operating-system.md
 Cursor prompt template: docs/cursor-prompt-template.md
 Testing/checklist consolidation: docs/testing-checklist-consolidation.md

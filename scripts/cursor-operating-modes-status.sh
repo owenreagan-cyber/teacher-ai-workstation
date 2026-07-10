@@ -26,6 +26,7 @@ cd "${repo_root}"
 operating_modes_doc="docs/cursor-operating-modes-and-approval-gates.md"
 domain_boundaries_doc="docs/teacher-workstation-domain-boundaries.md"
 proposals_index="docs/proposals/index.md"
+agents_md="AGENTS.md"
 status_script="scripts/cursor-operating-modes-status.sh"
 status_test="tests/cursor-operating-modes-status-test.sh"
 
@@ -41,10 +42,13 @@ Student data: no
 EOF
 
 section 'Foundation Documents'
+check_file "${agents_md}"
 check_file "${operating_modes_doc}"
 check_file "${domain_boundaries_doc}"
 check_file "${proposals_index}"
 check_file docs/proposals/README.md
+check_doc_contains "${agents_md}" "docs/cursor-operating-modes-and-approval-gates.md" "AGENTS.md links operating modes"
+check_doc_contains "${agents_md}" "Sub-Agent and Tool Inheritance" "AGENTS.md sub-agent inheritance"
 
 section 'Operating Mode Coverage'
 check_doc_contains "${operating_modes_doc}" "Maximum Autonomous Execution Mode" "maximum autonomous execution mode"
@@ -105,6 +109,9 @@ check_doc_contains docs/master-build-roadmap.md "reviewed" "roadmap lane_status 
 section 'Cross-Links and Roadmap Coherence'
 check_doc_contains docs/cursor-workflow-operating-system.md "docs/engineering-constitution.md" "workflow guide links engineering constitution"
 check_doc_contains docs/cursor-workflow-operating-system.md "cursor-operating-modes-and-approval-gates" "workflow guide links operating modes"
+check_doc_contains docs/cursor-workflow-operating-system.md "AGENTS.md" "workflow guide links AGENTS.md"
+check_doc_contains "${operating_modes_doc}" "AGENTS.md" "operating modes links AGENTS.md"
+check_doc_contains "${agents_md}" "docs/cursor-workflow-operating-system.md" "AGENTS.md links cursor workflow"
 check_doc_contains docs/cursor-operating-modes-and-approval-gates.md "cursor-autonomous-build-engine.md" "operating modes links autonomous build engine"
 check_doc_contains docs/implementation-approval-gate.md "documentation/status only" "implementation gate status only"
 check_doc_contains docs/build-queue.md "master-build-roadmap" "build queue links roadmap"

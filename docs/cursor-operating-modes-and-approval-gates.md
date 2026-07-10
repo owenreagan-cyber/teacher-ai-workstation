@@ -15,6 +15,7 @@ Define permanent operating modes, approval levels, proposal lifecycle, blocked-i
 
 This document complements:
 
+- `AGENTS.md` — repo-wide agent quick-start
 - `docs/implementation-approval-gate.md` — repo-wide implementation gate
 - `docs/engineering-constitution.md` — engineering authority
 - `docs/cursor-workflow-operating-system.md` — workflow handoff

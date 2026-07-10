@@ -1,6 +1,11 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+
+if [ "${1:-}" = "--canvas-llm-phase-21b-existing-page-dry-run-readiness-status" ]; then
+  exec bash "scripts/canvas-llm-phase-21b-existing-page-dry-run-readiness-status.sh"
+fi
+
 VERSION="chief-of-staff CLI phase-1d"
 LARGE_CONTEXT_BYTES=204800
 STALE_MEMORY_SECONDS=$((30 * 24 * 60 * 60))

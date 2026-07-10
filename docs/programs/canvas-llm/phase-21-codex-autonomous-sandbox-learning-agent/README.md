@@ -51,7 +51,14 @@ Example operator setup:
 
 ```bash
 export CANVAS_BASE_URL="https://thalesacademy.instructure.com"
-export CANVAS_TOKEN="<set locally only; never paste into chat>"
+# Set CANVAS_TOKEN locally only.
+# Use a hidden prompt in Terminal; never paste the token into chat or commit it.
+printf "Canvas token: "
+stty -echo
+IFS= read CANVAS_TOKEN
+stty echo
+echo
+export CANVAS_TOKEN
 ```
 
 Do not run experiment or cleanup mode unless Owen intentionally approves the run context.

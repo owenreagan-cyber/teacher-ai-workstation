@@ -44,7 +44,14 @@ Future local operator commands:
 
 ```bash
 export CANVAS_BASE_URL="https://thalesacademy.instructure.com"
-export CANVAS_TOKEN="<set locally only; never paste into chat>"
+# Set CANVAS_TOKEN locally only.
+# Use a hidden prompt in Terminal; never paste the token into chat or commit it.
+printf "Canvas token: "
+stty -echo
+IFS= read CANVAS_TOKEN
+stty echo
+echo
+export CANVAS_TOKEN
 
 python3 scripts/canvas-llm/canvas_learning_agent.py --mode inventory
 python3 scripts/canvas-llm/canvas_learning_agent.py --mode reference-inventory
@@ -552,3 +559,49 @@ Current handoff records PR #301 baseline: f61dae2
 ```
 
 Current handoff records PR #301 baseline: f61dae2
+
+---
+
+## Phase 21B Existing Page Dry-Run Readiness Update
+
+Phase 21B validates the next safe step after Phase 21A:
+
+```text
+Run existing-page dry-run against owner-designated sandbox course 24399 before any --allow-writes experiment.
+```
+
+Phase 21B keeps Canvas writes blocked.
+
+Phase 21B adds a dedicated status command:
+
+```bash
+bin/chief-of-staff --canvas-llm-phase-21b-existing-page-dry-run-readiness-status
+```
+
+Required preflight for future phases:
+
+```bash
+python3 scripts/canvas-llm-handoff-breadcrumb-repair.py --repair
+python3 scripts/canvas-llm-handoff-breadcrumb-repair.py --check
+```
+
+---
+
+## Phase 21B Dry-Run Finding
+
+Observed decision:
+
+```text
+EXISTING_PAGE_DRY_RUN_NEEDS_AGENT_HARDENING
+```
+
+Reason:
+
+```text
+Inventory found sandbox QxWy page candidates in course 24399, but existing-page dry-run returned:
+WARN: no sandbox QxWy candidate page found
+```
+
+Next step should harden the existing-page dry-run selector before any sandbox write experiment.
+
+Canvas writes remain blocked.

@@ -2,6 +2,8 @@
 
 Last updated: 2026-07-03
 
+Agent quick-start: `AGENTS.md`
+
 ```text
 Status: documentation/status only
 Ledger: active

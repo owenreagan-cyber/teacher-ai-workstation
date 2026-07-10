@@ -18,7 +18,7 @@ Student data: blocked — absolute
 
 ## Purpose
 
-Consolidate Owen's full known **app / tool / game ecosystem** (52 canonical concepts) into one deduplicated, risk-classified inventory and prototype build list. This supersedes the earlier 9-app classroom utility candidate matrix as the **master planning map** — the matrix remains valid for templates already built.
+Consolidate Owen's full known **app / tool / game ecosystem** (52 canonical concepts) into one deduplicated, risk-classified inventory and prototype build list. Agent quick-start: `AGENTS.md`. This supersedes the earlier 9-app classroom utility candidate matrix as the **master planning map** — the matrix remains valid for templates already built.
 
 **This document does not approve app runtime, databases, APIs, student data, or AI generation.**
 

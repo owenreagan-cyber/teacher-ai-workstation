@@ -16,6 +16,7 @@ Canonical grouped index of Chief of Staff v1 commands. Separates **implemented**
 
 Cross-references:
 
+- Agent quick-start: `AGENTS.md`
 - Agent Core: `docs/chief-of-staff-agent-core.md`
 - Operating model: `docs/chief-of-staff-operating-model.md`
 - Proof workflow: `docs/chief-of-staff-proof-workflow.md`

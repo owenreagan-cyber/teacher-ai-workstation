@@ -18,6 +18,7 @@ This document is the **canonical program roadmap** for completing Teacher AI Wor
 
 Cross-references:
 
+- Agent quick-start: `AGENTS.md`
 - Engineering authority: `docs/engineering-constitution.md`
 - Approval gate: `docs/implementation-approval-gate.md`
 - Capability map: `docs/teacher-workstation-capability-map.md`

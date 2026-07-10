@@ -22,6 +22,7 @@ Define how **external AI builder tools** may help Owen build the Teacher AI Work
 
 | Document | Role |
 | --- | --- |
+| `AGENTS.md` | Repo-wide agent quick-start |
 | `docs/ai-tool-routing-matrix.md` | Tool routing matrix (R0) — who does what |
 | `docs/cursor-operating-modes-and-approval-gates.md` | Cursor autonomous execution boundaries |
 | `docs/implementation-approval-gate.md` | Repo-wide implementation gate |

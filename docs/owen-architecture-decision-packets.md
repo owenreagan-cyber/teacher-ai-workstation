@@ -33,6 +33,7 @@ Collect **repo-backed decision packets** for blocked gates that require Owen's e
 
 | Topic | Existing authority (do not duplicate) |
 | --- | --- |
+| Agent operating rules | `AGENTS.md` |
 | Production registry Options A–D detail | `docs/curriculum-builder-production-registry-next-gate-decision-packet.md` |
 | Agent builder classification | `docs/agent-builder-compatibility-and-external-tool-governance.md` |
 | Classroom utility candidate matrix | `docs/classroom-utility-app-candidate-matrix.md` |

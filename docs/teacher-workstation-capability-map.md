@@ -14,6 +14,7 @@ This document is the **canonical capability map** for Teacher AI Workstation. It
 
 Cross-references:
 
+- Agent quick-start: `AGENTS.md`
 - Master program sequence: `docs/master-build-roadmap.md` §4
 - AI tool roles: `docs/ai-tool-routing-matrix.md`, `assistant/model-routing.md`
 - Long-term future programs: `docs/long-term-future-programs-roadmap.md`

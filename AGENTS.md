@@ -24,8 +24,18 @@ Read this file first. Then follow the linked authority documents for the task at
 | `docs/implementation-approval-gate.md` | Repo-wide implementation gate |
 | `bin/chief-of-staff` and status scripts | PASS/WARN/FAIL proof surfaces |
 | `assistant/memory/active-priorities.md` | Session handoff and active priorities |
-| `docs/build-queue.md` | Active build queue and track status |
 | `docs/master-build-roadmap.md` | Whole-system roadmap |
+| `docs/whole-system-master-roadmap-build-state-report.md` | Whole-system build-state snapshot |
+| `docs/whole-system-coherence-maintenance-report.md` | Coherence audit and stale-language fixes |
+| `docs/teacher-workstation-capability-map.md` | Capability map with status labels |
+| `docs/app-ecosystem-inventory-and-prototype-build-list.md` | 52-app planning inventory |
+| `docs/agent-builder-compatibility-and-external-tool-governance.md` | External builder tool classification |
+| `docs/owen-architecture-decision-packets.md` | Blocked-gate decision prep (Owen owns choices) |
+| `docs/proposals/index.md` | Proposal ledger |
+| `assistant/memory/active-priorities.md` | Session handoff and active priorities |
+| `docs/build-queue.md` | Active build queue and track status |
+| `docs/chief-of-staff-command-index-v1.md` | Chief of Staff command index |
+| `assistant/chief-of-staff/v1/command-surface-manifest.json` | CLI command manifest |
 | Explicit mission prompts | Scoped approval for a specific task |
 
 If this file and a mission prompt disagree, the **stricter** rule wins unless the mission prompt explicitly narrows scope inside approved boundaries.
@@ -53,8 +63,59 @@ Repo root: `~/Projects/teacher-ai-workstation`
 6. **`docs/cursor-workflow-operating-system.md`** — Owen / ChatGPT / Cursor / GitHub workflow
 7. **`.cursor/rules/teacher-ai-workstation-senior-engineer.mdc`** — full lifecycle when explicitly authorized
 8. **`docs/proposals/index.md`** — proposal ledger (check before proposing)
+9. **`docs/master-build-roadmap.md`** — canonical program roadmap
+10. **`docs/build-queue.md`** and **`assistant/memory/active-priorities.md`** — current focus and handoff
+11. **`docs/teacher-workstation-capability-map.md`** — capability status labels
+12. **`docs/agent-builder-compatibility-and-external-tool-governance.md`** — external builder boundaries
+13. **`docs/owen-architecture-decision-packets.md`** — blocked gates awaiting Owen decisions
 
 Cursor-specific rules also live in `.cursor/rules/teacher-ai-workstation.mdc`.
+
+## Canonical Reference Map
+
+Use this map to find the right authority doc. AGENTS.md summarizes; linked docs remain authoritative for detail.
+
+### Engineering and gates
+
+| Path | Role |
+| --- | --- |
+| `docs/engineering-constitution.md` | Canonical engineering authority |
+| `docs/implementation-approval-gate.md` | Planning vs implementation boundary |
+| `docs/cursor-operating-modes-and-approval-gates.md` | Autonomous modes, discovery, proposals |
+| `docs/teacher-workstation-domain-boundaries.md` | Domain-specific blocked categories |
+| `docs/cursor-workflow-operating-system.md` | Owen / ChatGPT / Cursor / GitHub workflow |
+
+### Whole-system posture
+
+| Path | Role |
+| --- | --- |
+| `docs/master-build-roadmap.md` | Program roadmap and lane sequencing |
+| `docs/whole-system-master-roadmap-build-state-report.md` | Build-state snapshot; `--whole-system-master-roadmap-status` |
+| `docs/whole-system-coherence-maintenance-report.md` | Coherence audit; `--whole-system-coherence-status` |
+| `docs/teacher-workstation-capability-map.md` | Capability map with status labels |
+| `docs/build-queue.md` | Active build queue |
+| `assistant/memory/active-priorities.md` | Session handoff memory |
+
+### App ecosystem and decisions
+
+| Path | Role |
+| --- | --- |
+| `docs/app-ecosystem-inventory-and-prototype-build-list.md` | 52-app inventory; `--app-ecosystem-inventory-status` |
+| `docs/owen-architecture-decision-packets.md` | Decision packets; `--owen-architecture-decision-packets-status` |
+| `docs/agent-builder-compatibility-and-external-tool-governance.md` | External builders; `--agent-builder-compatibility-governance-status` |
+| `docs/proposals/index.md` | Proposal ledger |
+
+### Chief of Staff infrastructure
+
+| Path | Role |
+| --- | --- |
+| `bin/chief-of-staff` | Local CLI and status orchestrator |
+| `assistant/chief-of-staff/v1/command-surface-manifest.json` | Command surface manifest |
+| `docs/chief-of-staff-command-index-v1.md` | Grouped command index |
+| `scripts/chief-of-staff-dashboard.sh` | Dashboard aggregation script |
+| `scripts/chief-of-staff-validate-all.sh` | Validate-all orchestrator |
+| `scripts/phase-1-status.sh` | Phase-1 status verifier |
+| `tests/smoke-chief-of-staff-cli.sh` | CLI safety smoke tests |
 
 ## Preflight (Before Editing)
 
@@ -204,6 +265,18 @@ When a mission authorizes merge and final proof, report:
 ## Chief of Staff
 
 `bin/chief-of-staff` is the local CLI and dashboard orchestrator. It reports health; it does not activate runtime behavior by default.
+
+Infrastructure spine:
+
+| Component | Path |
+| --- | --- |
+| CLI entrypoint | `bin/chief-of-staff` |
+| Command manifest | `assistant/chief-of-staff/v1/command-surface-manifest.json` |
+| Command index | `docs/chief-of-staff-command-index-v1.md` |
+| Dashboard script | `scripts/chief-of-staff-dashboard.sh` |
+| Validate-all | `scripts/chief-of-staff-validate-all.sh` |
+| Phase-1 verifier | `scripts/phase-1-status.sh` |
+| CLI smoke tests | `tests/smoke-chief-of-staff-cli.sh` |
 
 Quick commands:
 

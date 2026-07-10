@@ -1,5 +1,7 @@
 # Active Priorities
 
+Agent quick-start: `AGENTS.md`
+
 ## Current Roadmap
 
 ### Recently Completed (workflow polish)

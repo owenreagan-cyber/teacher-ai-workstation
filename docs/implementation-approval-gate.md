@@ -10,7 +10,7 @@ Runtime activation status: not active
 
 ## Purpose
 
-This document defines the **repo-wide implementation approval gate** for Teacher AI Workstation. It separates planning/status work from implementation work and requires explicit approval before any track may activate schemas, validators, renderers, registries, APIs, ingestion, RAG, generation, or automation. documentation/status only — no runtime behavior.
+This document defines the **repo-wide implementation approval gate** for Teacher AI Workstation. Agent quick-start: `AGENTS.md`. It separates planning/status work from implementation work and requires explicit approval before any track may activate schemas, validators, renderers, registries, APIs, ingestion, RAG, generation, or automation. documentation/status only — no runtime behavior.
 
 ## Gate Status
 

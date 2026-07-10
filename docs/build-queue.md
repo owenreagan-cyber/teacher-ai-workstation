@@ -2,6 +2,8 @@
 
 Last updated: 2026-07-07
 
+Agent quick-start: `AGENTS.md`
+
 ## Current Completed Phase
 
 Phase 0E Vibe Engine.

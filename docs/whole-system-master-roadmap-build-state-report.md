@@ -11,6 +11,7 @@ Baseline: main after Whole-System Master Roadmap Build-State Report mission
 Closure: whole_system_master_roadmap_status_complete
 Coherence maintenance closure: complete_whole_system_coherence_maintenance
 Agent builder governance closure: complete_agent_builder_compatibility_governance_program
+AGENTS.md governance closure: complete_agents_md_governance_rules_program
 Decision packets closure: complete_owen_architecture_decision_packets_program
 App ecosystem inventory closure: complete_app_ecosystem_inventory_and_prototype_build_list
 Classroom Timer & Stopwatch planning closure: complete_classroom_timer_stopwatch_planning_lane
@@ -135,10 +136,11 @@ Cross-references: `docs/build-queue.md`, `docs/master-build-roadmap.md`, `docs/p
 | [x] | Discovery ≠ implementation banner on `--cursor-operating-modes-status` | repo-backed |
 | [x] | ABE sprint queue template + proposal-folder README checks | repo-backed |
 | [x] | Agent builder compatibility and external tool governance program complete | repo-backed — `docs/agent-builder-compatibility-and-external-tool-governance.md`; `complete_agent_builder_compatibility_governance_program` |
+| [x] | Repo-wide AGENTS.md governance rules program complete | repo-backed — `AGENTS.md`; `complete_agents_md_governance_rules_program`; global guidance only — not implementation approval |
 | [x] | Owen architecture decision packet program complete | repo-backed — `docs/owen-architecture-decision-packets.md`; `complete_owen_architecture_decision_packets_program`; Owen owns decisions |
 | [>] | Batch Level 2 review playbook (lane review still proposed/deferred) | planning/proposal-only |
 | [!] | Runtime/product behavior without explicit mission | blocked gate |
-| **Proof** | `--cursor-operating-modes-status`, `--autonomous-build-engine-status`, `--governance-lane-status`, `--agent-builder-compatibility-governance-status`, `--owen-architecture-decision-packets-status` | |
+| **Proof** | `--cursor-operating-modes-status`, `--autonomous-build-engine-status`, `--governance-lane-status`, `--agent-builder-compatibility-governance-status`, `--agents-governance-status`, `--owen-architecture-decision-packets-status` | |
 
 ---
 
@@ -337,6 +339,7 @@ Cross-references: `docs/build-queue.md`, `docs/master-build-roadmap.md`, `docs/p
 | Whole-system roadmap status | 102 / 0 / 0 PASS |
 | Whole-system coherence maintenance | 114 / 0 / 0 PASS |
 | Agent builder compatibility governance | `--agent-builder-compatibility-governance-status` |
+| AGENTS.md governance | `--agents-governance-status`; `AGENTS.md` global guidance — not implementation approval |
 | Owen architecture decision packets | `--owen-architecture-decision-packets-status` |
 | App ecosystem inventory | 51 / 0 / 0 PASS |
 | App ecosystem planning lanes program | `--app-ecosystem-planning-lanes-status` |

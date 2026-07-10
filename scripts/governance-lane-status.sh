@@ -28,6 +28,7 @@ manifest="assistant/chief-of-staff/v1/command-surface-manifest.json"
 COMPONENTS=(
   "Cursor Operating Modes Governance|scripts/cursor-operating-modes-status.sh"
   "Autonomous Build Engine Governance|scripts/autonomous-build-engine-status.sh"
+  "AGENTS.md Governance|scripts/agents-governance-status.sh"
 )
 
 section 'Governance Lane Status (Aggregate)'

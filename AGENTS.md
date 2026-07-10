@@ -53,6 +53,100 @@ Default posture:
 
 Repo root: `~/Projects/teacher-ai-workstation`
 
+## Global Guidance vs Implementation Approval
+
+`AGENTS.md` is **global guidance only**. Reading or following this file does **not**:
+
+- cross the implementation approval gate
+- approve runtime, integrations, generation, or student-data handling
+- authorize production registry writes or `--write` tooling
+- replace an explicit mission prompt
+
+Mission prompts may authorize bounded work inside approved scope. When in doubt, stop for approval.
+
+## Cost and Context Rules
+
+- Prefer **repo-local**, **read-only** status checks before broad exploration.
+- Use **targeted** file reads and searches — do not load entire large docs when a section suffices.
+- Prefer **small PRs** with validation proof over large speculative diffs.
+- Do not repeat governance philosophy in chat when `AGENTS.md` and linked docs already state it.
+- Use ChatGPT for mission prompts and PR review; use coding agents for repo-local implementation when authorized.
+- Do not burn context inventing parallel governance docs — extend existing authority files.
+- Stop and escalate rather than guessing when validation fails or scope is ambiguous.
+
+## Secrets Rules
+
+Reference: `docs/secrets-and-agent-access-policy.md`
+
+- **1Password** is the source of truth for secrets — not the repo, chat, Obsidian, or shell history.
+- Never commit, paste, log, or store passwords, API keys, OAuth tokens, recovery codes, or MFA codes in repo files.
+- Agents get **capabilities**, not raw credentials (for example authenticated `gh`, not a pasted GitHub password).
+- Status scripts and agents must **not** read `.env`, inspect secret files, or probe credential stores.
+- Never print tokens or secrets in completion reports.
+
+## Full Autonomous Lifecycle (Mission-Scoped Only)
+
+Full autonomous lifecycle (commit → push → PR → merge → branch cleanup → final proof) applies **only** when an **explicit mission prompt** authorizes it.
+
+Default posture remains human-reviewed gates per `docs/cursor-workflow-operating-system.md`.
+
+When full autonomous approval **is** granted, it covers **approved repo edits** only:
+
+| Approved repo edits inside scope | Blocked without mission approval |
+| --- | --- |
+| Docs, status scripts, tests, cross-links | Runtime apps and product behavior |
+| Read-only status commands and dashboard proof | Canvas writes, email sends, live integrations |
+| PR lifecycle on feature branches | Production registry writes, active `--write`, writer scripts |
+| Validation hardening inside scope | Student data, real curriculum ingestion |
+| | API/OAuth/network, scanning, OCR, embeddings, RAG |
+| | AI generation, Ollama/local model execution |
+| | Tool install/probing, Mac system mutation |
+
+See also `docs/agent-builder-compatibility-and-external-tool-governance.md` § Full Autonomous Run Approval Scope.
+
+## Git and PR Lifecycle Rules
+
+- Never commit directly to `main`.
+- Preflight on updated `main`; create a **feature branch** for changes.
+- Stage only intended files; report unexpected changes before commit.
+- Preserve parseable `PASS:` / `WARN:` / `FAIL:` Summary blocks in status scripts.
+- Merge proof requires clean local `main`, dashboard health, and required validation commands.
+- Delete local and remote feature branches after merge when a full-lifecycle mission authorizes cleanup.
+
+Human gates (no-commit review, commit, push/PR, merge) apply unless the mission explicitly authorizes autonomous completion.
+
+## Blocked Runtime and Product Writes
+
+Unless a mission prompt explicitly approves a bounded exception, agents must **not** activate or implement:
+
+- runtime apps, Canvas writes, email sends, or messaging automation
+- real curriculum ingestion, student-data handling, or classroom-sensitive content
+- Drive/NAS/iCloud/Canvas access, API/OAuth/network calls, or secrets handling
+- file/folder scanning, OCR, embeddings, RAG, or AI generation
+- local model/Ollama execution, automation, or background jobs
+- production registry writes, a second production registry record, active `--write`, or writer scripts
+- tool installation/probing, Mac system changes, widget/shortcut installation
+
+`AGENTS.md` restates boundaries; track-specific blocked-runtime docs and mission prompts add detail.
+
+## Production Registry and --write Boundary
+
+- Production registry remains **parked**: one approved record, sentinel intact, no writer scripts.
+- `--curriculum-registry-write` and production registry writer tooling are **blocked** unless Owen explicitly approves a separate mission.
+- Status scripts may **grep** for forbidden handlers; they must not perform writes.
+
+## Phase-Specific Instructions (Not Global Rules)
+
+Do **not** embed phase-specific Canvas LLM autosave, agenda, calendar, sandbox write, or track-specific runtime instructions in `AGENTS.md`.
+
+Those rules live in:
+
+- explicit mission prompts
+- track docs under `docs/programs/`
+- phase status scripts and tests
+
+`AGENTS.md` stays stable and global across missions.
+
 ## Authority Stack (Read Order)
 
 1. **Explicit mission prompt** — scoped task approval when present
@@ -206,11 +300,14 @@ Minimum proof for docs/status PRs:
 
 ```bash
 bash -n bin/chief-of-staff
+bash scripts/agents-governance-status.sh
+bin/chief-of-staff --agents-governance-status
 bash scripts/cursor-workflow-status.sh
 bin/chief-of-staff --cursor-workflow-status
 bash scripts/phase-1-status.sh
 bin/chief-of-staff --dashboard
 bash tests/smoke-chief-of-staff-cli.sh
+bash tests/agents-governance-status-test.sh
 ```
 
 Broader proof when touching governance or whole-system docs:
@@ -282,6 +379,7 @@ Quick commands:
 
 ```bash
 bin/chief-of-staff --dashboard
+bin/chief-of-staff --agents-governance-status
 bin/chief-of-staff --cursor-workflow-status
 bin/chief-of-staff --cursor-operating-modes-status
 bin/chief-of-staff --help
@@ -303,4 +401,4 @@ Cross-repo work requires explicit scope in the mission prompt.
 
 ## Non-Activation Confirmation
 
-This file is Markdown governance text only. It does not activate runtime behavior, integrations, generation, student-data handling, network calls, automation, registry writes, or changes to existing command semantics.
+This file is Markdown governance text only. It does not activate runtime behavior, integrations, generation, student-data handling, network calls, automation, registry writes, or changes to existing command semantics. **Global guidance is not implementation approval.**

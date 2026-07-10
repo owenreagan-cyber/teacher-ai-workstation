@@ -347,6 +347,7 @@ Developer and Cursor Workflow:
   --whole-system-coherence-status      Show whole-system coherence maintenance audit and cross-link proof and exit.
   --agent-builder-compatibility-governance-status
                                        Show agent builder compatibility and external tool governance status and exit.
+  --agents-governance-status           Show repo-wide AGENTS.md governance status and exit.
   --owen-architecture-decision-packets-status
                                        Show Owen architecture decision packet index and boundary proof and exit.
   --app-ecosystem-inventory-status     Show app ecosystem inventory and prototype build list status and exit.
@@ -3451,6 +3452,15 @@ while [[ $# -gt 0 ]]; do
         die "Agent builder compatibility governance status script is missing: scripts/agent-builder-compatibility-governance-status.sh"
       fi
       bash "${agent_builder_governance_status_script}"
+      exit 0
+      ;;
+    --agents-governance-status)
+      repo_root="$(resolve_repo_root)"
+      agents_governance_status_script="${repo_root}/scripts/agents-governance-status.sh"
+      if [[ ! -f "${agents_governance_status_script}" ]]; then
+        die "AGENTS.md governance status script is missing: scripts/agents-governance-status.sh"
+      fi
+      bash "${agents_governance_status_script}"
       exit 0
       ;;
     --owen-architecture-decision-packets-status)

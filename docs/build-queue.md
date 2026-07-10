@@ -1,6 +1,6 @@
 # Build Queue
 
-Last updated: 2026-07-07
+Last updated: 2026-07-10
 
 Agent quick-start: `AGENTS.md`
 
@@ -20,6 +20,7 @@ Handoff and status clarity. Start from `docs/phase-1-chief-of-staff-status-audit
 
 ## Recently Completed
 
+- Repo-wide AGENTS.md governance rules program (2026-07-10): `AGENTS.md`; `scripts/agents-governance-status.sh`; `--agents-governance-status`; `complete_agents_md_governance_rules_program`; global agent guidance only — not implementation approval; no runtime, Canvas writes, registry writes, or phase-specific global rules.
 - Canvas LLM Phase 11 Sandbox Metadata Import Preview Gate (2026-07-07): `docs/programs/canvas-llm/canvas-phase-11-sandbox-import-preview-gate.md`; `scripts/canvas-llm-sandbox-import-preview.py`; `scripts/canvas-llm-phase-11-status.sh`; `--canvas-llm-phase-11-status`; `canvas_llm_phase_11_sandbox_metadata_import_preview_gate_complete`; local ignored Phase 9B metadata preview only, course 24399 only, import blocked, no Canvas API call, no knowledge DB write, no runtime SQLite/database write, no Canvas writes/publishing, no student data, no real curriculum body ingestion, no generation, embeddings, RAG, local model execution, or production writes; expected WARN preserved for announcements_metadata=0.
 - Canvas LLM Phase 10 Sandbox Metadata Review And Import Gate (2026-07-07): `docs/programs/canvas-llm/canvas-phase-10-sandbox-metadata-review-gate.md`; `scripts/canvas-llm-sandbox-metadata-review.py`; `scripts/canvas-llm-phase-10-status.sh`; `--canvas-llm-phase-10-status`; `canvas_llm_phase_10_sandbox_metadata_review_gate_complete`; local ignored Phase 9B metadata review only, course 24399 only, import blocked, no Canvas API call, no Canvas writes/publishing, no student data, no real curriculum body ingestion, no runtime SQLite/database writes, no generation, embeddings, RAG, local model execution, or production writes; expected WARN preserved for announcements_metadata=0.
 - Canvas LLM Phase 9B Sandbox API Metadata Fetch Execution (2026-07-07): `docs/programs/canvas-llm/canvas-phase-9b-sandbox-api-metadata-fetch.md`; `scripts/canvas-llm-sandbox-metadata-fetch.py`; `scripts/canvas-llm-phase-9b-status.sh`; `--canvas-llm-phase-9b-status`; `canvas_llm_phase_9b_sandbox_api_metadata_fetch_complete`; approved course 24399 only, read-only GET metadata fetch only, local env only, local ignored staging only, no tracked fetched metadata, no tracked school Canvas URL, no token printed, no Canvas writes/publishing, no student data, no real curriculum body ingestion, no runtime SQLite/database writes, no generation, embeddings, RAG, local model execution, or production writes.

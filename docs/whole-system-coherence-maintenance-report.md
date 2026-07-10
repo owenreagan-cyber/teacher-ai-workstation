@@ -40,6 +40,7 @@ Record the whole-system coherence maintenance pass after recent planning lanes (
 | A4–A7 fixture enrichment | `complete_a4_a7_fixture_optional_field_enrichment` | `--curriculum-registry-a4-a7-fixture-schema-status` | yes | yes | yes |
 | Whole-system coherence | `complete_whole_system_coherence_maintenance` | `--whole-system-coherence-status` | yes | yes | yes |
 | Agent builder governance | `complete_agent_builder_compatibility_governance_program` | `--agent-builder-compatibility-governance-status` | yes | yes | yes |
+| AGENTS.md governance rules | `complete_agents_md_governance_rules_program` | `--agents-governance-status` | yes | yes | yes |
 | Vibe / Wallpaper / Widgets planning gate | `complete_vibe_wallpaper_widgets_planning_gate_program` | `--vibe-wallpaper-widgets-planning-status` | yes | yes | yes |
 
 ## Current Global State Proof (Post Agent Builder Governance)

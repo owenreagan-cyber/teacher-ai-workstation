@@ -1014,6 +1014,7 @@ COMPLETE:
   G1 Lovable Classroom App Builder read-only planning surface
   J1 3D Builder Workshop Agent read-only planning surface
   Governance Cursor operating modes foundation
+  Repo-wide AGENTS.md governance rules (global guidance — not implementation approval)
   Three-Level Discovery Governance (operating modes + proposal ledger schema)
   A4–A7 Curriculum Builder metadata contract schemas (read-only)
 

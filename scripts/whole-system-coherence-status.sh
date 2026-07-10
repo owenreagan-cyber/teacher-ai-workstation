@@ -229,6 +229,7 @@ check_doc_contains docs/curriculum-builder-registry-expected-warns.md "--markdow
 check_doc_contains docs/curriculum-builder-registry-expected-warns.md "--gemini-discovery-classification-intake-status" "expected warns gemini status"
 check_doc_contains docs/curriculum-builder-registry-expected-warns.md "--whole-system-coherence-status" "expected warns coherence status"
 check_doc_contains docs/curriculum-builder-registry-expected-warns.md "--agent-builder-compatibility-governance-status" "expected warns agent builder status"
+check_doc_contains docs/curriculum-builder-registry-expected-warns.md "--agents-governance-status" "expected warns AGENTS.md governance status"
 check_doc_contains docs/curriculum-builder-registry-expected-warns.md "--owen-architecture-decision-packets-status" "expected warns decision packets status"
 check_doc_contains docs/curriculum-builder-registry-expected-warns.md "--app-ecosystem-inventory-status" "expected warns app ecosystem status"
 check_doc_contains docs/curriculum-builder-registry-expected-warns.md "--classroom-timer-stopwatch-planning-status" "expected warns timer planning status"

@@ -16,6 +16,7 @@
         {"flag": "--whole-system-master-roadmap-status", "status": "implemented", "purpose": "Whole-system master roadmap build-state report and next safe lane selector (read-only)"},
         {"flag": "--whole-system-coherence-status", "status": "implemented", "purpose": "Whole-system coherence maintenance audit and cross-link proof (read-only)"},
         {"flag": "--agent-builder-compatibility-governance-status", "status": "implemented", "purpose": "Agent builder compatibility and external tool governance (read-only; no agent launch)"},
+        {"flag": "--agents-governance-status", "status": "implemented", "purpose": "Repo-wide AGENTS.md governance quick-start proof (read-only; not implementation approval)"},
         {"flag": "--owen-architecture-decision-packets-status", "status": "implemented", "purpose": "Owen architecture decision packet index and boundary proof (read-only; Owen owns decisions)"},
         {"flag": "--app-ecosystem-inventory-status", "status": "implemented", "purpose": "App ecosystem inventory and prototype build list (read-only; 52 apps; Owen owns priority)"},
         {"flag": "--classroom-timer-stopwatch-planning-status", "status": "implemented", "purpose": "Classroom Timer & Stopwatch planning lane (read-only; Owen selected)"},

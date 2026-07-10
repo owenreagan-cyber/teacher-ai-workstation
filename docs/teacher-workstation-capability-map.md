@@ -46,6 +46,7 @@ Cross-references:
 | Approval / blocker queues | **implemented read-only** | `--approval-queue`, `--blocker-queue` (Program B4) |
 | Mode awareness (conceptual) | **implemented read-only** | `--mode-status` (Program B5); no Mac changes |
 | Cursor operating modes governance | **implemented read-only** | `--cursor-operating-modes-status`; approval gates + proposal ledger |
+| AGENTS.md governance | **implemented read-only** | `AGENTS.md`; `--agents-governance-status`; global guidance — not implementation approval |
 | Autonomous Build Engine governance | **implemented read-only** | `--autonomous-build-engine-status`; continuation loop + exhaustion rules |
 | Governance lane aggregate status | **implemented read-only** | `--governance-lane-status`; operating modes + ABE + proposal folders |
 | Whole-system master roadmap build-state report | **implemented read-only** | `--whole-system-master-roadmap-status`; 15-lane posture + next safe lane selector |

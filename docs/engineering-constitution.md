@@ -324,6 +324,7 @@ Isolated PRs that skip intake or weaken invariants are out of constitution compl
 
 | Document | Role |
 | --- | --- |
+| `AGENTS.md` | Repo-wide agent quick-start and operating rules |
 | `docs/engineering-constitution.md` | This document — canonical engineering authority |
 | `docs/implementation-approval-gate.md` | Repo-wide implementation gate |
 | `docs/curriculum-builder-canonical-planning-index.md` | Curriculum Builder entry point |

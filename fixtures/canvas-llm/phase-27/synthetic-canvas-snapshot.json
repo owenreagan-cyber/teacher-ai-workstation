@@ -1,0 +1,189 @@
+{
+  "snapshotId": "synthetic-canvas-snapshot",
+  "generatedAt": "2026-07-11T00:00:00Z",
+  "source": "https://canvas.example.invalid/",
+  "objects": [
+    {
+      "objectId": "math-agenda",
+      "objectType": "page",
+      "targetCourse": "26404",
+      "confidence": 1.0,
+      "recommendedAction": "Approve",
+      "remote": {
+        "title": "Math Agenda",
+        "body": "<div><p>Practice</p></div>",
+        "publication": "published",
+        "modulePosition": 1,
+        "linkTarget": "https://canvas.example.invalid/courses/26404/pages/math-agenda"
+      },
+      "local": {
+        "title": "Math Agenda",
+        "body": "<div>\n  <p>Practice</p>\n</div>",
+        "publication": "published",
+        "modulePosition": 1,
+        "linkTarget": "https://canvas.example.invalid/courses/26404/pages/math-agenda",
+        "moduleRef": "Weekly Agendas",
+        "blockedReasons": [],
+        "dependencies": []
+      }
+    },
+    {
+      "objectId": "reading-spelling",
+      "objectType": "page",
+      "targetCourse": "26442",
+      "confidence": 0.9,
+      "recommendedAction": "Review",
+      "remote": {
+        "title": "Reading/Spelling",
+        "body": "<p>Old body</p>",
+        "publication": "published",
+        "modulePosition": 2
+      },
+      "local": {
+        "title": "Reading/Spelling",
+        "body": "<p>New body</p>",
+        "publication": "published",
+        "modulePosition": 2,
+        "moduleRef": "Weekly Reading",
+        "dependencies": ["math-agenda"]
+      }
+    },
+    {
+      "objectId": "language-arts",
+      "objectType": "page",
+      "targetCourse": "26495",
+      "confidence": 0.8,
+      "recommendedAction": "Create",
+      "remote": {},
+      "local": {
+        "title": "Language Arts",
+        "body": "<p>Plan</p>",
+        "publication": "draft",
+        "modulePosition": 3,
+        "moduleRef": "Weekly LA"
+      }
+    },
+    {
+      "objectId": "history-assignment",
+      "objectType": "assignment",
+      "targetCourse": "26427",
+      "confidence": 1.0,
+      "recommendedAction": "Omit",
+      "remote": {
+        "title": "History Assignment"
+      },
+      "local": {
+        "title": "History Assignment",
+        "body": "",
+        "publication": "draft",
+        "blockedReasons": ["assignment omitted"],
+        "dependencies": []
+      }
+    },
+    {
+      "objectId": "science-assignment",
+      "objectType": "assignment",
+      "targetCourse": "26427",
+      "confidence": 1.0,
+      "recommendedAction": "Omit",
+      "remote": {
+        "title": "Science Assignment"
+      },
+      "local": {
+        "title": "Science Assignment",
+        "body": "",
+        "publication": "draft",
+        "blockedReasons": ["assignment omitted"],
+        "dependencies": []
+      }
+    },
+    {
+      "objectId": "reading-test-14",
+      "objectType": "assignment",
+      "targetCourse": "26442",
+      "confidence": 1.0,
+      "recommendedAction": "Review",
+      "remote": {},
+      "local": {
+        "title": "Reading Test 14",
+        "body": "Reading Test 14 has no Checkout.",
+        "publication": "draft",
+        "blockedReasons": ["due-time unresolved"],
+        "dependencies": []
+      }
+    },
+    {
+      "objectId": "homeroom-page",
+      "objectType": "page",
+      "targetCourse": "26427",
+      "confidence": 1.0,
+      "recommendedAction": "Approve",
+      "expectedStatus": "UNCHANGED",
+      "remote": {
+        "title": "Homeroom",
+        "body": "<p>Agenda</p>",
+        "publication": "published"
+      },
+      "local": {
+        "title": "Homeroom",
+        "body": "<p>Agenda</p>",
+        "publication": "published",
+        "dependencies": []
+      }
+    },
+    {
+      "objectId": "conflict-page",
+      "objectType": "page",
+      "targetCourse": "26442",
+      "confidence": 0.2,
+      "recommendedAction": "Review",
+      "expectedStatus": "CONFLICT",
+      "remote": {
+        "title": "Reading/Spelling Conflict",
+        "body": "<p>A</p>"
+      },
+      "local": {
+        "title": "Reading/Spelling Conflict",
+        "body": "<p>B</p>",
+        "conflict": true,
+        "dependencies": []
+      }
+    },
+    {
+      "objectId": "omit-history",
+      "objectType": "assignment",
+      "targetCourse": "26427",
+      "confidence": 1.0,
+      "recommendedAction": "Omit",
+      "expectedStatus": "OMIT",
+      "remote": {
+        "title": "History Omit"
+      },
+      "local": {
+        "title": "History Omit",
+        "body": "",
+        "publication": "draft",
+        "blockedReasons": [],
+        "dependencies": []
+      }
+    },
+    {
+      "objectId": "delete-candidate-page",
+      "objectType": "page",
+      "targetCourse": "26404",
+      "confidence": 1.0,
+      "recommendedAction": "Delete candidate only",
+      "expectedStatus": "DELETE_CANDIDATE",
+      "remote": {
+        "title": "Old Math Page",
+        "body": "<p>Old</p>"
+      },
+      "local": {
+        "title": "Old Math Page",
+        "body": "",
+        "publication": "draft",
+        "dependencies": []
+      }
+    }
+  ]
+}

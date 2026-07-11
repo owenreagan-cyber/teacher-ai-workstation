@@ -1,0 +1,904 @@
+{
+  "approvalState": "draft",
+  "artifactClassification": "weekly-content-production-packet",
+  "assessmentReminders": [
+    {
+      "body_html": "<p>Math Written Test 18 and Fact Test 18 on Tuesday.</p>",
+      "body_text": "Math Written Test 18 and Fact Test 18 on Tuesday.",
+      "date": "2026-08-18",
+      "display_date": "Tuesday",
+      "linked_assignment_ids": [
+        "p23-01b34c1869f7a737ca",
+        "p23-d12844b38d7e0b8f55",
+        "p23-2bd5c3cf2ab994c274"
+      ],
+      "provenance": [
+        {
+          "details": "SM5: Test 18",
+          "sourceRef": "/Users/owen/Projects/teacher-ai-workstation/fixtures/canvas-llm/phase-23/synthetic-weekly-content.json",
+          "sourceType": "fixture"
+        },
+        {
+          "details": "linked to packet assignments",
+          "sourceRef": "assessment-reminder",
+          "sourceType": "phase22-rule"
+        }
+      ],
+      "reminder_id": "p23-4b939af8642d7e7994",
+      "title": "Math Written Test 18 and Fact Test 18",
+      "warnings": []
+    },
+    {
+      "body_html": "<p>Reading Mastery Test 13 on Wednesday.</p>",
+      "body_text": "Reading Mastery Test 13 on Wednesday.",
+      "date": "2026-08-19",
+      "display_date": "Wednesday",
+      "linked_assignment_ids": [
+        "p23-befe19a652af2f3eab",
+        "p23-10416259e32ce97bfe"
+      ],
+      "provenance": [
+        {
+          "details": "RM4: Reading Test 13",
+          "sourceRef": "/Users/owen/Projects/teacher-ai-workstation/fixtures/canvas-llm/phase-23/synthetic-weekly-content.json",
+          "sourceType": "fixture"
+        },
+        {
+          "details": "linked to packet assignments",
+          "sourceRef": "assessment-reminder",
+          "sourceType": "phase22-rule"
+        }
+      ],
+      "reminder_id": "p23-9be37b65e0c334ecb3",
+      "title": "Reading Mastery Test 13",
+      "warnings": []
+    },
+    {
+      "body_html": "<p>Spelling Test 6 on Wednesday.</p>",
+      "body_text": "Spelling Test 6 on Wednesday.",
+      "date": "2026-08-19",
+      "display_date": "Wednesday",
+      "linked_assignment_ids": [
+        "p23-bf43a4a979e891344a"
+      ],
+      "provenance": [
+        {
+          "details": "SPELL Test 6",
+          "sourceRef": "/Users/owen/Projects/teacher-ai-workstation/fixtures/canvas-llm/phase-23/synthetic-weekly-content.json",
+          "sourceType": "fixture"
+        },
+        {
+          "details": "linked to packet assignments",
+          "sourceRef": "assessment-reminder",
+          "sourceType": "phase22-rule"
+        }
+      ],
+      "reminder_id": "p23-b8707e3b6a35a89892",
+      "title": "Spelling Test 6",
+      "warnings": []
+    },
+    {
+      "body_html": "<p>Reading Test 14 is scheduled on Thursday. No companion support packet is assigned for Test 14.</p>",
+      "body_text": "Reading Test 14 is scheduled on Thursday. No companion support packet is assigned for Test 14.",
+      "date": "2026-08-20",
+      "display_date": "Thursday",
+      "linked_assignment_ids": [
+        "p23-38769bfc5157508f02"
+      ],
+      "provenance": [
+        {
+          "details": "No checkout companion exists for Test 14",
+          "sourceRef": "reading-checkout",
+          "sourceType": "phase22-rule"
+        }
+      ],
+      "reminder_id": "p23-5f7f31f7771baea9ab",
+      "title": "Reading Test 14",
+      "warnings": []
+    }
+  ],
+  "assignments": [
+    {
+      "assignment_id": "p23-13d85295c0521a19a2",
+      "audience": "All Students",
+      "body_html": "<p>SM5: Lesson 18</p>",
+      "body_text": "SM5: Lesson 18",
+      "display_date": "Monday",
+      "grade_display": "Percentage",
+      "group": "Tests/Assessments",
+      "linked_page_id": "p23-3d7341f76241f3fbcc",
+      "linked_resource_ids": [
+        "math-lesson-18-guide"
+      ],
+      "machine_date": "2026-08-17",
+      "points": 100,
+      "provenance": [
+        {
+          "details": "SM5: Lesson 18",
+          "sourceRef": "/Users/owen/Projects/teacher-ai-workstation/fixtures/canvas-llm/phase-23/synthetic-weekly-content.json",
+          "sourceType": "fixture"
+        },
+        {
+          "details": "assignment draft expansion",
+          "sourceRef": "math",
+          "sourceType": "phase22-rule"
+        }
+      ],
+      "subject": "math",
+      "submission_type": "On Paper",
+      "title": "SM5: Lesson 18",
+      "verified_assignment_url": null,
+      "warnings": []
+    },
+    {
+      "assignment_id": "p23-01b34c1869f7a737ca",
+      "audience": "All Students",
+      "body_html": "<p>SM5: Lesson 18 Study Guide</p>",
+      "body_text": "Study Guide 18 is the only Math homework before Test 18.",
+      "display_date": "Tuesday",
+      "grade_display": "Percentage",
+      "group": "Tests/Assessments",
+      "linked_page_id": "p23-3d7341f76241f3fbcc",
+      "linked_resource_ids": [
+        "math-test-18-blank",
+        "math-test-18-completed",
+        "math-test-18-fact-practice"
+      ],
+      "machine_date": "2026-08-18",
+      "points": 100,
+      "provenance": [
+        {
+          "details": "SM5: Test 18",
+          "sourceRef": "/Users/owen/Projects/teacher-ai-workstation/fixtures/canvas-llm/phase-23/synthetic-weekly-content.json",
+          "sourceType": "fixture"
+        },
+        {
+          "details": "assignment draft expansion",
+          "sourceRef": "math",
+          "sourceType": "phase22-rule"
+        }
+      ],
+      "subject": "math",
+      "submission_type": "On Paper",
+      "title": "SM5: Lesson 18 Study Guide",
+      "verified_assignment_url": null,
+      "warnings": []
+    },
+    {
+      "assignment_id": "p23-d12844b38d7e0b8f55",
+      "audience": "All Students",
+      "body_html": "<p>SM5: Lesson 18 Written Test</p>",
+      "body_text": "SM5: Lesson 18 Written Test",
+      "display_date": "Tuesday",
+      "grade_display": "Percentage",
+      "group": "Tests/Assessments",
+      "linked_page_id": "p23-3d7341f76241f3fbcc",
+      "linked_resource_ids": [
+        "math-test-18-blank",
+        "math-test-18-completed",
+        "math-test-18-fact-practice"
+      ],
+      "machine_date": "2026-08-18",
+      "points": 100,
+      "provenance": [
+        {
+          "details": "SM5: Test 18",
+          "sourceRef": "/Users/owen/Projects/teacher-ai-workstation/fixtures/canvas-llm/phase-23/synthetic-weekly-content.json",
+          "sourceType": "fixture"
+        },
+        {
+          "details": "assignment draft expansion",
+          "sourceRef": "math",
+          "sourceType": "phase22-rule"
+        }
+      ],
+      "subject": "math",
+      "submission_type": "On Paper",
+      "title": "SM5: Lesson 18 Written Test",
+      "verified_assignment_url": null,
+      "warnings": []
+    },
+    {
+      "assignment_id": "p23-2bd5c3cf2ab994c274",
+      "audience": "All Students",
+      "body_html": "<p>SM5: Lesson 18 Fact Test</p>",
+      "body_text": "SM5: Lesson 18 Fact Test",
+      "display_date": "Tuesday",
+      "grade_display": "Percentage",
+      "group": "Tests/Assessments",
+      "linked_page_id": "p23-3d7341f76241f3fbcc",
+      "linked_resource_ids": [
+        "math-test-18-blank",
+        "math-test-18-completed",
+        "math-test-18-fact-practice"
+      ],
+      "machine_date": "2026-08-18",
+      "points": 100,
+      "provenance": [
+        {
+          "details": "SM5: Test 18",
+          "sourceRef": "/Users/owen/Projects/teacher-ai-workstation/fixtures/canvas-llm/phase-23/synthetic-weekly-content.json",
+          "sourceType": "fixture"
+        },
+        {
+          "details": "assignment draft expansion",
+          "sourceRef": "math",
+          "sourceType": "phase22-rule"
+        }
+      ],
+      "subject": "math",
+      "submission_type": "On Paper",
+      "title": "SM5: Lesson 18 Fact Test",
+      "verified_assignment_url": null,
+      "warnings": []
+    },
+    {
+      "assignment_id": "p23-befe19a652af2f3eab",
+      "audience": "All Students",
+      "body_html": "<p><a href=\"https://preview.local/phase23/assignments/reading-test-13\">Reading Mastery Test 13</a></p>",
+      "body_text": "Reading Mastery Test 13",
+      "display_date": "Wednesday",
+      "grade_display": "Percentage",
+      "group": "Tests/Assessments",
+      "linked_page_id": "p23-a8b887a34247681d59",
+      "linked_resource_ids": [
+        "rm4-reading-test-13-study-guide",
+        "rm4-checkout-13-passage"
+      ],
+      "machine_date": "2026-08-19",
+      "points": 100,
+      "provenance": [
+        {
+          "details": "RM4: Reading Test 13",
+          "sourceRef": "/Users/owen/Projects/teacher-ai-workstation/fixtures/canvas-llm/phase-23/synthetic-weekly-content.json",
+          "sourceType": "fixture"
+        },
+        {
+          "details": "assignment draft expansion",
+          "sourceRef": "reading",
+          "sourceType": "phase22-rule"
+        }
+      ],
+      "subject": "reading",
+      "submission_type": "On Paper",
+      "title": "Reading Mastery Test 13",
+      "verified_assignment_url": "https://preview.local/phase23/assignments/reading-test-13",
+      "warnings": []
+    },
+    {
+      "assignment_id": "p23-10416259e32ce97bfe",
+      "audience": "All Students",
+      "body_html": "<p>Reading Checkout 13</p>",
+      "body_text": "Reading Checkout 13 fluency practice.",
+      "display_date": "Wednesday",
+      "grade_display": "Percentage",
+      "group": "Tests/Assessments",
+      "linked_page_id": "p23-a8b887a34247681d59",
+      "linked_resource_ids": [
+        "rm4-reading-test-13-study-guide",
+        "rm4-checkout-13-passage"
+      ],
+      "machine_date": "2026-08-19",
+      "points": 100,
+      "provenance": [
+        {
+          "details": "RM4: Reading Test 13",
+          "sourceRef": "/Users/owen/Projects/teacher-ai-workstation/fixtures/canvas-llm/phase-23/synthetic-weekly-content.json",
+          "sourceType": "fixture"
+        },
+        {
+          "details": "assignment draft expansion",
+          "sourceRef": "reading",
+          "sourceType": "phase22-rule"
+        }
+      ],
+      "subject": "reading",
+      "submission_type": "On Paper",
+      "title": "Reading Checkout 13",
+      "verified_assignment_url": null,
+      "warnings": []
+    },
+    {
+      "assignment_id": "p23-bf43a4a979e891344a",
+      "audience": "All Students",
+      "body_html": "<p>Spelling Test 6</p>",
+      "body_text": "Spelling Test 6",
+      "display_date": "Wednesday",
+      "grade_display": "Percentage",
+      "group": "Assessments",
+      "linked_page_id": "p23-a8b887a34247681d59",
+      "linked_resource_ids": [
+        "spell-test-6-words"
+      ],
+      "machine_date": "2026-08-19",
+      "points": 100,
+      "provenance": [
+        {
+          "details": "SPELL Test 6",
+          "sourceRef": "/Users/owen/Projects/teacher-ai-workstation/fixtures/canvas-llm/phase-23/synthetic-weekly-content.json",
+          "sourceType": "fixture"
+        },
+        {
+          "details": "assignment draft expansion",
+          "sourceRef": "spelling",
+          "sourceType": "phase22-rule"
+        }
+      ],
+      "subject": "spelling",
+      "submission_type": "On Paper",
+      "title": "Spelling Test 6",
+      "verified_assignment_url": null,
+      "warnings": []
+    },
+    {
+      "assignment_id": "p23-d7c383c20641c70799",
+      "audience": "All Students",
+      "body_html": "<p>ELA4: Chapter 3 Practice</p>",
+      "body_text": "ELA4: Chapter 3 Practice",
+      "display_date": "Thursday",
+      "grade_display": "Percentage",
+      "group": "Assignments",
+      "linked_page_id": "p23-9eeefd2e992e979caf",
+      "linked_resource_ids": [
+        "ela4-chapter-3-practice"
+      ],
+      "machine_date": "2026-08-20",
+      "points": 100,
+      "provenance": [
+        {
+          "details": "ELA4: Chapter 3 Practice",
+          "sourceRef": "/Users/owen/Projects/teacher-ai-workstation/fixtures/canvas-llm/phase-23/synthetic-weekly-content.json",
+          "sourceType": "fixture"
+        },
+        {
+          "details": "assignment draft expansion",
+          "sourceRef": "language-arts",
+          "sourceType": "phase22-rule"
+        }
+      ],
+      "subject": "language-arts",
+      "submission_type": "On Paper",
+      "title": "ELA4: Chapter 3 Practice",
+      "verified_assignment_url": null,
+      "warnings": []
+    },
+    {
+      "assignment_id": "p23-c76af26101635c0be9",
+      "audience": "All Students",
+      "body_html": "<p>Reading Mastery Test 14</p>",
+      "body_text": "Reading Mastery Test 14",
+      "display_date": "Thursday",
+      "grade_display": "Percentage",
+      "group": "Tests/Assessments",
+      "linked_page_id": "p23-a8b887a34247681d59",
+      "linked_resource_ids": [
+        "rm4-reading-test-14-study-guide"
+      ],
+      "machine_date": "2026-08-20",
+      "points": 100,
+      "provenance": [
+        {
+          "details": "RM4: Reading Test 14",
+          "sourceRef": "/Users/owen/Projects/teacher-ai-workstation/fixtures/canvas-llm/phase-23/synthetic-weekly-content.json",
+          "sourceType": "fixture"
+        },
+        {
+          "details": "assignment draft expansion",
+          "sourceRef": "reading",
+          "sourceType": "phase22-rule"
+        }
+      ],
+      "subject": "reading",
+      "submission_type": "On Paper",
+      "title": "Reading Mastery Test 14",
+      "verified_assignment_url": null,
+      "warnings": []
+    }
+  ],
+  "containsStudentData": false,
+  "deploymentState": "preview-only",
+  "generatedAt": "2026-07-11T16:09:12Z",
+  "packetId": "p23-dcbf1b871cf92f0f59",
+  "pages": [
+    {
+      "body_html": "<div id=\"kl_wrapper_3\" class=\"kl_circle_left kl_wrapper\" style=\"border-style: none;\"><div id=\"kl_banner\" class=\"\"><p style=\"color: #ffffff; background-color: #0065a7; text-align: center; margin: 0;\"><span style=\"font-size: 18pt;\">&nbsp;Weekly Agenda</span><br><span style=\"font-size: 10pt;\">Quarter 1, Week 5 | August 17–21, 2026</span></p><h3 style=\"background-color: #c51062; color: #ffffff; border: 0 !important;\">Reminders &amp; Resources</h3><div style=\"width: 100%; padding-left: 15px;\"><ul><li>Math Written Test 18 and Fact Test 18 on Tuesday</li></ul></div><div id=\"kl_activities2\" class=\"\"><h3 style=\"color: #ffffff; background-color: #0065a7; margin-top: 15px; margin-bottom: 2px; border: 0 !important;\">Monday</h3><div style=\"display: flex; width: 100%;\"><div style=\"width: 49%; padding-left: 15px;\"><h4 class=\"kl_solid_border\" style=\"color: #ffffff; background-color: #333333; padding-left: 10px; margin: 0; border: 0 !important;\">In Class</h4><ul><li>SM5: Lesson 18</li></ul></div><div style=\"width: 49%; padding-left: 15px;\"><h4 class=\"kl_solid_border\" style=\"color: #ffffff; background-color: #333333; padding-left: 10px; margin: 0; border: 0 !important;\">At Home</h4><ul><li><a href=\"https://preview.local/phase23/assignments/math-lesson-18-evens\">SM5: Lesson 18 Evens</a></li></ul></div></div></div><div id=\"kl_custom_block_4\" class=\"\"><h3 style=\"color: #ffffff; background-color: #0065a7; margin-top: 15px; margin-bottom: 2px; border: 0 !important;\">Tuesday</h3><div style=\"display: flex; width: 100%;\"><div style=\"width: 49%; padding-left: 15px;\"><h4 class=\"kl_solid_border\" style=\"color: #ffffff; background-color: #333333; padding-left: 10px; margin: 0; border: 0 !important;\">In Class</h4><ul><li>SM5: Lesson 18 Written Test</li><li>SM5: Lesson 18 Fact Test</li></ul></div></div></div></div></div>",
+      "body_text": "Monday: SM5: Lesson 18; SM5: Lesson 18 Evens\nTuesday: SM5: Lesson 18 Written Test; SM5: Lesson 18 Fact Test",
+      "linked_assignment_ids": [
+        "p23-01b34c1869f7a737ca",
+        "p23-13d85295c0521a19a2",
+        "p23-2bd5c3cf2ab994c274",
+        "p23-d12844b38d7e0b8f55"
+      ],
+      "page_id": "p23-3d7341f76241f3fbcc",
+      "provenance": [
+        {
+          "details": "weekly input rows",
+          "sourceRef": "/Users/owen/Projects/teacher-ai-workstation/fixtures/canvas-llm/phase-23/synthetic-weekly-content.json",
+          "sourceType": "fixture"
+        },
+        {
+          "details": "selected instructional week",
+          "sourceRef": "Q1W5",
+          "sourceType": "canonical-week"
+        }
+      ],
+      "resource_ids": [
+        "math-lesson-18-guide",
+        "math-test-18-blank",
+        "math-test-18-completed",
+        "math-test-18-fact-practice"
+      ],
+      "subject_group": "math",
+      "title": "Math Weekly Agenda"
+    },
+    {
+      "body_html": "<div id=\"kl_wrapper_3\" class=\"kl_circle_left kl_wrapper\" style=\"border-style: none;\"><div id=\"kl_banner\" class=\"\"><p style=\"color: #ffffff; background-color: #0065a7; text-align: center; margin: 0;\"><span style=\"font-size: 18pt;\">&nbsp;Weekly Agenda</span><br><span style=\"font-size: 10pt;\">Quarter 1, Week 5 | August 17–21, 2026</span></p><h3 style=\"background-color: #c51062; color: #ffffff; border: 0 !important;\">Reminders &amp; Resources</h3><div style=\"width: 100%; padding-left: 15px;\"><ul><li>Reading Mastery Test 13 and Reading Checkout 13 on Wednesday</li><li>Spelling Test 6 on Wednesday</li><li>Reading Mastery Test 14 on Thursday</li></ul></div><div id=\"kl_custom_block_3\" class=\"\"><h3 style=\"color: #ffffff; background-color: #0065a7; margin-top: 15px; margin-bottom: 2px; border: 0 !important;\">Wednesday</h3><div style=\"display: flex; width: 100%;\"><div style=\"width: 49%; padding-left: 15px;\"><h4 class=\"kl_solid_border\" style=\"color: #ffffff; background-color: #333333; padding-left: 10px; margin: 0; border: 0 !important;\">In Class</h4><ul><li>Reading Mastery Test 13</li><li>Spelling Test 6</li></ul></div><div style=\"width: 49%; padding-left: 15px;\"><h4 class=\"kl_solid_border\" style=\"color: #ffffff; background-color: #333333; padding-left: 10px; margin: 0; border: 0 !important;\">At Home</h4><ul><li>Reading Checkout 13</li></ul></div></div></div><div id=\"kl_custom_block_2\" class=\"\"><h3 style=\"color: #ffffff; background-color: #0065a7; margin-top: 15px; margin-bottom: 2px; border: 0 !important;\">Thursday</h3><div style=\"display: flex; width: 100%;\"><div style=\"width: 49%; padding-left: 15px;\"><h4 class=\"kl_solid_border\" style=\"color: #ffffff; background-color: #333333; padding-left: 10px; margin: 0; border: 0 !important;\">In Class</h4><ul><li>Reading Mastery Test 14</li></ul></div></div></div></div></div>",
+      "body_text": "Wednesday: Reading Mastery Test 13; Reading Checkout 13; Spelling Test 6\nThursday: Reading Mastery Test 14",
+      "linked_assignment_ids": [
+        "p23-10416259e32ce97bfe",
+        "p23-befe19a652af2f3eab",
+        "p23-bf43a4a979e891344a",
+        "p23-c76af26101635c0be9"
+      ],
+      "page_id": "p23-a8b887a34247681d59",
+      "provenance": [
+        {
+          "details": "weekly input rows",
+          "sourceRef": "/Users/owen/Projects/teacher-ai-workstation/fixtures/canvas-llm/phase-23/synthetic-weekly-content.json",
+          "sourceType": "fixture"
+        },
+        {
+          "details": "selected instructional week",
+          "sourceRef": "Q1W5",
+          "sourceType": "canonical-week"
+        }
+      ],
+      "resource_ids": [
+        "rm4-checkout-13-passage",
+        "rm4-reading-test-13-study-guide",
+        "rm4-reading-test-14-study-guide",
+        "spell-test-6-words"
+      ],
+      "subject_group": "reading-spelling",
+      "title": "Reading and Spelling Weekly Agenda"
+    },
+    {
+      "body_html": "<div id=\"kl_wrapper_3\" class=\"kl_circle_left kl_wrapper\" style=\"border-style: none;\"><div id=\"kl_banner\" class=\"\"><p style=\"color: #ffffff; background-color: #0065a7; text-align: center; margin: 0;\"><span style=\"font-size: 18pt;\">&nbsp;Weekly Agenda</span><br><span style=\"font-size: 10pt;\">Quarter 1, Week 5 | August 17–21, 2026</span></p><h3 style=\"background-color: #c51062; color: #ffffff; border: 0 !important;\">Reminders &amp; Resources</h3><div style=\"width: 100%; padding-left: 15px;\"></div><div id=\"kl_custom_block_2\" class=\"\"><h3 style=\"color: #ffffff; background-color: #0065a7; margin-top: 15px; margin-bottom: 2px; border: 0 !important;\">Thursday</h3><div style=\"display: flex; width: 100%;\"><div style=\"width: 49%; padding-left: 15px;\"><h4 class=\"kl_solid_border\" style=\"color: #ffffff; background-color: #333333; padding-left: 10px; margin: 0; border: 0 !important;\">In Class</h4><ul><li>ELA4: Chapter 3 Practice</li></ul></div><div style=\"width: 49%; padding-left: 15px;\"><h4 class=\"kl_solid_border\" style=\"color: #ffffff; background-color: #333333; padding-left: 10px; margin: 0; border: 0 !important;\">At Home</h4><ul><li>ELA4: Chapter 3 Practice</li></ul></div></div></div></div></div>",
+      "body_text": "Thursday: ELA4: Chapter 3 Practice; ELA4: Chapter 3 Practice",
+      "linked_assignment_ids": [
+        "p23-d7c383c20641c70799"
+      ],
+      "page_id": "p23-9eeefd2e992e979caf",
+      "provenance": [
+        {
+          "details": "weekly input rows",
+          "sourceRef": "/Users/owen/Projects/teacher-ai-workstation/fixtures/canvas-llm/phase-23/synthetic-weekly-content.json",
+          "sourceType": "fixture"
+        },
+        {
+          "details": "selected instructional week",
+          "sourceRef": "Q1W5",
+          "sourceType": "canonical-week"
+        }
+      ],
+      "resource_ids": [
+        "ela4-chapter-3-practice"
+      ],
+      "subject_group": "language-arts",
+      "title": "Language Arts Weekly Agenda"
+    },
+    {
+      "body_html": "<div id=\"kl_wrapper_3\" class=\"kl_circle_left kl_wrapper\" style=\"border-style: none;\"><div id=\"kl_banner\" class=\"\"><p style=\"color: #ffffff; background-color: #0065a7; text-align: center; margin: 0;\"><span style=\"font-size: 18pt;\">&nbsp;Weekly Agenda</span><br><span style=\"font-size: 10pt;\">Quarter 1, Week 5 | August 17–21, 2026</span></p><h3 style=\"background-color: #c51062; color: #ffffff; border: 0 !important;\">Reminders &amp; Resources</h3><div style=\"width: 100%; padding-left: 15px;\"></div><div id=\"kl_custom_block_4\" class=\"\"><h3 style=\"color: #ffffff; background-color: #0065a7; margin-top: 15px; margin-bottom: 2px; border: 0 !important;\">Tuesday</h3><div style=\"display: flex; width: 100%;\"><div style=\"width: 49%; padding-left: 15px;\"><h4 class=\"kl_solid_border\" style=\"color: #ffffff; background-color: #333333; padding-left: 10px; margin: 0; border: 0 !important;\">In Class</h4><ul><li>History Lesson 5</li></ul></div><div style=\"width: 49%; padding-left: 15px;\"><h4 class=\"kl_solid_border\" style=\"color: #ffffff; background-color: #333333; padding-left: 10px; margin: 0; border: 0 !important;\">At Home</h4><ul><li>History Lesson 5</li></ul></div></div></div><div id=\"kl_custom_block_1\" class=\"\"><h3 style=\"color: #ffffff; background-color: #0065a7; margin-top: 15px; margin-bottom: 2px; border: 0 !important;\">Friday</h3><div style=\"display: flex; width: 100%;\"><div style=\"width: 49%; padding-left: 15px;\"><h4 class=\"kl_solid_border\" style=\"color: #ffffff; background-color: #333333; padding-left: 10px; margin: 0; border: 0 !important;\">In Class</h4><ul><li>History Review</li></ul></div></div></div></div></div>",
+      "body_text": "Tuesday: History Lesson 5; History Lesson 5\nFriday: History Review",
+      "linked_assignment_ids": [],
+      "page_id": "p23-c28c71515c4f7ca308",
+      "provenance": [
+        {
+          "details": "weekly input rows",
+          "sourceRef": "/Users/owen/Projects/teacher-ai-workstation/fixtures/canvas-llm/phase-23/synthetic-weekly-content.json",
+          "sourceType": "fixture"
+        },
+        {
+          "details": "selected instructional week",
+          "sourceRef": "Q1W5",
+          "sourceType": "canonical-week"
+        }
+      ],
+      "resource_ids": [
+        "history-lesson-5-map"
+      ],
+      "subject_group": "history",
+      "title": "History Weekly Agenda"
+    },
+    {
+      "body_html": "<div id=\"kl_wrapper_3\" class=\"kl_circle_left kl_wrapper\" style=\"border-style: none;\"><div id=\"kl_banner\" class=\"\"><p style=\"color: #ffffff; background-color: #0065a7; text-align: center; margin: 0;\"><span style=\"font-size: 18pt;\">&nbsp;Weekly Agenda</span><br><span style=\"font-size: 10pt;\">Quarter 1, Week 5 | August 17–21, 2026</span></p><h3 style=\"background-color: #c51062; color: #ffffff; border: 0 !important;\">Reminders &amp; Resources</h3><div style=\"width: 100%; padding-left: 15px;\"></div><div id=\"kl_activities2\" class=\"\"><h3 style=\"color: #ffffff; background-color: #0065a7; margin-top: 15px; margin-bottom: 2px; border: 0 !important;\">Monday</h3><div style=\"display: flex; width: 100%;\"><div style=\"width: 49%; padding-left: 15px;\"><h4 class=\"kl_solid_border\" style=\"color: #ffffff; background-color: #333333; padding-left: 10px; margin: 0; border: 0 !important;\">In Class</h4><ul><li>Science Lesson 4</li></ul></div><div style=\"width: 49%; padding-left: 15px;\"><h4 class=\"kl_solid_border\" style=\"color: #ffffff; background-color: #333333; padding-left: 10px; margin: 0; border: 0 !important;\">At Home</h4><ul><li>Science Lesson 4</li></ul></div></div></div><div id=\"kl_custom_block_1\" class=\"\"><h3 style=\"color: #ffffff; background-color: #0065a7; margin-top: 15px; margin-bottom: 2px; border: 0 !important;\">Friday</h3><div style=\"display: flex; width: 100%;\"><div style=\"width: 49%; padding-left: 15px;\"><h4 class=\"kl_solid_border\" style=\"color: #ffffff; background-color: #333333; padding-left: 10px; margin: 0; border: 0 !important;\">In Class</h4><ul><li>Science Review</li></ul></div></div></div></div></div>",
+      "body_text": "Monday: Science Lesson 4; Science Lesson 4\nFriday: Science Review",
+      "linked_assignment_ids": [],
+      "page_id": "p23-24abd4386e1ed2b683",
+      "provenance": [
+        {
+          "details": "weekly input rows",
+          "sourceRef": "/Users/owen/Projects/teacher-ai-workstation/fixtures/canvas-llm/phase-23/synthetic-weekly-content.json",
+          "sourceType": "fixture"
+        },
+        {
+          "details": "selected instructional week",
+          "sourceRef": "Q1W5",
+          "sourceType": "canonical-week"
+        }
+      ],
+      "resource_ids": [
+        "science-lesson-4-safety"
+      ],
+      "subject_group": "science",
+      "title": "Science Weekly Agenda"
+    }
+  ],
+  "provenance": [
+    {
+      "details": "synthetic weekly content source",
+      "source_ref": "/Users/owen/Projects/teacher-ai-workstation/fixtures/canvas-llm/phase-23/synthetic-weekly-content.json",
+      "source_type": "fixture"
+    },
+    {
+      "details": "instructional week authority",
+      "source_ref": "config/curriculum/canvas/instructional-weeks-2026-2027.json",
+      "source_type": "canonical-calendar"
+    },
+    {
+      "details": "curriculum resolution and preview-only safety rules",
+      "source_ref": "scripts/canvas_llm_phase22/phase22_workstation.py",
+      "source_type": "phase22-rules"
+    }
+  ],
+  "resources": [
+    {
+      "canonical_name": "ELA4 Chapter 3 Practice",
+      "match_confidence": 0.98,
+      "match_reason": "Language Arts chapter practice",
+      "matched_to": [
+        "ELA4: Chapter 3 Practice"
+      ],
+      "provenance": [
+        {
+          "details": "Synthetic chapter practice reference.",
+          "sourceRef": "/Users/owen/Projects/teacher-ai-workstation/fixtures/canvas-llm/phase-23/synthetic-weekly-content.json",
+          "sourceType": "fixture"
+        },
+        {
+          "details": "approved match",
+          "sourceRef": "ela4-chapter-3-practice",
+          "sourceType": "resource-catalog"
+        }
+      ],
+      "resource_id": "ela4-chapter-3-practice",
+      "resource_type": "practice",
+      "subject": "language-arts",
+      "verification_status": "approved"
+    },
+    {
+      "canonical_name": "History Lesson 5 Map Skills",
+      "match_confidence": 0.98,
+      "match_reason": "History map-skills resource",
+      "matched_to": [
+        "History Lesson 5",
+        "History Review"
+      ],
+      "provenance": [
+        {
+          "details": "Synthetic history resource reference.",
+          "sourceRef": "/Users/owen/Projects/teacher-ai-workstation/fixtures/canvas-llm/phase-23/synthetic-weekly-content.json",
+          "sourceType": "fixture"
+        },
+        {
+          "details": "approved match",
+          "sourceRef": "history-lesson-5-map",
+          "sourceType": "resource-catalog"
+        }
+      ],
+      "resource_id": "history-lesson-5-map",
+      "resource_type": "worksheet",
+      "subject": "history",
+      "verification_status": "approved"
+    },
+    {
+      "canonical_name": "SM5 Lesson 18 Guide",
+      "match_confidence": 0.99,
+      "match_reason": "synthetic lesson guide for Math page draft",
+      "matched_to": [
+        "SM5: Lesson 18"
+      ],
+      "provenance": [
+        {
+          "details": "Synthetic worksheet reference only.",
+          "sourceRef": "/Users/owen/Projects/teacher-ai-workstation/fixtures/canvas-llm/phase-23/synthetic-weekly-content.json",
+          "sourceType": "fixture"
+        },
+        {
+          "details": "approved match",
+          "sourceRef": "math-lesson-18-guide",
+          "sourceType": "resource-catalog"
+        }
+      ],
+      "resource_id": "math-lesson-18-guide",
+      "resource_type": "worksheet",
+      "subject": "math",
+      "verification_status": "approved"
+    },
+    {
+      "canonical_name": "SM5 Study Guide 18 Blank",
+      "match_confidence": 0.99,
+      "match_reason": "Math test study guide blank form",
+      "matched_to": [
+        "SM5: Test 18"
+      ],
+      "provenance": [
+        {
+          "details": "Blank study guide reference only.",
+          "sourceRef": "/Users/owen/Projects/teacher-ai-workstation/fixtures/canvas-llm/phase-23/synthetic-weekly-content.json",
+          "sourceType": "fixture"
+        },
+        {
+          "details": "approved match",
+          "sourceRef": "math-test-18-blank",
+          "sourceType": "resource-catalog"
+        }
+      ],
+      "resource_id": "math-test-18-blank",
+      "resource_type": "study-guide",
+      "subject": "math",
+      "verification_status": "approved"
+    },
+    {
+      "canonical_name": "SM5 Study Guide 18 Completed",
+      "match_confidence": 0.99,
+      "match_reason": "Math test completed study guide reference",
+      "matched_to": [
+        "SM5: Test 18"
+      ],
+      "provenance": [
+        {
+          "details": "Completed study guide reference only.",
+          "sourceRef": "/Users/owen/Projects/teacher-ai-workstation/fixtures/canvas-llm/phase-23/synthetic-weekly-content.json",
+          "sourceType": "fixture"
+        },
+        {
+          "details": "approved match",
+          "sourceRef": "math-test-18-completed",
+          "sourceType": "resource-catalog"
+        }
+      ],
+      "resource_id": "math-test-18-completed",
+      "resource_type": "study-guide",
+      "subject": "math",
+      "verification_status": "approved"
+    },
+    {
+      "canonical_name": "SM5 Fact Test 18 Practice",
+      "match_confidence": 0.98,
+      "match_reason": "Fact test practice pairing",
+      "matched_to": [
+        "SM5: Test 18"
+      ],
+      "provenance": [
+        {
+          "details": "Synthetic fact-test practice reference.",
+          "sourceRef": "/Users/owen/Projects/teacher-ai-workstation/fixtures/canvas-llm/phase-23/synthetic-weekly-content.json",
+          "sourceType": "fixture"
+        },
+        {
+          "details": "approved match",
+          "sourceRef": "math-test-18-fact-practice",
+          "sourceType": "resource-catalog"
+        }
+      ],
+      "resource_id": "math-test-18-fact-practice",
+      "resource_type": "practice",
+      "subject": "math",
+      "verification_status": "approved"
+    },
+    {
+      "canonical_name": "RM4 Checkout 13 Passage Card",
+      "match_confidence": 0.99,
+      "match_reason": "Checkout 13 passage reference",
+      "matched_to": [
+        "RM4: Reading Test 13"
+      ],
+      "provenance": [
+        {
+          "details": "Synthetic passage card reference.",
+          "sourceRef": "/Users/owen/Projects/teacher-ai-workstation/fixtures/canvas-llm/phase-23/synthetic-weekly-content.json",
+          "sourceType": "fixture"
+        },
+        {
+          "details": "approved match",
+          "sourceRef": "rm4-checkout-13-passage",
+          "sourceType": "resource-catalog"
+        }
+      ],
+      "resource_id": "rm4-checkout-13-passage",
+      "resource_type": "passage",
+      "subject": "reading",
+      "verification_status": "approved"
+    },
+    {
+      "canonical_name": "RM4 Reading Test 13 Study Guide",
+      "match_confidence": 0.99,
+      "match_reason": "Reading test 13 study guide reference",
+      "matched_to": [
+        "RM4: Reading Test 13"
+      ],
+      "provenance": [
+        {
+          "details": "Student-facing reading study guide reference.",
+          "sourceRef": "/Users/owen/Projects/teacher-ai-workstation/fixtures/canvas-llm/phase-23/synthetic-weekly-content.json",
+          "sourceType": "fixture"
+        },
+        {
+          "details": "approved match",
+          "sourceRef": "rm4-reading-test-13-study-guide",
+          "sourceType": "resource-catalog"
+        }
+      ],
+      "resource_id": "rm4-reading-test-13-study-guide",
+      "resource_type": "study-guide",
+      "subject": "reading",
+      "verification_status": "approved"
+    },
+    {
+      "canonical_name": "RM4 Reading Test 14 Study Guide",
+      "match_confidence": 0.99,
+      "match_reason": "Reading test 14 study guide reference with no checkout",
+      "matched_to": [
+        "RM4: Reading Test 14"
+      ],
+      "provenance": [
+        {
+          "details": "No checkout resource is linked here.",
+          "sourceRef": "/Users/owen/Projects/teacher-ai-workstation/fixtures/canvas-llm/phase-23/synthetic-weekly-content.json",
+          "sourceType": "fixture"
+        },
+        {
+          "details": "approved match",
+          "sourceRef": "rm4-reading-test-14-study-guide",
+          "sourceType": "resource-catalog"
+        }
+      ],
+      "resource_id": "rm4-reading-test-14-study-guide",
+      "resource_type": "study-guide",
+      "subject": "reading",
+      "verification_status": "approved"
+    },
+    {
+      "canonical_name": "Science Lesson 4 Lab Safety",
+      "match_confidence": 0.98,
+      "match_reason": "Science lab-safety resource",
+      "matched_to": [
+        "Science Lesson 4",
+        "Science Review"
+      ],
+      "provenance": [
+        {
+          "details": "Synthetic science resource reference.",
+          "sourceRef": "/Users/owen/Projects/teacher-ai-workstation/fixtures/canvas-llm/phase-23/synthetic-weekly-content.json",
+          "sourceType": "fixture"
+        },
+        {
+          "details": "approved match",
+          "sourceRef": "science-lesson-4-safety",
+          "sourceType": "resource-catalog"
+        }
+      ],
+      "resource_id": "science-lesson-4-safety",
+      "resource_type": "checklist",
+      "subject": "science",
+      "verification_status": "approved"
+    },
+    {
+      "canonical_name": "SPELL Test 6 Focus Words",
+      "match_confidence": 0.99,
+      "match_reason": "Spelling focus-word list",
+      "matched_to": [
+        "SPELL Test 6"
+      ],
+      "provenance": [
+        {
+          "details": "Synthetic cumulative spelling list reference.",
+          "sourceRef": "/Users/owen/Projects/teacher-ai-workstation/fixtures/canvas-llm/phase-23/synthetic-weekly-content.json",
+          "sourceType": "fixture"
+        },
+        {
+          "details": "approved match",
+          "sourceRef": "spell-test-6-words",
+          "sourceType": "resource-catalog"
+        }
+      ],
+      "resource_id": "spell-test-6-words",
+      "resource_type": "word-list",
+      "subject": "spelling",
+      "verification_status": "approved"
+    }
+  ],
+  "risks": [
+    {
+      "code": "due-time",
+      "message": "Canvas assignment due-time convention remains unresolved",
+      "mitigation": "Keep assignment dueTime fields blocked or explicitly unresolved",
+      "severity": "warning"
+    }
+  ],
+  "schemaVersion": 1,
+  "sourceKind": "synthetic",
+  "subjects": [
+    {
+      "assignmentCount": 4,
+      "entryCount": 2,
+      "pageId": "p23-3d7341f76241f3fbcc",
+      "subjectGroup": "math"
+    },
+    {
+      "assignmentCount": 4,
+      "entryCount": 3,
+      "pageId": "p23-a8b887a34247681d59",
+      "subjectGroup": "reading-spelling"
+    },
+    {
+      "assignmentCount": 1,
+      "entryCount": 1,
+      "pageId": "p23-9eeefd2e992e979caf",
+      "subjectGroup": "language-arts"
+    },
+    {
+      "assignmentCount": 0,
+      "entryCount": 2,
+      "pageId": "p23-c28c71515c4f7ca308",
+      "subjectGroup": "history"
+    },
+    {
+      "assignmentCount": 0,
+      "entryCount": 2,
+      "pageId": "p23-24abd4386e1ed2b683",
+      "subjectGroup": "science"
+    }
+  ],
+  "validation": {
+    "failCount": 0,
+    "findings": [
+      {
+        "code": "privacy.student-data",
+        "message": "Packet excludes student data",
+        "severity": "pass",
+        "target": "packet"
+      },
+      {
+        "code": "deployment.preview-only",
+        "message": "Packet is preview-only",
+        "severity": "pass",
+        "target": "packet"
+      },
+      {
+        "code": "due-time.unresolved",
+        "message": "Canvas assignment due-time convention remains unresolved",
+        "severity": "warn",
+        "target": "packet.assignments"
+      },
+      {
+        "code": "week.boundary",
+        "message": "Packet week boundaries match canonical calendar",
+        "severity": "pass",
+        "target": "Q1W5"
+      },
+      {
+        "code": "reading-test-14.checkout",
+        "message": "Reading Test 14 correctly has no checkout reminder",
+        "severity": "pass",
+        "target": "Reading Test 14"
+      }
+    ],
+    "passCount": 4,
+    "warnCount": 1
+  },
+  "weekCode": "Q1W5",
+  "weekEnd": "2026-08-21",
+  "weekStart": "2026-08-17"
+}

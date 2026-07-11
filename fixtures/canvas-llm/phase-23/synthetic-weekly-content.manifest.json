@@ -1,0 +1,11 @@
+{
+  "artifactClassification": "synthetic-weekly-content",
+  "containsStudentData": false,
+  "sourcePath": "fixtures/canvas-llm/phase-23/synthetic-weekly-content.json",
+  "purpose": "Synthetic Phase 23 week used to build a local-only weekly production packet.",
+  "notes": [
+    "No student names, scores, roster rows, or live Canvas content are present.",
+    "The fixture is only for deterministic local packet generation.",
+    "Do not add school Canvas URLs or fake links."
+  ]
+}

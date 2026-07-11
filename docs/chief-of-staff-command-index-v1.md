@@ -57,6 +57,7 @@ These flags exist in `bin/chief-of-staff` and work as read-only local status sur
 | `bin/chief-of-staff --chief-of-staff-v1-status` | Chief of Staff v1 Agent Core foundation status |
 | `bin/chief-of-staff --chief-of-staff-command-index-v1-status` | Command index v1 status proof |
 | `bin/chief-of-staff --teacher-workstation-foundation-status` | Phase 3 foundation orchestration |
+| `bin/chief-of-staff --canvas-llm-phase-23-weekly-content-production-engine-status` | Canvas LLM Phase 23 weekly content production engine status |
 
 ### Proof
 

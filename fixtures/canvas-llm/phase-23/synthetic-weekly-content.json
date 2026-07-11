@@ -1,0 +1,257 @@
+{
+  "schemaVersion": 1,
+  "artifactClassification": "synthetic-weekly-content",
+  "containsStudentData": false,
+  "sourceKind": "synthetic",
+  "weekCode": "Q1W5",
+  "weekStart": "2026-08-17",
+  "weekEnd": "2026-08-21",
+  "title": "Phase 23 Synthetic Weekly Content Fixture",
+  "entries": [
+    {
+      "date": "2026-08-17",
+      "weekday": "Monday",
+      "subject": "math",
+      "entryType": "lesson",
+      "lesson": "18",
+      "title": "SM5: Lesson 18",
+      "inClass": "Review place value, regrouping, and evens practice.",
+      "atHome": "Complete Lesson 18 evens practice.",
+      "resourceHints": [
+        "math-lesson-18-guide"
+      ]
+    },
+    {
+      "date": "2026-08-17",
+      "weekday": "Monday",
+      "subject": "science",
+      "entryType": "lesson",
+      "lesson": "4",
+      "title": "Science Lesson 4",
+      "inClass": "Lab safety and observation checklist.",
+      "atHome": "Review the safety checklist.",
+      "resourceHints": [
+        "science-lesson-4-safety"
+      ]
+    },
+    {
+      "date": "2026-08-18",
+      "weekday": "Tuesday",
+      "subject": "math",
+      "entryType": "test",
+      "test": "18",
+      "title": "SM5: Test 18",
+      "inClass": "Math test, fact test, and study guide review.",
+      "atHome": "",
+      "resourceHints": [
+        "math-test-18-blank",
+        "math-test-18-completed",
+        "math-test-18-fact-practice"
+      ]
+    },
+    {
+      "date": "2026-08-18",
+      "weekday": "Tuesday",
+      "subject": "history",
+      "entryType": "lesson",
+      "lesson": "5",
+      "title": "History Lesson 5",
+      "inClass": "Map skills and unit review.",
+      "atHome": "Read the map skills summary.",
+      "resourceHints": [
+        "history-lesson-5-map"
+      ]
+    },
+    {
+      "date": "2026-08-19",
+      "weekday": "Wednesday",
+      "subject": "reading",
+      "entryType": "test",
+      "test": "13",
+      "title": "RM4: Reading Test 13",
+      "inClass": "Reading Test 13 with Checkout 13 practice.",
+      "atHome": "",
+      "resourceHints": [
+        "rm4-reading-test-13-study-guide",
+        "rm4-checkout-13-passage"
+      ]
+    },
+    {
+      "date": "2026-08-19",
+      "weekday": "Wednesday",
+      "subject": "spelling",
+      "entryType": "test",
+      "test": "6",
+      "title": "SPELL Test 6",
+      "inClass": "Cumulative spelling review and focus words.",
+      "atHome": "Practice the focus-word list.",
+      "resourceHints": [
+        "spell-test-6-words"
+      ]
+    },
+    {
+      "date": "2026-08-20",
+      "weekday": "Thursday",
+      "subject": "reading",
+      "entryType": "test",
+      "test": "14",
+      "title": "RM4: Reading Test 14",
+      "inClass": "Reading Test 14 without a Checkout.",
+      "atHome": "",
+      "resourceHints": [
+        "rm4-reading-test-14-study-guide"
+      ]
+    },
+    {
+      "date": "2026-08-20",
+      "weekday": "Thursday",
+      "subject": "language-arts",
+      "entryType": "lesson",
+      "lesson": "3",
+      "title": "ELA4: Chapter 3 Practice",
+      "inClass": "Sentence combining and paragraph structure.",
+      "atHome": "Complete the chapter practice.",
+      "resourceHints": [
+        "ela4-chapter-3-practice"
+      ]
+    },
+    {
+      "date": "2026-08-21",
+      "weekday": "Friday",
+      "subject": "science",
+      "entryType": "review",
+      "lesson": "4",
+      "title": "Science Review",
+      "inClass": "Review observations and vocabulary.",
+      "atHome": "",
+      "resourceHints": [
+        "science-lesson-4-safety"
+      ]
+    },
+    {
+      "date": "2026-08-21",
+      "weekday": "Friday",
+      "subject": "history",
+      "entryType": "review",
+      "lesson": "5",
+      "title": "History Review",
+      "inClass": "Review map skills and main ideas.",
+      "atHome": "",
+      "resourceHints": [
+        "history-lesson-5-map"
+      ]
+    }
+  ],
+  "resourceCatalog": [
+    {
+      "resourceId": "math-lesson-18-guide",
+      "canonicalName": "SM5 Lesson 18 Guide",
+      "subject": "math",
+      "resourceType": "worksheet",
+      "verificationStatus": "approved",
+      "matchConfidence": 0.99,
+      "matchReason": "synthetic lesson guide for Math page draft",
+      "notes": "Synthetic worksheet reference only."
+    },
+    {
+      "resourceId": "math-test-18-blank",
+      "canonicalName": "SM5 Study Guide 18 Blank",
+      "subject": "math",
+      "resourceType": "study-guide",
+      "verificationStatus": "approved",
+      "matchConfidence": 0.99,
+      "matchReason": "Math test study guide blank form",
+      "notes": "Blank study guide reference only."
+    },
+    {
+      "resourceId": "math-test-18-completed",
+      "canonicalName": "SM5 Study Guide 18 Completed",
+      "subject": "math",
+      "resourceType": "study-guide",
+      "verificationStatus": "approved",
+      "matchConfidence": 0.99,
+      "matchReason": "Math test completed study guide reference",
+      "notes": "Completed study guide reference only."
+    },
+    {
+      "resourceId": "math-test-18-fact-practice",
+      "canonicalName": "SM5 Fact Test 18 Practice",
+      "subject": "math",
+      "resourceType": "practice",
+      "verificationStatus": "approved",
+      "matchConfidence": 0.98,
+      "matchReason": "Fact test practice pairing",
+      "notes": "Synthetic fact-test practice reference."
+    },
+    {
+      "resourceId": "rm4-reading-test-13-study-guide",
+      "canonicalName": "RM4 Reading Test 13 Study Guide",
+      "subject": "reading",
+      "resourceType": "study-guide",
+      "verificationStatus": "approved",
+      "matchConfidence": 0.99,
+      "matchReason": "Reading test 13 study guide reference",
+      "notes": "Student-facing reading study guide reference."
+    },
+    {
+      "resourceId": "rm4-checkout-13-passage",
+      "canonicalName": "RM4 Checkout 13 Passage Card",
+      "subject": "reading",
+      "resourceType": "passage",
+      "verificationStatus": "approved",
+      "matchConfidence": 0.99,
+      "matchReason": "Checkout 13 passage reference",
+      "notes": "Synthetic passage card reference."
+    },
+    {
+      "resourceId": "rm4-reading-test-14-study-guide",
+      "canonicalName": "RM4 Reading Test 14 Study Guide",
+      "subject": "reading",
+      "resourceType": "study-guide",
+      "verificationStatus": "approved",
+      "matchConfidence": 0.99,
+      "matchReason": "Reading test 14 study guide reference with no checkout",
+      "notes": "No checkout resource is linked here."
+    },
+    {
+      "resourceId": "spell-test-6-words",
+      "canonicalName": "SPELL Test 6 Focus Words",
+      "subject": "spelling",
+      "resourceType": "word-list",
+      "verificationStatus": "approved",
+      "matchConfidence": 0.99,
+      "matchReason": "Spelling focus-word list",
+      "notes": "Synthetic cumulative spelling list reference."
+    },
+    {
+      "resourceId": "ela4-chapter-3-practice",
+      "canonicalName": "ELA4 Chapter 3 Practice",
+      "subject": "language-arts",
+      "resourceType": "practice",
+      "verificationStatus": "approved",
+      "matchConfidence": 0.98,
+      "matchReason": "Language Arts chapter practice",
+      "notes": "Synthetic chapter practice reference."
+    },
+    {
+      "resourceId": "history-lesson-5-map",
+      "canonicalName": "History Lesson 5 Map Skills",
+      "subject": "history",
+      "resourceType": "worksheet",
+      "verificationStatus": "approved",
+      "matchConfidence": 0.98,
+      "matchReason": "History map-skills resource",
+      "notes": "Synthetic history resource reference."
+    },
+    {
+      "resourceId": "science-lesson-4-safety",
+      "canonicalName": "Science Lesson 4 Lab Safety",
+      "subject": "science",
+      "resourceType": "checklist",
+      "verificationStatus": "approved",
+      "matchConfidence": 0.98,
+      "matchReason": "Science lab-safety resource",
+      "notes": "Synthetic science resource reference."
+    }
+  ]
+}

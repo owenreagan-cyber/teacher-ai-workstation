@@ -1,0 +1,9 @@
+{
+  "fixture": "fixtures/canvas-llm/phase-24/predictive-teacher-brain.json",
+  "schemaVersion": 1,
+  "containsStudentData": false,
+  "notes": [
+    "Synthetic Phase 24 teacher-brain fixture",
+    "Covers math, reading, spelling, Shurley, history, science, corrections, and unresolved cadence warnings"
+  ]
+}

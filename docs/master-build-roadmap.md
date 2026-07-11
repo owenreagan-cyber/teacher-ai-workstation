@@ -40,7 +40,7 @@ Cross-references:
 | Chief of Staff | **Strong foundation** | CLI, dashboard, memory, intake, proof runner — daily ops and unified next-action incomplete |
 | Phase 3 foundations | **Complete (v0)** | Lesson Planning, Curriculum Library, Renderer, Local Retrieval, Integration Planning |
 | Curriculum Builder | **v1 foundation complete** | Registry, 5 contracts, binding, validation — no renderers, real records, or generation |
-| Canvas LLM | **Frozen/stopped** | Planning stack complete; stop marker active; no runtime |
+| Canvas LLM | **Active** | Phase 23 complete; Phase 24 predictive Teacher Brain + FPK rule engine underway |
 | Local LLM | **Active (D1 read-only)** | Program D1 status foundation; no installs/downloads/inference |
 | Mac workstation experience | **Scaffold/plan** | Wallpaper foundation stack; teacher modes planned; no live curator/widget |
 | Health Monitor / System Updater | **Active** | Read-only foundations complete (Programs H and I) |
@@ -125,6 +125,12 @@ Closure: `docs/teacher-workstation-foundation-v0.md`
 | **Teacher Workstation System Updater** | Read-only update checks → guided plans → approved maintenance | **Complete** — Program I read-only foundation |
 | **AI Tool Routing Matrix** | Documented roles for cloud/local/builder tools | **Active** — read-only operational surface; routing inactive |
 | **Curriculum Builder Complete** | Registry + contracts + renderers + teacher-reviewed outputs | v1 foundation done; renderers/generation gated |
+| **Phase 24 Predictive Teacher Brain** | Deterministic local week prediction with source hierarchy and correction memory | New build lane |
+| **Phase 25 Curriculum Source Intelligence** | Approved source resolution and resource resolver | Next research lane |
+| **Phase 26 Unified Weekly Production Workstation** | Teacher-reviewed weekly planning workflow | Future integration lane |
+| **Phase 27 Safety Diff + deployment manifest** | Read-only Canvas comparison, deployment ledger, transport readiness | Future write-prep lane |
+| **Phase 28 Controlled Canvas write pilot** | Narrow approved write pilot with full guardrails | Future controlled write lane |
+| **Phase 29 Final polish** | Announcements, uploads, recovery, production readiness | Final hardening lane |
 | **Presentation Engine** | Classroom display planning structures from approved metadata labels | **Planning complete** — renderer-foundation docs/fixtures; runtime render/export blocked |
 | **Local LLM / Ollama Workstation** | Local model policy, inventory, health checks | **Active** — Program D1 read-only foundation |
 | **Mac Workstation Experience** | Teacher modes, wallpaper, visible transformation | **Active** — Program E1 read-only foundation |

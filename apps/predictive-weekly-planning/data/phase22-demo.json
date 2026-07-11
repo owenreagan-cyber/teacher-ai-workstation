@@ -1,0 +1,343 @@
+{
+  "phase": "22",
+  "product": "Predictive Weekly Planning Workstation",
+  "privacyBoundary": {
+    "studentDataAllowed": false,
+    "canvasWritesAllowed": false,
+    "emailSendsAllowed": false,
+    "rawSourceCommitted": false,
+    "assessmentResultsExcluded": true
+  },
+  "artifactClassification": "synthetic-curriculum",
+  "containsStudentData": false,
+  "sourceArtifact": {
+    "path": "fixtures/canvas-llm/phase-22/synthetic-pacing-guide.csv",
+    "classification": "synthetic-curriculum",
+    "containsStudentData": false
+  },
+  "yearlyPacingGuide": {
+    "id": "phase-22-yearly-pacing-guide",
+    "schoolYear": {
+      "id": "2026-2027",
+      "label": "2026-2027",
+      "startsOn": "2026-08-17",
+      "endsOn": "2026-08-21"
+    },
+    "instructionalCalendar": {
+      "schoolYear": "2026-2027",
+      "weekdays": [
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday"
+      ],
+      "closures": []
+    },
+    "subjects": [
+      {
+        "id": "math",
+        "name": "Math",
+        "columnHints": []
+      },
+      {
+        "id": "reading",
+        "name": "Reading",
+        "columnHints": []
+      },
+      {
+        "id": "spelling",
+        "name": "Spelling",
+        "columnHints": []
+      },
+      {
+        "id": "language-arts",
+        "name": "Language Arts",
+        "columnHints": []
+      },
+      {
+        "id": "history",
+        "name": "History",
+        "columnHints": []
+      },
+      {
+        "id": "science",
+        "name": "Science",
+        "columnHints": []
+      }
+    ],
+    "entries": [
+      {
+        "id": "p22-d63c65072334ed9e",
+        "schoolYear": "2026-2027",
+        "sourceYear": "synthetic",
+        "date": "2026-08-17",
+        "weekIndex": 1,
+        "weekday": "Monday",
+        "subjectId": "math",
+        "rawInstructionalText": "Lesson 1 Power Up",
+        "normalizedTitle": "Lesson 1 Power Up",
+        "entryType": "lesson",
+        "sequenceNumber": "1",
+        "source": "synthetic-fixture",
+        "predictionConfidence": 0.42,
+        "teacherApproved": false,
+        "actualStatus": "predicted",
+        "movedFromDate": null,
+        "notes": ""
+      },
+      {
+        "id": "p22-b70df38511a1d69f",
+        "schoolYear": "2026-2027",
+        "sourceYear": "synthetic",
+        "date": "2026-08-18",
+        "weekIndex": 1,
+        "weekday": "Tuesday",
+        "subjectId": "reading",
+        "rawInstructionalText": "Lesson 1 comprehension",
+        "normalizedTitle": "Lesson 1 comprehension",
+        "entryType": "lesson",
+        "sequenceNumber": "1",
+        "source": "synthetic-fixture",
+        "predictionConfidence": 0.42,
+        "teacherApproved": false,
+        "actualStatus": "predicted",
+        "movedFromDate": null,
+        "notes": ""
+      },
+      {
+        "id": "p22-528890b3e5386d9f",
+        "schoolYear": "2026-2027",
+        "sourceYear": "synthetic",
+        "date": "2026-08-19",
+        "weekIndex": 1,
+        "weekday": "Wednesday",
+        "subjectId": "spelling",
+        "rawInstructionalText": "Test 1 focus words",
+        "normalizedTitle": "Test 1 focus words",
+        "entryType": "test",
+        "sequenceNumber": "1",
+        "source": "synthetic-fixture",
+        "predictionConfidence": 0.42,
+        "teacherApproved": false,
+        "actualStatus": "predicted",
+        "movedFromDate": null,
+        "notes": ""
+      },
+      {
+        "id": "p22-6723bf62922ed3c9",
+        "schoolYear": "2026-2027",
+        "sourceYear": "synthetic",
+        "date": "2026-08-20",
+        "weekIndex": 1,
+        "weekday": "Thursday",
+        "subjectId": "history",
+        "rawInstructionalText": "Chapter 1 map skills",
+        "normalizedTitle": "Chapter 1 map skills",
+        "entryType": "unresolved",
+        "sequenceNumber": null,
+        "source": "synthetic-fixture",
+        "predictionConfidence": 0.42,
+        "teacherApproved": false,
+        "actualStatus": "predicted",
+        "movedFromDate": null,
+        "notes": ""
+      },
+      {
+        "id": "p22-74a19701456d9f1b",
+        "schoolYear": "2026-2027",
+        "sourceYear": "synthetic",
+        "date": "2026-08-21",
+        "weekIndex": 1,
+        "weekday": "Friday",
+        "subjectId": "science",
+        "rawInstructionalText": "Investigation 1 notebook setup",
+        "normalizedTitle": "Investigation 1 notebook setup",
+        "entryType": "unresolved",
+        "sequenceNumber": null,
+        "source": "synthetic-fixture",
+        "predictionConfidence": 0.42,
+        "teacherApproved": false,
+        "actualStatus": "predicted",
+        "movedFromDate": null,
+        "notes": ""
+      }
+    ]
+  },
+  "importReport": {
+    "sourcePath": "fixtures/canvas-llm/phase-22/synthetic-pacing-guide.csv",
+    "sourceKind": "synthetic-fixture",
+    "sourcePresent": true,
+    "rawRowsScanned": 7,
+    "entriesImported": 5,
+    "excludedCells": 5,
+    "unresolvedCells": 26,
+    "generatedAt": "2026-07-10T20:59:25Z",
+    "artifactClassification": "teacher-planning",
+    "containsStudentData": false,
+    "notes": [
+      "Only instructional pacing cells are imported.",
+      "Excluded-cell reports contain location and reason only.",
+      "Raw imports remain ignored local files."
+    ]
+  },
+  "excludedCellReport": [
+    {
+      "row": 7,
+      "column": 3,
+      "reason": "student-or-assessment-result-excluded"
+    },
+    {
+      "row": 7,
+      "column": 4,
+      "reason": "student-or-assessment-result-excluded"
+    },
+    {
+      "row": 7,
+      "column": 5,
+      "reason": "student-or-assessment-result-excluded"
+    },
+    {
+      "row": 7,
+      "column": 6,
+      "reason": "student-or-assessment-result-excluded"
+    },
+    {
+      "row": 7,
+      "column": 7,
+      "reason": "student-or-assessment-result-excluded"
+    }
+  ],
+  "unresolvedCellReport": [
+    {
+      "row": 2,
+      "column": 3,
+      "reason": "instructional-cell-without-date-anchor"
+    },
+    {
+      "row": 2,
+      "column": 4,
+      "reason": "instructional-cell-without-date-anchor"
+    },
+    {
+      "row": 2,
+      "column": 5,
+      "reason": "unclassified-non-instructional-cell"
+    },
+    {
+      "row": 2,
+      "column": 6,
+      "reason": "instructional-cell-without-date-anchor"
+    },
+    {
+      "row": 2,
+      "column": 7,
+      "reason": "instructional-cell-without-date-anchor"
+    },
+    {
+      "row": 3,
+      "column": 3,
+      "reason": "instructional-cell-without-date-anchor"
+    },
+    {
+      "row": 3,
+      "column": 4,
+      "reason": "instructional-cell-without-date-anchor"
+    },
+    {
+      "row": 3,
+      "column": 5,
+      "reason": "instructional-cell-without-date-anchor"
+    },
+    {
+      "row": 3,
+      "column": 6,
+      "reason": "instructional-cell-without-date-anchor"
+    },
+    {
+      "row": 3,
+      "column": 7,
+      "reason": "instructional-cell-without-date-anchor"
+    },
+    {
+      "row": 4,
+      "column": 3,
+      "reason": "instructional-cell-without-date-anchor"
+    },
+    {
+      "row": 4,
+      "column": 4,
+      "reason": "instructional-cell-without-date-anchor"
+    },
+    {
+      "row": 4,
+      "column": 5,
+      "reason": "instructional-cell-without-date-anchor"
+    },
+    {
+      "row": 4,
+      "column": 6,
+      "reason": "instructional-cell-without-date-anchor"
+    },
+    {
+      "row": 4,
+      "column": 7,
+      "reason": "instructional-cell-without-date-anchor"
+    },
+    {
+      "row": 5,
+      "column": 3,
+      "reason": "instructional-cell-without-date-anchor"
+    },
+    {
+      "row": 5,
+      "column": 4,
+      "reason": "instructional-cell-without-date-anchor"
+    },
+    {
+      "row": 5,
+      "column": 5,
+      "reason": "instructional-cell-without-date-anchor"
+    },
+    {
+      "row": 5,
+      "column": 6,
+      "reason": "instructional-cell-without-date-anchor"
+    },
+    {
+      "row": 5,
+      "column": 7,
+      "reason": "instructional-cell-without-date-anchor"
+    },
+    {
+      "row": 6,
+      "column": 3,
+      "reason": "instructional-cell-without-date-anchor"
+    },
+    {
+      "row": 6,
+      "column": 4,
+      "reason": "instructional-cell-without-date-anchor"
+    },
+    {
+      "row": 6,
+      "column": 5,
+      "reason": "instructional-cell-without-date-anchor"
+    },
+    {
+      "row": 6,
+      "column": 6,
+      "reason": "instructional-cell-without-date-anchor"
+    },
+    {
+      "row": 6,
+      "column": 7,
+      "reason": "instructional-cell-without-date-anchor"
+    },
+    {
+      "row": 7,
+      "column": 2,
+      "reason": "instructional-cell-without-date-anchor"
+    }
+  ]
+}

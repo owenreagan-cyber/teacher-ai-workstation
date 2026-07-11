@@ -1,0 +1,66 @@
+{
+  "schemaVersion": 1,
+  "status": "owner-approved-with-explicit-unresolved-fields",
+  "approvedAt": "2026-07-10",
+  "source": "canvas-maps-owner-source-2026-07-10.pdf",
+  "effectiveSchoolYear": "2026-2027",
+  "timezone": "America/New_York",
+  "versioningRequired": true,
+  "structure": [
+    "header-banner",
+    "week-subtitle",
+    "reminders",
+    "resources",
+    "daily-blocks"
+  ],
+  "dailySections": [
+    "in-class",
+    "at-home"
+  ],
+  "visualTokens": {
+    "primaryBlue": "#0065a7",
+    "secondaryTeal": "#00c0a5",
+    "dangerRed": "#c51062",
+    "darkGrey": "#333333",
+    "accentGold": "#c87800"
+  },
+  "wrapper": {
+    "className": "kl_wrapper",
+    "leftBorder": "5px solid #0065a7"
+  },
+  "rules": {
+    "brevityMandate": true,
+    "stripVendorNamesFromPublicTitles": true,
+    "stripLearningObjectives": true,
+    "stripEssentialQuestions": true,
+    "resourcesMustUseStructuredReferences": true,
+    "fakeLinksForbidden": true,
+    "atHomeUsesAssignmentUrlWhenAvailable": true,
+    "readingAndSpellingShareAgenda": true,
+    "fridayInstructionAllowed": true,
+    "fridayHomeworkDefault": "none",
+    "fridayAtHomeSectionDefault": "omit",
+    "fridayTestExceptionAllowed": true,
+    "historyScienceAssignmentsDisabled": true
+  },
+  "unresolvedPolicies": {
+    "canvasAssignmentDueTime": {
+      "status": "owner-confirmation-required",
+      "conflictingEvidence": [
+        "12:00 AM",
+        "11:59 PM"
+      ]
+    },
+    "automaticFrontPagePublication": {
+      "status": "future-deployment-gate"
+    }
+  },
+  "confirmedPolicies": {
+    "readingTest14CheckoutAbsence": {
+      "status": "owner-confirmed",
+      "checkoutNumber": 14,
+      "checkoutExists": false,
+      "note": "Reading Test 14 does not have a Checkout. Valid Checkouts are 1-13 only."
+    }
+  }
+}

@@ -1,0 +1,81 @@
+{
+  "schemaVersion": 1,
+  "status": "owner-confirmed-from-canvas-export",
+  "schoolYear": "2026-2027",
+  "canonicalHtmlSource": "docs/programs/canvas-llm/phase-22-predictive-weekly-planning-workstation/standards/canvas-weekly-agenda-html-standard-2026-2027.html",
+  "calendarSource": "config/curriculum/canvas/instructional-weeks-2026-2027.json",
+  "heading": {
+    "title": "Weekly Agenda",
+    "subtitlePattern": "Quarter {quarter}, Week {week} | {dateRange}",
+    "example": "Quarter 1, Week 1 | July 20-24, 2026"
+  },
+  "sections": {
+    "combinedRemindersAndResources": true,
+    "sectionTitle": "Reminders & Resources",
+    "assessmentWindowDays": 10,
+    "ordering": [
+      "assessment-reminders",
+      "study-guide-links",
+      "lesson-resource-links"
+    ]
+  },
+  "assessmentReminderRules": {
+    "includeTestsWithinNextCalendarDays": 10,
+    "includeCheckoutsWithinNextCalendarDays": 10,
+    "studyGuideLinksNestedUnderRelatedAssessment": true,
+    "checkoutStudyGuideAllowed": false,
+    "fakeLinksAllowed": false,
+    "missingLinksShownInStudentHtml": false
+  },
+  "dailyLayout": {
+    "days": [
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday"
+    ],
+    "layout": "two-column-flex",
+    "leftColumn": "In Class",
+    "rightColumn": "At Home",
+    "columnWidth": "49%",
+    "briefBulletsRequired": true,
+    "paragraphLengthDescriptionsDiscouraged": true
+  },
+  "friday": {
+    "atHomeMayBeOmittedByDefault": true
+  },
+  "htmlTokens": {
+    "wrapperId": "kl_wrapper_3",
+    "wrapperClasses": [
+      "kl_circle_left",
+      "kl_wrapper"
+    ],
+    "bannerId": "kl_banner",
+    "firstActivitiesId": "kl_activities2",
+    "dayBlockIds": [
+      "kl_activities2",
+      "kl_custom_block_4",
+      "kl_custom_block_3",
+      "kl_custom_block_2",
+      "kl_custom_block_1"
+    ]
+  },
+  "colors": {
+    "blue": "#0065a7",
+    "magenta": "#c51062",
+    "darkGray": "#333333",
+    "white": "#ffffff"
+  },
+  "contentRules": {
+    "lessonTextStyle": "concise-bullets",
+    "homeworkTextStyle": "concise-bullets",
+    "verifiedLinksOnly": true,
+    "teacherOnlyResourcesBlocked": true,
+    "unresolvedValuesNeverGuessed": true
+  },
+  "legacySupersededRules": {
+    "separateRemindersAndResourcesSections": false,
+    "stackedInClassAndAtHomeSections": false
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "artifactClassification": "synthetic-curriculum",
+  "containsStudentData": false,
+  "sourcePath": "fixtures/canvas-llm/phase-22/synthetic-pacing-guide.csv",
+  "purpose": "Synthetic pacing fixture used to generate the local Phase 22 demo artifact.",
+  "notes": [
+    "No student names, grades, scores, roster rows, or individualized records are present.",
+    "Do not treat the CSV as trusted production content.",
+    "The generated demo artifact must remain local-only."
+  ]
+}

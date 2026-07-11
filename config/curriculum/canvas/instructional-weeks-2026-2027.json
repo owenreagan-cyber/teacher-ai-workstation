@@ -1,0 +1,311 @@
+{
+  "schemaVersion": 1,
+  "status": "owner-provided-canvas-export",
+  "schoolYear": "2026-2027",
+  "source": "Owner-provided Canvas course export",
+  "weekCount": 37,
+  "quarterWeekCounts": {
+    "Q1": 9,
+    "Q2": 9,
+    "Q3": 9,
+    "Q4": 10
+  },
+  "weeks": [
+    {
+      "quarter": 1,
+      "week": 1,
+      "code": "Q1W1",
+      "pageTitle": "Q1W1 - July 20-24, 2026",
+      "displaySubtitle": "Quarter 1, Week 1 | July 20-24, 2026",
+      "sourcePath": "32fab929297940749b072431c86eaeb3/wiki_content/q1w1-july-20-24-2026.html"
+    },
+    {
+      "quarter": 1,
+      "week": 2,
+      "code": "Q1W2",
+      "pageTitle": "Q1W2 - July 27-31, 2026",
+      "displaySubtitle": "Quarter 1, Week 2 | July 27-31, 2026",
+      "sourcePath": "32fab929297940749b072431c86eaeb3/wiki_content/q1w2-july-27-31-2026.html"
+    },
+    {
+      "quarter": 1,
+      "week": 3,
+      "code": "Q1W3",
+      "pageTitle": "Q1W3 - August 3-7, 2026",
+      "displaySubtitle": "Quarter 1, Week 3 | August 3-7, 2026",
+      "sourcePath": "32fab929297940749b072431c86eaeb3/wiki_content/q1w3-august-3-7-2026.html"
+    },
+    {
+      "quarter": 1,
+      "week": 4,
+      "code": "Q1W4",
+      "pageTitle": "Q1W4 - August 10–14, 2026",
+      "displaySubtitle": "Quarter 1, Week 4 | August 10–14, 2026",
+      "sourcePath": "32fab929297940749b072431c86eaeb3/wiki_content/q1w4-august-10-14-2026.html"
+    },
+    {
+      "quarter": 1,
+      "week": 5,
+      "code": "Q1W5",
+      "pageTitle": "Q1W5 - August 17–21, 2026",
+      "displaySubtitle": "Quarter 1, Week 5 | August 17–21, 2026",
+      "sourcePath": "32fab929297940749b072431c86eaeb3/wiki_content/q1w5-august-17-21-2026.html"
+    },
+    {
+      "quarter": 1,
+      "week": 6,
+      "code": "Q1W6",
+      "pageTitle": "Q1W6 - August 24–28, 2026",
+      "displaySubtitle": "Quarter 1, Week 6 | August 24–28, 2026",
+      "sourcePath": "32fab929297940749b072431c86eaeb3/wiki_content/q1w6-august-24-28-2026.html"
+    },
+    {
+      "quarter": 1,
+      "week": 7,
+      "code": "Q1W7",
+      "pageTitle": "Q1W7 - August 31–September 4, 2026",
+      "displaySubtitle": "Quarter 1, Week 7 | August 31–September 4, 2026",
+      "sourcePath": "32fab929297940749b072431c86eaeb3/wiki_content/q1w7-august-31-september-4-2026.html"
+    },
+    {
+      "quarter": 1,
+      "week": 8,
+      "code": "Q1W8",
+      "pageTitle": "Q1W8 - September 7–11, 2026",
+      "displaySubtitle": "Quarter 1, Week 8 | September 7–11, 2026",
+      "sourcePath": "32fab929297940749b072431c86eaeb3/wiki_content/q1w8-september-7-11-2026.html"
+    },
+    {
+      "quarter": 1,
+      "week": 9,
+      "code": "Q1W9",
+      "pageTitle": "Q1W9 - September 14–18, 2026",
+      "displaySubtitle": "Quarter 1, Week 9 | September 14–18, 2026",
+      "sourcePath": "32fab929297940749b072431c86eaeb3/wiki_content/q1w9-september-14-18-2026.html"
+    },
+    {
+      "quarter": 2,
+      "week": 1,
+      "code": "Q2W1",
+      "pageTitle": "Q2W1 - October 12–16, 2026",
+      "displaySubtitle": "Quarter 2, Week 1 | October 12–16, 2026",
+      "sourcePath": "32fab929297940749b072431c86eaeb3/wiki_content/q2w1-october-12-16-2026.html"
+    },
+    {
+      "quarter": 2,
+      "week": 2,
+      "code": "Q2W2",
+      "pageTitle": "Q2W2 - October 19–23, 2026",
+      "displaySubtitle": "Quarter 2, Week 2 | October 19–23, 2026",
+      "sourcePath": "32fab929297940749b072431c86eaeb3/wiki_content/q2w2-october-19-23-2026.html"
+    },
+    {
+      "quarter": 2,
+      "week": 3,
+      "code": "Q2W3",
+      "pageTitle": "Q2W3 -  October 26–30, 2026",
+      "displaySubtitle": "Quarter 2, Week 3 | &nbsp;October 26–30, 2026",
+      "sourcePath": "32fab929297940749b072431c86eaeb3/wiki_content/q2w3-october-26-30-2026.html"
+    },
+    {
+      "quarter": 2,
+      "week": 4,
+      "code": "Q2W4",
+      "pageTitle": "Q2W4 - November 2–6, 2026",
+      "displaySubtitle": "Quarter 2, Week 4 | November 2–6, 2026",
+      "sourcePath": "32fab929297940749b072431c86eaeb3/wiki_content/q2w4-november-2-6-2026.html"
+    },
+    {
+      "quarter": 2,
+      "week": 5,
+      "code": "Q2W5",
+      "pageTitle": "Q2W5 - November 9–13, 2026",
+      "displaySubtitle": "Quarter 2, Week 5 | November 9–13, 2026",
+      "sourcePath": "32fab929297940749b072431c86eaeb3/wiki_content/q2w5-november-9-13-2026.html"
+    },
+    {
+      "quarter": 2,
+      "week": 6,
+      "code": "Q2W6",
+      "pageTitle": "Q2W6 - November 16–20, 2026",
+      "displaySubtitle": "Quarter 2, Week 6 | November 16–20, 2026",
+      "sourcePath": "32fab929297940749b072431c86eaeb3/wiki_content/q2w6-november-16-20-2026.html"
+    },
+    {
+      "quarter": 2,
+      "week": 7,
+      "code": "Q2W7",
+      "pageTitle": "Q2W7 - November 30–December 4, 2026",
+      "displaySubtitle": "Quarter 2, Week 7 | November 30–December 4, 2026",
+      "sourcePath": "32fab929297940749b072431c86eaeb3/wiki_content/q2w7-november-30-december-4-2026.html"
+    },
+    {
+      "quarter": 2,
+      "week": 8,
+      "code": "Q2W8",
+      "pageTitle": "Q2W8 - December 7–11, 2026",
+      "displaySubtitle": "Quarter 2, Week 8 | December 7–11, 2026",
+      "sourcePath": "32fab929297940749b072431c86eaeb3/wiki_content/q2w8-december-7-11-2026.html"
+    },
+    {
+      "quarter": 2,
+      "week": 9,
+      "code": "Q2W9",
+      "pageTitle": "Q2W9 - December 14–18, 2026",
+      "displaySubtitle": "Quarter 2, Week 9 | December 14–18, 2026",
+      "sourcePath": "32fab929297940749b072431c86eaeb3/wiki_content/q2w9-december-14-18-2026.html"
+    },
+    {
+      "quarter": 3,
+      "week": 1,
+      "code": "Q3W1",
+      "pageTitle": "Q3W1 - January 11–15, 2027",
+      "displaySubtitle": "Quarter 3, Week 1 | January 11–15, 2027",
+      "sourcePath": "32fab929297940749b072431c86eaeb3/wiki_content/q3w1-january-11-15-2027.html"
+    },
+    {
+      "quarter": 3,
+      "week": 2,
+      "code": "Q3W2",
+      "pageTitle": "Q3W2 - January 18–22, 2027",
+      "displaySubtitle": "Quarter 3, Week 2 | January 18–22, 2027",
+      "sourcePath": "32fab929297940749b072431c86eaeb3/wiki_content/q3w2-january-18-22-2027.html"
+    },
+    {
+      "quarter": 3,
+      "week": 3,
+      "code": "Q3W3",
+      "pageTitle": "Q3W3 - January 25–29, 2027",
+      "displaySubtitle": "Quarter 3, Week 3 | January 25–29, 2027",
+      "sourcePath": "32fab929297940749b072431c86eaeb3/wiki_content/q3w3-january-25-29-2027.html"
+    },
+    {
+      "quarter": 3,
+      "week": 4,
+      "code": "Q3W4",
+      "pageTitle": "Q3W4 - February 1–5, 2027",
+      "displaySubtitle": "Quarter 3, Week 4 | February 1–5, 2027",
+      "sourcePath": "32fab929297940749b072431c86eaeb3/wiki_content/q3w4-february-1-5-2027.html"
+    },
+    {
+      "quarter": 3,
+      "week": 5,
+      "code": "Q3W5",
+      "pageTitle": "Q3W5 - February 8–12, 2027",
+      "displaySubtitle": "Quarter 3, Week 5 | February 8–12, 2027",
+      "sourcePath": "32fab929297940749b072431c86eaeb3/wiki_content/q3w5-february-8-12-2027.html"
+    },
+    {
+      "quarter": 3,
+      "week": 6,
+      "code": "Q3W6",
+      "pageTitle": "Q3W6 - February 15–19, 2027",
+      "displaySubtitle": "Quarter 3, Week 6 | February 15–19, 2027",
+      "sourcePath": "32fab929297940749b072431c86eaeb3/wiki_content/q3w6-february-15-19-2027.html"
+    },
+    {
+      "quarter": 3,
+      "week": 7,
+      "code": "Q3W7",
+      "pageTitle": "Q3W7 - February 22–26, 2027",
+      "displaySubtitle": "Quarter 3, Week 7 | February 22–26, 2027",
+      "sourcePath": "32fab929297940749b072431c86eaeb3/wiki_content/q3w7-february-22-26-2027-2.html"
+    },
+    {
+      "quarter": 3,
+      "week": 8,
+      "code": "Q3W8",
+      "pageTitle": "Q3W8 - March 1–5, 2027",
+      "displaySubtitle": "Quarter 3, Week 8 | March 1–5, 2027",
+      "sourcePath": "32fab929297940749b072431c86eaeb3/wiki_content/q3w8-march-1-5-2027.html"
+    },
+    {
+      "quarter": 3,
+      "week": 9,
+      "code": "Q3W9",
+      "pageTitle": "Q3W9 - March 8–12, 2027",
+      "displaySubtitle": "Quarter 3, Week 9 | March 8–12, 2027",
+      "sourcePath": "32fab929297940749b072431c86eaeb3/wiki_content/q3w9-march-8-12-2027.html"
+    },
+    {
+      "quarter": 4,
+      "week": 1,
+      "code": "Q4W1",
+      "pageTitle": "Q4W1 - April 5–9, 2027",
+      "displaySubtitle": "Quarter 4, Week 1 | April 5–9, 2027",
+      "sourcePath": "32fab929297940749b072431c86eaeb3/wiki_content/q4w1-april-5-9-2027.html"
+    },
+    {
+      "quarter": 4,
+      "week": 2,
+      "code": "Q4W2",
+      "pageTitle": "Q4W2 - April 12–16, 2027",
+      "displaySubtitle": "Quarter 4, Week 2 | April 12–16, 2027",
+      "sourcePath": "32fab929297940749b072431c86eaeb3/wiki_content/q4w2-april-12-16-2027.html"
+    },
+    {
+      "quarter": 4,
+      "week": 3,
+      "code": "Q4W3",
+      "pageTitle": "Q4W3 - April 19–23, 2027",
+      "displaySubtitle": "Quarter 4, Week 3 | April 19–23, 2027",
+      "sourcePath": "32fab929297940749b072431c86eaeb3/wiki_content/q4w3-april-19-23-2027.html"
+    },
+    {
+      "quarter": 4,
+      "week": 4,
+      "code": "Q4W4",
+      "pageTitle": "Q4W4 - April 26–30, 2027",
+      "displaySubtitle": "Quarter 4, Week 4 | April 26–30, 2027",
+      "sourcePath": "32fab929297940749b072431c86eaeb3/wiki_content/q4w4-april-26-30-2027.html"
+    },
+    {
+      "quarter": 4,
+      "week": 5,
+      "code": "Q4W5",
+      "pageTitle": "Q4W5 - May 3–7, 2027",
+      "displaySubtitle": "Quarter 4, Week 5 | May 3–7, 2027",
+      "sourcePath": "32fab929297940749b072431c86eaeb3/wiki_content/q4w5-may-3-7-2027.html"
+    },
+    {
+      "quarter": 4,
+      "week": 6,
+      "code": "Q4W6",
+      "pageTitle": "Q4W6 - May 10–14, 2027",
+      "displaySubtitle": "Quarter 4, Week 6 | May 10–14, 2027",
+      "sourcePath": "32fab929297940749b072431c86eaeb3/wiki_content/q4w6-may-10-14-2027.html"
+    },
+    {
+      "quarter": 4,
+      "week": 7,
+      "code": "Q4W7",
+      "pageTitle": "Q4W7 - May 17–21, 2027",
+      "displaySubtitle": "Quarter 4, Week 7 | May 17–21, 2027",
+      "sourcePath": "32fab929297940749b072431c86eaeb3/wiki_content/q4w7-may-17-21-2027.html"
+    },
+    {
+      "quarter": 4,
+      "week": 8,
+      "code": "Q4W8",
+      "pageTitle": "Q4W8 - May 24–28, 2027",
+      "displaySubtitle": "Quarter 4, Week 8 | May 24–28, 2027",
+      "sourcePath": "32fab929297940749b072431c86eaeb3/wiki_content/q4w8-may-24-28-2027.html"
+    },
+    {
+      "quarter": 4,
+      "week": 9,
+      "code": "Q4W9",
+      "pageTitle": "Q4W9 - May 31–June 4, 2027",
+      "displaySubtitle": "Quarter 4, Week 9 | May 31–June 4, 2027",
+      "sourcePath": "32fab929297940749b072431c86eaeb3/wiki_content/q4w9-may-31-june-4-2027.html"
+    },
+    {
+      "quarter": 4,
+      "week": 10,
+      "code": "Q4W10",
+      "pageTitle": "Q4W10 - June 7–11, 2027",
+      "displaySubtitle": "Quarter 4, Week 10 | June 7–11, 2027",
+      "sourcePath": "32fab929297940749b072431c86eaeb3/wiki_content/q4w10-june-7-11-2027.html"
+    }
+  ]
+}

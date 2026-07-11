@@ -1,0 +1,570 @@
+{
+  "schemaVersion": 1,
+  "status": "owner-approved",
+  "approvedAt": "2026-07-10",
+  "source": "canvas-maps-owner-source-2026-07-10.pdf",
+  "curriculum": "Reading Mastery 4",
+  "mapPurpose": "reading-homework-comprehension-question-location",
+  "lessons": {
+    "1": {
+      "comprehensionLetter": "C",
+      "page": 4
+    },
+    "2": {
+      "comprehensionLetter": "C",
+      "page": 8
+    },
+    "3": {
+      "comprehensionLetter": "E",
+      "page": 13
+    },
+    "4": {
+      "comprehensionLetter": "D",
+      "page": 17
+    },
+    "5": {
+      "comprehensionLetter": "C",
+      "page": 21
+    },
+    "6": {
+      "comprehensionLetter": "D",
+      "page": 25
+    },
+    "7": {
+      "comprehensionLetter": "E",
+      "page": 31
+    },
+    "8": {
+      "comprehensionLetter": "C",
+      "page": 35
+    },
+    "9": {
+      "comprehensionLetter": "E",
+      "page": 40
+    },
+    "10": {
+      "comprehensionLetter": "F",
+      "page": 45
+    },
+    "11": {
+      "comprehensionLetter": "E",
+      "page": 49
+    },
+    "12": {
+      "comprehensionLetter": "E",
+      "page": 55
+    },
+    "13": {
+      "comprehensionLetter": "D",
+      "page": 60
+    },
+    "14": {
+      "comprehensionLetter": "E",
+      "page": 64
+    },
+    "15": {
+      "comprehensionLetter": "D",
+      "page": 69
+    },
+    "16": {
+      "comprehensionLetter": "F",
+      "page": 75
+    },
+    "17": {
+      "comprehensionLetter": "E",
+      "page": 80
+    },
+    "18": {
+      "comprehensionLetter": "D",
+      "page": 85
+    },
+    "19": {
+      "comprehensionLetter": "F",
+      "page": 89
+    },
+    "20": {
+      "comprehensionLetter": "E",
+      "page": 93
+    },
+    "21": {
+      "comprehensionLetter": "E",
+      "page": 97
+    },
+    "22": {
+      "comprehensionLetter": "C",
+      "page": 101
+    },
+    "23": {
+      "comprehensionLetter": "C",
+      "page": 106
+    },
+    "24": {
+      "comprehensionLetter": "D",
+      "page": 109
+    },
+    "25": {
+      "comprehensionLetter": "D",
+      "page": 114
+    },
+    "26": {
+      "comprehensionLetter": "D",
+      "page": 119
+    },
+    "27": {
+      "comprehensionLetter": "D",
+      "page": 124
+    },
+    "28": {
+      "comprehensionLetter": "D",
+      "page": 130
+    },
+    "29": {
+      "comprehensionLetter": "D",
+      "page": 134
+    },
+    "30": {
+      "comprehensionLetter": "C",
+      "page": 138
+    },
+    "31": {
+      "comprehensionLetter": "E",
+      "page": 143
+    },
+    "32": {
+      "comprehensionLetter": "D",
+      "page": 149
+    },
+    "33": {
+      "comprehensionLetter": "E",
+      "page": 153
+    },
+    "34": {
+      "comprehensionLetter": "G",
+      "page": 159
+    },
+    "35": {
+      "comprehensionLetter": "E",
+      "page": 163
+    },
+    "36": {
+      "comprehensionLetter": "E",
+      "page": 168
+    },
+    "37": {
+      "comprehensionLetter": "D",
+      "page": 172
+    },
+    "38": {
+      "comprehensionLetter": "E",
+      "page": 177
+    },
+    "39": {
+      "comprehensionLetter": "F",
+      "page": 182
+    },
+    "40": {
+      "comprehensionLetter": "F",
+      "page": 187
+    },
+    "41": {
+      "comprehensionLetter": "E",
+      "page": 194
+    },
+    "42": {
+      "comprehensionLetter": "F",
+      "page": 201
+    },
+    "43": {
+      "comprehensionLetter": "F",
+      "page": 207
+    },
+    "44": {
+      "comprehensionLetter": "E",
+      "page": 212
+    },
+    "45": {
+      "comprehensionLetter": "F",
+      "page": 217
+    },
+    "46": {
+      "comprehensionLetter": "F",
+      "page": 223
+    },
+    "47": {
+      "comprehensionLetter": "E",
+      "page": 227
+    },
+    "48": {
+      "comprehensionLetter": "E",
+      "page": 231
+    },
+    "49": {
+      "comprehensionLetter": "F",
+      "page": 236
+    },
+    "50": {
+      "comprehensionLetter": "F",
+      "page": 242
+    },
+    "51": {
+      "comprehensionLetter": "D",
+      "page": 247
+    },
+    "52": {
+      "comprehensionLetter": "E",
+      "page": 252
+    },
+    "53": {
+      "comprehensionLetter": "H",
+      "page": 257
+    },
+    "54": {
+      "comprehensionLetter": "H",
+      "page": 262
+    },
+    "55": {
+      "comprehensionLetter": "E",
+      "page": 267
+    },
+    "56": {
+      "comprehensionLetter": "E",
+      "page": 272
+    },
+    "57": {
+      "comprehensionLetter": "E",
+      "page": 277
+    },
+    "58": {
+      "comprehensionLetter": "E",
+      "page": 282
+    },
+    "59": {
+      "comprehensionLetter": "E",
+      "page": 288
+    },
+    "60": {
+      "comprehensionLetter": "E",
+      "page": 293
+    },
+    "61": {
+      "comprehensionLetter": "E",
+      "page": 298
+    },
+    "62": {
+      "comprehensionLetter": "F",
+      "page": 303
+    },
+    "63": {
+      "comprehensionLetter": "E",
+      "page": 308
+    },
+    "64": {
+      "comprehensionLetter": "E",
+      "page": 313
+    },
+    "65": {
+      "comprehensionLetter": "E",
+      "page": 318
+    },
+    "66": {
+      "comprehensionLetter": "E",
+      "page": 323
+    },
+    "67": {
+      "comprehensionLetter": "F",
+      "page": 328
+    },
+    "68": {
+      "comprehensionLetter": "E",
+      "page": 333
+    },
+    "69": {
+      "comprehensionLetter": "F",
+      "page": 339
+    },
+    "70": {
+      "comprehensionLetter": "F",
+      "page": 345
+    },
+    "71": {
+      "comprehensionLetter": "E",
+      "page": 350
+    },
+    "72": {
+      "comprehensionLetter": "E",
+      "page": 355
+    },
+    "73": {
+      "comprehensionLetter": "F",
+      "page": 361
+    },
+    "74": {
+      "comprehensionLetter": "F",
+      "page": 366
+    },
+    "75": {
+      "comprehensionLetter": "E",
+      "page": 372
+    },
+    "76": {
+      "comprehensionLetter": "F",
+      "page": 377
+    },
+    "77": {
+      "comprehensionLetter": "E",
+      "page": 383
+    },
+    "78": {
+      "comprehensionLetter": "E",
+      "page": 388
+    },
+    "79": {
+      "comprehensionLetter": "F",
+      "page": 393
+    },
+    "80": {
+      "comprehensionLetter": "E",
+      "page": 399
+    },
+    "81": {
+      "comprehensionLetter": "F",
+      "page": 404
+    },
+    "82": {
+      "comprehensionLetter": "D",
+      "page": 409
+    },
+    "83": {
+      "comprehensionLetter": "F",
+      "page": 414
+    },
+    "84": {
+      "comprehensionLetter": "G",
+      "page": 420
+    },
+    "85": {
+      "comprehensionLetter": "F",
+      "page": 426
+    },
+    "86": {
+      "comprehensionLetter": "D",
+      "page": 432
+    },
+    "87": {
+      "comprehensionLetter": "E",
+      "page": 437
+    },
+    "88": {
+      "comprehensionLetter": "E",
+      "page": 443
+    },
+    "89": {
+      "comprehensionLetter": "E",
+      "page": 448
+    },
+    "90": {
+      "comprehensionLetter": "E",
+      "page": 454
+    },
+    "91": {
+      "comprehensionLetter": "E",
+      "page": 460
+    },
+    "92": {
+      "comprehensionLetter": "F",
+      "page": 466
+    },
+    "93": {
+      "comprehensionLetter": "E",
+      "page": 472
+    },
+    "94": {
+      "comprehensionLetter": "E",
+      "page": 477
+    },
+    "95": {
+      "comprehensionLetter": "E",
+      "page": 482
+    },
+    "96": {
+      "comprehensionLetter": "E",
+      "page": 487
+    },
+    "97": {
+      "comprehensionLetter": "E",
+      "page": 493
+    },
+    "98": {
+      "comprehensionLetter": "F",
+      "page": 498
+    },
+    "99": {
+      "comprehensionLetter": "E",
+      "page": 504
+    },
+    "100": {
+      "comprehensionLetter": "F",
+      "page": 510
+    },
+    "101": {
+      "comprehensionLetter": "E",
+      "page": 516
+    },
+    "102": {
+      "comprehensionLetter": "F",
+      "page": 522
+    },
+    "103": {
+      "comprehensionLetter": "D",
+      "page": 528
+    },
+    "104": {
+      "comprehensionLetter": "E",
+      "page": 534
+    },
+    "105": {
+      "comprehensionLetter": "E",
+      "page": 540
+    },
+    "106": {
+      "comprehensionLetter": "E",
+      "page": 546
+    },
+    "107": {
+      "comprehensionLetter": "E",
+      "page": 552
+    },
+    "108": {
+      "comprehensionLetter": "E",
+      "page": 558
+    },
+    "109": {
+      "comprehensionLetter": "E",
+      "page": 564
+    },
+    "110": {
+      "comprehensionLetter": "C",
+      "page": 570
+    },
+    "111": {
+      "comprehensionLetter": "E",
+      "page": 576
+    },
+    "112": {
+      "comprehensionLetter": "E",
+      "page": 582
+    },
+    "113": {
+      "comprehensionLetter": "E",
+      "page": 588
+    },
+    "114": {
+      "comprehensionLetter": "F",
+      "page": 594
+    },
+    "115": {
+      "comprehensionLetter": "E",
+      "page": 600
+    },
+    "116": {
+      "comprehensionLetter": "E",
+      "page": 606
+    },
+    "117": {
+      "comprehensionLetter": "E",
+      "page": 612
+    },
+    "118": {
+      "comprehensionLetter": "E",
+      "page": 618
+    },
+    "119": {
+      "comprehensionLetter": "E",
+      "page": 624
+    },
+    "120": {
+      "comprehensionLetter": "E",
+      "page": 630
+    },
+    "121": {
+      "comprehensionLetter": "E",
+      "page": 636
+    },
+    "122": {
+      "comprehensionLetter": "E",
+      "page": 642
+    },
+    "123": {
+      "comprehensionLetter": "D",
+      "page": 648
+    },
+    "124": {
+      "comprehensionLetter": "E",
+      "page": 654
+    },
+    "125": {
+      "comprehensionLetter": "E",
+      "page": 660
+    },
+    "126": {
+      "comprehensionLetter": "E",
+      "page": 666
+    },
+    "127": {
+      "comprehensionLetter": "E",
+      "page": 672
+    },
+    "128": {
+      "comprehensionLetter": "E",
+      "page": 678
+    },
+    "129": {
+      "comprehensionLetter": "E",
+      "page": 684
+    },
+    "130": {
+      "comprehensionLetter": "E",
+      "page": 690
+    },
+    "131": {
+      "comprehensionLetter": "E",
+      "page": 696
+    },
+    "132": {
+      "comprehensionLetter": "E",
+      "page": 702
+    },
+    "133": {
+      "comprehensionLetter": "E",
+      "page": 708
+    },
+    "134": {
+      "comprehensionLetter": "E",
+      "page": 714
+    },
+    "135": {
+      "comprehensionLetter": "E",
+      "page": 720
+    },
+    "136": {
+      "comprehensionLetter": "E",
+      "page": 726
+    },
+    "137": {
+      "comprehensionLetter": "E",
+      "page": 732
+    },
+    "138": {
+      "comprehensionLetter": "E",
+      "page": 738
+    },
+    "139": {
+      "comprehensionLetter": "E",
+      "page": 744
+    },
+    "140": {
+      "comprehensionLetter": "E",
+      "page": 750
+    }
+  }
+}

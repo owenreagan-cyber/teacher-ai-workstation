@@ -1,0 +1,185 @@
+{
+  "schemaVersion": 1,
+  "status": "owner-confirmed",
+  "approvedAt": "2026-07-10",
+  "curriculum": "Reading Mastery 4",
+  "canonicalTerminology": "Checkout",
+  "sourceTerminology": "Check out",
+  "mappingRule": {
+    "checkoutNumber": "associatedLessonNumber divided by 10",
+    "readingTestNumber": "same as checkoutNumber",
+    "lessonRangeStart": "associatedLessonNumber minus 9",
+    "lessonRangeEnd": "associatedLessonNumber"
+  },
+  "checkouts": {
+    "1": {
+      "checkoutNumber": 1,
+      "readingTestNumber": 1,
+      "sourceCheckoutKey": "Check out 10",
+      "associatedLesson": 10,
+      "lessonRange": {
+        "start": 1,
+        "end": 10
+      },
+      "passage": "The Cyclone, Chapter 2",
+      "bookVolume": "Book A",
+      "page": 43
+    },
+    "2": {
+      "checkoutNumber": 2,
+      "readingTestNumber": 2,
+      "sourceCheckoutKey": "Check out 20",
+      "associatedLesson": 20,
+      "lessonRange": {
+        "start": 11,
+        "end": 20
+      },
+      "passage": "The Field of Flowers",
+      "bookVolume": "Book A",
+      "page": 90
+    },
+    "3": {
+      "checkoutNumber": 3,
+      "readingTestNumber": 3,
+      "sourceCheckoutKey": "Check out 30",
+      "associatedLesson": 30,
+      "lessonRange": {
+        "start": 21,
+        "end": 30
+      },
+      "passage": "The Wizard's Story",
+      "bookVolume": "Book A",
+      "page": 135
+    },
+    "4": {
+      "checkoutNumber": 4,
+      "readingTestNumber": 4,
+      "sourceCheckoutKey": "Check out 40",
+      "associatedLesson": 40,
+      "lessonRange": {
+        "start": 31,
+        "end": 40
+      },
+      "passage": "A Horse to Remember, Chapter 2",
+      "bookVolume": "Book A",
+      "page": 184
+    },
+    "5": {
+      "checkoutNumber": 5,
+      "readingTestNumber": 5,
+      "sourceCheckoutKey": "Check out 50",
+      "associatedLesson": 50,
+      "lessonRange": {
+        "start": 41,
+        "end": 50
+      },
+      "passage": "The Cat That Walked by Himself, Chapter 2",
+      "bookVolume": "Book B",
+      "page": 17
+    },
+    "6": {
+      "checkoutNumber": 6,
+      "readingTestNumber": 6,
+      "sourceCheckoutKey": "Check out 60",
+      "associatedLesson": 60,
+      "lessonRange": {
+        "start": 51,
+        "end": 60
+      },
+      "passage": "The Mystery of the Butterfly Trees",
+      "bookVolume": "Book B",
+      "page": 65
+    },
+    "7": {
+      "checkoutNumber": 7,
+      "readingTestNumber": 7,
+      "sourceCheckoutKey": "Check out 70",
+      "associatedLesson": 70,
+      "lessonRange": {
+        "start": 61,
+        "end": 70
+      },
+      "passage": "The Circuit, Part 2",
+      "bookVolume": "Book B",
+      "page": 115
+    },
+    "8": {
+      "checkoutNumber": 8,
+      "readingTestNumber": 8,
+      "sourceCheckoutKey": "Check out 80",
+      "associatedLesson": 80,
+      "lessonRange": {
+        "start": 71,
+        "end": 80
+      },
+      "passage": "The Golden Touch, Chapter 1",
+      "bookVolume": "Book B",
+      "page": 166
+    },
+    "9": {
+      "checkoutNumber": 9,
+      "readingTestNumber": 9,
+      "sourceCheckoutKey": "Check out 90",
+      "associatedLesson": 90,
+      "lessonRange": {
+        "start": 81,
+        "end": 90
+      },
+      "passage": "The Miraculous Pitcher, Chapter 4",
+      "bookVolume": "Book B",
+      "page": 221
+    },
+    "10": {
+      "checkoutNumber": 10,
+      "readingTestNumber": 10,
+      "sourceCheckoutKey": "Check out 100",
+      "associatedLesson": 100,
+      "lessonRange": {
+        "start": 91,
+        "end": 100
+      },
+      "passage": "The Spider and the Fly, Part 2",
+      "bookVolume": "Book C",
+      "page": 17
+    },
+    "11": {
+      "checkoutNumber": 11,
+      "readingTestNumber": 11,
+      "sourceCheckoutKey": "Check out 110",
+      "associatedLesson": 110,
+      "lessonRange": {
+        "start": 101,
+        "end": 110
+      },
+      "passage": "England in the 1500's: Part 2",
+      "bookVolume": "Book C",
+      "page": 62
+    },
+    "12": {
+      "checkoutNumber": 12,
+      "readingTestNumber": 12,
+      "sourceCheckoutKey": "Check out 120",
+      "associatedLesson": 120,
+      "lessonRange": {
+        "start": 111,
+        "end": 120
+      },
+      "passage": "The Prince in the Toils",
+      "bookVolume": "Book C",
+      "page": 110
+    },
+    "13": {
+      "checkoutNumber": 13,
+      "readingTestNumber": 13,
+      "sourceCheckoutKey": "Check out 130",
+      "associatedLesson": 130,
+      "lessonRange": {
+        "start": 121,
+        "end": 130
+      },
+      "passage": "The Prince with the Peasants",
+      "bookVolume": "Book C",
+      "page": 155
+    }
+  }
+}

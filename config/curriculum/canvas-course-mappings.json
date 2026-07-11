@@ -1,0 +1,225 @@
+{
+  "schemaVersion": 1,
+  "status": "owner-approved",
+  "approvedAt": "2026-07-10",
+  "evidenceSource": "owner-provided-2026-07-10",
+  "rules": {
+    "lookupRequiresSchoolYearAndEnvironment": true,
+    "archivedCoursesAreReadOnly": true,
+    "archivedCoursesCannotBeDeploymentTargets": true,
+    "sandboxCannotBeProductionTarget": true,
+    "missingMappingsMustNotBeInferred": true
+  },
+  "currentProduction": {
+    "schoolYear": "2026-2027",
+    "environment": "production",
+    "courses": [
+      {
+        "subjectId": "math",
+        "displayName": "Math",
+        "courseId": 26404,
+        "canonicalPrefix": "SM5",
+        "canonicalName": "Saxon Math 5",
+        "assignmentPolicy": "enabled"
+      },
+      {
+        "subjectId": "reading",
+        "displayName": "Reading",
+        "courseId": 26442,
+        "canonicalPrefix": "RM4",
+        "canonicalName": "Reading Mastery 4",
+        "assignmentPolicy": "enabled"
+      },
+      {
+        "subjectId": "spelling",
+        "displayName": "Spelling",
+        "courseId": 26442,
+        "canonicalPrefix": "SPELL",
+        "canonicalName": "Spelling 4",
+        "assignmentPolicy": "enabled",
+        "mergedWithSubject": "reading",
+        "sharesCanvasCourseWith": "reading"
+      },
+      {
+        "subjectId": "language-arts",
+        "displayName": "Language Arts",
+        "courseId": 26495,
+        "canonicalPrefix": "ELA4",
+        "canonicalName": "Shurley English 4",
+        "assignmentPolicy": "enabled"
+      },
+      {
+        "subjectId": "history",
+        "displayName": "History",
+        "courseId": 26493,
+        "canonicalPrefix": null,
+        "canonicalName": "History 4",
+        "assignmentPolicy": "disabled",
+        "noAssignmentsReason": "owner-approved-subject-policy"
+      },
+      {
+        "subjectId": "science",
+        "displayName": "Science",
+        "courseId": 26496,
+        "canonicalPrefix": null,
+        "canonicalName": "Science 4",
+        "assignmentPolicy": "disabled",
+        "noAssignmentsReason": "owner-approved-subject-policy"
+      },
+      {
+        "subjectId": "homeroom",
+        "displayName": "Homeroom",
+        "courseId": 26427,
+        "canonicalPrefix": "NEWSLETTER",
+        "canonicalName": "Homeroom",
+        "assignmentPolicy": "disabled",
+        "newsletterTarget": true
+      }
+    ]
+  },
+  "demoSandbox": {
+    "schoolYear": "sandbox",
+    "environment": "demo-sandbox",
+    "courses": [
+      {
+        "subjectId": "math",
+        "displayName": "Math Automation Sandbox",
+        "courseId": 24399,
+        "canonicalPrefix": "SM5",
+        "canonicalName": "Saxon Math 5",
+        "assignmentPolicy": "enabled",
+        "writePolicy": "approval-gated",
+        "mustRemainSeparateFromProduction": true
+      }
+    ]
+  },
+  "archivedReference": [
+    {
+      "schoolYear": "2025-2026",
+      "environment": "archived-reference",
+      "readOnly": true,
+      "writesBlocked": true,
+      "resourceEvidenceAllowed": true,
+      "historicalPatternEvidenceAllowed": true,
+      "courses": [
+        {
+          "subjectId": "math",
+          "courseId": 21957,
+          "canonicalPrefix": "SM5",
+          "canonicalName": "Saxon Math 5",
+          "assignmentPolicy": "enabled"
+        },
+        {
+          "subjectId": "reading",
+          "courseId": 21919,
+          "canonicalPrefix": "RM4",
+          "canonicalName": "Reading Mastery 4",
+          "assignmentPolicy": "enabled"
+        },
+        {
+          "subjectId": "spelling",
+          "courseId": 21919,
+          "canonicalPrefix": "SPELL",
+          "canonicalName": "Spelling 4",
+          "assignmentPolicy": "enabled",
+          "mergedWithSubject": "reading",
+          "sharesCanvasCourseWith": "reading"
+        },
+        {
+          "subjectId": "language-arts",
+          "courseId": 21944,
+          "canonicalPrefix": "ELA4",
+          "canonicalName": "Shurley English 4",
+          "assignmentPolicy": "enabled"
+        },
+        {
+          "subjectId": "history",
+          "courseId": 21934,
+          "canonicalPrefix": null,
+          "canonicalName": "History 4",
+          "assignmentPolicy": "disabled"
+        },
+        {
+          "subjectId": "science",
+          "courseId": 21970,
+          "canonicalPrefix": null,
+          "canonicalName": "Science 4",
+          "assignmentPolicy": "disabled"
+        },
+        {
+          "subjectId": "homeroom",
+          "courseId": 22254,
+          "canonicalPrefix": "NEWSLETTER",
+          "canonicalName": "Homeroom",
+          "assignmentPolicy": "disabled",
+          "newsletterTarget": true
+        }
+      ]
+    },
+    {
+      "schoolYear": "2024-2025",
+      "environment": "archived-reference",
+      "readOnly": true,
+      "writesBlocked": true,
+      "resourceEvidenceAllowed": true,
+      "historicalPatternEvidenceAllowed": true,
+      "courses": [
+        {
+          "subjectId": "math",
+          "courseId": 19428,
+          "canonicalPrefix": "SM5",
+          "canonicalName": "Saxon Math 5",
+          "assignmentPolicy": "enabled"
+        },
+        {
+          "subjectId": "reading",
+          "courseId": 19419,
+          "canonicalPrefix": "RM4",
+          "canonicalName": "Reading Mastery 4",
+          "assignmentPolicy": "enabled"
+        },
+        {
+          "subjectId": "spelling",
+          "courseId": 19419,
+          "canonicalPrefix": "SPELL",
+          "canonicalName": "Spelling 4",
+          "assignmentPolicy": "enabled",
+          "mergedWithSubject": "reading",
+          "sharesCanvasCourseWith": "reading"
+        },
+        {
+          "subjectId": "language-arts",
+          "courseId": 19426,
+          "canonicalPrefix": "ELA4",
+          "canonicalName": "Shurley English 4",
+          "assignmentPolicy": "enabled"
+        },
+        {
+          "subjectId": "history-a",
+          "courseId": 19422,
+          "canonicalPrefix": null,
+          "canonicalName": "History 4 - Section A",
+          "assignmentPolicy": "disabled"
+        },
+        {
+          "subjectId": "history-b",
+          "courseId": 19423,
+          "canonicalPrefix": null,
+          "canonicalName": "History 4 - Section B",
+          "assignmentPolicy": "disabled"
+        },
+        {
+          "subjectId": "homeroom",
+          "courseId": 19424,
+          "canonicalPrefix": "NEWSLETTER",
+          "canonicalName": "Homeroom",
+          "assignmentPolicy": "disabled",
+          "newsletterTarget": true
+        }
+      ],
+      "knownMissingMappings": [
+        "science"
+      ]
+    }
+  ]
+}

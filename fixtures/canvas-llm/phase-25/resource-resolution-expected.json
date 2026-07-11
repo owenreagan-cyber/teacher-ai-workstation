@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "artifactClassification": "synthetic-phase25-resource-resolution",
+  "containsStudentData": false,
+  "expectedResolved": [
+    "SM5-L18-STUDENT-BOOK",
+    "SM5-EVEN-HW-RECORDING-SHEET",
+    "SM5-LESSON-1-20-WORKSHEET",
+    "SM5-L18-ANSWER-KEY",
+    "SM5-L18-SECURE-ASSESSMENT",
+    "SM5-T18-STUDY-GUIDE",
+    "RM4-T13-TEST",
+    "RM4-C13-PASSAGE",
+    "RM4-FLUENCY-DIRECTIONS",
+    "RM4-T14-TEST",
+    "SPELL-T5-WORD-LIST"
+  ],
+  "expectedWarnings": [
+    "Math test cadence remains owner-unresolved",
+    "Canvas assignment due-time convention remains owner-unresolved"
+  ],
+  "expectedReviewQueueStatuses": [
+    "Resolved",
+    "Needs Review",
+    "Blocked",
+    "Teacher-Only",
+    "Missing",
+    "Conflicting"
+  ]
+}

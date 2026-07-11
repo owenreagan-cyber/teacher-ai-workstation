@@ -1,0 +1,384 @@
+{
+  "schemaVersion": 1,
+  "artifactClassification": "synthetic-phase24-teacher-brain",
+  "containsStudentData": false,
+  "weekCode": "Q1W5",
+  "sourceKind": "synthetic",
+  "sourceHierarchy": [
+    "owner-confirmed hard rules",
+    "explicit current-year pacing-guide entry",
+    "approved teacher correction",
+    "repeated FPK pacing-guide pattern",
+    "predictive suggestion",
+    "unresolved"
+  ],
+  "warnings": [
+    "Math test cadence remains owner-unresolved",
+    "Canvas assignment due-time convention remains owner-unresolved"
+  ],
+  "predictions": [
+    {
+      "weekCode": "Q1W5",
+      "subject": "math",
+      "weekday": "Monday",
+      "event_type": "lesson",
+      "lesson_number": 18,
+      "in_class_title": "SM5: Lesson 18",
+      "at_home_title": "SM5: Lesson 18 Evens",
+      "source_pacing_reference": "FPK-Math-L18",
+      "rules_applied": ["math.lesson.increment", "math.homework.parity.even"],
+      "explanation": ["Previous completed Math lesson was 17.", "Normal progression advances to Lesson 18.", "Lesson 18 is even, so even homework is predicted."],
+      "confidence": {
+        "level": "high",
+        "score": 0.97,
+        "rationale": "Math lesson progression and parity are owner-confirmed"
+      },
+      "requires_review": false,
+      "resource_requirements": [
+        {
+          "resource_type": "student-book",
+          "lesson_ref": "SM5-L18",
+          "resolution_status": "unresolved",
+          "requires_review": true
+        },
+        {
+          "resource_type": "homework-recording-sheet",
+          "lesson_ref": "SM5-L18",
+          "variant": "even",
+          "resolution_status": "unresolved",
+          "requires_review": true
+        }
+      ]
+    },
+    {
+      "weekCode": "Q1W5",
+      "subject": "math",
+      "weekday": "Tuesday",
+      "event_type": "lesson",
+      "lesson_number": 7,
+      "in_class_title": "SM5: Lesson 7",
+      "at_home_title": "SM5: Lesson 7 Odds",
+      "source_pacing_reference": "FPK-Math-L7",
+      "rules_applied": ["math.lesson.increment", "math.homework.parity.odd"],
+      "explanation": ["Previous completed Math lesson was 6.", "Normal progression advances to Lesson 7.", "Lesson 7 is odd, so odd homework is predicted."],
+      "confidence": {
+        "level": "high",
+        "score": 0.97,
+        "rationale": "Math lesson progression and parity are owner-confirmed"
+      },
+      "requires_review": false,
+      "resource_requirements": [
+        {
+          "resource_type": "student-book",
+          "lesson_ref": "SM5-L7",
+          "resolution_status": "unresolved",
+          "requires_review": true
+        },
+        {
+          "resource_type": "homework-recording-sheet",
+          "lesson_ref": "SM5-L7",
+          "variant": "odd",
+          "resolution_status": "unresolved",
+          "requires_review": true
+        }
+      ]
+    },
+    {
+      "weekCode": "Q1W5",
+      "subject": "math",
+      "weekday": "Wednesday",
+      "event_type": "lesson",
+      "lesson_number": 8,
+      "in_class_title": "SM5: Lesson 8",
+      "at_home_title": "SM5: Lesson 8 Odds",
+      "source_pacing_reference": "FPK-Math-L8",
+      "rules_applied": ["math.lesson.increment", "math.homework.parity.override"],
+      "explanation": ["Teacher preference overrides the automatic even homework parity."],
+      "confidence": {
+        "level": "medium",
+        "score": 0.92,
+        "rationale": "Teacher override changes the homework parity"
+      },
+      "requires_review": false,
+      "manual_override_state": "applied",
+      "resource_requirements": [
+        {
+          "resource_type": "student-book",
+          "lesson_ref": "SM5-L8",
+          "resolution_status": "unresolved",
+          "requires_review": true
+        },
+        {
+          "resource_type": "homework-recording-sheet",
+          "lesson_ref": "SM5-L8",
+          "variant": "odd",
+          "resolution_status": "unresolved",
+          "requires_review": true
+        }
+      ]
+    },
+    {
+      "weekCode": "Q1W5",
+      "subject": "math",
+      "weekday": "Thursday",
+      "event_type": "lesson",
+      "lesson_number": 10,
+      "in_class_title": "SM5: Investigation 1",
+      "at_home_title": "SM5: Investigation 1 Study Guide",
+      "source_pacing_reference": "FPK-Math-L10",
+      "rules_applied": ["math.investigation.sequence", "math.investigation.study-guide"],
+      "explanation": ["Lesson 10 reaches an investigation boundary.", "Investigation 1 follows Lesson 10."],
+      "confidence": {
+        "level": "high",
+        "score": 0.96,
+        "rationale": "Owner-confirmed investigation sequence"
+      },
+      "requires_review": false,
+      "resource_requirements": [
+        {
+          "resource_type": "investigation-resource",
+          "lesson_ref": "SM5-I1",
+          "resolution_status": "unresolved",
+          "requires_review": true
+        },
+        {
+          "resource_type": "study-guide",
+          "lesson_ref": "SM5-I1",
+          "resolution_status": "unresolved",
+          "requires_review": true
+        }
+      ]
+    },
+    {
+      "weekCode": "Q1W5",
+      "subject": "math",
+      "weekday": "Friday",
+      "event_type": "lesson",
+      "lesson_number": 20,
+      "in_class_title": "SM5: Investigation 2",
+      "at_home_title": "SM5: Investigation 2 Study Guide",
+      "source_pacing_reference": "FPK-Math-L20",
+      "rules_applied": ["math.investigation.sequence", "math.investigation.study-guide"],
+      "explanation": ["Lesson 20 reaches an investigation boundary.", "Investigation 2 follows Lesson 20."],
+      "confidence": {
+        "level": "high",
+        "score": 0.96,
+        "rationale": "Owner-confirmed investigation sequence"
+      },
+      "requires_review": false,
+      "resource_requirements": [
+        {
+          "resource_type": "investigation-resource",
+          "lesson_ref": "SM5-I2",
+          "resolution_status": "unresolved",
+          "requires_review": true
+        },
+        {
+          "resource_type": "study-guide",
+          "lesson_ref": "SM5-I2",
+          "resolution_status": "unresolved",
+          "requires_review": true
+        }
+      ]
+    },
+    {
+      "weekCode": "Q1W5",
+      "subject": "math",
+      "weekday": "Monday",
+      "event_type": "assessment",
+      "assessment_number": 18,
+      "lesson_number": 18,
+      "in_class_title": "Math Written Test 18 and Fact Test 18",
+      "at_home_title": "",
+      "source_pacing_reference": "FPK-Math-Test-Cadence",
+      "rules_applied": ["math.assessment.cadence", "math.monday-displacement"],
+      "explanation": ["A calculated Math test would have occurred on Monday.", "Monday advances instruction to the next available lesson.", "Ordinary Odds/Evens homework is suppressed and Study Guide only is assigned."],
+      "confidence": {
+        "level": "medium",
+        "score": 0.6,
+        "rationale": "Assessment cadence depends on unresolved profile"
+      },
+      "requires_review": true,
+      "resource_requirements": [
+        {
+          "resource_type": "study-guide",
+          "lesson_ref": "SM5-T18",
+          "variant": "blank",
+          "resolution_status": "unresolved",
+          "requires_review": true
+        },
+        {
+          "resource_type": "written-test",
+          "lesson_ref": "SM5-T18",
+          "resolution_status": "unresolved",
+          "requires_review": true
+        }
+      ]
+    },
+    {
+      "weekCode": "Q1W5",
+      "subject": "reading",
+      "weekday": "Wednesday",
+      "event_type": "assessment",
+      "assessment_number": 13,
+      "in_class_title": "Reading Mastery Test 13",
+      "at_home_title": "Reading Checkout 13",
+      "source_pacing_reference": "FPK-Reading-T13",
+      "rules_applied": ["reading.assessment.block", "reading.checkout.mapping"],
+      "explanation": ["Reading Test 13 maps to Checkout 13."],
+      "confidence": {
+        "level": "high",
+        "score": 0.96,
+        "rationale": "Reading checkout mapping is owner-confirmed"
+      },
+      "requires_review": false,
+      "resource_requirements": [
+        {
+          "resource_type": "reading-study-guide",
+          "lesson_ref": "RM4-T13",
+          "resolution_status": "unresolved",
+          "requires_review": true
+        },
+        {
+          "resource_type": "reading-checkout-passage",
+          "lesson_ref": "RM4-C13",
+          "resolution_status": "unresolved",
+          "requires_review": true
+        },
+        {
+          "resource_type": "fluency-directions",
+          "assessment_family": "checkout",
+          "resolution_status": "unresolved",
+          "requires_review": true
+        }
+      ]
+    },
+    {
+      "weekCode": "Q1W5",
+      "subject": "reading",
+      "weekday": "Thursday",
+      "event_type": "assessment",
+      "assessment_number": 14,
+      "in_class_title": "Reading Mastery Test 14",
+      "at_home_title": "",
+      "source_pacing_reference": "FPK-Reading-T14",
+      "rules_applied": ["reading.assessment.block", "reading.checkout.mapping"],
+      "explanation": ["Reading Test 14 has no companion checkout."],
+      "confidence": {
+        "level": "high",
+        "score": 0.98,
+        "rationale": "Reading Test 14 has no checkout"
+      },
+      "requires_review": false,
+      "resource_requirements": [
+        {
+          "resource_type": "reading-test",
+          "lesson_ref": "RM4-T14",
+          "resolution_status": "unresolved",
+          "requires_review": true
+        }
+      ]
+    },
+    {
+      "weekCode": "Q1W5",
+      "subject": "spelling",
+      "weekday": "Friday",
+      "event_type": "assessment",
+      "assessment_number": 5,
+      "in_class_title": "Spelling Test 5",
+      "at_home_title": "",
+      "source_pacing_reference": "FPK-Spelling-T5",
+      "rules_applied": ["spelling.fifth-lesson.test", "spelling.friday.preference"],
+      "explanation": ["Spelling Test 5 prefers Friday."],
+      "confidence": {
+        "level": "high",
+        "score": 0.94,
+        "rationale": "Spelling Friday preference is pattern-backed"
+      },
+      "requires_review": false,
+      "resource_requirements": [
+        {
+          "resource_type": "word-list",
+          "lesson_ref": "SPELL-T5",
+          "resolution_status": "unresolved",
+          "requires_review": true
+        }
+      ]
+    },
+    {
+      "weekCode": "Q1W5",
+      "subject": "shurley",
+      "weekday": "Tuesday",
+      "event_type": "lesson",
+      "lesson_number": 2,
+      "in_class_title": "Shurley Chapter 4 Lesson 2",
+      "at_home_title": "",
+      "source_pacing_reference": "FPK-Shurley-C4-L2",
+      "rules_applied": ["shurley.explicit-entry"],
+      "explanation": ["Explicit Shurley pacing entry supplied by the source."],
+      "confidence": {
+        "level": "high",
+        "score": 0.88,
+        "rationale": "Shurley explicit pacing entry is available"
+      },
+      "requires_review": false,
+      "resource_requirements": [
+        {
+          "resource_type": "classroom-practice",
+          "lesson_ref": "SHURLEY-L2",
+          "resolution_status": "unresolved",
+          "requires_review": true
+        }
+      ]
+    },
+    {
+      "weekCode": "Q1W5",
+      "subject": "history",
+      "weekday": "Thursday",
+      "event_type": "lesson",
+      "lesson_number": 5,
+      "title": "History Unit 5, Day 2",
+      "source_pacing_reference": "FPK-History-U5",
+      "rules_applied": ["history-science.no-assignment-prediction"],
+      "explanation": ["History and Science use explicit current-year entries when available.", "Assignment prediction remains disabled."],
+      "confidence": {
+        "level": "low",
+        "score": 0.47,
+        "rationale": "History and Science stay conservative and reviewable"
+      },
+      "requires_review": true,
+      "resource_requirements": [
+        {
+          "resource_type": "page-resource",
+          "lesson_ref": "HIST-U5",
+          "resolution_status": "unresolved",
+          "requires_review": true
+        }
+      ]
+    },
+    {
+      "weekCode": "Q1W5",
+      "subject": "science",
+      "weekday": "Friday",
+      "event_type": "lesson",
+      "title": "Science Lab Continuation",
+      "source_pacing_reference": "FPK-Science-Lab",
+      "rules_applied": ["history-science.no-assignment-prediction"],
+      "explanation": ["History and Science use explicit current-year entries when available.", "Assignment prediction remains disabled."],
+      "confidence": {
+        "level": "low",
+        "score": 0.47,
+        "rationale": "History and Science stay conservative and reviewable"
+      },
+      "requires_review": true,
+      "resource_requirements": [
+        {
+          "resource_type": "page-resource",
+          "lesson_ref": "SCI-LAB",
+          "resolution_status": "unresolved",
+          "requires_review": true
+        }
+      ]
+    }
+  ]
+}

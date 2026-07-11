@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "artifactClassification": "synthetic-phase25-resource-corrections",
+  "containsStudentData": false,
+  "version": 1,
+  "records": [
+    {
+      "subject": "math",
+      "weekCode": "Q1W5",
+      "day": "Monday",
+      "requiredResourceClass": "worksheet",
+      "predictedResourceId": "SM5-L18-WORKSHEET-LEGACY",
+      "approvedResourceId": "SM5-LESSON-1-20-WORKSHEET",
+      "correctionScope": "this lesson",
+      "timestamp": "2026-07-11T00:00:00Z",
+      "reason": "Legacy alias maps to the approved lesson-range worksheet",
+      "sourceRule": "teacher.resource.override",
+      "revision": 1
+    }
+  ]
+}

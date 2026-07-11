@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Phase 26 Unified Weekly Production Workstation</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="hero">
+    <div>
+      <p class="eyebrow">Phase 26</p>
+      <h1>Unified Weekly Production Workstation</h1>
+      <p class="lede">One local workspace for planning, prediction, resource resolution, approval, and export.</p>
+      <div class="week-row">
+        <label for="week-select">Week</label>
+        <select id="week-select"></select>
+        <button class="btn primary" id="generate-btn" type="button">Generate</button>
+        <button class="btn" id="regenerate-btn" type="button">Regenerate</button>
+        <button class="btn" id="approve-week-btn" type="button">Approve Full Week</button>
+        <button class="btn" id="export-btn" type="button">Export Package</button>
+      </div>
+      <p class="meta" id="week-meta">Loading...</p>
+      <div class="pill-row">
+        <span class="pill" id="readiness-pill">Readiness: loading</span>
+        <span class="pill muted" id="approval-pill">Approval: loading</span>
+        <span class="pill muted" id="manifest-pill">Manifest: loading</span>
+        <span class="pill muted" id="state-pill">State: loading</span>
+      </div>
+    </div>
+    <div class="hero-aside">
+      <div class="metric">
+        <span class="metric-label">Readiness</span>
+        <strong id="readiness-score">0%</strong>
+        <span id="readiness-explainer">Deterministic local calculation</span>
+      </div>
+      <div class="metric">
+        <span class="metric-label">Exception inbox</span>
+        <strong id="exception-count">0</strong>
+        <span>Items needing review</span>
+      </div>
+      <div class="metric">
+        <span class="metric-label">Revisions</span>
+        <strong id="revision-count">0</strong>
+        <span>Saved local history entries</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="shell">
+    <section class="panel-grid">
+      <section class="panel card-panel">
+        <div class="panel-head">
+          <h2>Subject Workspace</h2>
+          <p>Current readiness, predictions, resolved resources, and approval state.</p>
+        </div>
+        <div id="subject-grid" class="subject-grid"></div>
+      </section>
+
+      <section class="panel card-panel">
+        <div class="panel-head">
+          <h2>Exception Inbox</h2>
+          <p>Review unresolved or conflicting items before approving the week.</p>
+        </div>
+        <div id="exception-inbox" class="stack"></div>
+      </section>
+    </section>
+
+    <section class="panel-grid">
+      <section class="panel card-panel">
+        <div class="panel-head">
+          <h2>Revision History</h2>
+          <p>Initial generation, corrections, approvals, and export events.</p>
+        </div>
+        <div id="revision-history" class="stack"></div>
+      </section>
+
+      <section class="panel card-panel">
+        <div class="panel-head">
+          <h2>Approval Panel</h2>
+          <p>Approve subject by subject, then approve the full week.</p>
+        </div>
+        <div id="approval-panel" class="stack"></div>
+      </section>
+    </section>
+
+    <section class="panel-grid">
+      <section class="panel card-panel wide">
+        <div class="panel-head">
+          <h2>Source / Prediction / Resolution Trace</h2>
+          <p>What the source said, what the system inferred, which rules applied, and what was selected.</p>
+        </div>
+        <div id="trace-grid" class="trace-grid"></div>
+      </section>
+    </section>
+
+    <section class="panel-grid">
+      <section class="panel card-panel">
+        <div class="panel-head">
+          <h2>Teacher Corrections</h2>
+          <p>Inline, local-only edits that invalidate approvals and trigger regeneration.</p>
+        </div>
+        <form id="correction-form" class="correction-form">
+          <label>Subject <input id="correction-subject" value="math" required></label>
+          <label>Day <input id="correction-day" value="Monday" required></label>
+          <label>Field <input id="correction-field" value="at home" required></label>
+          <label>Original <input id="correction-original" value="SM5: Lesson 18 Evens" required></label>
+          <label>Edited <input id="correction-edited" value="SM5: Lesson 18 Odds" required></label>
+          <label>Scope <input id="correction-scope" value="this occurrence only" required></label>
+          <label>Reason <input id="correction-reason" value="Teacher correction" required></label>
+          <label>Source rule <input id="correction-source-rule" value="teacher.override" required></label>
+          <button class="btn primary" type="submit">Save correction</button>
+        </form>
+        <p id="correction-status" class="status-note">No correction saved yet</p>
+      </section>
+
+      <section class="panel card-panel">
+        <div class="panel-head">
+          <h2>Local State</h2>
+          <p>SQLite-backed week selection, persistence, backup, and quarantine state.</p>
+        </div>
+        <pre id="local-state" class="code-block"></pre>
+      </section>
+    </section>
+
+    <section class="panel-grid">
+      <section class="panel card-panel wide">
+        <div class="panel-head">
+          <h2>Preview Tabs</h2>
+          <p>Agenda HTML, text, JSON, assignments, reminders, resources, and deployment manifest.</p>
+        </div>
+        <nav class="tabs" id="preview-tabs">
+          <button class="tab active" data-tab="agenda-html" type="button">Agenda HTML</button>
+          <button class="tab" data-tab="text" type="button">Text</button>
+          <button class="tab" data-tab="json" type="button">JSON</button>
+          <button class="tab" data-tab="assignments" type="button">Assignments</button>
+          <button class="tab" data-tab="reminders" type="button">Reminders</button>
+          <button class="tab" data-tab="resources" type="button">Resources</button>
+          <button class="tab" data-tab="manifest" type="button">Deployment Manifest</button>
+        </nav>
+        <div class="preview-shell">
+          <section class="preview active" data-panel="agenda-html"><div id="agenda-html" class="preview-frame"></div></section>
+          <section class="preview" data-panel="text"><pre id="text-preview" class="code-block"></pre></section>
+          <section class="preview" data-panel="json"><pre id="json-preview" class="code-block"></pre></section>
+          <section class="preview" data-panel="assignments"><div id="assignments-preview" class="stack"></div></section>
+          <section class="preview" data-panel="reminders"><div id="reminders-preview" class="stack"></div></section>
+          <section class="preview" data-panel="resources"><div id="resources-preview" class="stack"></div></section>
+          <section class="preview" data-panel="manifest"><pre id="manifest-preview" class="code-block"></pre></section>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <script src="workstation.js"></script>
+</body>
+</html>

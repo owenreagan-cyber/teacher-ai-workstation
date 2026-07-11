@@ -1,6 +1,6 @@
 # Chief of Staff Command Index v1
 
-Last updated: 2026-07-02
+Last updated: 2026-07-11
 
 ```text
 Status: documentation/status only
@@ -60,6 +60,7 @@ These flags exist in `bin/chief-of-staff` and work as read-only local status sur
 | `bin/chief-of-staff --canvas-llm-phase-23-weekly-content-production-engine-status` | Canvas LLM Phase 23 weekly content production engine status |
 | `bin/chief-of-staff --canvas-llm-phase-24-predictive-teacher-brain-status` | Canvas LLM Phase 24 predictive teacher brain status |
 | `bin/chief-of-staff --canvas-llm-phase-25-curriculum-source-intelligence-status` | Canvas LLM Phase 25 curriculum source intelligence status |
+| `bin/chief-of-staff --canvas-llm-phase-26-unified-weekly-production-workstation-status` | Canvas LLM Phase 26 unified weekly production workstation status |
 
 ### Proof
 

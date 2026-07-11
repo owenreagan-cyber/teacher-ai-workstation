@@ -59,6 +59,7 @@ These flags exist in `bin/chief-of-staff` and work as read-only local status sur
 | `bin/chief-of-staff --teacher-workstation-foundation-status` | Phase 3 foundation orchestration |
 | `bin/chief-of-staff --canvas-llm-phase-23-weekly-content-production-engine-status` | Canvas LLM Phase 23 weekly content production engine status |
 | `bin/chief-of-staff --canvas-llm-phase-24-predictive-teacher-brain-status` | Canvas LLM Phase 24 predictive teacher brain status |
+| `bin/chief-of-staff --canvas-llm-phase-25-curriculum-source-intelligence-status` | Canvas LLM Phase 25 curriculum source intelligence status |
 
 ### Proof
 

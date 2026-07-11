@@ -12,6 +12,10 @@ if [ "${1:-}" = "--canvas-llm-phase-24-predictive-teacher-brain-status" ]; then
   exec bash "scripts/canvas-llm-phase-24-predictive-teacher-brain-status.sh"
 fi
 
+if [ "${1:-}" = "--canvas-llm-phase-25-curriculum-source-intelligence-status" ]; then
+  exec bash "scripts/canvas-llm-phase-25-curriculum-source-intelligence-status.sh"
+fi
+
 if [ "${1:-}" = "--canvas-llm-phase-23-weekly-content-production-engine-status" ]; then
   exec bash "scripts/canvas-llm-phase-23-weekly-content-production-engine-status.sh"
 fi
@@ -347,6 +351,8 @@ Teacher Planning Command Organization (status only; safe sample: fractions-revie
   --canvas-llm-phase-19g-19i-completion-status Show Canvas LLM Phase 19G-I completion status and exit.
   --canvas-llm-phase-20-demo-sandbox-write-gate-approval-packet-status Show Canvas LLM Phase 20 demo sandbox write gate approval packet status and exit.
   --canvas-llm-phase-21-codex-autonomous-sandbox-learning-agent-status Show Canvas LLM Phase 21 autonomous sandbox learning agent status and exit.
+  --canvas-llm-phase-25-curriculum-source-intelligence-status
+                                       Show Canvas LLM Phase 25 curriculum source intelligence status and exit.
   --canvas-llm-phase-23-weekly-content-production-engine-status Show Canvas LLM Phase 23 weekly content production engine status and exit.
   --canvas-llm-phase-21d-sandbox-week-render-write-status
                                        Show Canvas LLM Phase 21D gated sandbox week render/write status and exit.

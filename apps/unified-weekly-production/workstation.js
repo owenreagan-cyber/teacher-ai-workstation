@@ -109,6 +109,12 @@ function renderWeekOptions(packet) {
 async function loadWorkstation() {
   const packet = await request('/api/workstation');
   window.__packet = packet;
+  let phase27 = null;
+  try {
+    phase27 = await request('./data/phase27-demo.json');
+  } catch (error) {
+    phase27 = null;
+  }
   renderWeekOptions(packet);
   $('week-meta').textContent = `${packet.weekCode} • ${packet.weekSelection.startsOn} to ${packet.weekSelection.endsOn} • ${packet.weekSelection.displaySubtitle}`;
   $('readiness-pill').textContent = `Readiness: ${packet.readiness.score}%`;
@@ -138,6 +144,22 @@ async function loadWorkstation() {
   ].join('');
   $('local-state').textContent = JSON.stringify(packet.localState, null, 2);
   renderPreview(packet);
+  if (phase27) {
+    $('phase27-mode').textContent = `Phase 27: ${phase27.deploymentManifestV1.mode}`;
+    $('phase27-snapshot-age').textContent = `Snapshot: ${phase27.deploymentManifestV1.targetSnapshotAge}`;
+    $('phase27-health').textContent = `Health: ${phase27.deploymentManifestV1.validationSummary.failCount === 0 ? 'PASS' : 'FAIL'}`;
+    $('phase27-diff').innerHTML = phase27.safetyDiff.map((item) => `
+      <article class="card">
+        <h3>${esc(item.localTitle)}</h3>
+        <p class="status ${item.comparisonStatus === 'BLOCKED' ? 'bad' : item.comparisonStatus === 'CONFLICT' ? 'warn' : ''}">${esc(item.comparisonStatus)}</p>
+        <p class="muted">${esc(item.objectType)} • ${esc(item.targetCourse)}</p>
+        <p class="muted">Before: ${esc(item.contentHashBefore)}</p>
+        <p class="muted">After: ${esc(item.contentHashAfter)}</p>
+        <details><summary>Field diffs</summary><pre class="code-block">${esc(JSON.stringify(item.fieldDiffs, null, 2))}</pre></details>
+      </article>
+    `).join('');
+    $('phase27-manifest').textContent = JSON.stringify(phase27.deploymentManifestV1, null, 2);
+  }
   setActiveTab(document.querySelector('.tab.active')?.dataset.tab || 'agenda-html');
 
   document.querySelectorAll('[data-approve-subject]').forEach((button) => {

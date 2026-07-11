@@ -20,6 +20,10 @@ if [ "${1:-}" = "--canvas-llm-phase-26-unified-weekly-production-workstation-sta
   exec bash "scripts/canvas-llm-phase-26-unified-weekly-production-workstation-status.sh"
 fi
 
+if [ "${1:-}" = "--canvas-llm-phase-27-canvas-readiness-and-safety-diff-status" ]; then
+  exec bash "scripts/canvas-llm-phase-27-canvas-readiness-and-safety-diff-status.sh"
+fi
+
 if [ "${1:-}" = "--canvas-llm-phase-23-weekly-content-production-engine-status" ]; then
   exec bash "scripts/canvas-llm-phase-23-weekly-content-production-engine-status.sh"
 fi

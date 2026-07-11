@@ -149,6 +149,30 @@
         </div>
       </section>
     </section>
+
+    <section class="panel-grid">
+      <section class="panel card-panel wide">
+        <div class="panel-head">
+          <h2>Phase 27 Safety Diff</h2>
+          <p>Read-only Canvas comparison, manifest preview, and blocked deployment planning.</p>
+        </div>
+        <div class="pill-row">
+          <span class="pill muted" id="phase27-mode">Phase 27: unavailable</span>
+          <span class="pill muted" id="phase27-snapshot-age">Snapshot: unknown</span>
+          <span class="pill muted" id="phase27-health">Health: unknown</span>
+        </div>
+        <div class="trace-grid">
+          <article class="card">
+            <h3>Safety Diff</h3>
+            <div id="phase27-diff" class="stack"></div>
+          </article>
+          <article class="card">
+            <h3>Deployment Manifest v1</h3>
+            <pre id="phase27-manifest" class="code-block"></pre>
+          </article>
+        </div>
+      </section>
+    </section>
   </main>
 
   <script src="workstation.js"></script>

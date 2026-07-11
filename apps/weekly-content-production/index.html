@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Phase 23 Weekly Content Production Engine</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="hero">
+    <div>
+      <p class="eyebrow">Phase 23</p>
+      <h1>Weekly Content Production Engine</h1>
+      <p class="lede">Local-first packet builder, validator, and preview workspace.</p>
+      <p class="meta" id="packet-meta">Loading packet...</p>
+      <div class="state-row">
+        <span class="state-pill" id="approval-state">Approval: loading</span>
+        <span class="state-pill state-pill-muted" id="deployment-state">Deployment: loading</span>
+      </div>
+      <div class="local-state-panel">
+        <label class="local-state-label" for="local-approval-state">Local approval state</label>
+        <div class="local-state-controls">
+          <select id="local-approval-state">
+            <option value="draft">draft</option>
+            <option value="reviewed">reviewed</option>
+            <option value="approved">approved</option>
+          </select>
+          <button id="local-approval-save" class="action-btn" type="button">Save local state</button>
+          <span id="local-approval-status" class="status-note">Not saved</span>
+        </div>
+      </div>
+    </div>
+    <div class="status">
+      <span>Preview-only</span>
+      <span>No Canvas writes</span>
+      <span>No email sends</span>
+      <span id="warn-pill" class="warn">WARN</span>
+      <button id="export-btn" class="action-btn" type="button">Export Packet</button>
+      <span id="export-status" class="status-note">Not exported</span>
+    </div>
+  </header>
+  <main class="shell">
+    <nav class="tabs">
+      <button class="tab active" data-tab="summary">Summary</button>
+      <button class="tab" data-tab="pages">Pages</button>
+      <button class="tab" data-tab="assignments">Assignments</button>
+      <button class="tab" data-tab="resources">Resources</button>
+      <button class="tab" data-tab="reminders">Reminders</button>
+      <button class="tab" data-tab="html-preview">HTML Preview</button>
+      <button class="tab" data-tab="text-preview">Text Preview</button>
+      <button class="tab" data-tab="json-preview">JSON Preview</button>
+      <button class="tab" data-tab="validation">Validation</button>
+      <button class="tab" data-tab="risks">Risks</button>
+      <button class="tab" data-tab="provenance">Provenance</button>
+    </nav>
+    <section class="workspace">
+      <section class="panel active" id="tab-summary">
+        <h2>Packet Summary</h2>
+        <p id="packet-summary">Loading...</p>
+      </section>
+      <section class="panel" id="tab-pages"><h2>Page Drafts</h2><div id="pages-grid" class="card-grid"></div></section>
+      <section class="panel" id="tab-assignments"><h2>Assignment Drafts</h2><div id="assignments-grid" class="card-grid"></div></section>
+      <section class="panel" id="tab-resources"><h2>Approved Resource Matches</h2><div id="resources-grid" class="card-grid"></div></section>
+      <section class="panel" id="tab-reminders"><h2>Assessment Reminders</h2><div id="reminders-grid" class="card-grid"></div></section>
+      <section class="panel" id="tab-html-preview"><h2>HTML Preview</h2><div id="html-preview" class="preview-frame"></div></section>
+      <section class="panel" id="tab-text-preview"><h2>Text Preview</h2><pre id="text-preview" class="preview-text"></pre></section>
+      <section class="panel" id="tab-json-preview"><h2>Packet JSON Preview</h2><pre id="packet-json-preview" class="preview-text"></pre></section>
+      <section class="panel" id="tab-validation"><h2>Validation</h2><ul id="validation-list" class="finding-list"></ul><p id="validation-summary"></p></section>
+      <section class="panel" id="tab-risks"><h2>Risks</h2><ul id="risks-list" class="finding-list"></ul></section>
+      <section class="panel" id="tab-provenance"><h2>Provenance</h2><ul id="provenance-list" class="finding-list"></ul></section>
+    </section>
+  </main>
+  <script src="workstation.js"></script>
+</body>
+</html>

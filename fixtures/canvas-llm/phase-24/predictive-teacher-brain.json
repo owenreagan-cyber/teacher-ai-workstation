@@ -1,0 +1,251 @@
+{
+  "schemaVersion": 1,
+  "artifactClassification": "synthetic-phase24-teacher-brain",
+  "containsStudentData": false,
+  "weekCode": "Q1W5",
+  "sourceKind": "synthetic",
+  "sourceHierarchy": [
+    "owner-confirmed hard rules",
+    "explicit current-year pacing-guide entry",
+    "approved teacher correction",
+    "repeated FPK pacing-guide pattern",
+    "predictive suggestion",
+    "unresolved"
+  ],
+  "ownerConfirmedRules": {
+    "mathLessonRange": "1-120",
+    "readingCheckoutRange": "1-13",
+    "readingTest14HasNoCheckout": true,
+    "spellingFridayPreference": true
+  },
+  "pacingGuideEntries": [
+    {
+      "id": "math-lesson-18",
+      "subject": "math",
+      "weekday": "Monday",
+      "eventType": "lesson",
+      "lessonNumber": 18,
+      "previousLessonNumber": 17,
+      "sourcePacingReference": "FPK-Math-L18"
+    },
+    {
+      "id": "math-lesson-7",
+      "subject": "math",
+      "weekday": "Tuesday",
+      "eventType": "lesson",
+      "lessonNumber": 7,
+      "previousLessonNumber": 6,
+      "sourcePacingReference": "FPK-Math-L7"
+    },
+    {
+      "id": "math-lesson-8-override",
+      "subject": "math",
+      "weekday": "Wednesday",
+      "eventType": "lesson",
+      "lessonNumber": 8,
+      "manualOverride": {
+        "homeworkParity": "odds",
+        "scope": "this occurrence only",
+        "revision": 1,
+        "timestamp": "2026-07-11T00:00:00Z",
+        "reason": "Teacher prefers odd homework for this lesson"
+      },
+      "sourcePacingReference": "FPK-Math-L8"
+    },
+    {
+      "id": "math-investigation-10",
+      "subject": "math",
+      "weekday": "Thursday",
+      "eventType": "lesson",
+      "lessonNumber": 10,
+      "previousLessonNumber": 9,
+      "sourcePacingReference": "FPK-Math-L10"
+    },
+    {
+      "id": "math-investigation-20",
+      "subject": "math",
+      "weekday": "Friday",
+      "eventType": "lesson",
+      "lessonNumber": 20,
+      "previousLessonNumber": 19,
+      "sourcePacingReference": "FPK-Math-L20"
+    },
+    {
+      "id": "math-monday-assessment",
+      "subject": "math",
+      "weekday": "Monday",
+      "eventType": "assessment",
+      "assessmentNumber": 18,
+      "previousLessonNumber": 17,
+      "testCadenceProfile": "owner-unresolved",
+      "sourcePacingReference": "FPK-Math-Test-Cadence"
+    },
+    {
+      "id": "reading-test-1",
+      "subject": "reading",
+      "weekday": "Tuesday",
+      "eventType": "assessment",
+      "assessmentNumber": 1,
+      "sourcePacingReference": "FPK-Reading-T1"
+    },
+    {
+      "id": "reading-test-7",
+      "subject": "reading",
+      "weekday": "Wednesday",
+      "eventType": "assessment",
+      "assessmentNumber": 7,
+      "sourcePacingReference": "FPK-Reading-T7"
+    },
+    {
+      "id": "reading-test-8",
+      "subject": "reading",
+      "weekday": "Thursday",
+      "eventType": "assessment",
+      "assessmentNumber": 8,
+      "sourcePacingReference": "FPK-Reading-T8"
+    },
+    {
+      "id": "reading-test-10",
+      "subject": "reading",
+      "weekday": "Friday",
+      "eventType": "assessment",
+      "assessmentNumber": 10,
+      "sourcePacingReference": "FPK-Reading-T10"
+    },
+    {
+      "id": "reading-test-11",
+      "subject": "reading",
+      "weekday": "Monday",
+      "eventType": "assessment",
+      "assessmentNumber": 11,
+      "sourcePacingReference": "FPK-Reading-T11"
+    },
+    {
+      "id": "reading-test-13",
+      "subject": "reading",
+      "weekday": "Wednesday",
+      "eventType": "assessment",
+      "assessmentNumber": 13,
+      "sourcePacingReference": "FPK-Reading-T13"
+    },
+    {
+      "id": "reading-test-14",
+      "subject": "reading",
+      "weekday": "Thursday",
+      "eventType": "assessment",
+      "assessmentNumber": 14,
+      "sourcePacingReference": "FPK-Reading-T14"
+    },
+    {
+      "id": "spelling-friday",
+      "subject": "spelling",
+      "weekday": "Friday",
+      "eventType": "assessment",
+      "assessmentNumber": 5,
+      "sourcePacingReference": "FPK-Spelling-T5"
+    },
+    {
+      "id": "spelling-shortened-week",
+      "subject": "spelling",
+      "weekday": "Friday",
+      "eventType": "assessment",
+      "assessmentNumber": 10,
+      "calendar": {
+        "closedWeekdays": ["Friday"]
+      },
+      "sourcePacingReference": "FPK-Spelling-T10"
+    },
+    {
+      "id": "spelling-override",
+      "subject": "spelling",
+      "weekday": "Friday",
+      "eventType": "assessment",
+      "assessmentNumber": 15,
+      "manualOverride": {
+        "scheduledDay": "Thursday",
+        "scope": "this occurrence only",
+        "revision": 1,
+        "timestamp": "2026-07-11T00:00:00Z",
+        "reason": "Teacher moved spelling test earlier"
+      },
+      "sourcePacingReference": "FPK-Spelling-T15"
+    },
+    {
+      "id": "shurley-explicit",
+      "subject": "shurley",
+      "weekday": "Tuesday",
+      "eventType": "lesson",
+      "chapter": 4,
+      "lesson": 2,
+      "sourcePacingReference": "FPK-Shurley-C4-L2"
+    },
+    {
+      "id": "shurley-unsupported",
+      "subject": "shurley",
+      "weekday": "Wednesday",
+      "eventType": "lesson",
+      "sourcePacingReference": "FPK-Shurley-unknown"
+    },
+    {
+      "id": "history-continuation",
+      "subject": "history",
+      "weekday": "Thursday",
+      "eventType": "lesson",
+      "title": "History Unit 5, Day 2",
+      "sourcePacingReference": "FPK-History-U5"
+    },
+    {
+      "id": "science-suggestion",
+      "subject": "science",
+      "weekday": "Friday",
+      "eventType": "lesson",
+      "title": "Science Lab Continuation",
+      "sourcePacingReference": "FPK-Science-Lab"
+    }
+  ],
+  "manualOverrides": [
+    {
+      "subject": "math",
+      "weekCode": "Q1W5",
+      "day": "Wednesday",
+      "predictedValue": "SM5: Lesson 8 Evens",
+      "approvedValue": "SM5: Lesson 8 Odds",
+      "correctionScope": "this occurrence only",
+      "timestamp": "2026-07-11T00:00:00Z",
+      "reason": "Teacher preference",
+      "sourceRule": "teacher.override",
+      "revision": 1
+    }
+  ],
+  "manualTeacherCorrections": [
+    {
+      "subject": "math",
+      "weekCode": "Q1W5",
+      "day": "Wednesday",
+      "predictedValue": "SM5: Lesson 8 Evens",
+      "approvedValue": "SM5: Lesson 8 Odds",
+      "correctionScope": "this occurrence only",
+      "timestamp": "2026-07-11T00:00:00Z",
+      "reason": "Teacher preference",
+      "sourceRule": "teacher.override",
+      "revision": 1
+    }
+  ],
+  "explicitOverrides": [
+    {
+      "subject": "spelling",
+      "weekCode": "Q1W5",
+      "day": "Friday",
+      "field": "scheduledDay",
+      "value": "Thursday",
+      "scope": "this occurrence only",
+      "timestamp": "2026-07-11T00:00:00Z",
+      "reason": "Teacher moved spelling test earlier",
+      "revision": 1
+    }
+  ],
+  "warnings": [
+    "Canvas assignment due-time convention remains owner-unresolved",
+    "Math test cadence remains owner-unresolved"
+  ]
+}

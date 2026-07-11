@@ -80,8 +80,13 @@ The Fact Test map supplies:
 - They retain separate subject identities and prefixes.
 - Standard Reading lessons do not create gradebook assignments automatically.
 - Reading homework uses the owner-approved comprehension letter/page map.
+- Reading Checkouts are valid for numbers 1-13 only.
+- Reading Test 14 has no Checkout.
 - Spelling parent announcements use positions 21-25 of the approved cumulative list.
-- Reading Test 14 fluency/checkout behavior remains unresolved.
+- Reading fluency bands are complete and owner-confirmed for Checkouts 1-13.
+  - Checkouts 1-7: 100 WPM, 2 or fewer errors
+  - Checkouts 8-10: 115 WPM, 2 or fewer errors
+  - Checkouts 11-13: 130 WPM, 2 or fewer errors
 
 ## History and Science
 
@@ -275,6 +280,5 @@ A failed dependency blocks downstream operations.
 The following must not be guessed:
 
 - final Canvas assignment due-time convention
-- Reading Test 14 fluency/checkout rule
 - exact Study Guide blank/completed Canvas resource IDs
 - final current-year assignment-group mappings

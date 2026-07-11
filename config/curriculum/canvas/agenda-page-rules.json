@@ -51,11 +51,16 @@
         "11:59 PM"
       ]
     },
-    "readingTest14FluencyCheckout": {
-      "status": "owner-confirmation-required"
-    },
     "automaticFrontPagePublication": {
       "status": "future-deployment-gate"
+    }
+  },
+  "confirmedPolicies": {
+    "readingTest14CheckoutAbsence": {
+      "status": "owner-confirmed",
+      "checkoutNumber": 14,
+      "checkoutExists": false,
+      "note": "Reading Test 14 does not have a Checkout. Valid Checkouts are 1-13 only."
     }
   }
 }

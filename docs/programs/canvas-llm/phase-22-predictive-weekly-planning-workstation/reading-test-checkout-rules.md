@@ -1,6 +1,7 @@
 # Reading Test and Checkout Rules
 
 Status: owner-confirmed.
+Valid Checkouts are 1-13 only. Reading Test 14 has no Checkout.
 
 ## Canonical terminology
 
@@ -131,4 +132,10 @@ Checkout 2:
 - tracking and tapping
 - read out loud every day
 
-Other WPM and error targets remain unresolved until supplied by an approved owner source.
+Confirmed fluency bands:
+
+- Checkouts 1-7: 100 words per minute, 2 or fewer errors
+- Checkouts 8-10: 115 words per minute, 2 or fewer errors
+- Checkouts 11-13: 130 words per minute, 2 or fewer errors
+
+Checkout 14 does not exist.

@@ -15,7 +15,7 @@ Recovered exact deterministic evidence includes:
 - Math test-family generation rules: written test, fact test, and study guide.
 - Friday/pre-test homework suppression behavior.
 - Reading + Spelling Together Logic, including Reading/Spelling course routing.
-- Reading fluency benchmark bands and a partial Reading lesson-to-test map.
+- Reading fluency benchmark bands, Reading lesson-to-test map, and confirmed no-checkout behavior for Reading Test 14.
 - Spelling test maps and focus-word generation rules.
 - Assignment title/group rules and subject/course prefix history.
 - Pre-deploy validators for duplicates, Friday violations, missing files, title conventions, and missing Math Study Guides.
@@ -113,7 +113,7 @@ Owner confirmation needed: yes, before canonical promotion, because no independe
 
 ### Reading Test Map And Checkout/Fluency
 
-Classification: `exact-code-map`, `conflicting`
+Classification: `exact-code-map`
 
 Source:
 
@@ -133,18 +133,13 @@ Fluency bands:
 - Tests 1-7: 100 WPM, 2 or fewer errors.
 - Tests 8-10: 115 WPM, 2 or fewer errors.
 - Tests 11-13: 130 WPM, 2 or fewer errors.
+Reading Test 14 has no Checkout.
 
 Supporting sources:
 
 - `pacing-sync-pilot-8c50be47/supabase/migrations/20260420000000_update_fluency_benchmarks.sql` lines 1-12 seeds the same bands into `system_config.auto_logic.readingFluencyBenchmarks`.
 - `pacing-sync-pilot-8c50be47/src/lib/reading-fluency.ts` lines 12-52 resolves configured bands.
-
-Conflict / bug-risk:
-
-- `Thalescanvasgemini/functions/src/core/assignmentEngine.ts` lines 31-39 only hard-locks lesson 80 -> test 8, then falls back to `Math.ceil(lessonNum / 10)`.
-- Same file lines 71-80 adds Test 14 -> 140 WPM, while the canonical-looking `functions/src/core/mappings.ts` bands end at 13 and fallback to 130 WPM. This is evidence for the known "Test 14 incorrectly triggering Fluency Checkout" risk, not a canonical rule.
-
-Owner confirmation needed: yes, especially for whether tests after 13 should create checkout/fluency work.
+- `config/curriculum/reading/reading-mastery-4/checkout-passage-map.json` contains only Checkouts 1-13.
 
 ### Spelling Test And Focus-Word Rules
 
@@ -178,7 +173,7 @@ Owner confirmation needed: yes for which focus-word selector is canonical.
 | Saxon Math 5 Study Guide blank/completed resource mapping | `missing` | No tracked blank/completed selector map found. | Needs owner/source extraction. |
 | Reading Mastery 4 homework-question mapping | `missing` | No deterministic homework-question map found. | Needs source extraction. |
 | Reading lesson-to-reader/resource mapping | `partial`, `documentation-only` | `CHECKOUT_PAGE_MAP` has only lessons/tests 10 and 11 in `src/lib/thales/mappings.ts` lines 121-124. | Too partial to canonicalize. |
-| Reading checkout/test logic | `exact-code-map`, `conflicting` | Reading test creates Reading Test + Checkout; mapping conflicts after test 13/14. | Needs owner confirmation. |
+| Reading checkout/test logic | `exact-code-map` | Reading tests 1-13 create Reading Test + Checkout; Reading Test 14 has no Checkout. | Owner-confirmed. |
 | Resource filename aliases | `inferred-from-implementation` | `resourceResolver.ts` keyword matching and `pre-deploy-validator.ts` lesson-ref regex. | Not exact enough for canonical aliases. |
 
 ## 5. Supabase/Firebase Evidence
@@ -215,7 +210,7 @@ No live Supabase or Firebase connection was used.
 | Power-Up mapping | Supabase seed maps lessons 1-120 and has lessons 3-8 as A/A/A/A/A/A; Thales server/client maps tests 1-23 and has 3:B, 4:C, 6:B, 7:B, 8:C. |
 | Study Guide grading | Phase 19B owner-approved docs say Study Guide should be 0 points and excluded from final grade; older client assignment logic returns 100 points and `omitFromFinal=true`; newer server engine returns 0 points, pass/fail, omitted. |
 | Reading lesson-to-test | Server mappings hard-lock 80/90/100/110/120/130 -> 8-13; assignment engine only hard-locks 80 -> 8 and falls back by tens. |
-| Reading Test 14 / fluency | One implementation includes Test 14 at 140 WPM; canonical-looking bands stop at 13. |
+| Reading Test 14 / checkout absence | One implementation included a Test 14 checkout path; owner rules confirm Reading Test 14 has no Checkout. |
 | Spelling focus words | Announcement path uses cumulative positions 21-25; server helper has first-five and challenge-word selector. |
 | Reading/Spelling course ID | Main Together Logic routes Reading/Spelling to 21919; `AnnouncementRM.tsx` has a local `TOGETHER_LOGIC_COURSE_ID = 22254`, likely wrong because 22254 is Homeroom in seeded config. |
 | Language Arts prefix | Initial seed uses `ELA4:`, later migration changes to `ELA4A`, while Phase 19 owner-approved docs prefer `ELA4`. |
@@ -226,7 +221,7 @@ Evidence recovered:
 
 - Duplicate assignments: pre-deploy validator detects duplicate `subject|day|title`; Firebase engine uses `idempotencyKey`; `Thalescanvasgemini` services include multiple cleanup/dedup paths.
 - Incorrect Reading checkout calculation: conflicting `READING_TEST_MAP` vs fallback `Math.ceil(lessonNum / 10)` is a plausible source.
-- Test 14 incorrectly triggering Fluency Checkout: `assignmentEngine.ts` explicitly returns WPM for Test 14; other fluency evidence stops at 13.
+- Historical Test 14 checkout bug is superseded by the owner-confirmed no-checkout rule for Reading Test 14.
 - Math Study Guide plus normal homework duplication: Math test triple creates a Study Guide sibling; pre-deploy validator requires paired Study Guide, but normal homework suppression on test/pre-test days is not fully evidenced as a separate rule.
 - Incorrect Power Up selection: conflicting Power-Up maps.
 - Wrong blank/completed resource selection: no deterministic selector found.
@@ -242,7 +237,6 @@ These should not be canonicalized from this pass:
 - Reading Mastery 4 homework-question map.
 - Full Reading lesson-to-reader/resource map.
 - Complete resource filename alias registry.
-- Owner-confirmed rule for Reading Test 14 and later.
 - Owner-confirmed Power-Up authority between Supabase seed and Thales deterministic server map.
 
 ## 9. Recommended Canonical Source
@@ -261,10 +255,9 @@ Recommended near-term canonicalization strategy:
 2. Should Math Study Guides always be generated for every Math Test, and should they always be due the day before when the test is Tuesday-Friday?
 3. Should Math Study Guides suppress normal Math homework on the pre-test day?
 4. What is the authoritative blank/completed Study Guide resource naming and selection rule?
-5. Does Reading Mastery Test 14 create a Fluency Checkout, or should checkout/fluency stop at Test 13?
-6. Should spelling focus words be cumulative positions 21-25, first five, or selected challenge words?
-7. Is Reading + Spelling Together Logic course ID 21919 for all future output?
-8. Should the Language Arts prefix be `ELA4`, `ELA4A`, or treated as historical alias only?
+5. Should spelling focus words be cumulative positions 21-25, first five, or selected challenge words?
+6. Is Reading + Spelling Together Logic course ID 21919 for all future output?
+7. Should the Language Arts prefix be `ELA4`, `ELA4A`, or treated as historical alias only?
 
 ## 11. Proposed Phase 22 Config Files
 

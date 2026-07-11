@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Predictive Weekly Planning Workstation</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <div>
+      <h1>Predictive Weekly Planning Workstation</h1>
+      <p id="startup-message">Local SQLite workspace loading...</p>
+      <p class="week-banner"><strong id="week-code">...</strong> <span id="week-subtitle">...</span></p>
+    </div>
+    <div class="safety-stack" aria-label="Safety boundaries">
+      <span>No student data</span>
+      <span>No Canvas writes</span>
+      <span>No email sends</span>
+      <span id="save-state" class="saved">Saved</span>
+    </div>
+  </header>
+  <main class="app-shell" id="main-content">
+    <nav class="rail" aria-label="Workstation views">
+      <button class="rail-button active" data-view="startup">Startup</button>
+      <button class="rail-button" data-view="year">Yearly Pacing</button>
+      <button class="rail-button" data-view="week">Weekly Plan</button>
+      <button class="rail-button" data-view="builder">Guided Builder</button>
+      <button class="rail-button" data-view="resources">Resources</button>
+      <button class="rail-button" data-view="drafts">Draft Review</button>
+      <button class="rail-button" data-view="deploy">Deployment Zone</button>
+      <button class="rail-button" data-view="revisions">Revision Recovery</button>
+      <button class="rail-button" data-view="settings">Settings</button>
+    </nav>
+    <section class="workspace">
+      <section class="summary-grid">
+        <article><span class="label">Week</span><strong id="metric-week">...</strong></article>
+        <article><span class="label">Subject</span><strong id="metric-subject">...</strong></article>
+        <article><span class="label">State</span><strong id="metric-state">...</strong></article>
+        <article><span class="label">Validation</span><strong id="metric-validation">...</strong></article>
+        <article><span class="label">Writes</span><strong>Off</strong></article>
+      </section>
+      <section class="view active" id="view-startup">
+        <h2>Startup and Week Chooser</h2>
+        <div id="startup-panel"></div>
+      </section>
+      <section class="view" id="view-year">
+        <h2>Yearly Pacing Workspace</h2>
+        <button id="import-pacing" type="button">Import Sanitized CSV</button>
+        <input id="pacing-filter" placeholder="Filter subject, week, date, lesson, test, unresolved" aria-label="Filter pacing entries">
+        <table><tbody id="pacing-body"></tbody></table>
+      </section>
+      <section class="view" id="view-week">
+        <h2>Weekly Plan</h2>
+        <button id="generate-week" type="button">Regenerate Drafts</button>
+        <div id="week-grid"></div>
+        <ul id="validation-list"></ul>
+      </section>
+      <section class="view" id="view-builder">
+        <h2>Guided Week Builder</h2>
+        <div id="builder-panel"></div>
+      </section>
+      <section class="view" id="view-resources">
+        <h2>Resource Registry and Picker</h2>
+        <button id="add-resource" type="button">Add Placeholder Resource</button>
+        <div id="resource-list"></div>
+      </section>
+      <section class="view" id="view-drafts">
+        <h2>Draft Review</h2>
+        <div class="preview-tabs" role="tablist" aria-label="Preview mode">
+          <button type="button" class="active" data-preview-tab="text" role="tab" aria-selected="true">Text Preview</button>
+          <button type="button" data-preview-tab="html" role="tab" aria-selected="false">HTML Preview</button>
+        </div>
+        <ul id="draft-list"></ul>
+        <textarea id="draft-text" aria-label="Draft text preview"></textarea>
+        <div id="page-preview" class="page-preview"></div>
+        <pre id="html-preview" class="html-preview hidden" aria-label="HTML source preview"></pre>
+      </section>
+      <section class="view" id="view-deploy">
+        <h2>Deployment Zone</h2>
+        <p class="danger-note">Preview only. No execution controls exist in Phase 22.</p>
+        <ol id="deployment-list"></ol>
+      </section>
+      <section class="view" id="view-revisions">
+        <h2>Revision Recovery</h2>
+        <button id="manual-backup" type="button">Manual Backup</button>
+        <ul id="revision-list"></ul>
+      </section>
+      <section class="view" id="view-settings">
+        <h2>Settings</h2>
+        <pre id="settings-json"></pre>
+        <pre id="health-json"></pre>
+      </section>
+    </section>
+  </main>
+  <script src="workstation.js"></script>
+</body>
+</html>

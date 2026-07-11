@@ -4,8 +4,10 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+import sys
 
 ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(ROOT))
 
 
 def load_json(relative: str) -> dict:
@@ -31,6 +33,11 @@ spelling = load_json(
     "config/curriculum/spelling/cumulative-test-word-lists.json"
 )
 agenda = load_json("config/curriculum/canvas/agenda-page-rules.json")
+checkout_map = load_json(
+    "config/curriculum/reading/reading-mastery-4/checkout-passage-map.json"
+)
+
+from scripts.canvas_llm_phase22 import phase22_workstation as p
 
 current = {
     item["subjectId"]: item
@@ -161,6 +168,38 @@ checks.extend(
             "Reading Lesson 140 maps to E, page 750",
         ),
         (
+            len(checkout_map["checkouts"]) == 13,
+            "Reading Checkout map contains Checkouts 1-13",
+        ),
+        (
+            set(checkout_map["checkouts"]) == {str(number) for number in range(1, 14)},
+            "Reading Checkout map covers Checkouts 1-13 exactly",
+        ),
+        (
+            p.resolve_checkout(1)["fluency"] == {"wpm": 100, "maxErrors": 2},
+            "Checkout 1 fluency is 100 WPM / 2 errors",
+        ),
+        (
+            p.resolve_checkout(7)["fluency"] == {"wpm": 100, "maxErrors": 2},
+            "Checkout 7 fluency is 100 WPM / 2 errors",
+        ),
+        (
+            p.resolve_checkout(8)["fluency"] == {"wpm": 115, "maxErrors": 2},
+            "Checkout 8 fluency is 115 WPM / 2 errors",
+        ),
+        (
+            p.resolve_checkout(10)["fluency"] == {"wpm": 115, "maxErrors": 2},
+            "Checkout 10 fluency is 115 WPM / 2 errors",
+        ),
+        (
+            p.resolve_checkout(11)["fluency"] == {"wpm": 130, "maxErrors": 2},
+            "Checkout 11 fluency is 130 WPM / 2 errors",
+        ),
+        (
+            p.resolve_checkout(13)["fluency"] == {"wpm": 130, "maxErrors": 2},
+            "Checkout 13 fluency is 130 WPM / 2 errors",
+        ),
+        (
             len(spelling["tests"]) == 24,
             "Spelling map contains Tests 1-24",
         ),
@@ -210,10 +249,33 @@ checks.extend(
             "Fake links are forbidden",
         ),
         (
-            agenda["unresolvedPolicies"]
-            ["readingTest14FluencyCheckout"]["status"]
+            agenda["confirmedPolicies"]["readingTest14CheckoutAbsence"]["checkoutExists"]
+            is False,
+            "Reading Test 14 has no Checkout",
+        ),
+        (
+            agenda["confirmedPolicies"]["readingTest14CheckoutAbsence"]["checkoutNumber"]
+            == 14,
+            "Checkout 14 does not exist",
+        ),
+        (
+            p.reading_assessment_family(14, "2026-07-21")["checkout"] is None,
+            "Reading Test 14 returns no Checkout",
+        ),
+        (
+            p.reading_assessment_family(14, "2026-07-21")["warnings"] == [],
+            "Reading Test 14 produces no checkout warning",
+        ),
+        (
+            "Checkout 14" not in p.reading_announcement_body(
+                p.reading_assessment_family(14, "2026-07-21")
+            ),
+            "Reading Test 14 announcement omits Checkout 14",
+        ),
+        (
+            agenda["unresolvedPolicies"]["canvasAssignmentDueTime"]["status"]
             == "owner-confirmation-required",
-            "Reading Test 14 remains unresolved",
+            "Canvas assignment due-time convention remains unresolved",
         ),
     ]
 )

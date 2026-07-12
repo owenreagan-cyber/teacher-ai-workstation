@@ -555,9 +555,15 @@ class WorkstationDB:
     def current_week(self,today=None):
         with self.connect() as db:
             sel=select_startup_week(self,today); iw=sel['week']
-            if not db.execute('SELECT 1 FROM weekly_plans WHERE starts_on=?',(iw['startsOn'],)).fetchone(): self.create_week(iw['startsOn'],db); db.commit()
             row=db.execute('SELECT * FROM weekly_plans WHERE starts_on=?',(iw['startsOn'],)).fetchone()
-            return {'week':row_to_week(db,row),'startup':sel,'startupPrompt':sel.get('startupPrompt'),'warning':sel.get('warning'),'instructionalWeek':iw,'weekChooser':sel.get('mode')=='chooser'}
+            return {
+                'week': row_to_week(db,row) if row else None,
+                'startup': sel,
+                'startupPrompt': sel.get('startupPrompt') or ('Choose or create a week to begin.' if not row else None),
+                'warning': sel.get('warning'),
+                'instructionalWeek': iw,
+                'weekChooser': True if not row else sel.get('mode')=='chooser',
+            }
     def get_week(self,wid):
         with self.connect() as db: return row_to_week(db,db.execute('SELECT * FROM weekly_plans WHERE id=?',(wid,)).fetchone())
     def get_week_by_code(self,code):
@@ -734,7 +740,7 @@ def build_payload(source,kind):
 def write_json(path,payload): path.parent.mkdir(parents=True,exist_ok=True); path.write_text(json.dumps(payload,indent=2,ensure_ascii=False)+'\n')
 class Handler(SimpleHTTPRequestHandler):
     db_path=DEFAULT_DB_PATH
-    def db(self): db=WorkstationDB(self.db_path); db.migrate(); db.seed_from_fixture(); return db
+    def db(self): db=WorkstationDB(self.db_path); db.migrate(); return db
     def sendj(self,p,status=200):
         b=json.dumps(p,indent=2,ensure_ascii=False).encode(); self.send_response(status); self.send_header('Content-Type','application/json'); self.send_header('Content-Length',str(len(b))); self.end_headers(); self.wfile.write(b)
     def body(self): return json.loads(self.rfile.read(int(self.headers.get('Content-Length','0') or 0)).decode() or '{}')
@@ -823,10 +829,53 @@ def command_validate(a):
             print(f"{'FAIL' if sens else 'PASS'} text scan: path={p.name} containsSensitive={sens}")
             bad=bad or sens
     return int(bad)
-def command_init_db(a): db=WorkstationDB(a.db); db.migrate(); db.seed_from_fixture(); print(f'Initialized Phase 22 database: {db.path}'); return 0
-def command_serve(a): db=WorkstationDB(a.db); db.migrate(); db.seed_from_fixture(); Handler.db_path=db.path; os.chdir(APP_DIR); srv=ThreadingHTTPServer((a.host,a.port),Handler); print(f'Phase 22 workstation serving at http://{a.host}:{a.port} db={db.path}'); srv.serve_forever()
+def command_init_db(a):
+    db=WorkstationDB(a.db)
+    db.migrate()
+    print(f'Initialized empty Phase 22 database: {db.path}')
+    return 0
+
+def command_serve(a):
+    db=WorkstationDB(a.db)
+    db.migrate()
+    Handler.db_path=db.path
+    os.chdir(APP_DIR)
+    srv=ThreadingHTTPServer((a.host,a.port),Handler)
+    print(f'Phase 22 workstation serving at http://{a.host}:{a.port} db={db.path}')
+    srv.serve_forever()
 def command_self_test(a):
-    import tempfile; p=Path(tempfile.mkdtemp())/'w.sqlite3'; db=WorkstationDB(p); db.migrate(); db.seed_from_fixture()
+    import tempfile
+
+    empty_path=Path(tempfile.mkdtemp())/'empty.sqlite3'
+    empty_db=WorkstationDB(empty_path)
+    empty_db.migrate()
+
+    with empty_db.connect() as empty_conn:
+        assert empty_conn.execute('SELECT COUNT(*) FROM pacing_entries').fetchone()[0] == 0
+        assert empty_conn.execute('SELECT COUNT(*) FROM weekly_plans').fetchone()[0] == 0
+        assert empty_conn.execute('SELECT COUNT(*) FROM daily_subject_entries').fetchone()[0] == 0
+        assert empty_conn.execute('SELECT COUNT(*) FROM drafts').fetchone()[0] == 0
+
+    empty_current=empty_db.current_week()
+    assert empty_current['week'] is None
+    assert empty_current['weekChooser'] is True
+
+    with empty_db.connect() as empty_conn:
+        assert empty_conn.execute('SELECT COUNT(*) FROM weekly_plans').fetchone()[0] == 0
+
+    blank_week_id=empty_db.create_week('2026-08-17')
+    blank_week=empty_db.get_week(blank_week_id)
+    blank_math=next(item for item in blank_week['subjects'] if item['subject']=='math')
+    assert len(blank_math['days']) == 5
+    assert all(not day['lesson'] for day in blank_math['days'])
+
+    with empty_db.connect() as empty_conn:
+        assert empty_conn.execute('SELECT COUNT(*) FROM pacing_entries').fetchone()[0] == 0
+
+    p=Path(tempfile.mkdtemp())/'w.sqlite3'
+    db=WorkstationDB(p)
+    db.migrate()
+    db.seed_from_fixture()
     weeks=load_instructional_weeks(); assert len(weeks)==37; assert weeks[0]['code']=='Q1W1' and weeks[0]['startsOn']=='2026-07-20'; assert instructional_week_by_code('Q1W5')['startsOn']=='2026-08-17'
     assert canonical_week_code('Q1_W1')=='Q1W1'; assert canonical_week_code('q4-w10')=='Q4W10'
     assert resolve_reading_test(1)['lessonRange']=={'start':1,'end':10}; assert resolve_reading_test(10)['lessonRange']=={'start':91,'end':100}

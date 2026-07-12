@@ -243,11 +243,11 @@ def build_display_assignment_title(subject: str, entry_type: str, number: int | 
                 return f"{title} Evens"
             return f"{title} {'Odds' if raw_number % 2 else 'Evens'}"
         if entry_type in {"written-test", "written test", "test"}:
-            return f"SM5: Lesson {raw_number} Written Test"
+            return f"SM5: Math Test {raw_number}"
         if entry_type in {"fact-test", "fact test"}:
-            return f"SM5: Lesson {raw_number} Fact Test"
+            return f"SM5: Fact Test {raw_number}"
         if entry_type in {"study-guide", "study guide"}:
-            return f"SM5: Lesson {raw_number} Study Guide"
+            return f"SM5: Study Guide {raw_number}"
     if subject == "reading":
         if raw_number is None:
             raise ValueError("Reading assignment titles require a number")
@@ -455,6 +455,77 @@ def select_week(week_code: str | None = None, on_date: date | None = None) -> In
     if not week:
         raise ValueError("Default startup week Q1W5 is unavailable")
     return canonical_week(week["code"])
+
+
+def sqlite_entries_for_week(
+    db_path: Path,
+    week: InstructionalWeek,
+    subject: str = "math",
+) -> list[PacingEntry]:
+    db = phase22.WorkstationDB(db_path)
+    db.migrate()
+
+    canonical = phase22.instructional_week_by_code(week.code)
+    if canonical is None:
+        raise KeyError(f"Unknown instructional week: {week.code}")
+
+    with db.connect() as conn:
+        row = conn.execute(
+            "SELECT * FROM weekly_plans WHERE starts_on=?",
+            (canonical["startsOn"],),
+        ).fetchone()
+
+        if row is None:
+            raise KeyError(
+                f"SQLite week {week.code} does not exist; "
+                "create or select the week explicitly before generation"
+            )
+
+        week_record = phase22.row_to_week(conn, row)
+
+    subject_plan = next(
+        (
+            item
+            for item in week_record.get("subjects", [])
+            if item.get("subject") == subject
+        ),
+        None,
+    )
+    if subject_plan is None:
+        return []
+
+    entries: list[PacingEntry] = []
+    for raw in subject_plan.get("days", []):
+        lesson = str(raw.get("lesson") or "").strip() or None
+        test = str(raw.get("tests") or "").strip() or None
+        title = str(raw.get("title") or "").strip()
+        in_class = str(raw.get("in_class") or "").strip()
+        at_home = str(raw.get("at_home") or "").strip()
+        notes = str(raw.get("notes") or "").strip()
+
+        has_content = any((lesson, test, title, in_class, at_home, notes))
+        if not has_content:
+            continue
+
+        entry_type = "test" if test else "lesson"
+        entries.append(
+            PacingEntry(
+                date=raw.get("entry_date", ""),
+                weekday=raw.get("weekday", ""),
+                subject=subject,
+                title=title,
+                entry_type=entry_type,
+                lesson=lesson,
+                test=test,
+                in_class=in_class,
+                at_home=at_home,
+                resource_hints=[],
+                notes=notes,
+            )
+        )
+
+    entries.sort(key=lambda item: (item.date, item.subject, item.title))
+    return entries
 
 
 def fixture_entries_for_week(fixture: dict[str, Any], week: InstructionalWeek) -> list[PacingEntry]:
@@ -919,6 +990,70 @@ def validate_packet(packet: dict[str, Any], fixture: dict[str, Any] | None = Non
     }, risks
 
 
+def build_packet_from_sqlite(
+    db_path: Path,
+    week_code: str,
+    subject: str = "math",
+) -> dict[str, Any]:
+    week = select_week(week_code)
+    entries = sqlite_entries_for_week(db_path, week, subject=subject)
+    pages, subjects = build_pages(week, entries)
+    assignments = build_assignments(week, entries)
+    reminders = build_assessment_reminders(week, entries)
+
+    packet = ProductionPacket(
+        schema_version=1,
+        packet_id=stable_id(
+            "packet",
+            week.code,
+            subject,
+            json.dumps(
+                [row_from_entry(item) for item in entries],
+                sort_keys=True,
+                ensure_ascii=False,
+            ),
+        ),
+        week_code=week.code,
+        week_start=week.starts_on,
+        week_end=week.ends_on,
+        generated_at=now_utc(),
+        source_kind="sqlite",
+        artifact_classification="weekly-content-production-packet",
+        contains_student_data=False,
+        subjects=subjects,
+        pages=pages,
+        assignments=assignments,
+        resources=[],
+        assessment_reminders=reminders,
+        validation={},
+        risks=[],
+        provenance=[
+            ProvenanceRecord(
+                "sqlite",
+                str(db_path),
+                f"teacher-edited {subject} weekly state",
+            ),
+            ProvenanceRecord(
+                "canonical-calendar",
+                "config/curriculum/canvas/instructional-weeks-2026-2027.json",
+                "instructional week authority",
+            ),
+            ProvenanceRecord(
+                "phase22-rules",
+                "scripts/canvas_llm_phase22/phase22_workstation.py",
+                "curriculum resolution and preview-only safety rules",
+            ),
+        ],
+        approval_state="draft",
+        deployment_state="preview-only",
+    )
+
+    validation, risks = validate_packet(packet.to_dict(), fixture=None)
+    packet.validation = validation
+    packet.risks = risks
+    return packet.to_dict()
+
+
 def build_packet(week_code: str | None = None, fixture_path: Path = FIXTURE_PATH) -> dict[str, Any]:
     fixture = load_fixture(fixture_path)
     week = select_week(week_code or fixture.get("weekCode"))
@@ -1215,6 +1350,129 @@ def command_validate(args: argparse.Namespace) -> int:
 
 
 def command_self_test(args: argparse.Namespace) -> int:
+    assert build_display_assignment_title(
+        "math", "written-test", 4
+    ) == "SM5: Math Test 4"
+    assert build_display_assignment_title(
+        "math", "fact-test", 4
+    ) == "SM5: Fact Test 4"
+    assert build_display_assignment_title(
+        "math", "study-guide", 4
+    ) == "SM5: Study Guide 4"
+
+    import tempfile
+
+    missing_sqlite_path = (
+        Path(tempfile.mkdtemp())
+        / "phase23-missing-week.sqlite3"
+    )
+    missing_sqlite_db = phase22.WorkstationDB(missing_sqlite_path)
+    missing_sqlite_db.migrate()
+
+    try:
+        build_packet_from_sqlite(
+            missing_sqlite_path,
+            "Q1W5",
+            subject="math",
+        )
+    except KeyError as exc:
+        assert "create or select the week explicitly" in str(exc)
+    else:
+        raise AssertionError(
+            "SQLite generation must reject a missing week"
+        )
+
+    with missing_sqlite_db.connect() as missing_conn:
+        assert missing_conn.execute(
+            "SELECT COUNT(*) FROM weekly_plans"
+        ).fetchone()[0] == 0
+
+    sqlite_path = Path(tempfile.mkdtemp()) / "phase23-sqlite-math.sqlite3"
+    sqlite_db = phase22.WorkstationDB(sqlite_path)
+    sqlite_db.migrate()
+
+    sqlite_week_id = sqlite_db.create_week("2026-08-17")
+    sqlite_week = sqlite_db.get_week(sqlite_week_id)
+    sqlite_math = next(
+        item
+        for item in sqlite_week["subjects"]
+        if item["subject"] == "math"
+    )
+
+    sqlite_updates = [
+        {
+            "lesson": "18",
+            "title": "Lesson 18",
+            "in_class": "Lesson 18",
+            "at_home": "Evens",
+        },
+        {
+            "lesson": "19",
+            "title": "Lesson 19",
+            "in_class": "Lesson 19",
+            "at_home": "Odds",
+        },
+        {
+            "lesson": "20",
+            "title": "Lesson 20",
+            "in_class": "Lesson 20",
+            "at_home": "Evens",
+        },
+        {
+            "tests": "4",
+            "title": "Written Test 4",
+            "in_class": "Written Test 4 and Fact Test 4",
+        },
+        {
+            "lesson": "21",
+            "title": "Lesson 21",
+            "in_class": "Lesson 21",
+        },
+    ]
+
+    for sqlite_day, sqlite_fields in zip(
+        sqlite_math["days"],
+        sqlite_updates,
+    ):
+        sqlite_result = sqlite_db.patch_table(
+            "daily_subject_entries",
+            sqlite_day["id"],
+            sqlite_fields,
+            sqlite_day["version"],
+        )
+        assert not sqlite_result.get("conflict")
+
+    sqlite_packet = build_packet_from_sqlite(
+        sqlite_path,
+        "Q1W5",
+        subject="math",
+    )
+
+    sqlite_titles = {
+        item["title"]
+        for item in sqlite_packet["assignments"]
+    }
+
+    assert sqlite_packet["sourceKind"] == "sqlite"
+    assert sqlite_packet["weekCode"] == "Q1W5"
+    assert sqlite_packet["deploymentState"] == "preview-only"
+    assert sqlite_packet["containsStudentData"] is False
+    assert sqlite_packet["validation"]["failCount"] == 0
+    assert len(sqlite_packet["pages"]) == 1
+    assert sqlite_packet["pages"][0]["subject_group"] == "math"
+    assert sqlite_titles == {
+        "SM5: Lesson 18",
+        "SM5: Lesson 19",
+        "SM5: Lesson 20",
+        "SM5: Study Guide 4",
+        "SM5: Math Test 4",
+        "SM5: Fact Test 4",
+        "SM5: Lesson 21",
+    }
+    assert all(
+        item.get("source_type") != "fixture"
+        for item in sqlite_packet["provenance"]
+    )
     import tempfile
     fixture = load_fixture()
     packet = build_packet()

@@ -103,3 +103,35 @@ Status: preview/review only write gate readiness review complete as local-analys
 ## Phase 19 - Minimum Canvas Write Gate Design Packet
 
 Status: planned. Phase 19 remains preview-only and will define the smallest safe future Canvas setup operation, approval requirements, rollback expectations, target-course restrictions, and validation proof requirements. No Canvas mutation should occur until a future explicitly approved write phase.
+
+## Recovery Gate C0A - Canonical Context Pack
+
+Status: validated canonical recovery gate complete.
+
+This recovery gate reconciles the approved 2026-2027 product, curriculum, calendar, naming, resource, communication, approval, and publishing rules into one tracked source bundle under:
+
+```text
+docs/programs/canvas-llm/canonical-context-pack/
+```
+
+It also adds:
+
+```text
+scripts/canvas-llm-canonical-context-pack-validator.py
+scripts/canvas-llm-canonical-context-pack-status.sh
+bin/chief-of-staff --canvas-llm-canonical-context-pack-status
+```
+
+Validated boundaries:
+
+- single-user, local-first Teacher AI Workstation;
+- SQLite is authoritative for current teacher work;
+- production weeks must not be implicitly seeded from synthetic fixtures;
+- Phase 23 fixture input remains test-only;
+- Phase 25 resource visibility and verification safety are preserved;
+- Phase 27 comparison, approval, dependency, ledger, transport, and read-back safety are preserved;
+- ignored legacy applications remain read-only evidence;
+- export does not mean Canvas publication;
+- Canvas writes remain unauthorized by this recovery gate.
+
+The next recovery step is a no-write convergence audit across Phase 22–27, followed by one Math vertical slice driven by real editable SQLite weekly state.

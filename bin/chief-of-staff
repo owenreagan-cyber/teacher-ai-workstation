@@ -24,6 +24,10 @@ if [ "${1:-}" = "--canvas-llm-phase-27-canvas-readiness-and-safety-diff-status" 
   exec bash "scripts/canvas-llm-phase-27-canvas-readiness-and-safety-diff-status.sh"
 fi
 
+if [ "${1:-}" = "--canvas-llm-canonical-context-pack-status" ]; then
+  exec bash "scripts/canvas-llm-canonical-context-pack-status.sh"
+fi
+
 if [ "${1:-}" = "--canvas-llm-phase-23-weekly-content-production-engine-status" ]; then
   exec bash "scripts/canvas-llm-phase-23-weekly-content-production-engine-status.sh"
 fi

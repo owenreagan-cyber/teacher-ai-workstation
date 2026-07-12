@@ -62,6 +62,7 @@ These flags exist in `bin/chief-of-staff` and work as read-only local status sur
 | `bin/chief-of-staff --canvas-llm-phase-25-curriculum-source-intelligence-status` | Canvas LLM Phase 25 curriculum source intelligence status |
 | `bin/chief-of-staff --canvas-llm-phase-26-unified-weekly-production-workstation-status` | Canvas LLM Phase 26 unified weekly production workstation status |
 | `bin/chief-of-staff --canvas-llm-phase-27-canvas-readiness-and-safety-diff-status` | Canvas LLM Phase 27 canvas readiness and safety diff status |
+| `bin/chief-of-staff --canvas-llm-canonical-context-pack-status` | Canvas LLM canonical context pack integrity and safety status |
 
 ### Proof
 

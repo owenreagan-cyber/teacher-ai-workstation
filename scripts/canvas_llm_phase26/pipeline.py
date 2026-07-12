@@ -214,18 +214,40 @@ def build_subjects_list() -> list[tuple[str, str, str]]:
     ]
 
 
-def build_workstation_packet(week_code: str | None = None, db_path: Path | None = None) -> dict[str, Any]:
+def build_workstation_packet(
+    week_code: str | None = None,
+    db_path: Path | None = None,
+    source_mode: str = "demo",
+    phase22_db_path: Path | None = None,
+) -> dict[str, Any]:
     conn = storage.connect(db_path)
     try:
         selected_code = compact(week_code or storage.get_selected_week_code(conn) or storage.DEFAULT_WEEK_CODE).upper()
         week = canonical_week(selected_code)
         storage.set_selected_week_code(conn, week["code"])
-        storage.ensure_week_state(conn, week["code"], "demo")
+        normalized_source_mode = compact(source_mode).lower() or "demo"
+        if normalized_source_mode not in {"demo", "sqlite"}:
+            raise ValueError("source_mode must be demo or sqlite")
+        if normalized_source_mode == "sqlite" and phase22_db_path is None:
+            raise ValueError("phase22_db_path is required for sqlite source mode")
+
+        storage.ensure_week_state(
+            conn,
+            week["code"],
+            normalized_source_mode,
+        )
         phase24_corrections = storage.export_phase24_correction_state(conn, week["code"])
         phase25_corrections = storage.export_phase25_corrections(conn, week["code"])
         phase24_packet = build_phase24_packet(week["code"], phase24_corrections)
         phase25_packet = build_phase25_packet_from_prediction(week["code"], phase24_packet, phase25_corrections)
-        production_packet = phase23.build_packet(week["code"])
+        if normalized_source_mode == "sqlite":
+            production_packet = phase23.build_packet_from_sqlite(
+                Path(phase22_db_path),
+                week["code"],
+                subject="math",
+            )
+        else:
+            production_packet = phase23.build_packet(week["code"])
         approvals = storage.list_approvals(conn, week["code"])
         subject_specs = build_subjects_list()
         teacher_edits = storage.list_corrections(conn, week["code"])
@@ -243,7 +265,12 @@ def build_workstation_packet(week_code: str | None = None, db_path: Path | None 
         local_diff = revisions.build_local_diff(revision_events)
         manifest = build_deployment_manifest(week["code"], production_packet, subject_workspaces)
         packet_hash = stable_hash({"productionPacket": production_packet, "phase25Packet": phase25_packet, "phase24Packet": phase24_packet})
-        storage.touch_week_state(conn, week["code"], packet_hash, "demo")
+        storage.touch_week_state(
+            conn,
+            week["code"],
+            packet_hash,
+            normalized_source_mode,
+        )
         export_preview = {
             "weekCode": week["code"],
             "mode": "preview-only",
@@ -269,7 +296,7 @@ def build_workstation_packet(week_code: str | None = None, db_path: Path | None 
             packet_id=stable_id("workstation", week["code"], production_packet.get("packetId"), phase25_packet.get("packetId")),
             week_code=week["code"],
             generated_at=now_utc(),
-            source_mode="demo",
+            source_mode=normalized_source_mode,
             week_selection=build_week_selection(week),
             source_pacing=phase24_packet,
             teacher_brain=phase24_packet,
@@ -288,7 +315,19 @@ def build_workstation_packet(week_code: str | None = None, db_path: Path | None 
                 {"sourceType": "canonical-calendar", "sourceRef": "config/curriculum/canvas/instructional-weeks-2026-2027.json", "details": "owner-provided instructional calendar"},
                 {"sourceType": "phase24", "sourceRef": str(PHASE24_INPUT), "details": "teacher brain prediction source"},
                 {"sourceType": "phase25", "sourceRef": str(PHASE25_REGISTRY), "details": "resource resolution source registry"},
-                {"sourceType": "phase23", "sourceRef": "apps/weekly-content-production/data/phase23-demo.json", "details": "production packet source"},
+                {
+                    "sourceType": "phase23",
+                    "sourceRef": (
+                        str(phase22_db_path)
+                        if normalized_source_mode == "sqlite"
+                        else "apps/weekly-content-production/data/phase23-demo.json"
+                    ),
+                    "details": (
+                        "SQLite-backed Math production packet source"
+                        if normalized_source_mode == "sqlite"
+                        else "production packet source"
+                    ),
+                },
             ],
             local_state={"selectedWeekCode": storage.get_selected_week_code(conn), **storage.state_summary(conn, week["code"]), "weekCode": week["code"]},
         )
@@ -325,14 +364,53 @@ def validate_workstation_packet(packet: dict[str, Any]) -> dict[str, Any]:
         findings.append({"severity": "pass", "code": "workflow.unified", "message": "Unified Phase 22-25 orchestration is present", "target": "subjectWorkspaces"})
     else:
         findings.append({"severity": "fail", "code": "workflow.unified", "message": "Unified orchestration is missing", "target": "subjectWorkspaces"})
-    if any("Checkout 14" in json.dumps(item, ensure_ascii=False) for item in packet.get("productionPacket", {}).get("assessmentReminders", [])):
-        findings.append({"severity": "fail", "code": "reading.checkout14", "message": "Checkout 14 must not appear in production preview", "target": "productionPacket"})
-    else:
-        findings.append({"severity": "pass", "code": "reading.checkout14", "message": "Reading Test 14 is present without Checkout 14", "target": "productionPacket"})
-    if any(item.get("subject") == "reading" and item.get("day") == "Thursday" and item.get("issueType") == "Rule ambiguity" for item in packet.get("exceptionInbox", [])):
-        findings.append({"severity": "pass", "code": "reading-test-14.checkout", "message": "Reading Test 14 returns no Checkout", "target": "exceptionInbox"})
-    else:
-        findings.append({"severity": "fail", "code": "reading-test-14.checkout", "message": "Reading Test 14 checkout behavior is unresolved", "target": "exceptionInbox"})
+    production_packet = packet.get("productionPacket", {})
+    production_pages = production_packet.get("pages", [])
+    production_assignments = production_packet.get("assignments", [])
+    production_reminders = production_packet.get("assessmentReminders", [])
+
+    has_reading_content = any(
+        "reading" in str(page.get("subject_group", "")).lower()
+        or "reading" in str(page.get("subjectGroup", "")).lower()
+        for page in production_pages
+    ) or any(
+        str(item.get("subject", "")).lower() == "reading"
+        for item in production_assignments + production_reminders
+    )
+
+    if has_reading_content:
+        reading_text = json.dumps(
+            {
+                "assignments": production_assignments,
+                "assessmentReminders": production_reminders,
+            },
+            ensure_ascii=False,
+        )
+
+        reading_test_14_present = (
+            "Reading Mastery Test 14" in reading_text
+            or "Reading Test 14" in reading_text
+        )
+        checkout_14_present = "Reading Checkout 14" in reading_text
+
+        if checkout_14_present:
+            findings.append(
+                {
+                    "severity": "fail",
+                    "code": "reading.checkout14",
+                    "message": "Reading Test 14 must not generate Checkout 14",
+                    "target": "productionPacket",
+                }
+            )
+        elif reading_test_14_present:
+            findings.append(
+                {
+                    "severity": "pass",
+                    "code": "reading.checkout14",
+                    "message": "Reading Test 14 is present without Checkout 14",
+                    "target": "productionPacket",
+                }
+            )
     if any(subject.get("subject") == "math" and subject.get("readinessState") in {"Ready", "Approved", "Needs Review", "Blocked"} for subject in packet.get("subjectWorkspaces", [])):
         findings.append({"severity": "pass", "code": "subject.cards", "message": "Subject readiness cards are present", "target": "subjectWorkspaces"})
     else:

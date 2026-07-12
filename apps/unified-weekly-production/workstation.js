@@ -109,12 +109,6 @@ function renderWeekOptions(packet) {
 async function loadWorkstation() {
   const packet = await request('/api/workstation');
   window.__packet = packet;
-  let phase27 = null;
-  try {
-    phase27 = await request('./data/phase27-demo.json');
-  } catch (error) {
-    phase27 = null;
-  }
   renderWeekOptions(packet);
   $('week-meta').textContent = `${packet.weekCode} • ${packet.weekSelection.startsOn} to ${packet.weekSelection.endsOn} • ${packet.weekSelection.displaySubtitle}`;
   $('readiness-pill').textContent = `Readiness: ${packet.readiness.score}%`;
@@ -144,22 +138,7 @@ async function loadWorkstation() {
   ].join('');
   $('local-state').textContent = JSON.stringify(packet.localState, null, 2);
   renderPreview(packet);
-  if (phase27) {
-    $('phase27-mode').textContent = `Phase 27: ${phase27.deploymentManifestV1.mode}`;
-    $('phase27-snapshot-age').textContent = `Snapshot: ${phase27.deploymentManifestV1.targetSnapshotAge}`;
-    $('phase27-health').textContent = `Health: ${phase27.deploymentManifestV1.validationSummary.failCount === 0 ? 'PASS' : 'FAIL'}`;
-    $('phase27-diff').innerHTML = phase27.safetyDiff.map((item) => `
-      <article class="card">
-        <h3>${esc(item.localTitle)}</h3>
-        <p class="status ${item.comparisonStatus === 'BLOCKED' ? 'bad' : item.comparisonStatus === 'CONFLICT' ? 'warn' : ''}">${esc(item.comparisonStatus)}</p>
-        <p class="muted">${esc(item.objectType)} • ${esc(item.targetCourse)}</p>
-        <p class="muted">Before: ${esc(item.contentHashBefore)}</p>
-        <p class="muted">After: ${esc(item.contentHashAfter)}</p>
-        <details><summary>Field diffs</summary><pre class="code-block">${esc(JSON.stringify(item.fieldDiffs, null, 2))}</pre></details>
-      </article>
-    `).join('');
-    $('phase27-manifest').textContent = JSON.stringify(phase27.deploymentManifestV1, null, 2);
-  }
+  await loadPhase27();
   setActiveTab(document.querySelector('.tab.active')?.dataset.tab || 'agenda-html');
 
   document.querySelectorAll('[data-approve-subject]').forEach((button) => {
@@ -228,6 +207,257 @@ async function loadWorkstation() {
     await loadWorkstation();
   };
 }
+
+// Mirrors approval_gate.NON_APPROVABLE_STATUSES exactly. The server is the
+// real enforcement point (this only controls whether the button is shown
+// disabled); BLOCKED covers both archived-course targets and unresolved
+// due-time assignments, since both set that comparisonStatus.
+const PHASE27_NON_APPROVABLE = new Set(['CONFLICT', 'BLOCKED', 'OMIT', 'DELETE_CANDIDATE']);
+
+const PHASE27_FRIENDLY_LABEL = {
+  CREATE: 'New',
+  UPDATE: 'Changed',
+  UNCHANGED: 'Unchanged',
+  BLOCKED: 'Blocked',
+  CONFLICT: 'Conflict',
+  OMIT: 'Omitted',
+  DELETE_CANDIDATE: 'Delete candidate',
+};
+
+const PHASE27_STATUS_CLASS = {
+  BLOCKED: 'bad',
+  CONFLICT: 'bad',
+  OMIT: 'warn',
+  DELETE_CANDIDATE: 'warn',
+};
+
+function phase27DiffCard(item) {
+  const statusClass = PHASE27_STATUS_CLASS[item.comparisonStatus] || '';
+  const canApprove = !PHASE27_NON_APPROVABLE.has(item.comparisonStatus);
+  const label = PHASE27_FRIENDLY_LABEL[item.comparisonStatus] || item.comparisonStatus;
+  const body = item.localBody || '';
+  return `
+    <article class="card" data-object-id="${esc(item.objectId)}">
+      <h3>${esc(item.localTitle || item.objectId)}</h3>
+      <p class="status ${statusClass}">${esc(label)}</p>
+      <p class="muted">${esc(item.objectType)} • course ${esc(item.targetCourse)}</p>
+      ${(item.blockers || []).length ? `<p class="status bad">Blocked: ${esc(item.blockers.join('; '))}</p>` : ''}
+      <p class="muted">Approval: ${esc(item.approvalState)}</p>
+      <div class="preview-frame">
+        <p class="muted">${esc(item.localTitle || '')}</p>
+        <pre class="code-block phase27-copy-body">${esc(body)}</pre>
+      </div>
+      <div class="week-row">
+        <button class="btn phase27-approve-btn" type="button" data-object-id="${esc(item.objectId)}" ${canApprove ? '' : 'disabled'}>Approve</button>
+        <button class="btn phase27-revoke-btn" type="button" data-object-id="${esc(item.objectId)}">Revoke</button>
+        <button class="btn phase27-copy-btn" type="button" data-object-id="${esc(item.objectId)}">Copy</button>
+      </div>
+      <details>
+        <summary>Expert Details</summary>
+        <p class="muted">Match: ${esc(item.matchReason || 'none')} (confidence ${item.matchConfidence}) • Module: ${esc((item.modulePlacement || {}).status || 'n/a')}</p>
+        <pre class="code-block">${esc(JSON.stringify(item.fieldDiffs, null, 2))}</pre>
+      </details>
+    </article>
+  `;
+}
+
+function phase27PlacementCard(item) {
+  const mp = item.modulePlacement || {};
+  const statusClass = mp.status === 'already-correct' || mp.status === 'omitted' ? '' : mp.status === 'blocked' ? 'bad' : 'warn';
+  return `
+    <article class="card">
+      <h3>${esc(item.localTitle || item.objectId)}</h3>
+      <p class="status ${statusClass}">${esc(mp.status || 'n/a')}</p>
+      <p class="muted">Current: ${esc(mp.currentModule || '—')} @ ${mp.currentPosition ?? '—'} &rarr; Desired: ${esc(mp.desiredModule || '—')} @ ${mp.desiredPosition ?? '—'}</p>
+      ${mp.conflictReason ? `<p class="muted">${esc(mp.conflictReason)}</p>` : ''}
+    </article>
+  `;
+}
+
+function phase27HealthCard(h) {
+  const statusClass = h.status === 'FAIL' ? 'bad' : (h.status === 'WARN' || h.status === 'BLOCKED') ? 'warn' : '';
+  return `
+    <article class="card">
+      <h3>${esc(h.check)}</h3>
+      <p class="status ${statusClass}">${esc(h.status)}</p>
+      <p class="muted">${esc(h.detail)}</p>
+    </article>
+  `;
+}
+
+function phase27RollbackCard(r) {
+  return `
+    <article class="card">
+      <h3>${esc(r.operationId)}</h3>
+      <p class="muted">${esc(r.rollbackType)} • risk: ${esc(r.risk)} • executable: ${String(r.executable)}</p>
+      <details><summary>Prior state</summary><pre class="code-block">${esc(JSON.stringify(r.priorState, null, 2))}</pre></details>
+    </article>
+  `;
+}
+
+function renderPhase27(payload) {
+  const manifest = payload.deploymentManifestV1;
+  $('phase27-mode').textContent = `Phase 27: ${manifest.mode}`;
+  $('phase27-snapshot-age').textContent = `Snapshot: ${manifest.targetSnapshotFreshness || manifest.targetSnapshotAge}`;
+  // Two different questions, shown separately: is the *software* correct
+  // (systemValidationStatus, from dependency-graph structural checks), and
+  // is *this week's content* ready to deploy (overallReadiness, which is
+  // expected to read "blocked" whenever a demo conflict/blocked item is
+  // present -- that is not a software defect).
+  $('phase27-system-validation').textContent = `System validation: ${manifest.systemValidationStatus}`;
+  $('phase27-manifest-readiness').textContent = `Demo manifest readiness: ${manifest.overallReadiness.toUpperCase()}`;
+
+  const remoteObjects = (payload.snapshot && payload.snapshot.remoteObjects) || [];
+  $('phase27-snapshot').innerHTML = remoteObjects.map((obj) => `
+    <article class="card">
+      <h3>${esc(obj.title || obj.slug || obj.canvasId)}</h3>
+      <p class="muted">${esc(obj.objectType)} • course ${esc(obj.courseRef)} • canvasId ${esc(obj.canvasId)} • ${esc(obj.publication || 'unknown')}</p>
+    </article>
+  `).join('') || '<p class="muted">No remote objects in this snapshot.</p>';
+
+  const transport = payload.transportReadiness || {};
+  $('phase27-transport').innerHTML = `
+    <article class="card">
+      <h3>${esc(transport.defaultTransport || 'DisabledCanvasTransport')}</h3>
+      <p class="status ${transport.mutationRejectionVerified ? '' : 'bad'}">${transport.mutationRejectionVerified ? 'Mutation rejection verified' : 'NOT VERIFIED'}</p>
+      <p class="muted">Live read-only transport enabled: ${transport.liveReadOnlyEnabled ? 'yes' : 'no'}</p>
+    </article>
+  `;
+
+  $('phase27-diff').innerHTML = (payload.safetyDiff || []).map(phase27DiffCard).join('');
+  $('phase27-placement').innerHTML = (payload.safetyDiff || []).map(phase27PlacementCard).join('');
+  $('phase27-manifest').textContent = JSON.stringify(manifest, null, 2);
+  $('phase27-health-checks').innerHTML = (payload.healthChecks || []).map(phase27HealthCard).join('');
+  $('phase27-rollback').innerHTML = (manifest.rollbackPlan || []).map(phase27RollbackCard).join('')
+    || '<p class="muted">No rollback instructions (nothing pending deployment).</p>';
+
+  document.querySelectorAll('.phase27-approve-btn').forEach((button) => {
+    button.addEventListener('click', () => phase27Approve(button.dataset.objectId));
+  });
+  document.querySelectorAll('.phase27-revoke-btn').forEach((button) => {
+    button.addEventListener('click', () => phase27Revoke(button.dataset.objectId));
+  });
+  document.querySelectorAll('.phase27-copy-btn').forEach((button) => {
+    button.addEventListener('click', () => phase27Copy(button.dataset.objectId));
+  });
+}
+
+async function phase27Copy(objectId) {
+  const payload = window.__phase27;
+  if (!payload) return;
+  const item = payload.safetyDiff.find((d) => d.objectId === objectId);
+  if (!item) return;
+  const text = `${item.localTitle || ''}\n\n${item.localBody || ''}`;
+  try {
+    await navigator.clipboard.writeText(text);
+    $('phase27-status-note').textContent = `Copied "${item.localTitle || objectId}" to clipboard.`;
+  } catch (error) {
+    $('phase27-status-note').textContent = `Could not copy to clipboard: ${error.message}`;
+  }
+}
+
+async function loadPhase27Ledger() {
+  try {
+    const status = await request('/api/phase27/ledger-status');
+    $('phase27-ledger').innerHTML = `
+      <article class="card">
+        <h3>Ledger ${status.exists ? '' : '(not yet created)'}</h3>
+        <p class="status ${status.integrityOk === false ? 'bad' : ''}">${status.exists ? (status.integrityOk ? 'integrity ok' : 'integrity FAILED') : 'no ledger yet'}</p>
+        <p class="muted">schema version ${status.schemaVersion ?? '—'} • ${status.eventCount} event(s)</p>
+        <details><summary>Recent events</summary><pre class="code-block">${esc(JSON.stringify(status.recentEvents, null, 2))}</pre></details>
+      </article>
+    `;
+  } catch (error) {
+    $('phase27-ledger').innerHTML = `<p class="muted">Ledger status unavailable: ${esc(error.message)}</p>`;
+  }
+}
+
+async function loadPhase27() {
+  let payload = null;
+  try {
+    payload = await request('/api/phase27/packet');
+  } catch (liveError) {
+    try {
+      payload = await request('./data/phase27-demo.json');
+    } catch (fallbackError) {
+      payload = null;
+    }
+  }
+  window.__phase27 = payload;
+  if (!payload) {
+    $('phase27-status-note').textContent = 'Phase 27 data is unavailable (no live endpoint and no static demo file).';
+    return;
+  }
+  $('phase27-status-note').textContent = '';
+  renderPhase27(payload);
+  await loadPhase27Ledger();
+}
+
+async function phase27Approve(objectId) {
+  const payload = window.__phase27;
+  if (!payload) return;
+  const item = payload.safetyDiff.find((d) => d.objectId === objectId);
+  const manifest = payload.deploymentManifestV1;
+  if (!item) return;
+  try {
+    const result = await request('/api/phase27/approve', {
+      method: 'POST',
+      body: JSON.stringify({
+        objectId,
+        comparisonStatus: item.comparisonStatus,
+        blockers: item.blockers,
+        manifestRevision: manifest.packetRevision,
+        snapshotId: manifest.targetSnapshotId,
+        snapshotFreshness: manifest.targetSnapshotFreshness || manifest.targetSnapshotAge,
+        approvedBy: 'teacher',
+      }),
+    });
+    if (result.ok) {
+      item.approvalState = 'Approved';
+      renderPhase27(payload);
+      await loadPhase27Ledger();
+    }
+  } catch (error) {
+    $('phase27-status-note').textContent = `Could not approve ${objectId}: ${error.message}`;
+  }
+}
+
+async function phase27Revoke(objectId) {
+  const payload = window.__phase27;
+  if (!payload) return;
+  const manifest = payload.deploymentManifestV1;
+  try {
+    await request('/api/phase27/revoke', {
+      method: 'POST',
+      body: JSON.stringify({
+        objectId,
+        manifestRevision: manifest.packetRevision,
+        snapshotId: manifest.targetSnapshotId,
+      }),
+    });
+    const item = payload.safetyDiff.find((d) => d.objectId === objectId);
+    if (item) item.approvalState = 'Needs Review';
+    renderPhase27(payload);
+    await loadPhase27Ledger();
+  } catch (error) {
+    $('phase27-status-note').textContent = `Could not revoke ${objectId}: ${error.message}`;
+  }
+}
+
+$('phase27-refresh-btn').addEventListener('click', async () => {
+  $('phase27-status-note').textContent = 'Refreshing...';
+  await loadPhase27();
+  $('phase27-status-note').textContent = 'Refreshed.';
+});
+
+$('phase27-export-btn').addEventListener('click', async () => {
+  try {
+    const result = await request('/api/phase27/export', { method: 'POST', body: JSON.stringify({}) });
+    $('phase27-status-note').textContent = `Export written to ${result.exportDir}`;
+  } catch (error) {
+    $('phase27-status-note').textContent = `Export failed: ${error.message}`;
+  }
+});
 
 document.querySelectorAll('.tab').forEach((button) => {
   button.addEventListener('click', () => setActiveTab(button.dataset.tab));

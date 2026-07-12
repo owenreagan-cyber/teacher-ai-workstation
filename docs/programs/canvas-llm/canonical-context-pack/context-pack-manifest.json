@@ -1,0 +1,52 @@
+{
+  "schemaVersion": 1,
+  "schoolYear": "2026-2027",
+  "productMode": "single-user-local-first",
+  "status": "validated",
+  "canonicalSources": [
+    {
+      "domain": "canvas-course-routing",
+      "path": "config/curriculum/canvas-course-mappings.json"
+    },
+    {
+      "domain": "agenda-page-rules",
+      "path": "config/curriculum/canvas/agenda-page-rules.json"
+    },
+    {
+      "domain": "instructional-weeks",
+      "path": "config/curriculum/canvas/instructional-weeks-2026-2027.json"
+    },
+    {
+      "domain": "weekly-agenda-standard",
+      "path": "config/curriculum/canvas/weekly-agenda-standard-2026-2027.json"
+    },
+    {
+      "domain": "math-lesson-power-up-map",
+      "path": "config/curriculum/math/saxon-math-5/lesson-power-up-map.json"
+    },
+    {
+      "domain": "math-fact-test-practice-map",
+      "path": "config/curriculum/math/saxon-math-5/fact-test-practice-map.json"
+    },
+    {
+      "domain": "reading-comprehension-location-map",
+      "path": "config/curriculum/reading/reading-mastery-4/comprehension-location-map.json"
+    },
+    {
+      "domain": "reading-checkout-passage-map",
+      "path": "config/curriculum/reading/reading-mastery-4/checkout-passage-map.json"
+    },
+    {
+      "domain": "spelling-cumulative-test-word-lists",
+      "path": "config/curriculum/spelling/cumulative-test-word-lists.json"
+    }
+  ],
+  "validation": {
+    "validator": "scripts/canvas-llm-canonical-context-pack-validator.py",
+    "statusCommand": "bin/chief-of-staff --canvas-llm-canonical-context-pack-status",
+    "expectedSummary": {
+      "warn": 0,
+      "fail": 0
+    }
+  }
+}

@@ -665,3 +665,61 @@ Rollback approval phrase:
 ```text
 PHASE_21D_SANDBOX_WEEK_ROLLBACK_APPROVED
 ```
+
+---
+
+## Recovery Gate C0A - Canonical Context Pack
+
+The canonical 2026-2027 Context Pack is complete and validated.
+
+Canonical directory:
+
+```text
+docs/programs/canvas-llm/canonical-context-pack/
+```
+
+Validation command:
+
+```bash
+bin/chief-of-staff --canvas-llm-canonical-context-pack-status
+```
+
+Expected status:
+
+```text
+WARN: 0
+FAIL: 0
+```
+
+The Context Pack establishes:
+
+- one teacher and one local-first workstation;
+- Python localhost service plus SQLite/local files;
+- real editable Monday-Friday weekly state;
+- fixtures limited to tests and deterministic demonstrations;
+- explicit course routing, naming, calendar, assignment, agenda, announcement, newsletter, resource, approval, and publishing contracts;
+- standalone Reading and standalone Spelling announcement support;
+- combined Reading/Spelling announcements only for same-week assessments;
+- Reading Test 14 without Checkout 14;
+- Spelling Test 25 blocked pending an approved owner source;
+- Phase 27 as the protected Canvas safety boundary;
+- ignored legacy applications as evidence only.
+
+Current runtime limitation:
+
+```text
+Phase 22 production startup still seeds fixture data.
+Phase 23 generation still loads its synthetic weekly fixture.
+Parts of Phase 26 still consume Phase 24/25 fixture inputs.
+```
+
+Do not describe those paths as the final production pipeline.
+
+Next recovery step:
+
+```text
+Run a no-write Phase 22-27 convergence audit.
+Then implement one real-SQLite Math vertical slice.
+```
+
+The first vertical slice must remain preview-only and perform no Canvas mutation.

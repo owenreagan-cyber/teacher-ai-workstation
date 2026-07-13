@@ -570,8 +570,8 @@ class WorkstationDB:
         iw=instructional_week_by_code(code)
         if not iw: raise KeyError('week code not found')
         with self.connect() as db:
-            if not db.execute('SELECT 1 FROM weekly_plans WHERE starts_on=?',(iw['startsOn'],)).fetchone(): self.create_week(iw['startsOn'],db); db.commit()
             row=db.execute('SELECT * FROM weekly_plans WHERE starts_on=?',(iw['startsOn'],)).fetchone()
+            if not row: return None
             return row_to_week(db,row)
     def import_pacing(self,path,replace=True):
         source=path if Path(path).exists() else SYNTHETIC_FIXTURE_PATH; kind='real-import' if Path(source)==RAW_IMPORT_PATH else 'synthetic-fixture'; g,r,e,u=import_pacing_grid(Path(source),kind)
@@ -769,7 +769,10 @@ class Handler(SimpleHTTPRequestHandler):
             if m=='GET' and path=='/api/weeks/current': return self.sendj(db.current_week())
             if m=='POST' and path=='/api/weeks': return self.sendj(db.get_week(db.create_week(self.body().get('startsOn','2026-08-17'))),201)
             if m=='GET' and re.fullmatch(r'/api/weeks/by-code/[^/]+',path):
-                try: return self.sendj(db.get_week_by_code(urllib.parse.unquote(path.rsplit('/',1)[-1])))
+                try:
+                    wk=db.get_week_by_code(urllib.parse.unquote(path.rsplit('/',1)[-1]))
+                    if wk is None: return self.sendj({'error':'week not found'},404)
+                    return self.sendj(wk)
                 except KeyError: return self.sendj({'error':'week code not found'},404)
             if m=='GET' and re.fullmatch(r'/api/weeks/[^/]+',path): return self.sendj(db.get_week(path.rsplit('/',1)[-1]))
             if m=='PATCH' and re.fullmatch(r'/api/weeks/[^/]+',path):
@@ -863,6 +866,13 @@ def command_self_test(a):
     with empty_db.connect() as empty_conn:
         assert empty_conn.execute('SELECT COUNT(*) FROM weekly_plans').fetchone()[0] == 0
 
+    # Regression: get_week_by_code on empty DB must not create a week
+    missing=empty_db.get_week_by_code('Q1W5')
+    assert missing is None
+    with empty_db.connect() as empty_conn:
+        assert empty_conn.execute('SELECT COUNT(*) FROM weekly_plans').fetchone()[0] == 0
+        assert empty_conn.execute('SELECT COUNT(*) FROM daily_subject_entries').fetchone()[0] == 0
+
     blank_week_id=empty_db.create_week('2026-08-17')
     blank_week=empty_db.get_week(blank_week_id)
     blank_math=next(item for item in blank_week['subjects'] if item['subject']=='math')
@@ -870,7 +880,13 @@ def command_self_test(a):
     assert all(not day['lesson'] for day in blank_math['days'])
 
     with empty_db.connect() as empty_conn:
+        assert empty_conn.execute('SELECT COUNT(*) FROM weekly_plans').fetchone()[0] == 1
         assert empty_conn.execute('SELECT COUNT(*) FROM pacing_entries').fetchone()[0] == 0
+
+    # Explicitly created week is findable by code
+    found_blank=empty_db.get_week_by_code('Q1W5')
+    assert found_blank is not None
+    assert found_blank['id'] == blank_week_id
 
     p=Path(tempfile.mkdtemp())/'w.sqlite3'
     db=WorkstationDB(p)
@@ -961,10 +977,14 @@ def command_browser_proof(a):
             assert code in buttons
         cdp.eval("window.__phase22FetchLog = []; window.__phase22OriginalFetch = window.fetch.bind(window); window.fetch = (...args) => { window.__phase22FetchLog.push(String(args[0])); return window.__phase22OriginalFetch(...args); };")
         cdp.eval("document.querySelector('[data-week-code=\"Q4W10\"]').click();")
-        wait_for_condition(cdp,"document.querySelector('#week-code') && document.querySelector('#week-code').textContent === 'Q4W10'")
-        assert cdp.eval(f"localStorage.getItem('{SELECTED_WEEK_STORAGE_KEY}')") == 'Q4W10'
+        wait_for_condition(cdp,"document.getElementById('create-week-btn') !== null")
+        wait_for_condition(cdp,"document.querySelector('#week-code').textContent === 'Q4W10'")
         fetch_log=cdp.eval("window.__phase22FetchLog || []")
         assert any('/api/weeks/by-code/Q4W10' in str(item) for item in fetch_log)
+        assert cdp.eval(f"localStorage.getItem('{SELECTED_WEEK_STORAGE_KEY}')") == 'Q4W10'
+        assert cdp.eval("document.querySelector('#week-grid').textContent.includes('No week loaded')")
+        cdp.eval("document.getElementById('create-week-btn').click();")
+        wait_for_condition(cdp,"document.querySelector('#week-grid input[data-field=\"lesson\"]') !== null")
         first_input=cdp.eval("(() => { const el = document.querySelector('#week-grid input[data-field=\"lesson\"]'); el.value = 'Browser Proof Lesson'; el.dispatchEvent(new Event('input', { bubbles: true })); return el.value; })()")
         assert first_input == 'Browser Proof Lesson'
         state_before=cdp.eval("document.querySelector('#save-state').textContent")
@@ -983,6 +1003,20 @@ def command_browser_proof(a):
         assert cdp.eval(f"localStorage.getItem('{SELECTED_WEEK_STORAGE_KEY}')") == 'Q4W10'
         assert cdp.eval("document.querySelector('#week-code').textContent") == 'Q4W10'
         assert cdp.eval("document.querySelector('#week-grid .subject-tab.active').dataset.subject")
+        # Proof: non-404 error reaches "Load failed" state, not "week does not exist"
+        cdp.call('Page.addScriptToEvaluateOnNewDocument',{'source':'''
+          const origFetch = window.fetch.bind(window);
+          window.fetch = (url, opts) => {
+            if (String(url).includes('/api/bootstrap')) {
+              return new Response('{"error":"server error"}', { status: 500, headers: {'Content-Type':'application/json'} });
+            }
+            return origFetch(url, opts);
+          };
+        '''})
+        cdp.call('Page.navigate',{'url':f'http://127.0.0.1:{port}/'})
+        wait_for_condition(cdp,"document.querySelector('.workspace h2') && document.querySelector('.workspace h2').textContent === 'Load failed'")
+        error_text=cdp.eval("document.querySelector('.workspace p').textContent") or ''
+        assert 'week does not exist' not in error_text.lower()
         print('PASS Phase 22 browser proof complete')
         return 0
     finally:

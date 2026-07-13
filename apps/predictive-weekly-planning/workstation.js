@@ -180,17 +180,26 @@ document.querySelectorAll('.rail-button').forEach((button) => {
 
 function renderWeekHeader() {
   const iw = state.week?.payload?.instructionalWeek || {};
-  const code = state.selectedWeekCode || iw.code || canonicalWeekCode(state.week?.starts_on);
+  const code = state.selectedWeekCode || iw.code || state.week?.starts_on;
   $('metric-week').textContent = code || 'Week';
   $('week-code').textContent = code || 'Week';
   $('week-subtitle').textContent = iw.displaySubtitle || state.week?.starts_on || '';
-  $('metric-state').textContent = state.week.state;
+  $('metric-state').textContent = state.week?.state || '-';
   $('metric-subject').textContent = SUBJECT_LABEL(state.subjectId);
   $('startup-message').textContent = state.startupNote || state.boot?.currentWeek?.startupPrompt || 'Current instructional week opened from SQLite.';
   const warning = state.boot?.currentWeek?.warning;
   const startCopy = `${warning ? `<p class="warn-banner">${esc(warning)}</p>` : ''}<p>${esc(state.startupNote || 'Selected week is restored locally before any fallback runs. SQLite is canonical. Autosave persists before navigation, blur, tab changes, and page unload when timing allows.')}</p>`;
-  $('startup-panel').innerHTML = `${startCopy}<div id="week-chooser" class="week-chooser"></div>`;
+  let extra = '';
+  if (!state.week) {
+    const startsOn = weekCodeToStartsOn(state.selectedWeekCode);
+    if (startsOn) {
+      extra = `<div id="create-week-panel"><button type="button" id="create-week-btn" class="primary-button">Create Week ${esc(code)}</button></div>`;
+    }
+  }
+  $('startup-panel').innerHTML = `${startCopy}${extra}<div id="week-chooser" class="week-chooser"></div>`;
   renderWeekChooser();
+  const createBtn = document.getElementById('create-week-btn');
+  if (createBtn) createBtn.onclick = createSelectedWeek;
 }
 
 function renderWeekChooser() {
@@ -216,22 +225,39 @@ async function loadWeekByCode(code, { persist = true, source = 'bootstrap' } = {
     throw new Error(`Unknown instructional week: ${canonical}`);
   }
   if (persist) persistSelectedWeekCode(canonical);
-  state.startupNote = source === 'button'
-    ? `Selected week ${canonical} restored from local state.`
-    : source === 'explicit'
-      ? `Opened requested week ${canonical}.`
-      : `Restored saved week ${canonical}.`;
-  const week = await api(`/api/weeks/by-code/${encodeURIComponent(canonical)}`);
-  state.week = week;
   state.selectedWeekCode = canonical;
-  renderWeekHeader();
-  renderWeekGrid();
-  $('metric-validation').textContent = `${state.week.validation.length} items`;
-  $('validation-list').innerHTML = state.week.validation.map((v) => `<li class="${v.severity}">${v.severity.toUpperCase()}: ${esc(v.message)}</li>`).join('');
-  $('deployment-list').innerHTML = (state.week.deploymentPreview?.items || []).map((item) => `<li>${esc(item.target)} — ${esc(item.status)}</li>`).join('');
-  renderDrafts(state.week.drafts || []);
-  await loadAgendaPreview();
-  return week;
+  try {
+    const week = await api(`/api/weeks/by-code/${encodeURIComponent(canonical)}`);
+    state.week = week;
+    state.startupNote = source === 'button'
+      ? `Selected week ${canonical}.`
+      : source === 'explicit'
+        ? `Opened requested week ${canonical}.`
+        : `Restored saved week ${canonical}.`;
+    renderWeekHeader();
+    renderWeekGrid();
+    $('metric-validation').textContent = `${state.week.validation.length} items`;
+    $('validation-list').innerHTML = state.week.validation.map((v) => `<li class="${v.severity}">${v.severity.toUpperCase()}: ${esc(v.message)}</li>`).join('');
+    $('deployment-list').innerHTML = (state.week.deploymentPreview?.items || []).map((item) => `<li>${esc(item.target)} — ${esc(item.status)}</li>`).join('');
+    renderDrafts(state.week.drafts || []);
+    await loadAgendaPreview();
+    return week;
+  } catch (error) {
+    if (error.status === 404) {
+      state.week = null;
+      state.startupNote = `Week ${canonical} does not exist yet. Choose a week and click "Create Week" to get started.`;
+      renderWeekHeader();
+      renderWeekGrid();
+      $('metric-validation').textContent = '0 items';
+      $('validation-list').innerHTML = '';
+      $('deployment-list').innerHTML = '';
+      $('draft-list').innerHTML = '';
+      $('html-preview').textContent = '';
+      $('page-preview').innerHTML = '';
+      return null;
+    }
+    throw error;
+  }
 }
 
 function bindEditable(input, table, field) {
@@ -259,6 +285,10 @@ function bindEditable(input, table, field) {
 }
 
 function renderWeekGrid() {
+  if (!state.week || !state.week.subjects) {
+    $('week-grid').innerHTML = '<p class="empty-state">No week loaded. Select a week and click Create Week.</p>';
+    return;
+  }
   const subject = state.week.subjects.find((s) => s.subject === state.subjectId) || state.week.subjects[0];
   state.subjectId = subject.subject;
   $('metric-subject').textContent = SUBJECT_LABEL(subject.subject);
@@ -313,6 +343,7 @@ function renderDrafts(drafts) {
 }
 
 async function loadAgendaPreview() {
+  if (!state.week) return;
   const preview = await api(`/api/weeks/${state.week.id}/agenda-preview`);
   $('html-preview').textContent = preview.html;
   if (state.previewTab === 'html') $('page-preview').innerHTML = preview.html;
@@ -329,6 +360,23 @@ document.querySelectorAll('[data-preview-tab]').forEach((tab) => {
   });
 });
 
+async function createSelectedWeek() {
+  const code = state.selectedWeekCode;
+  const startsOn = weekCodeToStartsOn(code);
+  if (!startsOn) return;
+  await flushAll();
+  const created = await api('/api/weeks', { method: 'POST', body: JSON.stringify({ startsOn }) });
+  state.week = created;
+  state.startupNote = `Created week ${code}.`;
+  renderWeekHeader();
+  renderWeekGrid();
+  $('metric-validation').textContent = `${state.week.validation.length} items`;
+  $('validation-list').innerHTML = state.week.validation.map((v) => `<li class="${v.severity}">${v.severity.toUpperCase()}: ${esc(v.message)}</li>`).join('');
+  $('deployment-list').innerHTML = (state.week.deploymentPreview?.items || []).map((item) => `<li>${esc(item.target)} — ${esc(item.status)}</li>`).join('');
+  renderDrafts(state.week.drafts || []);
+  await loadAgendaPreview();
+}
+
 async function main() {
   state.boot = await api('/api/bootstrap');
   const pacing = (await api('/api/pacing')).entries;
@@ -342,16 +390,11 @@ async function main() {
     : savedWeek
       ? `Restored saved week ${savedWeek}.`
       : state.boot.currentWeek.startupPrompt || 'Current instructional week opened from SQLite.';
-  try {
-    await loadWeekByCode(chosenWeek, { persist: true, source: explicitWeek ? 'explicit' : savedWeek ? 'saved' : 'bootstrap' });
-  } catch (error) {
-    if (chosenWeek !== bootWeek) {
-      await loadWeekByCode(bootWeek, { persist: false, source: 'bootstrap' });
-      state.startupNote = `Restored fallback week ${bootWeek}.`;
-    } else {
-      throw error;
-    }
-  }
+  const loaded = await loadWeekByCode(chosenWeek, {
+    persist: true,
+    source: explicitWeek ? 'explicit' : savedWeek ? 'saved' : 'bootstrap',
+  });
+  if (loaded === null) state.week = null;
   renderPacing(pacing);
   $('builder-panel').innerHTML = '<p>Reading and Spelling share one agenda page. Reading Tests and Checkouts form one assessment family. Checkout study guides are never created.</p>';
   $('resource-list').innerHTML = resources.map((r) => `<article>${esc(r.canonical_name)} — ${esc(r.sensitivity)} (${esc(r.verification_status)})</article>`).join('') || '<p>No resources registered yet.</p>';
@@ -359,6 +402,7 @@ async function main() {
   $('health-json').textContent = JSON.stringify(await api('/api/health'), null, 2);
 
   $('generate-week').onclick = async () => {
+    if (!state.week) return;
     await flushAll();
     state.week = await api(`/api/weeks/${state.week.id}/generate`, { method: 'POST', body: '{}' });
     renderWeekGrid();

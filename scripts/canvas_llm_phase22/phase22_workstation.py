@@ -970,6 +970,7 @@ def command_browser_proof(a):
         cdp=ChromeCDP(ws_url)
         cdp.call('Runtime.enable')
         cdp.call('Page.enable')
+        # Phase 1: chooser with 37 weeks on empty DB
         wait_for_condition(cdp,"document.readyState === 'complete' && document.querySelectorAll('.week-chooser button[data-week-code]').length === 37")
         buttons=cdp.eval("Array.from(document.querySelectorAll('.week-chooser button[data-week-code]')).map((b) => b.dataset.weekCode)")
         assert len(buttons)==37 and len(set(buttons))==37
@@ -983,34 +984,181 @@ def command_browser_proof(a):
         assert any('/api/weeks/by-code/Q4W10' in str(item) for item in fetch_log)
         assert cdp.eval(f"localStorage.getItem('{SELECTED_WEEK_STORAGE_KEY}')") == 'Q4W10'
         assert cdp.eval("document.querySelector('#week-grid').textContent.includes('No week loaded')")
+        # Phase 2: explicit create + enter 5 Math values Mon-Fri
         cdp.eval("document.getElementById('create-week-btn').click();")
         wait_for_condition(cdp,"document.querySelector('#week-grid input[data-field=\"lesson\"]') !== null")
-        first_input=cdp.eval("(() => { const el = document.querySelector('#week-grid input[data-field=\"lesson\"]'); el.value = 'Browser Proof Lesson'; el.dispatchEvent(new Event('input', { bubbles: true })); return el.value; })()")
-        assert first_input == 'Browser Proof Lesson'
-        state_before=cdp.eval("document.querySelector('#save-state').textContent")
-        assert state_before != 'Saved'
+        cdp.eval("""
+        (() => {
+          var L = document.querySelectorAll('#week-grid input[data-field="lesson"]');
+          var TS = document.querySelectorAll('#week-grid input[data-field="tests"]');
+          L[0].value='31'; L[0].dispatchEvent(new Event('input',{bubbles:true}));
+          L[1].value='32'; L[1].dispatchEvent(new Event('input',{bubbles:true}));
+          L[2].value='33'; L[2].dispatchEvent(new Event('input',{bubbles:true}));
+          TS[3].value='7'; TS[3].dispatchEvent(new Event('input',{bubbles:true}));
+          L[4].value='34'; L[4].dispatchEvent(new Event('input',{bubbles:true}));
+          return 'set';
+        })()
+        """)
         wait_for_condition(cdp,"document.querySelector('#save-state') && document.querySelector('#save-state').textContent === 'Saved'")
-        saved_value=cdp.eval("document.querySelector('#week-grid input[data-field=\"lesson\"]').value")
-        assert saved_value == 'Browser Proof Lesson'
+        # Phase 3: verify PATCH requests reached backend
+        patch_paths=cdp.eval("(window.__phase22FetchLog||[]).filter(function(u){return u.indexOf('/api/daily-entries/')>=0})")
+        assert len(patch_paths) >= 5
+        patched_ids=set()
+        for pp in patch_paths:
+            for seg in pp.split('/'):
+                if seg.startswith('p22-'):
+                    patched_ids.add(seg)
+        assert len(patched_ids) >= 5
+        # Phase 4: verify SQLite contains exact values
+        with sqlite3.connect(dbp) as conn:
+            conn.row_factory=sqlite3.Row
+            plan=conn.execute('SELECT * FROM weekly_plans').fetchone()
+            assert plan is not None
+            rows=conn.execute('SELECT * FROM daily_subject_entries WHERE weekly_plan_id=? AND subject=? ORDER BY entry_date',(plan['id'],'math')).fetchall()
+            assert len(rows)==5
+            assert rows[0]['lesson']=='31' and rows[0]['title']==''
+            assert rows[1]['lesson']=='32'
+            assert rows[2]['lesson']=='33'
+            assert rows[3]['lesson']=='' and rows[3]['tests']=='7'
+            assert rows[4]['lesson']=='34'
+        # Phase 5: browser reload — all 5 values restored + header
         cdp.call('Page.reload',{'ignoreCache':True})
-        wait_for_condition(cdp,"document.querySelector('#week-grid input[data-field=\"lesson\"]') && document.querySelector('#week-grid input[data-field=\"lesson\"]').value === 'Browser Proof Lesson'")
-        assert cdp.eval(f"localStorage.getItem('{SELECTED_WEEK_STORAGE_KEY}')") == 'Q4W10'
+        wait_for_condition(cdp,"document.querySelectorAll('#week-grid input[data-field=\"lesson\"]').length===5&&document.querySelectorAll('#week-grid input[data-field=\"lesson\"]')[0].value==='31'&&document.querySelectorAll('#week-grid input[data-field=\"lesson\"]')[1].value==='32'&&document.querySelectorAll('#week-grid input[data-field=\"lesson\"]')[2].value==='33'&&document.querySelectorAll('#week-grid input[data-field=\"lesson\"]')[4].value==='34'&&(document.querySelectorAll('#week-grid input[data-field=\"tests\"]')[3]||{}).value==='7'&&document.querySelector('#week-code').textContent==='Q4W10'")
+        assert cdp.eval(f"localStorage.getItem('{SELECTED_WEEK_STORAGE_KEY}')")=='Q4W10'
+        # Phase 6: generate week after reload — wait for generated
+        # drafts and deployment preview, not for inputs that were already
+        # present before the asynchronous POST completed.
+        cdp.eval("document.getElementById('generate-week').click();")
+        wait_for_condition(
+            cdp,
+            """
+            (() => {
+              const drafts=(document.querySelector('#draft-list')||{}).textContent||'';
+              const deployment=(document.querySelector('#deployment-list')||{}).textContent||'';
+              return drafts.includes('SM5 Lesson 31 ')
+                && drafts.includes('SM5 Lesson 32 ')
+                && drafts.includes('SM5 Lesson 33 ')
+                && drafts.includes('SM5 Study Guide 7')
+                && drafts.includes('SM5 Written Test 7')
+                && drafts.includes('SM5 Fact Test 7')
+                && deployment.includes('blocked_preview');
+            })()
+            """,
+        )
+
+        # Generation must preserve the five teacher-entered values.
+        assert cdp.eval(
+            """
+            (() => {
+              const lessons=document.querySelectorAll(
+                '#week-grid input[data-field="lesson"]'
+              );
+              const tests=document.querySelectorAll(
+                '#week-grid input[data-field="tests"]'
+              );
+              return lessons.length===5
+                && lessons[0].value==='31'
+                && lessons[1].value==='32'
+                && lessons[2].value==='33'
+                && lessons[3].value===''
+                && tests[3].value==='7'
+                && lessons[4].value==='34';
+            })()
+            """
+        ) is True
+
+        deploy_text=cdp.eval(
+            "(document.querySelector('#deployment-list')||{}).textContent||''"
+        )
+        assert 'blocked_preview' in deploy_text
+
+        # Prove generation consumed the reloaded SQLite Math rows.
+        with sqlite3.connect(dbp) as conn:
+            conn.row_factory=sqlite3.Row
+            generated_rows=conn.execute(
+                """
+                SELECT entry_date, lesson, tests, resolver_output
+                FROM daily_subject_entries
+                WHERE weekly_plan_id=? AND subject=?
+                ORDER BY entry_date
+                """,
+                (plan['id'], 'math'),
+            ).fetchall()
+            assert len(generated_rows)==5
+
+            generated_inputs=[
+                (row['lesson'], row['tests'])
+                for row in generated_rows
+            ]
+            assert generated_inputs==[
+                ('31',''),
+                ('32',''),
+                ('33',''),
+                ('','7'),
+                ('34',''),
+            ]
+
+            generated_resolvers=[
+                jl(row['resolver_output'],{})
+                for row in generated_rows
+            ]
+            assert all(generated_resolvers)
+
+            draft_titles={
+                row['title']
+                for row in conn.execute(
+                    """
+                    SELECT title
+                    FROM drafts
+                    WHERE weekly_plan_id=? AND subject='math'
+                    """,
+                    (plan['id'],),
+                )
+            }
+
+            assert any(
+                title.startswith('SM5 Lesson 31 ')
+                for title in draft_titles
+            )
+            assert any(
+                title.startswith('SM5 Lesson 32 ')
+                for title in draft_titles
+            )
+            assert any(
+                title.startswith('SM5 Lesson 33 ')
+                for title in draft_titles
+            )
+            assert 'SM5 Study Guide 7' in draft_titles
+            assert 'SM5 Written Test 7' in draft_titles
+            assert 'SM5 Fact Test 7' in draft_titles
+
+            deployment=conn.execute(
+                """
+                SELECT status, payload
+                FROM deployment_plans
+                WHERE weekly_plan_id=?
+                """,
+                (plan['id'],),
+            ).fetchone()
+            assert deployment is not None
+            assert deployment['status']=='preview_only'
+            deployment_payload=jl(deployment['payload'],{})
+            assert deployment_payload.get('previewOnly') is True
+            assert deployment_payload.get('canvasWritesAllowed') is False
+
+        # Phase 7: server restart — values survive
         server.terminate(); server.wait(timeout=5)
         server=subprocess.Popen(serve_cmd,cwd=APP_DIR,env=env,stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)
         wait_for_http_json(f'http://127.0.0.1:{port}/api/health')
         cdp.call('Page.reload',{'ignoreCache':True})
-        wait_for_condition(cdp,"document.querySelector('#week-grid input[data-field=\"lesson\"]') && document.querySelector('#week-grid input[data-field=\"lesson\"]').value === 'Browser Proof Lesson'")
-        assert cdp.eval(f"localStorage.getItem('{SELECTED_WEEK_STORAGE_KEY}')") == 'Q4W10'
-        assert cdp.eval("document.querySelector('#week-code').textContent") == 'Q4W10'
-        assert cdp.eval("document.querySelector('#week-grid .subject-tab.active').dataset.subject")
-        # Proof: non-404 error reaches "Load failed" state, not "week does not exist"
+        wait_for_condition(cdp,"document.querySelectorAll('#week-grid input[data-field=\"lesson\"]').length===5&&document.querySelectorAll('#week-grid input[data-field=\"lesson\"]')[0].value==='31'&&document.querySelectorAll('#week-grid input[data-field=\"lesson\"]')[1].value==='32'&&document.querySelectorAll('#week-grid input[data-field=\"lesson\"]')[2].value==='33'&&document.querySelectorAll('#week-grid input[data-field=\"lesson\"]')[4].value==='34'&&(document.querySelectorAll('#week-grid input[data-field=\"tests\"]')[3]||{}).value==='7'&&document.querySelector('#week-code').textContent==='Q4W10'")
+        assert cdp.eval(f"localStorage.getItem('{SELECTED_WEEK_STORAGE_KEY}')")=='Q4W10'
+        # Phase 8: non-404 error reaches "Load failed"
         cdp.call('Page.addScriptToEvaluateOnNewDocument',{'source':'''
-          const origFetch = window.fetch.bind(window);
-          window.fetch = (url, opts) => {
-            if (String(url).includes('/api/bootstrap')) {
-              return new Response('{"error":"server error"}', { status: 500, headers: {'Content-Type':'application/json'} });
-            }
-            return origFetch(url, opts);
+          var _origFetch=window.fetch.bind(window);
+          window.fetch=function(u,o){
+            if(String(u).indexOf('/api/bootstrap')>=0) return new Response('{"error":"server error"}',{status:500,headers:{"Content-Type":"application/json"}});
+            return _origFetch(u,o);
           };
         '''})
         cdp.call('Page.navigate',{'url':f'http://127.0.0.1:{port}/'})

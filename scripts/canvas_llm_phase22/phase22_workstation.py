@@ -991,11 +991,11 @@ def command_browser_proof(a):
         (() => {
           var L = document.querySelectorAll('#week-grid input[data-field="lesson"]');
           var TS = document.querySelectorAll('#week-grid input[data-field="tests"]');
-          L[0].value='31'; L[0].dispatchEvent(new Event('input',{bubbles:true}));
-          L[1].value='32'; L[1].dispatchEvent(new Event('input',{bubbles:true}));
-          L[2].value='33'; L[2].dispatchEvent(new Event('input',{bubbles:true}));
+          L[0].value='18'; L[0].dispatchEvent(new Event('input',{bubbles:true}));
+          L[1].value='19'; L[1].dispatchEvent(new Event('input',{bubbles:true}));
+          L[2].value='20'; L[2].dispatchEvent(new Event('input',{bubbles:true}));
           TS[3].value='7'; TS[3].dispatchEvent(new Event('input',{bubbles:true}));
-          L[4].value='34'; L[4].dispatchEvent(new Event('input',{bubbles:true}));
+          L[4].value='21'; L[4].dispatchEvent(new Event('input',{bubbles:true}));
           return 'set';
         })()
         """)
@@ -1016,28 +1016,162 @@ def command_browser_proof(a):
             assert plan is not None
             rows=conn.execute('SELECT * FROM daily_subject_entries WHERE weekly_plan_id=? AND subject=? ORDER BY entry_date',(plan['id'],'math')).fetchall()
             assert len(rows)==5
-            assert rows[0]['lesson']=='31' and rows[0]['title']==''
-            assert rows[1]['lesson']=='32'
-            assert rows[2]['lesson']=='33'
+            assert rows[0]['lesson']=='18' and rows[0]['title']==''
+            assert rows[1]['lesson']=='19'
+            assert rows[2]['lesson']=='20'
             assert rows[3]['lesson']=='' and rows[3]['tests']=='7'
-            assert rows[4]['lesson']=='34'
+            assert rows[4]['lesson']=='21'
         # Phase 5: browser reload — all 5 values restored + header
         cdp.call('Page.reload',{'ignoreCache':True})
-        wait_for_condition(cdp,"document.querySelectorAll('#week-grid input[data-field=\"lesson\"]').length===5&&document.querySelectorAll('#week-grid input[data-field=\"lesson\"]')[0].value==='31'&&document.querySelectorAll('#week-grid input[data-field=\"lesson\"]')[1].value==='32'&&document.querySelectorAll('#week-grid input[data-field=\"lesson\"]')[2].value==='33'&&document.querySelectorAll('#week-grid input[data-field=\"lesson\"]')[4].value==='34'&&(document.querySelectorAll('#week-grid input[data-field=\"tests\"]')[3]||{}).value==='7'&&document.querySelector('#week-code').textContent==='Q4W10'")
+        wait_for_condition(cdp,"document.querySelectorAll('#week-grid input[data-field=\"lesson\"]').length===5&&document.querySelectorAll('#week-grid input[data-field=\"lesson\"]')[0].value==='18'&&document.querySelectorAll('#week-grid input[data-field=\"lesson\"]')[1].value==='19'&&document.querySelectorAll('#week-grid input[data-field=\"lesson\"]')[2].value==='20'&&document.querySelectorAll('#week-grid input[data-field=\"lesson\"]')[4].value==='21'&&(document.querySelectorAll('#week-grid input[data-field=\"tests\"]')[3]||{}).value==='7'&&document.querySelector('#week-code').textContent==='Q4W10'")
         assert cdp.eval(f"localStorage.getItem('{SELECTED_WEEK_STORAGE_KEY}')")=='Q4W10'
         # Phase 6: generate week after reload — wait for generated
         # drafts and deployment preview, not for inputs that were already
         # present before the asynchronous POST completed.
+        # Inputs can render before main() finishes attaching the Generate
+        # handler after reload. Wait for the handler itself before clicking.
+        wait_for_condition(
+            cdp,
+            """
+            (() => {
+              const button=document.getElementById('generate-week');
+              return button && typeof button.onclick === 'function';
+            })()
+            """,
+        )
+
+        # Record the Generate request immediately when it starts, then update
+        # the same log entry when the response or error arrives.
+        cdp.eval("""
+        (() => {
+          window.__phase22GenerateFetchLog=[];
+          const originalFetch=window.fetch.bind(window);
+          window.fetch=async (...args) => {
+            const url=String(args[0]);
+            const options=args[1] || {};
+            const isGenerate=url.includes('/generate');
+            const entry=isGenerate ? {
+              url,
+              method:String(options.method || 'GET').toUpperCase(),
+              started:true,
+              completed:false,
+              status:null,
+              ok:null,
+              error:null,
+            } : null;
+
+            if (entry) window.__phase22GenerateFetchLog.push(entry);
+
+            try {
+              const response=await originalFetch(...args);
+              if (entry) {
+                entry.completed=true;
+                entry.status=response.status;
+                entry.ok=response.ok;
+              }
+              return response;
+            } catch (error) {
+              if (entry) {
+                entry.completed=true;
+                entry.error=String(error);
+              }
+              throw error;
+            }
+          };
+        })()
+        """)
+
         cdp.eval("document.getElementById('generate-week').click();")
+
+        wait_for_condition(
+            cdp,
+            """
+            (() => {
+              const log=window.__phase22GenerateFetchLog||[];
+              return log.length===1 && log[0].completed===true;
+            })()
+            """,
+        )
+
+        generate_fetch_log=cdp.eval(
+            "window.__phase22GenerateFetchLog||[]"
+        )
+        assert len(generate_fetch_log)==1
+        assert generate_fetch_log[0]['method']=='POST'
+        assert generate_fetch_log[0]['error'] is None, generate_fetch_log
+        assert generate_fetch_log[0]['status']==200, generate_fetch_log
+        assert generate_fetch_log[0]['ok'] is True
+
+        # Wait on the authoritative generated SQLite state first. Rendering
+        # may lag behind the completed POST in slower headless runs.
+        expected_draft_titles={
+            'SM5 Study Guide 7',
+            'SM5 Written Test 7',
+            'SM5 Fact Test 7',
+        }
+        deadline=time.monotonic()+30
+        last_generation_state=None
+        while time.monotonic()<deadline:
+            with sqlite3.connect(dbp) as poll_conn:
+                draft_titles={
+                    row[0]
+                    for row in poll_conn.execute(
+                        """
+                        SELECT title
+                        FROM drafts
+                        WHERE weekly_plan_id=? AND subject='math'
+                        """,
+                        (plan['id'],),
+                    )
+                }
+                deployment_row=poll_conn.execute(
+                    """
+                    SELECT status, payload
+                    FROM deployment_plans
+                    WHERE weekly_plan_id=?
+                    """,
+                    (plan['id'],),
+                ).fetchone()
+
+            lesson_drafts_ok=all(
+                any(title.startswith(f'SM5 Lesson {lesson} ') for title in draft_titles)
+                for lesson in (18,19,20)
+            )
+            assessment_drafts_ok=expected_draft_titles.issubset(draft_titles)
+            deployment_ok=bool(
+                deployment_row
+                and deployment_row[0]=='preview_only'
+                and jl(deployment_row[1],{}).get('canvasWritesAllowed') is False
+            )
+
+            last_generation_state={
+                'draftTitles':sorted(draft_titles),
+                'deploymentStatus':deployment_row[0] if deployment_row else None,
+                'lessonDraftsOk':lesson_drafts_ok,
+                'assessmentDraftsOk':assessment_drafts_ok,
+                'deploymentOk':deployment_ok,
+            }
+
+            if lesson_drafts_ok and assessment_drafts_ok and deployment_ok:
+                break
+            time.sleep(0.1)
+        else:
+            raise AssertionError(
+                f'generation did not reach expected SQLite state: '
+                f'{last_generation_state}'
+            )
+
+        # After authoritative generation completes, prove the browser
+        # rendered the generated drafts and blocked preview state.
         wait_for_condition(
             cdp,
             """
             (() => {
               const drafts=(document.querySelector('#draft-list')||{}).textContent||'';
               const deployment=(document.querySelector('#deployment-list')||{}).textContent||'';
-              return drafts.includes('SM5 Lesson 31 ')
-                && drafts.includes('SM5 Lesson 32 ')
-                && drafts.includes('SM5 Lesson 33 ')
+              return drafts.includes('SM5 Lesson 18 ')
+                && drafts.includes('SM5 Lesson 19 ')
+                && drafts.includes('SM5 Lesson 20 ')
                 && drafts.includes('SM5 Study Guide 7')
                 && drafts.includes('SM5 Written Test 7')
                 && drafts.includes('SM5 Fact Test 7')
@@ -1057,12 +1191,12 @@ def command_browser_proof(a):
                 '#week-grid input[data-field="tests"]'
               );
               return lessons.length===5
-                && lessons[0].value==='31'
-                && lessons[1].value==='32'
-                && lessons[2].value==='33'
+                && lessons[0].value==='18'
+                && lessons[1].value==='19'
+                && lessons[2].value==='20'
                 && lessons[3].value===''
                 && tests[3].value==='7'
-                && lessons[4].value==='34';
+                && lessons[4].value==='21';
             })()
             """
         ) is True
@@ -1091,11 +1225,11 @@ def command_browser_proof(a):
                 for row in generated_rows
             ]
             assert generated_inputs==[
-                ('31',''),
-                ('32',''),
-                ('33',''),
+                ('18',''),
+                ('19',''),
+                ('20',''),
                 ('','7'),
-                ('34',''),
+                ('21',''),
             ]
 
             generated_resolvers=[
@@ -1117,15 +1251,15 @@ def command_browser_proof(a):
             }
 
             assert any(
-                title.startswith('SM5 Lesson 31 ')
+                title.startswith('SM5 Lesson 18 ')
                 for title in draft_titles
             )
             assert any(
-                title.startswith('SM5 Lesson 32 ')
+                title.startswith('SM5 Lesson 19 ')
                 for title in draft_titles
             )
             assert any(
-                title.startswith('SM5 Lesson 33 ')
+                title.startswith('SM5 Lesson 20 ')
                 for title in draft_titles
             )
             assert 'SM5 Study Guide 7' in draft_titles
@@ -1151,7 +1285,7 @@ def command_browser_proof(a):
         server=subprocess.Popen(serve_cmd,cwd=APP_DIR,env=env,stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)
         wait_for_http_json(f'http://127.0.0.1:{port}/api/health')
         cdp.call('Page.reload',{'ignoreCache':True})
-        wait_for_condition(cdp,"document.querySelectorAll('#week-grid input[data-field=\"lesson\"]').length===5&&document.querySelectorAll('#week-grid input[data-field=\"lesson\"]')[0].value==='31'&&document.querySelectorAll('#week-grid input[data-field=\"lesson\"]')[1].value==='32'&&document.querySelectorAll('#week-grid input[data-field=\"lesson\"]')[2].value==='33'&&document.querySelectorAll('#week-grid input[data-field=\"lesson\"]')[4].value==='34'&&(document.querySelectorAll('#week-grid input[data-field=\"tests\"]')[3]||{}).value==='7'&&document.querySelector('#week-code').textContent==='Q4W10'")
+        wait_for_condition(cdp,"document.querySelectorAll('#week-grid input[data-field=\"lesson\"]').length===5&&document.querySelectorAll('#week-grid input[data-field=\"lesson\"]')[0].value==='18'&&document.querySelectorAll('#week-grid input[data-field=\"lesson\"]')[1].value==='19'&&document.querySelectorAll('#week-grid input[data-field=\"lesson\"]')[2].value==='20'&&document.querySelectorAll('#week-grid input[data-field=\"lesson\"]')[4].value==='21'&&(document.querySelectorAll('#week-grid input[data-field=\"tests\"]')[3]||{}).value==='7'&&document.querySelector('#week-code').textContent==='Q4W10'")
         assert cdp.eval(f"localStorage.getItem('{SELECTED_WEEK_STORAGE_KEY}')")=='Q4W10'
         # Phase 8: non-404 error reaches "Load failed"
         cdp.call('Page.addScriptToEvaluateOnNewDocument',{'source':'''

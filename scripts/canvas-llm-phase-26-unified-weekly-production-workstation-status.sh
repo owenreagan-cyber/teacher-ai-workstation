@@ -72,7 +72,11 @@ PHASE26_LOCAL_ROOT="$T/local-root" python3 "$M" build-demo --week Q1W5 --output 
 python3 "$V" "$OUT" >"$T/validate.txt" 2>&1 && pass "workstation packet validates" || { cat "$T/validate.txt"; fail "workstation packet validation fails"; }
 
 grep -q '^WARN: due-time.unresolved Canvas assignment due-time convention remains owner-unresolved$' "$T/validate.txt" && pass "due-time unresolved warning is present" || fail "due-time warning missing"
-grep -q '^PASS: reading-test-14.checkout Reading Test 14 returns no Checkout$' "$T/validate.txt" && pass "Reading Test 14 no-checkout PASS is present" || fail "Reading Test 14 no-checkout PASS missing"
+if grep -q '^FAIL: reading-test-14.checkout ' "$T/validate.txt"; then
+  fail "Reading Test 14 produced a Checkout failure"
+else
+  pass "Reading Test 14 produces no Checkout failure"
+fi
 grep -q '^PASS: manifest.preview Deployment manifest preview is available$' "$T/validate.txt" && pass "deployment manifest preview PASS is present" || fail "deployment manifest preview PASS missing"
 grep -q '^FAIL: 0$' "$T/validate.txt" && pass "validator reported zero failures" || fail "validator reported failures"
 

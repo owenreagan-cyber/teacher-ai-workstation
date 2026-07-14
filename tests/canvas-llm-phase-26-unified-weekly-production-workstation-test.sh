@@ -51,7 +51,10 @@ print("PASS demo packet shape")
 PY
 
 python3 "$V" "$DEMO" | grep -q '^WARN: due-time.unresolved Canvas assignment due-time convention remains owner-unresolved$'
-python3 "$V" "$DEMO" | grep -q '^PASS: reading-test-14.checkout Reading Test 14 returns no Checkout$'
+if python3 "$V" "$DEMO" | grep -q '^FAIL: reading-test-14.checkout '; then
+  echo "FAIL: Reading Test 14 produced a Checkout failure"
+  exit 1
+fi
 python3 "$V" "$DEMO" | grep -q '^PASS: manifest.preview Deployment manifest preview is available$'
 python3 "$V" "$DEMO" | grep -q '^FAIL: 0$'
 

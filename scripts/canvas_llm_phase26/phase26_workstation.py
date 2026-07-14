@@ -190,11 +190,6 @@ def command_build_demo(args: argparse.Namespace) -> int:
     packet = build_demo_packet(args.week, Path(args.db) if args.db else None)
     out = Path(args.output or APP_DATA)
     write_json(out, packet)
-    if out != APP_DATA:
-        try:
-            write_json(APP_DATA, packet)
-        except OSError:
-            pass
     print(f"Phase 26 workstation demo rebuilt: {out}")
     return 0
 

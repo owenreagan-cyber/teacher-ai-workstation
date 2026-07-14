@@ -216,6 +216,14 @@ function renderWeekChooser() {
   });
 }
 
+function renderDeploymentPreview(items) {
+  return (Array.isArray(items) ? items : []).map((item) => {
+    const deps = Array.isArray(item?.unresolved_dependencies) ? item.unresolved_dependencies.filter(Boolean) : [];
+    const depLine = deps.length ? `<div class="muted">${deps.map((d) => esc(d)).join('; ')}</div>` : '';
+    return `<li>${esc(item?.target)} — ${esc(item?.status)}${depLine}</li>`;
+  }).join('');
+}
+
 const SUBJECT_LABEL = (id) => (state.boot?.subjects || []).find((s) => s.id === id)?.name || id;
 
 async function loadWeekByCode(code, { persist = true, source = 'bootstrap' } = {}) {
@@ -238,7 +246,7 @@ async function loadWeekByCode(code, { persist = true, source = 'bootstrap' } = {
     renderWeekGrid();
     $('metric-validation').textContent = `${state.week.validation.length} items`;
     $('validation-list').innerHTML = state.week.validation.map((v) => `<li class="${v.severity}">${v.severity.toUpperCase()}: ${esc(v.message)}</li>`).join('');
-    $('deployment-list').innerHTML = (state.week.deploymentPreview?.items || []).map((item) => `<li>${esc(item.target)} — ${esc(item.status)}</li>`).join('');
+    $('deployment-list').innerHTML = renderDeploymentPreview(state.week.deploymentPreview?.items);
     renderDrafts(state.week.drafts || []);
     await loadAgendaPreview();
     return week;
@@ -372,7 +380,7 @@ async function createSelectedWeek() {
   renderWeekGrid();
   $('metric-validation').textContent = `${state.week.validation.length} items`;
   $('validation-list').innerHTML = state.week.validation.map((v) => `<li class="${v.severity}">${v.severity.toUpperCase()}: ${esc(v.message)}</li>`).join('');
-  $('deployment-list').innerHTML = (state.week.deploymentPreview?.items || []).map((item) => `<li>${esc(item.target)} — ${esc(item.status)}</li>`).join('');
+  $('deployment-list').innerHTML = renderDeploymentPreview(state.week.deploymentPreview?.items);
   renderDrafts(state.week.drafts || []);
   await loadAgendaPreview();
 }
@@ -409,7 +417,7 @@ async function main() {
     renderDrafts(state.week.drafts || []);
     $('metric-validation').textContent = `${state.week.validation.length} items`;
     $('validation-list').innerHTML = state.week.validation.map((v) => `<li class="${v.severity}">${v.severity.toUpperCase()}: ${esc(v.message)}</li>`).join('');
-    $('deployment-list').innerHTML = (state.week.deploymentPreview?.items || []).map((item) => `<li>${esc(item.target)} — ${esc(item.status)}</li>`).join('');
+    $('deployment-list').innerHTML = renderDeploymentPreview(state.week.deploymentPreview?.items);
     await loadAgendaPreview();
   };
   $('manual-backup').onclick = async () => alert((await api('/api/backups', { method: 'POST', body: '{}' })).backupPath);

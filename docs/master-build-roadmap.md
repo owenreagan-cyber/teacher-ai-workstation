@@ -40,7 +40,7 @@ Cross-references:
 | Chief of Staff | **Strong foundation** | CLI, dashboard, memory, intake, proof runner — daily ops and unified next-action incomplete |
 | Phase 3 foundations | **Complete (v0)** | Lesson Planning, Curriculum Library, Renderer, Local Retrieval, Integration Planning |
 | Curriculum Builder | **v1 foundation complete** | Registry, 5 contracts, binding, validation — no renderers, real records, or generation |
-| Canvas LLM | **Active** | Phase 23 complete; Phase 24 complete; Phase 25 complete; Phase 26 unified weekly production workstation complete; Phase 27 readiness and safety diff in progress |
+| Canvas LLM | **Active** | Phase 23 complete; Phase 24 complete; Phase 25 complete; Phase 26 unified weekly production workstation complete; Phase 27 readiness and safety diff: 27A scaffold merged (PR #323), 27B recovery (canonical model, matching, dependency graph, SQLite ledger, transport boundary, health checks, rollback planning, UI panels) pending human review/merge |
 | Local LLM | **Active (D1 read-only)** | Program D1 status foundation; no installs/downloads/inference |
 | Mac workstation experience | **Scaffold/plan** | Wallpaper foundation stack; teacher modes planned; no live curator/widget |
 | Health Monitor / System Updater | **Active** | Read-only foundations complete (Programs H and I) |
@@ -128,8 +128,8 @@ Closure: `docs/teacher-workstation-foundation-v0.md`
 | **Phase 24 Predictive Teacher Brain** | Deterministic local week prediction with source hierarchy and correction memory | **Complete** |
 | **Phase 25 Curriculum Source Intelligence** | Approved source resolution and resource resolver | Complete |
 | **Phase 26 Unified Weekly Production Workstation** | Unified local weekly planning, prediction, resolution, approval, and export | Complete |
-| **Phase 27 Canvas Readiness and Safety Diff** | Read-only Canvas comparison, deployment ledger, transport readiness | Active write-prep lane |
-| **Phase 28 Controlled Canvas write pilot** | Narrow approved write pilot with full guardrails | Future controlled write lane |
+| **Phase 27 Canvas Readiness and Safety Diff** | Read-only Canvas comparison, deployment ledger, transport readiness | 27A scaffold merged (PR #323); 27B recovery implements the full architecture (matching, dependency graph, SQLite ledger, approval invalidation, health checks, rollback planning, UI panels) — pending human review/merge. Canvas assignment due-time convention remains owner-unresolved. |
+| **Phase 28 Controlled Canvas write pilot** | Narrow approved write pilot with full guardrails | Blocked until Phase 27B receives human approval and merge |
 | **Phase 29 Final polish** | Announcements, uploads, recovery, production readiness | Final hardening lane |
 | **Presentation Engine** | Classroom display planning structures from approved metadata labels | **Planning complete** — renderer-foundation docs/fixtures; runtime render/export blocked |
 | **Local LLM / Ollama Workstation** | Local model policy, inventory, health checks | **Active** — Program D1 read-only foundation |

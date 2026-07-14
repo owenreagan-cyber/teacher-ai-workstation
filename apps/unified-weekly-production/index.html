@@ -153,26 +153,100 @@
     <section class="panel-grid">
       <section class="panel card-panel wide">
         <div class="panel-head">
-          <h2>Phase 27 Safety Diff</h2>
-          <p>Read-only Canvas comparison, manifest preview, and blocked deployment planning.</p>
+          <h2>Phase 27 Canvas Readiness</h2>
+          <p>Read-only Canvas comparison and local approval tracking. There is no deploy, publish, upload, or mutation control in this phase &mdash; everything below is preview-only. Copy content into Canvas yourself.</p>
         </div>
         <div class="pill-row">
           <span class="pill muted" id="phase27-mode">Phase 27: unavailable</span>
           <span class="pill muted" id="phase27-snapshot-age">Snapshot: unknown</span>
-          <span class="pill muted" id="phase27-health">Health: unknown</span>
+          <span class="pill muted" id="phase27-system-validation">System validation: unknown</span>
+          <span class="pill muted" id="phase27-manifest-readiness">Demo manifest readiness: unknown</span>
         </div>
-        <div class="trace-grid">
-          <article class="card">
-            <h3>Safety Diff</h3>
-            <div id="phase27-diff" class="stack"></div>
-          </article>
-          <article class="card">
-            <h3>Deployment Manifest v1</h3>
-            <pre id="phase27-manifest" class="code-block"></pre>
-          </article>
+        <div class="week-row">
+          <button class="btn" id="phase27-refresh-btn" type="button">Refresh</button>
+          <button class="btn" id="phase27-export-btn" type="button">Export</button>
         </div>
+        <p id="phase27-status-note" class="status-note"></p>
       </section>
     </section>
+
+    <section class="panel-grid">
+      <section class="panel card-panel wide">
+        <div class="panel-head">
+          <h2>Safety Diff</h2>
+          <p>New / Changed / Unchanged / Blocked / Conflict / Omitted, computed from real matching, dependency, and policy logic &mdash; never a fixture-forced field. Each card shows copy-ready Canvas content.</p>
+        </div>
+        <div id="phase27-diff" class="stack"></div>
+      </section>
+    </section>
+
+    <details class="panel card-panel wide">
+      <summary>Expert Details (diagnostics, raw manifest, ledger, health checks)</summary>
+
+      <div class="panel-grid">
+        <section class="panel card-panel">
+          <div class="panel-head">
+            <h2>Canvas Snapshot</h2>
+            <p>Read-only snapshot of Canvas objects used for comparison. Synthetic/fixture-backed by default.</p>
+          </div>
+          <div id="phase27-snapshot" class="stack"></div>
+        </section>
+
+        <section class="panel card-panel">
+          <div class="panel-head">
+            <h2>Transport Readiness</h2>
+            <p>Every Phase 27 transport is read-only. Mutation rejection is verified by calling it, not printed.</p>
+          </div>
+          <div id="phase27-transport" class="stack"></div>
+        </section>
+      </div>
+
+      <div class="panel-grid">
+        <section class="panel card-panel">
+          <div class="panel-head">
+            <h2>Module Placement</h2>
+            <p>already-correct / needs-placement / needs-reorder / missing-module / ambiguous-module / blocked / omitted.</p>
+          </div>
+          <div id="phase27-placement" class="stack"></div>
+        </section>
+
+        <section class="panel card-panel">
+          <div class="panel-head">
+            <h2>Deployment Manifest v1</h2>
+            <p>Preview-only manifest. <code>mode</code> and <code>executable</code> are always <code>preview-only</code> / <code>false</code>. <code>systemValidationStatus</code> is software correctness; <code>overallReadiness</code> is this week's content readiness &mdash; they answer different questions.</p>
+          </div>
+          <pre id="phase27-manifest" class="code-block"></pre>
+        </section>
+      </div>
+
+      <div class="panel-grid">
+        <section class="panel card-panel">
+          <div class="panel-head">
+            <h2>Deployment Ledger</h2>
+            <p>SQLite-backed audit trail: schema version, integrity, and recent immutable events.</p>
+          </div>
+          <div id="phase27-ledger" class="stack"></div>
+        </section>
+
+        <section class="panel card-panel">
+          <div class="panel-head">
+            <h2>Health Checks</h2>
+            <p>Deterministic PASS / WARN / FAIL / BLOCKED / NOT_APPLICABLE checks. No AI judgment.</p>
+          </div>
+          <div id="phase27-health-checks" class="stack"></div>
+        </section>
+      </div>
+
+      <div class="panel-grid">
+        <section class="panel card-panel wide">
+          <div class="panel-head">
+            <h2>Rollback Plan</h2>
+            <p>Non-executable rollback instructions preserving prior state. Nothing here ever executes automatically.</p>
+          </div>
+          <div id="phase27-rollback" class="stack"></div>
+        </section>
+      </div>
+    </details>
   </main>
 
   <script src="workstation.js"></script>

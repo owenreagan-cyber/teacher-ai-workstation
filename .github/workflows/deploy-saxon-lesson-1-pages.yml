@@ -1,0 +1,40 @@
+name: Deploy Saxon Lesson 1 to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "docs/saxon-math-lesson-1/**"
+      - ".github/workflows/deploy-saxon-lesson-1-pages.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload presentation
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: docs/saxon-math-lesson-1
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

@@ -428,8 +428,8 @@ def validate_approval_safety() -> None:
     )
     require_contains(
         approval,
-        "Canvas assignment due-time convention remains unresolved.",
-        "unresolved due-time blocker is preserved",
+        "11:59 PM America/New_York",
+        "approved due-time contract is recorded",
     )
     require_contains(
         approval,

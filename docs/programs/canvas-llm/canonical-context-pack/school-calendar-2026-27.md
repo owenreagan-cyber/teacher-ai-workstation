@@ -121,11 +121,12 @@ The previous instructional day is the latest earlier date that:
 
 This rule is used for:
 
-- Study Guide placement;
 - assessment preparation;
 - reminder timing;
 - announcement timing;
 - rescheduled content.
+
+Historical note: Study Guide placement was removed from the active workflow.
 
 ## Next instructional day
 
@@ -148,20 +149,17 @@ Default behavior:
 - an explicit teacher override may request homework, but the override must be visible and validated;
 - a validator must not silently delete teacher-entered Friday content.
 
-## Weekly announcement scheduling
+## Assessment announcement scheduling
 
-Weekly agenda announcements are scheduled on the last valid instructional day before the upcoming instructional week.
+Assessment announcements are prepared for:
 
-Rules:
+```text
+Friday 4:00 PM America/New_York
+```
 
-- if Friday is instructional, use Friday;
-- if Friday is closed, use the previous instructional day;
-- a Monday holiday does not by itself move the announcement to Thursday;
-- multi-day closures resolve to the latest valid instructional day before the upcoming week;
-- fixed seven-day or calendar-offset logic is prohibited;
-- the preferred time remains configurable;
-- 4:00 PM Eastern remains legacy/default evidence until explicitly confirmed as current production policy;
-- unusual computed schedules must be previewed before scheduling.
+When Friday is not instructional, use the previous valid instructional day per calendar-disruption logic.
+
+Historical note: earlier drafts scheduled weekly agenda announcements on the last valid instructional day before the upcoming week. That pattern remains superseded evidence only.
 
 ## No-Monday-test rule
 
@@ -171,9 +169,10 @@ If any rule, disruption, or cascade would place a test on Monday:
 
 - move the test to Tuesday;
 - preserve the instructional sequence;
-- recalculate preparation and Study Guide timing;
 - regenerate reminders and announcements;
 - invalidate stale generated content and approvals.
+
+Historical note: earlier disruption logic recalculated Study Guide timing. That step is dormant evidence only.
 
 ## Inclement-weather statement
 
@@ -203,5 +202,4 @@ The context-pack validator must confirm:
 - current-week logic references the instructional calendar;
 - previous/next instructional-day logic skips holidays, breaks, weekends, and closures;
 - no-Monday-test rule is represented;
-- weekly announcement scheduling uses last instructional day;
-- no fixed-offset-only scheduling rule is treated as canonical.
+- assessment announcement scheduling uses Friday 4:00 PM America/New_York when Friday is instructional;

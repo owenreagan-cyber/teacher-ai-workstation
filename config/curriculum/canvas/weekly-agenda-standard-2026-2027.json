@@ -1,6 +1,6 @@
 {
-  "schemaVersion": 1,
-  "status": "owner-confirmed-from-canvas-export",
+  "schemaVersion": 2,
+  "status": "owner-approved-2026-2027-operating-contract",
   "schoolYear": "2026-2027",
   "canonicalHtmlSource": "docs/programs/canvas-llm/phase-22-predictive-weekly-planning-workstation/standards/canvas-weekly-agenda-html-standard-2026-2027.html",
   "calendarSource": "config/curriculum/canvas/instructional-weeks-2026-2027.json",
@@ -10,22 +10,24 @@
     "example": "Quarter 1, Week 1 | July 20-24, 2026"
   },
   "sections": {
-    "combinedRemindersAndResources": true,
-    "sectionTitle": "Reminders & Resources",
+    "remindersOnly": true,
+    "sectionTitle": "Reminders",
     "assessmentWindowDays": 10,
-    "ordering": [
-      "assessment-reminders",
-      "study-guide-links",
-      "lesson-resource-links"
-    ]
+    "allowedReminderContent": [
+      "assessment-name",
+      "assessment-date"
+    ],
+    "resourceSectionAllowed": false,
+    "linksAllowed": false
   },
   "assessmentReminderRules": {
     "includeTestsWithinNextCalendarDays": 10,
     "includeCheckoutsWithinNextCalendarDays": 10,
-    "studyGuideLinksNestedUnderRelatedAssessment": true,
-    "checkoutStudyGuideAllowed": false,
-    "fakeLinksAllowed": false,
-    "missingLinksShownInStudentHtml": false
+    "assessmentNamesAndDatesOnly": true,
+    "studyGuideReferencesAllowed": false,
+    "resourceReferencesAllowed": false,
+    "linksAllowed": false,
+    "attachmentsAllowed": false
   },
   "dailyLayout": {
     "days": [
@@ -37,13 +39,13 @@
     ],
     "layout": "two-column-flex",
     "leftColumn": "In Class",
-    "rightColumn": "At Home",
+    "rightColumn": "Homework",
     "columnWidth": "49%",
     "briefBulletsRequired": true,
     "paragraphLengthDescriptionsDiscouraged": true
   },
   "friday": {
-    "atHomeMayBeOmittedByDefault": true
+    "homeworkDefault": "No Homework"
   },
   "htmlTokens": {
     "wrapperId": "kl_wrapper_3",
@@ -68,14 +70,21 @@
     "white": "#ffffff"
   },
   "contentRules": {
-    "lessonTextStyle": "concise-bullets",
-    "homeworkTextStyle": "concise-bullets",
-    "verifiedLinksOnly": true,
+    "lessonTextStyle": "concise",
+    "homeworkTextStyle": "concise",
     "teacherOnlyResourcesBlocked": true,
-    "unresolvedValuesNeverGuessed": true
+    "subjectAgendaLinksAllowed": false,
+    "curriculumResourceLinksAllowed": false,
+    "studyGuidesAllowed": false,
+    "sameDayDueTime": "23:59",
+    "timezone": "America/New_York",
+    "inactiveQuarterSubjectPolicy": "untouched"
   },
   "legacySupersededRules": {
-    "separateRemindersAndResourcesSections": false,
-    "stackedInClassAndAtHomeSections": false
-  }
+    "combinedRemindersAndResourcesSection": true,
+    "studyGuideLinksInAgenda": true,
+    "lessonResourceLinksInAgenda": true,
+    "atHomeColumnLabel": true
+  },
+  "source": "docs/programs/canvas-llm/2026-2027-fpk-canvas-operating-contract.md"
 }

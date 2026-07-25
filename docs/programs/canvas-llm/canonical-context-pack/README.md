@@ -2,12 +2,20 @@
 
 This directory is the authoritative 2026–2027 context pack for the Teacher AI Workstation Canvas LLM builder.
 
-Purpose:
+## Primary authority
+
+```text
+docs/programs/canvas-llm/2026-2027-fpk-canvas-operating-contract.md
+```
+
+That operating contract is the highest explicit authority for current Canvas LLM rules.
+
+## Purpose
 
 - define the current owner-approved product rules;
 - index canonical curriculum maps and configuration;
 - define teacher input and Canvas output contracts;
-- record naming conventions, calendar logic, resource rules, announcement rules, newsletter rules, approval rules, and publishing sequence;
+- record naming conventions, calendar logic, announcement rules, newsletter rules, approval rules, and publishing sequence;
 - compare legacy applications against current canonical behavior;
 - preserve unresolved owner decisions explicitly;
 - provide one validated source bundle for Claude, Copilot, Cursor, or future coding agents.
@@ -22,17 +30,21 @@ It is not:
 - a student information system;
 - an autonomous ungated Canvas publisher.
 
-Canonical precedence:
+## Canonical precedence
 
-1. current owner-approved 2026–2027 rules;
-2. current canonical config under `config/curriculum/`;
-3. current validators and deterministic rule engines;
-4. current read-only Canvas metadata;
-5. validated historical behavior;
-6. legacy application evidence;
-7. fixtures and prototype behavior.
+1. `docs/programs/canvas-llm/2026-2027-fpk-canvas-operating-contract.md`
+2. current canonical config under `config/curriculum/`
+3. current validators and deterministic rule engines
+4. this context pack
+5. current read-only Canvas metadata
+6. validated historical behavior
+7. legacy application evidence
+8. fixtures and prototype behavior
 
 Legacy behavior must never silently override current rules.
+
+Generator alignment with this pack is scheduled for C0L and later phases. This pack does not claim current generators are already compliant.
+
 ## Validation status
 
 ```text
@@ -57,7 +69,7 @@ The validation gate confirms:
 - Reading and Spelling announcements combine only when both assessments occur in the same canonical instructional week;
 - Reading Test 14 has no Checkout 14;
 - Spelling Test 25 remains owner-source-required;
-- resource visibility and assessment-security rules remain enforced;
+- quarter-subject activation is indexed in the manifest;
 - Phase 27 comparison, approval, dependency, ledger, transport, and read-back safety remain authoritative;
 - export is not Canvas publication;
 - ignored legacy apps remain evidence only.
@@ -70,8 +82,8 @@ It does not itself:
 
 - modify Phase 22–27 runtime behavior;
 - authorize Canvas writes;
-- resolve outstanding owner decisions;
+- resolve outstanding owner decisions except where the operating contract already resolved them;
 - promote synthetic fixture data into production;
 - promote ignored legacy applications into the tracked implementation.
 
-The next implementation gate is a no-write convergence audit followed by one real-SQLite Math vertical slice.
+The next implementation gate is generator alignment in C0L followed by a no-write convergence audit and one real-SQLite Math vertical slice.

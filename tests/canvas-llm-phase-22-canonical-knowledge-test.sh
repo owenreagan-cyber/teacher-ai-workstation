@@ -17,6 +17,8 @@ paths = [
     "config/curriculum/reading/reading-mastery-4/comprehension-location-map.json",
     "config/curriculum/spelling/cumulative-test-word-lists.json",
     "config/curriculum/canvas/agenda-page-rules.json",
+    "config/curriculum/canvas/quarter-subject-activation-2026-2027.json",
+    "config/curriculum/canvas/weekly-agenda-standard-2026-2027.json",
 ]
 
 for relative in paths:

@@ -120,7 +120,7 @@ A missing instructional activity is represented by an empty or explicit no-class
 | `entry_type` | Entry Type | enum | yes | `lesson` | yes | currently derivable; should become explicit |
 | `sequence_number` | Lesson / Test Number | string or integer | conditional | null | yes | pacing/prediction models |
 | `in_class` | In Class | text | no | empty | yes | `daily_subject_entries.in_class` |
-| `at_home` | At Home / Homework | text | no | empty | yes | `daily_subject_entries.at_home` |
+| `at_home` | Homework | text | no | empty | yes | `daily_subject_entries.at_home` |
 | `materials` | Materials | text or structured list | no | empty | yes | `daily_subject_entries.materials` |
 | `reminders` | Reminders | text or structured list | no | empty | yes | `daily_subject_entries.reminders` |
 | `tests` | Assessment Number / Test | string | no | empty | yes | `daily_subject_entries.tests` |
@@ -146,11 +146,9 @@ lesson
 review
 written_test
 fact_test
-study_guide
-investigation
 classroom_practice
 reading_test
-reading_checkout
+reading_fluency_checkout
 spelling_test
 project
 assessment
@@ -160,15 +158,17 @@ no_class
 custom
 ```
 
+Historical entry types such as `study_guide` and `investigation` remain dormant evidence only.
+
 Subject validators must restrict invalid combinations.
 
 Examples:
 
 - `classroom_practice` is normally Language Arts.
 - `fact_test` is Math.
-- `reading_checkout` is Reading and only valid for Checkouts 1–13.
+- `reading_fluency_checkout` is Reading and only valid for Checkouts 1–13.
 - `spelling_test` is Spelling.
-- History and Science assignment creation remains disabled unless separately approved.
+- History and Science assignment creation follows quarter activation in `quarter-subject-activation-2026-2027.json`.
 
 ## Teacher shorthand normalization
 
@@ -213,7 +213,7 @@ blocked
 Rules:
 
 - Math, Reading, Spelling, and Language Arts may derive assignment intent from entry type.
-- History and Science default to `do_not_create`.
+- History and Science default to `do_not_create` when inactive for the current quarter.
 - Missing required metadata yields `review_required` or `blocked`.
 - An explicit teacher choice is recorded separately from a derived default.
 
@@ -268,7 +268,7 @@ For a snow day:
 
 ```text
 In Class: Snow Day
-At Home: none
+Homework: No Homework
 ```
 
 The calendar-disruption contract governs lesson cascading and regeneration.

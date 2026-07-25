@@ -31,6 +31,7 @@ python3 "$M" --db "$T/runtime.sqlite3" runtime-proof --port 18766
 python3 "$M" --db "$T/browser.sqlite3" browser-proof --port 18767
 python3 - <<'PY' "$T/w.sqlite3"
 import sys
+import json
 from datetime import date
 from pathlib import Path
 sys.path.insert(0, str(Path('.').resolve()))
@@ -94,6 +95,7 @@ assert deploy_payload['operations'] == [
     'generate local assignment previews',
     'render academic agenda previews',
     'generate minimal assessment reminder previews',
+    'generate assessment announcement previews',
     'await teacher approval',
 ]
 assert all(item['status'] == 'blocked_preview' for item in deploy['items'])
@@ -193,6 +195,55 @@ assert any(f['code']=='spelling-test.window' and f['severity']=='pass' for f in 
 
 due=p.same_day_due_fields('2026-08-17')
 assert due['dueTime']=='11:59 PM' and due['points']==100 and due['gradeDisplay']=='Percentage'
+
+announce_rows=rows(
+    {'subject':'math','weekday':'Tuesday','lesson':'','tests':'4','entry_date':'2026-08-18','coverage':'Lessons 16-18 place value.'},
+    {'subject':'reading','weekday':'Wednesday','lesson':'','tests':'8','entry_date':'2026-08-19'},
+    {'subject':'reading','weekday':'Thursday','lesson':'','tests':'14','entry_date':'2026-08-20'},
+    {'subject':'spelling','weekday':'Friday','lesson':'','tests':'6','entry_date':'2026-08-21'},
+    {'subject':'language-arts','weekday':'Friday','lesson':'','tests':'1','entry_date':'2026-08-21','title':'ELA4: Assessment 1'},
+    {'subject':'history','weekday':'Friday','lesson':'','tests':'1','entry_date':'2026-08-21','title':'HIST4: Assessment 1','coverage':'Map skills review.'},
+    {'subject':'science','weekday':'Friday','lesson':'','tests':'1','entry_date':'2026-08-21','title':'SCI4: Assessment 1'},
+)
+drafts=p.build_week_announcement_drafts(announce_rows, week_meta)
+assert drafts
+assert all(item['teacherApprovalRequired'] for item in drafts)
+assert all(item['previewOnly'] for item in drafts)
+assert all(item['schedule_metadata']['scheduleIntent']=='Friday 4:00 PM America/New_York' for item in drafts)
+assert all(item['schedule_metadata']['announcementDate']=='2026-08-14' for item in drafts)
+assert all(item['schedule_metadata']['scheduledDay']=='Friday' for item in drafts)
+assert all(item['schedule_metadata']['scheduledTime']=='4:00 PM' for item in drafts)
+assert all(item['schedule_metadata']['timezone']=='America/New_York' for item in drafts)
+assert all(item['schedule_metadata']['targetWeekStartsOn']=='2026-08-17' for item in drafts)
+assert all(item['schedule_metadata']['announcementDate'] < item['assessment_date'] for item in drafts)
+assert p.announcement_date_for_target_week('2026-08-17')=='2026-08-14'
+assert p.compact(None or '')==''
+assert not bool(p.compact(None or ''))
+schedule, warnings = p.build_announcement_schedule_metadata({'code':'Q1W5','startsOn':'2026-08-17','closedAnnouncementDates':['2026-08-14']}, {})
+assert schedule['announcementDate']=='2026-08-14' and schedule['teacherOverrideApplied'] is False
+assert any('calendar disruption' in w.lower() for w in warnings)
+override_schedule, _ = p.build_announcement_schedule_metadata({'code':'Q1W5','startsOn':'2026-08-17'}, {'announcementDate':'2026-08-07'})
+assert override_schedule['announcementDate']=='2026-08-07' and override_schedule['teacherOverrideApplied'] is True
+assert all(item['approval_state']=='Draft' for item in drafts)
+math_written=[d for d in drafts if d['assessment_type']=='written_assessment']
+math_fact=[d for d in drafts if d['assessment_type']=='fact_assessment']
+assert len(math_written)==1 and math_written[0]['title']=='SM5: Written Assessment 4'
+assert len(math_fact)==1 and math_fact[0]['title']=='SM5: Fact Assessment 4'
+assert math_written[0]['coverage_status']=='provided'
+reading_mastery=[d for d in drafts if d['assessment_type']=='mastery_test' and d['assessment_number']==8]
+reading_fluency=[d for d in drafts if d['assessment_type']=='fluency_checkout']
+spelling=[d for d in drafts if d['assessment_type']=='spelling_test']
+assert reading_mastery and reading_mastery[0]['coverage_status']=='missing'
+assert any('approximately 115 words' in d['body_text'] for d in reading_fluency if d['assessment_number']==8)
+assert all('no more than two errors' in d['body_text'].lower() for d in reading_fluency)
+assert not any(d['assessment_number']==14 for d in reading_fluency)
+assert spelling and 'practice lessons 2 through 5' in spelling[0]['body_text'].lower()
+assert not any(d['subject']=='science' for d in drafts)
+assert {d['announcement_id'] for d in p.build_week_announcement_drafts(announce_rows, week_meta)}=={d['announcement_id'] for d in drafts}
+blob=json.dumps(drafts)
+assert 'Study Guide' not in blob and 'Focus Words' not in blob and 'sourceCheckoutKey' not in blob
+assert 'http://' not in blob and 'https://' not in blob
+print('PASS C0N announcement generation')
 print('PASS C0M graded-item selection')
 print('PASS python behavior')
 PY

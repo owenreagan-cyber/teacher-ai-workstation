@@ -24,7 +24,7 @@ for f in \
   ck "$f" "$f"
 done
 PYTHONPYCACHEPREFIX="${TMPDIR:-/tmp}/teacher-ai-workstation-pycache" python3 -m py_compile "$M" >/tmp/p22py.txt 2>&1 && pass "Python syntax passes" || { cat /tmp/p22py.txt; fail "Python syntax fails"; }
-for n in load_instructional_weeks select_startup_week canonical_week_code get_week_by_code resolve_reading_test resolve_checkout reading_assessment_family render_agenda_html patch_response runtime-proof browser-proof /api/pacing/ /api/calendar/instructional-weeks agenda-preview artifactClassification containsStudentData phase22_validate_artifact_payload selected_graded_assignment_specs build_week_graded_selection_context; do
+for n in load_instructional_weeks select_startup_week canonical_week_code get_week_by_code resolve_reading_test resolve_checkout reading_assessment_family render_agenda_html patch_response runtime-proof browser-proof /api/pacing/ /api/calendar/instructional-weeks agenda-preview artifactClassification containsStudentData phase22_validate_artifact_payload selected_graded_assignment_specs build_week_graded_selection_context build_week_announcement_drafts announcement_date_for_target_week; do
   has "$M" "$n" "module includes $n"
 done
 for n in week-code week-subtitle week-chip field-save Conflict Error "Keep Mine" "Use Server Value" data-field preview-tab loadWeekByCode weekCodeToStartsOn; do

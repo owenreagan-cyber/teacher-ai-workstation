@@ -52,6 +52,7 @@
       "entryType": "test",
       "test": "18",
       "title": "SM5: Test 18",
+      "coverage": "Lessons 16-18 place value and regrouping.",
       "inClass": "Math test, fact test, and study guide review.",
       "atHome": "",
       "resourceHints": [
@@ -100,6 +101,7 @@
       "entryType": "test",
       "test": "13",
       "title": "RM4: Reading Test 13",
+      "coverage": "Lessons 121-130 vocabulary and story details.",
       "inClass": "Reading Test 13 with Checkout 13 practice.",
       "atHome": "",
       "resourceHints": [
@@ -169,28 +171,25 @@
     {
       "date": "2026-08-21",
       "weekday": "Friday",
-      "subject": "science",
-      "entryType": "review",
-      "lesson": "4",
-      "title": "Science Review",
-      "inClass": "Review observations and vocabulary.",
+      "subject": "history",
+      "entryType": "test",
+      "test": "1",
+      "title": "HIST4: Assessment 1",
+      "coverage": "Map skills and ancient Rome unit review.",
+      "inClass": "History assessment.",
       "atHome": "",
-      "resourceHints": [
-        "science-lesson-4-safety"
-      ]
+      "resourceHints": []
     },
     {
       "date": "2026-08-21",
       "weekday": "Friday",
-      "subject": "history",
-      "entryType": "review",
-      "lesson": "5",
-      "title": "History Review",
-      "inClass": "Review map skills and main ideas.",
+      "subject": "language-arts",
+      "entryType": "test",
+      "test": "1",
+      "title": "ELA4: Assessment 1",
+      "inClass": "Language Arts assessment.",
       "atHome": "",
-      "resourceHints": [
-        "history-lesson-5-map"
-      ]
+      "resourceHints": []
     }
   ],
   "resourceCatalog": [

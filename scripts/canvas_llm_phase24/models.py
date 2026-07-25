@@ -132,6 +132,7 @@ class WeekPrediction:
     warnings: list[str]
     review_state: str
     provenance: list[dict[str, Any]]
+    announcement_drafts: list[dict[str, Any]] = field(default_factory=list)
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -145,4 +146,5 @@ class WeekPrediction:
             "warnings": list(self.warnings),
             "reviewState": self.review_state,
             "provenance": list(self.provenance),
+            "announcementDrafts": list(self.announcement_drafts),
         }

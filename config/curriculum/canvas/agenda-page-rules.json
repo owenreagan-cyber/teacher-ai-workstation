@@ -1,21 +1,20 @@
 {
-  "schemaVersion": 1,
-  "status": "owner-approved-with-explicit-unresolved-fields",
-  "approvedAt": "2026-07-10",
-  "source": "canvas-maps-owner-source-2026-07-10.pdf",
+  "schemaVersion": 2,
+  "status": "owner-approved-2026-2027-operating-contract",
+  "approvedAt": "2026-07-25",
+  "source": "docs/programs/canvas-llm/2026-2027-fpk-canvas-operating-contract.md",
   "effectiveSchoolYear": "2026-2027",
   "timezone": "America/New_York",
   "versioningRequired": true,
   "structure": [
-    "header-banner",
-    "week-subtitle",
+    "week-heading",
+    "date-range",
     "reminders",
-    "resources",
     "daily-blocks"
   ],
   "dailySections": [
     "in-class",
-    "at-home"
+    "homework"
   ],
   "visualTokens": {
     "primaryBlue": "#0065a7",
@@ -33,24 +32,19 @@
     "stripVendorNamesFromPublicTitles": true,
     "stripLearningObjectives": true,
     "stripEssentialQuestions": true,
-    "resourcesMustUseStructuredReferences": true,
     "fakeLinksForbidden": true,
-    "atHomeUsesAssignmentUrlWhenAvailable": true,
     "readingAndSpellingShareAgenda": true,
     "fridayInstructionAllowed": true,
-    "fridayHomeworkDefault": "none",
-    "fridayAtHomeSectionDefault": "omit",
+    "fridayHomeworkDefault": "No Homework",
     "fridayTestExceptionAllowed": true,
-    "historyScienceAssignmentsDisabled": true
+    "resourceSectionAllowed": false,
+    "subjectAgendaLinksAllowed": false,
+    "curriculumResourceLinksAllowed": false,
+    "homeworkLabel": "Homework",
+    "inactiveQuarterSubjectPolicy": "untouched",
+    "quarterSubjectActivationConfig": "config/curriculum/canvas/quarter-subject-activation-2026-2027.json"
   },
   "unresolvedPolicies": {
-    "canvasAssignmentDueTime": {
-      "status": "owner-confirmation-required",
-      "conflictingEvidence": [
-        "12:00 AM",
-        "11:59 PM"
-      ]
-    },
     "automaticFrontPagePublication": {
       "status": "future-deployment-gate"
     }
@@ -61,6 +55,22 @@
       "checkoutNumber": 14,
       "checkoutExists": false,
       "note": "Reading Test 14 does not have a Checkout. Valid Checkouts are 1-13 only."
+    },
+    "canvasAssignmentDueTime": {
+      "status": "owner-confirmed",
+      "dueDatePolicy": "same-calendar-day",
+      "localTime": "23:59",
+      "displayTime": "11:59 PM",
+      "timezone": "America/New_York"
+    },
+    "historyScienceQuarterActivation": {
+      "status": "owner-confirmed",
+      "config": "config/curriculum/canvas/quarter-subject-activation-2026-2027.json",
+      "inactivePolicy": "untouched"
+    },
+    "homeroomNewsletterCadence": {
+      "status": "owner-confirmed",
+      "cadence": "monthly"
     }
   }
 }

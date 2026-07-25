@@ -632,36 +632,30 @@ Current Phase 27 health checks include:
 snapshot schema
 snapshot freshness
 archived-course blocking
-resource state
-unresolved due time
+due-time policy
 dependency cycles
 missing dependencies
-History assignment omission
-Science assignment omission
+inactive quarter-subject blocking
 ledger integrity
 ```
 
-## Due-time blocker
+## Due-time contract
 
-Canvas assignment due-time convention remains unresolved.
-
-Affected assignments must remain:
+All assignments are due on the same calendar day as the assignment at:
 
 ```text
-BLOCKED
+11:59 PM America/New_York
 ```
 
-until an owner-approved due-time contract is recorded.
+Examples:
 
-The system must not guess:
+- Monday Math homework → Monday at 11:59 PM America/New_York
+- Tuesday Reading homework → Tuesday at 11:59 PM America/New_York
+- Friday Spelling test → Friday at 11:59 PM America/New_York
 
-```text
-12:00 AM
-end of day
-class start
-class end
-11:59 PM
-```
+Historical note: earlier drafts treated due time as unresolved and listed alternatives such as `12:00 AM`. That evidence is superseded and non-authoritative.
+
+Assignments must remain `BLOCKED` when due-time metadata cannot be rendered deterministically from the approved contract.
 
 ## Archived targets
 
@@ -675,16 +669,23 @@ Archived mappings remain read-only evidence.
 
 ## History and Science assignments
 
-Current canonical policy:
+Quarter activation is machine-readable in:
 
 ```text
-History assignment → OMIT
-Science assignment → OMIT
+config/curriculum/canvas/quarter-subject-activation-2026-2027.json
 ```
 
-Agenda-page generation remains allowed.
+During an inactive quarter, History or Science assignment operations must be:
 
-The safety diff must not turn these into CREATE operations.
+```text
+OMIT
+```
+
+During an active quarter, approved History or Science assignments may compare as `CREATE` or `UPDATE` subject to teacher review.
+
+The inactive subject page must remain untouched. The safety diff must not modify inactive-quarter Canvas pages automatically.
+
+Agenda-page generation for the active quarter subject remains allowed.
 
 ## Rollback planning
 

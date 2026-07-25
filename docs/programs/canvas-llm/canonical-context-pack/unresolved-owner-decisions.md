@@ -1,21 +1,12 @@
 # Unresolved Owner Decisions
 
-## Spelling student-facing prefix
-
-Current conflict:
+Highest authority for resolved 2026–2027 rules:
 
 ```text
-Validated routing prefix: SPELL
-Owner-approved assignment example: RM4: Spelling Test 1
+docs/programs/canvas-llm/2026-2027-fpk-canvas-operating-contract.md
 ```
 
-Decision required:
-
-- Should routing keep `SPELL` while student-facing titles use `RM4`?
-- Or should the canonical Spelling prefix change to `RM4` everywhere?
-- Or should the schema explicitly separate routing prefix from title prefix?
-
-No configuration or validator change is authorized until this is resolved.
+The following items remain genuinely unresolved.
 
 ## Spelling Test 25
 
@@ -30,14 +21,37 @@ Decision/evidence required:
 
 Do not generate or validate Test 25 until the exact source is approved.
 
-## Reading and Spelling announcement combination rule — resolved
+## Live Canvas assignment-group IDs
 
-Owner-approved behavior:
+Numeric assignment-group IDs must be resolved from teacher-initiated read-only Canvas metadata.
 
-- standalone Spelling announcements are allowed;
-- standalone Reading announcements are allowed;
-- combine Reading and Spelling assessment communication only when their
-  assessments occur within the same instructional week;
-- sharing course `26442` or the `reading-spelling` agenda does not automatically
-  require combined announcements;
-- combined communication preserves separate assessment families.
+The system must not:
+
+- hardcode production IDs in repo config;
+- guess IDs from archived years;
+- treat logical group names as sufficient without live verification.
+
+## Live Canvas module IDs
+
+Numeric module IDs and module item IDs require the same live-read boundary.
+
+Logical module names may be committed; numeric IDs must be verified before publication.
+
+## Homeroom newsletter title pattern
+
+The monthly Homeroom newsletter is confirmed.
+
+The exact page title pattern for 2026–2027 remains to be finalized against historical comparison.
+
+Candidate historical patterns remain non-authoritative until owner-approved.
+
+## Live Canvas metadata dependencies
+
+Before any future approved write, the system should verify:
+
+- course exists and matches expected subject/year;
+- current assignment-group membership;
+- current module placement;
+- current page and assignment URLs when referenced.
+
+A mismatch blocks publication.

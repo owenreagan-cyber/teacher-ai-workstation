@@ -3,205 +3,70 @@
 ## Status
 
 ```text
-APPROVED_WITH_OWNER_DECISIONS_REQUIRED
+APPROVED_WITH_OPEN_FIELDS
 ```
 
-## Curriculum
+Highest authority:
 
-The current tracked canonical source is:
+```text
+docs/programs/canvas-llm/2026-2027-fpk-canvas-operating-contract.md
+```
+
+## Canonical source
 
 ```text
 config/curriculum/spelling/cumulative-test-word-lists.json
 ```
 
-## Current verified coverage
-
-The tracked JSON contains exactly:
+## Supported tests
 
 ```text
 Spelling Tests 1–24
 ```
 
-Each test contains:
+Spelling Test 25 remains owner-source-required.
 
-```text
-25 cumulative words
-5 focus words
-```
-
-The current focus-word rule selects cumulative positions:
-
-```text
-21–25
-```
-
-Validated example:
-
-```text
-Spelling Test 24 focus words:
-Refreshing
-Light
-Should
-Planned
-Undefeated
-```
-
-## Current verified word evidence
-
-The active canonical file contains:
-
-```text
-Test 6: Delighted
-Test 15: Defeated
-```
-
-These values must not be replaced, standardized, or corrected without an exact owner-approved source comparison.
-
-The repository contains no tracked evidence for automatic replacement with similarly spelled alternatives.
-
-## Test 25 conflict
-
-The current JSON and validator support Tests 1–24.
-
-Recovered owner context indicates a possible Test 25, but no exact tracked Test 25 word list currently exists.
-
-Therefore:
-
-```text
-Test 25 status: OWNER_SOURCE_REQUIRED
-```
-
-Until the exact owner-approved list is supplied and reviewed:
-
-- do not invent Test 25;
-- do not copy Test 24;
-- do not infer words from patterns;
-- do not expand the validator to 25;
-- do not generate a Test 25 assignment;
-- do not report Tests 1–25 as canonical.
-
-## Prefix conflict
-
-Current course configuration and validator use:
-
-```text
-SPELL
-```
-
-Current owner-approved assignment-title example uses:
-
-```text
-RM4: Spelling Test 1
-```
-
-These may represent separate concepts:
-
-```text
-routing/internal prefix
-student-facing assignment title prefix
-```
-
-But that distinction is not yet encoded in the current schema.
-
-Status:
-
-```text
-OWNER_DECISION_REQUIRED
-```
-
-Until resolved:
-
-- preserve `SPELL` in current routing configuration;
-- preserve `RM4: Spelling Test 1` as the owner-approved title example;
-- do not alter the mapping JSON;
-- do not alter the validator;
-- do not silently choose one value for both purposes.
-
-## Course sharing
-
-Spelling currently shares the Reading Canvas course:
-
-```text
-Canvas course ID: 26442
-```
-
-Spelling remains a separate instructional subject.
-
-It may share an agenda surface with Reading under Together Logic.
-
-## Assignment title
-
-Owner-approved current example:
-
-```text
-RM4: Spelling Test 1
-```
-
-Provisional title pattern:
+## Assignment title pattern
 
 ```text
 RM4: Spelling Test {testNumber}
 ```
 
-This remains authoritative for the context-pack acceptance example, while the routing-prefix conflict remains open.
-
-## Announcement behavior
-
-A Spelling assessment notice may include:
+Example:
 
 ```text
-test number
-assessment date
-25-word cumulative list
-five focus words
-approved study guidance
+RM4: Spelling Test 1
 ```
 
-It must not include:
+Historical note: a legacy `SPELL` routing prefix remains dormant evidence only. The approved 2026–2027 assignment prefix is `RM4:`.
 
-- invented Test 25 content;
-- altered spellings;
-- unapproved answer material;
-- fake links;
-- teacher-only resources.
+## Course routing
 
-## Resource requirements
-
-Potential resources include:
+Spelling currently shares the Reading Canvas course:
 
 ```text
-approved cumulative word list
-student-safe practice material
-teacher-approved review material
-assessment reminder content
+Canvas course ID: 26442
+Title prefix: RM4:
 ```
 
-Secure answer content must never appear in student-facing artifacts.
+Spelling remains a separate instructional subject.
 
-## Required reconciliation process
+## Assessment schedule
 
-To add Test 25:
+Spelling tests occur Friday by default.
 
-1. obtain the exact owner-provided Test 25 source;
-2. preserve it as evidence without modifying the canonical file;
-3. create a word-by-word comparison;
-4. review capitalization, punctuation, apostrophes, and duplicates;
-5. review focus-word positions;
-6. record owner approval;
-7. update JSON;
-8. update validator;
-9. update this contract;
-10. rerun full validation.
+The teacher may override a Spelling test to Tuesday, Wednesday, or Thursday.
+
+## Announcement practice language
+
+Spelling tests occur every fifth lesson.
+
+For a test on lesson `N`, the practice range is `N - 4` through `N - 1`.
+
+Do not list exact Spelling words in announcements or agenda reminders.
 
 ## Validation requirements
 
-Current validator expectations:
+The validator must confirm Tests 1–24 coverage, `RM4:` title prefix, and Spelling Test 25 gating.
 
-- Tests 1–24 exist exactly;
-- every test has 25 words;
-- every test has five focus words;
-- Test 24 focus words are positions 21–25;
-- `Delighted` and `Defeated` remain unchanged unless approved;
-- no Test 25 is treated as canonical;
-- prefix conflict remains visible;
-- fake links are prohibited.
+Generator alignment is scheduled for C0L and later phases.

@@ -3,6 +3,7 @@
   "schoolYear": "2026-2027",
   "productMode": "single-user-local-first",
   "status": "validated",
+  "primaryAuthority": "docs/programs/canvas-llm/2026-2027-fpk-canvas-operating-contract.md",
   "canonicalSources": [
     {
       "domain": "canvas-course-routing",
@@ -11,6 +12,10 @@
     {
       "domain": "agenda-page-rules",
       "path": "config/curriculum/canvas/agenda-page-rules.json"
+    },
+    {
+      "domain": "quarter-subject-activation",
+      "path": "config/curriculum/canvas/quarter-subject-activation-2026-2027.json"
     },
     {
       "domain": "instructional-weeks",

@@ -33,6 +33,12 @@ spelling = load_json(
     "config/curriculum/spelling/cumulative-test-word-lists.json"
 )
 agenda = load_json("config/curriculum/canvas/agenda-page-rules.json")
+quarter_activation = load_json(
+    "config/curriculum/canvas/quarter-subject-activation-2026-2027.json"
+)
+weekly_agenda = load_json(
+    "config/curriculum/canvas/weekly-agenda-standard-2026-2027.json"
+)
 checkout_map = load_json(
     "config/curriculum/reading/reading-mastery-4/checkout-passage-map.json"
 )
@@ -52,8 +58,9 @@ archived_by_year = {
 checks.extend(
     [
         (
-            courses["status"] == "owner-approved",
-            "course mappings are owner-approved",
+            courses["status"]
+            == "owner-approved-2026-2027-operating-contract",
+            "course mappings are owner-approved for the 2026-2027 contract",
         ),
         (
             current["math"]["courseId"] == 26404,
@@ -76,8 +83,12 @@ checks.extend(
             "2026-2027 Spelling shares Reading course 26442",
         ),
         (
-            current["spelling"]["canonicalPrefix"] == "SPELL",
-            "2026-2027 Spelling prefix is SPELL",
+            current["spelling"]["canonicalPrefix"] == "RM4",
+            "2026-2027 Spelling prefix is RM4",
+        ),
+        (
+            current["spelling"]["gradingCourseSubject"] == "reading",
+            "2026-2027 Spelling grades route through Reading",
         ),
         (
             current["language-arts"]["courseId"] == 26495,
@@ -88,16 +99,48 @@ checks.extend(
             "2026-2027 Language Arts prefix is ELA4",
         ),
         (
-            current["history"]["assignmentPolicy"] == "disabled",
-            "History assignment generation is disabled",
+            current["history"]["canonicalPrefix"] == "HIST4",
+            "2026-2027 History prefix is HIST4",
         ),
         (
-            current["science"]["assignmentPolicy"] == "disabled",
-            "Science assignment generation is disabled",
+            current["history"]["assignmentPolicy"] == "quarter-gated",
+            "History assignment generation is quarter-gated",
+        ),
+        (
+            current["history"]["activeQuarters"] == [1, 3],
+            "History is active in Q1 and Q3",
+        ),
+        (
+            current["history"]["inactivePolicy"] == "untouched",
+            "Inactive History policy is untouched",
+        ),
+        (
+            current["science"]["canonicalPrefix"] == "SCI4",
+            "2026-2027 Science prefix is SCI4",
+        ),
+        (
+            current["science"]["assignmentPolicy"] == "quarter-gated",
+            "Science assignment generation is quarter-gated",
+        ),
+        (
+            current["science"]["activeQuarters"] == [2, 4],
+            "Science is active in Q2 and Q4",
+        ),
+        (
+            current["science"]["inactivePolicy"] == "untouched",
+            "Inactive Science policy is untouched",
         ),
         (
             current["homeroom"]["courseId"] == 26427,
             "2026-2027 Homeroom resolves to course 26427",
+        ),
+        (
+            current["homeroom"]["newsletterCadence"] == "monthly",
+            "Homeroom newsletter cadence is monthly",
+        ),
+        (
+            current["homeroom"]["schoolAndEventLinksAllowed"] is True,
+            "Homeroom school and event links are allowed",
         ),
         (
             courses["demoSandbox"]["courses"][0]["courseId"] == 24399,
@@ -237,8 +280,8 @@ checks.extend(
             "Friday instruction remains allowed",
         ),
         (
-            agenda["rules"]["fridayHomeworkDefault"] == "none",
-            "Friday homework defaults to none",
+            agenda["rules"]["fridayHomeworkDefault"] == "No Homework",
+            "Friday homework defaults to No Homework",
         ),
         (
             agenda["rules"]["readingAndSpellingShareAgenda"] is True,
@@ -273,9 +316,69 @@ checks.extend(
             "Reading Test 14 announcement omits Checkout 14",
         ),
         (
-            agenda["unresolvedPolicies"]["canvasAssignmentDueTime"]["status"]
-            == "owner-confirmation-required",
-            "Canvas assignment due-time convention remains unresolved",
+            courses["rules"]["sameDayDueTime"] == "23:59",
+            "Canvas assignments use same-day 11:59 PM due time",
+        ),
+        (
+            agenda["confirmedPolicies"]["canvasAssignmentDueTime"]["localTime"]
+            == "23:59",
+            "Agenda policy confirms 11:59 PM due time",
+        ),
+        (
+            agenda["rules"]["resourceSectionAllowed"] is False,
+            "Subject agenda resource sections are forbidden",
+        ),
+        (
+            agenda["rules"]["subjectAgendaLinksAllowed"] is False,
+            "Subject agenda links are forbidden",
+        ),
+        (
+            agenda["rules"]["homeworkLabel"] == "Homework",
+            "Subject agenda uses Homework label",
+        ),
+        (
+            weekly_agenda["sections"]["remindersOnly"] is True,
+            "Weekly agenda uses reminders-only section",
+        ),
+        (
+            weekly_agenda["sections"]["resourceSectionAllowed"] is False,
+            "Weekly agenda standard forbids resource sections",
+        ),
+        (
+            weekly_agenda["dailyLayout"]["rightColumn"] == "Homework",
+            "Weekly agenda right column is Homework",
+        ),
+        (
+            weekly_agenda["contentRules"]["studyGuidesAllowed"] is False,
+            "Weekly agenda standard forbids study guides",
+        ),
+        (
+            quarter_activation["quarters"]["Q1"]["activeSubject"] == "history"
+            and quarter_activation["quarters"]["Q1"]["inactiveSubject"]
+            == "science",
+            "Q1 activates History and leaves Science untouched",
+        ),
+        (
+            quarter_activation["quarters"]["Q2"]["activeSubject"] == "science"
+            and quarter_activation["quarters"]["Q2"]["inactiveSubject"]
+            == "history",
+            "Q2 activates Science and leaves History untouched",
+        ),
+        (
+            quarter_activation["quarters"]["Q3"]["activeSubject"] == "history"
+            and quarter_activation["quarters"]["Q3"]["inactiveSubject"]
+            == "science",
+            "Q3 activates History and leaves Science untouched",
+        ),
+        (
+            quarter_activation["quarters"]["Q4"]["activeSubject"] == "science"
+            and quarter_activation["quarters"]["Q4"]["inactiveSubject"]
+            == "history",
+            "Q4 activates Science and leaves History untouched",
+        ),
+        (
+            quarter_activation["rules"]["inactiveSubjectPolicy"] == "untouched",
+            "Inactive quarter subject must remain untouched",
         ),
     ]
 )

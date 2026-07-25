@@ -1,10 +1,26 @@
 # Resource Resolution Contract
 
+## Status
+
+```text
+DORMANT — historical evidence only
+```
+
+Highest authority for the active workflow:
+
+```text
+docs/programs/canvas-llm/2026-2027-fpk-canvas-operating-contract.md
+```
+
+Canvas resource grabber, resource indexing, file downloads, resource linking, embeddings, semantic search, duplicate detection, and attachment automation are de-scoped from the active Canvas LLM workflow.
+
+Phase 25 code may remain in the repository as dormant/superseded evidence. It is not a current required dependency for agenda pages, assignments, announcements, or publication.
+
 ## Purpose
 
-This contract defines how curriculum resources are identified, matched, reviewed, linked, blocked, and audited.
+This contract preserves historical resource-resolution rules for comparison and future cleanup decisions.
 
-Resource resolution must remain:
+Resource resolution must remain, when invoked in historical contexts:
 
 ```text
 deterministic
@@ -533,9 +549,13 @@ Student Book lesson
 Power Up practice
 homework worksheet
 Fact Test practice
+Historical resource examples (dormant):
+
+```text
 Study Guide blank
 Study Guide completed
 written test
+```
 teacher answer key
 secure assessment
 ```

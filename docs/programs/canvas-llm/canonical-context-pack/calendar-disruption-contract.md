@@ -61,7 +61,7 @@ For a full unexpected closure:
 
 ```text
 In Class: Snow Day
-At Home: none
+Homework: No Homework
 ```
 
 No ordinary assignment should be created for the closed date.
@@ -87,8 +87,9 @@ When a cascade places a test on Monday:
 1. move the test to Tuesday;
 2. preserve the logical sequence;
 3. adjust review or preparation content as needed;
-4. recalculate Study Guide timing using the previous valid instructional day;
-5. regenerate all affected assignment, reminder, and announcement dates.
+4. regenerate all affected assignment, reminder, and announcement dates.
+
+Historical note: earlier disruption logic recalculated Study Guide timing. Study guides are de-scoped from the active workflow; that step remains dormant evidence only.
 
 Example:
 
@@ -106,16 +107,9 @@ A disruption may invalidate or regenerate:
 weekly plan entries
 assignment drafts
 assignment due dates
-Study Guide dates
-Fact Test relationships
-resource requirements
-agenda page rows
-agenda page links
 assessment notices
 assessment reminders
-weekly announcements
 Homeroom newsletter content
-module placement intent
 deployment manifests
 Canvas comparison results
 approvals
@@ -189,7 +183,6 @@ The system must never:
 - keep later lessons on their original dates without evaluating the sequence;
 - place a shifted test on Monday;
 - retain stale due dates;
-- retain stale Study Guide dates;
 - retain stale reminders or announcements;
 - preserve an approval tied to the old schedule;
 - publish the revised schedule without renewed approval;
@@ -207,10 +200,8 @@ new date
 original lesson
 new lesson placement
 test movements
-Study Guide movements
 assignment due-date changes
 announcement changes
-resource changes
 approval invalidations
 unresolved conflicts
 ```
@@ -254,7 +245,6 @@ The validator must test:
 - no lesson deletion;
 - no automatic homework conversion;
 - Monday test moves to Tuesday;
-- Study Guide recalculation;
 - stale artifact marking;
 - approval invalidation;
 - reversible disruption history;

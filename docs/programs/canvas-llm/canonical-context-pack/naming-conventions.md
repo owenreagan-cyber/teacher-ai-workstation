@@ -4,6 +4,12 @@
 
 Canvas titles must be deterministic, concise, teacher-readable, and sortable.
 
+Highest authority:
+
+```text
+docs/programs/canvas-llm/2026-2027-fpk-canvas-operating-contract.md
+```
+
 The general assignment-tab format is:
 
 ```text
@@ -12,19 +18,17 @@ CLASS PREFIX: Assignment Name
 
 Punctuation, capitalization, spacing, prefixes, and number placement are part of the contract and must be validated.
 
-Legacy naming conventions must not override the examples explicitly approved by the owner.
-
 ## Approved subject prefixes
 
 | Subject | Prefix | Status |
 |---|---|---|
-| Math | `SM5` | APPROVED |
-| Reading | `RM4` | APPROVED |
-| Spelling | `RM4` for current assignment-title examples | APPROVED_WITH_OPEN_FIELDS |
-| Language Arts | `ELA4` | APPROVED |
-| History | `HIST4` | APPROVED |
-| Science | `SCI4` | APPROVED |
-| Homeroom | No ordinary assignment prefix currently approved | OWNER_DECISION_REQUIRED |
+| Math | `SM5:` | APPROVED |
+| Reading | `RM4:` | APPROVED |
+| Spelling | `RM4:` | APPROVED |
+| Language Arts | `ELA4:` | APPROVED |
+| History | `HIST4:` | APPROVED |
+| Science | `SCI4:` | APPROVED |
+| Homeroom | No ordinary assignment prefix | N/A |
 
 Reading and Spelling may share a Canvas course and agenda page while retaining separate instructional and assignment identities.
 
@@ -33,119 +37,69 @@ Reading and Spelling may share a Canvas course and agenda page while retaining s
 These examples are authoritative acceptance cases:
 
 ```text
-SM5: Math Test 1
-SM5: Fact Test 1
-SM5: Lesson 1 Odds
-ELA4: Classroom Practice 4
-RM4: Lesson 4 Workbook and Comprehension
+SM5: Written Assessment 7
+SM5: Fact Assessment 7
+SM5: Lesson 18 Homework
+ELA4: Persuasive Writing Final Draft
+RM4: Mastery Test 4
+RM4: Fluency Checkout 4
 RM4: Spelling Test 1
-HIST4: American Revolution Test
-HIST4: American Revolution Chapter 1 Vocab
-SCI4: Structures and Functions Chapter 1 Test
+HIST4: Ancient Rome Assessment
+SCI4: Life Cycles Assessment
 ```
+
+## Assessment naming patterns
+
+| Subject | Pattern | Example |
+|---|---|---|
+| Math written | `SM5: Written Assessment {n}` | `SM5: Written Assessment 7` |
+| Math fact | `SM5: Fact Assessment {n}` | `SM5: Fact Assessment 7` |
+| Reading mastery | `RM4: Mastery Test {n}` | `RM4: Mastery Test 4` |
+| Reading fluency | `RM4: Fluency Checkout {n}` | `RM4: Fluency Checkout 4` |
+| Spelling | `RM4: Spelling Test {n}` | `RM4: Spelling Test 1` |
+| Language Arts | topic or writing-title form | `ELA4: Persuasive Writing Final Draft` |
+| History | topic form | `HIST4: Ancient Rome Assessment` |
+| Science | topic form | `SCI4: Life Cycles Assessment` |
+
+Reading Test 14 must never generate Checkout 14 or a title referencing Checkout 14.
 
 ## Math assignment patterns
 
 ### Lesson homework
 
-```text
-SM5: Lesson {lessonNumber} Odds
-SM5: Lesson {lessonNumber} Evens
-```
-
-The Odds/Evens suffix is determined by canonical Math parity rules and may be changed only by an explicit teacher override.
+Homework titles follow the operating-contract schedule rather than odd/even lesson parity alone.
 
 Examples:
 
 ```text
-SM5: Lesson 1 Odds
-SM5: Lesson 2 Evens
+SM5: Lesson 18 Homework
 ```
 
-### Written tests
-
-```text
-SM5: Math Test {testNumber}
-```
-
-Example:
-
-```text
-SM5: Math Test 1
-```
-
-### Fact Tests
-
-```text
-SM5: Fact Test {factTestNumber}
-```
-
-Example:
-
-```text
-SM5: Fact Test 1
-```
+Historical note: older evidence used `SM5: Lesson {n} Odds/Evens` patterns. Those remain superseded naming evidence unless explicitly reapproved.
 
 ### Study Guides
 
-The exact current assignment title pattern remains to be verified against current owner-approved behavior.
+Study guides are not part of the 2026–2027 Canvas workflow.
 
-Candidate historical patterns must remain non-canonical until approved:
-
-```text
-SM5: Study Guide {testNumber}
-SM5: Math Test {testNumber} Study Guide
-```
-
-Status: `OWNER_DECISION_REQUIRED`
-
-### Investigations
-
-Exact assignment-generation and title behavior remain to be verified.
-
-Status: `OWNER_DECISION_REQUIRED`
+Historical candidate patterns such as `SM5: Study Guide {n}` remain dormant and non-authoritative.
 
 ## Reading assignment patterns
 
-### Lesson workbook and comprehension
+### Classwork
+
+Daily classwork goal on the agenda page:
 
 ```text
-RM4: Lesson {lessonNumber} Workbook and Comprehension
+Workbook
 ```
 
-Example:
+### Homework
+
+Tuesday and Thursday homework:
 
 ```text
-RM4: Lesson 4 Workbook and Comprehension
+Comprehension Questions
 ```
-
-### Reading tests
-
-Exact current title pattern remains to be confirmed.
-
-Possible historical evidence includes:
-
-```text
-RM4: Reading Test {testNumber}
-RM4: Reading Mastery Test {testNumber}
-```
-
-Status: `OWNER_DECISION_REQUIRED`
-
-### Reading Checkouts
-
-Exact current title pattern remains to be confirmed.
-
-Possible historical evidence includes:
-
-```text
-RM4: Checkout {checkoutNumber}
-RM4: Reading Checkout {checkoutNumber}
-```
-
-Status: `OWNER_DECISION_REQUIRED`
-
-Reading Test 14 must never generate Checkout 14 or a title referencing Checkout 14.
 
 ## Spelling assignment pattern
 
@@ -159,86 +113,45 @@ Example:
 RM4: Spelling Test 1
 ```
 
-The shared `RM4` prefix reflects the current owner-approved title example. Any legacy `SPELL` prefix remains legacy evidence unless explicitly reapproved.
+Historical note: a legacy `SPELL` routing prefix remains dormant evidence only.
 
 ## Language Arts assignment patterns
 
-### Classroom Practice
+Final writing drafts use titles such as:
 
 ```text
-ELA4: Classroom Practice {practiceNumber}
+ELA4: Persuasive Writing Final Draft
 ```
 
-Example:
+## History and Science assignment patterns
+
+History and Science assignments are generated only during their active quarters per:
 
 ```text
-ELA4: Classroom Practice 4
+config/curriculum/canvas/quarter-subject-activation-2026-2027.json
 ```
-
-### Tests
-
-Exact format remains to be confirmed.
-
-Candidate:
-
-```text
-ELA4: {unitOrTopic} Test
-```
-
-Status: `OWNER_DECISION_REQUIRED`
-
-## History assignment patterns
-
-History assignments are disabled by default unless explicitly approved for the current subject/type.
 
 Approved examples:
 
 ```text
-HIST4: American Revolution Test
-HIST4: American Revolution Chapter 1 Vocab
+HIST4: Ancient Rome Assessment
+SCI4: Life Cycles Assessment
 ```
-
-These examples establish the prefix and topic-first structure but do not authorize all History entries to create assignments.
-
-## Science assignment patterns
-
-Science assignments are disabled by default unless explicitly approved for the current subject/type.
-
-Approved example:
-
-```text
-SCI4: Structures and Functions Chapter 1 Test
-```
-
-This establishes the prefix and topic-first structure but does not authorize all Science entries to create assignments.
 
 ## Agenda-page content naming
 
-For Math, the page body uses concise instructional wording rather than repeating the full Canvas assignment title.
-
-Example:
+For Math, the page body uses concise instructional wording:
 
 ```text
-Math
-
-In Class: Lesson 1
-Homework: [SM5: Lesson 1 Odds]
+In Class: Lesson 18
+Homework: #12-30 evens
 ```
 
-The Homework text must link to the corresponding verified Canvas assignment after that assignment exists.
-
-Before the assignment URL is created and verified, the page generator must:
-
-- retain the intended assignment reference;
-- mark the dependency unresolved;
-- avoid inventing a URL;
-- block final publish where the verified link is required.
+Agenda pages must not link to assignments or curriculum resources.
 
 ## Agenda page titles
 
-The current 2026–2027 Canvas agenda-page scaffold is authoritative for exact week-page titles and date labels.
-
-Do not infer or replace those titles with generic patterns until they are extracted and indexed from:
+The current 2026–2027 Canvas agenda-page scaffold is authoritative for exact week-page titles and date labels from:
 
 ```text
 config/curriculum/canvas/instructional-weeks-2026-2027.json
@@ -247,69 +160,58 @@ config/curriculum/canvas/weekly-agenda-standard-2026-2027.json
 
 ## Homeroom naming
 
-Homeroom uses a Newsletter Page rather than the standard subject agenda artifact.
+Homeroom uses a monthly Newsletter Page rather than the standard subject agenda artifact.
 
-Exact newsletter title pattern remains to be documented in:
+Exact newsletter title pattern remains in `unresolved-owner-decisions.md`.
 
-```text
-newsletter-homeroom-contract.md
-```
+## Assignment points and due time
 
-Status: `OWNER_DECISION_REQUIRED`
+All assignments:
+
+- are worth 100 points;
+- display as percentages;
+- are due on the same calendar day as the assignment;
+- are due at 11:59 PM America/New_York.
 
 ## Normalization examples
 
 Teacher-entered shorthand must be normalized without changing meaning.
-
-Examples:
 
 | Teacher input | Normalized instructional text |
 |---|---|
 | `l1` | `Lesson 1` |
 | `L1` | `Lesson 1` |
 | `lesson 1` | `Lesson 1` |
-| `Lesson 1` | `Lesson 1` |
 
-For Math Lesson 1, the resulting assignment title is:
-
-```text
-SM5: Lesson 1 Odds
-```
-
-Normalization must not guess an assessment number, topic, homework parity override, resource, due time, or assignment group when those values are unresolved.
+Normalization must not guess an assessment number, topic, resource, due time, or assignment group when those values are unresolved.
 
 ## Validation requirements
 
 The context-pack validator must test exact equality for at least:
 
 ```text
-SM5: Math Test 1
-SM5: Fact Test 1
-SM5: Lesson 1 Odds
-ELA4: Classroom Practice 4
-RM4: Lesson 4 Workbook and Comprehension
+SM5: Written Assessment 7
+SM5: Fact Assessment 7
+RM4: Mastery Test 4
+RM4: Fluency Checkout 4
 RM4: Spelling Test 1
-HIST4: American Revolution Test
-HIST4: American Revolution Chapter 1 Vocab
-SCI4: Structures and Functions Chapter 1 Test
+ELA4: Persuasive Writing Final Draft
+HIST4: Ancient Rome Assessment
+SCI4: Life Cycles Assessment
 ```
 
 Validation must fail for known incorrect forms such as:
 
 ```text
-SM5: 1 Lesson Odds
-SM5 Lesson 1 Odds
-Math Test 1
+SM5: 7 Written Assessment
+SM5 Written Assessment 7
+Math Test 7
 RM4 Spelling Test 1
 ```
 
 ## Unresolved naming decisions
 
-- Math Study Guide title
-- Math Investigation title
-- Reading Test title
-- Reading Checkout title
-- Language Arts test title
-- Homeroom newsletter title
-- Standard weekly announcement titles
-- Assessment reminder titles
+- Homeroom newsletter title pattern
+- Language Arts non-assessment accuracy-grade titles when not covered by operating contract
+
+Generator alignment with these naming rules is scheduled for C0L and later phases.

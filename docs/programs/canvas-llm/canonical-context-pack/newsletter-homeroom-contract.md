@@ -4,14 +4,23 @@
 
 This contract defines the Homeroom family newsletter as a distinct, page-first Canvas communication artifact.
 
+Highest authority:
+
+```text
+docs/programs/canvas-llm/2026-2027-fpk-canvas-operating-contract.md
+```
+
 Homeroom is not an academic subject agenda.
+
+## Cadence
+
+The Homeroom newsletter is updated once per month, not weekly.
 
 ## Current course routing
 
 ```text
 Subject: Homeroom
 Canvas course ID: 26427
-Canonical routing prefix: NEWSLETTER
 newsletterTarget: true
 ```
 
@@ -27,11 +36,27 @@ config/curriculum/canvas-course-mappings.json
 Newsletter = Homeroom Canvas Page
 ```
 
-The newsletter page owns the substantive weekly family communication.
+The newsletter page owns the substantive monthly family communication.
 
 A newsletter-update announcement only notifies families that the page changed.
 
 It does not replace the newsletter page.
+
+## Required newsletter sections
+
+The operating contract retains these sections:
+
+```text
+Important Dates
+Homeroom News
+School News
+```
+
+School and event links are permitted in the Homeroom newsletter.
+
+This is an explicit exception to the no-link rule for subject agenda pages, assignments, and assessment announcements.
+
+Subject curriculum-resource links remain prohibited elsewhere.
 
 ## Current implementation status
 
@@ -51,6 +76,8 @@ Current newsletter runtime status: PLACEHOLDER_ONLY
 
 It must not be described as complete, production-ready, or publishable.
 
+Generator alignment is scheduled for C0L and later phases.
+
 ## Historical evidence
 
 Approved read-only historical references:
@@ -61,25 +88,9 @@ Approved read-only historical references:
 2026–2027 target Homeroom course: 26427
 ```
 
-Current evidence ranking:
-
-```text
-19424 → primary historical newsletter structure reference
-22254 → supporting historical reference
-26427 → current target shell
-```
-
-Historical metadata may inform:
-
-- page structure;
-- layout evolution;
-- section order;
-- reminder categories;
-- title patterns;
-- module placement;
-- page/announcement relationships.
-
 Historical body content must not be ingested or copied into production without a separate approved review gate.
+
+Historical weekly newsletter title patterns such as `Weekly Newsletter — July 20-24, 2026` remain superseded evidence only.
 
 ## Newsletter identity
 
@@ -87,7 +98,7 @@ Each newsletter draft must include:
 
 ```text
 local_object_id
-week_code
+month_code
 school_year
 course_id
 title
@@ -110,9 +121,7 @@ preview_only
 
 ## Newsletter page title
 
-The exact current title pattern is not yet approved.
-
-Candidate historical patterns must remain evidence only.
+The exact current monthly title pattern is not yet approved.
 
 Status:
 
@@ -120,112 +129,42 @@ Status:
 OWNER_DECISION_REQUIRED
 ```
 
-Possible future forms:
-
-```text
-Weekly Newsletter — July 20-24, 2026
-Q1W1 Newsletter
-Homeroom Newsletter — July 20-24, 2026
-```
-
-No title pattern may be made canonical without owner approval and historical comparison.
-
-## Required newsletter sections
-
-The final section schema remains under review.
-
-The model should support structured sections such as:
-
-```text
-Welcome / Weekly Overview
-Important Dates
-Assessment Reminders
-Math
-Reading
-Spelling
-Language Arts
-History
-Science
-Classroom Reminders
-Materials or Supplies
-Upcoming Events
-Closing Note
-```
-
-Not every section must appear every week.
-
-Empty sections should be omitted rather than filled with invented content.
+See `unresolved-owner-decisions.md`.
 
 ## Source behavior
 
-Newsletter content must come from structured, persisted weekly state.
-
-Potential sources:
-
-```text
-weekly plan
-assessment families
-approved reminders
-calendar disruptions
-teacher-entered Homeroom notes
-subject newsletter_include flags
-verified resource links
-upcoming school events
-```
+Newsletter content must come from structured, persisted monthly state.
 
 It must not be generated solely from the Phase 23 fixture.
 
-## Subject inclusion
-
-Each subject/day entry may carry:
-
-```text
-newsletter_include
-```
-
-Default inclusion rules must remain explicit by subject and entry type.
-
-The system must not automatically copy every daily agenda line into the newsletter.
-
 ## Assessment reminders
 
-Newsletter assessment content may include:
+Newsletter assessment content may include assessment name, date, and teacher-entered coverage.
 
-- assessment name;
-- date;
-- covered lesson range;
-- approved preparation instructions;
-- verified Study Guide links;
-- Reading Checkout passage details when applicable;
-- Spelling focus words when approved.
+It must not include:
+
+- study guides or study-guide links;
+- exact Reading checkout page or passage location;
+- exact Spelling words;
+- verified curriculum-resource links on academic surfaces.
 
 Reading Test 14 must omit all Checkout 14 content.
 
 Spelling Test 25 must not appear without approved source data.
 
-## Calendar disruption behavior
-
-When dates change:
-
-- update the newsletter draft;
-- show old/new dates in the review diff;
-- invalidate the previous newsletter approval;
-- regenerate the update announcement;
-- block publication until renewed approval.
-
 ## Newsletter-update announcement
 
-Canonical announcement text:
+Canonical notification text:
 
 ```text
-The newsletter has been updated for the week of {date range}.
+The newsletter has been updated for {month or date range}.
 ```
 
 This announcement:
 
 - points families to the newsletter page;
 - does not duplicate the full newsletter;
-- must use the verified newsletter page URL;
+- may use the verified newsletter page URL;
 - remains blocked until the page exists and the URL is verified.
 
 ## Page-first dependency order
@@ -234,19 +173,20 @@ Required order:
 
 1. generate newsletter draft;
 2. validate content;
-3. resolve required resources;
-4. compare newsletter page to Canvas;
-5. review and approve page;
-6. create or update page;
-7. read back and verify page;
-8. capture verified page URL;
-9. generate update announcement with that URL;
-10. compare announcement;
-11. review and approve announcement;
-12. publish/schedule announcement;
-13. verify announcement.
+3. compare newsletter page to Canvas;
+4. review and approve page;
+5. create or update page;
+6. read back and verify page;
+7. capture verified page URL;
+8. generate update announcement with that URL;
+9. compare announcement;
+10. review and approve announcement;
+11. publish/schedule announcement;
+12. verify announcement.
 
-The announcement must never be published before its page dependency succeeds.
+Resource resolution is not a current publication dependency.
+
+Historical Phase 25 resource-resolution steps remain dormant evidence only.
 
 ## Preview behavior
 
@@ -258,10 +198,6 @@ canvasWritesAllowed: false
 emailSendsAllowed: false
 ```
 
-The UI must clearly label placeholder content.
-
-A button labeled Publish must not merely save a local file.
-
 ## Delivery channels
 
 Confirmed:
@@ -271,92 +207,11 @@ Homeroom Canvas Page
 Canvas update announcement
 ```
 
-Possible future channels requiring separate approval:
-
-```text
-email
-print/PDF
-daily brief inclusion
-external family messaging
-```
-
 No email-send behavior is approved in this contract.
-
-## Newsletter and announcements
-
-The newsletter page and its update announcement are separate artifacts.
-
-They must have separate:
-
-```text
-local IDs
-content hashes
-comparison results
-approvals
-deployment records
-verification results
-```
-
-Approval of one does not approve the other.
 
 ## Privacy and safety
 
-The newsletter must not contain:
-
-- student names;
-- grades;
-- accommodations;
-- behavior information;
-- birthdays unless separately approved;
-- private family information;
-- teacher-only resources;
-- secure assessments or answer keys;
-- local filesystem paths;
-- unverified links;
-- hidden diagnostics.
-
-## AI usage
-
-The first production newsletter generator should be deterministic and structured.
-
-Optional AI assistance may later:
-
-- improve wording;
-- summarize teacher-approved structured fields;
-- suggest a friendly closing.
-
-AI must not:
-
-- invent events;
-- invent assessment dates;
-- invent resources;
-- invent student information;
-- publish without review.
-
-## Historical comparison requirement
-
-Before approving a final layout:
-
-- compare metadata and approved visual structure from courses `19424` and `22254`;
-- identify repeated section patterns;
-- identify page/module relationships;
-- document what is reused, adapted, or rejected;
-- do not ingest historical private body content without a separate gate.
-
-## Publish blockers
-
-Publishing is blocked when:
-
-- title pattern is unresolved;
-- required date range is missing;
-- required source content is stale;
-- required page resources are unresolved;
-- student-sensitive content is detected;
-- page comparison is stale;
-- approval is missing or stale;
-- target course is not verified;
-- newsletter page dependency fails;
-- current content is still placeholder-only.
+The newsletter must not contain student names, grades, accommodations, behavior information, teacher-only resources, secure assessments, answer keys, local filesystem paths, or hidden diagnostics.
 
 ## Validation requirements
 
@@ -364,12 +219,11 @@ The validator must confirm:
 
 - Homeroom routes to `26427`;
 - Homeroom remains separate from academic agenda groups;
-- newsletter is page-first;
+- newsletter cadence is monthly;
+- required sections match the operating contract;
+- school/event links are permitted only in Homeroom;
 - update announcement uses canonical notification wording;
 - page and announcement have separate approvals;
 - current placeholder is labeled preview-only;
-- no email send is authorized;
-- historical courses remain read-only evidence;
 - Reading Test 14 contains no Checkout 14 wording;
-- Spelling Test 25 is excluded until approved;
-- student data and secure resources are prohibited.
+- Spelling Test 25 is excluded until approved.

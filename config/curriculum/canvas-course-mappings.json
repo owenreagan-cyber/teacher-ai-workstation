@@ -1,14 +1,20 @@
 {
-  "schemaVersion": 1,
-  "status": "owner-approved",
-  "approvedAt": "2026-07-10",
-  "evidenceSource": "owner-provided-2026-07-10",
+  "schemaVersion": 2,
+  "status": "owner-approved-2026-2027-operating-contract",
+  "approvedAt": "2026-07-25",
+  "evidenceSource": "docs/programs/canvas-llm/2026-2027-fpk-canvas-operating-contract.md",
   "rules": {
     "lookupRequiresSchoolYearAndEnvironment": true,
     "archivedCoursesAreReadOnly": true,
     "archivedCoursesCannotBeDeploymentTargets": true,
     "sandboxCannotBeProductionTarget": true,
-    "missingMappingsMustNotBeInferred": true
+    "missingMappingsMustNotBeInferred": true,
+    "quarterSubjectActivationRequired": true,
+    "quarterSubjectActivationConfig": "config/curriculum/canvas/quarter-subject-activation-2026-2027.json",
+    "inactiveQuarterSubjectMustRemainUntouched": true,
+    "assignmentTitleColonPrefixRequired": true,
+    "sameDayDueTime": "23:59",
+    "timezone": "America/New_York"
   },
   "currentProduction": {
     "schoolYear": "2026-2027",
@@ -34,11 +40,12 @@
         "subjectId": "spelling",
         "displayName": "Spelling",
         "courseId": 26442,
-        "canonicalPrefix": "SPELL",
+        "canonicalPrefix": "RM4",
         "canonicalName": "Spelling 4",
         "assignmentPolicy": "enabled",
         "mergedWithSubject": "reading",
-        "sharesCanvasCourseWith": "reading"
+        "sharesCanvasCourseWith": "reading",
+        "gradingCourseSubject": "reading"
       },
       {
         "subjectId": "language-arts",
@@ -52,19 +59,27 @@
         "subjectId": "history",
         "displayName": "History",
         "courseId": 26493,
-        "canonicalPrefix": null,
+        "canonicalPrefix": "HIST4",
         "canonicalName": "History 4",
-        "assignmentPolicy": "disabled",
-        "noAssignmentsReason": "owner-approved-subject-policy"
+        "assignmentPolicy": "quarter-gated",
+        "activeQuarters": [
+          1,
+          3
+        ],
+        "inactivePolicy": "untouched"
       },
       {
         "subjectId": "science",
         "displayName": "Science",
         "courseId": 26496,
-        "canonicalPrefix": null,
+        "canonicalPrefix": "SCI4",
         "canonicalName": "Science 4",
-        "assignmentPolicy": "disabled",
-        "noAssignmentsReason": "owner-approved-subject-policy"
+        "assignmentPolicy": "quarter-gated",
+        "activeQuarters": [
+          2,
+          4
+        ],
+        "inactivePolicy": "untouched"
       },
       {
         "subjectId": "homeroom",
@@ -73,7 +88,9 @@
         "canonicalPrefix": "NEWSLETTER",
         "canonicalName": "Homeroom",
         "assignmentPolicy": "disabled",
-        "newsletterTarget": true
+        "newsletterTarget": true,
+        "newsletterCadence": "monthly",
+        "schoolAndEventLinksAllowed": true
       }
     ]
   },

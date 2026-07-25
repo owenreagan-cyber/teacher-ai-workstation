@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 1,
+  "status": "owner-approved",
+  "approvedAt": "2026-07-25",
+  "schoolYear": "2026-2027",
+  "source": "docs/programs/canvas-llm/2026-2027-fpk-canvas-operating-contract.md",
+  "rules": {
+    "exactlyOneQuarterSubjectActive": true,
+    "inactiveSubjectPolicy": "untouched",
+    "inactiveSubjectExcludedFromGeneration": true,
+    "inactiveSubjectExcludedFromAssignments": true,
+    "inactiveSubjectExcludedFromAnnouncements": true,
+    "inactiveSubjectExcludedFromReminders": true,
+    "inactiveSubjectPublishChangesForbidden": true,
+    "inactiveSubjectUnpublishChangesForbidden": true,
+    "inactiveSubjectFrontPageChangesForbidden": true
+  },
+  "quarters": {
+    "Q1": {
+      "quarter": 1,
+      "activeSubject": "history",
+      "activePrefix": "HIST4",
+      "inactiveSubject": "science",
+      "inactivePolicy": "untouched"
+    },
+    "Q2": {
+      "quarter": 2,
+      "activeSubject": "science",
+      "activePrefix": "SCI4",
+      "inactiveSubject": "history",
+      "inactivePolicy": "untouched"
+    },
+    "Q3": {
+      "quarter": 3,
+      "activeSubject": "history",
+      "activePrefix": "HIST4",
+      "inactiveSubject": "science",
+      "inactivePolicy": "untouched"
+    },
+    "Q4": {
+      "quarter": 4,
+      "activeSubject": "science",
+      "activePrefix": "SCI4",
+      "inactiveSubject": "history",
+      "inactivePolicy": "untouched"
+    }
+  }
+}

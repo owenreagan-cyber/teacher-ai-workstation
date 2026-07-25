@@ -6,10 +6,16 @@
 APPROVED
 ```
 
+Highest authority:
+
+```text
+docs/programs/canvas-llm/2026-2027-fpk-canvas-operating-contract.md
+```
+
 ## Curriculum
 
 ```text
-Saxon Math 5
+Saxon Math 4 — Course 1
 ```
 
 ## Canonical sources
@@ -18,7 +24,6 @@ Saxon Math 5
 config/curriculum/math/saxon-math-5/lesson-power-up-map.json
 config/curriculum/math/saxon-math-5/fact-test-practice-map.json
 scripts/canvas_llm_phase22/validate_canonical_knowledge.py
-scripts/canvas_llm_phase22/phase22_workstation.py
 ```
 
 ## Course routing
@@ -28,225 +33,91 @@ Current 2026–2027 routing:
 ```text
 Subject: Math
 Canvas course ID: 26404
-Canonical prefix: SM5
+Canonical prefix: SM5:
 ```
 
-Numeric course metadata remains subject to current approved configuration and future read-only metadata verification.
+## Daily classwork goal
 
-## Lesson coverage
-
-The canonical lesson-to-Power-Up map contains exactly:
+Monday through Friday:
 
 ```text
-Lessons 1–120
+#1-10
 ```
 
-Validated boundary examples:
+Agenda display example:
 
 ```text
-Lesson 5  → Power Up A
-Lesson 25 → Power Up D
-Lesson 90 → Power Up F
+In Class: Lesson 18
 ```
 
-The full map remains in JSON and must not be duplicated manually into this document.
+## Homework schedule
 
-## Teacher input normalization
+- Monday: `#12-30 evens`
+- Tuesday: No Homework
+- Wednesday: `#11-29 odds`
+- Thursday: No Homework
+- Friday: No Homework
 
-Accepted unambiguous examples:
+When there is no homework:
 
 ```text
-l1
-L1
-lesson 1
-Lesson 1
+Homework: No Homework
 ```
 
-Canonical normalized result:
+## Weekly Math accuracy grades
 
-```text
-Lesson 1
-```
+Create three Math accuracy grades per week:
 
-## Standard lesson behavior
+1. Monday homework
+2. Wednesday homework
+3. Tuesday classwork by default
 
-For a normal Math lesson:
+If Tuesday contains a Math assessment, default the classwork grade to Thursday.
 
-```text
-In Class: Lesson {lessonNumber}
-```
+Do not grade fact classwork or fact homework.
 
-Suggested homework is determined by lesson parity unless overridden:
+Assessments are not included in the three weekly accuracy grades.
 
-```text
-Odd lesson number  → Odds
-Even lesson number → Evens
-```
-
-Examples:
-
-```text
-Lesson 1 → SM5: Lesson 1 Odds
-Lesson 2 → SM5: Lesson 2 Evens
-```
-
-An explicit teacher override outranks the parity default.
-
-## Power Up resolution
-
-Each lesson resolves to its mapped Power Up from:
-
-```text
-lesson-power-up-map.json
-```
-
-The system must:
-
-- preserve the exact canonical code;
-- never infer a missing code;
-- treat a missing lesson mapping as blocking;
-- expose the Power Up in resource requirements;
-- retain teacher corrections separately from canonical map data.
-
-## Fact Test coverage
-
-The canonical Fact Test map contains exactly:
-
-```text
-Fact Tests 1–23
-```
-
-Validated example:
-
-```text
-Fact Test 12 → Power Up E
-```
-
-Fact Test 12 also includes the approved division-practice description.
-
-## Assessment family
-
-A Math assessment family may include:
-
-```text
-Written Math Test
-Fact Test
-Study Guide
-Assessment announcement
-Assessment reminder
-Required resources
-```
-
-Canonical internal family fields include:
-
-```text
-assessmentFamilyId
-testNumber
-writtenTestDate
-factTestDate
-studyGuideDate
-announcementDraft
-factTest
-studyGuideSuppressesNormalHomework
-suppressionReason
-requiredResources
-```
-
-## Study Guide scheduling
-
-The Study Guide belongs on the previous valid instructional day before the Math test.
-
-It suppresses normal Math homework for that preparation day.
-
-Existing canonical behavior:
-
-```text
-Study Guide {n} is the only Math homework before Test {n}.
-```
-
-Required resources may include:
-
-```text
-Study Guide {n} Blank
-Study Guide {n} Completed
-Power Up {code} practice
-```
-
-Missing required resources block final publication.
-
-## Test naming
+## Assessment naming
 
 Approved assignment titles:
 
 ```text
-SM5: Math Test {testNumber}
-SM5: Fact Test {factTestNumber}
+SM5: Written Assessment {testNumber}
+SM5: Fact Assessment {factTestNumber}
 ```
 
 Examples:
 
 ```text
-SM5: Math Test 1
-SM5: Fact Test 1
+SM5: Written Assessment 7
+SM5: Fact Assessment 7
 ```
 
-The exact Study Guide assignment title remains unresolved and must not be guessed.
+Math assessments typically occur on Tuesday.
+
+## Study Guides
+
+Study guides are not part of the 2026–2027 Canvas workflow.
+
+Historical Phase 22/25 behavior that scheduled Study Guides, suppressed homework, and required Study Guide resources remains dormant and non-authoritative evidence only.
 
 ## Monday test prohibition
 
 Math tests may not occur on Monday.
 
-When disruption logic would move a test to Monday:
+When disruption logic would move a test to Monday, move it to Tuesday and invalidate affected approvals.
 
-- move it to Tuesday;
-- recalculate Study Guide placement;
-- regenerate reminders;
-- regenerate announcements;
-- invalidate affected approvals and comparison results.
+## Power Up and Fact Test maps
 
-## Friday behavior
+The canonical lesson-to-Power-Up map contains Lessons 1–120.
 
-Friday instruction is allowed.
+The canonical Fact Test map contains Fact Tests 1–23.
 
-Default Friday homework behavior:
-
-```text
-none
-```
-
-A teacher may explicitly override this, but the system must not silently remove teacher-entered Friday content.
-
-## Resource requirements
-
-Potential required resources include:
-
-```text
-Student Book lesson
-Power Up practice
-Homework worksheet
-Fact Test practice
-Study Guide blank
-Study Guide completed
-Teacher-approved supporting resource
-```
-
-Only verified resources may be emitted as resolved links.
+These maps remain authoritative for internal planning references. Parent-facing agenda pages must not link to Power Up or Fact Test resources.
 
 ## Validation requirements
 
-The validator must confirm:
+The validator must confirm lesson and Fact Test map coverage, approved assessment title patterns, deterministic homework schedule behavior, and Monday test prohibition.
 
-- 120 lessons exist;
-- lesson keys cover 1–120 exactly;
-- Lesson 5 maps to A;
-- Lesson 25 maps to D;
-- Lesson 90 maps to F;
-- 23 Fact Tests exist;
-- Fact Test keys cover 1–23 exactly;
-- Fact Test 12 maps to E;
-- Fact Test 12 retains approved division-practice wording;
-- title formatting matches canonical examples;
-- odd/even homework behavior is deterministic;
-- explicit teacher override outranks parity;
-- missing mappings block generation;
-- no Monday test is produced.
+Generator alignment is scheduled for C0L and later phases.

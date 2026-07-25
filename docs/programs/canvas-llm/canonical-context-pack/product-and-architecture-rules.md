@@ -235,7 +235,7 @@ blank/new weeks
 Monday-Friday
 all supported subjects
 teacher-entered In Class text
-teacher-entered At Home text
+teacher-entered Homework text
 lessons
 tests
 resources
@@ -353,21 +353,11 @@ Predictions should operate on real weekly/pacing state, with fixtures limited to
 
 ## Phase 25 status
 
-Phase 25 contains the canonical resource-resolution foundation.
+Phase 25 resource resolution is de-scoped from the active 2026–2027 Canvas LLM workflow per the operating contract.
 
-Preserve:
+The Phase 25 implementation remains in the repository as dormant historical evidence. It is not a current publication dependency.
 
-```text
-resource identity
-visibility
-verification
-secure-resource blocking
-correction memory
-review queue
-explanations
-```
-
-Production resource resolution must consume the real weekly model and real local registry metadata, not fixture files by default.
+Historical Phase 25 concepts such as resource identity, visibility, verification, and secure-resource blocking remain documented in `resource-resolution-contract.md` for reference only.
 
 ## Phase 26 status
 

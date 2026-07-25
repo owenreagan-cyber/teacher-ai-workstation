@@ -28,12 +28,20 @@ assert temp == committed
 assert temp["containsStudentData"] is False
 assert temp["weekCode"] == "Q1W5"
 assert temp["validation"]["failCount"] == 0
-assert temp["validation"]["warnCount"] == 1
+assert temp["validation"]["warnCount"] == 0
+assert temp["resources"] == []
+assert all(not assignment.get("linked_resource_ids") for assignment in temp.get("assignments", []))
+assert "Study Guide" not in json.dumps(temp)
+assert "Reminders &amp; Resources" not in json.dumps(temp.get("pages", []))
+assert all("Homework" in page.get("body_html", "") for page in temp.get("pages", []))
+demo_text = json.dumps(temp)
+assert "RM4: Spelling Test 6" in demo_text
+assert "SPELL Test" not in demo_text
 print("PASS demo packet matches committed artifact shape")
 PY
 
 python3 "$V" "$DEMO" | grep -q '^FAIL: 0$'
-python3 "$V" "$DEMO" | grep -q '^WARN: due-time.unresolved'
+python3 "$V" "$DEMO" | grep -q '^PASS: due-time.resolved Assignments use same-day 11:59 PM America/New_York due times$'
 python3 "$V" "$DEMO" | grep -q '^PASS: reading-test-14.checkout Reading Test 14 correctly has no checkout reminder$'
 
 python3 "$M" self-test
@@ -116,7 +124,8 @@ assert urllib.request.urlopen(base + "/workstation.js").status == 200
 assert urllib.request.urlopen(base + "/styles.css").status == 200
 assert packet["weekCode"] == "Q1W5"
 assert packet["validation"]["failCount"] == 0
-assert packet["validation"]["warnCount"] == 1
+assert packet["validation"]["warnCount"] == 0
+assert "Study Guide" not in json.dumps(packet)
 local_state = json.loads(urllib.request.urlopen(base + "/api/local-state?weekCode=Q1W5").read())
 assert local_state["status"] == "saved"
 assert local_state["approvalState"] == "draft"
@@ -255,7 +264,7 @@ Promise.resolve().then(() => new Promise((resolve) => setTimeout(resolve, 0))).t
   if (document.getElementById('packet-meta').textContent !== `Q1W5 • 2026-08-17 to 2026-08-21 • ${packet.packetId}`) {
     throw new Error('browser smoke did not render the week header');
   }
-  if (!document.getElementById('packet-summary').textContent.includes('Pages 5')) {
+  if (!document.getElementById('packet-summary').textContent.includes('Pages 4')) {
     throw new Error('browser smoke did not render packet summary');
   }
   if (document.getElementById('packet-summary').textContent.includes('undefined')) {
@@ -264,11 +273,11 @@ Promise.resolve().then(() => new Promise((resolve) => setTimeout(resolve, 0))).t
   if (!document.getElementById('pages-grid').innerHTML.includes('Math Weekly Agenda')) {
     throw new Error('browser smoke did not render pages');
   }
-  if (!document.getElementById('assignments-grid').innerHTML.includes('SM5: Lesson 18 Study Guide')) {
-    throw new Error('browser smoke did not render assignments');
+  if (document.getElementById('assignments-grid').innerHTML.includes('Study Guide')) {
+    throw new Error('browser smoke rendered study guide assignments');
   }
-  if (!document.getElementById('resources-grid').innerHTML.includes('SM5 Lesson 18 Guide')) {
-    throw new Error('browser smoke did not render resources');
+  if (!document.getElementById('assignments-grid').innerHTML.includes('SM5: Written Assessment')) {
+    throw new Error('browser smoke did not render assignments');
   }
   if (!document.getElementById('reminders-grid').innerHTML.includes('Reading Test 14')) {
     throw new Error('browser smoke did not render Reading Test 14');
@@ -279,13 +288,16 @@ Promise.resolve().then(() => new Promise((resolve) => setTimeout(resolve, 0))).t
   if (!document.getElementById('html-preview').innerHTML.includes('Weekly Agenda')) {
     throw new Error('browser smoke did not render HTML preview');
   }
-  if (document.getElementById('html-preview').innerHTML.includes('&nbsp;&nbsp;')) {
-    throw new Error('browser smoke rendered placeholder bullet content');
+  if (document.getElementById('html-preview').innerHTML.includes('Reminders &amp; Resources')) {
+    throw new Error('browser smoke rendered legacy reminders heading');
+  }
+  if (!document.getElementById('html-preview').innerHTML.includes('Homework</h4>')) {
+    throw new Error('browser smoke did not render Homework heading');
   }
   if (!document.getElementById('text-preview').textContent.includes('Monday:')) {
     throw new Error('browser smoke did not render text preview');
   }
-  if (!document.getElementById('text-preview').textContent.includes('Thursday: Reading Mastery Test 14')) {
+  if (!document.getElementById('text-preview').textContent.includes('Thursday: RM4: Mastery Test 14')) {
     throw new Error('browser smoke did not render canonical Reading Test 14 text');
   }
   if (!document.getElementById('packet-json-preview').textContent.includes('"weekCode": "Q1W5"')) {
@@ -333,9 +345,9 @@ start_server
 
 python3 - "$LOCAL_ROOT" <<'PY'
 import json
-import sys
 import urllib.request
 from pathlib import Path
+import sys
 
 base = "http://127.0.0.1:18775"
 local_root = Path(sys.argv[1])

@@ -77,24 +77,18 @@ def week_has_saved_work(workstation,starts_on,conn=None):
 def resolve_reading_test(n:int):
     if not 1<=n<=14: raise ValueError('Reading Test number must be 1-14')
     end=n*10; start=end-9
-    return {'testNumber':n,'title':f'RM4: Reading Test {n}','lessonRange':{'start':start,'end':end},'assignmentGroup':'Tests/Assessments','points':100,'gradeDisplay':'Percentage','submissionType':'On Paper','assignedTo':'All Students','dueTime':'12:00 AM unresolved'}
+    return {'testNumber':n,'title':f'RM4: Mastery Test {n}','lessonRange':{'start':start,'end':end},'assignmentGroup':'Tests/Assessments','points':100,'gradeDisplay':'Percentage','submissionType':'On Paper','assignedTo':'All Students','dueTime':'11:59 PM','timezone':'America/New_York'}
 def resolve_checkout(n:int):
     if not 1<=n<=13: raise ValueError('Checkout number must be 1-13')
     m=rjson('reading/reading-mastery-4/checkout-passage-map.json')['checkouts'][str(n)]; flu=CHECKOUT_FLUENCY_CONFIRMED.get(str(n),{})
-    return {'checkoutNumber':n,'readingTestNumber':n,'title':f'RM4: Checkout {n}','sourceCheckoutKey':m['sourceCheckoutKey'],'passage':m['passage'],'bookVolume':m['bookVolume'],'page':m['page'],'fluency':flu,'assignmentGroup':'Checkouts','points':100,'gradeDisplay':'Percentage','submissionType':'On Paper','assignedTo':'All Students','dueTime':'12:00 AM unresolved','checkoutStudyGuideAllowed':False}
+    return {'checkoutNumber':n,'readingTestNumber':n,'title':f'RM4: Fluency Checkout {n}','sourceCheckoutKey':m['sourceCheckoutKey'],'passage':m['passage'],'bookVolume':m['bookVolume'],'page':m['page'],'fluency':flu,'assignmentGroup':'Checkouts','points':100,'gradeDisplay':'Percentage','submissionType':'On Paper','assignedTo':'All Students','dueTime':'11:59 PM','timezone':'America/New_York','checkoutStudyGuideAllowed':False}
 def reading_checkout_number(n:int):
     return n if 1<=n<=13 else None
 def reading_test_description(test_num:int,has_study_guide=False):
-    rt=resolve_reading_test(test_num); lr=rt['lessonRange']; base=f"Review Lessons {lr['start']}-{lr['end']}, including vocabulary and story details."
-    return base+(' Use the attached study guide to help you review.' if has_study_guide else '')
+    rt=resolve_reading_test(test_num); lr=rt['lessonRange']
+    return f"Review Lessons {lr['start']}-{lr['end']}, including vocabulary and story details."
 def checkout_description(n:int):
-    c=resolve_checkout(n); lines=['Target Fluency Goal']
-    if c['fluency'].get('wpm'): lines.append(f"{c['fluency']['wpm']} words per minute")
-    else: lines.append('[WPM target unresolved]')
-    if c['fluency'].get('maxErrors') is not None: lines.append(f"{c['fluency']['maxErrors']} or fewer errors")
-    elif not c['fluency']: lines.append('[Maximum errors unresolved]')
-    lines+=['Tracking and tapping','Read out loud every day',f"Practice passage: {c['passage']}",f"{c['bookVolume']}, page {c['page']}"]
-    return '\n'.join(lines)
+    return FLUENCY_PRACTICE_GENERIC
 def reading_assessment_family(n:int,test_day:str):
     fid=stable_id('reading-assessment-family',n,test_day); rt=resolve_reading_test(n); checkout_number=reading_checkout_number(n); co=resolve_checkout(n) if checkout_number else None
     warnings=[]
@@ -102,15 +96,8 @@ def reading_assessment_family(n:int,test_day:str):
     if co and co['fluency'].get('maxErrors') is None and str(n) not in CHECKOUT_FLUENCY_CONFIRMED: warnings.append(f"Checkout {n} maximum-error target unresolved.")
     return {'assessmentFamilyId':fid,'readingTestNumber':n,'checkoutNumber':checkout_number,'writtenTestDate':test_day,'checkoutDate':test_day if co else None,'readingTest':rt,'checkout':co,'announcementDraft':stable_id('reading-test-announcement',fid),'sourceCheckoutKey':co['sourceCheckoutKey'] if co else None,'checkoutStudyGuideAllowed':False,'warnings':warnings}
 def reading_announcement_body(fam,has_study_guide=False):
-    rt,co=fam['readingTest'],fam['checkout']; lr=rt['lessonRange']; lines=['Hello Families,',f"Assessment date: {fam['writtenTestDate']}",f"Reading Test {rt['testNumber']} covers Lessons {lr['start']}-{lr['end']}.", 'Review vocabulary and story details.']
-    if has_study_guide: lines.append('Reading Test Study Guide attached or linked when verified.')
-    if co:
-        lines+=[f"Checkout {co['checkoutNumber']} fluency practice:"]
-        if co['fluency'].get('wpm'): lines.append(f"Target: {co['fluency']['wpm']} words per minute")
-        else: lines.append('Target fluency: [unresolved]')
-        if co['fluency'].get('maxErrors') is not None: lines.append(f"Maximum errors: {co['fluency']['maxErrors']}")
-        else: lines.append('Maximum errors: [unresolved]')
-        lines+=['Use tracking and tapping.','Read out loud every day.',f"Practice passage: {co['passage']} ({co['bookVolume']}, page {co['page']})."]
+    rt,co=fam['readingTest'],fam['checkout']; lr=rt['lessonRange']; lines=['Hello Families,',f"Assessment date: {fam['writtenTestDate']}",f"Reading Mastery Test {rt['testNumber']} covers Lessons {lr['start']}-{lr['end']}.", 'Review vocabulary and story details.']
+    if co: lines.append(FLUENCY_PRACTICE_GENERIC)
     lines+=['Thank you,','Mr. Reagan']
     return '\n'.join(lines)
 def parse_reading_quick_create(text):
@@ -349,6 +336,40 @@ def wait_for_condition(cdp,expression,timeout=20):
         time.sleep(0.2)
     raise RuntimeError(f'timeout waiting for condition: {expression} (last={last})')
 def rjson(*parts): return json.loads((REPO_ROOT/'config/curriculum'/Path(*parts)).read_text())
+_quarter_activation_cache=None
+FLUENCY_PRACTICE_GENERIC='Have your child continue to practice fluency by reading a short paragraph of about 100 words aloud in less than one minute. They should make no more than 2 errors.'
+def load_quarter_subject_activation():
+    global _quarter_activation_cache
+    if not _quarter_activation_cache: _quarter_activation_cache=rjson('canvas/quarter-subject-activation-2026-2027.json')
+    return _quarter_activation_cache
+def quarter_key_from_week_meta(week_meta):
+    if not week_meta: return None
+    q=week_meta.get('quarter')
+    if q: return f'Q{q}'
+    m=re.match(r'Q([1-4])',compact(week_meta.get('code','')),re.I)
+    return f'Q{m.group(1)}' if m else None
+def subject_active_for_quarter(subject,week_meta):
+    subject=compact(subject).lower()
+    if subject not in {'history','science'}: return True
+    qk=quarter_key_from_week_meta(week_meta)
+    if not qk: return True
+    activation=load_quarter_subject_activation()['quarters'].get(qk,{})
+    return activation.get('activeSubject')==subject
+def math_homework_for_weekday(weekday):
+    wd=compact(weekday)
+    if wd=='Monday': return '#12-30 evens'
+    if wd=='Wednesday': return '#11-29 odds'
+    return 'No Homework'
+def reading_homework_for_weekday(weekday):
+    wd=compact(weekday)
+    if wd in {'Tuesday','Thursday'}: return 'Comprehension Questions'
+    return 'No Homework'
+def math_classwork_goal(): return '#1-10'
+def reading_classwork_goal(): return 'Workbook'
+def same_day_due_fields(entry_date):
+    return {'dueDate':entry_date,'dueTime':'11:59 PM','timezone':'America/New_York','points':100,'gradeDisplay':'Percentage','unresolvedDueTime':False}
+def assignment_due_payload(entry_date):
+    return same_day_due_fields(entry_date)
 def resolve_math_lesson(n:int,homework_override=None):
     if not 1<=n<=120: raise ValueError('Math lesson number must be 1-120')
     p=rjson('math/saxon-math-5/lesson-power-up-map.json')['lessonToPowerUp'].get(str(n));
@@ -445,8 +466,8 @@ def next_instructional_day(start:date,no_school:set[str]):
     while d.weekday()>=5 or d.isoformat() in no_school: d+=timedelta(days=1)
     return d
 def math_assessment_family(n:int,test_day:str,no_school:set[str]):
-    fact=resolve_fact_test(n); study=previous_instructional_day(date.fromisoformat(test_day),no_school).isoformat(); fid=stable_id('math-assessment-family',n,test_day)
-    return {'assessmentFamilyId':fid,'testNumber':n,'writtenTestDate':test_day,'factTestDate':test_day,'studyGuideDate':study,'announcementDraft':stable_id('math-test-announcement',fid),'factTest':fact,'studyGuideSuppressesNormalHomework':True,'suppressionReason':f'Study Guide {n} is the only Math homework before Test {n}.','requiredResources':[f'Study Guide {n} Blank',f'Study Guide {n} Completed',f'Power Up {fact["powerUpCode"]} practice']}
+    fact=resolve_fact_test(n); fid=stable_id('math-assessment-family',n,test_day)
+    return {'assessmentFamilyId':fid,'testNumber':n,'writtenTestDate':test_day,'factTestDate':test_day,'announcementDraft':stable_id('math-test-announcement',fid),'factTest':fact}
 SCHEMA='''
 CREATE TABLE IF NOT EXISTS schema_migrations(version INTEGER PRIMARY KEY,applied_at TEXT NOT NULL);
 CREATE TABLE IF NOT EXISTS settings(id TEXT PRIMARY KEY,value TEXT NOT NULL,version INTEGER NOT NULL DEFAULT 1,created_at TEXT NOT NULL,updated_at TEXT NOT NULL,updated_by TEXT NOT NULL);
@@ -594,48 +615,70 @@ class WorkstationDB:
         with self.connect() as db: return [dict(r) for r in db.execute('SELECT * FROM resources ORDER BY canonical_name LIMIT 200')]
     def generate_week(self,wid,db=None):
         own=db is None; db=db or self.connect(); rows=[dict(r) for r in db.execute('SELECT * FROM daily_subject_entries WHERE weekly_plan_id=? ORDER BY entry_date,subject',(wid,))]
+        plan=db.execute('SELECT payload,starts_on FROM weekly_plans WHERE id=?',(wid,)).fetchone(); payload=jl(plan['payload'],{}); iw=payload.get('instructionalWeek') or instructional_week_by_starts_on(plan['starts_on']) or {}
         for r in rows:
-            resolver=resolver_for_daily(r); val=[]
-            if r['subject']=='math' and resolver.get('assessmentFamily'):
-                for label in resolver['assessmentFamily']['requiredResources']:
-                    if not db.execute("SELECT 1 FROM resources WHERE canonical_name LIKE ? AND verification_status='verified'",(f'%{label}%',)).fetchone(): val.append({'severity':'blocking','message':f'Missing verified resource: {label}'})
+            if not subject_active_for_quarter(r['subject'],iw):
+                db.execute('UPDATE daily_subject_entries SET resolver_output=?,validation=?,in_class=?,at_home=? WHERE id=?',(jd({'assignmentPolicy':'untouched','reason':'inactive-quarter-subject','skipGeneration':True}),jd([]),'','',r['id']))
+                continue
+            resolver=resolver_for_daily(r,iw); val=[]
             if r['subject']=='reading' and resolver.get('assessmentFamily'):
                 for wmsg in resolver['assessmentFamily'].get('warnings',[]): val.append({'severity':'warning','message':wmsg})
-            db.execute('UPDATE daily_subject_entries SET resolver_output=?,validation=? WHERE id=?',(jd(resolver),jd(val),r['id']))
+            agenda=agenda_fields_for_row(r,iw)
+            db.execute('UPDATE daily_subject_entries SET in_class=?,at_home=?,resolver_output=?,validation=? WHERE id=?',(agenda.get('in_class',''),agenda.get('at_home',''),jd(resolver),jd(val),r['id']))
         replace_drafts(db,wid); replace_deployment(db,wid)
         if own: db.commit(); db.close()
         return self.get_week(wid) if own else {}
-def resolver_for_daily(r):
+def resolver_for_daily(r,week_meta=None):
     lesson=int(r['lesson']) if str(r.get('lesson','')).isdigit() else None; test=int(r['tests']) if str(r.get('tests','')).isdigit() else None; s=r['subject']
+    if s in {'history','science'} and week_meta and not subject_active_for_quarter(s,week_meta):
+        return {'assignmentPolicy':'untouched','reason':'inactive-quarter-subject','agendaCapable':False,'skipGeneration':True}
     try:
         if s=='math' and test: return {'assessmentFamily':math_assessment_family(test,r['entry_date'],set())}
         if s=='math' and lesson: return resolve_math_lesson(lesson)
         if s=='reading' and test: return {'assessmentFamily':reading_assessment_family(test,r['entry_date'])}
         if s=='reading' and lesson: return resolve_reading_lesson(lesson)
         if s=='spelling' and test: return resolve_spelling_test(test)
-        if s in {'history','science'}: return {'assignmentPolicy':'disabled','reason':'owner-approved-subject-policy','agendaCapable':True}
+        if s in {'history','science'}: return {'assignmentPolicy':'active','agendaCapable':True}
     except Exception as e: return {'error':str(e)}
     return {'status':'unresolved'}
-def collect_assessments_from_rows(rows,week_start):
+def agenda_fields_for_row(r,week_meta):
+    if not subject_active_for_quarter(r.get('subject'),week_meta): return {'in_class':'','at_home':''}
+    s=r['subject']; wd=r['weekday']; lesson=int(r['lesson']) if str(r.get('lesson','')).isdigit() else None; test=int(r['tests']) if str(r.get('tests','')).isdigit() else None
+    if s=='math' and lesson:
+        return {'in_class':f"Lesson {lesson}\n{math_classwork_goal()}",'at_home':math_homework_for_weekday(wd)}
+    if s=='math' and test:
+        return {'in_class':f"Written Assessment {test}\nFact Assessment {test}",'at_home':'No Homework'}
+    if s=='reading' and lesson:
+        return {'in_class':f"Lesson {lesson}\n{reading_classwork_goal()}",'at_home':reading_homework_for_weekday(wd)}
+    if s=='reading' and test:
+        return {'in_class':f"Mastery Test {test}",'at_home':'No Homework'}
+    if s=='spelling' and lesson:
+        return {'in_class':f"Lesson {lesson}",'at_home':reading_homework_for_weekday(wd)}
+    if s=='spelling' and test:
+        return {'in_class':f"Spelling Test {test}",'at_home':'No Homework'}
+    if compact(r.get('in_class')) or compact(r.get('at_home')): return {'in_class':compact(r.get('in_class','')),'at_home':compact(r.get('at_home','')) or 'No Homework'}
+    if compact(r.get('title')): return {'in_class':compact(r.get('title','')),'at_home':'No Homework'}
+    return {'in_class':'','at_home':''}
+def collect_assessments_from_rows(rows,week_start,week_meta=None):
     out=[]; seen=set()
     for r in rows:
+        if not subject_active_for_quarter(r.get('subject'),week_meta): continue
         test=int(r['tests']) if str(r.get('tests','')).isdigit() else None; s=r['subject']; ed=r['entry_date']
         if s=='reading' and test:
             fam=reading_assessment_family(test,ed); key=fam['assessmentFamilyId']
             if key in seen: continue
             seen.add(key)
-            bullet=f"Reading Test {test} on {weekday_for('',ed)} {ed}"
-            if fam['checkout']:
-                bullet=f"Reading Test {test} and Checkout {test} on {weekday_for('',ed)} {ed}"
-            out.append({'date':ed,'familyId':key,'bullet':bullet,'studyGuides':[{'label':f'Reading Test {test} Study Guide','verifiedUrl':None}]})
+            bullet=f"RM4: Mastery Test {test} on {weekday_for('',ed)} {ed}"
+            if fam['checkout']: bullet=f"RM4: Mastery Test {test} and RM4: Fluency Checkout {test} on {weekday_for('',ed)} {ed}"
+            out.append({'date':ed,'familyId':key,'bullet':bullet})
         if s=='math' and test:
             key=f'math-{test}-{ed}'
             if key in seen: continue
-            seen.add(key); out.append({'date':ed,'familyId':key,'bullet':f"Math Written Test {test} and Fact Test {test} on {weekday_for('',ed)} {ed}",'studyGuides':[{'label':f'Math Study Guide {test} Blank','verifiedUrl':None},{'label':f'Math Study Guide {test} Completed','verifiedUrl':None}]})
+            seen.add(key); out.append({'date':ed,'familyId':key,'bullet':f"SM5: Written Assessment {test} and SM5: Fact Assessment {test} on {weekday_for('',ed)} {ed}"})
         if s=='spelling' and test:
             key=f'spell-{test}-{ed}'
             if key in seen: continue
-            seen.add(key); out.append({'date':ed,'familyId':key,'bullet':f"Spelling Test {test} on {weekday_for('',ed)} {ed}",'studyGuides':[]})
+            seen.add(key); out.append({'date':ed,'familyId':key,'bullet':f"RM4: Spelling Test {test} on {weekday_for('',ed)} {ed}"})
     return out
 def verified_link_html(label,url):
     if url and str(url).startswith('http') and '#' not in str(url) and not str(url).lower().startswith('javascript:'): return f'<li><a href="{html.escape(url)}">{html.escape(label)}</a></li>'
@@ -647,61 +690,69 @@ def build_reminders_html(week_meta,assessments,resources,week_start):
         key=a.get('familyId') or a['bullet']
         if key in seen: continue
         seen.add(key); items.append(f'<li>{html.escape(a["bullet"])}</li>')
-        for sg in a.get('studyGuides',[]):
-            if sg.get('verifiedUrl'): items.append(verified_link_html(sg['label'],sg['verifiedUrl']))
-    for res in resources or []:
-        if res.get('verifiedUrl'): items.append(verified_link_html(res.get('label','Resource'),res['verifiedUrl']))
     if not items: items=['<li>&nbsp;</li>']
     return '<ul>'+''.join(items)+'</ul>'
 def render_agenda_html(week_meta,rows,assessments=None,resources=None):
     iw=week_meta or {}; subtitle=iw.get('displaySubtitle') or f"Quarter {iw.get('quarter','?')}, Week {iw.get('week','?')}"
-    week_start=iw.get('startsOn') or (rows[0]['entry_date'] if rows else ''); reminders=build_reminders_html(iw,assessments or collect_assessments_from_rows(rows,week_start),resources or [],week_start)
-    parts=[f'<div id="kl_wrapper_3" class="kl_circle_left kl_wrapper" style="border-style: none;"><div id="kl_banner" class=""><p style="color: {WHITE}; background-color: {BLUE}; text-align: center; margin: 0;"><span style="font-size: 18pt;">&nbsp;Weekly Agenda</span><br><span style="font-size: 10pt;">{html.escape(subtitle)}</span></p><h3 style="background-color: {MAGENTA}; color: {WHITE}; border: 0 !important;">Reminders &amp; Resources</h3><div style="width: 100%; padding-left: 15px;">{reminders}</div>']
+    week_start=iw.get('startsOn') or (rows[0]['entry_date'] if rows else ''); active_rows=[r for r in rows if subject_active_for_quarter(r.get('subject'),iw)]
+    reminders=build_reminders_html(iw,assessments or collect_assessments_from_rows(active_rows,week_start,iw),[],week_start)
+    parts=[f'<div id="kl_wrapper_3" class="kl_circle_left kl_wrapper" style="border-style: none;"><div id="kl_banner" class=""><p style="color: {WHITE}; background-color: {BLUE}; text-align: center; margin: 0;"><span style="font-size: 18pt;">&nbsp;Weekly Agenda</span><br><span style="font-size: 10pt;">{html.escape(subtitle)}</span></p><h3 style="background-color: {MAGENTA}; color: {WHITE}; border: 0 !important;">Reminders</h3><div style="width: 100%; padding-left: 15px;">{reminders}</div>']
     for idx,wd in enumerate(WEEKDAYS):
-        dr=[r for r in rows if r['weekday']==wd]; in_class=''.join(f'<li>{html.escape(x.get("in_class") or x.get("title") or " ")}</li>' for x in dr) or '<li>&nbsp;&nbsp;</li>'
-        at_home_items=[x for x in dr if compact(x.get('at_home',''))]; show_at_home=wd!='Friday' or at_home_items; at_home=''.join(f'<li>{html.escape(x["at_home"])}</li>' for x in at_home_items) if at_home_items else '<li>&nbsp;&nbsp;</li>'
+        dr=[r for r in active_rows if r['weekday']==wd]
+        in_class_lines=[]
+        homework_lines=[]
+        for x in dr:
+            fields=agenda_fields_for_row(x,iw)
+            for line in compact(fields.get('in_class','')).split('\n'):
+                if compact(line): in_class_lines.append(compact(line))
+            hw=compact(fields.get('at_home','')) or 'No Homework'
+            homework_lines.append(hw)
+        in_class=''.join(f'<li>{html.escape(line)}</li>' for line in in_class_lines) or '<li>&nbsp;&nbsp;</li>'
+        homework=''.join(f'<li>{html.escape(line)}</li>' for line in homework_lines) or '<li>No Homework</li>'
         parts.append(f'<div id="{DAY_BLOCK_IDS[idx]}" class=""><h3 style="color: {WHITE}; background-color: {BLUE}; margin-top: 15px; margin-bottom: 2px; border: 0 !important;">{wd}</h3><div style="display: flex; width: 100%;"><div style="width: 49%; padding-left: 15px;"><h4 class="kl_solid_border" style="color: {WHITE}; background-color: {DGRAY}; padding-left: 10px; margin: 0; border: 0 !important;">In Class</h4><ul>{in_class}</ul></div>')
-        if show_at_home: parts.append(f'<div style="width: 49%; padding-left: 15px;"><h4 class="kl_solid_border" style="color: {WHITE}; background-color: {DGRAY}; padding-left: 10px; margin: 0; border: 0 !important;">At Home</h4><ul>{at_home}</ul></div>')
+        parts.append(f'<div style="width: 49%; padding-left: 15px;"><h4 class="kl_solid_border" style="color: {WHITE}; background-color: {DGRAY}; padding-left: 10px; margin: 0; border: 0 !important;">Homework</h4><ul>{homework}</ul></div>')
         parts.append('</div></div>')
     parts.append('</div></div>'); return ''.join(parts)
-def assignment_drafts_for_day(r):
-    s=r['subject']; lesson=int(r['lesson']) if str(r.get('lesson','')).isdigit() else None; test=int(r['tests']) if str(r.get('tests','')).isdigit() else None; out=[]
+def assignment_drafts_for_day(r,week_meta=None):
+    if not subject_active_for_quarter(r.get('subject'),week_meta): return []
+    s=r['subject']; lesson=int(r['lesson']) if str(r.get('lesson','')).isdigit() else None; test=int(r['tests']) if str(r.get('tests','')).isdigit() else None; out=[]; due=assignment_due_payload(r['entry_date'])
     if s in {'history','science'}: return []
     if s=='math' and test:
-        fam=math_assessment_family(test,r['entry_date'],set()); out=[('assignment','math',f'SM5 Study Guide {test}',fam['suppressionReason']),('assignment','math',f'SM5 Written Test {test}','Local editable written test draft.'),('assignment','math',f'SM5 Fact Test {test}',fam['factTest']['practiceDescription'])]
-    elif s=='math' and lesson and r['weekday']!='Friday': out=[('assignment','math',f"SM5 Lesson {lesson} {resolve_math_lesson(lesson)['suggestedHomework']}",'Local Odds/Evens homework draft. Due time unresolved.')]
+        fam=math_assessment_family(test,r['entry_date'],set()); out=[('assignment','math',f'SM5: Written Assessment {test}','Local editable written assessment draft.'),('assignment','math',f'SM5: Fact Assessment {test}',fam['factTest']['practiceDescription'])]
+    elif s=='math' and lesson and math_homework_for_weekday(r['weekday'])!='No Homework':
+        hw=math_homework_for_weekday(r['weekday']); out=[('assignment','math',f'SM5: Lesson {lesson} Homework',f'Homework: {hw}.')]
     elif s=='reading' and test:
         fam=reading_assessment_family(test,r['entry_date']); out=[('assignment','reading',fam['readingTest']['title'],reading_test_description(test))]
-        if fam['checkout']:
-            out.append(('assignment','reading',fam['checkout']['title'],checkout_description(test)))
-            out.append(('announcement','reading',f"Reading Test and Checkout - {r['entry_date']}",reading_announcement_body(fam)))
-        else:
-            out.append(('announcement','reading',f"Reading Test - {r['entry_date']}",reading_announcement_body(fam)))
-    elif s=='spelling' and test: out=[('assignment','spelling',f'SPELL Test {test}','Focus words: '+', '.join(resolve_spelling_test(test)['focusWords']))]
-    elif s=='language-arts' and (lesson or r['title']): out=[('assignment','language-arts',r['title'] or 'ELA4 practice','Local Language Arts draft.')]
-    return out
+        if fam['checkout']: out.append(('assignment','reading',fam['checkout']['title'],checkout_description(test)))
+        out.append(('announcement','reading',f"Reading Assessment - {r['entry_date']}",reading_announcement_body(fam)))
+    elif s=='spelling' and test:
+        practice_start=max(1,test-4); out=[('assignment','spelling',f'RM4: Spelling Test {test}',f'Practice Lessons {practice_start} through {test-1}.')]
+    elif s=='language-arts' and (lesson or r['title']):
+        title=r['title'] if compact(r.get('title','')).startswith('ELA4:') else f"ELA4: {compact(r.get('title') or 'practice')}"
+        out=[('assignment','language-arts',title,'Local Language Arts draft.')]
+    return [(kind,sub,title,text,due) for kind,sub,title,text in out]
 def replace_drafts(db,wid):
     db.execute('DELETE FROM drafts WHERE weekly_plan_id=?',(wid,)); rows=[dict(r) for r in db.execute('SELECT * FROM daily_subject_entries WHERE weekly_plan_id=? ORDER BY entry_date,subject',(wid,))]
     plan=db.execute('SELECT payload,starts_on FROM weekly_plans WHERE id=?',(wid,)).fetchone(); payload=jl(plan['payload'],{}); iw=payload.get('instructionalWeek') or instructional_week_by_starts_on(plan['starts_on']) or {}
     groups={'math':['math'],'reading-spelling':['reading','spelling'],'language-arts':['language-arts'],'history':['history'],'science':['science']}
     for key,subs in groups.items():
-        rs=[r for r in rows if r['subject'] in subs]
+        if key in {'history','science'} and not any(subject_active_for_quarter(s,iw) for s in subs): continue
+        rs=[r for r in rows if r['subject'] in subs and subject_active_for_quarter(r['subject'],iw)]
         if rs: insert_draft(db,wid,'page',key,f'{key} Agenda',f'{key} Agenda',render_agenda_html(iw,rs),{'subjects':subs,'instructionalWeek':iw})
     for r in rows:
-        for kind,sub,title,text in assignment_drafts_for_day(r):
-            extra={'unresolvedDueTime':True}
-            if sub=='reading' and kind=='announcement': extra={'assessmentFamily':jl(r.get('resolver_output') or '{}',{}).get('assessmentFamily')}
+        for kind,sub,title,text,due in assignment_drafts_for_day(r,iw):
+            extra=dict(due)
+            if sub=='reading' and kind=='announcement': extra['assessmentFamily']=jl(r.get('resolver_output') or '{}',{}).get('assessmentFamily')
             insert_draft(db,wid,kind,sub,title,text,f'<p>{html.escape(text)}</p>',extra)
-    insert_draft(db,wid,'newsletter','homeroom','Newsletter Draft','Preview newsletter; unsent.','<p>Preview newsletter; unsent.</p>',{'previewOnly':True})
     insert_draft(db,wid,'announcement','all','Weekly Page Update','Preview announcement; unsent.','<p>Preview announcement; unsent.</p>',{'previewOnly':True})
     insert_draft(db,wid,'daily_brief','homeroom','Daily Teacher Brief','Recipient: owen.reagan@thalesacademy.org\nSchedule: 6:15 AM America/New_York instructional days\nWeather: placeholder only.\nClassroom-safe joke: Why did the notebook smile? It had good margins.','<pre>Recipient: owen.reagan@thalesacademy.org</pre>',{'previewOnly':True})
 def insert_draft(db,wid,kind,sub,title,text,html_body,payload): db.execute('INSERT INTO drafts(id,weekly_plan_id,kind,subject,title,body_text,body_html,status,idempotency_key,payload,created_at,updated_at,updated_by) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)',(stable_id('draft',wid,kind,sub,title),wid,kind,sub,title,text,html_body,'draft',stable_id('idem',wid,kind,sub,title),jd(payload),now_utc(),now_utc(),'generator'))
 def replace_deployment(db,wid):
     db.execute('DELETE FROM deployment_items WHERE deployment_plan_id IN (SELECT id FROM deployment_plans WHERE weekly_plan_id=?)',(wid,)); db.execute('DELETE FROM deployment_plans WHERE weekly_plan_id=?',(wid,)); pid=stable_id('deployment',wid)
-    db.execute('INSERT INTO deployment_plans(id,weekly_plan_id,status,payload,created_at,updated_at,updated_by) VALUES(?,?,?,?,?,?,?)',(pid,wid,'preview_only',jd({'previewOnly':True,'canvasWritesAllowed':False,'emailSendsAllowed':False,'scheduleIntent':'Friday 4:00 PM America/New_York','operations':['validate resources','create/update assignments','capture assignment URLs','render agenda pages with verified URLs','publish pages','set front pages','send page-update announcements','send assessment reminders','verify results']}),now_utc(),now_utc(),'generator'))
+    ops=['validate local weekly inputs','generate local assignment previews','render academic agenda previews','generate minimal assessment reminder previews','await teacher approval']
+    db.execute('INSERT INTO deployment_plans(id,weekly_plan_id,status,payload,created_at,updated_at,updated_by) VALUES(?,?,?,?,?,?,?)',(pid,wid,'preview_only',jd({'previewOnly':True,'canvasWritesAllowed':False,'emailSendsAllowed':False,'scheduleIntent':'Friday 4:00 PM America/New_York','operations':ops}),now_utc(),now_utc(),'generator'))
     for i,d in enumerate(db.execute('SELECT * FROM drafts WHERE weekly_plan_id=?',(wid,))):
-        unresolved=['Teacher approval required']; payload=jl(d['payload'],{})
-        if payload.get('unresolvedDueTime'): unresolved.append('Canvas assignment due time unresolved')
+        unresolved=['Teacher approval required']
         db.execute('INSERT INTO deployment_items(id,deployment_plan_id,item_type,target,dependency_order,status,approved,validated,current_year_mapped,stale,already_deployed,unresolved_dependencies,idempotency_key,payload,created_at,updated_at,updated_by) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',(stable_id('deploy-item',d['id']),pid,d['kind'],d['title'],i+1,'blocked_preview',0,0,1,0,0,jd(unresolved),stable_id('idem','deploy',d['id']),jd({'previewOnly':True}),now_utc(),now_utc(),'generator'))
 def row_to_week(db,row):
     w=dict(row); w['deployment_status']=jl(w['deployment_status'],{}); w['payload']=jl(w['payload'],{}); w['subjects']=[]
@@ -713,7 +764,7 @@ def row_to_week(db,row):
     w['drafts']=[dict(x) for x in db.execute('SELECT * FROM drafts WHERE weekly_plan_id=?',(row['id'],))]; w['deploymentPreview']=deployment_preview(db,row['id']); w['validation']=collect_validation(w); return w
 def collect_validation(w):
     vals=[v for s in w.get('subjects',[]) for d in s.get('days',[]) for v in d.get('validation',[])]
-    vals += [{'severity':'warning','message':'Canvas assignment due-time convention remains unresolved; no 12:00 AM or 11:59 PM guess is applied.'},{'severity':'pass','message':'Phase 22 is preview-only: no Canvas writes and no email sends.'}]; return vals
+    vals += [{'severity':'pass','message':'Phase 22 is preview-only: no Canvas writes and no email sends.'}]; return vals
 def deployment_preview(db,wid):
     p=db.execute('SELECT * FROM deployment_plans WHERE weekly_plan_id=?',(wid,)).fetchone()
     if not p: return None
@@ -898,17 +949,18 @@ def command_self_test(a):
     assert resolve_checkout(1)['fluency']=={'wpm':100,'maxErrors':2}; assert resolve_checkout(7)['fluency']=={'wpm':100,'maxErrors':2}
     assert resolve_checkout(8)['fluency']=={'wpm':115,'maxErrors':2}; assert resolve_checkout(10)['fluency']=={'wpm':115,'maxErrors':2}
     assert resolve_checkout(11)['fluency']=={'wpm':130,'maxErrors':2}; assert resolve_checkout(13)['fluency']=={'wpm':130,'maxErrors':2}
-    assert resolve_checkout(2)['passage']=='The Field of Flowers'; assert resolve_checkout(13)['passage']=='The Prince with the Peasants'; assert resolve_checkout(2)['title']=='RM4: Checkout 2'
+    assert resolve_checkout(2)['passage']=='The Field of Flowers'; assert resolve_checkout(13)['passage']=='The Prince with the Peasants'; assert resolve_checkout(2)['title']=='RM4: Fluency Checkout 2'
     fam=reading_assessment_family(2,'2026-07-21'); assert fam['assessmentFamilyId']; assert fam['sourceCheckoutKey']=='Check out 20'
     fam14=reading_assessment_family(14,'2026-07-21'); assert fam14['checkout'] is None and fam14['checkoutNumber'] is None and fam14['warnings']==[]; assert 'Checkout 14' not in reading_announcement_body(fam14); assert reading_checkout_number(14) is None
     assert resolve_math_lesson(1)['suggestedHomework']=='Odds'; assert resolve_fact_test(1)['powerUpCode']; assert resolve_reading_lesson(1)['page']==4
     w=db.current_week()['week']; d=w['subjects'][0]['days'][0]; up=db.patch_table('daily_subject_entries',d['id'],{'lesson':'1','title':'Lesson 1'},d['version'])
     assert up['version']==d['version']+1 and up['record']['title']=='Lesson 1'; assert db.patch_table('daily_subject_entries',d['id'],{'title':'stale'},d['version'])['status']==409
-    by_code=db.get_week_by_code('Q1_W1'); assert by_code['id']==w['id']; demo=build_payload(SYNTHETIC_FIXTURE_PATH,'synthetic-fixture'); assert demo['artifactClassification']=='synthetic-curriculum' and demo['containsStudentData'] is False
+    by_code=db.get_week_by_code(w['payload'].get('instructionalWeek',{}).get('code') or canonical_week_code('Q1W1')); assert by_code and by_code['id']==w['id']; demo=build_payload(SYNTHETIC_FIXTURE_PATH,'synthetic-fixture'); assert demo['artifactClassification']=='synthetic-curriculum' and demo['containsStudentData'] is False
     up2=db.patch_table('daily_subject_entries',d['id'],{'title':'Lesson 2'},up['version']); assert up2['title']=='Lesson 2'
     db2=WorkstationDB(p); got=db2.get_week(w['id']); assert got['subjects'][0]['days'][0]['title']=='Lesson 2'
     db.generate_week(w['id']); html=''.join(x['body_html'] for x in db.get_week(w['id'])['drafts'])
-    assert 'kl_wrapper_3' in html and 'Reminders &amp; Resources' in html and 'display: flex' in html and 'width: 49%' in html and 'In Class' in html and 'At Home' in html
+    assert 'kl_wrapper_3' in html and 'Reminders</h3>' in html and 'Homework</h4>' in html and 'display: flex' in html and 'width: 49%' in html and 'In Class' in html
+    assert 'Reminders &amp; Resources' not in html and '>At Home<' not in html and 'Study Guide' not in html
     assert 'href="#"' not in html; print('PASS Phase 22 self-test complete'); return 0
 def command_runtime_proof(a):
     import tempfile,urllib.request,subprocess,time
@@ -938,7 +990,7 @@ def command_runtime_proof(a):
             try: urllib.request.urlopen(f'http://127.0.0.1:{port}/api/health',timeout=1); break
             except Exception: time.sleep(0.25)
         page=urllib.request.urlopen(f'http://127.0.0.1:{port}/').read().decode(); assert 'Predictive Weekly Planning' in page
-        prev=json.loads(urllib.request.urlopen(f'http://127.0.0.1:{port}/api/weeks/{w["id"]}/agenda-preview').read()); assert 'Reminders &amp; Resources' in prev['html']
+        prev=json.loads(urllib.request.urlopen(f'http://127.0.0.1:{port}/api/weeks/{w["id"]}/agenda-preview').read()); assert 'Reminders</h3>' in prev['html'] and 'Homework</h4>' in prev['html']
     finally: proc2.terminate(); proc2.wait(timeout=5)
     print('PASS Phase 22 runtime proof complete'); return 0
 def command_browser_proof(a):
@@ -1105,9 +1157,8 @@ def command_browser_proof(a):
         # Wait on the authoritative generated SQLite state first. Rendering
         # may lag behind the completed POST in slower headless runs.
         expected_draft_titles={
-            'SM5 Study Guide 7',
-            'SM5 Written Test 7',
-            'SM5 Fact Test 7',
+            'SM5: Written Assessment 7',
+            'SM5: Fact Assessment 7',
         }
         deadline=time.monotonic()+30
         last_generation_state=None
@@ -1134,8 +1185,8 @@ def command_browser_proof(a):
                 ).fetchone()
 
             lesson_drafts_ok=all(
-                any(title.startswith(f'SM5 Lesson {lesson} ') for title in draft_titles)
-                for lesson in (18,19,20)
+                any(title==f'SM5: Lesson {lesson} Homework' for title in draft_titles)
+                for lesson in (18,20)
             )
             assessment_drafts_ok=expected_draft_titles.issubset(draft_titles)
             deployment_ok=bool(
@@ -1169,12 +1220,11 @@ def command_browser_proof(a):
             (() => {
               const drafts=(document.querySelector('#draft-list')||{}).textContent||'';
               const deployment=(document.querySelector('#deployment-list')||{}).textContent||'';
-              return drafts.includes('SM5 Lesson 18 ')
-                && drafts.includes('SM5 Lesson 19 ')
-                && drafts.includes('SM5 Lesson 20 ')
-                && drafts.includes('SM5 Study Guide 7')
-                && drafts.includes('SM5 Written Test 7')
-                && drafts.includes('SM5 Fact Test 7')
+              return drafts.includes('SM5: Lesson 18 Homework')
+                && drafts.includes('SM5: Lesson 20 Homework')
+                && drafts.includes('SM5: Written Assessment 7')
+                && drafts.includes('SM5: Fact Assessment 7')
+                && !drafts.includes('Study Guide')
                 && deployment.includes('blocked_preview');
             })()
             """,
@@ -1250,21 +1300,10 @@ def command_browser_proof(a):
                 )
             }
 
-            assert any(
-                title.startswith('SM5 Lesson 18 ')
-                for title in draft_titles
-            )
-            assert any(
-                title.startswith('SM5 Lesson 19 ')
-                for title in draft_titles
-            )
-            assert any(
-                title.startswith('SM5 Lesson 20 ')
-                for title in draft_titles
-            )
-            assert 'SM5 Study Guide 7' in draft_titles
-            assert 'SM5 Written Test 7' in draft_titles
-            assert 'SM5 Fact Test 7' in draft_titles
+            assert any(title==f'SM5: Lesson {lesson} Homework' for title in draft_titles for lesson in (18,20))
+            assert 'SM5: Written Assessment 7' in draft_titles
+            assert 'SM5: Fact Assessment 7' in draft_titles
+            assert not any('Study Guide' in title for title in draft_titles)
 
             deployment=conn.execute(
                 """

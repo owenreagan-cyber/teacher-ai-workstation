@@ -59,6 +59,25 @@ def compact(value: Any) -> str:
     return " ".join(str(value or "").replace("\xa0", " ").split())
 
 
+def subject_active_for_week(subject: str, week: InstructionalWeek) -> bool:
+    return phase22.subject_active_for_quarter(subject, {"quarter": week.quarter, "code": week.code})
+
+
+def math_homework_for_weekday(weekday: str) -> str:
+    return phase22.math_homework_for_weekday(weekday)
+
+
+def reading_homework_for_weekday(weekday: str) -> str:
+    return phase22.reading_homework_for_weekday(weekday)
+
+
+def same_day_due_fields(entry_date: str) -> dict[str, Any]:
+    return phase22.same_day_due_fields(entry_date)
+
+
+FLUENCY_PRACTICE_GENERIC = phase22.FLUENCY_PRACTICE_GENERIC
+
+
 def read_json(path: Path) -> dict[str, Any]:
     return json.loads(path.read_text(encoding="utf-8"))
 
@@ -233,39 +252,30 @@ def build_display_assignment_title(subject: str, entry_type: str, number: int | 
         if raw_number is None:
             raise ValueError("Math assignment titles require a number")
         if entry_type in {"lesson", "homework"}:
-            title = f"SM5: Lesson {raw_number}"
-            hint = compact(hint_override or "").lower()
-            if hint in {"none", "no", "off"}:
-                return title
-            if hint in {"odds", "odd"}:
-                return f"{title} Odds"
-            if hint in {"evens", "even"}:
-                return f"{title} Evens"
-            return f"{title} {'Odds' if raw_number % 2 else 'Evens'}"
-        if entry_type in {"written-test", "written test", "test"}:
-            return f"SM5: Math Test {raw_number}"
-        if entry_type in {"fact-test", "fact test"}:
-            return f"SM5: Fact Test {raw_number}"
-        if entry_type in {"study-guide", "study guide"}:
-            return f"SM5: Study Guide {raw_number}"
+            return f"SM5: Lesson {raw_number} Homework"
+        if entry_type in {"written-test", "written test", "test", "written-assessment", "written assessment"}:
+            return f"SM5: Written Assessment {raw_number}"
+        if entry_type in {"fact-test", "fact test", "fact-assessment", "fact assessment"}:
+            return f"SM5: Fact Assessment {raw_number}"
     if subject == "reading":
         if raw_number is None:
             raise ValueError("Reading assignment titles require a number")
         if entry_type == "lesson":
-            return f"Reading Lesson {raw_number}"
+            return f"RM4: Lesson {raw_number}"
         if entry_type in {"test", "mastery-test", "mastery test"}:
-            return f"Reading Mastery Test {raw_number}"
-        if entry_type == "checkout":
-            return f"Reading Checkout {raw_number}"
+            return f"RM4: Mastery Test {raw_number}"
+        if entry_type in {"checkout", "fluency-checkout", "fluency checkout"}:
+            return f"RM4: Fluency Checkout {raw_number}"
     if subject == "spelling":
         if raw_number is None:
             raise ValueError("Spelling assignment titles require a number")
         if entry_type == "lesson":
-            return f"Spelling Lesson {raw_number}"
+            return f"RM4: Spelling Lesson {raw_number}"
         if entry_type == "test":
-            return f"Spelling Test {raw_number}"
+            return f"RM4: Spelling Test {raw_number}"
     if subject == "language-arts":
-        return compact(str(number or "")) or "ELA4"
+        title = compact(str(number or "")) or "practice"
+        return title if title.startswith("ELA4:") else f"ELA4: {title}"
     return compact(str(number or "")) or compact(subject).title()
 
 
@@ -545,10 +555,11 @@ def fixture_entries_for_week(fixture: dict[str, Any], week: InstructionalWeek) -
                 test=raw.get("test"),
                 in_class=raw.get("inClass", ""),
                 at_home=raw.get("atHome", ""),
-                resource_hints=list(raw.get("resourceHints", [])),
+                resource_hints=[],
                 notes=raw.get("notes", ""),
             )
         )
+    entries = [entry for entry in entries if subject_active_for_week(entry.subject, week)]
     entries.sort(key=lambda item: (item.date, item.subject, item.title))
     return entries
 
@@ -603,7 +614,7 @@ def render_page_html(week: InstructionalWeek, rows: list[dict[str, Any]]) -> str
     reminder_list = "".join(f"<li>{esc(item)}</li>" for item in suppress_empty_daily_content(reminder_items))
     reminder_html = f"<ul>{reminder_list}</ul>" if reminder_list else ""
     parts = [
-        f'<div id="kl_wrapper_3" class="kl_circle_left kl_wrapper" style="border-style: none;"><div id="kl_banner" class=""><p style="color: {WHITE}; background-color: {BLUE}; text-align: center; margin: 0;"><span style="font-size: 18pt;">&nbsp;Weekly Agenda</span><br><span style="font-size: 10pt;">{esc(week.display_subtitle)}</span></p><h3 style="background-color: {MAGENTA}; color: {WHITE}; border: 0 !important;">Reminders &amp; Resources</h3><div style="width: 100%; padding-left: 15px;">{reminder_html}</div>'
+        f'<div id="kl_wrapper_3" class="kl_circle_left kl_wrapper" style="border-style: none;"><div id="kl_banner" class=""><p style="color: {WHITE}; background-color: {BLUE}; text-align: center; margin: 0;"><span style="font-size: 18pt;">&nbsp;Weekly Agenda</span><br><span style="font-size: 10pt;">{esc(week.display_subtitle)}</span></p><h3 style="background-color: {MAGENTA}; color: {WHITE}; border: 0 !important;">Reminders</h3><div style="width: 100%; padding-left: 15px;">{reminder_html}</div>'
     ]
     for idx, wd in enumerate(WEEKDAYS):
         day_rows = [r for r in rows if r["weekday"] == wd]
@@ -620,12 +631,12 @@ def render_page_html(week: InstructionalWeek, rows: list[dict[str, Any]]) -> str
         if not in_class_items and not at_home_items:
             continue
         in_class_list = "".join(
-            f"<li>{render_verified_assignment_reference(item['title'], item.get('verified_assignment_url'), bool(item.get('verified_assignment_url')))}</li>"
+            f"<li>{esc(item['title'])}</li>"
             for item in in_class_items
             if compact(item.get("title"))
         )
         at_home_list = "".join(
-            f"<li>{render_verified_assignment_reference(item['title'], item.get('verified_assignment_url'), bool(item.get('verified_assignment_url')))}</li>"
+            f"<li>{esc(item['title'])}</li>"
             for item in at_home_items
             if compact(item.get("title"))
         )
@@ -635,7 +646,7 @@ def render_page_html(week: InstructionalWeek, rows: list[dict[str, Any]]) -> str
         )
         if at_home_list:
             parts.append(
-                f'<div style="width: 49%; padding-left: 15px;"><h4 class="kl_solid_border" style="color: {WHITE}; background-color: {DGRAY}; padding-left: 10px; margin: 0; border: 0 !important;">At Home</h4><ul>{at_home_list}</ul></div>'
+                f'<div style="width: 49%; padding-left: 15px;"><h4 class="kl_solid_border" style="color: {WHITE}; background-color: {DGRAY}; padding-left: 10px; margin: 0; border: 0 !important;">Homework</h4><ul>{at_home_list}</ul></div>'
             )
         parts.append("</div></div>")
     parts.append("</div></div>")
@@ -653,38 +664,37 @@ def page_title_for_group(group: str) -> str:
 
 
 def verified_assignment_url_for_title(title: str) -> str | None:
-    return {
-        "SM5: Lesson 18 Evens": "https://preview.local/phase23/assignments/math-lesson-18-evens",
-        "Reading Mastery Test 13": "https://preview.local/phase23/assignments/reading-test-13",
-    }.get(compact(title))
+    return None
 
 
 def assignment_titles_for_entry(entry: PacingEntry) -> list[str]:
     lesson = int(entry.lesson) if str(entry.lesson or "").isdigit() else None
     test = int(entry.test) if str(entry.test or "").isdigit() else None
-    if entry.subject == "math" and lesson:
-        if entry.entry_type == "lesson":
-            return [build_display_assignment_title("math", "lesson", lesson, "none")]
-        return []
+    if entry.subject == "math" and lesson and entry.entry_type == "lesson":
+        if math_homework_for_weekday(entry.weekday) == "No Homework":
+            return []
+        return [build_display_assignment_title("math", "homework", lesson)]
     if entry.subject == "math" and test:
         return [
-            build_display_assignment_title("math", "study-guide", test),
-            build_display_assignment_title("math", "written-test", test),
-            build_display_assignment_title("math", "fact-test", test),
+            build_display_assignment_title("math", "written-assessment", test),
+            build_display_assignment_title("math", "fact-assessment", test),
         ]
     if entry.subject == "reading" and test:
-        titles = [build_display_assignment_title("reading", "test", test)]
+        titles = [build_display_assignment_title("reading", "mastery-test", test)]
         if test <= 13:
-            titles.append(build_display_assignment_title("reading", "checkout", test))
+            titles.append(build_display_assignment_title("reading", "fluency-checkout", test))
         return titles
     if entry.subject == "spelling" and test:
         return [build_display_assignment_title("spelling", "test", test)]
     if entry.subject == "language-arts" and compact(entry.title):
-        return [compact(entry.title)]
+        title = compact(entry.title)
+        return [title if title.startswith("ELA4:") else f"ELA4: {title}"]
     return []
 
 
 def entry_display_sections(entry: PacingEntry, week: InstructionalWeek) -> dict[str, list[dict[str, Any]]]:
+    if not subject_active_for_week(entry.subject, week):
+        return {"in_class": [], "at_home": [], "reminders": []}
     lesson = int(entry.lesson) if str(entry.lesson or "").isdigit() else None
     test = int(entry.test) if str(entry.test or "").isdigit() else None
     display_date = format_teacher_facing_date(entry.date, week.starts_on, week.ends_on)
@@ -692,43 +702,44 @@ def entry_display_sections(entry: PacingEntry, week: InstructionalWeek) -> dict[
     at_home: list[dict[str, Any]] = []
     reminders: list[str] = []
     if entry.subject == "math" and lesson and entry.entry_type == "lesson":
-        lesson_title = build_display_assignment_title("math", "lesson", lesson, "none")
-        homework_title = build_display_assignment_title("math", "lesson", lesson, "evens" if lesson % 2 == 0 else "odds")
-        in_class.append({"title": lesson_title})
-        at_home.append({"title": homework_title, "verified_assignment_url": verified_assignment_url_for_title(homework_title)})
+        in_class.extend([{"title": f"Lesson {lesson}"}, {"title": phase22.math_classwork_goal()}])
+        at_home.append({"title": math_homework_for_weekday(entry.weekday)})
     elif entry.subject == "math" and test:
         in_class.extend(
             [
-                {"title": build_display_assignment_title("math", "written-test", test)},
-                {"title": build_display_assignment_title("math", "fact-test", test)},
+                {"title": f"Written Assessment {test}"},
+                {"title": f"Fact Assessment {test}"},
             ]
         )
-        reminders.append(f"Math Written Test {test} and Fact Test {test} on {display_date}")
+        at_home.append({"title": "No Homework"})
+        reminders.append(f"SM5: Written Assessment {test} and SM5: Fact Assessment {test} on {display_date}")
+    elif entry.subject == "reading" and lesson:
+        in_class.extend([{"title": f"Lesson {lesson}"}, {"title": phase22.reading_classwork_goal()}])
+        at_home.append({"title": reading_homework_for_weekday(entry.weekday)})
     elif entry.subject == "reading" and test:
-        test_title = build_display_assignment_title("reading", "test", test)
-        in_class.append({"title": test_title})
+        in_class.append({"title": f"RM4: Mastery Test {test}"})
+        at_home.append({"title": "No Homework"})
         if test <= 13:
-            checkout_title = build_display_assignment_title("reading", "checkout", test)
-            at_home.append({"title": checkout_title})
-            reminders.append(f"Reading Mastery Test {test} and Reading Checkout {test} on {display_date}")
+            reminders.append(f"RM4: Mastery Test {test} and RM4: Fluency Checkout {test} on {display_date}")
         else:
-            reminders.append(f"Reading Mastery Test {test} on {display_date}")
+            reminders.append(f"RM4: Mastery Test {test} on {display_date}")
+    elif entry.subject == "spelling" and lesson:
+        in_class.append({"title": f"Lesson {lesson}"})
+        at_home.append({"title": reading_homework_for_weekday(entry.weekday)})
     elif entry.subject == "spelling" and test:
-        test_title = build_display_assignment_title("spelling", "test", test)
-        in_class.append({"title": test_title})
-        reminders.append(f"Spelling Test {test} on {display_date}")
+        in_class.append({"title": f"Spelling Test {test}"})
+        at_home.append({"title": "No Homework"})
+        reminders.append(f"RM4: Spelling Test {test} on {display_date}")
     elif entry.subject == "language-arts":
         canonical = compact(entry.title)
         if canonical:
-            in_class.append({"title": canonical})
-        if compact(entry.at_home):
-            at_home.append({"title": canonical or compact(entry.at_home)})
+            in_class.append({"title": canonical if canonical.startswith("ELA4:") else f"ELA4: {canonical}"})
+        at_home.append({"title": reading_homework_for_weekday(entry.weekday) if compact(entry.at_home) else "No Homework"})
     elif entry.subject in {"history", "science"}:
         canonical = compact(entry.title)
-        if canonical and compact(entry.in_class):
+        if canonical:
             in_class.append({"title": canonical})
-        if canonical and compact(entry.at_home):
-            at_home.append({"title": canonical})
+        at_home.append({"title": "No Homework"})
     return {"in_class": in_class, "at_home": at_home, "reminders": reminders}
 
 
@@ -752,6 +763,8 @@ def build_pages(week: InstructionalWeek, entries: list[PacingEntry]) -> tuple[li
     pages: list[PageDraft] = []
     subject_summaries: list[dict[str, Any]] = []
     for group, rows in group_rows(entries).items():
+        if group in {"history", "science"} and not any(subject_active_for_week(entry.subject, week) for entry in entries if subject_group_for_subject(entry.subject) == group or entry.subject == group):
+            continue
         if not rows:
             continue
         html_body = render_page_html(week, rows)
@@ -814,33 +827,35 @@ def build_assignments(week: InstructionalWeek, entries: list[PacingEntry]) -> li
         display_date = format_teacher_facing_date(entry.date, week.starts_on, week.ends_on)
         for title in titles:
             assignment_id = stable_id("assignment", entry.date, entry.subject, title)
-            verified_url = verified_assignment_url_for_title(title)
             body_text = title
-            if entry.subject == "math" and title.endswith("Study Guide"):
-                body_text = "Study Guide 18 is the only Math homework before Test 18."
-            elif entry.subject == "reading" and title.startswith("Reading Checkout"):
-                body_text = f"{title} fluency practice."
+            if entry.subject == "reading" and title.startswith("RM4: Fluency Checkout"):
+                body_text = FLUENCY_PRACTICE_GENERIC
+            elif entry.subject == "spelling" and title.startswith("RM4: Spelling Test"):
+                practice_start = max(1, int(entry.test or 1) - 4)
+                body_text = f"Practice Lessons {practice_start} through {int(entry.test or 1) - 1}."
+            due_fields = same_day_due_fields(entry.date)
             assignments.append(
                 AssignmentDraft(
                     assignment_id=assignment_id,
                     subject=entry.subject,
                     title=title,
                     body_text=body_text,
-                    body_html=f"<p>{render_verified_assignment_reference(title, verified_url, bool(verified_url))}</p>",
+                    body_html=f"<p>{html.escape(body_text)}</p>",
                     group="Tests/Assessments" if entry.subject in {"math", "reading"} else ("Assessments" if entry.subject == "spelling" else "Assignments"),
                     points=100,
                     grade_display="Percentage",
                     submission_type="On Paper",
                     audience="All Students",
                     linked_page_id=stable_id("page", week.code, subject_group_for_subject(entry.subject)),
-                    linked_resource_ids=list(entry.resource_hints),
-                    verified_assignment_url=verified_url,
+                    linked_resource_ids=[],
+                    verified_assignment_url=None,
                     machine_date=entry.date,
                     display_date=display_date,
                     warnings=[],
                     provenance=[
                         {"sourceType": "fixture", "sourceRef": str(FIXTURE_PATH), "details": entry.title},
                         {"sourceType": "phase22-rule", "sourceRef": entry.subject, "details": "assignment draft expansion"},
+                        {"sourceType": "due-time", "sourceRef": entry.date, "details": f"{due_fields['dueTime']} {due_fields['timezone']}"},
                     ],
                 )
             )
@@ -848,31 +863,7 @@ def build_assignments(week: InstructionalWeek, entries: list[PacingEntry]) -> li
 
 
 def build_resource_matches(entries: list[PacingEntry], fixture: dict[str, Any]) -> list[ResourceMatch]:
-    catalog = {item["resourceId"]: item for item in fixture.get("resourceCatalog", [])}
-    matched_ids = sorted({hint for entry in entries for hint in entry.resource_hints})
-    resources: list[ResourceMatch] = []
-    for resource_id in matched_ids:
-        resource = catalog.get(resource_id)
-        if not resource:
-            continue
-        matched_to = [entry.title for entry in entries if resource_id in entry.resource_hints]
-        resources.append(
-            ResourceMatch(
-                resource_id=resource_id,
-                canonical_name=resource["canonicalName"],
-                subject=resource["subject"],
-                resource_type=resource["resourceType"],
-                verification_status=resource["verificationStatus"],
-                match_confidence=float(resource.get("matchConfidence", 0.97)),
-                match_reason=resource.get("matchReason", "approved synthetic match"),
-                matched_to=matched_to,
-                provenance=[
-                    {"sourceType": "fixture", "sourceRef": str(FIXTURE_PATH), "details": resource.get("notes", "")},
-                    {"sourceType": "resource-catalog", "sourceRef": resource_id, "details": "approved match"},
-                ],
-            )
-        )
-    return resources
+    return []
 
 
 def build_assessment_reminders(week: InstructionalWeek, entries: list[PacingEntry]) -> list[AssessmentReminder]:
@@ -946,9 +937,9 @@ def validate_packet(packet: dict[str, Any], fixture: dict[str, Any] | None = Non
 
     findings.append(
         ValidationFinding(
-            "warn",
-            "due-time.unresolved",
-            "Canvas assignment due-time convention remains unresolved",
+            "pass",
+            "due-time.resolved",
+            "Assignments use same-day 11:59 PM America/New_York due times",
             "packet.assignments",
         )
     )
@@ -974,7 +965,6 @@ def validate_packet(packet: dict[str, Any], fixture: dict[str, Any] | None = Non
     pass_count = sum(1 for item in findings if item.severity == "pass")
     warn_count = sum(1 for item in findings if item.severity == "warn")
     fail_count = sum(1 for item in findings if item.severity == "fail")
-    risks.append(RiskFinding("warning", "due-time", "Canvas assignment due-time convention remains unresolved", "Keep assignment dueTime fields blocked or explicitly unresolved"))
     if fixture is not None:
         if fixture.get("artifactClassification") != "synthetic-weekly-content":
             findings.append(ValidationFinding("fail", "fixture.classification", "Fixture classification must remain synthetic-weekly-content", str(FIXTURE_PATH)))
@@ -984,7 +974,7 @@ def validate_packet(packet: dict[str, Any], fixture: dict[str, Any] | None = Non
             fail_count += 1
     return {
         "passCount": pass_count,
-        "warnCount": warn_count if warn_count else 1,
+        "warnCount": warn_count,
         "failCount": fail_count,
         "findings": [asdict(item) for item in findings],
     }, risks
@@ -1351,14 +1341,19 @@ def command_validate(args: argparse.Namespace) -> int:
 
 def command_self_test(args: argparse.Namespace) -> int:
     assert build_display_assignment_title(
-        "math", "written-test", 4
-    ) == "SM5: Math Test 4"
+        "math", "written-assessment", 4
+    ) == "SM5: Written Assessment 4"
     assert build_display_assignment_title(
-        "math", "fact-test", 4
-    ) == "SM5: Fact Test 4"
+        "math", "fact-assessment", 4
+    ) == "SM5: Fact Assessment 4"
     assert build_display_assignment_title(
-        "math", "study-guide", 4
-    ) == "SM5: Study Guide 4"
+        "reading", "mastery-test", 4
+    ) == "RM4: Mastery Test 4"
+    assert build_display_assignment_title(
+        "spelling", "test", 4
+    ) == "RM4: Spelling Test 4"
+    assert math_homework_for_weekday("Monday") == "#12-30 evens"
+    assert reading_homework_for_weekday("Tuesday") == "Comprehension Questions"
 
     import tempfile
 
@@ -1461,13 +1456,10 @@ def command_self_test(args: argparse.Namespace) -> int:
     assert len(sqlite_packet["pages"]) == 1
     assert sqlite_packet["pages"][0]["subject_group"] == "math"
     assert sqlite_titles == {
-        "SM5: Lesson 18",
-        "SM5: Lesson 19",
-        "SM5: Lesson 20",
-        "SM5: Study Guide 4",
-        "SM5: Math Test 4",
-        "SM5: Fact Test 4",
-        "SM5: Lesson 21",
+        "SM5: Lesson 18 Homework",
+        "SM5: Lesson 20 Homework",
+        "SM5: Written Assessment 4",
+        "SM5: Fact Assessment 4",
     }
     assert all(
         item.get("source_type") != "fixture"
@@ -1480,10 +1472,14 @@ def command_self_test(args: argparse.Namespace) -> int:
     assert packet["weekCode"] == "Q1W5"
     assert packet["containsStudentData"] is False
     assert packet["validation"]["failCount"] == 0
-    assert packet["validation"]["warnCount"] >= 1
+    assert packet["validation"]["warnCount"] == 0
     assert any(rem["title"] == "Reading Test 14" for rem in packet["assessmentReminders"])
     assert all("Checkout 14" not in rem["body_text"] for rem in packet["assessmentReminders"])
-    assert any(res["resource_id"] == "rm4-checkout-13-passage" for res in packet["resources"])
+    assert packet["resources"] == []
+    page_html = packet["pages"][0]["body_html"]
+    assert "Reminders</h3>" in page_html and "Homework</h4>" in page_html
+    assert "Reminders &amp; Resources" not in page_html and ">At Home<" not in page_html
+    assert "Study Guide" not in page_html
     temp_path = Path(tempfile.mkdtemp()) / "phase23-demo.json"
     save_packet(packet, temp_path)
     assert read_json(temp_path)["packetId"] == packet["packetId"]

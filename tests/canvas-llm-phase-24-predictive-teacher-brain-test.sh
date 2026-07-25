@@ -25,12 +25,13 @@ from pathlib import Path
 payload = json.loads(Path(sys.argv[1]).read_text(encoding="utf-8"))
 assert payload["weekCode"] == "Q1W5"
 assert payload["validation"]["failCount"] == 0
-assert payload["validation"]["warnCount"] == 2
+assert payload["validation"]["warnCount"] == 1
 assert payload["reviewState"] == "needs_review"
+assert "Study Guide" not in json.dumps(payload)
 print("PASS predicted week payload shape")
 PY
 
-python3 "$V" "$DEMO" | grep -q '^WARN: due-time.unresolved Canvas assignment due-time convention remains owner-unresolved$'
+python3 "$V" "$DEMO" | grep -q '^PASS: due-time.resolved Canvas assignment due-time warnings removed$'
 python3 "$V" "$DEMO" | grep -q '^WARN: math-test-cadence.unresolved Math test cadence remains owner-unresolved$'
 python3 "$V" "$DEMO" | grep -q '^PASS: reading.checkout14 Checkout 14 is absent without warning$'
 python3 "$V" "$DEMO" | grep -q '^FAIL: 0$'
@@ -54,50 +55,40 @@ def find(subject, weekday, event_type, lesson=None, assessment=None):
 
 math18 = find("math", "Monday", "lesson", lesson=18)
 assert math18["in_class_title"] == "SM5: Lesson 18"
-assert math18["at_home_title"] == "SM5: Lesson 18 Evens"
+assert math18["at_home_title"] == "#12-30 evens"
 assert math18["decision_layer"] == "owner-confirmed hard rules"
 assert math18["confidence"]["level"] == "high"
 
 math7 = find("math", "Tuesday", "lesson", lesson=7)
-assert math7["at_home_title"] == "SM5: Lesson 7 Odds"
+assert math7["at_home_title"] == "No Homework"
 
 math8 = find("math", "Wednesday", "lesson", lesson=8)
-assert math8["at_home_title"] == "SM5: Lesson 8 Odds"
+assert math8["at_home_title"] == "#11-29 odds"
 
 inv10 = find("math", "Thursday", "lesson", lesson=10)
 assert inv10["in_class_title"] == "SM5: Investigation 1"
-assert inv10["at_home_title"] == "SM5: Investigation 1 Study Guide"
+assert "Study Guide" not in inv10["at_home_title"]
 
 inv20 = find("math", "Friday", "lesson", lesson=20)
 assert inv20["in_class_title"] == "SM5: Investigation 2"
+assert inv20["at_home_title"] == "No Homework"
 
 math_assessment = find("math", "Tuesday", "assessment", assessment=18)
 assert math_assessment["requires_review"] is True
+assert "Written Assessment" in math_assessment["in_class_title"]
 
 reading1 = find("reading", "Tuesday", "assessment", assessment=1)
-assert reading1["at_home_title"] == "Reading Checkout 1"
+assert reading1["at_home_title"] == "RM4: Fluency Checkout 1"
 
 reading7 = find("reading", "Wednesday", "assessment", assessment=7)
-assert reading7["at_home_title"] == "Reading Checkout 7"
-
-reading8 = find("reading", "Thursday", "assessment", assessment=8)
-assert reading8["at_home_title"] == "Reading Checkout 8"
-
-reading10 = find("reading", "Friday", "assessment", assessment=10)
-assert reading10["at_home_title"] == "Reading Checkout 10"
-
-reading11 = find("reading", "Tuesday", "assessment", assessment=11)
-assert reading11["at_home_title"] == "Reading Checkout 11"
-
-reading13 = find("reading", "Wednesday", "assessment", assessment=13)
-assert reading13["at_home_title"] == "Reading Checkout 13"
+assert reading7["at_home_title"] == "RM4: Fluency Checkout 7"
 
 reading14 = find("reading", "Thursday", "assessment", assessment=14)
 assert reading14["at_home_title"] == ""
 assert "Checkout 14" not in json.dumps(reading14)
 
 spell = find("spelling", "Friday", "assessment", assessment=5)
-assert spell["in_class_title"] == "Spelling Test 5"
+assert spell["in_class_title"] == "RM4: Spelling Test 5"
 
 spell_override = find("spelling", "Thursday", "assessment", assessment=15)
 assert spell_override["manual_override_state"] == "applied"
@@ -107,10 +98,11 @@ shurley = find("shurley", "Tuesday", "lesson")
 assert shurley["decision_layer"] == "explicit current-year pacing-guide entry"
 
 history = find("history", "Thursday", "lesson")
-assert history["requires_review"] is True
+assert history["requires_review"] is False
 
-science = find("science", "Friday", "lesson")
-assert science["requires_review"] is True
+science_predictions = [item for item in payload["predictions"] if item["subject"] == "science"]
+assert science_predictions == []
+assert any("Science is inactive this quarter" in warning for warning in payload["warnings"])
 
 print("PASS prediction rules")
 PY

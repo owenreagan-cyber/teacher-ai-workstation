@@ -47,11 +47,99 @@ def math_homework_title(lesson_number: int, weekday: str, hint_override: str | N
     homework = phase22.math_homework_for_weekday(weekday)
     if homework == "No Homework":
         return "No Homework"
-    return f"SM5: Lesson {lesson_number} Homework"
+    if weekday in phase22.MATH_HOMEWORK_GRADE_DAYS:
+        return phase22.math_homework_assignment_title(weekday, lesson_number)
+    return phase22.math_homework_assignment_title(weekday, lesson_number) if weekday in phase22.MATH_HOMEWORK_GRADE_DAYS else "No Homework"
 
 
 def math_homework_for_weekday(weekday: str) -> str:
     return phase22.math_homework_for_weekday(weekday)
+
+
+def pacing_rows_from_knowledge(knowledge: dict[str, Any], week_code: str) -> list[dict[str, Any]]:
+    rows: list[dict[str, Any]] = []
+    for raw in knowledge.get("pacingGuideEntries", []):
+        if compact(raw.get("weekCode") or week_code) != compact(week_code):
+            continue
+        lesson = raw.get("lessonNumber")
+        assessment = raw.get("assessmentNumber")
+        weekday = raw.get("weekday") or "Monday"
+        subject = compact(raw.get("subject")).lower()
+        rows.append(
+            {
+                "subject": subject,
+                "weekday": weekday,
+                "lesson": str(lesson or ""),
+                "tests": str(assessment or "") if raw.get("eventType") == "assessment" else "",
+                "entry_date": "",
+                "title": "",
+                "resolver_output": json.dumps({"gradedSelectionOverride": raw.get("manualOverride") or {}}),
+            }
+        )
+    return rows
+
+
+def annotate_graded_selection(predictions: list[PredictedInstructionalEvent], knowledge: dict[str, Any], week_code: str) -> tuple[list[PredictedInstructionalEvent], list[str], list[UnresolvedDecision]]:
+    warnings: list[str] = []
+    unresolved: list[UnresolvedDecision] = []
+    week = phase22.instructional_week_by_code(week_code) or {"code": week_code}
+    rows = pacing_rows_from_knowledge(knowledge, week_code)
+    ctx = phase22.build_week_graded_selection_context(rows, week)
+    specs = phase22.selected_graded_assignment_specs(rows, week)
+    selected_keys = {
+        (compact(spec["subject"]).lower(), spec["row"].get("weekday"), compact((spec.get("payload") or {}).get("metadata", {}).get("gradeRole")))
+        for spec in specs
+        if spec.get("kind") == "assignment" and (spec.get("payload") or {}).get("metadata", {}).get("gradeCategory") == "instructional"
+    }
+    for item in predictions:
+        subject = compact(item.subject).lower()
+        weekday = item.weekday
+        if item.event_type == "assessment":
+            item.rules_applied = list(dict.fromkeys([*item.rules_applied, "graded.assessment-event"]))
+            item.explanation = [*item.explanation, "Assessment events remain separate from weekly instructional grade selections."]
+            continue
+        if item.event_type != "lesson":
+            continue
+        roles: list[str] = []
+        if subject == "math":
+            if weekday in phase22.MATH_HOMEWORK_GRADE_DAYS and phase22.math_homework_for_weekday(weekday) != "No Homework":
+                roles.append("homework")
+            if weekday == ctx["mathClassworkDay"]:
+                roles.append("classwork")
+        if subject == "reading":
+            if weekday in phase22.READING_HOMEWORK_GRADE_DAYS and phase22.reading_homework_for_weekday(weekday) != "No Homework":
+                roles.append("homework")
+            if weekday == ctx["readingClassworkDay"]:
+                roles.append("classwork")
+        selected_roles = [role for role in roles if (subject, weekday, role) in selected_keys]
+        if selected_roles:
+            item.rules_applied = list(dict.fromkeys([*item.rules_applied, "graded.selected", *[f"graded.role.{role}" for role in selected_roles]]))
+            item.explanation = [*item.explanation, f"Selected instructional grade preview(s): {', '.join(selected_roles)} on {weekday}."]
+            meta = phase22.graded_selection_metadata(
+                selection_reason=f"owner-confirmed-{weekday.lower()}-selection",
+                grade_role=selected_roles[0],
+                selection_source=ctx["mathClassworkSelectionSource"] if subject == "math" and "classwork" in selected_roles else (ctx["readingClassworkSelectionSource"] if subject == "reading" and "classwork" in selected_roles else "default"),
+                teacher_override_applied=ctx["mathClassworkSelectionSource"] == "teacher-override" or ctx["readingClassworkSelectionSource"] == "teacher-override",
+                default_selection=True,
+                selected_day=weekday,
+            )
+            item.explanation.append(json.dumps({"gradedSelection": meta}, ensure_ascii=False))
+        else:
+            item.rules_applied = list(dict.fromkeys([*item.rules_applied, "graded.non-selected-instructional"]))
+            item.explanation = [*item.explanation, "Instructional agenda item only; no Canvas assignment preview selected for this occurrence."]
+    for bad in ctx.get("overrides", {}).get("invalid") or []:
+        unresolved.append(
+            UnresolvedDecision(
+                decision_id=f"graded-selection-override-{bad.get('field')}",
+                subject="math" if bad.get("field") == "mathClassworkDay" else "reading",
+                week_code=week_code,
+                day="",
+                reason=f"Invalid graded-selection override value: {bad.get('value')}",
+                candidates=[{"field": bad.get("field"), "value": bad.get("value"), "status": "rejected"}],
+            )
+        )
+        warnings.append(f"Invalid graded-selection override for {bad.get('field')}: {bad.get('value')}")
+    return predictions, warnings, unresolved
 
 
 def reading_homework_for_weekday(weekday: str) -> str:
@@ -420,12 +508,15 @@ def predict_week_data(week_code: str, source_path: str | Path, correction_state:
             approved = entry["approvedCorrection"]
             approved_value = compact(approved.get("approvedValue"))
             manual_override = dict(entry.get("manualOverride") or {})
-            if "odds" in approved_value.lower():
-                manual_override["homeworkParity"] = "odds"
-            elif "evens" in approved_value.lower():
-                manual_override["homeworkParity"] = "evens"
-            if "thursday" in approved_value.lower():
-                manual_override["scheduledDay"] = "Thursday"
+            low = approved_value.lower()
+            if "thursday classwork" in low or ("thursday" in low and "classwork" in low):
+                manual_override["classworkDay"] = "Thursday"
+            elif "tuesday classwork" in low or ("tuesday" in low and "classwork" in low):
+                manual_override["classworkDay"] = "Tuesday"
+            elif "wednesday workbook" in low or ("wednesday" in low and "workbook" in low):
+                manual_override["classworkDay"] = "Wednesday"
+            elif "monday workbook" in low or ("monday" in low and "workbook" in low):
+                manual_override["classworkDay"] = "Monday"
             if manual_override:
                 entry["manualOverride"] = manual_override
             teacher_corrections.append(
@@ -443,12 +534,14 @@ def predict_week_data(week_code: str, source_path: str | Path, correction_state:
                 )
             )
         if entry.get("manualOverride"):
+            override_field = "classworkDay" if entry["manualOverride"].get("classworkDay") else ("scheduledDay" if entry["manualOverride"].get("scheduledDay") else "classworkDay")
+            override_value = str(entry["manualOverride"].get("classworkDay") or entry["manualOverride"].get("scheduledDay") or "")
             teacher_overrides.append(TeacherOverride(
                 subject=entry.get("subject", ""),
                 week_code=week_code,
                 day=entry.get("weekday", ""),
-                field="scheduledDay" if entry["manualOverride"].get("scheduledDay") else "homeworkParity",
-                value=str(entry["manualOverride"].get("scheduledDay") or entry["manualOverride"].get("homeworkParity") or ""),
+                field=override_field,
+                value=override_value,
                 scope=entry["manualOverride"].get("scope", "this occurrence only"),
                 timestamp=entry["manualOverride"].get("timestamp") or "2026-07-11T00:00:00Z",
                 reason=entry["manualOverride"].get("reason", ""),
@@ -458,6 +551,9 @@ def predict_week_data(week_code: str, source_path: str | Path, correction_state:
         predictions.extend(item_predictions)
         unresolved_decisions.extend(item_unresolved)
         warnings.extend(item_warnings)
+    predictions, selection_warnings, selection_unresolved = annotate_graded_selection(predictions, knowledge, week_code)
+    unresolved_decisions.extend(selection_unresolved)
+    warnings.extend(selection_warnings)
     if "Math test cadence remains owner-unresolved" not in warnings:
         warnings.append("Math test cadence remains owner-unresolved")
     warnings = list(dict.fromkeys(warnings))
@@ -498,6 +594,20 @@ def validate_week_prediction(payload: dict[str, Any]) -> dict[str, Any]:
         findings.append({"severity": "warn", "code": "math-test-cadence.unresolved", "message": "Math test cadence remains owner-unresolved", "target": "week"})
     else:
         findings.append({"severity": "pass", "code": "math-test-cadence.unresolved", "message": "Math test cadence resolved", "target": "week"})
+    week = phase22.instructional_week_by_code(payload.get("weekCode") or "") or {"code": payload.get("weekCode")}
+    rows = []
+    for item in payload.get("predictions", []):
+        if item.get("event_type") == "lesson":
+            rows.append({"subject": item.get("subject"), "weekday": item.get("weekday"), "lesson": str(item.get("lesson_number") or ""), "tests": "", "entry_date": "", "title": ""})
+        elif item.get("event_type") == "assessment":
+            rows.append({"subject": item.get("subject"), "weekday": item.get("weekday"), "lesson": "", "tests": str(item.get("assessment_number") or ""), "entry_date": "", "title": ""})
+    window_findings = phase22.validate_assessment_schedule_windows(rows, week)
+    if any(item.get("severity") == "pass" and item.get("code") == "math-written.window" for item in window_findings):
+        findings.append({"severity": "pass", "code": "assessment-window.math-written", "message": "Math Written Assessment window validation recorded", "target": "week"})
+    if any(item.get("severity") == "pass" and item.get("code") == "reading-mastery.window" for item in window_findings):
+        findings.append({"severity": "pass", "code": "assessment-window.reading-mastery", "message": "Reading Mastery Test window validation recorded", "target": "week"})
+    if any(item.get("severity") == "pass" and item.get("code") == "spelling-test.window" for item in window_findings):
+        findings.append({"severity": "pass", "code": "assessment-window.spelling", "message": "Spelling Test window validation recorded", "target": "week"})
     reading14 = [item for item in payload.get("predictions", []) if compact(item.get("subject")).lower() == "reading" and int(item.get("assessment_number") or 0) == 14]
     has_checkout14 = any(
         compact(item.get("at_home_title")).lower().startswith("reading checkout 14")

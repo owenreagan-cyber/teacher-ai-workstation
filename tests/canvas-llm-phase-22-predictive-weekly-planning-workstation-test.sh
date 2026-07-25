@@ -108,6 +108,92 @@ assert 'href="#"' not in html
 assert p.resolve_math_lesson(1)['suggestedHomework'] == 'Odds'
 assert p.resolve_course('2026-2027', 'production', 'reading')['courseId'] == p.resolve_course('2026-2027', 'production', 'spelling')['courseId']
 assert p.phase22_validate_artifact_payload(p.build_payload(Path('fixtures/canvas-llm/phase-22/synthetic-pacing-guide.csv'), 'synthetic-fixture'))['safe']
+
+def rows(*items):
+    return [dict(x) for x in items]
+
+week_meta={'quarter':1,'code':'Q1W5'}
+normal_math=rows(
+    {'subject':'math','weekday':'Monday','lesson':'18','tests':'','entry_date':'2026-08-17'},
+    {'subject':'math','weekday':'Tuesday','lesson':'19','tests':'','entry_date':'2026-08-18'},
+    {'subject':'math','weekday':'Wednesday','lesson':'20','tests':'','entry_date':'2026-08-19'},
+    {'subject':'math','weekday':'Thursday','lesson':'21','tests':'','entry_date':'2026-08-20'},
+    {'subject':'math','weekday':'Friday','lesson':'22','tests':'','entry_date':'2026-08-21'},
+)
+specs=p.selected_graded_assignment_specs(normal_math, week_meta)
+math_instructional=[s for s in specs if s['subject']=='math' and s['payload']['metadata']['gradeCategory']=='instructional']
+assert len(math_instructional)==3
+assert any(s['title']==p.math_homework_assignment_title('Monday',18) for s in math_instructional)
+assert any(s['title']==p.math_homework_assignment_title('Wednesday',20) for s in math_instructional)
+assert any(s['title']==p.math_classwork_assignment_title('Tuesday',19) for s in math_instructional)
+assert not any(s['title']==p.math_classwork_assignment_title('Thursday',21) for s in math_instructional)
+
+displaced_math=rows(
+    {'subject':'math','weekday':'Monday','lesson':'18','tests':'','entry_date':'2026-08-17'},
+    {'subject':'math','weekday':'Tuesday','lesson':'','tests':'4','entry_date':'2026-08-18'},
+    {'subject':'math','weekday':'Wednesday','lesson':'20','tests':'','entry_date':'2026-08-19'},
+    {'subject':'math','weekday':'Thursday','lesson':'21','tests':'','entry_date':'2026-08-20'},
+)
+specs=p.selected_graded_assignment_specs(displaced_math, week_meta)
+math_instructional=[s for s in specs if s['subject']=='math' and s['payload']['metadata']['gradeCategory']=='instructional']
+assert len(math_instructional)==3
+assert any(s['title']==p.math_classwork_assignment_title('Thursday',21) for s in math_instructional)
+assert not any(s['title']==p.math_classwork_assignment_title('Tuesday',19) for s in math_instructional)
+assert any(s['title']=='SM5: Written Assessment 4' for s in specs)
+
+override_math=rows(
+    {'subject':'math','weekday':'Monday','lesson':'18','tests':'','entry_date':'2026-08-17','resolver_output':'{"gradedSelectionOverride":{"classworkDay":"Thursday"}}'},
+    {'subject':'math','weekday':'Tuesday','lesson':'19','tests':'','entry_date':'2026-08-18'},
+    {'subject':'math','weekday':'Wednesday','lesson':'20','tests':'','entry_date':'2026-08-19'},
+    {'subject':'math','weekday':'Thursday','lesson':'21','tests':'','entry_date':'2026-08-20'},
+)
+specs=p.selected_graded_assignment_specs(override_math, week_meta)
+assert any(s['title']==p.math_classwork_assignment_title('Thursday',21) and s['payload']['metadata']['teacherOverrideApplied'] for s in specs)
+
+normal_reading=rows(
+    {'subject':'reading','weekday':'Monday','lesson':'50','tests':'','entry_date':'2026-08-17'},
+    {'subject':'reading','weekday':'Tuesday','lesson':'51','tests':'','entry_date':'2026-08-18'},
+    {'subject':'reading','weekday':'Wednesday','lesson':'52','tests':'','entry_date':'2026-08-19'},
+    {'subject':'reading','weekday':'Thursday','lesson':'53','tests':'','entry_date':'2026-08-20'},
+)
+specs=p.selected_graded_assignment_specs(normal_reading, week_meta)
+reading_instructional=[s for s in specs if s['subject']=='reading' and s['payload']['metadata']['gradeCategory']=='instructional']
+assert len(reading_instructional)==3
+assert any(s['title']==p.reading_classwork_assignment_title('Monday',50) for s in reading_instructional)
+assert not any(s['title']==p.reading_classwork_assignment_title('Wednesday',52) for s in reading_instructional)
+
+reading_override=rows(
+    {'subject':'reading','weekday':'Monday','lesson':'50','tests':'','entry_date':'2026-08-17'},
+    {'subject':'reading','weekday':'Tuesday','lesson':'51','tests':'','entry_date':'2026-08-18'},
+    {'subject':'reading','weekday':'Wednesday','lesson':'52','tests':'','entry_date':'2026-08-19','resolver_output':'{"gradedSelectionOverride":{"classworkDay":"Wednesday"}}'},
+    {'subject':'reading','weekday':'Thursday','lesson':'53','tests':'','entry_date':'2026-08-20'},
+)
+specs=p.selected_graded_assignment_specs(reading_override, week_meta)
+assert any(s['title']==p.reading_classwork_assignment_title('Wednesday',52) and s['payload']['metadata']['teacherOverrideApplied'] for s in specs)
+assert not any(s['title']==p.reading_classwork_assignment_title('Monday',50) for s in specs)
+
+other=rows(
+    {'subject':'spelling','weekday':'Tuesday','lesson':'5','tests':'','entry_date':'2026-08-18'},
+    {'subject':'language-arts','weekday':'Wednesday','lesson':'3','tests':'','entry_date':'2026-08-19','title':'ELA4: Chapter 3 Practice'},
+    {'subject':'history','weekday':'Thursday','lesson':'4','tests':'','entry_date':'2026-08-20','title':'HIST4: Ancient Rome, Lesson 4'},
+    {'subject':'science','weekday':'Friday','lesson':'2','tests':'','entry_date':'2026-08-21','title':'SCI4: Life Cycles, Lesson 2'},
+)
+specs=p.selected_graded_assignment_specs(other, week_meta)
+assert not any(s['subject'] in {'spelling','language-arts','history','science'} and s['payload']['metadata']['gradeRole'] in {'homework','classwork'} for s in specs)
+
+window_rows=rows(
+    {'subject':'math','weekday':'Tuesday','lesson':'','tests':'4','entry_date':'2026-08-18'},
+    {'subject':'reading','weekday':'Wednesday','lesson':'','tests':'7','entry_date':'2026-08-19'},
+    {'subject':'spelling','weekday':'Friday','lesson':'','tests':'5','entry_date':'2026-08-21'},
+)
+findings=p.validate_assessment_schedule_windows(window_rows, week_meta)
+assert any(f['code']=='math-written.window' and f['severity']=='pass' for f in findings)
+assert any(f['code']=='reading-mastery.window' and f['severity']=='pass' for f in findings)
+assert any(f['code']=='spelling-test.window' and f['severity']=='pass' for f in findings)
+
+due=p.same_day_due_fields('2026-08-17')
+assert due['dueTime']=='11:59 PM' and due['points']==100 and due['gradeDisplay']=='Percentage'
+print('PASS C0M graded-item selection')
 print('PASS python behavior')
 PY
 bash scripts/canvas-llm-phase-22-predictive-weekly-planning-workstation-status.sh >"$T/status.txt" 2>&1 || { cat "$T/status.txt"; exit 1; }

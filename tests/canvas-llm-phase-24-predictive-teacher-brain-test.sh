@@ -163,4 +163,24 @@ assert any(path.name == 'Q1W5.json' for path in (root / 'quarantine').rglob('Q1W
 print('PASS correction memory')
 PY
 
+python3 - <<'PY'
+import json
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path('.').resolve()))
+from scripts.canvas_llm_phase24.rule_engine import predict_week_data, annotate_graded_selection
+from scripts.canvas_llm_phase24.pacing_knowledge import load_pacing_knowledge
+
+fixture = Path('fixtures/canvas-llm/phase-24/predictive-teacher-brain.json')
+knowledge = load_pacing_knowledge(fixture)
+prediction = predict_week_data('Q1W5', fixture, {'records': []})
+selected = [item for item in prediction.predictions if 'graded.selected' in item.rules_applied]
+non_selected = [item for item in prediction.predictions if 'graded.non-selected-instructional' in item.rules_applied]
+assert any('graded.selected' in item.rules_applied for item in prediction.predictions)
+assert any('graded.non-selected-instructional' in item.rules_applied for item in prediction.predictions)
+assert any('Math test cadence remains owner-unresolved' in warning for warning in prediction.warnings)
+assert not any(item.field == 'homeworkParity' for item in prediction.teacher_overrides)
+print('PASS C0M graded-item selection metadata')
+PY
+
 echo "PASS: Canvas LLM Phase 24 predictive teacher brain tests complete"

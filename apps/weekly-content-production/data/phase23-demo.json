@@ -34,7 +34,8 @@
       "display_date": "Wednesday",
       "linked_assignment_ids": [
         "p23-c0d34d1195a555d20b",
-        "p23-a2274f0daa5ac0c157"
+        "p23-a2274f0daa5ac0c157",
+        "p23-3c8693052ca7b95cf2"
       ],
       "provenance": [
         {
@@ -98,13 +99,13 @@
   ],
   "assignments": [
     {
-      "assignment_id": "p23-7d4b46a46f68dd4de9",
+      "assignment_id": "p23-aaaf4102779c89e400",
       "audience": "All Students",
-      "body_html": "<p>SM5: Lesson 18 Homework</p>",
-      "body_text": "SM5: Lesson 18 Homework",
+      "body_html": "<p>Classwork: #1-10\nHomework: #12-30 evens</p>",
+      "body_text": "Classwork: #1-10\nHomework: #12-30 evens",
       "display_date": "Monday",
       "grade_display": "Percentage",
-      "group": "Tests/Assessments",
+      "group": "Assignments",
       "linked_page_id": "p23-3d7341f76241f3fbcc",
       "linked_resource_ids": [],
       "machine_date": "2026-08-17",
@@ -116,7 +117,7 @@
           "sourceType": "fixture"
         },
         {
-          "details": "assignment draft expansion",
+          "details": "owner-confirmed-monday-homework",
           "sourceRef": "math",
           "sourceType": "phase22-rule"
         },
@@ -126,17 +127,252 @@
           "sourceType": "due-time"
         }
       ],
+      "selection_metadata": {
+        "defaultSelection": true,
+        "gradeCategory": "instructional",
+        "gradeRole": "homework",
+        "graded": true,
+        "selectedDay": "Monday",
+        "selectionReason": "owner-confirmed-monday-homework",
+        "selectionSource": "default",
+        "teacherOverrideApplied": false
+      },
       "subject": "math",
       "submission_type": "On Paper",
-      "title": "SM5: Lesson 18 Homework",
+      "title": "SM5: Monday Homework — Lesson 18",
+      "verified_assignment_url": null,
+      "warnings": []
+    },
+    {
+      "assignment_id": "p23-c3469ae1ef8d9b2573",
+      "audience": "All Students",
+      "body_html": "<p>Classwork: #1-10\nHomework: #11-29 odds</p>",
+      "body_text": "Classwork: #1-10\nHomework: #11-29 odds",
+      "display_date": "Wednesday",
+      "grade_display": "Percentage",
+      "group": "Assignments",
+      "linked_page_id": "p23-3d7341f76241f3fbcc",
+      "linked_resource_ids": [],
+      "machine_date": "2026-08-19",
+      "points": 100,
+      "provenance": [
+        {
+          "details": "SM5: Lesson 19",
+          "sourceRef": "/Users/owen/Projects/teacher-ai-workstation/fixtures/canvas-llm/phase-23/synthetic-weekly-content.json",
+          "sourceType": "fixture"
+        },
+        {
+          "details": "owner-confirmed-wednesday-homework",
+          "sourceRef": "math",
+          "sourceType": "phase22-rule"
+        },
+        {
+          "details": "11:59 PM America/New_York",
+          "sourceRef": "2026-08-19",
+          "sourceType": "due-time"
+        }
+      ],
+      "selection_metadata": {
+        "defaultSelection": true,
+        "gradeCategory": "instructional",
+        "gradeRole": "homework",
+        "graded": true,
+        "selectedDay": "Wednesday",
+        "selectionReason": "owner-confirmed-wednesday-homework",
+        "selectionSource": "default",
+        "teacherOverrideApplied": false
+      },
+      "subject": "math",
+      "submission_type": "On Paper",
+      "title": "SM5: Wednesday Homework — Lesson 19",
+      "verified_assignment_url": null,
+      "warnings": []
+    },
+    {
+      "assignment_id": "p23-b6808bc61ad731aa79",
+      "audience": "All Students",
+      "body_html": "<p>Classwork: #1-10</p>",
+      "body_text": "Classwork: #1-10",
+      "display_date": "Thursday",
+      "grade_display": "Percentage",
+      "group": "Assignments",
+      "linked_page_id": "p23-3d7341f76241f3fbcc",
+      "linked_resource_ids": [],
+      "machine_date": "2026-08-20",
+      "points": 100,
+      "provenance": [
+        {
+          "details": "SM5: Lesson 20",
+          "sourceRef": "/Users/owen/Projects/teacher-ai-workstation/fixtures/canvas-llm/phase-23/synthetic-weekly-content.json",
+          "sourceType": "fixture"
+        },
+        {
+          "details": "owner-confirmed-thursday-classwork",
+          "sourceRef": "math",
+          "sourceType": "phase22-rule"
+        },
+        {
+          "details": "11:59 PM America/New_York",
+          "sourceRef": "2026-08-20",
+          "sourceType": "due-time"
+        }
+      ],
+      "selection_metadata": {
+        "defaultSelection": false,
+        "gradeCategory": "instructional",
+        "gradeRole": "classwork",
+        "graded": true,
+        "selectedDay": "Thursday",
+        "selectionReason": "owner-confirmed-thursday-classwork",
+        "selectionSource": "assessment-displacement",
+        "teacherOverrideApplied": false
+      },
+      "subject": "math",
+      "submission_type": "On Paper",
+      "title": "SM5: Thursday Classwork — Lesson 20",
+      "verified_assignment_url": null,
+      "warnings": []
+    },
+    {
+      "assignment_id": "p23-6bbe60dea7994461a4",
+      "audience": "All Students",
+      "body_html": "<p>Homework: Comprehension Questions</p>",
+      "body_text": "Homework: Comprehension Questions",
+      "display_date": "Tuesday",
+      "grade_display": "Percentage",
+      "group": "Assignments",
+      "linked_page_id": "p23-a8b887a34247681d59",
+      "linked_resource_ids": [],
+      "machine_date": "2026-08-18",
+      "points": 100,
+      "provenance": [
+        {
+          "details": "RM4: Lesson 51",
+          "sourceRef": "/Users/owen/Projects/teacher-ai-workstation/fixtures/canvas-llm/phase-23/synthetic-weekly-content.json",
+          "sourceType": "fixture"
+        },
+        {
+          "details": "owner-confirmed-tuesday-comprehension-homework",
+          "sourceRef": "reading",
+          "sourceType": "phase22-rule"
+        },
+        {
+          "details": "11:59 PM America/New_York",
+          "sourceRef": "2026-08-18",
+          "sourceType": "due-time"
+        }
+      ],
+      "selection_metadata": {
+        "defaultSelection": true,
+        "gradeCategory": "instructional",
+        "gradeRole": "homework",
+        "graded": true,
+        "selectedDay": "Tuesday",
+        "selectionReason": "owner-confirmed-tuesday-comprehension-homework",
+        "selectionSource": "default",
+        "teacherOverrideApplied": false
+      },
+      "subject": "reading",
+      "submission_type": "On Paper",
+      "title": "RM4: Tuesday Comprehension Questions — Lesson 51",
+      "verified_assignment_url": null,
+      "warnings": []
+    },
+    {
+      "assignment_id": "p23-549607f33e6396bf42",
+      "audience": "All Students",
+      "body_html": "<p>Homework: Comprehension Questions</p>",
+      "body_text": "Homework: Comprehension Questions",
+      "display_date": "Thursday",
+      "grade_display": "Percentage",
+      "group": "Assignments",
+      "linked_page_id": "p23-a8b887a34247681d59",
+      "linked_resource_ids": [],
+      "machine_date": "2026-08-20",
+      "points": 100,
+      "provenance": [
+        {
+          "details": "RM4: Lesson 52",
+          "sourceRef": "/Users/owen/Projects/teacher-ai-workstation/fixtures/canvas-llm/phase-23/synthetic-weekly-content.json",
+          "sourceType": "fixture"
+        },
+        {
+          "details": "owner-confirmed-thursday-comprehension-homework",
+          "sourceRef": "reading",
+          "sourceType": "phase22-rule"
+        },
+        {
+          "details": "11:59 PM America/New_York",
+          "sourceRef": "2026-08-20",
+          "sourceType": "due-time"
+        }
+      ],
+      "selection_metadata": {
+        "defaultSelection": true,
+        "gradeCategory": "instructional",
+        "gradeRole": "homework",
+        "graded": true,
+        "selectedDay": "Thursday",
+        "selectionReason": "owner-confirmed-thursday-comprehension-homework",
+        "selectionSource": "default",
+        "teacherOverrideApplied": false
+      },
+      "subject": "reading",
+      "submission_type": "On Paper",
+      "title": "RM4: Thursday Comprehension Questions — Lesson 52",
+      "verified_assignment_url": null,
+      "warnings": []
+    },
+    {
+      "assignment_id": "p23-54a4c1703adebae30d",
+      "audience": "All Students",
+      "body_html": "<p>Classwork: Workbook</p>",
+      "body_text": "Classwork: Workbook",
+      "display_date": "Monday",
+      "grade_display": "Percentage",
+      "group": "Assignments",
+      "linked_page_id": "p23-a8b887a34247681d59",
+      "linked_resource_ids": [],
+      "machine_date": "2026-08-17",
+      "points": 100,
+      "provenance": [
+        {
+          "details": "RM4: Lesson 50",
+          "sourceRef": "/Users/owen/Projects/teacher-ai-workstation/fixtures/canvas-llm/phase-23/synthetic-weekly-content.json",
+          "sourceType": "fixture"
+        },
+        {
+          "details": "owner-confirmed-monday-workbook-classwork",
+          "sourceRef": "reading",
+          "sourceType": "phase22-rule"
+        },
+        {
+          "details": "11:59 PM America/New_York",
+          "sourceRef": "2026-08-17",
+          "sourceType": "due-time"
+        }
+      ],
+      "selection_metadata": {
+        "defaultSelection": true,
+        "gradeCategory": "instructional",
+        "gradeRole": "classwork",
+        "graded": true,
+        "selectedDay": "Monday",
+        "selectionReason": "owner-confirmed-monday-workbook-classwork",
+        "selectionSource": "default",
+        "teacherOverrideApplied": false
+      },
+      "subject": "reading",
+      "submission_type": "On Paper",
+      "title": "RM4: Monday Workbook Classwork — Lesson 50",
       "verified_assignment_url": null,
       "warnings": []
     },
     {
       "assignment_id": "p23-f4c66acc4d1dbb5f7a",
       "audience": "All Students",
-      "body_html": "<p>SM5: Written Assessment 18</p>",
-      "body_text": "SM5: Written Assessment 18",
+      "body_html": "<p>Local editable written assessment draft.</p>",
+      "body_text": "Local editable written assessment draft.",
       "display_date": "Tuesday",
       "grade_display": "Percentage",
       "group": "Tests/Assessments",
@@ -151,7 +387,7 @@
           "sourceType": "fixture"
         },
         {
-          "details": "assignment draft expansion",
+          "details": "scheduled-written-assessment",
           "sourceRef": "math",
           "sourceType": "phase22-rule"
         },
@@ -161,6 +397,16 @@
           "sourceType": "due-time"
         }
       ],
+      "selection_metadata": {
+        "defaultSelection": false,
+        "gradeCategory": "assessment",
+        "gradeRole": "assessment",
+        "graded": true,
+        "selectedDay": "Tuesday",
+        "selectionReason": "scheduled-written-assessment",
+        "selectionSource": "pacing",
+        "teacherOverrideApplied": false
+      },
       "subject": "math",
       "submission_type": "On Paper",
       "title": "SM5: Written Assessment 18",
@@ -170,8 +416,8 @@
     {
       "assignment_id": "p23-dcdbe9cdacf31e3247",
       "audience": "All Students",
-      "body_html": "<p>SM5: Fact Assessment 18</p>",
-      "body_text": "SM5: Fact Assessment 18",
+      "body_html": "<p>Division with remainders starting with 7/2, 16/3</p>",
+      "body_text": "Division with remainders starting with 7/2, 16/3",
       "display_date": "Tuesday",
       "grade_display": "Percentage",
       "group": "Tests/Assessments",
@@ -186,7 +432,7 @@
           "sourceType": "fixture"
         },
         {
-          "details": "assignment draft expansion",
+          "details": "scheduled-fact-assessment",
           "sourceRef": "math",
           "sourceType": "phase22-rule"
         },
@@ -196,6 +442,16 @@
           "sourceType": "due-time"
         }
       ],
+      "selection_metadata": {
+        "defaultSelection": false,
+        "gradeCategory": "assessment",
+        "gradeRole": "assessment",
+        "graded": true,
+        "selectedDay": "Tuesday",
+        "selectionReason": "scheduled-fact-assessment",
+        "selectionSource": "pacing",
+        "teacherOverrideApplied": false
+      },
       "subject": "math",
       "submission_type": "On Paper",
       "title": "SM5: Fact Assessment 18",
@@ -205,8 +461,8 @@
     {
       "assignment_id": "p23-c0d34d1195a555d20b",
       "audience": "All Students",
-      "body_html": "<p>RM4: Mastery Test 13</p>",
-      "body_text": "RM4: Mastery Test 13",
+      "body_html": "<p>Review Lessons 121-130, including vocabulary and story details.</p>",
+      "body_text": "Review Lessons 121-130, including vocabulary and story details.",
       "display_date": "Wednesday",
       "grade_display": "Percentage",
       "group": "Tests/Assessments",
@@ -221,7 +477,7 @@
           "sourceType": "fixture"
         },
         {
-          "details": "assignment draft expansion",
+          "details": "scheduled-mastery-test",
           "sourceRef": "reading",
           "sourceType": "phase22-rule"
         },
@@ -231,6 +487,16 @@
           "sourceType": "due-time"
         }
       ],
+      "selection_metadata": {
+        "defaultSelection": false,
+        "gradeCategory": "assessment",
+        "gradeRole": "assessment",
+        "graded": true,
+        "selectedDay": "Wednesday",
+        "selectionReason": "scheduled-mastery-test",
+        "selectionSource": "pacing",
+        "teacherOverrideApplied": false
+      },
       "subject": "reading",
       "submission_type": "On Paper",
       "title": "RM4: Mastery Test 13",
@@ -256,7 +522,7 @@
           "sourceType": "fixture"
         },
         {
-          "details": "assignment draft expansion",
+          "details": "scheduled-fluency-checkout",
           "sourceRef": "reading",
           "sourceType": "phase22-rule"
         },
@@ -266,6 +532,16 @@
           "sourceType": "due-time"
         }
       ],
+      "selection_metadata": {
+        "defaultSelection": false,
+        "gradeCategory": "assessment",
+        "gradeRole": "assessment",
+        "graded": true,
+        "selectedDay": "Wednesday",
+        "selectionReason": "scheduled-fluency-checkout",
+        "selectionSource": "pacing",
+        "teacherOverrideApplied": false
+      },
       "subject": "reading",
       "submission_type": "On Paper",
       "title": "RM4: Fluency Checkout 13",
@@ -291,7 +567,7 @@
           "sourceType": "fixture"
         },
         {
-          "details": "assignment draft expansion",
+          "details": "scheduled-spelling-test",
           "sourceRef": "spelling",
           "sourceType": "phase22-rule"
         },
@@ -301,6 +577,16 @@
           "sourceType": "due-time"
         }
       ],
+      "selection_metadata": {
+        "defaultSelection": false,
+        "gradeCategory": "assessment",
+        "gradeRole": "assessment",
+        "graded": true,
+        "selectedDay": "Wednesday",
+        "selectionReason": "scheduled-spelling-test",
+        "selectionSource": "pacing",
+        "teacherOverrideApplied": false
+      },
       "subject": "spelling",
       "submission_type": "On Paper",
       "title": "RM4: Spelling Test 6",
@@ -308,45 +594,10 @@
       "warnings": []
     },
     {
-      "assignment_id": "p23-d7c383c20641c70799",
-      "audience": "All Students",
-      "body_html": "<p>ELA4: Chapter 3 Practice</p>",
-      "body_text": "ELA4: Chapter 3 Practice",
-      "display_date": "Thursday",
-      "grade_display": "Percentage",
-      "group": "Assignments",
-      "linked_page_id": "p23-9eeefd2e992e979caf",
-      "linked_resource_ids": [],
-      "machine_date": "2026-08-20",
-      "points": 100,
-      "provenance": [
-        {
-          "details": "ELA4: Chapter 3 Practice",
-          "sourceRef": "/Users/owen/Projects/teacher-ai-workstation/fixtures/canvas-llm/phase-23/synthetic-weekly-content.json",
-          "sourceType": "fixture"
-        },
-        {
-          "details": "assignment draft expansion",
-          "sourceRef": "language-arts",
-          "sourceType": "phase22-rule"
-        },
-        {
-          "details": "11:59 PM America/New_York",
-          "sourceRef": "2026-08-20",
-          "sourceType": "due-time"
-        }
-      ],
-      "subject": "language-arts",
-      "submission_type": "On Paper",
-      "title": "ELA4: Chapter 3 Practice",
-      "verified_assignment_url": null,
-      "warnings": []
-    },
-    {
       "assignment_id": "p23-cbf1f4758f4fa3fda5",
       "audience": "All Students",
-      "body_html": "<p>RM4: Mastery Test 14</p>",
-      "body_text": "RM4: Mastery Test 14",
+      "body_html": "<p>Review Lessons 131-140, including vocabulary and story details.</p>",
+      "body_text": "Review Lessons 131-140, including vocabulary and story details.",
       "display_date": "Thursday",
       "grade_display": "Percentage",
       "group": "Tests/Assessments",
@@ -361,7 +612,7 @@
           "sourceType": "fixture"
         },
         {
-          "details": "assignment draft expansion",
+          "details": "scheduled-mastery-test",
           "sourceRef": "reading",
           "sourceType": "phase22-rule"
         },
@@ -371,6 +622,16 @@
           "sourceType": "due-time"
         }
       ],
+      "selection_metadata": {
+        "defaultSelection": false,
+        "gradeCategory": "assessment",
+        "gradeRole": "assessment",
+        "graded": true,
+        "selectedDay": "Thursday",
+        "selectionReason": "scheduled-mastery-test",
+        "selectionSource": "pacing",
+        "teacherOverrideApplied": false
+      },
       "subject": "reading",
       "submission_type": "On Paper",
       "title": "RM4: Mastery Test 14",
@@ -380,14 +641,16 @@
   ],
   "containsStudentData": false,
   "deploymentState": "preview-only",
-  "generatedAt": "2026-07-25T18:41:47Z",
-  "packetId": "p23-cef064489f5bda96a0",
+  "generatedAt": "2026-07-25T19:49:09Z",
+  "packetId": "p23-7b22aec2ca0e40e425",
   "pages": [
     {
-      "body_html": "<div id=\"kl_wrapper_3\" class=\"kl_circle_left kl_wrapper\" style=\"border-style: none;\"><div id=\"kl_banner\" class=\"\"><p style=\"color: #ffffff; background-color: #0065a7; text-align: center; margin: 0;\"><span style=\"font-size: 18pt;\">&nbsp;Weekly Agenda</span><br><span style=\"font-size: 10pt;\">Quarter 1, Week 5 | August 17–21, 2026</span></p><h3 style=\"background-color: #c51062; color: #ffffff; border: 0 !important;\">Reminders</h3><div style=\"width: 100%; padding-left: 15px;\"><ul><li>SM5: Written Assessment 18 and SM5: Fact Assessment 18 on Tuesday</li></ul></div><div id=\"kl_activities2\" class=\"\"><h3 style=\"color: #ffffff; background-color: #0065a7; margin-top: 15px; margin-bottom: 2px; border: 0 !important;\">Monday</h3><div style=\"display: flex; width: 100%;\"><div style=\"width: 49%; padding-left: 15px;\"><h4 class=\"kl_solid_border\" style=\"color: #ffffff; background-color: #333333; padding-left: 10px; margin: 0; border: 0 !important;\">In Class</h4><ul><li>Lesson 18</li><li>#1-10</li></ul></div><div style=\"width: 49%; padding-left: 15px;\"><h4 class=\"kl_solid_border\" style=\"color: #ffffff; background-color: #333333; padding-left: 10px; margin: 0; border: 0 !important;\">Homework</h4><ul><li>#12-30 evens</li></ul></div></div></div><div id=\"kl_custom_block_4\" class=\"\"><h3 style=\"color: #ffffff; background-color: #0065a7; margin-top: 15px; margin-bottom: 2px; border: 0 !important;\">Tuesday</h3><div style=\"display: flex; width: 100%;\"><div style=\"width: 49%; padding-left: 15px;\"><h4 class=\"kl_solid_border\" style=\"color: #ffffff; background-color: #333333; padding-left: 10px; margin: 0; border: 0 !important;\">In Class</h4><ul><li>Written Assessment 18</li><li>Fact Assessment 18</li></ul></div><div style=\"width: 49%; padding-left: 15px;\"><h4 class=\"kl_solid_border\" style=\"color: #ffffff; background-color: #333333; padding-left: 10px; margin: 0; border: 0 !important;\">Homework</h4><ul><li>No Homework</li></ul></div></div></div></div></div>",
-      "body_text": "Monday: Lesson 18; #1-10; #12-30 evens\nTuesday: Written Assessment 18; Fact Assessment 18; No Homework",
+      "body_html": "<div id=\"kl_wrapper_3\" class=\"kl_circle_left kl_wrapper\" style=\"border-style: none;\"><div id=\"kl_banner\" class=\"\"><p style=\"color: #ffffff; background-color: #0065a7; text-align: center; margin: 0;\"><span style=\"font-size: 18pt;\">&nbsp;Weekly Agenda</span><br><span style=\"font-size: 10pt;\">Quarter 1, Week 5 | August 17–21, 2026</span></p><h3 style=\"background-color: #c51062; color: #ffffff; border: 0 !important;\">Reminders</h3><div style=\"width: 100%; padding-left: 15px;\"><ul><li>SM5: Written Assessment 18 and SM5: Fact Assessment 18 on Tuesday</li></ul></div><div id=\"kl_activities2\" class=\"\"><h3 style=\"color: #ffffff; background-color: #0065a7; margin-top: 15px; margin-bottom: 2px; border: 0 !important;\">Monday</h3><div style=\"display: flex; width: 100%;\"><div style=\"width: 49%; padding-left: 15px;\"><h4 class=\"kl_solid_border\" style=\"color: #ffffff; background-color: #333333; padding-left: 10px; margin: 0; border: 0 !important;\">In Class</h4><ul><li>Lesson 18</li><li>#1-10</li></ul></div><div style=\"width: 49%; padding-left: 15px;\"><h4 class=\"kl_solid_border\" style=\"color: #ffffff; background-color: #333333; padding-left: 10px; margin: 0; border: 0 !important;\">Homework</h4><ul><li>#12-30 evens</li></ul></div></div></div><div id=\"kl_custom_block_4\" class=\"\"><h3 style=\"color: #ffffff; background-color: #0065a7; margin-top: 15px; margin-bottom: 2px; border: 0 !important;\">Tuesday</h3><div style=\"display: flex; width: 100%;\"><div style=\"width: 49%; padding-left: 15px;\"><h4 class=\"kl_solid_border\" style=\"color: #ffffff; background-color: #333333; padding-left: 10px; margin: 0; border: 0 !important;\">In Class</h4><ul><li>Written Assessment 18</li><li>Fact Assessment 18</li></ul></div><div style=\"width: 49%; padding-left: 15px;\"><h4 class=\"kl_solid_border\" style=\"color: #ffffff; background-color: #333333; padding-left: 10px; margin: 0; border: 0 !important;\">Homework</h4><ul><li>No Homework</li></ul></div></div></div><div id=\"kl_custom_block_3\" class=\"\"><h3 style=\"color: #ffffff; background-color: #0065a7; margin-top: 15px; margin-bottom: 2px; border: 0 !important;\">Wednesday</h3><div style=\"display: flex; width: 100%;\"><div style=\"width: 49%; padding-left: 15px;\"><h4 class=\"kl_solid_border\" style=\"color: #ffffff; background-color: #333333; padding-left: 10px; margin: 0; border: 0 !important;\">In Class</h4><ul><li>Lesson 19</li><li>#1-10</li></ul></div><div style=\"width: 49%; padding-left: 15px;\"><h4 class=\"kl_solid_border\" style=\"color: #ffffff; background-color: #333333; padding-left: 10px; margin: 0; border: 0 !important;\">Homework</h4><ul><li>#11-29 odds</li></ul></div></div></div><div id=\"kl_custom_block_2\" class=\"\"><h3 style=\"color: #ffffff; background-color: #0065a7; margin-top: 15px; margin-bottom: 2px; border: 0 !important;\">Thursday</h3><div style=\"display: flex; width: 100%;\"><div style=\"width: 49%; padding-left: 15px;\"><h4 class=\"kl_solid_border\" style=\"color: #ffffff; background-color: #333333; padding-left: 10px; margin: 0; border: 0 !important;\">In Class</h4><ul><li>Lesson 20</li><li>#1-10</li></ul></div><div style=\"width: 49%; padding-left: 15px;\"><h4 class=\"kl_solid_border\" style=\"color: #ffffff; background-color: #333333; padding-left: 10px; margin: 0; border: 0 !important;\">Homework</h4><ul><li>No Homework</li></ul></div></div></div></div></div>",
+      "body_text": "Monday: Lesson 18; #1-10; #12-30 evens\nTuesday: Written Assessment 18; Fact Assessment 18; No Homework\nWednesday: Lesson 19; #1-10; #11-29 odds\nThursday: Lesson 20; #1-10; No Homework",
       "linked_assignment_ids": [
-        "p23-7d4b46a46f68dd4de9",
+        "p23-aaaf4102779c89e400",
+        "p23-b6808bc61ad731aa79",
+        "p23-c3469ae1ef8d9b2573",
         "p23-dcdbe9cdacf31e3247",
         "p23-f4c66acc4d1dbb5f7a"
       ],
@@ -409,10 +672,15 @@
       "title": "Math Weekly Agenda"
     },
     {
-      "body_html": "<div id=\"kl_wrapper_3\" class=\"kl_circle_left kl_wrapper\" style=\"border-style: none;\"><div id=\"kl_banner\" class=\"\"><p style=\"color: #ffffff; background-color: #0065a7; text-align: center; margin: 0;\"><span style=\"font-size: 18pt;\">&nbsp;Weekly Agenda</span><br><span style=\"font-size: 10pt;\">Quarter 1, Week 5 | August 17–21, 2026</span></p><h3 style=\"background-color: #c51062; color: #ffffff; border: 0 !important;\">Reminders</h3><div style=\"width: 100%; padding-left: 15px;\"><ul><li>RM4: Mastery Test 13 and RM4: Fluency Checkout 13 on Wednesday</li><li>RM4: Spelling Test 6 on Wednesday</li><li>RM4: Mastery Test 14 on Thursday</li></ul></div><div id=\"kl_custom_block_3\" class=\"\"><h3 style=\"color: #ffffff; background-color: #0065a7; margin-top: 15px; margin-bottom: 2px; border: 0 !important;\">Wednesday</h3><div style=\"display: flex; width: 100%;\"><div style=\"width: 49%; padding-left: 15px;\"><h4 class=\"kl_solid_border\" style=\"color: #ffffff; background-color: #333333; padding-left: 10px; margin: 0; border: 0 !important;\">In Class</h4><ul><li>RM4: Mastery Test 13</li><li>Spelling Test 6</li></ul></div><div style=\"width: 49%; padding-left: 15px;\"><h4 class=\"kl_solid_border\" style=\"color: #ffffff; background-color: #333333; padding-left: 10px; margin: 0; border: 0 !important;\">Homework</h4><ul><li>No Homework</li><li>No Homework</li></ul></div></div></div><div id=\"kl_custom_block_2\" class=\"\"><h3 style=\"color: #ffffff; background-color: #0065a7; margin-top: 15px; margin-bottom: 2px; border: 0 !important;\">Thursday</h3><div style=\"display: flex; width: 100%;\"><div style=\"width: 49%; padding-left: 15px;\"><h4 class=\"kl_solid_border\" style=\"color: #ffffff; background-color: #333333; padding-left: 10px; margin: 0; border: 0 !important;\">In Class</h4><ul><li>RM4: Mastery Test 14</li></ul></div><div style=\"width: 49%; padding-left: 15px;\"><h4 class=\"kl_solid_border\" style=\"color: #ffffff; background-color: #333333; padding-left: 10px; margin: 0; border: 0 !important;\">Homework</h4><ul><li>No Homework</li></ul></div></div></div></div></div>",
-      "body_text": "Wednesday: RM4: Mastery Test 13; No Homework; Spelling Test 6; No Homework\nThursday: RM4: Mastery Test 14; No Homework",
+      "body_html": "<div id=\"kl_wrapper_3\" class=\"kl_circle_left kl_wrapper\" style=\"border-style: none;\"><div id=\"kl_banner\" class=\"\"><p style=\"color: #ffffff; background-color: #0065a7; text-align: center; margin: 0;\"><span style=\"font-size: 18pt;\">&nbsp;Weekly Agenda</span><br><span style=\"font-size: 10pt;\">Quarter 1, Week 5 | August 17–21, 2026</span></p><h3 style=\"background-color: #c51062; color: #ffffff; border: 0 !important;\">Reminders</h3><div style=\"width: 100%; padding-left: 15px;\"><ul><li>RM4: Mastery Test 13 and RM4: Fluency Checkout 13 on Wednesday</li><li>RM4: Spelling Test 6 on Wednesday</li><li>RM4: Mastery Test 14 on Thursday</li></ul></div><div id=\"kl_activities2\" class=\"\"><h3 style=\"color: #ffffff; background-color: #0065a7; margin-top: 15px; margin-bottom: 2px; border: 0 !important;\">Monday</h3><div style=\"display: flex; width: 100%;\"><div style=\"width: 49%; padding-left: 15px;\"><h4 class=\"kl_solid_border\" style=\"color: #ffffff; background-color: #333333; padding-left: 10px; margin: 0; border: 0 !important;\">In Class</h4><ul><li>Lesson 50</li><li>Workbook</li></ul></div><div style=\"width: 49%; padding-left: 15px;\"><h4 class=\"kl_solid_border\" style=\"color: #ffffff; background-color: #333333; padding-left: 10px; margin: 0; border: 0 !important;\">Homework</h4><ul><li>No Homework</li></ul></div></div></div><div id=\"kl_custom_block_4\" class=\"\"><h3 style=\"color: #ffffff; background-color: #0065a7; margin-top: 15px; margin-bottom: 2px; border: 0 !important;\">Tuesday</h3><div style=\"display: flex; width: 100%;\"><div style=\"width: 49%; padding-left: 15px;\"><h4 class=\"kl_solid_border\" style=\"color: #ffffff; background-color: #333333; padding-left: 10px; margin: 0; border: 0 !important;\">In Class</h4><ul><li>Lesson 51</li><li>Workbook</li></ul></div><div style=\"width: 49%; padding-left: 15px;\"><h4 class=\"kl_solid_border\" style=\"color: #ffffff; background-color: #333333; padding-left: 10px; margin: 0; border: 0 !important;\">Homework</h4><ul><li>Comprehension Questions</li></ul></div></div></div><div id=\"kl_custom_block_3\" class=\"\"><h3 style=\"color: #ffffff; background-color: #0065a7; margin-top: 15px; margin-bottom: 2px; border: 0 !important;\">Wednesday</h3><div style=\"display: flex; width: 100%;\"><div style=\"width: 49%; padding-left: 15px;\"><h4 class=\"kl_solid_border\" style=\"color: #ffffff; background-color: #333333; padding-left: 10px; margin: 0; border: 0 !important;\">In Class</h4><ul><li>RM4: Mastery Test 13</li><li>Spelling Test 6</li></ul></div><div style=\"width: 49%; padding-left: 15px;\"><h4 class=\"kl_solid_border\" style=\"color: #ffffff; background-color: #333333; padding-left: 10px; margin: 0; border: 0 !important;\">Homework</h4><ul><li>No Homework</li><li>No Homework</li></ul></div></div></div><div id=\"kl_custom_block_2\" class=\"\"><h3 style=\"color: #ffffff; background-color: #0065a7; margin-top: 15px; margin-bottom: 2px; border: 0 !important;\">Thursday</h3><div style=\"display: flex; width: 100%;\"><div style=\"width: 49%; padding-left: 15px;\"><h4 class=\"kl_solid_border\" style=\"color: #ffffff; background-color: #333333; padding-left: 10px; margin: 0; border: 0 !important;\">In Class</h4><ul><li>Lesson 52</li><li>Workbook</li><li>RM4: Mastery Test 14</li></ul></div><div style=\"width: 49%; padding-left: 15px;\"><h4 class=\"kl_solid_border\" style=\"color: #ffffff; background-color: #333333; padding-left: 10px; margin: 0; border: 0 !important;\">Homework</h4><ul><li>Comprehension Questions</li><li>No Homework</li></ul></div></div></div></div></div>",
+      "body_text": "Monday: Lesson 50; Workbook; No Homework\nTuesday: Lesson 51; Workbook; Comprehension Questions\nWednesday: RM4: Mastery Test 13; No Homework; Spelling Test 6; No Homework\nThursday: Lesson 52; Workbook; Comprehension Questions; RM4: Mastery Test 14; No Homework",
       "linked_assignment_ids": [
+        "p23-3c8693052ca7b95cf2",
+        "p23-4cf57390c2631ef3bb",
+        "p23-549607f33e6396bf42",
+        "p23-54a4c1703adebae30d",
         "p23-5ca78fb5b25f9fe779",
+        "p23-6bbe60dea7994461a4",
         "p23-a2274f0daa5ac0c157",
         "p23-c0d34d1195a555d20b",
         "p23-cbf1f4758f4fa3fda5"
@@ -437,9 +705,7 @@
     {
       "body_html": "<div id=\"kl_wrapper_3\" class=\"kl_circle_left kl_wrapper\" style=\"border-style: none;\"><div id=\"kl_banner\" class=\"\"><p style=\"color: #ffffff; background-color: #0065a7; text-align: center; margin: 0;\"><span style=\"font-size: 18pt;\">&nbsp;Weekly Agenda</span><br><span style=\"font-size: 10pt;\">Quarter 1, Week 5 | August 17–21, 2026</span></p><h3 style=\"background-color: #c51062; color: #ffffff; border: 0 !important;\">Reminders</h3><div style=\"width: 100%; padding-left: 15px;\"></div><div id=\"kl_custom_block_2\" class=\"\"><h3 style=\"color: #ffffff; background-color: #0065a7; margin-top: 15px; margin-bottom: 2px; border: 0 !important;\">Thursday</h3><div style=\"display: flex; width: 100%;\"><div style=\"width: 49%; padding-left: 15px;\"><h4 class=\"kl_solid_border\" style=\"color: #ffffff; background-color: #333333; padding-left: 10px; margin: 0; border: 0 !important;\">In Class</h4><ul><li>ELA4: Chapter 3 Practice</li></ul></div><div style=\"width: 49%; padding-left: 15px;\"><h4 class=\"kl_solid_border\" style=\"color: #ffffff; background-color: #333333; padding-left: 10px; margin: 0; border: 0 !important;\">Homework</h4><ul><li>Comprehension Questions</li></ul></div></div></div></div></div>",
       "body_text": "Thursday: ELA4: Chapter 3 Practice; Comprehension Questions",
-      "linked_assignment_ids": [
-        "p23-d7c383c20641c70799"
-      ],
+      "linked_assignment_ids": [],
       "page_id": "p23-9eeefd2e992e979caf",
       "provenance": [
         {
@@ -502,19 +768,19 @@
   "sourceKind": "synthetic",
   "subjects": [
     {
-      "assignmentCount": 3,
-      "entryCount": 2,
+      "assignmentCount": 5,
+      "entryCount": 4,
       "pageId": "p23-3d7341f76241f3fbcc",
       "subjectGroup": "math"
     },
     {
-      "assignmentCount": 4,
-      "entryCount": 3,
+      "assignmentCount": 9,
+      "entryCount": 6,
       "pageId": "p23-a8b887a34247681d59",
       "subjectGroup": "reading-spelling"
     },
     {
-      "assignmentCount": 1,
+      "assignmentCount": 0,
       "entryCount": 1,
       "pageId": "p23-9eeefd2e992e979caf",
       "subjectGroup": "language-arts"

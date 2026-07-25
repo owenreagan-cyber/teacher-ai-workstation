@@ -370,6 +370,155 @@ def same_day_due_fields(entry_date):
     return {'dueDate':entry_date,'dueTime':'11:59 PM','timezone':'America/New_York','points':100,'gradeDisplay':'Percentage','unresolvedDueTime':False}
 def assignment_due_payload(entry_date):
     return same_day_due_fields(entry_date)
+MATH_CLASSWORK_DAYS=('Tuesday','Thursday')
+READING_CLASSWORK_DAYS=('Monday','Wednesday')
+MATH_HOMEWORK_GRADE_DAYS=('Monday','Wednesday')
+READING_HOMEWORK_GRADE_DAYS=('Tuesday','Thursday')
+GRADED_TITLE_SEP=' \u2014 '
+def graded_selection_metadata(*,graded=True,selection_reason='',grade_category='instructional',grade_role='',selection_source='default',teacher_override_applied=False,default_selection=True,selected_day=''):
+    return {'graded':graded,'selectionReason':selection_reason,'gradeCategory':grade_category,'gradeRole':grade_role,'selectionSource':selection_source,'teacherOverrideApplied':teacher_override_applied,'defaultSelection':default_selection,'selectedDay':selected_day}
+def parse_graded_selection_overrides(week_meta=None,rows=None):
+    overrides={'mathClassworkDay':None,'readingClassworkDay':None,'invalid':[]}
+    payload=dict((week_meta or {}).get('gradedSelectionOverrides') or {})
+    for r in rows or []:
+        ro=jl(r.get('resolver_output') or '{}',{})
+        sel=ro.get('gradedSelectionOverride') or ro.get('manualOverride') or {}
+        classwork_day=sel.get('classworkDay')
+        if compact(r.get('subject')).lower()=='math' and classwork_day:
+            payload['mathClassworkDay']=compact(classwork_day)
+        if compact(r.get('subject')).lower()=='reading' and classwork_day:
+            payload['readingClassworkDay']=compact(classwork_day)
+    math_day=compact(payload.get('mathClassworkDay') or '')
+    if math_day:
+        overrides['mathClassworkDay']=math_day if math_day in MATH_CLASSWORK_DAYS else None
+        if math_day not in MATH_CLASSWORK_DAYS: overrides['invalid'].append({'field':'mathClassworkDay','value':math_day})
+    reading_day=compact(payload.get('readingClassworkDay') or '')
+    if reading_day:
+        overrides['readingClassworkDay']=reading_day if reading_day in READING_CLASSWORK_DAYS else None
+        if reading_day not in READING_CLASSWORK_DAYS: overrides['invalid'].append({'field':'readingClassworkDay','value':reading_day})
+    return overrides
+def row_for_subject_day(rows,subject,weekday):
+    for r in rows:
+        if compact(r.get('subject')).lower()==compact(subject).lower() and r.get('weekday')==weekday: return r
+    return None
+def math_lesson_row(rows,weekday):
+    r=row_for_subject_day(rows,'math',weekday)
+    if r and str(r.get('lesson','')).isdigit() and not str(r.get('tests','')).isdigit(): return r
+    return None
+def reading_lesson_row(rows,weekday):
+    r=row_for_subject_day(rows,'reading',weekday)
+    if r and str(r.get('lesson','')).isdigit() and not str(r.get('tests','')).isdigit(): return r
+    return None
+def math_written_assessment_on_day(rows,weekday='Tuesday'):
+    r=row_for_subject_day(rows,'math',weekday)
+    return bool(r and str(r.get('tests','')).isdigit())
+def monday_reading_classwork_unavailable(rows,week_meta=None):
+    r=row_for_subject_day(rows,'reading','Monday')
+    return bool(r and str(r.get('tests','')).isdigit())
+def resolve_math_classwork_day(rows,override=None):
+    if override in MATH_CLASSWORK_DAYS: return override,'teacher-override',False
+    if math_written_assessment_on_day(rows,'Tuesday'): return 'Thursday','assessment-displacement',True
+    return 'Tuesday','default',True
+def resolve_reading_classwork_day(rows,override=None,week_meta=None):
+    if override in READING_CLASSWORK_DAYS: return override,'teacher-override',False
+    if monday_reading_classwork_unavailable(rows,week_meta): return 'Wednesday','assessment-displacement',True
+    return 'Monday','default',True
+def build_week_graded_selection_context(rows,week_meta=None):
+    overrides=parse_graded_selection_overrides(week_meta,rows)
+    math_day,math_source,math_default=resolve_math_classwork_day(rows,overrides.get('mathClassworkDay'))
+    reading_day,reading_source,reading_default=resolve_reading_classwork_day(rows,overrides.get('readingClassworkDay'),week_meta)
+    return {'mathClassworkDay':math_day,'mathClassworkSelectionSource':math_source,'mathClassworkDefaultSelection':math_default and math_source=='default','readingClassworkDay':reading_day,'readingClassworkSelectionSource':reading_source,'readingClassworkDefaultSelection':reading_default and reading_source=='default','overrides':overrides,'assessmentWindowValidation':validate_assessment_schedule_windows(rows,week_meta,overrides)}
+def math_homework_assignment_title(weekday,lesson_number):
+    return f"SM5: {weekday} Homework{GRADED_TITLE_SEP}Lesson {lesson_number}"
+def math_classwork_assignment_title(weekday,lesson_number):
+    return f"SM5: {weekday} Classwork{GRADED_TITLE_SEP}Lesson {lesson_number}"
+def reading_homework_assignment_title(weekday,lesson_number):
+    return f"RM4: {weekday} Comprehension Questions{GRADED_TITLE_SEP}Lesson {lesson_number}"
+def reading_classwork_assignment_title(weekday,lesson_number):
+    return f"RM4: {weekday} Workbook Classwork{GRADED_TITLE_SEP}Lesson {lesson_number}"
+def math_homework_assignment_description(weekday):
+    if weekday=='Monday': return 'Classwork: #1-10\nHomework: #12-30 evens'
+    if weekday=='Wednesday': return 'Classwork: #1-10\nHomework: #11-29 odds'
+    return ''
+def validate_assessment_schedule_windows(rows,week_meta=None,overrides=None):
+    findings=[]; overrides=overrides or {}
+    def add(code,severity,message,target,weekday=''):
+        findings.append({'code':code,'severity':severity,'message':message,'target':target,'weekday':weekday})
+    for r in rows or []:
+        if not subject_active_for_quarter(r.get('subject'),week_meta): continue
+        s=compact(r.get('subject')).lower(); wd=r.get('weekday') or ''; test=str(r.get('tests') or '').isdigit()
+        if s=='math' and test:
+            approved=bool((overrides or {}).get('mathWrittenAssessmentDay')==wd)
+            if wd=='Tuesday' or approved: add('math-written.window','pass',f'Math Written Assessment on {wd} is within the approved Tuesday window',f'math-test-{r.get("tests")}',wd)
+            else: add('math-written.window','warn',f'Math Written Assessment on {wd} is outside the default Tuesday window',f'math-test-{r.get("tests")}',wd)
+            if wd in {'Tuesday','Wednesday','Thursday','Friday'}: add('math-fact.window','pass',f'Math Fact Assessment on {wd} is within the approved window',f'math-fact-{r.get("tests")}',wd)
+            else: add('math-fact.window','warn',f'Math Fact Assessment on {wd} is outside the approved window',f'math-fact-{r.get("tests")}',wd)
+        if s=='reading' and test:
+            approved=bool((overrides or {}).get('readingMasteryTestDay')==wd)
+            if wd=='Wednesday' or approved: add('reading-mastery.window','pass',f'Reading Mastery Test on {wd} is within the approved Wednesday window',f'reading-test-{r.get("tests")}',wd)
+            else: add('reading-mastery.window','warn',f'Reading Mastery Test on {wd} is outside the default Wednesday window',f'reading-test-{r.get("tests")}',wd)
+            if int(r.get('tests') or 0)<=13 and wd in {'Tuesday','Wednesday','Thursday','Friday'}: add('reading-fluency.window','pass',f'Reading Fluency Checkout on {wd} is within the approved window',f'reading-checkout-{r.get("tests")}',wd)
+        if s=='spelling' and test:
+            if wd in {'Tuesday','Wednesday','Thursday','Friday'}: add('spelling-test.window','pass',f'Spelling Test on {wd} is within the approved window',f'spelling-test-{r.get("tests")}',wd)
+            else: add('spelling-test.window','warn',f'Spelling Test on {wd} is outside the approved window',f'spelling-test-{r.get("tests")}',wd)
+        if s in {'history','science'} and test and wd=='Friday' and subject_active_for_quarter(s,week_meta): add(f'{s}-assessment.window','pass',f'{s.title()} assessment on Friday is within the approved window',f'{s}-test-{r.get("tests")}',wd)
+        elif s in {'history','science'} and test and wd!='Friday' and subject_active_for_quarter(s,week_meta): add(f'{s}-assessment.window','warn',f'{s.title()} assessment on {wd} is outside the default Friday window',f'{s}-test-{r.get("tests")}',wd)
+        if s in {'language-arts','shurley'} and test and wd=='Friday': add('shurley-assessment.window','pass',f'Language Arts assessment on Friday is within the approved window',f'ela-test-{r.get("tests") or r.get("lesson")}',wd)
+        elif s in {'language-arts','shurley'} and test and wd!='Friday': add('shurley-assessment.window','warn',f'Language Arts assessment on {wd} is outside the default Friday window',f'ela-test-{r.get("tests") or r.get("lesson")}',wd)
+    for bad in (overrides or {}).get('invalid') or []:
+        add('graded-selection.override.invalid','warn',f"Invalid graded-selection override for {bad.get('field')}: {bad.get('value')}",bad.get('field') or 'override')
+    return findings
+def selected_graded_assignment_specs(rows,week_meta=None):
+    if not rows: return []
+    ctx=build_week_graded_selection_context(rows,week_meta); specs=[]; seen=set()
+    def append_spec(kind,subject,title,text,row,*,grade_role,selection_reason,selection_source,default_selection,teacher_override_applied=False,grade_category='instructional',extra=None):
+        key=(kind,subject,title,row.get('entry_date'))
+        if key in seen: return
+        seen.add(key)
+        meta=graded_selection_metadata(graded=True,selection_reason=selection_reason,grade_category=grade_category,grade_role=grade_role,selection_source=selection_source,teacher_override_applied=teacher_override_applied,default_selection=default_selection,selected_day=row.get('weekday') or '')
+        payload={'metadata':meta,'entry_date':row.get('entry_date'),'weekday':row.get('weekday') or ''}
+        if extra: payload.update(extra)
+        specs.append({'kind':kind,'subject':subject,'title':title,'text':text,'row':row,'payload':payload})
+    mon=math_lesson_row(rows,'Monday')
+    if mon:
+        lesson=int(mon['lesson']); append_spec('assignment','math',math_homework_assignment_title('Monday',lesson),math_homework_assignment_description('Monday'),mon,grade_role='homework',selection_reason='owner-confirmed-monday-homework',selection_source='default',default_selection=True)
+    wed=math_lesson_row(rows,'Wednesday')
+    if wed:
+        lesson=int(wed['lesson']); append_spec('assignment','math',math_homework_assignment_title('Wednesday',lesson),math_homework_assignment_description('Wednesday'),wed,grade_role='homework',selection_reason='owner-confirmed-wednesday-homework',selection_source='default',default_selection=True)
+    math_cw_day=ctx['mathClassworkDay']; math_cw=math_lesson_row(rows,math_cw_day)
+    if math_cw:
+        lesson=int(math_cw['lesson']); append_spec('assignment','math',math_classwork_assignment_title(math_cw_day,lesson),'Classwork: #1-10',math_cw,grade_role='classwork',selection_reason=f'owner-confirmed-{math_cw_day.lower()}-classwork',selection_source=ctx['mathClassworkSelectionSource'],default_selection=ctx['mathClassworkDefaultSelection'],teacher_override_applied=ctx['mathClassworkSelectionSource']=='teacher-override')
+    for wd in READING_HOMEWORK_GRADE_DAYS:
+        row=reading_lesson_row(rows,wd)
+        if row and reading_homework_for_weekday(wd)!='No Homework':
+            lesson=int(row['lesson']); append_spec('assignment','reading',reading_homework_assignment_title(wd,lesson),'Homework: Comprehension Questions',row,grade_role='homework',selection_reason=f'owner-confirmed-{wd.lower()}-comprehension-homework',selection_source='default',default_selection=True)
+    reading_cw_day=ctx['readingClassworkDay']; reading_cw=reading_lesson_row(rows,reading_cw_day)
+    if reading_cw:
+        lesson=int(reading_cw['lesson']); append_spec('assignment','reading',reading_classwork_assignment_title(reading_cw_day,lesson),'Classwork: Workbook',reading_cw,grade_role='classwork',selection_reason=f'owner-confirmed-{reading_cw_day.lower()}-workbook-classwork',selection_source=ctx['readingClassworkSelectionSource'],default_selection=ctx['readingClassworkDefaultSelection'],teacher_override_applied=ctx['readingClassworkSelectionSource']=='teacher-override')
+    for r in rows:
+        if not subject_active_for_quarter(r.get('subject'),week_meta): continue
+        s=compact(r.get('subject')).lower(); test=int(r['tests']) if str(r.get('tests','')).isdigit() else None
+        if s=='math' and test:
+            append_spec('assignment','math',f'SM5: Written Assessment {test}','Local editable written assessment draft.',r,grade_role='assessment',selection_reason='scheduled-written-assessment',selection_source='pacing',default_selection=False,grade_category='assessment')
+            fam=math_assessment_family(test,r['entry_date'],set()); append_spec('assignment','math',f'SM5: Fact Assessment {test}',fam['factTest']['practiceDescription'],r,grade_role='assessment',selection_reason='scheduled-fact-assessment',selection_source='pacing',default_selection=False,grade_category='assessment')
+        elif s=='reading' and test:
+            fam=reading_assessment_family(test,r['entry_date']); append_spec('assignment','reading',fam['readingTest']['title'],reading_test_description(test),r,grade_role='assessment',selection_reason='scheduled-mastery-test',selection_source='pacing',default_selection=False,grade_category='assessment',extra={'assessmentFamily':fam})
+            if fam['checkout']: append_spec('assignment','reading',fam['checkout']['title'],checkout_description(test),r,grade_role='assessment',selection_reason='scheduled-fluency-checkout',selection_source='pacing',default_selection=False,grade_category='assessment')
+            append_spec('announcement','reading',f"Reading Assessment - {r['entry_date']}",reading_announcement_body(fam),r,grade_role='assessment',selection_reason='assessment-announcement-preview',selection_source='pacing',default_selection=False,grade_category='assessment',extra={'assessmentFamily':fam})
+        elif s=='spelling' and test:
+            practice_start=max(1,test-4); append_spec('assignment','spelling',f'RM4: Spelling Test {test}',f'Practice Lessons {practice_start} through {test-1}.',r,grade_role='assessment',selection_reason='scheduled-spelling-test',selection_source='pacing',default_selection=False,grade_category='assessment')
+        elif s in {'history','science'} and test:
+            title=compact(r.get('title') or f"{s.title()} Assessment")
+            if not title.startswith('HIST4:') and s=='history': title=f'HIST4: {title}'
+            if not title.startswith('SCI4:') and s=='science': title=f'SCI4: {title}'
+            append_spec('assignment',s,title,f'Local {s.title()} assessment draft.',r,grade_role='assessment',selection_reason=f'scheduled-{s}-assessment',selection_source='pacing',default_selection=False,grade_category='assessment')
+        elif s in {'language-arts','shurley'} and test:
+            title=compact(r.get('title') or 'ELA4: Assessment')
+            if not title.startswith('ELA4:'): title=f'ELA4: {title}'
+            append_spec('assignment','language-arts',title,'Local Language Arts assessment draft.',r,grade_role='assessment',selection_reason='scheduled-language-arts-assessment',selection_source='pacing',default_selection=False,grade_category='assessment')
+    return specs
+def instructional_grade_count(specs,subject):
+    return sum(1 for s in specs if compact(s.get('subject')).lower()==subject and (s.get('payload') or {}).get('metadata',{}).get('gradeCategory')=='instructional')
 def resolve_math_lesson(n:int,homework_override=None):
     if not 1<=n<=120: raise ValueError('Math lesson number must be 1-120')
     p=rjson('math/saxon-math-5/lesson-power-up-map.json')['lessonToPowerUp'].get(str(n));
@@ -713,24 +862,15 @@ def render_agenda_html(week_meta,rows,assessments=None,resources=None):
         parts.append(f'<div style="width: 49%; padding-left: 15px;"><h4 class="kl_solid_border" style="color: {WHITE}; background-color: {DGRAY}; padding-left: 10px; margin: 0; border: 0 !important;">Homework</h4><ul>{homework}</ul></div>')
         parts.append('</div></div>')
     parts.append('</div></div>'); return ''.join(parts)
-def assignment_drafts_for_day(r,week_meta=None):
-    if not subject_active_for_quarter(r.get('subject'),week_meta): return []
-    s=r['subject']; lesson=int(r['lesson']) if str(r.get('lesson','')).isdigit() else None; test=int(r['tests']) if str(r.get('tests','')).isdigit() else None; out=[]; due=assignment_due_payload(r['entry_date'])
-    if s in {'history','science'}: return []
-    if s=='math' and test:
-        fam=math_assessment_family(test,r['entry_date'],set()); out=[('assignment','math',f'SM5: Written Assessment {test}','Local editable written assessment draft.'),('assignment','math',f'SM5: Fact Assessment {test}',fam['factTest']['practiceDescription'])]
-    elif s=='math' and lesson and math_homework_for_weekday(r['weekday'])!='No Homework':
-        hw=math_homework_for_weekday(r['weekday']); out=[('assignment','math',f'SM5: Lesson {lesson} Homework',f'Homework: {hw}.')]
-    elif s=='reading' and test:
-        fam=reading_assessment_family(test,r['entry_date']); out=[('assignment','reading',fam['readingTest']['title'],reading_test_description(test))]
-        if fam['checkout']: out.append(('assignment','reading',fam['checkout']['title'],checkout_description(test)))
-        out.append(('announcement','reading',f"Reading Assessment - {r['entry_date']}",reading_announcement_body(fam)))
-    elif s=='spelling' and test:
-        practice_start=max(1,test-4); out=[('assignment','spelling',f'RM4: Spelling Test {test}',f'Practice Lessons {practice_start} through {test-1}.')]
-    elif s=='language-arts' and (lesson or r['title']):
-        title=r['title'] if compact(r.get('title','')).startswith('ELA4:') else f"ELA4: {compact(r.get('title') or 'practice')}"
-        out=[('assignment','language-arts',title,'Local Language Arts draft.')]
-    return [(kind,sub,title,text,due) for kind,sub,title,text in out]
+def assignment_drafts_for_day(r,week_meta=None,selection_ctx=None):
+    return []
+def assignment_drafts_for_week(rows,week_meta=None):
+    specs=selected_graded_assignment_specs(rows,week_meta); out=[]
+    for spec in specs:
+        due=assignment_due_payload(spec['row']['entry_date']); extra=dict(due); extra.update(spec.get('payload') or {})
+        if spec['subject']=='reading' and spec['kind']=='announcement' and spec.get('payload',{}).get('assessmentFamily'): extra['assessmentFamily']=spec['payload']['assessmentFamily']
+        out.append((spec['kind'],spec['subject'],spec['title'],spec['text'],due,extra))
+    return out
 def replace_drafts(db,wid):
     db.execute('DELETE FROM drafts WHERE weekly_plan_id=?',(wid,)); rows=[dict(r) for r in db.execute('SELECT * FROM daily_subject_entries WHERE weekly_plan_id=? ORDER BY entry_date,subject',(wid,))]
     plan=db.execute('SELECT payload,starts_on FROM weekly_plans WHERE id=?',(wid,)).fetchone(); payload=jl(plan['payload'],{}); iw=payload.get('instructionalWeek') or instructional_week_by_starts_on(plan['starts_on']) or {}
@@ -739,11 +879,10 @@ def replace_drafts(db,wid):
         if key in {'history','science'} and not any(subject_active_for_quarter(s,iw) for s in subs): continue
         rs=[r for r in rows if r['subject'] in subs and subject_active_for_quarter(r['subject'],iw)]
         if rs: insert_draft(db,wid,'page',key,f'{key} Agenda',f'{key} Agenda',render_agenda_html(iw,rs),{'subjects':subs,'instructionalWeek':iw})
-    for r in rows:
-        for kind,sub,title,text,due in assignment_drafts_for_day(r,iw):
-            extra=dict(due)
-            if sub=='reading' and kind=='announcement': extra['assessmentFamily']=jl(r.get('resolver_output') or '{}',{}).get('assessmentFamily')
-            insert_draft(db,wid,kind,sub,title,text,f'<p>{html.escape(text)}</p>',extra)
+    active_rows=[r for r in rows if subject_active_for_quarter(r.get('subject'),iw)]
+    selection_ctx=build_week_graded_selection_context(active_rows,iw)
+    for kind,sub,title,text,due,extra in assignment_drafts_for_week(active_rows,iw):
+        insert_draft(db,wid,kind,sub,title,text,f'<p>{html.escape(text)}</p>',extra)
     insert_draft(db,wid,'announcement','all','Weekly Page Update','Preview announcement; unsent.','<p>Preview announcement; unsent.</p>',{'previewOnly':True})
     insert_draft(db,wid,'daily_brief','homeroom','Daily Teacher Brief','Recipient: owen.reagan@thalesacademy.org\nSchedule: 6:15 AM America/New_York instructional days\nWeather: placeholder only.\nClassroom-safe joke: Why did the notebook smile? It had good margins.','<pre>Recipient: owen.reagan@thalesacademy.org</pre>',{'previewOnly':True})
 def insert_draft(db,wid,kind,sub,title,text,html_body,payload): db.execute('INSERT INTO drafts(id,weekly_plan_id,kind,subject,title,body_text,body_html,status,idempotency_key,payload,created_at,updated_at,updated_by) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)',(stable_id('draft',wid,kind,sub,title),wid,kind,sub,title,text,html_body,'draft',stable_id('idem',wid,kind,sub,title),jd(payload),now_utc(),now_utc(),'generator'))
@@ -1184,10 +1323,11 @@ def command_browser_proof(a):
                     (plan['id'],),
                 ).fetchone()
 
-            lesson_drafts_ok=all(
-                any(title==f'SM5: Lesson {lesson} Homework' for title in draft_titles)
-                for lesson in (18,20)
-            )
+            lesson_drafts_ok={
+                math_homework_assignment_title('Monday',18),
+                math_classwork_assignment_title('Tuesday',19),
+                math_homework_assignment_title('Wednesday',20),
+            }.issubset(draft_titles)
             assessment_drafts_ok=expected_draft_titles.issubset(draft_titles)
             deployment_ok=bool(
                 deployment_row
@@ -1220,8 +1360,9 @@ def command_browser_proof(a):
             (() => {
               const drafts=(document.querySelector('#draft-list')||{}).textContent||'';
               const deployment=(document.querySelector('#deployment-list')||{}).textContent||'';
-              return drafts.includes('SM5: Lesson 18 Homework')
-                && drafts.includes('SM5: Lesson 20 Homework')
+              return drafts.includes('SM5: Monday Homework \u2014 Lesson 18')
+                && drafts.includes('SM5: Wednesday Homework \u2014 Lesson 20')
+                && drafts.includes('SM5: Tuesday Classwork \u2014 Lesson 19')
                 && drafts.includes('SM5: Written Assessment 7')
                 && drafts.includes('SM5: Fact Assessment 7')
                 && !drafts.includes('Study Guide')
@@ -1300,7 +1441,11 @@ def command_browser_proof(a):
                 )
             }
 
-            assert any(title==f'SM5: Lesson {lesson} Homework' for title in draft_titles for lesson in (18,20))
+            assert {
+                math_homework_assignment_title('Monday',18),
+                math_classwork_assignment_title('Tuesday',19),
+                math_homework_assignment_title('Wednesday',20),
+            }.issubset(draft_titles)
             assert 'SM5: Written Assessment 7' in draft_titles
             assert 'SM5: Fact Assessment 7' in draft_titles
             assert not any('Study Guide' in title for title in draft_titles)

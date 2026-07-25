@@ -57,7 +57,7 @@ assert p.resolve_checkout(11)['fluency'] == {'wpm': 130, 'maxErrors': 2}
 assert p.resolve_checkout(13)['fluency'] == {'wpm': 130, 'maxErrors': 2}
 assert p.resolve_checkout(1)['passage'] == 'The Cyclone, Chapter 2'
 assert p.resolve_checkout(13)['passage'] == 'The Prince with the Peasants'
-assert p.resolve_checkout(2)['title'] == 'RM4: Checkout 2'
+assert p.resolve_checkout(2)['title'] == 'RM4: Fluency Checkout 2'
 fam = p.reading_assessment_family(2, '2026-07-21')
 assert fam['sourceCheckoutKey'] == 'Check out 20'
 fam14 = p.reading_assessment_family(14, '2026-08-01')
@@ -75,11 +75,35 @@ assert db2.get_week(w['id'])['subjects'][0]['days'][0]['title'] == 'Lesson 1'
 db.seed_from_fixture()
 assert db.get_week(w['id'])['subjects'][0]['days'][0]['title'] == 'Lesson 1'
 db.generate_week(w['id'])
-html = ''.join(x['body_html'] for x in db.get_week(w['id'])['drafts'])
+week_after = db.get_week(w['id'])
+deploy = week_after['deploymentPreview']
+deploy_payload = deploy['payload']
+assert deploy_payload['previewOnly'] is True
+assert deploy_payload['canvasWritesAllowed'] is False
+assert deploy_payload['emailSendsAllowed'] is False
+assert deploy_payload['scheduleIntent'] == 'Friday 4:00 PM America/New_York'
+for op in deploy_payload['operations']:
+    low = op.lower()
+    assert 'resource' not in low
+    assert 'url' not in low
+    assert 'publish' not in low
+    assert 'front page' not in low
+    assert 'create/update' not in low
+assert deploy_payload['operations'] == [
+    'validate local weekly inputs',
+    'generate local assignment previews',
+    'render academic agenda previews',
+    'generate minimal assessment reminder previews',
+    'await teacher approval',
+]
+assert all(item['status'] == 'blocked_preview' for item in deploy['items'])
+assert all('Teacher approval required' in item['unresolved_dependencies'] for item in deploy['items'])
+html = ''.join(x['body_html'] for x in week_after['drafts'])
 assert 'kl_wrapper_3' in html
-assert 'Reminders &amp; Resources' in html
+assert 'Reminders</h3>' in html and 'Homework</h4>' in html
 assert 'display: flex' in html and 'width: 49%' in html
-assert 'In Class' in html and 'At Home' in html
+assert 'In Class' in html
+assert 'Reminders &amp; Resources' not in html and '>At Home<' not in html and 'Study Guide' not in html
 assert 'href="#"' not in html
 assert p.resolve_math_lesson(1)['suggestedHomework'] == 'Odds'
 assert p.resolve_course('2026-2027', 'production', 'reading')['courseId'] == p.resolve_course('2026-2027', 'production', 'spelling')['courseId']

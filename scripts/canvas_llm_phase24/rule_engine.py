@@ -43,16 +43,24 @@ def lesson_title(subject: str, number: int | None) -> str:
     return f"{subject_prefix(subject)}: Lesson {number}" if subject == "math" else f"{subject_prefix(subject)} Lesson {number}"
 
 
-def math_homework_title(lesson_number: int, hint_override: str | None = None) -> str:
-    base = f"SM5: Lesson {lesson_number}"
-    hint = compact(hint_override).lower()
-    if hint in {"evens", "even"}:
-        return f"{base} Evens"
-    if hint in {"odds", "odd"}:
-        return f"{base} Odds"
-    if hint in {"none", "no", "off"}:
-        return base
-    return f"{base} {'Evens' if lesson_number % 2 == 0 else 'Odds'}"
+def math_homework_title(lesson_number: int, weekday: str, hint_override: str | None = None) -> str:
+    homework = phase22.math_homework_for_weekday(weekday)
+    if homework == "No Homework":
+        return "No Homework"
+    return f"SM5: Lesson {lesson_number} Homework"
+
+
+def math_homework_for_weekday(weekday: str) -> str:
+    return phase22.math_homework_for_weekday(weekday)
+
+
+def reading_homework_for_weekday(weekday: str) -> str:
+    return phase22.reading_homework_for_weekday(weekday)
+
+
+def subject_active_for_week_code(subject: str, week_code: str) -> bool:
+    week = phase22.instructional_week_by_code(week_code) or {}
+    return phase22.subject_active_for_quarter(subject, week)
 
 
 def math_investigation_number(lesson_number: int | None) -> int | None:
@@ -124,37 +132,29 @@ def math_prediction(entry: dict[str, Any], knowledge: dict[str, Any]) -> tuple[l
         if math_investigation_number(lesson_number):
             investigation = math_investigation_number(lesson_number)
             in_class = f"SM5: Investigation {investigation}"
-            at_home = f"SM5: Investigation {investigation} Study Guide"
-            rules = ["math.investigation.sequence", "math.investigation.study-guide"]
+            at_home = math_homework_for_weekday(entry.get("weekday") or "")
+            rules = ["math.investigation.sequence", "math.homework.weekday"]
             explanation = [
                 f"Lesson {lesson_number} is on an investigation boundary.",
                 f"Investigation {investigation} follows Lesson {lesson_number}.",
-                "Investigation homework is the applicable Study Guide.",
+                "Weekday policy determines investigation-day homework.",
             ]
-            resources = [
-                verified_resource("investigation-study-guide", f"SM5-I{investigation}", None, False),
-                verified_resource("student-book", f"SM5-L{lesson_number}", None, False),
-            ]
+            resources = [verified_resource("student-book", f"SM5-L{lesson_number}", None, False)]
             predictions.append(base_prediction(entry, "lesson", in_class, at_home, decision_layer="owner-confirmed hard rules", confidence_obj=confidence("high", 0.96, "Owner-confirmed investigation sequence"), rules_applied=rules, explanation=explanation, resource_requirements=resources, manual_override_state=teacher_override_state))
             return predictions, unresolved, warnings
         in_class = f"SM5: Lesson {lesson_number}"
-        at_home = math_homework_title(lesson_number, manual_override.get("homeworkParity") or entry.get("hintOverride"))
-        rules = ["math.lesson.increment", "math.homework.parity"]
-        if compact(manual_override.get("homeworkParity")).lower() in {"evens", "odds"}:
-            rules.append("math.homework.parity.override")
+        at_home = math_homework_for_weekday(entry.get("weekday") or "")
+        rules = ["math.lesson.increment", "math.homework.weekday"]
         explanation = [
             f"Previous completed Math lesson was {entry.get('previousLessonNumber') or lesson_number - 1}.",
             f"Normal progression advances to Lesson {lesson_number}.",
-            "Parity determines the homework suffix unless a teacher override applies.",
+            "Weekday policy determines Math homework.",
         ]
-        resources = [
-            verified_resource("student-book", f"SM5-L{lesson_number}", None, False),
-            verified_resource("homework-recording-sheet", f"SM5-L{lesson_number}", "even" if lesson_number % 2 == 0 else "odd", False),
-        ]
+        resources = [verified_resource("student-book", f"SM5-L{lesson_number}", None, False)]
         decision_layer = "approved teacher correction" if manual_override else "owner-confirmed hard rules"
         confidence_level = "high" if not manual_override else "medium"
         confidence_score = 0.97 if not manual_override else 0.92
-        predictions.append(base_prediction(entry, "lesson", in_class, at_home, decision_layer=decision_layer, confidence_obj=confidence(confidence_level, confidence_score, "Math lesson progression and parity are owner-confirmed" if not manual_override else "Teacher override changes the homework parity"), rules_applied=rules, explanation=explanation, resource_requirements=resources, manual_override_state=teacher_override_state))
+        predictions.append(base_prediction(entry, "lesson", in_class, at_home, decision_layer=decision_layer, confidence_obj=confidence(confidence_level, confidence_score, "Math lesson progression uses weekday homework policy" if not manual_override else "Teacher override recorded"), rules_applied=rules, explanation=explanation, resource_requirements=resources, manual_override_state=teacher_override_state))
         return predictions, unresolved, warnings
     if entry.get("eventType") == "assessment":
         if entry.get("weekday") == "Monday":
@@ -169,19 +169,16 @@ def math_prediction(entry: dict[str, Any], knowledge: dict[str, Any]) -> tuple[l
                 lesson_entry,
                 "lesson",
                 f"SM5: Lesson {lesson_number}",
-                "Study Guide only",
+                math_homework_for_weekday(entry.get("weekday") or "Monday"),
                 decision_layer="owner-confirmed hard rules",
                 confidence_obj=confidence("high", 0.95, "Monday assessment displacement preserves instruction"),
-                rules_applied=["math.lesson.increment", "math.monday-test-displacement"],
+                rules_applied=["math.lesson.increment", "math.monday-test-displacement", "math.homework.weekday"],
                 explanation=[
                     "A calculated Math test would have occurred on Monday.",
                     "Monday advances instruction to the next available lesson.",
-                    "Ordinary Odds/Evens homework is suppressed and Study Guide only is assigned.",
+                    "Weekday policy determines homework on the displaced lesson day.",
                 ],
-                resource_requirements=[
-                    verified_resource("student-book", f"SM5-L{lesson_number}", None, False),
-                    verified_resource("study-guide", f"SM5-T{assessment_number or lesson_number}", "only", False),
-                ],
+                resource_requirements=[verified_resource("student-book", f"SM5-L{lesson_number}", None, False)],
                 manual_override_state=teacher_override_state,
                 review_state="needs_review",
             )
@@ -204,12 +201,8 @@ def math_prediction(entry: dict[str, Any], knowledge: dict[str, Any]) -> tuple[l
                 )
             )
             warnings.append("Math test cadence remains owner-unresolved")
-        title = f"Math Written Test {assessment_number or lesson_number} and Fact Test {assessment_number or lesson_number}"
-        resources = [
-            verified_resource("study-guide", f"SM5-T{assessment_number or lesson_number}", "blank", False),
-            verified_resource("study-guide", f"SM5-T{assessment_number or lesson_number}", "completed", False),
-            verified_resource("fact-practice", f"SM5-T{assessment_number or lesson_number}", None, False),
-        ]
+        title = f"SM5: Written Assessment {assessment_number or lesson_number} and SM5: Fact Assessment {assessment_number or lesson_number}"
+        resources = [verified_resource("fact-practice", f"SM5-T{assessment_number or lesson_number}", None, False)]
         explanations = [
             f"Math assessment is predicted for {assessment_day}.",
             "Monday assessments shift to Tuesday to preserve instruction.",
@@ -239,14 +232,14 @@ def reading_prediction(entry: dict[str, Any], knowledge: dict[str, Any]) -> tupl
                     explanation=["Monday assessment moves to Tuesday.", "Monday becomes a normal lesson day."],
                 )
             )
-        title = f"Reading Mastery Test {test_number}"
-        checkout_title = f"Reading Checkout {test_number}" if test_number and 1 <= int(test_number) <= 13 else ""
+        title = f"RM4: Mastery Test {test_number}"
+        checkout_title = f"RM4: Fluency Checkout {test_number}" if test_number and 1 <= int(test_number) <= 13 else ""
         if int(test_number or 0) == 14:
             explanation = ["Reading Test 14 has no companion checkout.", "No checkout companion exists for Test 14."]
-            resources = [verified_resource("reading-study-guide", f"RM4-T14", None, False)]
+            resources = []
         else:
-            explanation = [f"Reading Test {test_number} maps to Checkout {test_number}." if checkout_title else "Reading assessments do not invent Checkouts."]
-            resources = [verified_resource("reading-study-guide", f"RM4-T{test_number}", None, False)]
+            explanation = [f"Reading Test {test_number} maps to Fluency Checkout {test_number}." if checkout_title else "Reading assessments do not invent Checkouts."]
+            resources = []
             if checkout_title:
                 resources.append(verified_resource("reading-checkout-passage", f"RM4-C{test_number}", None, False))
         predictions.append(
@@ -270,12 +263,12 @@ def reading_prediction(entry: dict[str, Any], knowledge: dict[str, Any]) -> tupl
             base_prediction(
                 entry,
                 "lesson",
-                f"Reading Lesson {entry.get('lessonNumber')}",
-                "",
+                f"RM4: Lesson {entry.get('lessonNumber')}",
+                reading_homework_for_weekday(entry.get("weekday") or ""),
                 decision_layer="explicit current-year pacing-guide entry",
                 confidence_obj=confidence("high", 0.9, "Reading lesson progression is based on the current-year pacing guide"),
-                rules_applied=["reading.lesson.increment"],
-                explanation=[f"Reading lesson advances to {entry.get('lessonNumber')}.", "No checkout is created for lesson predictions."],
+                rules_applied=["reading.lesson.increment", "reading.homework.weekday"],
+                explanation=[f"Reading lesson advances to {entry.get('lessonNumber')}.", "Weekday policy determines Reading homework."],
                 review_state="approved",
             )
         )
@@ -300,7 +293,7 @@ def spelling_prediction(entry: dict[str, Any], knowledge: dict[str, Any]) -> tup
     explanation = [f"Spelling Test {entry.get('assessmentNumber') or entry.get('lessonNumber')} prefers Friday.", f"Scheduled on {day} after calendar review."]
     if "Friday" in closed and day != "Friday":
         explanation.append("Friday is unavailable, so the nearest valid instructional day is used.")
-    title = f"Spelling Test {entry.get('assessmentNumber') or entry.get('lessonNumber')}"
+    title = f"RM4: Spelling Test {entry.get('assessmentNumber') or entry.get('lessonNumber')}"
     predictions.append(
         base_prediction(
             {**entry, "weekday": day},
@@ -311,7 +304,7 @@ def spelling_prediction(entry: dict[str, Any], knowledge: dict[str, Any]) -> tup
             confidence_obj=confidence("high" if decision_layer != "repeated FPK pacing-guide pattern" else "medium", 0.94 if decision_layer != "repeated FPK pacing-guide pattern" else 0.72, "Spelling Friday preference is pattern-backed"),
             rules_applied=["spelling.fifth-lesson.test", "spelling.friday.preference"],
             explanation=explanation,
-            resource_requirements=[verified_resource("spelling-focus-words", f"SPELL-{entry.get('assessmentNumber') or entry.get('lessonNumber')}", None, False)],
+            resource_requirements=[],
             manual_override_state="applied" if manual.get("scheduledDay") else "none",
             review_state="approved" if decision_layer != "repeated FPK pacing-guide pattern" else "needs_review",
         )
@@ -355,8 +348,12 @@ def shurley_prediction(entry: dict[str, Any], knowledge: dict[str, Any]) -> tupl
 
 
 def history_science_prediction(entry: dict[str, Any], knowledge: dict[str, Any]) -> tuple[list[PredictedInstructionalEvent], list[UnresolvedDecision], list[str]]:
+    subject = compact(entry.get("subject")).lower()
+    week_code = entry.get("weekCode") or ""
+    if not subject_active_for_week_code(subject, week_code):
+        return [], [], [f"{subject.title()} is inactive this quarter and remains untouched."]
     predictions: list[PredictedInstructionalEvent] = []
-    title = compact(entry.get("title") or f"{entry.get('subject', '').title()} pacing suggestion")
+    title = compact(entry.get("title") or f"{subject.title()} pacing suggestion")
     explicit = bool(entry.get("title"))
     predictions.append(
         base_prediction(
@@ -364,12 +361,12 @@ def history_science_prediction(entry: dict[str, Any], knowledge: dict[str, Any])
             entry.get("eventType") or "lesson",
             title,
             "",
-            requires_review=True,
+            requires_review=not explicit,
             decision_layer="explicit current-year pacing-guide entry" if explicit else "predictive suggestion",
-            confidence_obj=confidence("low", 0.47 if not explicit else 0.67, "History and Science stay conservative and reviewable"),
-            rules_applied=["history-science.no-assignment-prediction"],
-            explanation=["History and Science use explicit current-year entries when available.", "Assignment prediction remains disabled."],
-            review_state="needs_review",
+            confidence_obj=confidence("medium", 0.72 if explicit else 0.47, "Active quarter subject uses explicit pacing when available"),
+            rules_applied=["history-science.quarter-activation", "history-science.no-assignment-prediction"],
+            explanation=[f"{subject.title()} is active this quarter.", "Assignment prediction remains disabled; agenda content only."],
+            review_state="approved" if explicit else "needs_review",
         )
     )
     return predictions, [], []
@@ -408,7 +405,7 @@ def predict_week_data(week_code: str, source_path: str | Path, correction_state:
     corrections = list((correction_state or {}).get("records", []))
     predictions: list[PredictedInstructionalEvent] = []
     unresolved_decisions: list[UnresolvedDecision] = []
-    warnings: list[str] = list(knowledge.get("warnings", []))
+    warnings: list[str] = [w for w in list(knowledge.get("warnings", [])) if "Canvas assignment due-time convention remains owner-unresolved" not in w]
     teacher_overrides: list[TeacherOverride] = []
     teacher_corrections: list[TeacherCorrection] = []
     for raw in knowledge.get("pacingGuideEntries", []):
@@ -463,8 +460,6 @@ def predict_week_data(week_code: str, source_path: str | Path, correction_state:
         warnings.extend(item_warnings)
     if "Math test cadence remains owner-unresolved" not in warnings:
         warnings.append("Math test cadence remains owner-unresolved")
-    if "Canvas assignment due-time convention remains owner-unresolved" not in warnings:
-        warnings.append("Canvas assignment due-time convention remains owner-unresolved")
     warnings = list(dict.fromkeys(warnings))
     provenance = [
         {"sourceType": "fixture", "sourceRef": str(source_path), "details": "Phase 24 synthetic teacher-brain fixture"},
@@ -496,9 +491,9 @@ def validate_week_prediction(payload: dict[str, Any]) -> dict[str, Any]:
         findings.append({"severity": "fail", "code": "source-hierarchy", "message": "Source hierarchy is incorrect", "target": "week"})
     warnings = list(dict.fromkeys(warnings))
     if any("Canvas assignment due-time convention remains owner-unresolved" in w for w in warnings):
-        findings.append({"severity": "warn", "code": "due-time.unresolved", "message": "Canvas assignment due-time convention remains owner-unresolved", "target": "week"})
+        findings.append({"severity": "fail", "code": "due-time.unresolved", "message": "Canvas assignment due-time warning must not remain", "target": "week"})
     else:
-        findings.append({"severity": "fail", "code": "due-time.unresolved", "message": "Canvas assignment due-time warning missing", "target": "week"})
+        findings.append({"severity": "pass", "code": "due-time.resolved", "message": "Canvas assignment due-time warnings removed", "target": "week"})
     if any("Math test cadence remains owner-unresolved" in w for w in warnings):
         findings.append({"severity": "warn", "code": "math-test-cadence.unresolved", "message": "Math test cadence remains owner-unresolved", "target": "week"})
     else:

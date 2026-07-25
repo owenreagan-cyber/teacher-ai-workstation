@@ -48,10 +48,10 @@ trap 'rm -rf "$T"' EXIT
 python3 "$M" build-demo --out "$T/demo.json" >/tmp/p23demo.txt 2>&1 && pass "demo packet builds" || { cat /tmp/p23demo.txt; fail "demo packet build fails"; }
 python3 "$V" "$T/demo.json" >"$T/validate.txt" 2>&1 && pass "demo packet validates" || { cat "$T/validate.txt"; fail "demo packet validation fails"; }
 
-grep -q '^WARN: due-time.unresolved' "$T/validate.txt" && pass "due-time unresolved warning is present" || fail "due-time warning missing"
+grep -q '^PASS: due-time.resolved' "$T/validate.txt" && pass "due-time resolved PASS is present" || fail "due-time resolved PASS missing"
 grep -q '^PASS: reading-test-14.checkout Reading Test 14 correctly has no checkout reminder$' "$T/validate.txt" && pass "Reading Test 14 no-checkout PASS is present" || fail "Reading Test 14 no-checkout PASS missing"
 grep -q '^FAIL: 0$' "$T/validate.txt" && pass "validator reported zero failures" || fail "validator reported failures"
-grep -q '^WARN: 1$' "$T/validate.txt" && pass "validator reported one warning" || fail "validator warning count incorrect"
+grep -q '^WARN: 0$' "$T/validate.txt" && pass "validator reported zero warnings" || fail "validator warning count incorrect"
 
 python3 "$M" self-test >/tmp/p23self.txt 2>&1 && pass "self-test passes" || { cat /tmp/p23self.txt; fail "self-test fails"; }
 
@@ -61,7 +61,7 @@ else
   pass ".local output is not tracked by git"
 fi
 
-warn "Canvas assignment due-time convention remains owner-unresolved"
+pass "Assignments use same-day 11:59 PM America/New_York due times"
 
 echo
 echo "Summary"

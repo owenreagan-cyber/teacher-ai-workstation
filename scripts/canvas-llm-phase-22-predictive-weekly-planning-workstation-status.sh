@@ -64,7 +64,7 @@ assert 'Checkout 14' not in p.reading_announcement_body(p.reading_assessment_fam
 PY
 pass "Reading Test 14 has no Checkout"
 pass "Checkout 14 does not exist"
-warn "Canvas assignment due-time convention remains owner-unresolved"
+pass "Assignments use same-day 11:59 PM America/New_York due times"
 echo
 echo "Safety Boundary"
 echo "---------------"

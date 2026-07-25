@@ -297,7 +297,7 @@ Promise.resolve().then(() => new Promise((resolve) => setTimeout(resolve, 0))).t
   if (!document.getElementById('text-preview').textContent.includes('Monday:')) {
     throw new Error('browser smoke did not render text preview');
   }
-  if (!document.getElementById('text-preview').textContent.includes('Thursday: RM4: Mastery Test 14')) {
+  if (!document.getElementById('text-preview').textContent.includes('Thursday:') || !document.getElementById('text-preview').textContent.includes('RM4: Mastery Test 14')) {
     throw new Error('browser smoke did not render canonical Reading Test 14 text');
   }
   if (!document.getElementById('packet-json-preview').textContent.includes('"weekCode": "Q1W5"')) {
@@ -409,5 +409,76 @@ if git ls-files .local | grep -q .; then
   echo "FAIL: .local artifacts tracked"
   exit 1
 fi
+
+python3 - <<'PY'
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path('.').resolve()))
+from scripts.canvas_llm_phase23 import phase23_content_engine as p23
+from scripts.canvas_llm_phase22 import phase22_workstation as p22
+
+week = p23.canonical_week('Q1W5')
+packet = p23.build_packet('Q1W5')
+assignments = packet['assignments']
+
+def instructional(subject):
+    return [
+        a for a in assignments
+        if a['subject'] == subject
+        and a.get('selection_metadata', {}).get('gradeCategory') == 'instructional'
+        and a.get('selection_metadata', {}).get('graded') is True
+    ]
+
+def assessments(subject=None):
+    items = [
+        a for a in assignments
+        if a.get('selection_metadata', {}).get('gradeCategory') == 'assessment'
+        and a.get('selection_metadata', {}).get('gradeRole') == 'assessment'
+    ]
+    if subject:
+        return [a for a in items if a['subject'] == subject]
+    return items
+
+math_instructional = instructional('math')
+reading_instructional = instructional('reading')
+assert len(math_instructional) == 3
+assert len(reading_instructional) == 3
+
+math_roles = {a['selection_metadata']['gradeRole'] for a in math_instructional}
+assert math_roles == {'homework', 'classwork'}
+assert not any('Tuesday Classwork' in a['title'] for a in math_instructional)
+assert any(a['title'] == p22.math_classwork_assignment_title('Thursday', 20) for a in math_instructional)
+
+for subject, expected in (('math', 3), ('reading', 3)):
+    for item in instructional(subject):
+        meta = item['selection_metadata']
+        assert meta.get('graded') is True
+        assert meta.get('gradeCategory') == 'instructional'
+        assert meta.get('gradeRole') in {'homework', 'classwork'}
+        assert meta.get('selectionReason')
+        assert meta.get('selectionSource')
+        assert meta.get('selectedDay') == item['display_date']
+        assert isinstance(meta.get('teacherOverrideApplied'), bool)
+        assert isinstance(meta.get('defaultSelection'), bool)
+
+for item in assessments():
+    meta = item['selection_metadata']
+    assert meta.get('graded') is True
+    assert meta.get('gradeCategory') == 'assessment'
+    assert meta.get('gradeRole') == 'assessment'
+    assert meta.get('selectionReason')
+    assert meta.get('selectedDay') == item['display_date']
+    assert isinstance(meta.get('teacherOverrideApplied'), bool)
+    assert isinstance(meta.get('defaultSelection'), bool)
+
+assert len(assessments('math')) >= 2
+assert 'Checkout 14' not in {a['title'] for a in assignments}
+assert all(a['points'] == 100 and a['grade_display'] == 'Percentage' for a in assignments)
+assert all(not a.get('linked_resource_ids') for a in assignments)
+assert 'Study Guide' not in __import__('json').dumps(packet)
+assert 'ELA4: Chapter 3 Practice' not in {a['title'] for a in assignments}
+assert all(a.get('selection_metadata') for a in assignments)
+print('PASS C0M selection metadata propagation')
+PY
 
 echo "PASS: Canvas LLM Phase 23 weekly content production engine tests complete"

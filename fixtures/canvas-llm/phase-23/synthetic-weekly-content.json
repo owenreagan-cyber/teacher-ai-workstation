@@ -24,6 +24,17 @@
     {
       "date": "2026-08-17",
       "weekday": "Monday",
+      "subject": "reading",
+      "entryType": "lesson",
+      "lesson": "50",
+      "title": "RM4: Lesson 50",
+      "inClass": "Workbook",
+      "atHome": "No Homework",
+      "resourceHints": []
+    },
+    {
+      "date": "2026-08-17",
+      "weekday": "Monday",
       "subject": "science",
       "entryType": "lesson",
       "lesson": "4",
@@ -50,6 +61,17 @@
     {
       "date": "2026-08-18",
       "weekday": "Tuesday",
+      "subject": "reading",
+      "entryType": "lesson",
+      "lesson": "51",
+      "title": "RM4: Lesson 51",
+      "inClass": "Workbook",
+      "atHome": "Comprehension Questions",
+      "resourceHints": []
+    },
+    {
+      "date": "2026-08-18",
+      "weekday": "Tuesday",
       "subject": "history",
       "entryType": "lesson",
       "lesson": "5",
@@ -59,6 +81,17 @@
       "resourceHints": [
         "history-lesson-5-map"
       ]
+    },
+    {
+      "date": "2026-08-19",
+      "weekday": "Wednesday",
+      "subject": "math",
+      "entryType": "lesson",
+      "lesson": "19",
+      "title": "SM5: Lesson 19",
+      "inClass": "Lesson 19",
+      "atHome": "#11-29 odds",
+      "resourceHints": []
     },
     {
       "date": "2026-08-19",
@@ -83,6 +116,28 @@
       "title": "RM4: Spelling Test 6",
       "inClass": "Cumulative spelling review and focus words.",
       "atHome": "Practice the focus-word list.",
+      "resourceHints": []
+    },
+    {
+      "date": "2026-08-20",
+      "weekday": "Thursday",
+      "subject": "math",
+      "entryType": "lesson",
+      "lesson": "20",
+      "title": "SM5: Lesson 20",
+      "inClass": "Lesson 20",
+      "atHome": "No Homework",
+      "resourceHints": []
+    },
+    {
+      "date": "2026-08-20",
+      "weekday": "Thursday",
+      "subject": "reading",
+      "entryType": "lesson",
+      "lesson": "52",
+      "title": "RM4: Lesson 52",
+      "inClass": "Workbook",
+      "atHome": "Comprehension Questions",
       "resourceHints": []
     },
     {

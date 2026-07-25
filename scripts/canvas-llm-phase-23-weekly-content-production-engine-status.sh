@@ -49,7 +49,9 @@ python3 "$M" build-demo --out "$T/demo.json" >/tmp/p23demo.txt 2>&1 && pass "dem
 python3 "$V" "$T/demo.json" >"$T/validate.txt" 2>&1 && pass "demo packet validates" || { cat "$T/validate.txt"; fail "demo packet validation fails"; }
 
 grep -q '^PASS: due-time.resolved' "$T/validate.txt" && pass "due-time resolved PASS is present" || fail "due-time resolved PASS missing"
-grep -q '^PASS: reading-test-14.checkout Reading Test 14 correctly has no checkout reminder$' "$T/validate.txt" && pass "Reading Test 14 no-checkout PASS is present" || fail "Reading Test 14 no-checkout PASS missing"
+grep -q '^PASS: reading-test-14.checkout Reading Test 14 correctly has no checkout reminder$' "$T/validate.txt" && pass "Reading Test 14 no-checkout reminder PASS is present" || fail "Reading Test 14 no-checkout reminder PASS missing"
+grep -q '^PASS: reading-test-14.checkout-announcement Reading Test 14 correctly has no Checkout 14 announcement$' "$T/validate.txt" && pass "Reading Test 14 no-checkout announcement PASS is present" || fail "Reading Test 14 no-checkout announcement PASS missing"
+grep -q '^PASS: announcement.records-present' "$T/validate.txt" && pass "announcement records PASS is present" || fail "announcement records PASS missing"
 grep -q '^FAIL: 0$' "$T/validate.txt" && pass "validator reported zero failures" || fail "validator reported failures"
 grep -q '^WARN: 0$' "$T/validate.txt" && pass "validator reported zero warnings" || fail "validator warning count incorrect"
 

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 from dataclasses import asdict
+from datetime import date, timedelta
 from pathlib import Path
 from typing import Any
 
@@ -140,6 +141,96 @@ def annotate_graded_selection(predictions: list[PredictedInstructionalEvent], kn
         )
         warnings.append(f"Invalid graded-selection override for {bad.get('field')}: {bad.get('value')}")
     return predictions, warnings, unresolved
+
+
+def pacing_rows_for_announcements(knowledge: dict[str, Any], week_code: str) -> list[dict[str, Any]]:
+    rows: list[dict[str, Any]] = []
+    week = phase22.instructional_week_by_code(week_code) or {}
+    weekday_offsets = {"Monday": 0, "Tuesday": 1, "Wednesday": 2, "Thursday": 3, "Friday": 4}
+    starts_on = week.get("startsOn") or ""
+    for raw in knowledge.get("pacingGuideEntries", []):
+        if compact(raw.get("weekCode") or week_code) != compact(week_code):
+            continue
+        if compact(raw.get("eventType")).lower() != "assessment":
+            continue
+        weekday = raw.get("weekday") or "Monday"
+        entry_date = compact(raw.get("entryDate") or raw.get("date") or "")
+        if not entry_date and starts_on and weekday in weekday_offsets:
+            entry_date = (date.fromisoformat(starts_on) + timedelta(days=weekday_offsets[weekday])).isoformat()
+        rows.append(
+            {
+                "subject": compact(raw.get("subject")).lower(),
+                "weekday": raw.get("weekday") or "Monday",
+                "lesson": str(raw.get("lessonNumber") or ""),
+                "tests": str(raw.get("assessmentNumber") or ""),
+                "entry_date": entry_date,
+                "title": compact(raw.get("title") or ""),
+                "coverage": compact(raw.get("coverage") or ""),
+                "notes": compact(raw.get("notes") or ""),
+                "resolver_output": json.dumps(
+                    {
+                        "coverage": raw.get("coverage"),
+                        "topic": raw.get("topic"),
+                        "announcementNoteSafe": raw.get("announcementNoteSafe"),
+                        "announcementScheduleOverride": raw.get("announcementScheduleOverride") or {},
+                    },
+                    ensure_ascii=False,
+                ),
+            }
+        )
+    return rows
+
+
+def annotate_announcement_drafts(
+    knowledge: dict[str, Any],
+    week_code: str,
+    predictions: list[PredictedInstructionalEvent],
+) -> tuple[list[dict[str, Any]], list[str], list[UnresolvedDecision]]:
+    warnings: list[str] = []
+    unresolved: list[UnresolvedDecision] = []
+    week = phase22.instructional_week_by_code(week_code) or {"code": week_code}
+    rows = pacing_rows_for_announcements(knowledge, week_code)
+    if not rows:
+        for item in predictions:
+            if item.event_type != "assessment":
+                continue
+            rows.append(
+                {
+                    "subject": compact(item.subject).lower(),
+                    "weekday": item.weekday,
+                    "lesson": str(item.lesson_number or ""),
+                    "tests": str(item.assessment_number or ""),
+                    "entry_date": (date.fromisoformat(week.get("startsOn") or "") + timedelta(days={"Monday": 0, "Tuesday": 1, "Wednesday": 2, "Thursday": 3, "Friday": 4}.get(item.weekday, 0))).isoformat() if week.get("startsOn") and item.weekday in {"Monday", "Tuesday", "Wednesday", "Thursday", "Friday"} else "",
+                    "title": compact(item.in_class_title or ""),
+                    "coverage": "",
+                    "notes": "",
+                    "resolver_output": "{}",
+                }
+            )
+    drafts = phase22.build_week_announcement_drafts(rows, week)
+    for draft in drafts:
+        draft["predictionMetadata"] = {
+            "triggerAssessmentType": draft.get("assessment_type"),
+            "triggerAssessmentNumber": draft.get("assessment_number"),
+            "coverageStatus": draft.get("coverage_status"),
+            "needsReview": draft.get("needs_review"),
+            "generationReason": draft.get("generation_reason"),
+            "scheduleIntent": (draft.get("schedule_metadata") or {}).get("scheduleIntent"),
+            "teacherOverrideApplied": (draft.get("schedule_metadata") or {}).get("teacherOverrideApplied"),
+        }
+        for warning in draft.get("warnings") or []:
+            if "calendar disruption" in warning.lower():
+                unresolved.append(
+                    UnresolvedDecision(
+                        decision_id=f"announcement-schedule-{draft.get('announcement_id')}",
+                        subject=draft.get("subject") or "",
+                        week_code=week_code,
+                        day="Friday",
+                        reason=warning,
+                        candidates=[{"scheduleIntent": phase22.ANNOUNCEMENT_SCHEDULE_INTENT, "status": "intent-preserved"}],
+                    )
+                )
+    return drafts, warnings, unresolved
 
 
 def reading_homework_for_weekday(weekday: str) -> str:
@@ -554,6 +645,9 @@ def predict_week_data(week_code: str, source_path: str | Path, correction_state:
     predictions, selection_warnings, selection_unresolved = annotate_graded_selection(predictions, knowledge, week_code)
     unresolved_decisions.extend(selection_unresolved)
     warnings.extend(selection_warnings)
+    announcement_drafts, announcement_warnings, announcement_unresolved = annotate_announcement_drafts(knowledge, week_code, predictions)
+    unresolved_decisions.extend(announcement_unresolved)
+    warnings.extend(announcement_warnings)
     if "Math test cadence remains owner-unresolved" not in warnings:
         warnings.append("Math test cadence remains owner-unresolved")
     warnings = list(dict.fromkeys(warnings))
@@ -574,6 +668,7 @@ def predict_week_data(week_code: str, source_path: str | Path, correction_state:
         warnings=warnings,
         review_state=review_state,
         provenance=provenance,
+        announcement_drafts=announcement_drafts,
     )
 
 
@@ -621,6 +716,15 @@ def validate_week_prediction(payload: dict[str, Any]) -> dict[str, Any]:
     raw_blob = json.dumps(payload, ensure_ascii=False)
     if "https://" in raw_blob or "http://" in raw_blob:
         findings.append({"severity": "fail", "code": "links.external", "message": "External URLs are forbidden in Phase 24 predictions", "target": "predictions"})
+    announcement_blob = json.dumps(payload.get("announcementDrafts") or [], ensure_ascii=False)
+    if any(title in announcement_blob for title in ("RM4: Fluency Checkout 14", "Checkout 14")):
+        findings.append({"severity": "fail", "code": "announcement.checkout14", "message": "Checkout 14 announcement must not be produced", "target": "announcementDrafts"})
+    elif payload.get("announcementDrafts"):
+        findings.append({"severity": "pass", "code": "announcement.checkout14", "message": "Announcement layer excludes Checkout 14", "target": "announcementDrafts"})
+    if payload.get("announcementDrafts") and all(item.get("teacherApprovalRequired") is not False for item in payload.get("announcementDrafts", [])):
+        findings.append({"severity": "pass", "code": "announcement.approval-required", "message": "Announcement drafts require teacher approval", "target": "announcementDrafts"})
+    if payload.get("announcementDrafts") and all((item.get("schedule_metadata") or {}).get("scheduleIntent") == phase22.ANNOUNCEMENT_SCHEDULE_INTENT for item in payload.get("announcementDrafts", [])):
+        findings.append({"severity": "pass", "code": "announcement.schedule-intent", "message": "Announcement schedule intent is Friday 4:00 PM America/New_York", "target": "announcementDrafts"})
     pass_count = sum(1 for item in findings if item["severity"] == "pass")
     warn_count = sum(1 for item in findings if item["severity"] == "warn")
     fail_count = sum(1 for item in findings if item["severity"] == "fail")

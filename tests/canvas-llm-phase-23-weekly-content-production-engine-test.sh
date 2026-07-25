@@ -411,6 +411,7 @@ if git ls-files .local | grep -q .; then
 fi
 
 python3 - <<'PY'
+import json
 import sys
 from pathlib import Path
 sys.path.insert(0, str(Path('.').resolve()))
@@ -478,6 +479,29 @@ assert all(not a.get('linked_resource_ids') for a in assignments)
 assert 'Study Guide' not in __import__('json').dumps(packet)
 assert 'ELA4: Chapter 3 Practice' not in {a['title'] for a in assignments}
 assert all(a.get('selection_metadata') for a in assignments)
+announcements=packet['announcements']
+assert announcements
+assert not any(item['title']=='RM4: Fluency Checkout 14' for item in announcements)
+assert any(item['title']=='SM5: Written Assessment 18' and item['coverage_status']=='provided' for item in announcements)
+assert any(item['title']=='RM4: Spelling Test 6' and item['coverage_status']=='missing' for item in announcements)
+assert any(item['title']=='HIST4: Assessment 1' for item in announcements)
+assert not any(item['subject']=='science' for item in announcements)
+assert all(item['teacher_approval_required'] for item in announcements)
+assert all(item['preview_only'] for item in announcements)
+assert all(item['schedule_metadata']['scheduleIntent']=='Friday 4:00 PM America/New_York' for item in announcements)
+assert all(item['schedule_metadata']['announcementDate']=='2026-08-14' for item in announcements)
+assert all(item['schedule_metadata']['announcementDate'] < item['assessment_date'] for item in announcements)
+assert all(item['schedule_metadata']['scheduledDay']=='Friday' for item in announcements)
+assert all(item['schedule_metadata']['scheduledTime']=='4:00 PM' for item in announcements)
+assert all(item['schedule_metadata']['timezone']=='America/New_York' for item in announcements)
+assert not any(item['schedule_metadata']['announcementDate']=='2026-08-21' for item in announcements)
+assert p22.announcement_date_for_target_week(packet['weekStart'])=='2026-08-14'
+repeat_schedule=[item['schedule_metadata'] for item in p23.build_packet('Q1W5')['announcements']]
+assert all(meta==announcements[0]['schedule_metadata'] for meta in repeat_schedule)
+assert 'Study Guide' not in json.dumps(announcements)
+repeat_ids={item['announcement_id'] for item in p23.build_packet('Q1W5')['announcements']}
+assert repeat_ids=={item['announcement_id'] for item in announcements}
+print('PASS C0N announcement packet serialization')
 print('PASS C0M selection metadata propagation')
 PY
 

@@ -305,6 +305,7 @@ class PacingEntry:
     at_home: str = ""
     resource_hints: list[str] = field(default_factory=list)
     notes: str = ""
+    coverage: str = ""
 
 
 @dataclass
@@ -368,6 +369,32 @@ class AssessmentReminder:
 
 
 @dataclass
+class AnnouncementDraft:
+    announcement_id: str
+    subject: str
+    title: str
+    body_text: str
+    body_html: str
+    assessment_type: str
+    assessment_number: int | None
+    assessment_date: str
+    display_date: str
+    target_week_code: str
+    coverage: str | None
+    coverage_status: str
+    schedule_metadata: dict[str, Any]
+    approval_state: str
+    needs_review: bool
+    warnings: list[str]
+    provenance: list[dict[str, Any]]
+    safety_metadata: dict[str, Any]
+    generation_reason: str = ""
+    teacher_approval_required: bool = True
+    approved: bool = False
+    preview_only: bool = True
+
+
+@dataclass
 class ValidationFinding:
     severity: str
     code: str
@@ -406,6 +433,7 @@ class ProductionPacket:
     assignments: list[AssignmentDraft]
     resources: list[ResourceMatch]
     assessment_reminders: list[AssessmentReminder]
+    announcements: list[AnnouncementDraft]
     validation: dict[str, Any]
     risks: list[RiskFinding]
     provenance: list[ProvenanceRecord]
@@ -428,6 +456,7 @@ class ProductionPacket:
             "assignments": [asdict(item) for item in self.assignments],
             "resources": [asdict(item) for item in self.resources],
             "assessmentReminders": [asdict(item) for item in self.assessment_reminders],
+            "announcements": [asdict(item) for item in self.announcements],
             "validation": self.validation,
             "risks": [asdict(item) for item in self.risks],
             "provenance": [asdict(item) for item in self.provenance],
@@ -562,6 +591,7 @@ def fixture_entries_for_week(fixture: dict[str, Any], week: InstructionalWeek) -
                 at_home=raw.get("atHome", ""),
                 resource_hints=[],
                 notes=raw.get("notes", ""),
+                coverage=raw.get("coverage", ""),
             )
         )
     entries = [entry for entry in entries if subject_active_for_week(entry.subject, week)]
@@ -581,6 +611,7 @@ def row_from_entry(entry: PacingEntry) -> dict[str, Any]:
         "at_home": entry.at_home,
         "resource_hints": list(entry.resource_hints),
         "notes": entry.notes,
+        "coverage": entry.coverage,
     }
 
 
@@ -747,6 +778,7 @@ def entry_from_row(row: dict[str, Any]) -> PacingEntry:
         at_home=row.get("at_home", ""),
         resource_hints=list(row.get("resource_hints", [])),
         notes=row.get("notes", ""),
+        coverage=row.get("coverage", ""),
     )
 
 
@@ -921,6 +953,40 @@ def build_assessment_reminders(week: InstructionalWeek, entries: list[PacingEntr
     return reminders
 
 
+def build_announcements(week: InstructionalWeek, entries: list[PacingEntry]) -> list[AnnouncementDraft]:
+    rows = [row_from_entry(entry) for entry in entries if subject_active_for_week(entry.subject, week)]
+    week_meta = {"quarter": week.quarter, "code": week.code, "startsOn": week.starts_on, "endsOn": week.ends_on}
+    drafts: list[AnnouncementDraft] = []
+    for raw in phase22.build_week_announcement_drafts(rows, week_meta):
+        drafts.append(
+            AnnouncementDraft(
+                announcement_id=raw["announcement_id"],
+                subject=raw["subject"],
+                title=raw["title"],
+                body_text=raw["body_text"],
+                body_html=raw["body_html"],
+                assessment_type=raw["assessment_type"],
+                assessment_number=raw.get("assessment_number"),
+                assessment_date=raw["assessment_date"],
+                display_date=raw["display_date"],
+                target_week_code=raw["target_week_code"],
+                coverage=raw.get("coverage"),
+                coverage_status=raw["coverage_status"],
+                schedule_metadata=dict(raw.get("schedule_metadata") or {}),
+                approval_state=raw.get("approval_state") or "Draft",
+                needs_review=bool(raw.get("needs_review")),
+                warnings=list(raw.get("warnings") or []),
+                provenance=list(raw.get("provenance") or []),
+                safety_metadata=dict(raw.get("safety_metadata") or {}),
+                generation_reason=raw.get("generation_reason") or "",
+                teacher_approval_required=bool(raw.get("teacherApprovalRequired", True)),
+                approved=bool(raw.get("approved", False)),
+                preview_only=bool(raw.get("previewOnly", True)),
+            )
+        )
+    return drafts
+
+
 def validate_packet(packet: dict[str, Any], fixture: dict[str, Any] | None = None) -> dict[str, Any]:
     findings: list[ValidationFinding] = []
     risks: list[RiskFinding] = []
@@ -961,6 +1027,35 @@ def validate_packet(packet: dict[str, Any], fixture: dict[str, Any] | None = Non
         if 'href="#"' in text_blob or "javascript:" in text_blob:
             findings.append(ValidationFinding("fail", "links.fake", "Fake links are forbidden", assignment.get("assignment_id")))
 
+    announcement_titles = {item.get("title") for item in packet.get("announcements", [])}
+    if any(title == "RM4: Fluency Checkout 14" for title in announcement_titles):
+        findings.append(ValidationFinding("fail", "reading-test-14.checkout-announcement", "Reading Test 14 must not generate Checkout 14 announcement", "announcements"))
+    else:
+        findings.append(ValidationFinding("pass", "reading-test-14.checkout-announcement", "Reading Test 14 correctly has no Checkout 14 announcement", "announcements"))
+
+    for announcement in packet.get("announcements", []):
+        blob = json.dumps(announcement, ensure_ascii=False)
+        if "Study Guide" in blob or "Focus Words" in blob or "sourceCheckoutKey" in blob or "bookVolume" in blob:
+            findings.append(ValidationFinding("fail", "announcement.forbidden-content", "Announcement draft contains forbidden content", announcement.get("announcement_id")))
+        elif "http://" in blob or "https://" in blob or "<a " in blob.lower():
+            findings.append(ValidationFinding("fail", "announcement.links", "Announcement drafts must not contain links", announcement.get("announcement_id")))
+        elif announcement.get("schedule_metadata", {}).get("scheduleIntent") != phase22.ANNOUNCEMENT_SCHEDULE_INTENT:
+            findings.append(ValidationFinding("fail", "announcement.schedule-intent", "Announcement schedule intent must remain Friday 4:00 PM America/New_York", announcement.get("announcement_id")))
+        elif not announcement.get("teacher_approval_required", announcement.get("teacherApprovalRequired")):
+            findings.append(ValidationFinding("fail", "announcement.approval-required", "Announcement drafts must require teacher approval", announcement.get("announcement_id")))
+        elif announcement.get("preview_only", announcement.get("previewOnly")) is False:
+            findings.append(ValidationFinding("fail", "announcement.preview-only", "Announcement drafts must remain preview-only", announcement.get("announcement_id")))
+        else:
+            findings.append(ValidationFinding("pass", "announcement.preview-safe", f"Announcement draft {announcement.get('title')} is preview-safe", announcement.get("announcement_id")))
+
+    page_blob = json.dumps(packet.get("pages", []), ensure_ascii=False)
+    for announcement in packet.get("announcements", []):
+        if compact(announcement.get("body_text")) and compact(announcement.get("body_text")) in page_blob:
+            findings.append(ValidationFinding("fail", "announcement.agenda-separation", "Announcement body must not appear in agenda pages", announcement.get("announcement_id")))
+
+    if packet.get("announcements"):
+        findings.append(ValidationFinding("pass", "announcement.records-present", "Announcement drafts are serialized separately from reminders", "announcements"))
+
     pass_count = sum(1 for item in findings if item.severity == "pass")
     warn_count = sum(1 for item in findings if item.severity == "warn")
     fail_count = sum(1 for item in findings if item.severity == "fail")
@@ -989,6 +1084,7 @@ def build_packet_from_sqlite(
     pages, subjects = build_pages(week, entries)
     assignments = build_assignments(week, entries)
     reminders = build_assessment_reminders(week, entries)
+    announcements = build_announcements(week, entries)
 
     packet = ProductionPacket(
         schema_version=1,
@@ -1014,6 +1110,7 @@ def build_packet_from_sqlite(
         assignments=assignments,
         resources=[],
         assessment_reminders=reminders,
+        announcements=announcements,
         validation={},
         risks=[],
         provenance=[
@@ -1051,6 +1148,7 @@ def build_packet(week_code: str | None = None, fixture_path: Path = FIXTURE_PATH
     assignments = build_assignments(week, entries)
     resources = build_resource_matches(entries, fixture)
     reminders = build_assessment_reminders(week, entries)
+    announcements = build_announcements(week, entries)
     packet = ProductionPacket(
         schema_version=1,
         packet_id=stable_id("packet", week.code, fixture_path.read_text(encoding="utf-8")),
@@ -1066,6 +1164,7 @@ def build_packet(week_code: str | None = None, fixture_path: Path = FIXTURE_PATH
         assignments=assignments,
         resources=resources,
         assessment_reminders=reminders,
+        announcements=announcements,
         validation={},
         risks=[],
         provenance=[
@@ -1095,7 +1194,7 @@ def save_packet(packet: dict[str, Any], path: Path = LOCAL_PACKET_STORE) -> Path
 
 
 def packet_summary(packet: dict[str, Any]) -> str:
-    return f"week={packet['weekCode']} pages={len(packet.get('pages', []))} assignments={len(packet.get('assignments', []))} resources={len(packet.get('resources', []))} reminders={len(packet.get('assessmentReminders', []))}"
+    return f"week={packet['weekCode']} pages={len(packet.get('pages', []))} assignments={len(packet.get('assignments', []))} resources={len(packet.get('resources', []))} reminders={len(packet.get('assessmentReminders', []))} announcements={len(packet.get('announcements', []))}"
 
 
 def render_packet_text(packet: dict[str, Any]) -> str:

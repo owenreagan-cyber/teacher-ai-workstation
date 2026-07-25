@@ -338,6 +338,156 @@ def wait_for_condition(cdp,expression,timeout=20):
 def rjson(*parts): return json.loads((REPO_ROOT/'config/curriculum'/Path(*parts)).read_text())
 _quarter_activation_cache=None
 FLUENCY_PRACTICE_GENERIC='Have your child continue to practice fluency by reading a short paragraph of about 100 words aloud in less than one minute. They should make no more than 2 errors.'
+ANNOUNCEMENT_SCHEDULE_DAY='Friday'
+ANNOUNCEMENT_SCHEDULE_TIME='4:00 PM'
+ANNOUNCEMENT_TIMEZONE='America/New_York'
+ANNOUNCEMENT_SCHEDULE_INTENT='Friday 4:00 PM America/New_York'
+CANONICAL_ASSESSMENT_TITLE_RE=re.compile(r'^(SM5|RM4|ELA4|HIST4|SCI4):',re.I)
+FORBIDDEN_ANNOUNCEMENT_PATTERNS=(
+    ('study guide','Study Guide language is forbidden in announcement drafts'),
+    ('answer key','Answer key language is forbidden in announcement drafts'),
+    ('focus words','Focus Words language is forbidden in announcement drafts'),
+    ('sourcecheckoutkey','Checkout source key is forbidden in announcement drafts'),
+    ('bookvolume','Book volume reference is forbidden in announcement drafts'),
+)
+def format_announcement_display_date(entry_date):
+    d=date.fromisoformat(entry_date)
+    return f"{d.strftime('%A')}, {d.strftime('%B')} {d.day}"
+def is_canonical_assessment_title(title):
+    return bool(CANONICAL_ASSESSMENT_TITLE_RE.match(compact(title)))
+def sanitize_announcement_text(text):
+    cleaned=compact(text or '')
+    if not cleaned: return ''
+    for needle,_ in FORBIDDEN_ANNOUNCEMENT_PATTERNS:
+        if needle in cleaned.lower(): return ''
+    if re.search(r'https?://',cleaned,re.I) or '<a ' in cleaned.lower() or 'href=' in cleaned.lower(): return ''
+    return cleaned
+def extract_teacher_coverage(row):
+    ro=jl(row.get('resolver_output') or '{}',{})
+    for key in ('announcementCoverage','coverage'):
+        val=sanitize_announcement_text(ro.get(key) or row.get(key) or '')
+        if val: return val
+    topic=sanitize_announcement_text(ro.get('topic') or row.get('topic') or '')
+    if topic and not is_canonical_assessment_title(topic): return topic
+    title=sanitize_announcement_text(row.get('title') or '')
+    if title and not is_canonical_assessment_title(title) and str(row.get('tests','')).isdigit(): return title
+    if ro.get('announcementNoteSafe') and compact(row.get('notes') or ''): return sanitize_announcement_text(row.get('notes'))
+    return ''
+def fluency_practice_guidance(checkout_number):
+    flu=CHECKOUT_FLUENCY_CONFIRMED.get(str(checkout_number),{'wpm':100,'maxErrors':2})
+    wpm=flu.get('wpm') or 100
+    return f'Students should practice reading approximately {wpm} words in under one minute with no more than two errors.'
+def spelling_practice_guidance(test_number):
+    practice_start=max(1,int(test_number)-4); practice_end=int(test_number)-1
+    return f'For Spelling Test {test_number}, students should practice lessons {practice_start} through {practice_end}.'
+def announcement_stable_id(week_code,subject,assessment_type,assessment_number,assessment_date):
+    return stable_id('announcement-draft',week_code,subject,assessment_type,assessment_number,assessment_date)
+def default_announcement_safety_metadata(**overrides):
+    base={'canvasWritesAllowed':False,'emailSendsAllowed':False,'containsStudentData':False,'containsLinks':False,'containsAttachments':False,'containsExactSpellingWords':False,'containsExactCheckoutLocation':False,'studyGuideAllowed':False}
+    base.update(overrides or {}); return base
+def announcement_body_html(body_text):
+    parts=[]
+    for para in compact(body_text or '').split('\n'):
+        if para: parts.append(f'<p>{html.escape(para)}</p>')
+    return ''.join(parts) or '<p></p>'
+def validate_announcement_safety(draft):
+    blob=' '.join([draft.get('title') or '',draft.get('body_text') or '',draft.get('coverage') or '']).lower(); warnings=[]
+    for needle,msg in FORBIDDEN_ANNOUNCEMENT_PATTERNS:
+        if needle in blob: warnings.append(msg)
+    if re.search(r'https?://',blob) or '<a ' in blob or 'href=' in blob: warnings.append('Links are forbidden in announcement drafts')
+    if re.search(r'\bpage\s+\d+\b',blob) and 'checkout' in blob: warnings.append('Exact checkout page reference is forbidden in announcement drafts')
+    if contains_sensitive_content(blob): warnings.append('Student-sensitive language is forbidden in announcement drafts')
+    return warnings
+def announcement_date_for_target_week(target_week_starts_on):
+    starts_on=compact(target_week_starts_on or '')
+    if not starts_on: return ''
+    monday=date.fromisoformat(starts_on)
+    if monday.weekday()!=0: return ''
+    return (monday-timedelta(days=3)).isoformat()
+def build_announcement_schedule_metadata(week_meta=None,overrides=None):
+    week_meta=week_meta or {}; overrides=overrides or {}
+    week_code=canonical_week_code(week_meta.get('code') or '')
+    starts_on=week_meta.get('startsOn') or week_meta.get('starts_on') or ''
+    if not starts_on and week_code:
+        iw=instructional_week_by_code(week_code) or {}
+        starts_on=iw.get('startsOn') or ''
+    announcement_date=''; schedule_warnings=[]
+    if starts_on: announcement_date=announcement_date_for_target_week(starts_on)
+    teacher_override_applied=bool(compact(overrides.get('announcementScheduleDay') or '') or compact(overrides.get('announcementDate') or ''))
+    override_date=compact(overrides.get('announcementDate') or '')
+    if teacher_override_applied and override_date: announcement_date=override_date
+    closed_dates=set(compact(d or '') for d in (week_meta.get('closedAnnouncementDates') or week_meta.get('noSchoolDates') or []) if compact(d or ''))
+    if announcement_date and announcement_date in closed_dates and not teacher_override_applied:
+        schedule_warnings.append('Preceding Friday announcement scheduling is unavailable due to calendar disruption; Friday 4:00 PM intent preserved for teacher review.')
+    schedule={'scheduledDay':ANNOUNCEMENT_SCHEDULE_DAY,'scheduledTime':ANNOUNCEMENT_SCHEDULE_TIME,'timezone':ANNOUNCEMENT_TIMEZONE,'scheduleIntent':ANNOUNCEMENT_SCHEDULE_INTENT,'targetWeekCode':week_code,'targetWeekStartsOn':starts_on,'announcementDate':announcement_date,'teacherOverrideApplied':teacher_override_applied,'teacherApprovalRequired':True,'previewOnly':True,'canvasWritesAllowed':False,'emailSendsAllowed':False}
+    return schedule,schedule_warnings
+def build_week_announcement_drafts(rows,week_meta=None):
+    if not rows: return []
+    week_meta=week_meta or {}; week_code=canonical_week_code(week_meta.get('code') or '')
+    ctx=build_week_graded_selection_context(rows,week_meta); window_findings=ctx.get('assessmentWindowValidation') or []
+    overrides=dict((week_meta or {}).get('announcementScheduleOverrides') or {})
+    for r in rows or []:
+        ro=jl(r.get('resolver_output') or '{}',{}); sel=ro.get('announcementScheduleOverride') or {}
+        if sel.get('announcementDate'): overrides['announcementDate']=compact(sel.get('announcementDate'))
+        if sel.get('scheduledDay'): overrides['announcementScheduleDay']=compact(sel.get('scheduledDay'))
+    schedule_metadata,schedule_warnings=build_announcement_schedule_metadata(week_meta,overrides)
+    drafts=[]; seen=set()
+    def window_warnings_for(subject,assessment_number):
+        out=[]
+        for finding in window_findings:
+            if finding.get('severity')!='warn': continue
+            target=compact(finding.get('target') or '')
+            if subject=='math' and target in {f'math-test-{assessment_number}',f'math-fact-{assessment_number}'}: out.append(finding.get('message') or '')
+            elif subject=='reading' and target in {f'reading-test-{assessment_number}',f'reading-checkout-{assessment_number}'}: out.append(finding.get('message') or '')
+            elif subject=='spelling' and target==f'spelling-test-{assessment_number}': out.append(finding.get('message') or '')
+            elif subject in {'history','science','language-arts','shurley'} and target.endswith(str(assessment_number)): out.append(finding.get('message') or '')
+        return out
+    def append_draft(*,subject,assessment_type,assessment_number,row,title,body_lines,generation_reason):
+        key=(subject,assessment_type,assessment_number,row.get('entry_date'))
+        if key in seen: return
+        seen.add(key)
+        coverage=extract_teacher_coverage(row); coverage_status='provided' if coverage else 'missing'
+        warnings=list(schedule_warnings); needs_review=False
+        if coverage_status=='missing':
+            warnings.append('Teacher-entered coverage is required before approval'); needs_review=True
+        warnings.extend(window_warnings_for(subject,assessment_number))
+        if any(window_warnings_for(subject,assessment_number)): needs_review=True
+        body_text='\n'.join([line for line in body_lines if compact(line)])
+        if coverage: body_text=f"{body_text}\nCoverage: {coverage}."
+        safety_warnings=validate_announcement_safety({'title':title,'body_text':body_text,'coverage':coverage}); warnings.extend(safety_warnings)
+        if safety_warnings: needs_review=True
+        draft={'announcement_id':announcement_stable_id(week_code,subject,assessment_type,assessment_number,row.get('entry_date')),'subject':subject,'title':title,'body_text':body_text,'body_html':announcement_body_html(body_text),'assessment_type':assessment_type,'assessment_number':assessment_number,'assessment_date':row.get('entry_date'),'display_date':format_announcement_display_date(row.get('entry_date')),'target_week_code':week_code,'coverage':coverage or None,'coverage_status':coverage_status,'schedule_metadata':dict(schedule_metadata),'approval_state':'Draft','needs_review':needs_review,'warnings':list(dict.fromkeys(warnings)),'provenance':[{'sourceType':'weekly-row','sourceRef':row.get('entry_date') or '','details':generation_reason},{'sourceType':'phase22-rule','sourceRef':'build_week_announcement_drafts','details':'explicit assessment event'}],'safety_metadata':default_announcement_safety_metadata(),'teacherApprovalRequired':True,'approved':False,'previewOnly':True,'generation_reason':generation_reason}
+        drafts.append(draft)
+    for r in rows:
+        if not subject_active_for_quarter(r.get('subject'),week_meta): continue
+        s=compact(r.get('subject')).lower(); test=int(r['tests']) if str(r.get('tests','')).isdigit() else None
+        if not test: continue
+        display_date=format_announcement_display_date(r['entry_date'])
+        if s=='math':
+            append_draft(subject='math',assessment_type='written_assessment',assessment_number=test,row=r,title=f'SM5: Written Assessment {test}',body_lines=[f'Math Written Assessment {test} is scheduled for {display_date}.','Students should review recent classwork and assigned practice.'],generation_reason='scheduled-written-assessment')
+            fact=math_assessment_family(test,r['entry_date'],set())['factTest']; fact_lines=[f'Math Fact Assessment {test} is scheduled for {display_date}.']
+            topic=sanitize_announcement_text(fact.get('practiceDescription') or '')
+            if topic and 'worksheet' not in topic.lower() and 'http' not in topic.lower(): fact_lines.append(topic)
+            append_draft(subject='math',assessment_type='fact_assessment',assessment_number=test,row=r,title=f'SM5: Fact Assessment {test}',body_lines=fact_lines,generation_reason='scheduled-fact-assessment')
+        elif s=='reading':
+            append_draft(subject='reading',assessment_type='mastery_test',assessment_number=test,row=r,title=f'RM4: Mastery Test {test}',body_lines=[f'Reading Mastery Test {test} is scheduled for {display_date}.'],generation_reason='scheduled-mastery-test')
+            if reading_checkout_number(test):
+                append_draft(subject='reading',assessment_type='fluency_checkout',assessment_number=test,row=r,title=f'RM4: Fluency Checkout {test}',body_lines=[f'Reading Fluency Checkout {test} is scheduled for {display_date}.',fluency_practice_guidance(test)],generation_reason='scheduled-fluency-checkout')
+        elif s=='spelling':
+            append_draft(subject='spelling',assessment_type='spelling_test',assessment_number=test,row=r,title=f'RM4: Spelling Test {test}',body_lines=[f'Spelling Test {test} is scheduled for {display_date}.',spelling_practice_guidance(test)],generation_reason='scheduled-spelling-test')
+        elif s in {'language-arts','shurley'}:
+            title=compact(r.get('title') or f'ELA4: Assessment {test}')
+            if not title.startswith('ELA4:'): title=f'ELA4: {title}'
+            append_draft(subject='language-arts',assessment_type='shurley_assessment',assessment_number=test,row=r,title=title,body_lines=[f'The Language Arts assessment is scheduled for {display_date}.'],generation_reason='scheduled-language-arts-assessment')
+        elif s=='history':
+            title=compact(r.get('title') or f'HIST4: Assessment {test}')
+            if not title.startswith('HIST4:'): title=f'HIST4: Assessment {test}'
+            append_draft(subject='history',assessment_type='history_assessment',assessment_number=test,row=r,title=title,body_lines=[f'The History assessment is scheduled for {display_date}.'],generation_reason='scheduled-history-assessment')
+        elif s=='science':
+            title=compact(r.get('title') or f'SCI4: Assessment {test}')
+            if not title.startswith('SCI4:'): title=f'SCI4: Assessment {test}'
+            append_draft(subject='science',assessment_type='science_assessment',assessment_number=test,row=r,title=title,body_lines=[f'The Science assessment is scheduled for {display_date}.'],generation_reason='scheduled-science-assessment')
+    return drafts
 def load_quarter_subject_activation():
     global _quarter_activation_cache
     if not _quarter_activation_cache: _quarter_activation_cache=rjson('canvas/quarter-subject-activation-2026-2027.json')
@@ -504,7 +654,6 @@ def selected_graded_assignment_specs(rows,week_meta=None):
         elif s=='reading' and test:
             fam=reading_assessment_family(test,r['entry_date']); append_spec('assignment','reading',fam['readingTest']['title'],reading_test_description(test),r,grade_role='assessment',selection_reason='scheduled-mastery-test',selection_source='pacing',default_selection=False,grade_category='assessment',extra={'assessmentFamily':fam})
             if fam['checkout']: append_spec('assignment','reading',fam['checkout']['title'],checkout_description(test),r,grade_role='assessment',selection_reason='scheduled-fluency-checkout',selection_source='pacing',default_selection=False,grade_category='assessment')
-            append_spec('announcement','reading',f"Reading Assessment - {r['entry_date']}",reading_announcement_body(fam),r,grade_role='assessment',selection_reason='assessment-announcement-preview',selection_source='pacing',default_selection=False,grade_category='assessment',extra={'assessmentFamily':fam})
         elif s=='spelling' and test:
             practice_start=max(1,test-4); append_spec('assignment','spelling',f'RM4: Spelling Test {test}',f'Practice Lessons {practice_start} through {test-1}.',r,grade_role='assessment',selection_reason='scheduled-spelling-test',selection_source='pacing',default_selection=False,grade_category='assessment')
         elif s in {'history','science'} and test:
@@ -867,8 +1016,8 @@ def assignment_drafts_for_day(r,week_meta=None,selection_ctx=None):
 def assignment_drafts_for_week(rows,week_meta=None):
     specs=selected_graded_assignment_specs(rows,week_meta); out=[]
     for spec in specs:
+        if spec.get('kind')!='assignment': continue
         due=assignment_due_payload(spec['row']['entry_date']); extra=dict(due); extra.update(spec.get('payload') or {})
-        if spec['subject']=='reading' and spec['kind']=='announcement' and spec.get('payload',{}).get('assessmentFamily'): extra['assessmentFamily']=spec['payload']['assessmentFamily']
         out.append((spec['kind'],spec['subject'],spec['title'],spec['text'],due,extra))
     return out
 def replace_drafts(db,wid):
@@ -883,12 +1032,13 @@ def replace_drafts(db,wid):
     selection_ctx=build_week_graded_selection_context(active_rows,iw)
     for kind,sub,title,text,due,extra in assignment_drafts_for_week(active_rows,iw):
         insert_draft(db,wid,kind,sub,title,text,f'<p>{html.escape(text)}</p>',extra)
-    insert_draft(db,wid,'announcement','all','Weekly Page Update','Preview announcement; unsent.','<p>Preview announcement; unsent.</p>',{'previewOnly':True})
+    for draft in build_week_announcement_drafts(active_rows,iw):
+        insert_draft(db,wid,'announcement',draft['subject'],draft['title'],draft['body_text'],draft['body_html'],{'previewOnly':True,'teacherApprovalRequired':True,'announcementDraft':draft,'scheduleMetadata':draft.get('schedule_metadata',{}),'safetyMetadata':draft.get('safety_metadata',{})})
     insert_draft(db,wid,'daily_brief','homeroom','Daily Teacher Brief','Recipient: owen.reagan@thalesacademy.org\nSchedule: 6:15 AM America/New_York instructional days\nWeather: placeholder only.\nClassroom-safe joke: Why did the notebook smile? It had good margins.','<pre>Recipient: owen.reagan@thalesacademy.org</pre>',{'previewOnly':True})
 def insert_draft(db,wid,kind,sub,title,text,html_body,payload): db.execute('INSERT INTO drafts(id,weekly_plan_id,kind,subject,title,body_text,body_html,status,idempotency_key,payload,created_at,updated_at,updated_by) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)',(stable_id('draft',wid,kind,sub,title),wid,kind,sub,title,text,html_body,'draft',stable_id('idem',wid,kind,sub,title),jd(payload),now_utc(),now_utc(),'generator'))
 def replace_deployment(db,wid):
     db.execute('DELETE FROM deployment_items WHERE deployment_plan_id IN (SELECT id FROM deployment_plans WHERE weekly_plan_id=?)',(wid,)); db.execute('DELETE FROM deployment_plans WHERE weekly_plan_id=?',(wid,)); pid=stable_id('deployment',wid)
-    ops=['validate local weekly inputs','generate local assignment previews','render academic agenda previews','generate minimal assessment reminder previews','await teacher approval']
+    ops=['validate local weekly inputs','generate local assignment previews','render academic agenda previews','generate minimal assessment reminder previews','generate assessment announcement previews','await teacher approval']
     db.execute('INSERT INTO deployment_plans(id,weekly_plan_id,status,payload,created_at,updated_at,updated_by) VALUES(?,?,?,?,?,?,?)',(pid,wid,'preview_only',jd({'previewOnly':True,'canvasWritesAllowed':False,'emailSendsAllowed':False,'scheduleIntent':'Friday 4:00 PM America/New_York','operations':ops}),now_utc(),now_utc(),'generator'))
     for i,d in enumerate(db.execute('SELECT * FROM drafts WHERE weekly_plan_id=?',(wid,))):
         unresolved=['Teacher approval required']

@@ -1,4 +1,469 @@
 {
+  "announcements": [
+    {
+      "announcement_id": "p22-fa0ab3bc6fd93319",
+      "approval_state": "Draft",
+      "approved": false,
+      "assessment_date": "2026-08-18",
+      "assessment_number": 18,
+      "assessment_type": "written_assessment",
+      "body_html": "<p>Math Written Assessment 18 is scheduled for Tuesday, August 18. Students should review recent classwork and assigned practice. Coverage: Lessons 16-18 place value and regrouping..</p>",
+      "body_text": "Math Written Assessment 18 is scheduled for Tuesday, August 18.\nStudents should review recent classwork and assigned practice.\nCoverage: Lessons 16-18 place value and regrouping..",
+      "coverage": "Lessons 16-18 place value and regrouping.",
+      "coverage_status": "provided",
+      "display_date": "Tuesday, August 18",
+      "generation_reason": "scheduled-written-assessment",
+      "needs_review": false,
+      "preview_only": true,
+      "provenance": [
+        {
+          "details": "scheduled-written-assessment",
+          "sourceRef": "2026-08-18",
+          "sourceType": "weekly-row"
+        },
+        {
+          "details": "explicit assessment event",
+          "sourceRef": "build_week_announcement_drafts",
+          "sourceType": "phase22-rule"
+        }
+      ],
+      "safety_metadata": {
+        "canvasWritesAllowed": false,
+        "containsAttachments": false,
+        "containsExactCheckoutLocation": false,
+        "containsExactSpellingWords": false,
+        "containsLinks": false,
+        "containsStudentData": false,
+        "emailSendsAllowed": false,
+        "studyGuideAllowed": false
+      },
+      "schedule_metadata": {
+        "announcementDate": "2026-08-14",
+        "canvasWritesAllowed": false,
+        "emailSendsAllowed": false,
+        "previewOnly": true,
+        "scheduleIntent": "Friday 4:00 PM America/New_York",
+        "scheduledDay": "Friday",
+        "scheduledTime": "4:00 PM",
+        "targetWeekCode": "Q1W5",
+        "targetWeekStartsOn": "2026-08-17",
+        "teacherApprovalRequired": true,
+        "teacherOverrideApplied": false,
+        "timezone": "America/New_York"
+      },
+      "subject": "math",
+      "target_week_code": "Q1W5",
+      "teacher_approval_required": true,
+      "title": "SM5: Written Assessment 18",
+      "warnings": []
+    },
+    {
+      "announcement_id": "p22-d84242548797288f",
+      "approval_state": "Draft",
+      "approved": false,
+      "assessment_date": "2026-08-18",
+      "assessment_number": 18,
+      "assessment_type": "fact_assessment",
+      "body_html": "<p>Math Fact Assessment 18 is scheduled for Tuesday, August 18. Division with remainders starting with 7/2, 16/3 Coverage: Lessons 16-18 place value and regrouping..</p>",
+      "body_text": "Math Fact Assessment 18 is scheduled for Tuesday, August 18.\nDivision with remainders starting with 7/2, 16/3\nCoverage: Lessons 16-18 place value and regrouping..",
+      "coverage": "Lessons 16-18 place value and regrouping.",
+      "coverage_status": "provided",
+      "display_date": "Tuesday, August 18",
+      "generation_reason": "scheduled-fact-assessment",
+      "needs_review": false,
+      "preview_only": true,
+      "provenance": [
+        {
+          "details": "scheduled-fact-assessment",
+          "sourceRef": "2026-08-18",
+          "sourceType": "weekly-row"
+        },
+        {
+          "details": "explicit assessment event",
+          "sourceRef": "build_week_announcement_drafts",
+          "sourceType": "phase22-rule"
+        }
+      ],
+      "safety_metadata": {
+        "canvasWritesAllowed": false,
+        "containsAttachments": false,
+        "containsExactCheckoutLocation": false,
+        "containsExactSpellingWords": false,
+        "containsLinks": false,
+        "containsStudentData": false,
+        "emailSendsAllowed": false,
+        "studyGuideAllowed": false
+      },
+      "schedule_metadata": {
+        "announcementDate": "2026-08-14",
+        "canvasWritesAllowed": false,
+        "emailSendsAllowed": false,
+        "previewOnly": true,
+        "scheduleIntent": "Friday 4:00 PM America/New_York",
+        "scheduledDay": "Friday",
+        "scheduledTime": "4:00 PM",
+        "targetWeekCode": "Q1W5",
+        "targetWeekStartsOn": "2026-08-17",
+        "teacherApprovalRequired": true,
+        "teacherOverrideApplied": false,
+        "timezone": "America/New_York"
+      },
+      "subject": "math",
+      "target_week_code": "Q1W5",
+      "teacher_approval_required": true,
+      "title": "SM5: Fact Assessment 18",
+      "warnings": []
+    },
+    {
+      "announcement_id": "p22-4b72d0b4c23d084f",
+      "approval_state": "Draft",
+      "approved": false,
+      "assessment_date": "2026-08-19",
+      "assessment_number": 13,
+      "assessment_type": "mastery_test",
+      "body_html": "<p>Reading Mastery Test 13 is scheduled for Wednesday, August 19. Coverage: Lessons 121-130 vocabulary and story details..</p>",
+      "body_text": "Reading Mastery Test 13 is scheduled for Wednesday, August 19.\nCoverage: Lessons 121-130 vocabulary and story details..",
+      "coverage": "Lessons 121-130 vocabulary and story details.",
+      "coverage_status": "provided",
+      "display_date": "Wednesday, August 19",
+      "generation_reason": "scheduled-mastery-test",
+      "needs_review": false,
+      "preview_only": true,
+      "provenance": [
+        {
+          "details": "scheduled-mastery-test",
+          "sourceRef": "2026-08-19",
+          "sourceType": "weekly-row"
+        },
+        {
+          "details": "explicit assessment event",
+          "sourceRef": "build_week_announcement_drafts",
+          "sourceType": "phase22-rule"
+        }
+      ],
+      "safety_metadata": {
+        "canvasWritesAllowed": false,
+        "containsAttachments": false,
+        "containsExactCheckoutLocation": false,
+        "containsExactSpellingWords": false,
+        "containsLinks": false,
+        "containsStudentData": false,
+        "emailSendsAllowed": false,
+        "studyGuideAllowed": false
+      },
+      "schedule_metadata": {
+        "announcementDate": "2026-08-14",
+        "canvasWritesAllowed": false,
+        "emailSendsAllowed": false,
+        "previewOnly": true,
+        "scheduleIntent": "Friday 4:00 PM America/New_York",
+        "scheduledDay": "Friday",
+        "scheduledTime": "4:00 PM",
+        "targetWeekCode": "Q1W5",
+        "targetWeekStartsOn": "2026-08-17",
+        "teacherApprovalRequired": true,
+        "teacherOverrideApplied": false,
+        "timezone": "America/New_York"
+      },
+      "subject": "reading",
+      "target_week_code": "Q1W5",
+      "teacher_approval_required": true,
+      "title": "RM4: Mastery Test 13",
+      "warnings": []
+    },
+    {
+      "announcement_id": "p22-0a8a1c50340eec3d",
+      "approval_state": "Draft",
+      "approved": false,
+      "assessment_date": "2026-08-19",
+      "assessment_number": 13,
+      "assessment_type": "fluency_checkout",
+      "body_html": "<p>Reading Fluency Checkout 13 is scheduled for Wednesday, August 19. Students should practice reading approximately 130 words in under one minute with no more than two errors. Coverage: Lessons 121-130 vocabulary and story details..</p>",
+      "body_text": "Reading Fluency Checkout 13 is scheduled for Wednesday, August 19.\nStudents should practice reading approximately 130 words in under one minute with no more than two errors.\nCoverage: Lessons 121-130 vocabulary and story details..",
+      "coverage": "Lessons 121-130 vocabulary and story details.",
+      "coverage_status": "provided",
+      "display_date": "Wednesday, August 19",
+      "generation_reason": "scheduled-fluency-checkout",
+      "needs_review": false,
+      "preview_only": true,
+      "provenance": [
+        {
+          "details": "scheduled-fluency-checkout",
+          "sourceRef": "2026-08-19",
+          "sourceType": "weekly-row"
+        },
+        {
+          "details": "explicit assessment event",
+          "sourceRef": "build_week_announcement_drafts",
+          "sourceType": "phase22-rule"
+        }
+      ],
+      "safety_metadata": {
+        "canvasWritesAllowed": false,
+        "containsAttachments": false,
+        "containsExactCheckoutLocation": false,
+        "containsExactSpellingWords": false,
+        "containsLinks": false,
+        "containsStudentData": false,
+        "emailSendsAllowed": false,
+        "studyGuideAllowed": false
+      },
+      "schedule_metadata": {
+        "announcementDate": "2026-08-14",
+        "canvasWritesAllowed": false,
+        "emailSendsAllowed": false,
+        "previewOnly": true,
+        "scheduleIntent": "Friday 4:00 PM America/New_York",
+        "scheduledDay": "Friday",
+        "scheduledTime": "4:00 PM",
+        "targetWeekCode": "Q1W5",
+        "targetWeekStartsOn": "2026-08-17",
+        "teacherApprovalRequired": true,
+        "teacherOverrideApplied": false,
+        "timezone": "America/New_York"
+      },
+      "subject": "reading",
+      "target_week_code": "Q1W5",
+      "teacher_approval_required": true,
+      "title": "RM4: Fluency Checkout 13",
+      "warnings": []
+    },
+    {
+      "announcement_id": "p22-44058c2acda72126",
+      "approval_state": "Draft",
+      "approved": false,
+      "assessment_date": "2026-08-19",
+      "assessment_number": 6,
+      "assessment_type": "spelling_test",
+      "body_html": "<p>Spelling Test 6 is scheduled for Wednesday, August 19. For Spelling Test 6, students should practice lessons 2 through 5.</p>",
+      "body_text": "Spelling Test 6 is scheduled for Wednesday, August 19.\nFor Spelling Test 6, students should practice lessons 2 through 5.",
+      "coverage": null,
+      "coverage_status": "missing",
+      "display_date": "Wednesday, August 19",
+      "generation_reason": "scheduled-spelling-test",
+      "needs_review": true,
+      "preview_only": true,
+      "provenance": [
+        {
+          "details": "scheduled-spelling-test",
+          "sourceRef": "2026-08-19",
+          "sourceType": "weekly-row"
+        },
+        {
+          "details": "explicit assessment event",
+          "sourceRef": "build_week_announcement_drafts",
+          "sourceType": "phase22-rule"
+        }
+      ],
+      "safety_metadata": {
+        "canvasWritesAllowed": false,
+        "containsAttachments": false,
+        "containsExactCheckoutLocation": false,
+        "containsExactSpellingWords": false,
+        "containsLinks": false,
+        "containsStudentData": false,
+        "emailSendsAllowed": false,
+        "studyGuideAllowed": false
+      },
+      "schedule_metadata": {
+        "announcementDate": "2026-08-14",
+        "canvasWritesAllowed": false,
+        "emailSendsAllowed": false,
+        "previewOnly": true,
+        "scheduleIntent": "Friday 4:00 PM America/New_York",
+        "scheduledDay": "Friday",
+        "scheduledTime": "4:00 PM",
+        "targetWeekCode": "Q1W5",
+        "targetWeekStartsOn": "2026-08-17",
+        "teacherApprovalRequired": true,
+        "teacherOverrideApplied": false,
+        "timezone": "America/New_York"
+      },
+      "subject": "spelling",
+      "target_week_code": "Q1W5",
+      "teacher_approval_required": true,
+      "title": "RM4: Spelling Test 6",
+      "warnings": [
+        "Teacher-entered coverage is required before approval"
+      ]
+    },
+    {
+      "announcement_id": "p22-082bc05bfba60c92",
+      "approval_state": "Draft",
+      "approved": false,
+      "assessment_date": "2026-08-20",
+      "assessment_number": 14,
+      "assessment_type": "mastery_test",
+      "body_html": "<p>Reading Mastery Test 14 is scheduled for Thursday, August 20.</p>",
+      "body_text": "Reading Mastery Test 14 is scheduled for Thursday, August 20.",
+      "coverage": null,
+      "coverage_status": "missing",
+      "display_date": "Thursday, August 20",
+      "generation_reason": "scheduled-mastery-test",
+      "needs_review": true,
+      "preview_only": true,
+      "provenance": [
+        {
+          "details": "scheduled-mastery-test",
+          "sourceRef": "2026-08-20",
+          "sourceType": "weekly-row"
+        },
+        {
+          "details": "explicit assessment event",
+          "sourceRef": "build_week_announcement_drafts",
+          "sourceType": "phase22-rule"
+        }
+      ],
+      "safety_metadata": {
+        "canvasWritesAllowed": false,
+        "containsAttachments": false,
+        "containsExactCheckoutLocation": false,
+        "containsExactSpellingWords": false,
+        "containsLinks": false,
+        "containsStudentData": false,
+        "emailSendsAllowed": false,
+        "studyGuideAllowed": false
+      },
+      "schedule_metadata": {
+        "announcementDate": "2026-08-14",
+        "canvasWritesAllowed": false,
+        "emailSendsAllowed": false,
+        "previewOnly": true,
+        "scheduleIntent": "Friday 4:00 PM America/New_York",
+        "scheduledDay": "Friday",
+        "scheduledTime": "4:00 PM",
+        "targetWeekCode": "Q1W5",
+        "targetWeekStartsOn": "2026-08-17",
+        "teacherApprovalRequired": true,
+        "teacherOverrideApplied": false,
+        "timezone": "America/New_York"
+      },
+      "subject": "reading",
+      "target_week_code": "Q1W5",
+      "teacher_approval_required": true,
+      "title": "RM4: Mastery Test 14",
+      "warnings": [
+        "Teacher-entered coverage is required before approval",
+        "Reading Mastery Test on Thursday is outside the default Wednesday window"
+      ]
+    },
+    {
+      "announcement_id": "p22-134a3cc22119f335",
+      "approval_state": "Draft",
+      "approved": false,
+      "assessment_date": "2026-08-21",
+      "assessment_number": 1,
+      "assessment_type": "history_assessment",
+      "body_html": "<p>The History assessment is scheduled for Friday, August 21. Coverage: Map skills and ancient Rome unit review..</p>",
+      "body_text": "The History assessment is scheduled for Friday, August 21.\nCoverage: Map skills and ancient Rome unit review..",
+      "coverage": "Map skills and ancient Rome unit review.",
+      "coverage_status": "provided",
+      "display_date": "Friday, August 21",
+      "generation_reason": "scheduled-history-assessment",
+      "needs_review": false,
+      "preview_only": true,
+      "provenance": [
+        {
+          "details": "scheduled-history-assessment",
+          "sourceRef": "2026-08-21",
+          "sourceType": "weekly-row"
+        },
+        {
+          "details": "explicit assessment event",
+          "sourceRef": "build_week_announcement_drafts",
+          "sourceType": "phase22-rule"
+        }
+      ],
+      "safety_metadata": {
+        "canvasWritesAllowed": false,
+        "containsAttachments": false,
+        "containsExactCheckoutLocation": false,
+        "containsExactSpellingWords": false,
+        "containsLinks": false,
+        "containsStudentData": false,
+        "emailSendsAllowed": false,
+        "studyGuideAllowed": false
+      },
+      "schedule_metadata": {
+        "announcementDate": "2026-08-14",
+        "canvasWritesAllowed": false,
+        "emailSendsAllowed": false,
+        "previewOnly": true,
+        "scheduleIntent": "Friday 4:00 PM America/New_York",
+        "scheduledDay": "Friday",
+        "scheduledTime": "4:00 PM",
+        "targetWeekCode": "Q1W5",
+        "targetWeekStartsOn": "2026-08-17",
+        "teacherApprovalRequired": true,
+        "teacherOverrideApplied": false,
+        "timezone": "America/New_York"
+      },
+      "subject": "history",
+      "target_week_code": "Q1W5",
+      "teacher_approval_required": true,
+      "title": "HIST4: Assessment 1",
+      "warnings": []
+    },
+    {
+      "announcement_id": "p22-96e49cf028069295",
+      "approval_state": "Draft",
+      "approved": false,
+      "assessment_date": "2026-08-21",
+      "assessment_number": 1,
+      "assessment_type": "shurley_assessment",
+      "body_html": "<p>The Language Arts assessment is scheduled for Friday, August 21.</p>",
+      "body_text": "The Language Arts assessment is scheduled for Friday, August 21.",
+      "coverage": null,
+      "coverage_status": "missing",
+      "display_date": "Friday, August 21",
+      "generation_reason": "scheduled-language-arts-assessment",
+      "needs_review": true,
+      "preview_only": true,
+      "provenance": [
+        {
+          "details": "scheduled-language-arts-assessment",
+          "sourceRef": "2026-08-21",
+          "sourceType": "weekly-row"
+        },
+        {
+          "details": "explicit assessment event",
+          "sourceRef": "build_week_announcement_drafts",
+          "sourceType": "phase22-rule"
+        }
+      ],
+      "safety_metadata": {
+        "canvasWritesAllowed": false,
+        "containsAttachments": false,
+        "containsExactCheckoutLocation": false,
+        "containsExactSpellingWords": false,
+        "containsLinks": false,
+        "containsStudentData": false,
+        "emailSendsAllowed": false,
+        "studyGuideAllowed": false
+      },
+      "schedule_metadata": {
+        "announcementDate": "2026-08-14",
+        "canvasWritesAllowed": false,
+        "emailSendsAllowed": false,
+        "previewOnly": true,
+        "scheduleIntent": "Friday 4:00 PM America/New_York",
+        "scheduledDay": "Friday",
+        "scheduledTime": "4:00 PM",
+        "targetWeekCode": "Q1W5",
+        "targetWeekStartsOn": "2026-08-17",
+        "teacherApprovalRequired": true,
+        "teacherOverrideApplied": false,
+        "timezone": "America/New_York"
+      },
+      "subject": "language-arts",
+      "target_week_code": "Q1W5",
+      "teacher_approval_required": true,
+      "title": "ELA4: Assessment 1",
+      "warnings": [
+        "Teacher-entered coverage is required before approval"
+      ]
+    }
+  ],
   "approvalState": "draft",
   "artifactClassification": "weekly-content-production-packet",
   "assessmentReminders": [
@@ -34,8 +499,7 @@
       "display_date": "Wednesday",
       "linked_assignment_ids": [
         "p23-c0d34d1195a555d20b",
-        "p23-a2274f0daa5ac0c157",
-        "p23-3c8693052ca7b95cf2"
+        "p23-a2274f0daa5ac0c157"
       ],
       "provenance": [
         {
@@ -94,6 +558,54 @@
       ],
       "reminder_id": "p23-5f7f31f7771baea9ab",
       "title": "Reading Test 14",
+      "warnings": []
+    },
+    {
+      "body_html": "<p>HIST4: Assessment 1 on Friday.</p>",
+      "body_text": "HIST4: Assessment 1 on Friday.",
+      "date": "2026-08-21",
+      "display_date": "Friday",
+      "linked_assignment_ids": [
+        "p23-6c92c62488b266a815"
+      ],
+      "provenance": [
+        {
+          "details": "HIST4: Assessment 1",
+          "sourceRef": "/Users/owen/Projects/teacher-ai-workstation/fixtures/canvas-llm/phase-23/synthetic-weekly-content.json",
+          "sourceType": "fixture"
+        },
+        {
+          "details": "linked to packet assignments",
+          "sourceRef": "assessment-reminder",
+          "sourceType": "phase22-rule"
+        }
+      ],
+      "reminder_id": "p23-011551040afd83782b",
+      "title": "HIST4: Assessment 1",
+      "warnings": []
+    },
+    {
+      "body_html": "<p>ELA4: Assessment 1 on Friday.</p>",
+      "body_text": "ELA4: Assessment 1 on Friday.",
+      "date": "2026-08-21",
+      "display_date": "Friday",
+      "linked_assignment_ids": [
+        "p23-71036af8378345a87c"
+      ],
+      "provenance": [
+        {
+          "details": "ELA4: Assessment 1",
+          "sourceRef": "/Users/owen/Projects/teacher-ai-workstation/fixtures/canvas-llm/phase-23/synthetic-weekly-content.json",
+          "sourceType": "fixture"
+        },
+        {
+          "details": "linked to packet assignments",
+          "sourceRef": "assessment-reminder",
+          "sourceType": "phase22-rule"
+        }
+      ],
+      "reminder_id": "p23-0677878fddd93afe1c",
+      "title": "ELA4: Assessment 1",
       "warnings": []
     }
   ],
@@ -637,12 +1149,102 @@
       "title": "RM4: Mastery Test 14",
       "verified_assignment_url": null,
       "warnings": []
+    },
+    {
+      "assignment_id": "p23-6c92c62488b266a815",
+      "audience": "All Students",
+      "body_html": "<p>Local History assessment draft.</p>",
+      "body_text": "Local History assessment draft.",
+      "display_date": "Friday",
+      "grade_display": "Percentage",
+      "group": "Tests/Assessments",
+      "linked_page_id": "p23-c28c71515c4f7ca308",
+      "linked_resource_ids": [],
+      "machine_date": "2026-08-21",
+      "points": 100,
+      "provenance": [
+        {
+          "details": "HIST4: Assessment 1",
+          "sourceRef": "/Users/owen/Projects/teacher-ai-workstation/fixtures/canvas-llm/phase-23/synthetic-weekly-content.json",
+          "sourceType": "fixture"
+        },
+        {
+          "details": "scheduled-history-assessment",
+          "sourceRef": "history",
+          "sourceType": "phase22-rule"
+        },
+        {
+          "details": "11:59 PM America/New_York",
+          "sourceRef": "2026-08-21",
+          "sourceType": "due-time"
+        }
+      ],
+      "selection_metadata": {
+        "defaultSelection": false,
+        "gradeCategory": "assessment",
+        "gradeRole": "assessment",
+        "graded": true,
+        "selectedDay": "Friday",
+        "selectionReason": "scheduled-history-assessment",
+        "selectionSource": "pacing",
+        "teacherOverrideApplied": false
+      },
+      "subject": "history",
+      "submission_type": "On Paper",
+      "title": "HIST4: Assessment 1",
+      "verified_assignment_url": null,
+      "warnings": []
+    },
+    {
+      "assignment_id": "p23-71036af8378345a87c",
+      "audience": "All Students",
+      "body_html": "<p>Local Language Arts assessment draft.</p>",
+      "body_text": "Local Language Arts assessment draft.",
+      "display_date": "Friday",
+      "grade_display": "Percentage",
+      "group": "Tests/Assessments",
+      "linked_page_id": "p23-9eeefd2e992e979caf",
+      "linked_resource_ids": [],
+      "machine_date": "2026-08-21",
+      "points": 100,
+      "provenance": [
+        {
+          "details": "ELA4: Assessment 1",
+          "sourceRef": "/Users/owen/Projects/teacher-ai-workstation/fixtures/canvas-llm/phase-23/synthetic-weekly-content.json",
+          "sourceType": "fixture"
+        },
+        {
+          "details": "scheduled-language-arts-assessment",
+          "sourceRef": "language-arts",
+          "sourceType": "phase22-rule"
+        },
+        {
+          "details": "11:59 PM America/New_York",
+          "sourceRef": "2026-08-21",
+          "sourceType": "due-time"
+        }
+      ],
+      "selection_metadata": {
+        "defaultSelection": false,
+        "gradeCategory": "assessment",
+        "gradeRole": "assessment",
+        "graded": true,
+        "selectedDay": "Friday",
+        "selectionReason": "scheduled-language-arts-assessment",
+        "selectionSource": "pacing",
+        "teacherOverrideApplied": false
+      },
+      "subject": "language-arts",
+      "submission_type": "On Paper",
+      "title": "ELA4: Assessment 1",
+      "verified_assignment_url": null,
+      "warnings": []
     }
   ],
   "containsStudentData": false,
   "deploymentState": "preview-only",
-  "generatedAt": "2026-07-25T19:49:09Z",
-  "packetId": "p23-7b22aec2ca0e40e425",
+  "generatedAt": "2026-07-25T22:43:53Z",
+  "packetId": "p23-75e8b4e54ff727ca0f",
   "pages": [
     {
       "body_html": "<div id=\"kl_wrapper_3\" class=\"kl_circle_left kl_wrapper\" style=\"border-style: none;\"><div id=\"kl_banner\" class=\"\"><p style=\"color: #ffffff; background-color: #0065a7; text-align: center; margin: 0;\"><span style=\"font-size: 18pt;\">&nbsp;Weekly Agenda</span><br><span style=\"font-size: 10pt;\">Quarter 1, Week 5 | August 17–21, 2026</span></p><h3 style=\"background-color: #c51062; color: #ffffff; border: 0 !important;\">Reminders</h3><div style=\"width: 100%; padding-left: 15px;\"><ul><li>SM5: Written Assessment 18 and SM5: Fact Assessment 18 on Tuesday</li></ul></div><div id=\"kl_activities2\" class=\"\"><h3 style=\"color: #ffffff; background-color: #0065a7; margin-top: 15px; margin-bottom: 2px; border: 0 !important;\">Monday</h3><div style=\"display: flex; width: 100%;\"><div style=\"width: 49%; padding-left: 15px;\"><h4 class=\"kl_solid_border\" style=\"color: #ffffff; background-color: #333333; padding-left: 10px; margin: 0; border: 0 !important;\">In Class</h4><ul><li>Lesson 18</li><li>#1-10</li></ul></div><div style=\"width: 49%; padding-left: 15px;\"><h4 class=\"kl_solid_border\" style=\"color: #ffffff; background-color: #333333; padding-left: 10px; margin: 0; border: 0 !important;\">Homework</h4><ul><li>#12-30 evens</li></ul></div></div></div><div id=\"kl_custom_block_4\" class=\"\"><h3 style=\"color: #ffffff; background-color: #0065a7; margin-top: 15px; margin-bottom: 2px; border: 0 !important;\">Tuesday</h3><div style=\"display: flex; width: 100%;\"><div style=\"width: 49%; padding-left: 15px;\"><h4 class=\"kl_solid_border\" style=\"color: #ffffff; background-color: #333333; padding-left: 10px; margin: 0; border: 0 !important;\">In Class</h4><ul><li>Written Assessment 18</li><li>Fact Assessment 18</li></ul></div><div style=\"width: 49%; padding-left: 15px;\"><h4 class=\"kl_solid_border\" style=\"color: #ffffff; background-color: #333333; padding-left: 10px; margin: 0; border: 0 !important;\">Homework</h4><ul><li>No Homework</li></ul></div></div></div><div id=\"kl_custom_block_3\" class=\"\"><h3 style=\"color: #ffffff; background-color: #0065a7; margin-top: 15px; margin-bottom: 2px; border: 0 !important;\">Wednesday</h3><div style=\"display: flex; width: 100%;\"><div style=\"width: 49%; padding-left: 15px;\"><h4 class=\"kl_solid_border\" style=\"color: #ffffff; background-color: #333333; padding-left: 10px; margin: 0; border: 0 !important;\">In Class</h4><ul><li>Lesson 19</li><li>#1-10</li></ul></div><div style=\"width: 49%; padding-left: 15px;\"><h4 class=\"kl_solid_border\" style=\"color: #ffffff; background-color: #333333; padding-left: 10px; margin: 0; border: 0 !important;\">Homework</h4><ul><li>#11-29 odds</li></ul></div></div></div><div id=\"kl_custom_block_2\" class=\"\"><h3 style=\"color: #ffffff; background-color: #0065a7; margin-top: 15px; margin-bottom: 2px; border: 0 !important;\">Thursday</h3><div style=\"display: flex; width: 100%;\"><div style=\"width: 49%; padding-left: 15px;\"><h4 class=\"kl_solid_border\" style=\"color: #ffffff; background-color: #333333; padding-left: 10px; margin: 0; border: 0 !important;\">In Class</h4><ul><li>Lesson 20</li><li>#1-10</li></ul></div><div style=\"width: 49%; padding-left: 15px;\"><h4 class=\"kl_solid_border\" style=\"color: #ffffff; background-color: #333333; padding-left: 10px; margin: 0; border: 0 !important;\">Homework</h4><ul><li>No Homework</li></ul></div></div></div></div></div>",
@@ -675,8 +1277,6 @@
       "body_html": "<div id=\"kl_wrapper_3\" class=\"kl_circle_left kl_wrapper\" style=\"border-style: none;\"><div id=\"kl_banner\" class=\"\"><p style=\"color: #ffffff; background-color: #0065a7; text-align: center; margin: 0;\"><span style=\"font-size: 18pt;\">&nbsp;Weekly Agenda</span><br><span style=\"font-size: 10pt;\">Quarter 1, Week 5 | August 17–21, 2026</span></p><h3 style=\"background-color: #c51062; color: #ffffff; border: 0 !important;\">Reminders</h3><div style=\"width: 100%; padding-left: 15px;\"><ul><li>RM4: Mastery Test 13 and RM4: Fluency Checkout 13 on Wednesday</li><li>RM4: Spelling Test 6 on Wednesday</li><li>RM4: Mastery Test 14 on Thursday</li></ul></div><div id=\"kl_activities2\" class=\"\"><h3 style=\"color: #ffffff; background-color: #0065a7; margin-top: 15px; margin-bottom: 2px; border: 0 !important;\">Monday</h3><div style=\"display: flex; width: 100%;\"><div style=\"width: 49%; padding-left: 15px;\"><h4 class=\"kl_solid_border\" style=\"color: #ffffff; background-color: #333333; padding-left: 10px; margin: 0; border: 0 !important;\">In Class</h4><ul><li>Lesson 50</li><li>Workbook</li></ul></div><div style=\"width: 49%; padding-left: 15px;\"><h4 class=\"kl_solid_border\" style=\"color: #ffffff; background-color: #333333; padding-left: 10px; margin: 0; border: 0 !important;\">Homework</h4><ul><li>No Homework</li></ul></div></div></div><div id=\"kl_custom_block_4\" class=\"\"><h3 style=\"color: #ffffff; background-color: #0065a7; margin-top: 15px; margin-bottom: 2px; border: 0 !important;\">Tuesday</h3><div style=\"display: flex; width: 100%;\"><div style=\"width: 49%; padding-left: 15px;\"><h4 class=\"kl_solid_border\" style=\"color: #ffffff; background-color: #333333; padding-left: 10px; margin: 0; border: 0 !important;\">In Class</h4><ul><li>Lesson 51</li><li>Workbook</li></ul></div><div style=\"width: 49%; padding-left: 15px;\"><h4 class=\"kl_solid_border\" style=\"color: #ffffff; background-color: #333333; padding-left: 10px; margin: 0; border: 0 !important;\">Homework</h4><ul><li>Comprehension Questions</li></ul></div></div></div><div id=\"kl_custom_block_3\" class=\"\"><h3 style=\"color: #ffffff; background-color: #0065a7; margin-top: 15px; margin-bottom: 2px; border: 0 !important;\">Wednesday</h3><div style=\"display: flex; width: 100%;\"><div style=\"width: 49%; padding-left: 15px;\"><h4 class=\"kl_solid_border\" style=\"color: #ffffff; background-color: #333333; padding-left: 10px; margin: 0; border: 0 !important;\">In Class</h4><ul><li>RM4: Mastery Test 13</li><li>Spelling Test 6</li></ul></div><div style=\"width: 49%; padding-left: 15px;\"><h4 class=\"kl_solid_border\" style=\"color: #ffffff; background-color: #333333; padding-left: 10px; margin: 0; border: 0 !important;\">Homework</h4><ul><li>No Homework</li><li>No Homework</li></ul></div></div></div><div id=\"kl_custom_block_2\" class=\"\"><h3 style=\"color: #ffffff; background-color: #0065a7; margin-top: 15px; margin-bottom: 2px; border: 0 !important;\">Thursday</h3><div style=\"display: flex; width: 100%;\"><div style=\"width: 49%; padding-left: 15px;\"><h4 class=\"kl_solid_border\" style=\"color: #ffffff; background-color: #333333; padding-left: 10px; margin: 0; border: 0 !important;\">In Class</h4><ul><li>Lesson 52</li><li>Workbook</li><li>RM4: Mastery Test 14</li></ul></div><div style=\"width: 49%; padding-left: 15px;\"><h4 class=\"kl_solid_border\" style=\"color: #ffffff; background-color: #333333; padding-left: 10px; margin: 0; border: 0 !important;\">Homework</h4><ul><li>Comprehension Questions</li><li>No Homework</li></ul></div></div></div></div></div>",
       "body_text": "Monday: Lesson 50; Workbook; No Homework\nTuesday: Lesson 51; Workbook; Comprehension Questions\nWednesday: RM4: Mastery Test 13; No Homework; Spelling Test 6; No Homework\nThursday: Lesson 52; Workbook; Comprehension Questions; RM4: Mastery Test 14; No Homework",
       "linked_assignment_ids": [
-        "p23-3c8693052ca7b95cf2",
-        "p23-4cf57390c2631ef3bb",
         "p23-549607f33e6396bf42",
         "p23-54a4c1703adebae30d",
         "p23-5ca78fb5b25f9fe779",
@@ -703,9 +1303,11 @@
       "title": "Reading and Spelling Weekly Agenda"
     },
     {
-      "body_html": "<div id=\"kl_wrapper_3\" class=\"kl_circle_left kl_wrapper\" style=\"border-style: none;\"><div id=\"kl_banner\" class=\"\"><p style=\"color: #ffffff; background-color: #0065a7; text-align: center; margin: 0;\"><span style=\"font-size: 18pt;\">&nbsp;Weekly Agenda</span><br><span style=\"font-size: 10pt;\">Quarter 1, Week 5 | August 17–21, 2026</span></p><h3 style=\"background-color: #c51062; color: #ffffff; border: 0 !important;\">Reminders</h3><div style=\"width: 100%; padding-left: 15px;\"></div><div id=\"kl_custom_block_2\" class=\"\"><h3 style=\"color: #ffffff; background-color: #0065a7; margin-top: 15px; margin-bottom: 2px; border: 0 !important;\">Thursday</h3><div style=\"display: flex; width: 100%;\"><div style=\"width: 49%; padding-left: 15px;\"><h4 class=\"kl_solid_border\" style=\"color: #ffffff; background-color: #333333; padding-left: 10px; margin: 0; border: 0 !important;\">In Class</h4><ul><li>ELA4: Chapter 3 Practice</li></ul></div><div style=\"width: 49%; padding-left: 15px;\"><h4 class=\"kl_solid_border\" style=\"color: #ffffff; background-color: #333333; padding-left: 10px; margin: 0; border: 0 !important;\">Homework</h4><ul><li>Comprehension Questions</li></ul></div></div></div></div></div>",
-      "body_text": "Thursday: ELA4: Chapter 3 Practice; Comprehension Questions",
-      "linked_assignment_ids": [],
+      "body_html": "<div id=\"kl_wrapper_3\" class=\"kl_circle_left kl_wrapper\" style=\"border-style: none;\"><div id=\"kl_banner\" class=\"\"><p style=\"color: #ffffff; background-color: #0065a7; text-align: center; margin: 0;\"><span style=\"font-size: 18pt;\">&nbsp;Weekly Agenda</span><br><span style=\"font-size: 10pt;\">Quarter 1, Week 5 | August 17–21, 2026</span></p><h3 style=\"background-color: #c51062; color: #ffffff; border: 0 !important;\">Reminders</h3><div style=\"width: 100%; padding-left: 15px;\"></div><div id=\"kl_custom_block_2\" class=\"\"><h3 style=\"color: #ffffff; background-color: #0065a7; margin-top: 15px; margin-bottom: 2px; border: 0 !important;\">Thursday</h3><div style=\"display: flex; width: 100%;\"><div style=\"width: 49%; padding-left: 15px;\"><h4 class=\"kl_solid_border\" style=\"color: #ffffff; background-color: #333333; padding-left: 10px; margin: 0; border: 0 !important;\">In Class</h4><ul><li>ELA4: Chapter 3 Practice</li></ul></div><div style=\"width: 49%; padding-left: 15px;\"><h4 class=\"kl_solid_border\" style=\"color: #ffffff; background-color: #333333; padding-left: 10px; margin: 0; border: 0 !important;\">Homework</h4><ul><li>Comprehension Questions</li></ul></div></div></div><div id=\"kl_custom_block_1\" class=\"\"><h3 style=\"color: #ffffff; background-color: #0065a7; margin-top: 15px; margin-bottom: 2px; border: 0 !important;\">Friday</h3><div style=\"display: flex; width: 100%;\"><div style=\"width: 49%; padding-left: 15px;\"><h4 class=\"kl_solid_border\" style=\"color: #ffffff; background-color: #333333; padding-left: 10px; margin: 0; border: 0 !important;\">In Class</h4><ul><li>ELA4: Assessment 1</li></ul></div><div style=\"width: 49%; padding-left: 15px;\"><h4 class=\"kl_solid_border\" style=\"color: #ffffff; background-color: #333333; padding-left: 10px; margin: 0; border: 0 !important;\">Homework</h4><ul><li>No Homework</li></ul></div></div></div></div></div>",
+      "body_text": "Thursday: ELA4: Chapter 3 Practice; Comprehension Questions\nFriday: ELA4: Assessment 1; No Homework",
+      "linked_assignment_ids": [
+        "p23-71036af8378345a87c"
+      ],
       "page_id": "p23-9eeefd2e992e979caf",
       "provenance": [
         {
@@ -724,9 +1326,11 @@
       "title": "Language Arts Weekly Agenda"
     },
     {
-      "body_html": "<div id=\"kl_wrapper_3\" class=\"kl_circle_left kl_wrapper\" style=\"border-style: none;\"><div id=\"kl_banner\" class=\"\"><p style=\"color: #ffffff; background-color: #0065a7; text-align: center; margin: 0;\"><span style=\"font-size: 18pt;\">&nbsp;Weekly Agenda</span><br><span style=\"font-size: 10pt;\">Quarter 1, Week 5 | August 17–21, 2026</span></p><h3 style=\"background-color: #c51062; color: #ffffff; border: 0 !important;\">Reminders</h3><div style=\"width: 100%; padding-left: 15px;\"></div><div id=\"kl_custom_block_4\" class=\"\"><h3 style=\"color: #ffffff; background-color: #0065a7; margin-top: 15px; margin-bottom: 2px; border: 0 !important;\">Tuesday</h3><div style=\"display: flex; width: 100%;\"><div style=\"width: 49%; padding-left: 15px;\"><h4 class=\"kl_solid_border\" style=\"color: #ffffff; background-color: #333333; padding-left: 10px; margin: 0; border: 0 !important;\">In Class</h4><ul><li>History Lesson 5</li></ul></div><div style=\"width: 49%; padding-left: 15px;\"><h4 class=\"kl_solid_border\" style=\"color: #ffffff; background-color: #333333; padding-left: 10px; margin: 0; border: 0 !important;\">Homework</h4><ul><li>No Homework</li></ul></div></div></div><div id=\"kl_custom_block_1\" class=\"\"><h3 style=\"color: #ffffff; background-color: #0065a7; margin-top: 15px; margin-bottom: 2px; border: 0 !important;\">Friday</h3><div style=\"display: flex; width: 100%;\"><div style=\"width: 49%; padding-left: 15px;\"><h4 class=\"kl_solid_border\" style=\"color: #ffffff; background-color: #333333; padding-left: 10px; margin: 0; border: 0 !important;\">In Class</h4><ul><li>History Review</li></ul></div><div style=\"width: 49%; padding-left: 15px;\"><h4 class=\"kl_solid_border\" style=\"color: #ffffff; background-color: #333333; padding-left: 10px; margin: 0; border: 0 !important;\">Homework</h4><ul><li>No Homework</li></ul></div></div></div></div></div>",
-      "body_text": "Tuesday: History Lesson 5; No Homework\nFriday: History Review; No Homework",
-      "linked_assignment_ids": [],
+      "body_html": "<div id=\"kl_wrapper_3\" class=\"kl_circle_left kl_wrapper\" style=\"border-style: none;\"><div id=\"kl_banner\" class=\"\"><p style=\"color: #ffffff; background-color: #0065a7; text-align: center; margin: 0;\"><span style=\"font-size: 18pt;\">&nbsp;Weekly Agenda</span><br><span style=\"font-size: 10pt;\">Quarter 1, Week 5 | August 17–21, 2026</span></p><h3 style=\"background-color: #c51062; color: #ffffff; border: 0 !important;\">Reminders</h3><div style=\"width: 100%; padding-left: 15px;\"></div><div id=\"kl_custom_block_4\" class=\"\"><h3 style=\"color: #ffffff; background-color: #0065a7; margin-top: 15px; margin-bottom: 2px; border: 0 !important;\">Tuesday</h3><div style=\"display: flex; width: 100%;\"><div style=\"width: 49%; padding-left: 15px;\"><h4 class=\"kl_solid_border\" style=\"color: #ffffff; background-color: #333333; padding-left: 10px; margin: 0; border: 0 !important;\">In Class</h4><ul><li>History Lesson 5</li></ul></div><div style=\"width: 49%; padding-left: 15px;\"><h4 class=\"kl_solid_border\" style=\"color: #ffffff; background-color: #333333; padding-left: 10px; margin: 0; border: 0 !important;\">Homework</h4><ul><li>No Homework</li></ul></div></div></div><div id=\"kl_custom_block_1\" class=\"\"><h3 style=\"color: #ffffff; background-color: #0065a7; margin-top: 15px; margin-bottom: 2px; border: 0 !important;\">Friday</h3><div style=\"display: flex; width: 100%;\"><div style=\"width: 49%; padding-left: 15px;\"><h4 class=\"kl_solid_border\" style=\"color: #ffffff; background-color: #333333; padding-left: 10px; margin: 0; border: 0 !important;\">In Class</h4><ul><li>HIST4: Assessment 1</li></ul></div><div style=\"width: 49%; padding-left: 15px;\"><h4 class=\"kl_solid_border\" style=\"color: #ffffff; background-color: #333333; padding-left: 10px; margin: 0; border: 0 !important;\">Homework</h4><ul><li>No Homework</li></ul></div></div></div></div></div>",
+      "body_text": "Tuesday: History Lesson 5; No Homework\nFriday: HIST4: Assessment 1; No Homework",
+      "linked_assignment_ids": [
+        "p23-6c92c62488b266a815"
+      ],
       "page_id": "p23-c28c71515c4f7ca308",
       "provenance": [
         {
@@ -774,19 +1378,19 @@
       "subjectGroup": "math"
     },
     {
-      "assignmentCount": 9,
+      "assignmentCount": 7,
       "entryCount": 6,
       "pageId": "p23-a8b887a34247681d59",
       "subjectGroup": "reading-spelling"
     },
     {
-      "assignmentCount": 0,
-      "entryCount": 1,
+      "assignmentCount": 1,
+      "entryCount": 2,
       "pageId": "p23-9eeefd2e992e979caf",
       "subjectGroup": "language-arts"
     },
     {
-      "assignmentCount": 0,
+      "assignmentCount": 1,
       "entryCount": 2,
       "pageId": "p23-c28c71515c4f7ca308",
       "subjectGroup": "history"
@@ -824,9 +1428,69 @@
         "message": "Reading Test 14 correctly has no checkout reminder",
         "severity": "pass",
         "target": "Reading Test 14"
+      },
+      {
+        "code": "reading-test-14.checkout-announcement",
+        "message": "Reading Test 14 correctly has no Checkout 14 announcement",
+        "severity": "pass",
+        "target": "announcements"
+      },
+      {
+        "code": "announcement.preview-safe",
+        "message": "Announcement draft SM5: Written Assessment 18 is preview-safe",
+        "severity": "pass",
+        "target": "p22-fa0ab3bc6fd93319"
+      },
+      {
+        "code": "announcement.preview-safe",
+        "message": "Announcement draft SM5: Fact Assessment 18 is preview-safe",
+        "severity": "pass",
+        "target": "p22-d84242548797288f"
+      },
+      {
+        "code": "announcement.preview-safe",
+        "message": "Announcement draft RM4: Mastery Test 13 is preview-safe",
+        "severity": "pass",
+        "target": "p22-4b72d0b4c23d084f"
+      },
+      {
+        "code": "announcement.preview-safe",
+        "message": "Announcement draft RM4: Fluency Checkout 13 is preview-safe",
+        "severity": "pass",
+        "target": "p22-0a8a1c50340eec3d"
+      },
+      {
+        "code": "announcement.preview-safe",
+        "message": "Announcement draft RM4: Spelling Test 6 is preview-safe",
+        "severity": "pass",
+        "target": "p22-44058c2acda72126"
+      },
+      {
+        "code": "announcement.preview-safe",
+        "message": "Announcement draft RM4: Mastery Test 14 is preview-safe",
+        "severity": "pass",
+        "target": "p22-082bc05bfba60c92"
+      },
+      {
+        "code": "announcement.preview-safe",
+        "message": "Announcement draft HIST4: Assessment 1 is preview-safe",
+        "severity": "pass",
+        "target": "p22-134a3cc22119f335"
+      },
+      {
+        "code": "announcement.preview-safe",
+        "message": "Announcement draft ELA4: Assessment 1 is preview-safe",
+        "severity": "pass",
+        "target": "p22-96e49cf028069295"
+      },
+      {
+        "code": "announcement.records-present",
+        "message": "Announcement drafts are serialized separately from reminders",
+        "severity": "pass",
+        "target": "announcements"
       }
     ],
-    "passCount": 5,
+    "passCount": 15,
     "warnCount": 0
   },
   "weekCode": "Q1W5",

@@ -180,6 +180,13 @@ assert any('graded.selected' in item.rules_applied for item in prediction.predic
 assert any('graded.non-selected-instructional' in item.rules_applied for item in prediction.predictions)
 assert any('Math test cadence remains owner-unresolved' in warning for warning in prediction.warnings)
 assert not any(item.field == 'homeworkParity' for item in prediction.teacher_overrides)
+assert prediction.announcement_drafts
+assert not any(item.get('title') == 'RM4: Fluency Checkout 14' for item in prediction.announcement_drafts)
+assert all(item.get('teacherApprovalRequired') is not False for item in prediction.announcement_drafts)
+assert all((item.get('schedule_metadata') or {}).get('scheduleIntent') == 'Friday 4:00 PM America/New_York' for item in prediction.announcement_drafts)
+assert all((item.get('schedule_metadata') or {}).get('announcementDate') == '2026-08-14' for item in prediction.announcement_drafts)
+assert all((item.get('schedule_metadata') or {}).get('announcementDate') < item.get('assessment_date') for item in prediction.announcement_drafts if item.get('assessment_date'))
+print('PASS C0N announcement prediction metadata')
 print('PASS C0M graded-item selection metadata')
 PY
 

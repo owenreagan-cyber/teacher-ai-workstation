@@ -195,6 +195,13 @@ assert prediction.newsletter_update_announcement['depends_on']==prediction.newsl
 assert prediction.newsletter_update_announcement['page_url'] is None
 assert prediction.newsletter_update_announcement['schedule_metadata'] is None
 print('PASS C0O newsletter prediction metadata')
+assert prediction.daily_teacher_briefs and len(prediction.daily_teacher_briefs)==5
+monday=next(item for item in prediction.daily_teacher_briefs if item.get('entry_date')=='2026-08-17')
+assert monday['title']=='Daily Teacher Brief — Monday, August 17, 2026'
+assert monday.get('recipientConfigured') and monday.get('recipientDisplay')=='Teacher'
+assert monday.get('delivery_status')=='blocked_preview'
+assert (monday.get('schedule_metadata') or {}).get('intendedForUtc')=='2026-08-17T10:15:00Z'
+print('PASS C0P daily teacher brief prediction metadata')
 print('PASS C0M graded-item selection metadata')
 PY
 

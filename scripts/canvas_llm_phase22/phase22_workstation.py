@@ -605,6 +605,167 @@ def get_newsletter_month_state(db,month_code,school_year='2026-2027'):
 def resolve_newsletter_for_week_start(starts_on,db=None,school_year='2026-2027',week_code=None):
     month_code=month_code_for_date(starts_on); state=get_newsletter_month_state(db,month_code,school_year) if db is not None else normalize_newsletter_month_state(default_newsletter_month_state(month_code,school_year))
     newsletter=build_monthly_newsletter_draft(state,week_code=week_code); update=build_newsletter_update_announcement(newsletter); return state,newsletter,update
+DAILY_BRIEF_SECTION_ORDER=('Today at a Glance','Lessons and Activities','Tests and Checkouts','Materials to Prepare','Planning Alerts','Scheduled Events','Weather','Classroom-Safe Joke')
+DAILY_BRIEF_ARTIFACT_KIND='daily_brief'
+DAILY_BRIEF_SCHEDULE_LOCAL_TIME='06:15'
+DAILY_BRIEF_TIMEZONE='America/New_York'
+CLASSROOM_SAFE_JOKES=('Why did the notebook smile? It had good margins.','Why did the pencil cross the road? It wanted to draw attention.','What kind of tree fits in your hand? A palm tree.','Why did the clock visit the office? It tocked too much.','What is a math teacher favorite dessert? Pi.')
+FORBIDDEN_DAILY_BRIEF_PATTERNS=(('study guide','Study Guide language is forbidden in daily brief drafts'),('checkout 14','Checkout 14 wording is forbidden in daily brief drafts'),('spelling test 25','Spelling Test 25 is forbidden until approved source data exists'),('sourcecheckoutkey','Checkout source key is forbidden in daily brief drafts'),('bookvolume','Book volume reference is forbidden in daily brief drafts'),('focus words','Focus Words language is forbidden in daily brief drafts'))
+def load_no_school_dates(db,school_year='2026-2027'):
+    if db is None: return set()
+    return {row['date'] for row in db.execute('SELECT date FROM no_school_dates WHERE school_year=?',(school_year,))}
+def instructional_dates_in_week(starts_on):
+    start=date.fromisoformat(starts_on); return [(start+timedelta(days=i)).isoformat() for i in range(5)]
+def is_instructional_school_day(target_date,db=None,school_year='2026-2027'):
+    d=date.fromisoformat(target_date) if isinstance(target_date,str) else target_date
+    if d.weekday()>=5: return False
+    ds=d.isoformat(); weeks=load_instructional_weeks(); first_start,last_end=weeks[0]['startsOn'],weeks[-1]['endsOn']
+    if ds<first_start or ds>last_end: return False
+    if not instructional_week_for_date(d): return False
+    if ds in load_no_school_dates(db,school_year): return False
+    return True
+def daily_brief_title(entry_date):
+    d=date.fromisoformat(entry_date); return f'Daily Teacher Brief — {d.strftime("%A")}, {d.strftime("%B")} {d.day}, {d.year}'
+def daily_brief_stable_id(entry_date,school_year='2026-2027'): return stable_id('daily-brief',school_year,entry_date)
+def daily_brief_scheduling_intent_id(entry_date,school_year='2026-2027'): return stable_id('daily-brief-schedule',school_year,entry_date)
+def classroom_safe_joke_for_date(entry_date): return CLASSROOM_SAFE_JOKES[int(hashlib.sha256(entry_date.encode()).hexdigest(),16)%len(CLASSROOM_SAFE_JOKES)]
+def daily_brief_intended_for_utc(entry_date):
+    d=date.fromisoformat(entry_date); local_dt=datetime(d.year,d.month,d.day,6,15,tzinfo=EASTERN); return local_dt.astimezone(UTC).replace(microsecond=0).isoformat().replace('+00:00','Z')
+def active_subjects_for_week_meta(week_meta):
+    return [s['id'] for s in SUBJECTS if subject_active_for_quarter(s['id'],week_meta)]
+def rows_for_entry_date(rows,entry_date): return [r for r in rows if r.get('entry_date')==entry_date]
+def scheduled_events_for_date(plan_payload,entry_date):
+    events=(plan_payload or {}).get('scheduledEvents') or {}; return list(events.get(entry_date) or [])
+def weather_for_date(plan_payload,entry_date):
+    weather=(plan_payload or {}).get('weatherByDate') or {}; val=compact(weather.get(entry_date) or ''); return val or 'Weather not provided'
+def collect_daily_brief_lessons(rows,entry_date,week_meta):
+    items=[]
+    for r in rows_for_entry_date(rows,entry_date):
+        if not subject_active_for_quarter(r.get('subject'),week_meta): continue
+        fields=agenda_fields_for_row(r,week_meta); text=compact(fields.get('in_class') or compact(r.get('title') or ''))
+        if not text: continue
+        items.append({'subject':r.get('subject'),'text':text})
+    return items
+def collect_daily_brief_assessments(rows,entry_date,week_meta):
+    items=[]; seen=set()
+    for r in rows_for_entry_date(rows,entry_date):
+        if not subject_active_for_quarter(r.get('subject'),week_meta): continue
+        test=int(r['tests']) if str(r.get('tests','')).isdigit() else None
+        if not test: continue
+        s=compact(r.get('subject')).lower()
+        if s=='spelling' and test>24: continue
+        if s=='reading' and test==14:
+            title=f'RM4: Mastery Test {test}'; key=f'reading-mastery-{test}-{entry_date}'
+            if key not in seen: seen.add(key); items.append({'subject':'reading','title':title,'date':entry_date})
+            continue
+        if s=='math':
+            for title in (f'SM5: Written Assessment {test}',f'SM5: Fact Assessment {test}'):
+                key=f'{title}-{entry_date}'
+                if key not in seen: seen.add(key); items.append({'subject':'math','title':title,'date':entry_date})
+        elif s=='reading':
+            title=f'RM4: Mastery Test {test}'; key=f'reading-mastery-{test}-{entry_date}'
+            if key not in seen: seen.add(key); items.append({'subject':'reading','title':title,'date':entry_date})
+            if reading_checkout_number(test):
+                checkout=f'RM4: Fluency Checkout {test}'; ckey=f'{checkout}-{entry_date}'
+                if ckey not in seen: seen.add(ckey); items.append({'subject':'reading','title':checkout,'date':entry_date})
+        elif s=='spelling':
+            title=f'RM4: Spelling Test {test}'; key=f'spelling-{test}-{entry_date}'
+            if key not in seen: seen.add(key); items.append({'subject':'spelling','title':title,'date':entry_date})
+        elif s in {'language-arts','history','science'}:
+            title=compact(r.get('title') or f'{s.title()} Assessment {test}')
+            key=f'{title}-{entry_date}'
+            if key not in seen: seen.add(key); items.append({'subject':s,'title':title,'date':entry_date})
+    return items
+def collect_daily_brief_materials(rows,entry_date,week_meta):
+    items=[]
+    for r in rows_for_entry_date(rows,entry_date):
+        if not subject_active_for_quarter(r.get('subject'),week_meta): continue
+        material=compact(r.get('materials') or '')
+        if not material or '/' in material or '\\' in material or material.lower().startswith(('http://','https://','file:')): continue
+        items.append({'subject':r.get('subject'),'text':material})
+    return items
+def collect_daily_brief_planning_alerts(rows,entry_date,week_meta,sections):
+    alerts=[]
+    day_rows=rows_for_entry_date(rows,entry_date)
+    for subject in active_subjects_for_week_meta(week_meta):
+        subject_rows=[r for r in day_rows if compact(r.get('subject')).lower()==subject]
+        if not subject_rows: alerts.append(f'{subject.title()} has no planning entry for today.'); continue
+        row=subject_rows[0]
+        fields=agenda_fields_for_row(row,week_meta); has_test=str(row.get('tests','')).isdigit(); has_lesson=str(row.get('lesson','')).isdigit() or compact(row.get('title') or '')
+        if not compact(fields.get('in_class') or '') and not has_test and not has_lesson: alerts.append(f'{subject.title()} lesson or activity is not entered for today.')
+        if has_test and not compact(row.get('title') or '') and subject in {'language-arts','history','science'}: alerts.append(f'{subject.title()} assessment details may need review for today.')
+        if subject_rows and not any(compact(r.get('materials') or '') for r in subject_rows): pass
+    if not sections.get('Lessons and Activities'): alerts.append('No lessons or activities are entered for active subjects today.')
+    return list(dict.fromkeys(alerts))
+def build_daily_brief_sections(entry_date,rows,week_meta,plan_payload):
+    d=date.fromisoformat(entry_date); glance={'date':entry_date,'weekday':d.strftime('%A'),'instructionalWeekCode':compact((week_meta or {}).get('code') or ''),'quarter':(week_meta or {}).get('quarter'),'activeSubjects':active_subjects_for_week_meta(week_meta),'instructionalDayStatus':'instructional school day','disruptionNotes':[]}
+    lessons=collect_daily_brief_lessons(rows,entry_date,week_meta); assessments=collect_daily_brief_assessments(rows,entry_date,week_meta); materials=collect_daily_brief_materials(rows,entry_date,week_meta)
+    events=scheduled_events_for_date(plan_payload,entry_date); weather=weather_for_date(plan_payload,entry_date); joke=classroom_safe_joke_for_date(entry_date)
+    sections={'Today at a Glance':[f"Date: {entry_date}",f"Weekday: {glance['weekday']}",f"Instructional week: {glance['instructionalWeekCode']}",f"Quarter: {glance['quarter']}",f"Active subjects: {', '.join(glance['activeSubjects']) or 'None'}",f"Status: {glance['instructionalDayStatus']}"],'Lessons and Activities':[f"{item['subject'].title()}: {item['text']}" for item in lessons],'Tests and Checkouts':[item['title'] for item in assessments],'Materials to Prepare':[f"{item['subject'].title()}: {item['text']}" for item in materials] or ['None entered'],'Planning Alerts':[],'Scheduled Events':[f"{item.get('title') or item.get('label')}" for item in events if isinstance(item,dict) and compact(item.get('title') or item.get('label'))] or ['No scheduled events entered'],'Weather':[weather],'Classroom-Safe Joke':[joke]}
+    sections['Planning Alerts']=collect_daily_brief_planning_alerts(rows,entry_date,week_meta,sections) or ['No planning alerts for today.']
+    return sections,glance
+def daily_brief_content_hash(entry_date,sections,school_year='2026-2027'):
+    canonical={'entry_date':entry_date,'school_year':school_year,'sections':{name:sections.get(name,[]) for name in DAILY_BRIEF_SECTION_ORDER}}
+    return hashlib.sha256(jd(canonical).encode()).hexdigest()[:16]
+def scan_daily_brief_warnings(sections):
+    blob=jd(sections).lower(); warnings=[]
+    for needle,message in FORBIDDEN_DAILY_BRIEF_PATTERNS:
+        if needle in blob: warnings.append(message)
+    return list(dict.fromkeys(warnings))
+def render_daily_brief_text(title,sections):
+    parts=[title,'']
+    for name in DAILY_BRIEF_SECTION_ORDER:
+        parts.append(name)
+        for line in sections.get(name,[]) or ['None']: parts.append(f'- {line}')
+        parts.append('')
+    return '\n'.join(parts).strip()
+def render_daily_brief_html(title,sections):
+    parts=[f'<h1>{html.escape(title)}</h1>']
+    for name in DAILY_BRIEF_SECTION_ORDER:
+        parts.append(f'<h2>{html.escape(name)}</h2><ul>')
+        for line in sections.get(name,[]) or ['None']: parts.append(f'<li>{html.escape(line)}</li>')
+        parts.append('</ul>')
+    return ''.join(parts)
+def build_daily_brief_schedule_metadata(entry_date):
+    intended=daily_brief_intended_for_utc(entry_date)
+    return {'localTime':DAILY_BRIEF_SCHEDULE_LOCAL_TIME,'timezone':DAILY_BRIEF_TIMEZONE,'intendedForUtc':intended,'instructionalDayOnly':True,'scheduleIntentOnly':True,'previewOnly':True,'deliveryAuthorized':False,'emailSendsAllowed':False,'status':'blocked_preview'}
+def build_daily_teacher_brief(entry_date,rows,week_meta,*,school_year='2026-2027',week_code=None,plan_payload=None):
+    sections,glance=build_daily_brief_sections(entry_date,rows,week_meta,plan_payload or {}); title=daily_brief_title(entry_date); content_hash=daily_brief_content_hash(entry_date,sections,school_year); warnings=scan_daily_brief_warnings(sections); schedule=build_daily_brief_schedule_metadata(entry_date)
+    return {'local_object_id':daily_brief_stable_id(entry_date,school_year),'entry_date':entry_date,'school_year':school_year,'week_code':week_code or compact((week_meta or {}).get('code') or ''),'title':title,'artifact_kind':DAILY_BRIEF_ARTIFACT_KIND,'audience':'teacher-only','channel':'local_preview','delivery_status':'blocked_preview','date_range':{'start':entry_date,'end':entry_date},'sections':[{ 'name':name,'items':list(sections.get(name) or [])} for name in DAILY_BRIEF_SECTION_ORDER],'glance':glance,'body_text':render_daily_brief_text(title,sections),'body_html':render_daily_brief_html(title,sections),'content_hash':content_hash,'schedule_metadata':schedule,'recipientConfigured':True,'recipientDisplay':'Teacher','approval_state':'Draft','approval_revision':0,'preview_only':True,'teacher_approval_required':True,'approved':False,'canvas_writes_allowed':False,'email_sends_allowed':False,'delivery_authorized':False,'contains_student_data':False,'needs_review':bool(warnings),'warnings':warnings,'generation_reason':'instructional-day-daily-teacher-brief','safety_metadata':{'canvasWritesAllowed':False,'emailSendsAllowed':False,'deliveryAuthorized':False,'previewOnly':True,'containsStudentData':False},'provenance':[{'sourceType':'weekly-plan','sourceRef':entry_date,'details':'structured daily teacher brief preview'}]}
+def build_daily_teacher_briefs_for_week(starts_on,rows,week_meta,*,school_year='2026-2027',db=None,plan_payload=None):
+    out=[]
+    for entry_date in instructional_dates_in_week(starts_on):
+        if not is_instructional_school_day(entry_date,db=db,school_year=school_year): continue
+        out.append(build_daily_teacher_brief(entry_date,rows,week_meta,school_year=school_year,week_code=(week_meta or {}).get('code'),plan_payload=plan_payload))
+    return out
+def insert_daily_brief_draft(db,wid,brief):
+    payload={'previewOnly':True,'teacherApprovalRequired':True,'artifactKind':DAILY_BRIEF_ARTIFACT_KIND,'dailyBriefDraft':brief,'recipientConfigured':True,'recipientDisplay':'Teacher'}
+    draft_id=daily_brief_stable_id(brief['entry_date'],brief['school_year']); idem=stable_id('idem','daily-brief',wid,brief['entry_date'])
+    db.execute('INSERT INTO drafts(id,weekly_plan_id,kind,subject,title,body_text,body_html,status,idempotency_key,payload,created_at,updated_at,updated_by) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)',(draft_id,wid,'daily_brief',HOMEROOM_NEWSLETTER_SUBJECT,brief['title'],brief['body_text'],brief['body_html'],'draft',idem,jd(payload),now_utc(),now_utc(),'generator'))
+    return draft_id
+def replace_daily_brief_scheduling_intent(db,wid,draft_id,brief):
+    sid=daily_brief_scheduling_intent_id(brief['entry_date'],brief['school_year']); schedule=brief.get('schedule_metadata') or build_daily_brief_schedule_metadata(brief['entry_date'])
+    payload={'previewOnly':True,'deliveryAuthorized':False,'emailSendsAllowed':False,'scheduleIntentOnly':True,'localTime':DAILY_BRIEF_SCHEDULE_LOCAL_TIME,'timezone':DAILY_BRIEF_TIMEZONE,'instructionalDayOnly':True,'status':'blocked_preview'}
+    db.execute('INSERT OR REPLACE INTO scheduling_intents(id,weekly_plan_id,draft_id,intended_for_utc,timezone,payload,version,created_at,updated_at,updated_by) VALUES(?,?,?,?,?,?,COALESCE((SELECT version FROM scheduling_intents WHERE id=?),0)+1,COALESCE((SELECT created_at FROM scheduling_intents WHERE id=?),?),?,?)',(sid,wid,draft_id,schedule['intendedForUtc'],DAILY_BRIEF_TIMEZONE,jd(payload),sid,sid,now_utc(),now_utc(),'generator'))
+def replace_daily_brief_drafts(db,wid,rows,iw,plan):
+    db.execute("DELETE FROM scheduling_intents WHERE weekly_plan_id=? AND draft_id IN (SELECT id FROM drafts WHERE weekly_plan_id=? AND kind='daily_brief')",(wid,wid))
+    starts_on=plan['starts_on'] or (iw or {}).get('startsOn') or ''
+    if not starts_on: return []
+    payload=jl(plan['payload'],{})
+    draft_ids=[]
+    for brief in build_daily_teacher_briefs_for_week(starts_on,rows,iw,school_year='2026-2027',db=db,plan_payload=payload):
+        draft_id=insert_daily_brief_draft(db,wid,brief); replace_daily_brief_scheduling_intent(db,wid,draft_id,brief); draft_ids.append(draft_id)
+    return draft_ids
+def decode_daily_brief_response(row,settings=None,db=None):
+    if not row: return {}
+    payload=jl(row.get('payload') or '{}',{}); draft=payload.get('dailyBriefDraft') or {}
+    schedule_row=None
+    if db is not None:
+        schedule_row=db.execute('SELECT * FROM scheduling_intents WHERE draft_id=? ORDER BY updated_at DESC LIMIT 1',(row['id'],)).fetchone()
+    schedule=jl(schedule_row['payload'],{}) if schedule_row else draft.get('schedule_metadata') or {}
+    out={'id':row['id'],'title':row['title'],'entryDate':draft.get('entry_date'),'dailyBrief':draft,'scheduleIntent':schedule,'recipientConfigured':payload.get('recipientConfigured',True),'recipientDisplay':payload.get('recipientDisplay','Teacher'),'previewOnly':True,'teacherApprovalRequired':True,'approved':False,'canvasWritesAllowed':False,'emailSendsAllowed':False,'deliveryAuthorized':False,'deliveryStatus':'blocked_preview','containsStudentData':False}
+    if settings and compact(settings.get('dailyBriefRecipient') or ''): out['recipient']=compact(settings['dailyBriefRecipient'])
+    return out
 def load_quarter_subject_activation():
     global _quarter_activation_cache
     if not _quarter_activation_cache: _quarter_activation_cache=rjson('canvas/quarter-subject-activation-2026-2027.json')
@@ -1157,7 +1318,7 @@ def replace_drafts(db,wid):
         _,newsletter,update=resolve_newsletter_for_week_start(starts_on,db=db,school_year='2026-2027',week_code=iw.get('code'))
         insert_draft(db,wid,'page',HOMEROOM_NEWSLETTER_SUBJECT,newsletter['title'],newsletter['body_text'],newsletter['body_html'],{'previewOnly':True,'teacherApprovalRequired':True,'artifactKind':'newsletter','cadence':'monthly','newsletterDraft':newsletter})
         insert_draft(db,wid,'announcement',HOMEROOM_NEWSLETTER_SUBJECT,update['title'],update['body_text'],update['body_html'],{'previewOnly':True,'teacherApprovalRequired':True,'artifactKind':'newsletter_update','announcementDraft':update,'safetyMetadata':update.get('safety_metadata',{}),'scheduleMetadata':None})
-    insert_draft(db,wid,'daily_brief','homeroom','Daily Teacher Brief','Recipient: owen.reagan@thalesacademy.org\nSchedule: 6:15 AM America/New_York instructional days\nWeather: placeholder only.\nClassroom-safe joke: Why did the notebook smile? It had good margins.','<pre>Recipient: owen.reagan@thalesacademy.org</pre>',{'previewOnly':True})
+    replace_daily_brief_drafts(db,wid,rows,iw,plan)
 def insert_draft(db,wid,kind,sub,title,text,html_body,payload): db.execute('INSERT INTO drafts(id,weekly_plan_id,kind,subject,title,body_text,body_html,status,idempotency_key,payload,created_at,updated_at,updated_by) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)',(stable_id('draft',wid,kind,sub,title),wid,kind,sub,title,text,html_body,'draft',stable_id('idem',wid,kind,sub,title),jd(payload),now_utc(),now_utc(),'generator'))
 def replace_deployment(db,wid):
     db.execute('DELETE FROM deployment_items WHERE deployment_plan_id IN (SELECT id FROM deployment_plans WHERE weekly_plan_id=?)',(wid,)); db.execute('DELETE FROM deployment_plans WHERE weekly_plan_id=?',(wid,)); pid=stable_id('deployment',wid)
@@ -1261,7 +1422,11 @@ class Handler(SimpleHTTPRequestHandler):
                 wid=path.split('/')[3]; wk=db.get_week(wid); iw=wk.get('payload',{}).get('instructionalWeek') or instructional_week_by_starts_on(wk['starts_on']) or {}
                 rs=[d for s in wk.get('subjects',[]) for d in s.get('days',[]) if s['subject'] in ('reading','spelling')]; html_body=render_agenda_html(iw,rs); return self.sendj({'html':html_body,'instructionalWeek':iw})
             if m=='GET' and path=='/api/daily-brief':
-                with db.connect() as c: row=c.execute("SELECT * FROM drafts WHERE kind='daily_brief' ORDER BY updated_at DESC LIMIT 1").fetchone(); return self.sendj(dict(row) if row else {})
+                with db.connect() as c:
+                    row=c.execute("SELECT * FROM drafts WHERE kind='daily_brief' ORDER BY updated_at DESC LIMIT 1").fetchone()
+                    settings_row=c.execute('SELECT value FROM settings WHERE id="app"').fetchone()
+                    settings=jl(settings_row['value'],{}) if settings_row else default_settings()
+                    return self.sendj(decode_daily_brief_response(dict(row) if row else None,settings=settings,db=c))
             return self.sendj({'error':'not found'},404)
         except Exception as e: return self.sendj({'error':str(e)},500)
 def command_import(a): db=WorkstationDB(a.db); db.migrate(); res=db.import_pacing(Path(a.source)); write_json(LOCAL_ROOT/'sanitized-pacing-artifact.json',res); print(f"Phase 22 import complete: entries={res['importReport']['entriesImported']} excluded={res['importReport']['excludedCells']} unresolved={res['importReport']['unresolvedCells']}"); return 0

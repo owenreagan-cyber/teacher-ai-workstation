@@ -26,6 +26,7 @@ EXPECTED_MARKDOWN_FILES = {
     "calendar-disruption-contract.md",
     "canonical-source-matrix.md",
     "canvas-course-routing.md",
+    "daily-teacher-brief-contract.md",
     "legacy-app-comparison-oracle.md",
     "math-rules-and-maps.md",
     "naming-conventions.md",

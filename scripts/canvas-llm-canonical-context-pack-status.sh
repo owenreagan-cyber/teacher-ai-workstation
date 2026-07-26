@@ -76,6 +76,10 @@ require_file \
   "Announcement contract exists"
 
 require_file \
+  "$PACK_DIR/daily-teacher-brief-contract.md" \
+  "Daily Teacher Brief contract exists"
+
+require_file \
   "$PACK_DIR/resource-resolution-contract.md" \
   "Resource-resolution contract exists"
 
@@ -104,10 +108,10 @@ markdown_count="$(
     | tr -d ' '
 )"
 
-if [[ "$markdown_count" = "20" ]]; then
-  pass "Context Pack contains exactly 20 Markdown documents"
+if [[ "$markdown_count" = "21" ]]; then
+  pass "Context Pack contains exactly 21 Markdown documents"
 else
-  fail "Context Pack Markdown inventory expected 20, found $markdown_count"
+  fail "Context Pack Markdown inventory expected 21, found $markdown_count"
 fi
 
 empty_markdown="$(

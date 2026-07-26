@@ -262,6 +262,28 @@ _,nl5b,up5b=p.resolve_newsletter_for_week_start(q1w5['startsOn'])
 assert nl5b['local_object_id']==nl5['local_object_id'] and nl5b['content_hash']==nl5['content_hash']
 assert up5b['announcement_id']==up5['announcement_id'] and up5['approved'] is False and nl5['approved'] is False
 print('PASS C0O homeroom monthly newsletter')
+monday='2026-08-17'
+assert p.daily_brief_title(monday)=='Daily Teacher Brief — Monday, August 17, 2026'
+assert p.daily_brief_intended_for_utc(monday)=='2026-08-17T10:15:00Z'
+assert not p.is_instructional_school_day('2026-08-15')
+assert not p.is_instructional_school_day('2026-08-16')
+briefs=p.build_daily_teacher_briefs_for_week(q1w5['startsOn'],announce_rows,week_meta)
+assert len(briefs)==5
+monday_brief=next(item for item in briefs if item['entry_date']==monday)
+assert [s['name'] for s in monday_brief['sections']]==list(p.DAILY_BRIEF_SECTION_ORDER)
+assert monday_brief['preview_only'] and not monday_brief['delivery_authorized'] and not monday_brief['email_sends_allowed']
+assert monday_brief['recipientConfigured'] and monday_brief['recipientDisplay']=='Teacher'
+weather=next(s for s in monday_brief['sections'] if s['name']=='Weather')
+assert 'Weather not provided' in weather['items']
+joke=next(s for s in monday_brief['sections'] if s['name']=='Classroom-Safe Joke')
+assert len(joke['items'])==1
+repeat=p.build_daily_teacher_briefs_for_week(q1w5['startsOn'],announce_rows,week_meta)
+assert repeat[0]['local_object_id']==monday_brief['local_object_id'] and repeat[0]['content_hash']==monday_brief['content_hash']
+tuesday_brief=next(item for item in briefs if item['entry_date']=='2026-08-18')
+assert tuesday_brief['local_object_id']!=monday_brief['local_object_id']
+blob=json.dumps(briefs)
+assert 'Study Guide' not in blob and 'Checkout 14' not in blob and 'Spelling Test 25' not in blob and 'owen.reagan@' not in blob.lower()
+print('PASS C0P daily teacher brief generation')
 print('PASS C0M graded-item selection')
 print('PASS python behavior')
 PY

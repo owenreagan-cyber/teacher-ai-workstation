@@ -1242,8 +1242,568 @@
     }
   ],
   "containsStudentData": false,
+  "dailyTeacherBriefs": [
+    {
+      "approval_revision": 0,
+      "approval_state": "Draft",
+      "approved": false,
+      "artifact_kind": "daily_brief",
+      "audience": "teacher-only",
+      "body_html": "<h1>Daily Teacher Brief — Monday, August 17, 2026</h1><h2>Today at a Glance</h2><ul><li>Date: 2026-08-17</li><li>Weekday: Monday</li><li>Instructional week: Q1W5</li><li>Quarter: 1</li><li>Active subjects: math, reading, spelling, language-arts, history</li><li>Status: instructional school day</li></ul><h2>Lessons and Activities</h2><ul><li>Math: Lesson 18 #1-10</li><li>Reading: Lesson 50 Workbook</li></ul><h2>Tests and Checkouts</h2><ul><li>None</li></ul><h2>Materials to Prepare</h2><ul><li>None entered</li></ul><h2>Planning Alerts</h2><ul><li>Spelling has no planning entry for today.</li><li>Language-Arts has no planning entry for today.</li><li>History has no planning entry for today.</li></ul><h2>Scheduled Events</h2><ul><li>No scheduled events entered</li></ul><h2>Weather</h2><ul><li>Weather not provided</li></ul><h2>Classroom-Safe Joke</h2><ul><li>Why did the pencil cross the road? It wanted to draw attention.</li></ul>",
+      "body_text": "Daily Teacher Brief — Monday, August 17, 2026\n\nToday at a Glance\n- Date: 2026-08-17\n- Weekday: Monday\n- Instructional week: Q1W5\n- Quarter: 1\n- Active subjects: math, reading, spelling, language-arts, history\n- Status: instructional school day\n\nLessons and Activities\n- Math: Lesson 18 #1-10\n- Reading: Lesson 50 Workbook\n\nTests and Checkouts\n- None\n\nMaterials to Prepare\n- None entered\n\nPlanning Alerts\n- Spelling has no planning entry for today.\n- Language-Arts has no planning entry for today.\n- History has no planning entry for today.\n\nScheduled Events\n- No scheduled events entered\n\nWeather\n- Weather not provided\n\nClassroom-Safe Joke\n- Why did the pencil cross the road? It wanted to draw attention.",
+      "canvas_writes_allowed": false,
+      "channel": "local_preview",
+      "contains_student_data": false,
+      "content_hash": "8fb33cbd182c3110",
+      "delivery_authorized": false,
+      "delivery_status": "blocked_preview",
+      "email_sends_allowed": false,
+      "entry_date": "2026-08-17",
+      "generation_reason": "instructional-day-daily-teacher-brief",
+      "local_object_id": "p22-67a4c2af9118235c",
+      "needs_review": false,
+      "preview_only": true,
+      "provenance": [
+        {
+          "details": "structured daily teacher brief preview",
+          "sourceRef": "2026-08-17",
+          "sourceType": "weekly-plan"
+        }
+      ],
+      "recipient_configured": true,
+      "recipient_display": "Teacher",
+      "safety_metadata": {
+        "canvasWritesAllowed": false,
+        "containsStudentData": false,
+        "deliveryAuthorized": false,
+        "emailSendsAllowed": false,
+        "previewOnly": true
+      },
+      "schedule_metadata": {
+        "deliveryAuthorized": false,
+        "emailSendsAllowed": false,
+        "instructionalDayOnly": true,
+        "intendedForUtc": "2026-08-17T10:15:00Z",
+        "localTime": "06:15",
+        "previewOnly": true,
+        "scheduleIntentOnly": true,
+        "status": "blocked_preview",
+        "timezone": "America/New_York"
+      },
+      "school_year": "2026-2027",
+      "sections": [
+        {
+          "items": [
+            "Date: 2026-08-17",
+            "Weekday: Monday",
+            "Instructional week: Q1W5",
+            "Quarter: 1",
+            "Active subjects: math, reading, spelling, language-arts, history",
+            "Status: instructional school day"
+          ],
+          "name": "Today at a Glance"
+        },
+        {
+          "items": [
+            "Math: Lesson 18 #1-10",
+            "Reading: Lesson 50 Workbook"
+          ],
+          "name": "Lessons and Activities"
+        },
+        {
+          "items": [],
+          "name": "Tests and Checkouts"
+        },
+        {
+          "items": [
+            "None entered"
+          ],
+          "name": "Materials to Prepare"
+        },
+        {
+          "items": [
+            "Spelling has no planning entry for today.",
+            "Language-Arts has no planning entry for today.",
+            "History has no planning entry for today."
+          ],
+          "name": "Planning Alerts"
+        },
+        {
+          "items": [
+            "No scheduled events entered"
+          ],
+          "name": "Scheduled Events"
+        },
+        {
+          "items": [
+            "Weather not provided"
+          ],
+          "name": "Weather"
+        },
+        {
+          "items": [
+            "Why did the pencil cross the road? It wanted to draw attention."
+          ],
+          "name": "Classroom-Safe Joke"
+        }
+      ],
+      "teacher_approval_required": true,
+      "title": "Daily Teacher Brief — Monday, August 17, 2026",
+      "warnings": [],
+      "week_code": "Q1W5"
+    },
+    {
+      "approval_revision": 0,
+      "approval_state": "Draft",
+      "approved": false,
+      "artifact_kind": "daily_brief",
+      "audience": "teacher-only",
+      "body_html": "<h1>Daily Teacher Brief — Tuesday, August 18, 2026</h1><h2>Today at a Glance</h2><ul><li>Date: 2026-08-18</li><li>Weekday: Tuesday</li><li>Instructional week: Q1W5</li><li>Quarter: 1</li><li>Active subjects: math, reading, spelling, language-arts, history</li><li>Status: instructional school day</li></ul><h2>Lessons and Activities</h2><ul><li>History: Map skills and unit review.</li><li>Math: Written Assessment 18 Fact Assessment 18</li><li>Reading: Lesson 51 Workbook</li></ul><h2>Tests and Checkouts</h2><ul><li>SM5: Written Assessment 18</li><li>SM5: Fact Assessment 18</li></ul><h2>Materials to Prepare</h2><ul><li>None entered</li></ul><h2>Planning Alerts</h2><ul><li>Spelling has no planning entry for today.</li><li>Language-Arts has no planning entry for today.</li></ul><h2>Scheduled Events</h2><ul><li>No scheduled events entered</li></ul><h2>Weather</h2><ul><li>Weather not provided</li></ul><h2>Classroom-Safe Joke</h2><ul><li>Why did the pencil cross the road? It wanted to draw attention.</li></ul>",
+      "body_text": "Daily Teacher Brief — Tuesday, August 18, 2026\n\nToday at a Glance\n- Date: 2026-08-18\n- Weekday: Tuesday\n- Instructional week: Q1W5\n- Quarter: 1\n- Active subjects: math, reading, spelling, language-arts, history\n- Status: instructional school day\n\nLessons and Activities\n- History: Map skills and unit review.\n- Math: Written Assessment 18 Fact Assessment 18\n- Reading: Lesson 51 Workbook\n\nTests and Checkouts\n- SM5: Written Assessment 18\n- SM5: Fact Assessment 18\n\nMaterials to Prepare\n- None entered\n\nPlanning Alerts\n- Spelling has no planning entry for today.\n- Language-Arts has no planning entry for today.\n\nScheduled Events\n- No scheduled events entered\n\nWeather\n- Weather not provided\n\nClassroom-Safe Joke\n- Why did the pencil cross the road? It wanted to draw attention.",
+      "canvas_writes_allowed": false,
+      "channel": "local_preview",
+      "contains_student_data": false,
+      "content_hash": "2431d30d77840fb1",
+      "delivery_authorized": false,
+      "delivery_status": "blocked_preview",
+      "email_sends_allowed": false,
+      "entry_date": "2026-08-18",
+      "generation_reason": "instructional-day-daily-teacher-brief",
+      "local_object_id": "p22-1dac766d38db22cc",
+      "needs_review": false,
+      "preview_only": true,
+      "provenance": [
+        {
+          "details": "structured daily teacher brief preview",
+          "sourceRef": "2026-08-18",
+          "sourceType": "weekly-plan"
+        }
+      ],
+      "recipient_configured": true,
+      "recipient_display": "Teacher",
+      "safety_metadata": {
+        "canvasWritesAllowed": false,
+        "containsStudentData": false,
+        "deliveryAuthorized": false,
+        "emailSendsAllowed": false,
+        "previewOnly": true
+      },
+      "schedule_metadata": {
+        "deliveryAuthorized": false,
+        "emailSendsAllowed": false,
+        "instructionalDayOnly": true,
+        "intendedForUtc": "2026-08-18T10:15:00Z",
+        "localTime": "06:15",
+        "previewOnly": true,
+        "scheduleIntentOnly": true,
+        "status": "blocked_preview",
+        "timezone": "America/New_York"
+      },
+      "school_year": "2026-2027",
+      "sections": [
+        {
+          "items": [
+            "Date: 2026-08-18",
+            "Weekday: Tuesday",
+            "Instructional week: Q1W5",
+            "Quarter: 1",
+            "Active subjects: math, reading, spelling, language-arts, history",
+            "Status: instructional school day"
+          ],
+          "name": "Today at a Glance"
+        },
+        {
+          "items": [
+            "History: Map skills and unit review.",
+            "Math: Written Assessment 18 Fact Assessment 18",
+            "Reading: Lesson 51 Workbook"
+          ],
+          "name": "Lessons and Activities"
+        },
+        {
+          "items": [
+            "SM5: Written Assessment 18",
+            "SM5: Fact Assessment 18"
+          ],
+          "name": "Tests and Checkouts"
+        },
+        {
+          "items": [
+            "None entered"
+          ],
+          "name": "Materials to Prepare"
+        },
+        {
+          "items": [
+            "Spelling has no planning entry for today.",
+            "Language-Arts has no planning entry for today."
+          ],
+          "name": "Planning Alerts"
+        },
+        {
+          "items": [
+            "No scheduled events entered"
+          ],
+          "name": "Scheduled Events"
+        },
+        {
+          "items": [
+            "Weather not provided"
+          ],
+          "name": "Weather"
+        },
+        {
+          "items": [
+            "Why did the pencil cross the road? It wanted to draw attention."
+          ],
+          "name": "Classroom-Safe Joke"
+        }
+      ],
+      "teacher_approval_required": true,
+      "title": "Daily Teacher Brief — Tuesday, August 18, 2026",
+      "warnings": [],
+      "week_code": "Q1W5"
+    },
+    {
+      "approval_revision": 0,
+      "approval_state": "Draft",
+      "approved": false,
+      "artifact_kind": "daily_brief",
+      "audience": "teacher-only",
+      "body_html": "<h1>Daily Teacher Brief — Wednesday, August 19, 2026</h1><h2>Today at a Glance</h2><ul><li>Date: 2026-08-19</li><li>Weekday: Wednesday</li><li>Instructional week: Q1W5</li><li>Quarter: 1</li><li>Active subjects: math, reading, spelling, language-arts, history</li><li>Status: instructional school day</li></ul><h2>Lessons and Activities</h2><ul><li>Math: Lesson 19 #1-10</li><li>Reading: Mastery Test 13</li><li>Spelling: Spelling Test 6</li></ul><h2>Tests and Checkouts</h2><ul><li>RM4: Mastery Test 13</li><li>RM4: Fluency Checkout 13</li><li>RM4: Spelling Test 6</li></ul><h2>Materials to Prepare</h2><ul><li>None entered</li></ul><h2>Planning Alerts</h2><ul><li>Language-Arts has no planning entry for today.</li><li>History has no planning entry for today.</li></ul><h2>Scheduled Events</h2><ul><li>No scheduled events entered</li></ul><h2>Weather</h2><ul><li>Weather not provided</li></ul><h2>Classroom-Safe Joke</h2><ul><li>Why did the clock visit the office? It tocked too much.</li></ul>",
+      "body_text": "Daily Teacher Brief — Wednesday, August 19, 2026\n\nToday at a Glance\n- Date: 2026-08-19\n- Weekday: Wednesday\n- Instructional week: Q1W5\n- Quarter: 1\n- Active subjects: math, reading, spelling, language-arts, history\n- Status: instructional school day\n\nLessons and Activities\n- Math: Lesson 19 #1-10\n- Reading: Mastery Test 13\n- Spelling: Spelling Test 6\n\nTests and Checkouts\n- RM4: Mastery Test 13\n- RM4: Fluency Checkout 13\n- RM4: Spelling Test 6\n\nMaterials to Prepare\n- None entered\n\nPlanning Alerts\n- Language-Arts has no planning entry for today.\n- History has no planning entry for today.\n\nScheduled Events\n- No scheduled events entered\n\nWeather\n- Weather not provided\n\nClassroom-Safe Joke\n- Why did the clock visit the office? It tocked too much.",
+      "canvas_writes_allowed": false,
+      "channel": "local_preview",
+      "contains_student_data": false,
+      "content_hash": "850794422d6e0f18",
+      "delivery_authorized": false,
+      "delivery_status": "blocked_preview",
+      "email_sends_allowed": false,
+      "entry_date": "2026-08-19",
+      "generation_reason": "instructional-day-daily-teacher-brief",
+      "local_object_id": "p22-f426a1216aac06c3",
+      "needs_review": false,
+      "preview_only": true,
+      "provenance": [
+        {
+          "details": "structured daily teacher brief preview",
+          "sourceRef": "2026-08-19",
+          "sourceType": "weekly-plan"
+        }
+      ],
+      "recipient_configured": true,
+      "recipient_display": "Teacher",
+      "safety_metadata": {
+        "canvasWritesAllowed": false,
+        "containsStudentData": false,
+        "deliveryAuthorized": false,
+        "emailSendsAllowed": false,
+        "previewOnly": true
+      },
+      "schedule_metadata": {
+        "deliveryAuthorized": false,
+        "emailSendsAllowed": false,
+        "instructionalDayOnly": true,
+        "intendedForUtc": "2026-08-19T10:15:00Z",
+        "localTime": "06:15",
+        "previewOnly": true,
+        "scheduleIntentOnly": true,
+        "status": "blocked_preview",
+        "timezone": "America/New_York"
+      },
+      "school_year": "2026-2027",
+      "sections": [
+        {
+          "items": [
+            "Date: 2026-08-19",
+            "Weekday: Wednesday",
+            "Instructional week: Q1W5",
+            "Quarter: 1",
+            "Active subjects: math, reading, spelling, language-arts, history",
+            "Status: instructional school day"
+          ],
+          "name": "Today at a Glance"
+        },
+        {
+          "items": [
+            "Math: Lesson 19 #1-10",
+            "Reading: Mastery Test 13",
+            "Spelling: Spelling Test 6"
+          ],
+          "name": "Lessons and Activities"
+        },
+        {
+          "items": [
+            "RM4: Mastery Test 13",
+            "RM4: Fluency Checkout 13",
+            "RM4: Spelling Test 6"
+          ],
+          "name": "Tests and Checkouts"
+        },
+        {
+          "items": [
+            "None entered"
+          ],
+          "name": "Materials to Prepare"
+        },
+        {
+          "items": [
+            "Language-Arts has no planning entry for today.",
+            "History has no planning entry for today."
+          ],
+          "name": "Planning Alerts"
+        },
+        {
+          "items": [
+            "No scheduled events entered"
+          ],
+          "name": "Scheduled Events"
+        },
+        {
+          "items": [
+            "Weather not provided"
+          ],
+          "name": "Weather"
+        },
+        {
+          "items": [
+            "Why did the clock visit the office? It tocked too much."
+          ],
+          "name": "Classroom-Safe Joke"
+        }
+      ],
+      "teacher_approval_required": true,
+      "title": "Daily Teacher Brief — Wednesday, August 19, 2026",
+      "warnings": [],
+      "week_code": "Q1W5"
+    },
+    {
+      "approval_revision": 0,
+      "approval_state": "Draft",
+      "approved": false,
+      "artifact_kind": "daily_brief",
+      "audience": "teacher-only",
+      "body_html": "<h1>Daily Teacher Brief — Thursday, August 20, 2026</h1><h2>Today at a Glance</h2><ul><li>Date: 2026-08-20</li><li>Weekday: Thursday</li><li>Instructional week: Q1W5</li><li>Quarter: 1</li><li>Active subjects: math, reading, spelling, language-arts, history</li><li>Status: instructional school day</li></ul><h2>Lessons and Activities</h2><ul><li>Language-Arts: Sentence combining and paragraph structure.</li><li>Math: Lesson 20 #1-10</li><li>Reading: Lesson 52 Workbook</li><li>Reading: Mastery Test 14</li></ul><h2>Tests and Checkouts</h2><ul><li>RM4: Mastery Test 14</li></ul><h2>Materials to Prepare</h2><ul><li>None entered</li></ul><h2>Planning Alerts</h2><ul><li>Spelling has no planning entry for today.</li><li>History has no planning entry for today.</li></ul><h2>Scheduled Events</h2><ul><li>No scheduled events entered</li></ul><h2>Weather</h2><ul><li>Weather not provided</li></ul><h2>Classroom-Safe Joke</h2><ul><li>Why did the clock visit the office? It tocked too much.</li></ul>",
+      "body_text": "Daily Teacher Brief — Thursday, August 20, 2026\n\nToday at a Glance\n- Date: 2026-08-20\n- Weekday: Thursday\n- Instructional week: Q1W5\n- Quarter: 1\n- Active subjects: math, reading, spelling, language-arts, history\n- Status: instructional school day\n\nLessons and Activities\n- Language-Arts: Sentence combining and paragraph structure.\n- Math: Lesson 20 #1-10\n- Reading: Lesson 52 Workbook\n- Reading: Mastery Test 14\n\nTests and Checkouts\n- RM4: Mastery Test 14\n\nMaterials to Prepare\n- None entered\n\nPlanning Alerts\n- Spelling has no planning entry for today.\n- History has no planning entry for today.\n\nScheduled Events\n- No scheduled events entered\n\nWeather\n- Weather not provided\n\nClassroom-Safe Joke\n- Why did the clock visit the office? It tocked too much.",
+      "canvas_writes_allowed": false,
+      "channel": "local_preview",
+      "contains_student_data": false,
+      "content_hash": "c0c5a3bb37043fef",
+      "delivery_authorized": false,
+      "delivery_status": "blocked_preview",
+      "email_sends_allowed": false,
+      "entry_date": "2026-08-20",
+      "generation_reason": "instructional-day-daily-teacher-brief",
+      "local_object_id": "p22-1cc39f4729734384",
+      "needs_review": false,
+      "preview_only": true,
+      "provenance": [
+        {
+          "details": "structured daily teacher brief preview",
+          "sourceRef": "2026-08-20",
+          "sourceType": "weekly-plan"
+        }
+      ],
+      "recipient_configured": true,
+      "recipient_display": "Teacher",
+      "safety_metadata": {
+        "canvasWritesAllowed": false,
+        "containsStudentData": false,
+        "deliveryAuthorized": false,
+        "emailSendsAllowed": false,
+        "previewOnly": true
+      },
+      "schedule_metadata": {
+        "deliveryAuthorized": false,
+        "emailSendsAllowed": false,
+        "instructionalDayOnly": true,
+        "intendedForUtc": "2026-08-20T10:15:00Z",
+        "localTime": "06:15",
+        "previewOnly": true,
+        "scheduleIntentOnly": true,
+        "status": "blocked_preview",
+        "timezone": "America/New_York"
+      },
+      "school_year": "2026-2027",
+      "sections": [
+        {
+          "items": [
+            "Date: 2026-08-20",
+            "Weekday: Thursday",
+            "Instructional week: Q1W5",
+            "Quarter: 1",
+            "Active subjects: math, reading, spelling, language-arts, history",
+            "Status: instructional school day"
+          ],
+          "name": "Today at a Glance"
+        },
+        {
+          "items": [
+            "Language-Arts: Sentence combining and paragraph structure.",
+            "Math: Lesson 20 #1-10",
+            "Reading: Lesson 52 Workbook",
+            "Reading: Mastery Test 14"
+          ],
+          "name": "Lessons and Activities"
+        },
+        {
+          "items": [
+            "RM4: Mastery Test 14"
+          ],
+          "name": "Tests and Checkouts"
+        },
+        {
+          "items": [
+            "None entered"
+          ],
+          "name": "Materials to Prepare"
+        },
+        {
+          "items": [
+            "Spelling has no planning entry for today.",
+            "History has no planning entry for today."
+          ],
+          "name": "Planning Alerts"
+        },
+        {
+          "items": [
+            "No scheduled events entered"
+          ],
+          "name": "Scheduled Events"
+        },
+        {
+          "items": [
+            "Weather not provided"
+          ],
+          "name": "Weather"
+        },
+        {
+          "items": [
+            "Why did the clock visit the office? It tocked too much."
+          ],
+          "name": "Classroom-Safe Joke"
+        }
+      ],
+      "teacher_approval_required": true,
+      "title": "Daily Teacher Brief — Thursday, August 20, 2026",
+      "warnings": [],
+      "week_code": "Q1W5"
+    },
+    {
+      "approval_revision": 0,
+      "approval_state": "Draft",
+      "approved": false,
+      "artifact_kind": "daily_brief",
+      "audience": "teacher-only",
+      "body_html": "<h1>Daily Teacher Brief — Friday, August 21, 2026</h1><h2>Today at a Glance</h2><ul><li>Date: 2026-08-21</li><li>Weekday: Friday</li><li>Instructional week: Q1W5</li><li>Quarter: 1</li><li>Active subjects: math, reading, spelling, language-arts, history</li><li>Status: instructional school day</li></ul><h2>Lessons and Activities</h2><ul><li>History: History assessment.</li><li>Language-Arts: Language Arts assessment.</li></ul><h2>Tests and Checkouts</h2><ul><li>HIST4: Assessment 1</li><li>ELA4: Assessment 1</li></ul><h2>Materials to Prepare</h2><ul><li>None entered</li></ul><h2>Planning Alerts</h2><ul><li>Math has no planning entry for today.</li><li>Reading has no planning entry for today.</li><li>Spelling has no planning entry for today.</li></ul><h2>Scheduled Events</h2><ul><li>No scheduled events entered</li></ul><h2>Weather</h2><ul><li>Weather not provided</li></ul><h2>Classroom-Safe Joke</h2><ul><li>Why did the notebook smile? It had good margins.</li></ul>",
+      "body_text": "Daily Teacher Brief — Friday, August 21, 2026\n\nToday at a Glance\n- Date: 2026-08-21\n- Weekday: Friday\n- Instructional week: Q1W5\n- Quarter: 1\n- Active subjects: math, reading, spelling, language-arts, history\n- Status: instructional school day\n\nLessons and Activities\n- History: History assessment.\n- Language-Arts: Language Arts assessment.\n\nTests and Checkouts\n- HIST4: Assessment 1\n- ELA4: Assessment 1\n\nMaterials to Prepare\n- None entered\n\nPlanning Alerts\n- Math has no planning entry for today.\n- Reading has no planning entry for today.\n- Spelling has no planning entry for today.\n\nScheduled Events\n- No scheduled events entered\n\nWeather\n- Weather not provided\n\nClassroom-Safe Joke\n- Why did the notebook smile? It had good margins.",
+      "canvas_writes_allowed": false,
+      "channel": "local_preview",
+      "contains_student_data": false,
+      "content_hash": "e4a9337da3e89d6d",
+      "delivery_authorized": false,
+      "delivery_status": "blocked_preview",
+      "email_sends_allowed": false,
+      "entry_date": "2026-08-21",
+      "generation_reason": "instructional-day-daily-teacher-brief",
+      "local_object_id": "p22-77005a7806b7ac28",
+      "needs_review": false,
+      "preview_only": true,
+      "provenance": [
+        {
+          "details": "structured daily teacher brief preview",
+          "sourceRef": "2026-08-21",
+          "sourceType": "weekly-plan"
+        }
+      ],
+      "recipient_configured": true,
+      "recipient_display": "Teacher",
+      "safety_metadata": {
+        "canvasWritesAllowed": false,
+        "containsStudentData": false,
+        "deliveryAuthorized": false,
+        "emailSendsAllowed": false,
+        "previewOnly": true
+      },
+      "schedule_metadata": {
+        "deliveryAuthorized": false,
+        "emailSendsAllowed": false,
+        "instructionalDayOnly": true,
+        "intendedForUtc": "2026-08-21T10:15:00Z",
+        "localTime": "06:15",
+        "previewOnly": true,
+        "scheduleIntentOnly": true,
+        "status": "blocked_preview",
+        "timezone": "America/New_York"
+      },
+      "school_year": "2026-2027",
+      "sections": [
+        {
+          "items": [
+            "Date: 2026-08-21",
+            "Weekday: Friday",
+            "Instructional week: Q1W5",
+            "Quarter: 1",
+            "Active subjects: math, reading, spelling, language-arts, history",
+            "Status: instructional school day"
+          ],
+          "name": "Today at a Glance"
+        },
+        {
+          "items": [
+            "History: History assessment.",
+            "Language-Arts: Language Arts assessment."
+          ],
+          "name": "Lessons and Activities"
+        },
+        {
+          "items": [
+            "HIST4: Assessment 1",
+            "ELA4: Assessment 1"
+          ],
+          "name": "Tests and Checkouts"
+        },
+        {
+          "items": [
+            "None entered"
+          ],
+          "name": "Materials to Prepare"
+        },
+        {
+          "items": [
+            "Math has no planning entry for today.",
+            "Reading has no planning entry for today.",
+            "Spelling has no planning entry for today."
+          ],
+          "name": "Planning Alerts"
+        },
+        {
+          "items": [
+            "No scheduled events entered"
+          ],
+          "name": "Scheduled Events"
+        },
+        {
+          "items": [
+            "Weather not provided"
+          ],
+          "name": "Weather"
+        },
+        {
+          "items": [
+            "Why did the notebook smile? It had good margins."
+          ],
+          "name": "Classroom-Safe Joke"
+        }
+      ],
+      "teacher_approval_required": true,
+      "title": "Daily Teacher Brief — Friday, August 21, 2026",
+      "warnings": [],
+      "week_code": "Q1W5"
+    }
+  ],
   "deploymentState": "preview-only",
-  "generatedAt": "2026-07-25T23:14:10Z",
+  "generatedAt": "2026-07-26T02:43:05Z",
   "newsletter": {
     "approval_revision": 0,
     "approval_state": "Draft",
@@ -1639,9 +2199,33 @@
         "message": "Newsletter update announcement is preview-safe and blocked",
         "severity": "pass",
         "target": "p22-4c29836dc7e5c1f4"
+      },
+      {
+        "code": "daily-brief.recipient",
+        "message": "Daily Brief recipient metadata remains redacted",
+        "severity": "pass",
+        "target": "p22-67a4c2af9118235c"
+      },
+      {
+        "code": "daily-brief.preview-safe",
+        "message": "Daily Brief Daily Teacher Brief — Monday, August 17, 2026 is preview-safe",
+        "severity": "pass",
+        "target": "p22-67a4c2af9118235c"
+      },
+      {
+        "code": "daily-brief.forbidden-content",
+        "message": "Daily Brief excludes forbidden content",
+        "severity": "pass",
+        "target": "dailyTeacherBriefs"
+      },
+      {
+        "code": "daily-brief.weather",
+        "message": "Daily Brief weather fallback is present",
+        "severity": "pass",
+        "target": "p22-67a4c2af9118235c"
       }
     ],
-    "passCount": 19,
+    "passCount": 23,
     "warnCount": 0
   },
   "weekCode": "Q1W5",

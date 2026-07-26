@@ -578,6 +578,12 @@ Current email sending is not authorized.
 
 Daily brief and newsletter-email concepts may remain preview-only until a separate delivery contract exists.
 
+The Daily Teacher Brief contract is:
+
+```text
+docs/programs/canvas-llm/canonical-context-pack/daily-teacher-brief-contract.md
+```
+
 Canvas announcement and email are distinct channels.
 
 ## Backups

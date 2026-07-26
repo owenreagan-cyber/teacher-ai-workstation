@@ -61,6 +61,8 @@ grep -q '^PASS: announcement.checkout14 Announcement layer excludes Checkout 14$
 grep -q '^PASS: announcement.schedule-intent Announcement schedule intent is Friday 4:00 PM America/New_York$' "$T/validate.txt" && pass "announcement schedule intent PASS is present" || fail "announcement schedule intent PASS missing"
 grep -q '^PASS: newsletter.monthly Homeroom newsletter metadata is monthly on course 26427$' "$T/validate.txt" && pass "newsletter monthly PASS is present" || fail "newsletter monthly PASS missing"
 grep -q '^PASS: newsletter-update.wording Newsletter update announcement uses canonical wording$' "$T/validate.txt" && pass "newsletter update wording PASS is present" || fail "newsletter update wording PASS missing"
+grep -q '^PASS: daily-brief.preview-only Daily Brief previews remain blocked$' "$T/validate.txt" && pass "daily brief preview-only PASS is present" || fail "daily brief preview-only PASS missing"
+grep -q '^PASS: daily-brief.schedule-intent Daily Brief scheduling intent is preview-only$' "$T/validate.txt" && pass "daily brief schedule intent PASS is present" || fail "daily brief schedule intent PASS missing"
 grep -q '^FAIL: 0$' "$T/validate.txt" && pass "validator reported zero failures" || fail "validator reported failures"
 
 warn "Math test cadence remains owner-unresolved"

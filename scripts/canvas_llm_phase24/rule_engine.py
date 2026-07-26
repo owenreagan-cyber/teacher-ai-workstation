@@ -264,6 +264,43 @@ def annotate_newsletter_metadata(
     return newsletter, update, warnings, []
 
 
+def annotate_daily_teacher_briefs(
+    week_code: str,
+    knowledge: dict[str, Any],
+) -> tuple[list[dict[str, Any]], list[str], list[UnresolvedDecision]]:
+    week = phase22.instructional_week_by_code(week_code) or {}
+    starts_on = compact(week.get("startsOn") or "")
+    if not starts_on:
+        return [], [], []
+    rows = pacing_rows_for_announcements(knowledge, week_code)
+    briefs = phase22.build_daily_teacher_briefs_for_week(
+        starts_on,
+        rows,
+        week,
+        school_year="2026-2027",
+        db=None,
+        plan_payload=knowledge.get("weeklyPlanPayload") or {},
+    )
+    warnings: list[str] = []
+    for brief in briefs:
+        brief["predictionMetadata"] = {
+            "entryDate": brief.get("entry_date"),
+            "needsReview": brief.get("needs_review"),
+            "deliveryStatus": brief.get("delivery_status"),
+            "scheduleIntentOnly": True,
+        }
+        for warning in brief.get("warnings") or []:
+            warnings.append(warning)
+        if any("Weather not provided" in item for section in brief.get("sections", []) for item in section.get("items", [])):
+            warnings.append("Daily Brief weather input is absent")
+        if brief.get("needs_review"):
+            warnings.append("Daily Brief contains unresolved planning alerts")
+    if len(briefs) < 5:
+        warnings.append("Shortened instructional week has fewer Daily Brief previews")
+    warnings.append("Daily Brief is preview-only and delivery remains blocked")
+    return briefs, list(dict.fromkeys(warnings)), []
+
+
 def reading_homework_for_weekday(weekday: str) -> str:
     return phase22.reading_homework_for_weekday(weekday)
 
@@ -682,6 +719,9 @@ def predict_week_data(week_code: str, source_path: str | Path, correction_state:
     newsletter_draft, newsletter_update, newsletter_warnings, newsletter_unresolved = annotate_newsletter_metadata(week_code)
     unresolved_decisions.extend(newsletter_unresolved)
     warnings.extend(newsletter_warnings)
+    daily_briefs, daily_brief_warnings, daily_brief_unresolved = annotate_daily_teacher_briefs(week_code, knowledge)
+    unresolved_decisions.extend(daily_brief_unresolved)
+    warnings.extend(daily_brief_warnings)
     if "Math test cadence remains owner-unresolved" not in warnings:
         warnings.append("Math test cadence remains owner-unresolved")
     warnings = list(dict.fromkeys(warnings))
@@ -705,6 +745,7 @@ def predict_week_data(week_code: str, source_path: str | Path, correction_state:
         announcement_drafts=announcement_drafts,
         newsletter_draft=newsletter_draft,
         newsletter_update_announcement=newsletter_update,
+        daily_teacher_briefs=daily_briefs,
     )
 
 
@@ -779,6 +820,19 @@ def validate_week_prediction(payload: dict[str, Any]) -> dict[str, Any]:
         findings.append({"severity": "pass", "code": "newsletter-update.schedule", "message": "Newsletter update announcement does not inherit assessment schedule", "target": "newsletterUpdateAnnouncement"})
     else:
         findings.append({"severity": "fail", "code": "newsletter-update.schedule", "message": "Newsletter update announcement must not inherit assessment schedule", "target": "newsletterUpdateAnnouncement"})
+    briefs = payload.get("dailyTeacherBriefs") or []
+    if briefs and all(item.get("delivery_status") == "blocked_preview" for item in briefs):
+        findings.append({"severity": "pass", "code": "daily-brief.preview-only", "message": "Daily Brief previews remain blocked", "target": "dailyTeacherBriefs"})
+    else:
+        findings.append({"severity": "fail", "code": "daily-brief.preview-only", "message": "Daily Brief previews must remain blocked", "target": "dailyTeacherBriefs"})
+    if briefs and all(item.get("recipientConfigured") is not False and item.get("recipientDisplay") == "Teacher" for item in briefs):
+        findings.append({"severity": "pass", "code": "daily-brief.recipient", "message": "Daily Brief recipient metadata remains redacted", "target": "dailyTeacherBriefs"})
+    else:
+        findings.append({"severity": "fail", "code": "daily-brief.recipient", "message": "Daily Brief recipient metadata must remain redacted", "target": "dailyTeacherBriefs"})
+    if briefs and all((item.get("schedule_metadata") or {}).get("scheduleIntentOnly") for item in briefs):
+        findings.append({"severity": "pass", "code": "daily-brief.schedule-intent", "message": "Daily Brief scheduling intent is preview-only", "target": "dailyTeacherBriefs"})
+    else:
+        findings.append({"severity": "fail", "code": "daily-brief.schedule-intent", "message": "Daily Brief scheduling intent must remain preview-only", "target": "dailyTeacherBriefs"})
     pass_count = sum(1 for item in findings if item["severity"] == "pass")
     warn_count = sum(1 for item in findings if item["severity"] == "warn")
     fail_count = sum(1 for item in findings if item["severity"] == "fail")

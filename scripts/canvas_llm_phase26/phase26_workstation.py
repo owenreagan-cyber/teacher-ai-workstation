@@ -18,6 +18,17 @@ sys.path.insert(0, str(REPO_ROOT))
 from scripts.canvas_llm_phase26 import pipeline, storage  # noqa: E402
 from scripts.canvas_llm_phase26.export_package import build_export_package, stable_hash  # noqa: E402
 from scripts.canvas_llm_phase26.validate_phase26_state import main as validate_main  # noqa: E402
+from scripts.canvas_llm_phase27.approval_gate import (  # noqa: E402
+    ApprovalRejectedError,
+    approve_operation,
+    revoke_operation,
+)
+from scripts.canvas_llm_phase27.export_package import export_package as build_phase27_export  # noqa: E402
+from scripts.canvas_llm_phase27.ledger import DEFAULT_LEDGER_PATH, DeploymentLedger  # noqa: E402
+from scripts.canvas_llm_phase27.phase27_readiness import build_packet as build_phase27_packet  # noqa: E402
+
+PHASE27_SNAPSHOT_PATH = REPO_ROOT / "fixtures/canvas-llm/phase-27/synthetic-canvas-snapshot.json"
+PHASE27_LEDGER_PATH = DEFAULT_LEDGER_PATH
 
 
 def write_json(path: Path, payload: dict[str, Any]) -> None:
@@ -104,6 +115,31 @@ class WorkstationHandler(SimpleHTTPRequestHandler):
             packet = build_workstation_packet()
             self._send_json(packet)
             return
+        if parsed == "/api/phase27/packet":
+            week_code = selected_week_code()
+            payload = build_phase27_packet(
+                week_code, APP_DATA, PHASE27_SNAPSHOT_PATH, PHASE27_LEDGER_PATH
+            )
+            self._send_json(payload)
+            return
+        if parsed == "/api/phase27/ledger-status":
+            if PHASE27_LEDGER_PATH.exists():
+                ledger = DeploymentLedger(PHASE27_LEDGER_PATH)
+                try:
+                    self._send_json(
+                        {
+                            "exists": True,
+                            "integrityOk": ledger.integrity_check(),
+                            "schemaVersion": ledger.schema_version(),
+                            "eventCount": ledger.event_count(),
+                            "recentEvents": ledger.events()[-10:],
+                        }
+                    )
+                finally:
+                    ledger.close()
+            else:
+                self._send_json({"exists": False, "integrityOk": None, "schemaVersion": None, "eventCount": 0, "recentEvents": []})
+            return
         if parsed == "/api/local-state":
             from urllib.parse import parse_qs, urlparse
 
@@ -182,6 +218,56 @@ class WorkstationHandler(SimpleHTTPRequestHandler):
             finally:
                 conn.close()
             self._send_json({"ok": True, **manifest})
+            return
+        if parsed == "/api/phase27/approve":
+            body = self._read_json()
+            ledger = DeploymentLedger(PHASE27_LEDGER_PATH)
+            try:
+                approve_operation(
+                    ledger,
+                    {
+                        "objectId": body["objectId"],
+                        "comparisonStatus": body["comparisonStatus"],
+                        "blockers": body.get("blockers", []),
+                    },
+                    int(body["manifestRevision"]),
+                    body["snapshotId"],
+                    body["snapshotFreshness"],
+                    body.get("approvedBy", "teacher"),
+                )
+                self._send_json({"ok": True})
+            except ApprovalRejectedError as exc:
+                self._send_json({"ok": False, "error": str(exc)}, status=409)
+            finally:
+                ledger.close()
+            return
+        if parsed == "/api/phase27/export":
+            week_code = selected_week_code()
+            payload = build_phase27_packet(
+                week_code, APP_DATA, PHASE27_SNAPSHOT_PATH, PHASE27_LEDGER_PATH
+            )
+            manifest = payload["deploymentManifestV1"]
+            export_dir = build_phase27_export(
+                week_code,
+                payload["safetyDiff"],
+                manifest,
+                payload["snapshot"],
+                payload.get("healthChecks", []),
+                manifest.get("rollbackPlan", []),
+                [],
+            )
+            self._send_json({"ok": True, "exportDir": str(export_dir)})
+            return
+        if parsed == "/api/phase27/revoke":
+            body = self._read_json()
+            ledger = DeploymentLedger(PHASE27_LEDGER_PATH)
+            try:
+                revoke_operation(
+                    ledger, body["objectId"], int(body["manifestRevision"]), body["snapshotId"]
+                )
+                self._send_json({"ok": True})
+            finally:
+                ledger.close()
             return
         self.send_error(404, "unknown endpoint")
 

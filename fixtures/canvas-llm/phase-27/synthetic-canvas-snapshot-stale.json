@@ -1,14 +1,35 @@
 {
-  "snapshotId": "synthetic-canvas-snapshot",
-  "generatedAt": "2026-07-11T00:00:00Z",
+  "snapshotId": "synthetic-canvas-snapshot-stale",
+  "generatedAt": "2026-07-05T00:00:00Z",
   "source": "https://canvas.example.invalid/",
   "modules": {
-    "26404": [{"moduleId": "m-math-1", "name": "Weekly Agendas"}],
-    "26442": [{"moduleId": "m-read-1", "name": "Weekly Reading"}],
-    "26495": [{"moduleId": "m-la-1", "name": "Weekly LA"}],
+    "26404": [
+      {
+        "moduleId": "m-math-1",
+        "name": "Weekly Agendas"
+      }
+    ],
+    "26442": [
+      {
+        "moduleId": "m-read-1",
+        "name": "Weekly Reading"
+      }
+    ],
+    "26495": [
+      {
+        "moduleId": "m-la-1",
+        "name": "Weekly LA"
+      }
+    ],
     "26496": [
-      {"moduleId": "m-sci-1", "name": "Science Notes"},
-      {"moduleId": "m-sci-2", "name": "Science Notes"}
+      {
+        "moduleId": "m-sci-1",
+        "name": "Science Notes"
+      },
+      {
+        "moduleId": "m-sci-2",
+        "name": "Science Notes"
+      }
     ],
     "26427": []
   },
@@ -112,7 +133,9 @@
       "publication": "published",
       "moduleRef": "Weekly Reading",
       "modulePosition": 2,
-      "dependencies": ["math-agenda"]
+      "dependencies": [
+        "math-agenda"
+      ]
     },
     {
       "localObjectId": "language-arts",
@@ -140,7 +163,9 @@
       "publication": "draft",
       "moduleRef": "Weekly LA",
       "modulePosition": 4,
-      "dependencies": ["reading-test-14"]
+      "dependencies": [
+        "reading-test-14"
+      ]
     },
     {
       "localObjectId": "conflict-page",

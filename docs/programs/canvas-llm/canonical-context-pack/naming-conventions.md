@@ -174,6 +174,20 @@ Approved newsletter-update announcement wording:
 The newsletter has been updated for {Month YYYY}.
 ```
 
+## Daily Teacher Brief naming
+
+Approved Daily Teacher Brief title pattern:
+
+```text
+Daily Teacher Brief — {Weekday, Month D, YYYY}
+```
+
+Example:
+
+```text
+Daily Teacher Brief — Monday, August 17, 2026
+```
+
 ## Assignment points and due time
 
 All assignments:

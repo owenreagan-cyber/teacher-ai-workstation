@@ -517,6 +517,19 @@ assert aug['local_object_id']==newsletter['local_object_id'] and sep['local_obje
 repeat=p23.build_packet('Q1W5')['newsletter']
 assert repeat['local_object_id']==newsletter['local_object_id'] and repeat['content_hash']==newsletter['content_hash']
 print('PASS C0O homeroom monthly newsletter packet serialization')
+briefs=packet['dailyTeacherBriefs']
+assert briefs and len(briefs)==5
+monday=next(item for item in briefs if item['entry_date']==packet['weekStart'])
+assert monday['title']=='Daily Teacher Brief — Monday, August 17, 2026'
+assert [section['name'] for section in monday['sections']]==list(p22.DAILY_BRIEF_SECTION_ORDER)
+assert monday['recipient_display']=='Teacher' and monday['recipient_configured'] is True
+assert monday['preview_only'] and not monday['delivery_authorized'] and not monday['email_sends_allowed']
+assert monday['schedule_metadata']['intendedForUtc']=='2026-08-17T10:15:00Z'
+repeat=p23.build_packet('Q1W5')['dailyTeacherBriefs']
+assert repeat[0]['local_object_id']==monday['local_object_id'] and repeat[0]['content_hash']==monday['content_hash']
+assert 'owen.reagan@' not in json.dumps(packet).lower()
+assert 'Study Guide' not in json.dumps(briefs)
+print('PASS C0P daily teacher brief packet serialization')
 print('PASS C0N announcement packet serialization')
 print('PASS C0M selection metadata propagation')
 PY

@@ -465,6 +465,40 @@ class NewsletterUpdateAnnouncement:
 
 
 @dataclass
+class DailyTeacherBrief:
+    local_object_id: str
+    entry_date: str
+    school_year: str
+    week_code: str
+    title: str
+    artifact_kind: str
+    audience: str
+    channel: str
+    delivery_status: str
+    sections: list[dict[str, Any]]
+    body_text: str
+    body_html: str
+    content_hash: str
+    schedule_metadata: dict[str, Any]
+    recipient_configured: bool
+    recipient_display: str
+    approval_state: str
+    approval_revision: int
+    preview_only: bool
+    teacher_approval_required: bool
+    approved: bool
+    canvas_writes_allowed: bool
+    email_sends_allowed: bool
+    delivery_authorized: bool
+    contains_student_data: bool
+    needs_review: bool
+    warnings: list[str]
+    generation_reason: str
+    safety_metadata: dict[str, Any]
+    provenance: list[dict[str, Any]]
+
+
+@dataclass
 class ValidationFinding:
     severity: str
     code: str
@@ -506,6 +540,7 @@ class ProductionPacket:
     announcements: list[AnnouncementDraft]
     newsletter: NewsletterDraft | None
     newsletter_update_announcement: NewsletterUpdateAnnouncement | None
+    daily_teacher_briefs: list[DailyTeacherBrief]
     validation: dict[str, Any]
     risks: list[RiskFinding]
     provenance: list[ProvenanceRecord]
@@ -531,6 +566,7 @@ class ProductionPacket:
             "announcements": [asdict(item) for item in self.announcements],
             "newsletter": asdict(self.newsletter) if self.newsletter else None,
             "newsletterUpdateAnnouncement": asdict(self.newsletter_update_announcement) if self.newsletter_update_announcement else None,
+            "dailyTeacherBriefs": [asdict(item) for item in self.daily_teacher_briefs],
             "validation": self.validation,
             "risks": [asdict(item) for item in self.risks],
             "provenance": [asdict(item) for item in self.provenance],
@@ -1137,6 +1173,48 @@ def build_newsletter(week: InstructionalWeek) -> tuple[NewsletterDraft, Newslett
     return newsletter, update
 
 
+def build_daily_teacher_briefs(week: InstructionalWeek, entries: list[PacingEntry]) -> list[DailyTeacherBrief]:
+    rows = [row_from_entry(entry) for entry in entries if subject_active_for_week(entry.subject, week)]
+    week_meta = {"quarter": week.quarter, "code": week.code, "startsOn": week.starts_on, "endsOn": week.ends_on}
+    briefs: list[DailyTeacherBrief] = []
+    for raw in phase22.build_daily_teacher_briefs_for_week(week.starts_on, rows, week_meta, school_year="2026-2027", db=None, plan_payload={}):
+        briefs.append(
+            DailyTeacherBrief(
+                local_object_id=raw["local_object_id"],
+                entry_date=raw["entry_date"],
+                school_year=raw["school_year"],
+                week_code=raw["week_code"],
+                title=raw["title"],
+                artifact_kind=raw["artifact_kind"],
+                audience=raw["audience"],
+                channel=raw["channel"],
+                delivery_status=raw["delivery_status"],
+                sections=list(raw["sections"]),
+                body_text=raw["body_text"],
+                body_html=raw["body_html"],
+                content_hash=raw["content_hash"],
+                schedule_metadata=dict(raw.get("schedule_metadata") or {}),
+                recipient_configured=bool(raw.get("recipientConfigured", True)),
+                recipient_display=str(raw.get("recipientDisplay") or "Teacher"),
+                approval_state=raw.get("approval_state") or "Draft",
+                approval_revision=int(raw.get("approval_revision") or 0),
+                preview_only=bool(raw.get("preview_only", True)),
+                teacher_approval_required=bool(raw.get("teacher_approval_required", True)),
+                approved=bool(raw.get("approved", False)),
+                canvas_writes_allowed=bool(raw.get("canvas_writes_allowed", False)),
+                email_sends_allowed=bool(raw.get("email_sends_allowed", False)),
+                delivery_authorized=bool(raw.get("delivery_authorized", False)),
+                contains_student_data=bool(raw.get("contains_student_data", False)),
+                needs_review=bool(raw.get("needs_review")),
+                warnings=list(raw.get("warnings") or []),
+                generation_reason=raw.get("generation_reason") or "",
+                safety_metadata=dict(raw.get("safety_metadata") or {}),
+                provenance=list(raw.get("provenance") or []),
+            )
+        )
+    return briefs
+
+
 def validate_packet(packet: dict[str, Any], fixture: dict[str, Any] | None = None) -> dict[str, Any]:
     findings: list[ValidationFinding] = []
     risks: list[RiskFinding] = []
@@ -1255,6 +1333,33 @@ def validate_packet(packet: dict[str, Any], fixture: dict[str, Any] | None = Non
         else:
             findings.append(ValidationFinding("pass", "newsletter-update.preview-safe", "Newsletter update announcement is preview-safe and blocked", update.get("announcement_id")))
 
+    briefs = packet.get("dailyTeacherBriefs") or []
+    if not briefs:
+        findings.append(ValidationFinding("fail", "daily-brief.missing", "Daily Teacher Brief previews must be serialized", "dailyTeacherBriefs"))
+    else:
+        monday = next((item for item in briefs if item.get("entry_date") == packet.get("weekStart")), briefs[0])
+        if monday.get("title") != phase22.daily_brief_title(packet.get("weekStart") or monday.get("entry_date") or ""):
+            findings.append(ValidationFinding("fail", "daily-brief.title", "Daily Brief title must use approved format", monday.get("local_object_id")))
+        elif [section.get("name") for section in monday.get("sections", [])] != list(phase22.DAILY_BRIEF_SECTION_ORDER):
+            findings.append(ValidationFinding("fail", "daily-brief.sections", "Daily Brief sections must match canonical order", monday.get("local_object_id")))
+        elif not monday.get("recipient_configured", monday.get("recipientConfigured")) or monday.get("recipient_display", monday.get("recipientDisplay")) != "Teacher":
+            findings.append(ValidationFinding("fail", "daily-brief.recipient", "Daily Brief recipient metadata must remain redacted", monday.get("local_object_id")))
+        elif monday.get("preview_only") is False or monday.get("delivery_authorized") or monday.get("email_sends_allowed") or monday.get("canvas_writes_allowed"):
+            findings.append(ValidationFinding("fail", "daily-brief.preview-only", "Daily Brief must remain preview-only with delivery blocked", monday.get("local_object_id")))
+        else:
+            findings.append(ValidationFinding("pass", "daily-brief.recipient", "Daily Brief recipient metadata remains redacted", monday.get("local_object_id")))
+            findings.append(ValidationFinding("pass", "daily-brief.preview-safe", f"Daily Brief {monday.get('title')} is preview-safe", monday.get("local_object_id")))
+        brief_blob = json.dumps(briefs, ensure_ascii=False)
+        if "owen.reagan@" in brief_blob.lower() or "Study Guide" in brief_blob or "Checkout 14" in brief_blob or "Spelling Test 25" in brief_blob:
+            findings.append(ValidationFinding("fail", "daily-brief.forbidden-content", "Daily Brief contains forbidden content", "dailyTeacherBriefs"))
+        else:
+            findings.append(ValidationFinding("pass", "daily-brief.forbidden-content", "Daily Brief excludes forbidden content", "dailyTeacherBriefs"))
+        weather_section = next((section for section in monday.get("sections", []) if section.get("name") == "Weather"), None)
+        if not weather_section or "Weather not provided" not in json.dumps(weather_section, ensure_ascii=False):
+            findings.append(ValidationFinding("fail", "daily-brief.weather", "Daily Brief weather fallback must be present", monday.get("local_object_id")))
+        else:
+            findings.append(ValidationFinding("pass", "daily-brief.weather", "Daily Brief weather fallback is present", monday.get("local_object_id")))
+
     pass_count = sum(1 for item in findings if item.severity == "pass")
     warn_count = sum(1 for item in findings if item.severity == "warn")
     fail_count = sum(1 for item in findings if item.severity == "fail")
@@ -1285,6 +1390,7 @@ def build_packet_from_sqlite(
     reminders = build_assessment_reminders(week, entries)
     announcements = build_announcements(week, entries)
     newsletter, newsletter_update = build_newsletter(week)
+    daily_teacher_briefs = build_daily_teacher_briefs(week, entries)
 
     packet = ProductionPacket(
         schema_version=1,
@@ -1313,6 +1419,7 @@ def build_packet_from_sqlite(
         announcements=announcements,
         newsletter=newsletter,
         newsletter_update_announcement=newsletter_update,
+        daily_teacher_briefs=daily_teacher_briefs,
         validation={},
         risks=[],
         provenance=[
@@ -1352,6 +1459,7 @@ def build_packet(week_code: str | None = None, fixture_path: Path = FIXTURE_PATH
     reminders = build_assessment_reminders(week, entries)
     announcements = build_announcements(week, entries)
     newsletter, newsletter_update = build_newsletter(week)
+    daily_teacher_briefs = build_daily_teacher_briefs(week, entries)
     packet = ProductionPacket(
         schema_version=1,
         packet_id=stable_id("packet", week.code, fixture_path.read_text(encoding="utf-8")),
@@ -1370,6 +1478,7 @@ def build_packet(week_code: str | None = None, fixture_path: Path = FIXTURE_PATH
         announcements=announcements,
         newsletter=newsletter,
         newsletter_update_announcement=newsletter_update,
+        daily_teacher_briefs=daily_teacher_briefs,
         validation={},
         risks=[],
         provenance=[

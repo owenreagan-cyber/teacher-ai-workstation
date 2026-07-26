@@ -96,6 +96,7 @@ assert deploy_payload['operations'] == [
     'render academic agenda previews',
     'generate minimal assessment reminder previews',
     'generate assessment announcement previews',
+    'generate monthly homeroom newsletter preview',
     'await teacher approval',
 ]
 assert all(item['status'] == 'blocked_preview' for item in deploy['items'])
@@ -244,6 +245,23 @@ blob=json.dumps(drafts)
 assert 'Study Guide' not in blob and 'Focus Words' not in blob and 'sourceCheckoutKey' not in blob
 assert 'http://' not in blob and 'https://' not in blob
 print('PASS C0N announcement generation')
+q1w5=p.instructional_week_by_code('Q1W5'); q1w6=p.instructional_week_by_code('Q1W6'); q1w8=p.instructional_week_by_code('Q1W8')
+assert p.month_code_for_date(q1w5['startsOn'])=='2026-08'
+_,nl5,up5=p.resolve_newsletter_for_week_start(q1w5['startsOn']); _,nl6,_=p.resolve_newsletter_for_week_start(q1w6['startsOn']); _,nl8,_=p.resolve_newsletter_for_week_start(q1w8['startsOn'])
+assert nl5['local_object_id']==nl6['local_object_id'] and nl5['local_object_id']!=nl8['local_object_id']
+assert nl5['title']=='Homeroom Newsletter — August 2026' and nl8['title']=='Homeroom Newsletter — September 2026'
+assert nl5['month_code']=='2026-08' and nl5['date_range']=={'start':'2026-08-01','end':'2026-08-31'} and nl5['course_id']==26427
+assert [s['name'] for s in nl5['sections']]==list(p.NEWSLETTER_SECTION_ORDER)
+assert nl5['preview_only'] and not nl5['canvas_writes_allowed'] and not nl5['email_sends_allowed']
+assert nl5['teacher_approval_required'] and not nl5['approved']
+assert up5['body_text']=='The newsletter has been updated for August 2026.' and up5['title']=='Homeroom Newsletter Updated — August 2026'
+assert up5['depends_on']==nl5['local_object_id'] and up5['page_url'] is None and up5['verification_status']=='unverified'
+assert up5['schedule_metadata'] is None and nl5['body_text'] not in up5['body_text']
+assert 'Newsletter Draft' not in nl5['title'] and 'Preview newsletter' not in nl5['body_text']
+_,nl5b,up5b=p.resolve_newsletter_for_week_start(q1w5['startsOn'])
+assert nl5b['local_object_id']==nl5['local_object_id'] and nl5b['content_hash']==nl5['content_hash']
+assert up5b['announcement_id']==up5['announcement_id'] and up5['approved'] is False and nl5['approved'] is False
+print('PASS C0O homeroom monthly newsletter')
 print('PASS C0M graded-item selection')
 print('PASS python behavior')
 PY

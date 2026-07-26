@@ -501,6 +501,22 @@ assert all(meta==announcements[0]['schedule_metadata'] for meta in repeat_schedu
 assert 'Study Guide' not in json.dumps(announcements)
 repeat_ids={item['announcement_id'] for item in p23.build_packet('Q1W5')['announcements']}
 assert repeat_ids=={item['announcement_id'] for item in announcements}
+newsletter=packet['newsletter']; update=packet['newsletterUpdateAnnouncement']
+assert newsletter and update
+assert newsletter['title']=='Homeroom Newsletter — August 2026' and newsletter['month_code']=='2026-08'
+assert newsletter['course_id']==26427 and newsletter['cadence']=='monthly'
+assert [s['name'] for s in newsletter['sections']]==list(p22.NEWSLETTER_SECTION_ORDER)
+assert newsletter['preview_only'] and not newsletter['canvas_writes_allowed'] and not newsletter['email_sends_allowed']
+assert update['body_text']=='The newsletter has been updated for August 2026.'
+assert update['depends_on']==newsletter['local_object_id'] and update['page_url'] is None
+assert update['schedule_metadata'] is None
+assert newsletter['title'] not in {page['title'] for page in packet['pages']}
+assert 'Newsletter Draft' not in json.dumps(packet)
+aug=p23.build_packet('Q1W6')['newsletter']; sep=p23.build_packet('Q1W8')['newsletter']
+assert aug['local_object_id']==newsletter['local_object_id'] and sep['local_object_id']!=newsletter['local_object_id']
+repeat=p23.build_packet('Q1W5')['newsletter']
+assert repeat['local_object_id']==newsletter['local_object_id'] and repeat['content_hash']==newsletter['content_hash']
+print('PASS C0O homeroom monthly newsletter packet serialization')
 print('PASS C0N announcement packet serialization')
 print('PASS C0M selection metadata propagation')
 PY

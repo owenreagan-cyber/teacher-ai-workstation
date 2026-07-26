@@ -37,14 +37,6 @@ Numeric module IDs and module item IDs require the same live-read boundary.
 
 Logical module names may be committed; numeric IDs must be verified before publication.
 
-## Homeroom newsletter title pattern
-
-The monthly Homeroom newsletter is confirmed.
-
-The exact page title pattern for 2026–2027 remains to be finalized against historical comparison.
-
-Candidate historical patterns remain non-authoritative until owner-approved.
-
 ## Live Canvas metadata dependencies
 
 Before any future approved write, the system should verify:

@@ -395,6 +395,76 @@ class AnnouncementDraft:
 
 
 @dataclass
+class NewsletterDraft:
+    local_object_id: str
+    month_code: str
+    month_label: str
+    school_year: str
+    course_id: int
+    title: str
+    date_range: dict[str, str]
+    body_text: str
+    body_html: str
+    sections: list[dict[str, Any]]
+    source_entry_ids: list[str]
+    source_revisions: list[Any]
+    content_hash: str
+    dependencies: list[dict[str, Any]]
+    blockers: list[str]
+    approval_state: str
+    approval_revision: int
+    snapshot_id: str
+    deployment_status: str
+    verification_status: str
+    preview_only: bool
+    teacher_approval_required: bool
+    approved: bool
+    canvas_writes_allowed: bool
+    email_sends_allowed: bool
+    subject: str
+    artifact_kind: str
+    generation_reason: str
+    provenance: list[dict[str, Any]]
+    safety_metadata: dict[str, Any]
+    needs_review: bool
+    warnings: list[str]
+    cadence: str = "monthly"
+
+
+@dataclass
+class NewsletterUpdateAnnouncement:
+    announcement_id: str
+    local_object_id: str
+    artifact_kind: str
+    logical_type: str
+    subject: str
+    month_code: str
+    month_label: str
+    title: str
+    body_text: str
+    body_html: str
+    depends_on: str
+    dependencies: list[dict[str, Any]]
+    page_url: str | None
+    blockers: list[str]
+    approval_state: str
+    approval_revision: int
+    approved: bool
+    teacher_approval_required: bool
+    preview_only: bool
+    canvas_writes_allowed: bool
+    email_sends_allowed: bool
+    verification_status: str
+    deployment_status: str
+    needs_review: bool
+    schedule_metadata: dict[str, Any] | None
+    warnings: list[str]
+    safety_metadata: dict[str, Any]
+    content_hash: str
+    generation_reason: str
+
+
+@dataclass
 class ValidationFinding:
     severity: str
     code: str
@@ -434,6 +504,8 @@ class ProductionPacket:
     resources: list[ResourceMatch]
     assessment_reminders: list[AssessmentReminder]
     announcements: list[AnnouncementDraft]
+    newsletter: NewsletterDraft | None
+    newsletter_update_announcement: NewsletterUpdateAnnouncement | None
     validation: dict[str, Any]
     risks: list[RiskFinding]
     provenance: list[ProvenanceRecord]
@@ -457,6 +529,8 @@ class ProductionPacket:
             "resources": [asdict(item) for item in self.resources],
             "assessmentReminders": [asdict(item) for item in self.assessment_reminders],
             "announcements": [asdict(item) for item in self.announcements],
+            "newsletter": asdict(self.newsletter) if self.newsletter else None,
+            "newsletterUpdateAnnouncement": asdict(self.newsletter_update_announcement) if self.newsletter_update_announcement else None,
             "validation": self.validation,
             "risks": [asdict(item) for item in self.risks],
             "provenance": [asdict(item) for item in self.provenance],
@@ -987,6 +1061,82 @@ def build_announcements(week: InstructionalWeek, entries: list[PacingEntry]) -> 
     return drafts
 
 
+def build_newsletter(week: InstructionalWeek) -> tuple[NewsletterDraft, NewsletterUpdateAnnouncement]:
+    _, raw_newsletter, raw_update = phase22.resolve_newsletter_for_week_start(
+        week.starts_on,
+        db=None,
+        school_year="2026-2027",
+        week_code=week.code,
+    )
+    newsletter = NewsletterDraft(
+        local_object_id=raw_newsletter["local_object_id"],
+        month_code=raw_newsletter["month_code"],
+        month_label=raw_newsletter["month_label"],
+        school_year=raw_newsletter["school_year"],
+        course_id=int(raw_newsletter["course_id"]),
+        title=raw_newsletter["title"],
+        date_range=dict(raw_newsletter["date_range"]),
+        body_text=raw_newsletter["body_text"],
+        body_html=raw_newsletter["body_html"],
+        sections=list(raw_newsletter["sections"]),
+        source_entry_ids=list(raw_newsletter["source_entry_ids"]),
+        source_revisions=list(raw_newsletter["source_revisions"]),
+        content_hash=raw_newsletter["content_hash"],
+        dependencies=list(raw_newsletter["dependencies"]),
+        blockers=list(raw_newsletter["blockers"]),
+        approval_state=raw_newsletter["approval_state"],
+        approval_revision=int(raw_newsletter["approval_revision"]),
+        snapshot_id=raw_newsletter["snapshot_id"],
+        deployment_status=raw_newsletter["deployment_status"],
+        verification_status=raw_newsletter["verification_status"],
+        preview_only=bool(raw_newsletter["preview_only"]),
+        teacher_approval_required=bool(raw_newsletter["teacher_approval_required"]),
+        approved=bool(raw_newsletter["approved"]),
+        canvas_writes_allowed=bool(raw_newsletter["canvas_writes_allowed"]),
+        email_sends_allowed=bool(raw_newsletter["email_sends_allowed"]),
+        subject=raw_newsletter["subject"],
+        artifact_kind=raw_newsletter["artifact_kind"],
+        generation_reason=raw_newsletter["generation_reason"],
+        provenance=list(raw_newsletter["provenance"]),
+        safety_metadata=dict(raw_newsletter["safety_metadata"]),
+        needs_review=bool(raw_newsletter["needs_review"]),
+        warnings=list(raw_newsletter["warnings"]),
+        cadence=raw_newsletter.get("cadence") or "monthly",
+    )
+    update = NewsletterUpdateAnnouncement(
+        announcement_id=raw_update["announcement_id"],
+        local_object_id=raw_update["local_object_id"],
+        artifact_kind=raw_update["artifact_kind"],
+        logical_type=raw_update["logical_type"],
+        subject=raw_update["subject"],
+        month_code=raw_update["month_code"],
+        month_label=raw_update["month_label"],
+        title=raw_update["title"],
+        body_text=raw_update["body_text"],
+        body_html=raw_update["body_html"],
+        depends_on=raw_update["depends_on"],
+        dependencies=list(raw_update["dependencies"]),
+        page_url=raw_update.get("page_url"),
+        blockers=list(raw_update["blockers"]),
+        approval_state=raw_update["approval_state"],
+        approval_revision=int(raw_update["approval_revision"]),
+        approved=bool(raw_update["approved"]),
+        teacher_approval_required=bool(raw_update["teacher_approval_required"]),
+        preview_only=bool(raw_update["preview_only"]),
+        canvas_writes_allowed=bool(raw_update["canvas_writes_allowed"]),
+        email_sends_allowed=bool(raw_update["email_sends_allowed"]),
+        verification_status=raw_update["verification_status"],
+        deployment_status=raw_update["deployment_status"],
+        needs_review=bool(raw_update["needs_review"]),
+        schedule_metadata=raw_update.get("schedule_metadata"),
+        warnings=list(raw_update["warnings"]),
+        safety_metadata=dict(raw_update["safety_metadata"]),
+        content_hash=raw_update["content_hash"],
+        generation_reason=raw_update["generation_reason"],
+    )
+    return newsletter, update
+
+
 def validate_packet(packet: dict[str, Any], fixture: dict[str, Any] | None = None) -> dict[str, Any]:
     findings: list[ValidationFinding] = []
     risks: list[RiskFinding] = []
@@ -1056,6 +1206,55 @@ def validate_packet(packet: dict[str, Any], fixture: dict[str, Any] | None = Non
     if packet.get("announcements"):
         findings.append(ValidationFinding("pass", "announcement.records-present", "Announcement drafts are serialized separately from reminders", "announcements"))
 
+    newsletter = packet.get("newsletter")
+    update = packet.get("newsletterUpdateAnnouncement")
+    if not newsletter:
+        findings.append(ValidationFinding("fail", "newsletter.missing", "Monthly Homeroom newsletter must be serialized", "newsletter"))
+    else:
+        if newsletter.get("course_id") != 26427:
+            findings.append(ValidationFinding("fail", "newsletter.course", "Homeroom newsletter must route to course 26427", newsletter.get("local_object_id")))
+        elif newsletter.get("title") != f"Homeroom Newsletter — {newsletter.get('month_label')}":
+            findings.append(ValidationFinding("fail", "newsletter.title", "Newsletter title must use approved monthly pattern", newsletter.get("local_object_id")))
+        elif newsletter.get("cadence") != "monthly" or newsletter.get("artifact_kind") != "newsletter":
+            findings.append(ValidationFinding("fail", "newsletter.cadence", "Newsletter cadence must remain monthly", newsletter.get("local_object_id")))
+        elif [section.get("name") for section in newsletter.get("sections", [])] != list(phase22.NEWSLETTER_SECTION_ORDER):
+            findings.append(ValidationFinding("fail", "newsletter.sections", "Newsletter sections must match canonical order", newsletter.get("local_object_id")))
+        elif newsletter.get("preview_only") is False or newsletter.get("canvas_writes_allowed") or newsletter.get("email_sends_allowed"):
+            findings.append(ValidationFinding("fail", "newsletter.preview-only", "Newsletter must remain preview-only with writes disabled", newsletter.get("local_object_id")))
+        elif not newsletter.get("teacher_approval_required") or newsletter.get("approved"):
+            findings.append(ValidationFinding("fail", "newsletter.approval", "Newsletter must require separate teacher approval", newsletter.get("local_object_id")))
+        else:
+            findings.append(ValidationFinding("pass", "newsletter.preview-safe", f"Newsletter {newsletter.get('title')} is preview-safe", newsletter.get("local_object_id")))
+        newsletter_blob = json.dumps(newsletter, ensure_ascii=False)
+        if "Study Guide" in newsletter_blob or "Checkout 14" in newsletter_blob or "Spelling Test 25" in newsletter_blob:
+            findings.append(ValidationFinding("fail", "newsletter.forbidden-content", "Newsletter contains forbidden assessment content", newsletter.get("local_object_id")))
+        else:
+            findings.append(ValidationFinding("pass", "newsletter.forbidden-content", "Newsletter excludes forbidden assessment content", newsletter.get("local_object_id")))
+        page_titles = {page.get("title") for page in packet.get("pages", [])}
+        if newsletter.get("title") in page_titles:
+            findings.append(ValidationFinding("fail", "newsletter.agenda-separation", "Newsletter must not appear as an academic agenda page title", newsletter.get("local_object_id")))
+        else:
+            findings.append(ValidationFinding("pass", "newsletter.agenda-separation", "Newsletter remains separate from academic agenda pages", newsletter.get("local_object_id")))
+
+    if not update:
+        findings.append(ValidationFinding("fail", "newsletter-update.missing", "Newsletter update announcement must be serialized", "newsletterUpdateAnnouncement"))
+    else:
+        expected_body = phase22.newsletter_update_body(update.get("month_label") or "")
+        if update.get("body_text") != expected_body:
+            findings.append(ValidationFinding("fail", "newsletter-update.body", "Update announcement must use canonical wording", update.get("announcement_id")))
+        elif compact(newsletter.get("body_text") or "") in compact(update.get("body_text") or ""):
+            findings.append(ValidationFinding("fail", "newsletter-update.duplicate", "Update announcement must not duplicate newsletter body", update.get("announcement_id")))
+        elif update.get("depends_on") != (newsletter or {}).get("local_object_id"):
+            findings.append(ValidationFinding("fail", "newsletter-update.dependency", "Update announcement must depend on newsletter page", update.get("announcement_id")))
+        elif update.get("page_url") or update.get("verification_status") == "verified":
+            findings.append(ValidationFinding("fail", "newsletter-update.url", "Update announcement must remain blocked without verified page URL", update.get("announcement_id")))
+        elif not update.get("teacher_approval_required") or update.get("approved"):
+            findings.append(ValidationFinding("fail", "newsletter-update.approval", "Update announcement requires separate approval metadata", update.get("announcement_id")))
+        elif (update.get("schedule_metadata") or {}).get("scheduleIntent") == phase22.ANNOUNCEMENT_SCHEDULE_INTENT:
+            findings.append(ValidationFinding("fail", "newsletter-update.schedule", "Update announcement must not inherit assessment announcement schedule", update.get("announcement_id")))
+        else:
+            findings.append(ValidationFinding("pass", "newsletter-update.preview-safe", "Newsletter update announcement is preview-safe and blocked", update.get("announcement_id")))
+
     pass_count = sum(1 for item in findings if item.severity == "pass")
     warn_count = sum(1 for item in findings if item.severity == "warn")
     fail_count = sum(1 for item in findings if item.severity == "fail")
@@ -1085,6 +1284,7 @@ def build_packet_from_sqlite(
     assignments = build_assignments(week, entries)
     reminders = build_assessment_reminders(week, entries)
     announcements = build_announcements(week, entries)
+    newsletter, newsletter_update = build_newsletter(week)
 
     packet = ProductionPacket(
         schema_version=1,
@@ -1111,6 +1311,8 @@ def build_packet_from_sqlite(
         resources=[],
         assessment_reminders=reminders,
         announcements=announcements,
+        newsletter=newsletter,
+        newsletter_update_announcement=newsletter_update,
         validation={},
         risks=[],
         provenance=[
@@ -1149,6 +1351,7 @@ def build_packet(week_code: str | None = None, fixture_path: Path = FIXTURE_PATH
     resources = build_resource_matches(entries, fixture)
     reminders = build_assessment_reminders(week, entries)
     announcements = build_announcements(week, entries)
+    newsletter, newsletter_update = build_newsletter(week)
     packet = ProductionPacket(
         schema_version=1,
         packet_id=stable_id("packet", week.code, fixture_path.read_text(encoding="utf-8")),
@@ -1165,6 +1368,8 @@ def build_packet(week_code: str | None = None, fixture_path: Path = FIXTURE_PATH
         resources=resources,
         assessment_reminders=reminders,
         announcements=announcements,
+        newsletter=newsletter,
+        newsletter_update_announcement=newsletter_update,
         validation={},
         risks=[],
         provenance=[

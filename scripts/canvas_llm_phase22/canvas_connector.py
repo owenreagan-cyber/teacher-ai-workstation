@@ -16,8 +16,11 @@ if str(REPO_ROOT) not in sys.path:
 from scripts.canvas_llm_phase22 import phase22_workstation as p22  # noqa: E402
 
 CONNECTOR_MODES = ('fake', 'sandbox')
+PRODUCTION_MODES = ('production', 'live')
 CREDENTIAL_STATES = ('missing', 'configured', 'disabled')
 SANDBOX_COURSE_ID = 26427
+DUPLICATE_RESULTS = ('MATCH', 'CONFLICT', 'MISSING')
+FAKE_OBJECT_CATALOG: dict[int, dict[str, list[dict[str, Any]]]] = {}
 REDACT_PATTERNS = (
     re.compile(r'Bearer\s+\S+', re.I),
     re.compile(r'authorization:\s*\S+', re.I),
@@ -35,6 +38,41 @@ def redact_log(message: str) -> str:
     for pattern in REDACT_PATTERNS:
         redacted = pattern.sub('[REDACTED]', redacted)
     return redacted
+
+
+@dataclass
+class CanvasSandboxConfig:
+    mode: str = 'fake'
+    course_id: int = SANDBOX_COURSE_ID
+    credential_state: str = 'missing'
+    enabled: bool = True
+
+    def to_dict(self) -> dict[str, Any]:
+        return asdict(self)
+
+    def to_connection_config(self) -> CanvasConnectionConfig:
+        return CanvasConnectionConfig(
+            mode=self.mode,
+            enabled=self.enabled,
+            base_url='https://[REDACTED].instructure.com' if self.mode == 'sandbox' else None,
+            credential_state=self.credential_state,
+        )
+
+    def stores_credentials(self) -> bool:
+        return False
+
+
+@dataclass
+class ExistingObjectResult:
+    result: str
+    target_type: str
+    target_id: str | None = None
+    title: str | None = None
+    body_hash: str | None = None
+    reason: str | None = None
+
+    def to_dict(self) -> dict[str, Any]:
+        return asdict(self)
 
 
 @dataclass
@@ -129,6 +167,15 @@ class CanvasConnector:
         if not self.connector_available():
             raise RuntimeError('connector unavailable')
         if self.config.mode == 'fake':
+            stored = _fake_store_entry('page', page_url)
+            if stored:
+                return CanvasPageRecord(
+                    page_id=f'fake-page-{compact(page_url)}',
+                    course_id=int(stored.get('course_id') or course_id),
+                    title=compact(stored.get('title') or page_url),
+                    url=page_url,
+                    body_html=compact(stored.get('body') or ''),
+                )
             return CanvasPageRecord(
                 page_id=f'fake-page-{compact(page_url)}',
                 course_id=course_id,
@@ -155,6 +202,15 @@ class CanvasConnector:
         if not self.connector_available():
             raise RuntimeError('connector unavailable')
         if self.config.mode == 'fake':
+            stored = _fake_store_entry('announcement', announcement_id)
+            if stored:
+                return CanvasAnnouncementRecord(
+                    announcement_id=announcement_id,
+                    course_id=int(stored.get('course_id') or course_id),
+                    title=compact(stored.get('title') or 'Announcement'),
+                    message_html=compact(stored.get('body') or ''),
+                    posted_at=None,
+                )
             return CanvasAnnouncementRecord(
                 announcement_id=announcement_id,
                 course_id=course_id,
@@ -163,6 +219,199 @@ class CanvasConnector:
                 posted_at=None,
             )
         raise RuntimeError('sandbox read requires human-authorized credentials')
+
+    def list_pages(self, course_id: int) -> list[CanvasPageRecord]:
+        if not self.connector_available():
+            raise RuntimeError('connector unavailable')
+        if self.config.mode == 'fake':
+            pages: list[CanvasPageRecord] = []
+            for page_url, stored in _fake_store_bucket('pages').items():
+                if int(stored.get('course_id') or course_id) != course_id:
+                    continue
+                pages.append(
+                    CanvasPageRecord(
+                        page_id=f'fake-page-{compact(page_url)}',
+                        course_id=course_id,
+                        title=compact(stored.get('title') or page_url),
+                        url=page_url,
+                        body_html=compact(stored.get('body') or ''),
+                    )
+                )
+            catalog = FAKE_OBJECT_CATALOG.get(course_id, {}).get('pages', [])
+            for item in catalog:
+                pages.append(
+                    CanvasPageRecord(
+                        page_id=compact(item.get('page_id') or item.get('url') or ''),
+                        course_id=course_id,
+                        title=compact(item.get('title') or ''),
+                        url=compact(item.get('url') or ''),
+                        body_html=compact(item.get('body_html') or ''),
+                    )
+                )
+            return pages
+        raise RuntimeError('sandbox read requires human-authorized credentials')
+
+    def list_announcements(self, course_id: int) -> list[CanvasAnnouncementRecord]:
+        if not self.connector_available():
+            raise RuntimeError('connector unavailable')
+        if self.config.mode == 'fake':
+            announcements: list[CanvasAnnouncementRecord] = []
+            for ann_id, stored in _fake_store_bucket('announcements').items():
+                if int(stored.get('course_id') or course_id) != course_id:
+                    continue
+                announcements.append(
+                    CanvasAnnouncementRecord(
+                        announcement_id=ann_id,
+                        course_id=course_id,
+                        title=compact(stored.get('title') or ann_id),
+                        message_html=compact(stored.get('body') or ''),
+                        posted_at=None,
+                    )
+                )
+            catalog = FAKE_OBJECT_CATALOG.get(course_id, {}).get('announcements', [])
+            for item in catalog:
+                announcements.append(
+                    CanvasAnnouncementRecord(
+                        announcement_id=compact(item.get('announcement_id') or ''),
+                        course_id=course_id,
+                        title=compact(item.get('title') or ''),
+                        message_html=compact(item.get('message_html') or ''),
+                        posted_at=item.get('posted_at'),
+                    )
+                )
+            return announcements
+        raise RuntimeError('sandbox read requires human-authorized credentials')
+
+    def find_existing_object(
+        self,
+        course_id: int,
+        target_type: str,
+        *,
+        target_id: str | None = None,
+        title: str | None = None,
+        expected_hash: str | None = None,
+    ) -> ExistingObjectResult:
+        """Check for existing Canvas objects before create — duplicate prevention."""
+        if target_type not in {'page', 'announcement'}:
+            return ExistingObjectResult(
+                result='CONFLICT',
+                target_type=target_type,
+                reason='unsupported_target_type',
+            )
+
+        if self.config.mode == 'fake':
+            bucket = 'pages' if target_type == 'page' else 'announcements'
+            store = _fake_store_bucket(bucket)
+            if target_id and target_id in store:
+                stored = store[target_id]
+                actual_hash = compact(stored.get('body_hash') or '')
+                actual_title = compact(stored.get('title') or '')
+                if expected_hash and actual_hash == compact(expected_hash):
+                    return ExistingObjectResult(
+                        result='MATCH',
+                        target_type=target_type,
+                        target_id=target_id,
+                        title=actual_title,
+                        body_hash=actual_hash,
+                    )
+                if title and actual_title == compact(title) and expected_hash and actual_hash != compact(expected_hash):
+                    return ExistingObjectResult(
+                        result='CONFLICT',
+                        target_type=target_type,
+                        target_id=target_id,
+                        title=actual_title,
+                        body_hash=actual_hash,
+                        reason='content_hash_mismatch',
+                    )
+                if title and actual_title == compact(title):
+                    return ExistingObjectResult(
+                        result='MATCH',
+                        target_type=target_type,
+                        target_id=target_id,
+                        title=actual_title,
+                        body_hash=actual_hash,
+                    )
+                return ExistingObjectResult(
+                    result='CONFLICT',
+                    target_type=target_type,
+                    target_id=target_id,
+                    title=actual_title,
+                    body_hash=actual_hash,
+                    reason='existing_object_differs',
+                )
+
+            if target_type == 'page':
+                for page in self.list_pages(course_id):
+                    if title and compact(page.title) == compact(title):
+                        return ExistingObjectResult(
+                            result='CONFLICT',
+                            target_type=target_type,
+                            target_id=compact(page.url or page.page_id),
+                            title=page.title,
+                            reason='title_collision',
+                        )
+            else:
+                for announcement in self.list_announcements(course_id):
+                    if title and compact(announcement.title) == compact(title):
+                        return ExistingObjectResult(
+                            result='CONFLICT',
+                            target_type=target_type,
+                            target_id=announcement.announcement_id,
+                            title=announcement.title,
+                            reason='title_collision',
+                        )
+
+            return ExistingObjectResult(
+                result='MISSING',
+                target_type=target_type,
+                target_id=target_id,
+                title=title,
+            )
+
+        if self.config.mode == 'sandbox':
+            if self.config.credential_state != 'configured':
+                return ExistingObjectResult(
+                    result='CONFLICT',
+                    target_type=target_type,
+                    reason='sandbox_credentials_missing',
+                )
+            return ExistingObjectResult(
+                result='MISSING',
+                target_type=target_type,
+                target_id=target_id,
+                title=title,
+            )
+
+        return ExistingObjectResult(
+            result='CONFLICT',
+            target_type=target_type,
+            reason='connector_unavailable',
+        )
+
+
+def _fake_store_bucket(bucket: str) -> dict[str, Any]:
+    from scripts.canvas_llm_phase22 import canvas_writer as writer  # noqa: E402
+
+    return writer.FAKE_CANVAS_STORE.get(bucket, {})
+
+
+def _fake_store_entry(target_type: str, target_id: str) -> dict[str, Any] | None:
+    bucket = 'pages' if target_type == 'page' else 'announcements'
+    return _fake_store_bucket(bucket).get(target_id)
+
+
+def sandbox_config_from_env() -> CanvasSandboxConfig:
+    return CanvasSandboxConfig(
+        mode='sandbox',
+        course_id=SANDBOX_COURSE_ID,
+        credential_state='disabled',
+        enabled=False,
+    )
+
+
+def production_mode_disabled() -> bool:
+    source = Path(__file__).read_text().lower()
+    return 'production' in source and 'production_modes' in source
 
 
 def default_connection_config() -> CanvasConnectionConfig:
@@ -210,6 +459,12 @@ def command_status_report(_args: argparse.Namespace) -> int:
 
 
 def command_self_test() -> int:
+    from scripts.canvas_llm_phase22 import canvas_writer as writer  # noqa: E402
+
+    writer.FAKE_CANVAS_STORE['pages'].clear()
+    writer.FAKE_CANVAS_STORE['announcements'].clear()
+    FAKE_OBJECT_CATALOG.clear()
+
     cfg = default_connection_config()
     connector = CanvasConnector(cfg)
     assert connector.config.writes_allowed() is False
@@ -224,9 +479,50 @@ def command_self_test() -> int:
     announcement = connector.read_announcement(SANDBOX_COURSE_ID, 'ann-001')
     assert announcement.course_id == SANDBOX_COURSE_ID
 
+    writer.FAKE_CANVAS_STORE['pages']['weekly-agenda-q1w5'] = {
+        'course_id': SANDBOX_COURSE_ID,
+        'title': 'Weekly Agenda',
+        'body': '<p>Agenda</p>',
+        'body_hash': writer.body_hash('Weekly Agenda', '<p>Agenda</p>'),
+    }
+    pages = connector.list_pages(SANDBOX_COURSE_ID)
+    assert any(p.url == 'weekly-agenda-q1w5' for p in pages)
+
+    missing = connector.find_existing_object(
+        SANDBOX_COURSE_ID,
+        'page',
+        target_id='new-page',
+        title='Brand New Page',
+        expected_hash='abc',
+    )
+    assert missing.result == 'MISSING'
+
+    matched = connector.find_existing_object(
+        SANDBOX_COURSE_ID,
+        'page',
+        target_id='weekly-agenda-q1w5',
+        title='Weekly Agenda',
+        expected_hash=writer.body_hash('Weekly Agenda', '<p>Agenda</p>'),
+    )
+    assert matched.result == 'MATCH'
+
+    conflict = connector.find_existing_object(
+        SANDBOX_COURSE_ID,
+        'page',
+        target_id='weekly-agenda-q1w5',
+        title='Weekly Agenda',
+        expected_hash='different-hash',
+    )
+    assert conflict.result == 'CONFLICT'
+
     sandbox_cfg = sandbox_connection_config()
     sandbox = CanvasConnector(sandbox_cfg)
     assert sandbox.connector_available() is False
+
+    sandbox_config = CanvasSandboxConfig()
+    assert sandbox_config.stores_credentials() is False
+    assert sandbox_config.to_connection_config().writes_allowed() is False
+    assert production_mode_disabled()
 
     sample = 'Authorization: Bearer secret-token-12345 token=abc'
     redacted = redact_log(sample)

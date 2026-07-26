@@ -249,6 +249,7 @@
         {"flag": "--teacher-app-designer-canvas-llm-status", "status": "implemented", "purpose": "Canvas LLM frozen foundation status"},
         {"flag": "--canvas-llm-artifact-health-status", "status": "implemented", "purpose": "Read-only artifact readiness and safety summary"},
         {"flag": "--approval-queue-status", "status": "implemented", "purpose": "Read-only teacher approval queue summary"},
+        {"flag": "--teacher-decision-status", "status": "implemented", "purpose": "Read-only teacher decision history and approval state summary"},
         {"flag": "--canvas-restart-status", "status": "blocked", "purpose": "Canvas restart blocked by stop marker"}
       ]
     },

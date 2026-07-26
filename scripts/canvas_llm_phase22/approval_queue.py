@@ -211,8 +211,12 @@ def load_queue_from_db(
     weekly_plan_id: str | None = None,
     approval_snapshots: dict[str, dict[str, Any]] | None = None,
 ) -> list[ApprovalQueueItem]:
+    from scripts.canvas_llm_phase22 import teacher_decisions as decisions
+
     records = registry.load_registry_from_db(db, weekly_plan_id)
-    return build_queue_from_registry(records, approval_snapshots)
+    decisions.sync_invalidations(db, records)
+    snapshots = approval_snapshots or decisions.build_approval_snapshots(db, records)
+    return build_queue_from_registry(records, snapshots)
 
 
 def queue_is_read_only() -> bool:

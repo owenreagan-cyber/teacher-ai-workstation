@@ -255,6 +255,12 @@
         {"flag": "--canvas-write-gate-status", "status": "implemented", "purpose": "Read-only Canvas write gate blocked-state summary"},
         {"flag": "--canvas-deployment-plan-status", "status": "implemented", "purpose": "Read-only deployment plan readiness summary"},
         {"flag": "--canvas-audit-status", "status": "implemented", "purpose": "Read-only deployment audit event summary"},
+        {"flag": "--canvas-operation-status", "status": "implemented", "purpose": "Canvas operations readiness summary (announcements, pages, assignments)"},
+        {"flag": "--canvas-repair-status", "status": "implemented", "purpose": "Canvas repair drift detection summary"},
+        {"flag": "--canvas-operations-dashboard", "status": "implemented", "purpose": "Teacher-facing Canvas operations dashboard"},
+        {"flag": "--canvas-repair-center", "status": "implemented", "purpose": "Canvas repair center recommendations (no auto-repair)"},
+        {"flag": "--homework-rules-status", "status": "implemented", "purpose": "Homework and assessment rules coverage summary"},
+        {"flag": "--assignment-draft-preview", "status": "implemented", "purpose": "Assignment draft preview (no Canvas writes)"},
         {"flag": "--canvas-restart-status", "status": "blocked", "purpose": "Canvas restart blocked by stop marker"}
       ]
     },

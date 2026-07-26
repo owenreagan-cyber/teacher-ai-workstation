@@ -9,6 +9,7 @@ has(){ grep -Fq -- "$2" "$1" && pass "$3" || fail "$3"; }
 echo "Canvas LLM Phase 22 Predictive Weekly Planning Workstation Status"
 echo "------------------------------------------------------------------"
 M=scripts/canvas_llm_phase22/phase22_workstation.py
+R=scripts/canvas_llm_phase22/artifact_registry.py
 A=apps/predictive-weekly-planning
 for f in \
   config/curriculum/canvas/instructional-weeks-2026-2027.json \
@@ -19,15 +20,26 @@ for f in \
   docs/programs/canvas-llm/phase-22-predictive-weekly-planning-workstation/standards/canvas-weekly-agenda-html-standard-2026-2027.html \
   config/curriculum/canvas-course-mappings.json \
   config/curriculum/canvas/agenda-page-rules.json \
-  $M $A/index.html $A/workstation.js $A/styles.css \
+  $M $R $A/index.html $A/workstation.js $A/styles.css \
+  docs/programs/canvas-llm/canonical-context-pack/artifact-registry-contract.md \
+  tests/canvas-llm-artifact-health-test.sh \
   tests/canvas-llm-phase-22-predictive-weekly-planning-workstation-test.sh; do
   ck "$f" "$f"
 done
-PYTHONPYCACHEPREFIX="${TMPDIR:-/tmp}/teacher-ai-workstation-pycache" python3 -m py_compile "$M" >/tmp/p22py.txt 2>&1 && pass "Python syntax passes" || { cat /tmp/p22py.txt; fail "Python syntax fails"; }
+PYTHONPYCACHEPREFIX="${TMPDIR:-/tmp}/teacher-ai-workstation-pycache" python3 -m py_compile "$M" "$R" >/tmp/p22py.txt 2>&1 && pass "Python syntax passes" || { cat /tmp/p22py.txt; fail "Python syntax fails"; }
 for n in load_instructional_weeks select_startup_week canonical_week_code get_week_by_code resolve_reading_test resolve_checkout reading_assessment_family render_agenda_html patch_response runtime-proof browser-proof /api/pacing/ /api/calendar/instructional-weeks agenda-preview artifactClassification containsStudentData phase22_validate_artifact_payload selected_graded_assignment_specs build_week_graded_selection_context build_week_announcement_drafts announcement_date_for_target_week month_code_for_date build_monthly_newsletter_draft build_newsletter_update_announcement get_newsletter_month_state homeroom_newsletter_months is_instructional_school_day daily_brief_title daily_brief_intended_for_utc build_daily_teacher_brief build_daily_teacher_briefs_for_week replace_daily_brief_drafts decode_daily_brief_response; do
   has "$M" "$n" "module includes $n"
 done
 has "$M" "generate monthly homeroom newsletter preview" "module includes generate monthly homeroom newsletter preview"
+for n in ArtifactRegistryRecord normalize_draft_row load_registry_from_drafts evaluate_artifact_health print_health_report registry_is_read_only; do
+  has "$R" "$n" "artifact registry includes $n"
+done
+if grep -Fq 'INSERT INTO' "$R" || grep -Fq 'UPDATE drafts' "$R" || grep -Fq 'DELETE FROM drafts' "$R"; then
+  fail "artifact registry contains draft mutation statements"
+else
+  pass "artifact registry remains read-only"
+fi
+python3 "$R" self-test >/tmp/p22registry.txt 2>&1 && pass "artifact registry self-test passes" || { cat /tmp/p22registry.txt; fail "artifact registry self-test fails"; }
 for n in week-code week-subtitle week-chip field-save Conflict Error "Keep Mine" "Use Server Value" data-field preview-tab loadWeekByCode weekCodeToStartsOn; do
   has "$A/workstation.js" "$n" "JS includes $n" || has "$A/index.html" "$n" "UI includes $n"
 done

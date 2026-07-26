@@ -88,6 +88,10 @@ require_file \
   "Approval queue contract exists"
 
 require_file \
+  "$PACK_DIR/teacher-decision-contract.md" \
+  "Teacher decision contract exists"
+
+require_file \
   "$PACK_DIR/resource-resolution-contract.md" \
   "Resource-resolution contract exists"
 
@@ -116,10 +120,10 @@ markdown_count="$(
     | tr -d ' '
 )"
 
-if [[ "$markdown_count" = "23" ]]; then
-  pass "Context Pack contains exactly 23 Markdown documents"
+if [[ "$markdown_count" = "24" ]]; then
+  pass "Context Pack contains exactly 24 Markdown documents"
 else
-  fail "Context Pack Markdown inventory expected 23, found $markdown_count"
+  fail "Context Pack Markdown inventory expected 24, found $markdown_count"
 fi
 
 empty_markdown="$(

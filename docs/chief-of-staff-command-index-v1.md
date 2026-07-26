@@ -65,6 +65,7 @@ These flags exist in `bin/chief-of-staff` and work as read-only local status sur
 | `bin/chief-of-staff --canvas-llm-canonical-context-pack-status` | Canvas LLM canonical context pack integrity and safety status |
 | `bin/chief-of-staff --canvas-llm-artifact-health-status` | Read-only Canvas LLM artifact readiness and safety summary |
 | `bin/chief-of-staff --approval-queue-status` | Read-only Canvas LLM teacher approval queue summary |
+| `bin/chief-of-staff --teacher-decision-status` | Read-only teacher decision history and approval state summary |
 
 ### Proof
 

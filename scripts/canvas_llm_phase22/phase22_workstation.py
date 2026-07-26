@@ -1065,6 +1065,8 @@ CREATE TABLE IF NOT EXISTS deployment_items(id TEXT PRIMARY KEY,deployment_plan_
 CREATE TABLE IF NOT EXISTS revisions(id TEXT PRIMARY KEY,record_type TEXT NOT NULL,record_id TEXT NOT NULL,record_version INTEGER NOT NULL,snapshot TEXT NOT NULL,created_at TEXT NOT NULL,created_by TEXT NOT NULL);
 CREATE TABLE IF NOT EXISTS audit_history(id TEXT PRIMARY KEY,action TEXT NOT NULL,record_type TEXT NOT NULL,record_id TEXT NOT NULL,detail TEXT NOT NULL,created_at TEXT NOT NULL,updated_by TEXT NOT NULL);
 CREATE TABLE IF NOT EXISTS homeroom_newsletter_months(id TEXT PRIMARY KEY,month_code TEXT NOT NULL,school_year TEXT NOT NULL,month_label TEXT NOT NULL,month_start TEXT NOT NULL,month_end TEXT NOT NULL,payload TEXT NOT NULL,version INTEGER NOT NULL DEFAULT 1,created_at TEXT NOT NULL,updated_at TEXT NOT NULL,updated_by TEXT NOT NULL,UNIQUE(month_code,school_year));
+CREATE TABLE IF NOT EXISTS teacher_decision_records(id TEXT PRIMARY KEY,artifact_id TEXT NOT NULL,artifact_kind TEXT NOT NULL,artifact_title TEXT NOT NULL,decision_type TEXT NOT NULL,decision_status TEXT NOT NULL,artifact_content_hash TEXT NOT NULL,artifact_revision INTEGER NOT NULL,teacher_display TEXT NOT NULL,note TEXT NOT NULL,invalidates_on_revision INTEGER NOT NULL DEFAULT 1,created_at TEXT NOT NULL,updated_at TEXT NOT NULL);
+CREATE INDEX IF NOT EXISTS idx_teacher_decision_records_artifact ON teacher_decision_records(artifact_id, created_at DESC);
 '''
 def select_startup_week(workstation,today=None):
     today=today or datetime.now(EASTERN).date(); weeks=load_instructional_weeks(); first_start,last_end=weeks[0]['startsOn'],weeks[-1]['endsOn']

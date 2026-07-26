@@ -11,6 +11,7 @@ echo "------------------------------------------------------------------"
 M=scripts/canvas_llm_phase22/phase22_workstation.py
 R=scripts/canvas_llm_phase22/artifact_registry.py
 Q=scripts/canvas_llm_phase22/approval_queue.py
+D=scripts/canvas_llm_phase22/teacher_decisions.py
 A=apps/predictive-weekly-planning
 for f in \
   config/curriculum/canvas/instructional-weeks-2026-2027.json \
@@ -21,15 +22,17 @@ for f in \
   docs/programs/canvas-llm/phase-22-predictive-weekly-planning-workstation/standards/canvas-weekly-agenda-html-standard-2026-2027.html \
   config/curriculum/canvas-course-mappings.json \
   config/curriculum/canvas/agenda-page-rules.json \
-  $M $R $Q $A/index.html $A/workstation.js $A/styles.css \
+  $M $R $Q $D $A/index.html $A/workstation.js $A/styles.css \
   docs/programs/canvas-llm/canonical-context-pack/artifact-registry-contract.md \
   docs/programs/canvas-llm/canonical-context-pack/approval-queue-contract.md \
+  docs/programs/canvas-llm/canonical-context-pack/teacher-decision-contract.md \
   tests/canvas-llm-artifact-health-test.sh \
   tests/canvas-llm-approval-queue-test.sh \
+  tests/canvas-llm-teacher-decisions-test.sh \
   tests/canvas-llm-phase-22-predictive-weekly-planning-workstation-test.sh; do
   ck "$f" "$f"
 done
-PYTHONPYCACHEPREFIX="${TMPDIR:-/tmp}/teacher-ai-workstation-pycache" python3 -m py_compile "$M" "$R" "$Q" >/tmp/p22py.txt 2>&1 && pass "Python syntax passes" || { cat /tmp/p22py.txt; fail "Python syntax fails"; }
+PYTHONPYCACHEPREFIX="${TMPDIR:-/tmp}/teacher-ai-workstation-pycache" python3 -m py_compile "$M" "$R" "$Q" "$D" >/tmp/p22py.txt 2>&1 && pass "Python syntax passes" || { cat /tmp/p22py.txt; fail "Python syntax fails"; }
 for n in load_instructional_weeks select_startup_week canonical_week_code get_week_by_code resolve_reading_test resolve_checkout reading_assessment_family render_agenda_html patch_response runtime-proof browser-proof /api/pacing/ /api/calendar/instructional-weeks agenda-preview artifactClassification containsStudentData phase22_validate_artifact_payload selected_graded_assignment_specs build_week_graded_selection_context build_week_announcement_drafts announcement_date_for_target_week month_code_for_date build_monthly_newsletter_draft build_newsletter_update_announcement get_newsletter_month_state homeroom_newsletter_months is_instructional_school_day daily_brief_title daily_brief_intended_for_utc build_daily_teacher_brief build_daily_teacher_briefs_for_week replace_daily_brief_drafts decode_daily_brief_response; do
   has "$M" "$n" "module includes $n"
 done
@@ -53,6 +56,16 @@ else
   pass "approval queue remains read-only"
 fi
 python3 "$Q" self-test >/tmp/p22queue.txt 2>&1 && pass "approval queue self-test passes" || { cat /tmp/p22queue.txt; fail "approval queue self-test fails"; }
+for n in TeacherDecisionRecord record_decision sync_invalidations derive_teacher_approval_state list_decision_history print_decision_status_report; do
+  has "$D" "$n" "teacher decisions includes $n"
+done
+if grep -Fq 'teacher_decision_records' "$M"; then pass "teacher decision migration exists"; else fail "teacher decision migration missing"; fi
+if grep -Fq 'UPDATE drafts' "$D" || grep -Fq 'deploy_artifact' "$D"; then
+  fail "teacher decisions mutate artifacts or deployment handlers"
+else
+  pass "teacher decisions remain audit-only for artifacts"
+fi
+python3 "$D" self-test >/tmp/p22decisions.txt 2>&1 && pass "teacher decisions self-test passes" || { cat /tmp/p22decisions.txt; fail "teacher decisions self-test fails"; }
 for n in week-code week-subtitle week-chip field-save Conflict Error "Keep Mine" "Use Server Value" data-field preview-tab loadWeekByCode weekCodeToStartsOn; do
   has "$A/workstation.js" "$n" "JS includes $n" || has "$A/index.html" "$n" "UI includes $n"
 done

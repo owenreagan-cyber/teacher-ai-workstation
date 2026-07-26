@@ -12,13 +12,15 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
+from scripts.canvas_llm_phase22 import curriculum_rules as curriculum  # noqa: E402
 from scripts.canvas_llm_phase22 import pacing_parser as pacing  # noqa: E402
 from scripts.canvas_llm_phase22 import phase22_workstation as p22  # noqa: E402
 
-RULE_CATEGORIES = ('homework', 'practice', 'classwork', 'assessment')
+RULE_CATEGORIES = ('homework', 'practice', 'classwork', 'assessment', 'in_class')
 GRADING_TYPES = ('Percentage', 'Points', 'Complete/Incomplete')
-SUBJECTS_WITH_RULES = ('math', 'reading', 'spelling')
-SUBJECTS_NEEDING_TEACHER_RULES = ('language-arts', 'history', 'science', 'shurley')
+SUBJECTS_WITH_RULES = curriculum.SUBJECTS_WITH_RULES
+SUBJECTS_NEEDING_TEACHER_RULES = curriculum.SUBJECTS_NEEDING_TEACHER_RULES
+MANUAL_SUBJECTS = curriculum.MANUAL_SUBJECTS
 
 
 def compact(value: Any) -> str:
@@ -86,6 +88,13 @@ class RuleApplication:
     weekday: str | None = None
     lesson_number: str | None = None
     week_code: str | None = None
+    entry_type: str = 'assignment'
+    unit: str | None = None
+    chapter: str | None = None
+    lesson: str | None = None
+    reason: str | None = None
+    homework_enabled: bool = True
+    canvas_assignment_enabled: bool = False
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)
@@ -146,89 +155,141 @@ def default_spelling_assessment_policy() -> AssignmentPolicy:
     )
 
 
-def configured_rules() -> list[HomeworkRule | AssessmentRule]:
-    return [
-        HomeworkRule(
-            rule_id='math-monday-homework',
-            subject='math',
-            trigger='math lesson exists on Monday',
-            weekday='Monday',
-            title_template='Saxon Math 5 - Lesson {lesson} Homework',
-            description_template='Problems: #12-30 Even',
-            policy=default_math_homework_policy(),
-        ),
-        HomeworkRule(
-            rule_id='math-wednesday-homework',
-            subject='math',
-            trigger='math lesson exists on Wednesday',
-            weekday='Wednesday',
-            title_template='Saxon Math 5 - Lesson {lesson} Homework',
-            description_template='Problems: #11-29 Odd',
-            policy=default_math_homework_policy(),
-        ),
-        HomeworkRule(
-            rule_id='math-tuesday-practice-check',
-            subject='math',
-            trigger='math lesson exists on Tuesday',
-            weekday='Tuesday',
-            title_template='Saxon Math 5 - Lesson {lesson} Practice Check',
-            description_template='Problems: #1-10',
-            policy=default_math_practice_policy(),
-        ),
-        HomeworkRule(
-            rule_id='math-thursday-practice-check',
-            subject='math',
-            trigger='math lesson exists on Thursday',
-            weekday='Thursday',
-            title_template='Saxon Math 5 - Lesson {lesson} Practice Check',
-            description_template='Problems: #1-10',
-            policy=default_math_practice_policy(),
-        ),
-        HomeworkRule(
-            rule_id='reading-tuesday-comprehension',
-            subject='reading',
-            trigger='reading lesson exists on Tuesday',
-            weekday='Tuesday',
-            title_template='Reading Mastery 4 - Lesson {lesson} Workbook and Comprehension',
-            description_template='Workbook and Comprehension Questions',
-            policy=default_reading_comprehension_policy(),
-        ),
-        HomeworkRule(
-            rule_id='reading-thursday-comprehension',
-            subject='reading',
-            trigger='reading lesson exists on Thursday',
-            weekday='Thursday',
-            title_template='Reading Mastery 4 - Lesson {lesson} Workbook and Comprehension',
-            description_template='Workbook and Comprehension Questions',
-            policy=default_reading_comprehension_policy(),
-        ),
-        HomeworkRule(
-            rule_id='reading-monday-workbook',
-            subject='reading',
-            trigger='reading lesson exists on Monday',
-            weekday='Monday',
-            title_template='Reading Mastery 4 - Lesson {lesson} Workbook',
-            description_template='Workbook',
-            policy=default_reading_workbook_policy(),
-        ),
-        HomeworkRule(
-            rule_id='reading-wednesday-workbook',
-            subject='reading',
-            trigger='reading lesson exists on Wednesday',
-            weekday='Wednesday',
-            title_template='Reading Mastery 4 - Lesson {lesson} Workbook',
-            description_template='Workbook',
-            policy=default_reading_workbook_policy(),
-        ),
-        AssessmentRule(
-            rule_id='spelling-test',
-            subject='spelling',
-            trigger='spelling test scheduled',
-            title_template='Spelling Test {test}',
-            description_template='Spelling assessment for test {test}',
-            policy=default_spelling_assessment_policy(),
-        ),
-    ]
+def _policy_from_grading_policy(grading_policy: dict[str, Any]) -> AssignmentPolicy:
+    return AssignmentPolicy(
+        category=compact(grading_policy.get('category') or 'homework'),
+        points=float(grading_policy.get('points') or 100),
+        grading_type=compact(grading_policy.get('grading_type') or 'Percentage'),
+        counts_toward_final_grade=bool(grading_policy.get('counts_toward_final_grade', False)),
+        teacher_choice_required=bool(grading_policy.get('teacher_choice_required', False)),
+        requires_approval=bool(grading_policy.get('requires_approval', True)),
+    )
+
+
+def _trigger_summary(trigger: dict[str, Any]) -> str:
+    subject = compact(trigger.get('subject') or '')
+    days = trigger.get('days') or []
+    if trigger.get('requires_test'):
+        return f'{subject} test scheduled'
+    if days:
+        return f'{subject} lesson exists on {", ".join(days)}'
+    return f'{subject} rule trigger'
+
+
+def _weekday_from_trigger(trigger: dict[str, Any]) -> str | None:
+    days = trigger.get('days') or []
+    return compact(days[0]) if len(days) == 1 else None
+
+
+def curriculum_rule_to_engine_rule(rule: curriculum.CurriculumRule) -> HomeworkRule | AssessmentRule:
+    policy = _policy_from_grading_policy(rule.grading_policy)
+    trigger = _trigger_summary(rule.trigger)
+    if rule.rule_type == 'assessment':
+        return AssessmentRule(
+            rule_id=rule.rule_id,
+            subject=rule.subject,
+            trigger=trigger,
+            title_template=rule.title_template,
+            description_template=rule.description_template,
+            policy=policy,
+            source='curriculum-rule-library',
+        )
+    return HomeworkRule(
+        rule_id=rule.rule_id,
+        subject=rule.subject,
+        trigger=trigger,
+        weekday=_weekday_from_trigger(rule.trigger),
+        title_template=rule.title_template,
+        description_template=rule.description_template,
+        policy=policy,
+        source='curriculum-rule-library',
+    )
+
+
+def configured_rules(library: curriculum.CurriculumRuleLibrary | None = None) -> list[HomeworkRule | AssessmentRule]:
+    return [curriculum_rule_to_engine_rule(rule) for rule in curriculum.effective_rules(library)]
+
+
+def _subject_rows_for_plan(plan: pacing.WeeklyInstructionalPlan, subject: str) -> list[pacing.SubjectLessonEntry]:
+    subject_plan = next((p for p in plan.subject_plans if p.subject == subject), None)
+    if not subject_plan:
+        return []
+    return subject_plan.lessons
+
+
+def _manual_row_payload(entry: pacing.SubjectLessonEntry, subject: str) -> dict[str, Any]:
+    return {
+        'subject': subject,
+        'weekday': entry.weekday,
+        'entry_date': entry.entry_date,
+        'lesson': entry.lesson or '',
+        'title': entry.title or '',
+        'notes': entry.notes or '',
+        'unit': entry.unit or '',
+        'chapter': entry.chapter or '',
+    }
+
+
+def _in_class_application_from_entry(
+    entry: curriculum.InClassEntry,
+    *,
+    rule_id: str,
+    weekday: str | None = None,
+) -> RuleApplication:
+    return RuleApplication(
+        rule_id=rule_id,
+        subject=entry.subject,
+        title=curriculum.SUBJECT_DISPLAY.get(entry.subject, entry.subject.title()),
+        description=entry.summary_text(),
+        category='in_class',
+        points=0.0,
+        grading_type='Percentage',
+        counts_toward_final_grade=False,
+        teacher_decision_required=False,
+        weekday=weekday,
+        week_code=entry.week_code,
+        entry_type='in_class',
+        unit=entry.unit,
+        chapter=entry.chapter,
+        lesson=entry.lesson,
+        reason=entry.reason,
+        homework_enabled=False,
+        canvas_assignment_enabled=False,
+    )
+
+
+def apply_manual_subject_rules(
+    plan: pacing.WeeklyInstructionalPlan,
+    library: curriculum.CurriculumRuleLibrary,
+) -> list[RuleApplication]:
+    applications: list[RuleApplication] = []
+    for subject in MANUAL_SUBJECTS:
+        behavior = library.behavior_for_subject(subject)
+        if behavior is None or not behavior.is_manual or not behavior.classroom_activity_enabled:
+            continue
+        for entry in _subject_rows_for_plan(plan, subject):
+            row = _manual_row_payload(entry, subject)
+            try:
+                reference = curriculum.parse_curriculum_reference(row, behavior.reference_type)
+            except ValueError:
+                continue
+            if not curriculum.validate_curriculum_reference(reference):
+                continue
+            in_class = curriculum.build_in_class_entry(
+                subject,
+                reference,
+                weekday=entry.weekday,
+                entry_date=entry.entry_date,
+                week_code=plan.week_code,
+            )
+            applications.append(
+                _in_class_application_from_entry(
+                    in_class,
+                    rule_id=f'{subject}-in-class',
+                    weekday=entry.weekday,
+                )
+            )
+    return applications
 
 
 def _lesson_for_weekday(plan: pacing.WeeklyInstructionalPlan, subject: str, weekday: str) -> str | None:
@@ -255,11 +316,15 @@ def _spelling_test_number(plan: pacing.WeeklyInstructionalPlan) -> str | None:
     return None
 
 
-def apply_rules(plan: pacing.WeeklyInstructionalPlan) -> list[RuleApplication]:
-    """Apply configured homework and assessment rules to a weekly instructional plan."""
+def apply_rules(
+    plan: pacing.WeeklyInstructionalPlan,
+    library: curriculum.CurriculumRuleLibrary | None = None,
+) -> list[RuleApplication]:
+    """Apply curriculum profile rules to a weekly instructional plan."""
+    library = library or curriculum.load_library()
     applications: list[RuleApplication] = []
 
-    for rule in configured_rules():
+    for rule in configured_rules(library):
         if isinstance(rule, HomeworkRule):
             lesson = _lesson_for_weekday(plan, rule.subject, compact(rule.weekday or ''))
             if not lesson:
@@ -301,15 +366,17 @@ def apply_rules(plan: pacing.WeeklyInstructionalPlan) -> list[RuleApplication]:
                 )
             )
 
+    applications.extend(apply_manual_subject_rules(plan, library))
+
     for subject_plan in plan.subject_plans:
         subject = compact(subject_plan.subject or '').lower()
-        if subject in SUBJECTS_NEEDING_TEACHER_RULES:
+        if subject in library.subjects_needing_teacher_rules:
             applications.append(
                 RuleApplication(
                     rule_id=f'{subject}-missing-rule',
                     subject=subject,
                     title=f'{subject.replace("-", " ").title()} Rule Required',
-                    description='No teacher-owned rule configured for this subject.',
+                    description='Teacher rule required.',
                     category='classwork',
                     points=0.0,
                     grading_type='Percentage',
@@ -323,12 +390,13 @@ def apply_rules(plan: pacing.WeeklyInstructionalPlan) -> list[RuleApplication]:
     return applications
 
 
-def rules_status_summary() -> dict[str, str]:
+def rules_status_summary(library: curriculum.CurriculumRuleLibrary | None = None) -> dict[str, str]:
+    summary = curriculum.curriculum_rules_status_summary(library)
     return {
-        'math': 'PASS',
-        'reading': 'PASS',
-        'spelling': 'PASS',
-        'missing_rules': 'History/Science',
+        'math': summary['math'],
+        'reading': summary['reading'],
+        'spelling': summary['spelling'],
+        'missing_rules': 'Language Arts',
     }
 
 
@@ -375,7 +443,7 @@ def command_self_test() -> int:
         {'subject': 'reading', 'weekday': 'Wednesday', 'entry_date': '2026-08-12', 'lesson': '4', 'tests': '', 'title': 'Lesson 4', 'notes': ''},
         {'subject': 'reading', 'weekday': 'Thursday', 'entry_date': '2026-08-13', 'lesson': '5', 'tests': '', 'title': 'Lesson 5', 'notes': ''},
         {'subject': 'spelling', 'weekday': 'Friday', 'entry_date': '2026-08-14', 'lesson': '', 'tests': '5', 'title': 'Spelling Test 5', 'notes': ''},
-        {'subject': 'history', 'weekday': 'Monday', 'entry_date': '2026-08-10', 'lesson': '1', 'tests': '', 'title': 'Chapter 1', 'notes': ''},
+        {'subject': 'history', 'weekday': 'Monday', 'entry_date': '2026-08-10', 'lesson': '8', 'tests': '', 'title': 'Chapter 8', 'notes': '', 'unit': 'The American Revolution', 'chapter': '8'},
     ]
     plan = pacing.parse_rows_to_plan(week_meta, rows)
     apps = apply_rules(plan)
@@ -403,7 +471,11 @@ def command_self_test() -> int:
     assert spelling.category == 'assessment'
 
     history = next(a for a in apps if a.subject == 'history')
-    assert history.needs_teacher_rule is True
+    assert history.entry_type == 'in_class'
+    assert history.homework_enabled is False
+    assert history.canvas_assignment_enabled is False
+    assert 'The American Revolution' in history.description
+    assert not any(a.category == 'homework' and a.subject in MANUAL_SUBJECTS for a in apps)
 
     assert rules_have_no_canvas_writes()
     print('PASS homework rules self-test')

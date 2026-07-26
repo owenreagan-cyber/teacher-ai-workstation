@@ -84,6 +84,18 @@ if [ "${1:-}" = "--assignment-draft-preview" ]; then
   exec python3 "scripts/canvas_llm_phase22/assignment_draft_generator.py" preview-report
 fi
 
+if [ "${1:-}" = "--curriculum-rules-status" ]; then
+  exec python3 "scripts/canvas_llm_phase22/curriculum_rules.py" status-report
+fi
+
+if [ "${1:-}" = "--curriculum-behavior-preview" ]; then
+  exec python3 "scripts/canvas_llm_phase22/curriculum_rules.py" behavior-preview "${2:-history}"
+fi
+
+if [ "${1:-}" = "--curriculum-profile-status" ]; then
+  exec python3 "scripts/canvas_llm_phase22/curriculum_rules.py" profile-report
+fi
+
 if [ "${1:-}" = "--canvas-llm-phase-23-weekly-content-production-engine-status" ]; then
   exec bash "scripts/canvas-llm-phase-23-weekly-content-production-engine-status.sh"
 fi
@@ -436,6 +448,9 @@ Teacher Planning Command Organization (status only; safe sample: fractions-revie
   --canvas-repair-center                 Show Canvas repair center recommendations and exit.
   --homework-rules-status                Show homework and assessment rules coverage summary and exit.
   --assignment-draft-preview             Show assignment draft preview for sample week and exit.
+  --curriculum-rules-status              Show curriculum rule library validation summary and exit.
+  --curriculum-behavior-preview [subject] Show curriculum generation behavior preview and exit.
+  --curriculum-profile-status            Show active curriculum profile, rules, and overrides and exit.
   --canvas-llm-phase-21d-sandbox-week-render-write-status
                                        Show Canvas LLM Phase 21D gated sandbox week render/write status and exit.
 

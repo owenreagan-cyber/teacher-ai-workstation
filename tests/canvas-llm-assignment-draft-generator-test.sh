@@ -30,7 +30,7 @@ rows = [
     {'subject': 'reading', 'weekday': 'Wednesday', 'entry_date': '2026-08-12', 'lesson': '4', 'tests': '', 'title': 'Lesson 4', 'notes': ''},
     {'subject': 'reading', 'weekday': 'Thursday', 'entry_date': '2026-08-13', 'lesson': '5', 'tests': '', 'title': 'Lesson 5', 'notes': ''},
     {'subject': 'spelling', 'weekday': 'Friday', 'entry_date': '2026-08-14', 'lesson': '', 'tests': '5', 'title': 'Spelling Test 5', 'notes': ''},
-    {'subject': 'history', 'weekday': 'Monday', 'entry_date': '2026-08-10', 'lesson': '1', 'tests': '', 'title': 'Chapter 1', 'notes': ''},
+    {'subject': 'history', 'weekday': 'Monday', 'entry_date': '2026-08-10', 'lesson': '8', 'tests': '', 'title': 'Chapter 8', 'notes': '', 'unit': 'The American Revolution', 'chapter': '8'},
 ]
 plan = pacing.parse_rows_to_plan(week_meta, rows)
 drafts = gen.generate_drafts_from_plan(plan)
@@ -38,7 +38,8 @@ summary = gen.summarize_drafts(drafts, plan.week_code)
 
 assert summary.generated >= 8
 assert summary.needs_review >= 2
-assert summary.blocked >= 1
+assert summary.blocked == 0
+assert not any(d.subject in ('history', 'science', 'shurley') for d in drafts)
 
 for draft in drafts:
     assert draft.artifact_id and draft.content_hash and draft.source_rule

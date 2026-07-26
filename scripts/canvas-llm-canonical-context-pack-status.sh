@@ -92,6 +92,22 @@ require_file \
   "Teacher decision contract exists"
 
 require_file \
+  "$PACK_DIR/canvas-deployment-readiness-contract.md" \
+  "Canvas deployment readiness contract exists"
+
+require_file \
+  "$PACK_DIR/canvas-connector-contract.md" \
+  "Canvas connector contract exists"
+
+require_file \
+  "$PACK_DIR/write-gate-contract.md" \
+  "Write gate contract exists"
+
+require_file \
+  "$PACK_DIR/deployment-audit-contract.md" \
+  "Deployment audit contract exists"
+
+require_file \
   "$PACK_DIR/resource-resolution-contract.md" \
   "Resource-resolution contract exists"
 
@@ -120,10 +136,10 @@ markdown_count="$(
     | tr -d ' '
 )"
 
-if [[ "$markdown_count" = "24" ]]; then
-  pass "Context Pack contains exactly 24 Markdown documents"
+if [[ "$markdown_count" = "28" ]]; then
+  pass "Context Pack contains exactly 28 Markdown documents"
 else
-  fail "Context Pack Markdown inventory expected 24, found $markdown_count"
+  fail "Context Pack Markdown inventory expected 28, found $markdown_count"
 fi
 
 empty_markdown="$(

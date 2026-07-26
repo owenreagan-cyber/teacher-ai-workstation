@@ -66,6 +66,11 @@ These flags exist in `bin/chief-of-staff` and work as read-only local status sur
 | `bin/chief-of-staff --canvas-llm-artifact-health-status` | Read-only Canvas LLM artifact readiness and safety summary |
 | `bin/chief-of-staff --approval-queue-status` | Read-only Canvas LLM teacher approval queue summary |
 | `bin/chief-of-staff --teacher-decision-status` | Read-only teacher decision history and approval state summary |
+| `bin/chief-of-staff --canvas-deployment-readiness-status` | Read-only Canvas LLM deployment readiness summary |
+| `bin/chief-of-staff --canvas-connector-status` | Read-only Canvas connector mode and write-disable summary |
+| `bin/chief-of-staff --canvas-write-gate-status` | Read-only Canvas write gate blocked-state summary |
+| `bin/chief-of-staff --canvas-deployment-plan-status` | Read-only deployment plan readiness summary |
+| `bin/chief-of-staff --canvas-audit-status` | Read-only deployment audit event summary |
 
 ### Proof
 

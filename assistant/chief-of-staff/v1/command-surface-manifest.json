@@ -250,6 +250,11 @@
         {"flag": "--canvas-llm-artifact-health-status", "status": "implemented", "purpose": "Read-only artifact readiness and safety summary"},
         {"flag": "--approval-queue-status", "status": "implemented", "purpose": "Read-only teacher approval queue summary"},
         {"flag": "--teacher-decision-status", "status": "implemented", "purpose": "Read-only teacher decision history and approval state summary"},
+        {"flag": "--canvas-deployment-readiness-status", "status": "implemented", "purpose": "Read-only Canvas LLM deployment readiness summary"},
+        {"flag": "--canvas-connector-status", "status": "implemented", "purpose": "Read-only Canvas connector mode and write-disable summary"},
+        {"flag": "--canvas-write-gate-status", "status": "implemented", "purpose": "Read-only Canvas write gate blocked-state summary"},
+        {"flag": "--canvas-deployment-plan-status", "status": "implemented", "purpose": "Read-only deployment plan readiness summary"},
+        {"flag": "--canvas-audit-status", "status": "implemented", "purpose": "Read-only deployment audit event summary"},
         {"flag": "--canvas-restart-status", "status": "blocked", "purpose": "Canvas restart blocked by stop marker"}
       ]
     },

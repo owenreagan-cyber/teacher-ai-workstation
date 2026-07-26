@@ -40,6 +40,26 @@ if [ "${1:-}" = "--teacher-decision-status" ]; then
   exec python3 "scripts/canvas_llm_phase22/teacher_decisions.py" decision-report
 fi
 
+if [ "${1:-}" = "--canvas-deployment-readiness-status" ]; then
+  exec python3 "scripts/canvas_llm_phase22/deployment_readiness.py" status-report
+fi
+
+if [ "${1:-}" = "--canvas-connector-status" ]; then
+  exec python3 "scripts/canvas_llm_phase22/canvas_connector.py" status-report
+fi
+
+if [ "${1:-}" = "--canvas-write-gate-status" ]; then
+  exec python3 "scripts/canvas_llm_phase22/write_gate.py" status-report
+fi
+
+if [ "${1:-}" = "--canvas-deployment-plan-status" ]; then
+  exec python3 "scripts/canvas_llm_phase22/deployment_planner.py" status-report
+fi
+
+if [ "${1:-}" = "--canvas-audit-status" ]; then
+  exec python3 "scripts/canvas_llm_phase22/deployment_audit.py" status-report
+fi
+
 if [ "${1:-}" = "--canvas-llm-phase-23-weekly-content-production-engine-status" ]; then
   exec bash "scripts/canvas-llm-phase-23-weekly-content-production-engine-status.sh"
 fi
@@ -381,6 +401,11 @@ Teacher Planning Command Organization (status only; safe sample: fractions-revie
   --canvas-llm-artifact-health-status    Show read-only Canvas LLM artifact readiness and safety summary and exit.
   --approval-queue-status                Show read-only Canvas LLM teacher approval queue summary and exit.
   --teacher-decision-status              Show read-only teacher decision history and approval state summary and exit.
+  --canvas-deployment-readiness-status   Show read-only Canvas LLM deployment readiness summary and exit.
+  --canvas-connector-status              Show read-only Canvas connector mode and write-disable summary and exit.
+  --canvas-write-gate-status             Show read-only Canvas write gate blocked-state summary and exit.
+  --canvas-deployment-plan-status        Show read-only deployment plan readiness summary and exit.
+  --canvas-audit-status                  Show read-only deployment audit event summary and exit.
   --canvas-llm-phase-21d-sandbox-week-render-write-status
                                        Show Canvas LLM Phase 21D gated sandbox week render/write status and exit.
 

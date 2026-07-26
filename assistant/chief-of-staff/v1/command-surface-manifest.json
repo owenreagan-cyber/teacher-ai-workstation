@@ -247,6 +247,7 @@
         {"flag": "--canvas-llm-phase-10-status", "status": "implemented", "purpose": "Canvas LLM Phase 10 sandbox metadata review/import gate status (local ignored metadata review only; no import)"},
         {"flag": "--canvas-llm-phase-11-status", "status": "implemented", "purpose": "Canvas LLM Phase 11 sandbox metadata import preview gate status (preview only; no import or database writes)"},
         {"flag": "--teacher-app-designer-canvas-llm-status", "status": "implemented", "purpose": "Canvas LLM frozen foundation status"},
+        {"flag": "--canvas-llm-artifact-health-status", "status": "implemented", "purpose": "Read-only artifact readiness and safety summary"},
         {"flag": "--canvas-restart-status", "status": "blocked", "purpose": "Canvas restart blocked by stop marker"}
       ]
     },

@@ -84,6 +84,10 @@ if [ "${1:-}" = "--assignment-draft-preview" ]; then
   exec python3 "scripts/canvas_llm_phase22/assignment_draft_generator.py" preview-report
 fi
 
+if [ "${1:-}" = "--grading-optimization-preview" ]; then
+  exec python3 "scripts/canvas_llm_phase22/grading_optimizer.py" preview-report
+fi
+
 if [ "${1:-}" = "--canvas-llm-phase-23-weekly-content-production-engine-status" ]; then
   exec bash "scripts/canvas-llm-phase-23-weekly-content-production-engine-status.sh"
 fi
@@ -436,6 +440,7 @@ Teacher Planning Command Organization (status only; safe sample: fractions-revie
   --canvas-repair-center                 Show Canvas repair center recommendations and exit.
   --homework-rules-status                Show homework and assessment rules coverage summary and exit.
   --assignment-draft-preview             Show assignment draft preview for sample week and exit.
+  --grading-optimization-preview         Show grading balance optimization preview and exit.
   --canvas-llm-phase-21d-sandbox-week-render-write-status
                                        Show Canvas LLM Phase 21D gated sandbox week render/write status and exit.
 

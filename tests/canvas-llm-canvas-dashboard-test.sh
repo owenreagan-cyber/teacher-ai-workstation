@@ -47,6 +47,7 @@ board = dashboard_mod.build_dashboard(db, wid, drift_reports=drift_reports)
 assert board.ready_items or board.needs_review_items or board.blocked_items
 assert any(item.artifact_kind == 'assignment' for item in board.blocked_items)
 assert len(board.drift_items) == 1
+assert board.grading_optimization_ready
 assert dashboard_mod.dashboard_performs_no_publishing()
 
 print('PASS dashboard states populated')
@@ -55,7 +56,7 @@ print('PASS drift items surfaced')
 print('PASS no publishing performed')
 PY
 
-bin/chief-of-staff --canvas-operations-dashboard | grep -q 'Canvas Operations Dashboard'
+bin/chief-of-staff --canvas-operations-dashboard | grep -q 'GRADING OPTIMIZATION'
 bin/chief-of-staff --canvas-operations-dashboard | grep -q 'No publishing performed'
 
 echo "PASS Canvas LLM canvas dashboard tests complete"

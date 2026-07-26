@@ -52,6 +52,8 @@ grep -q '^PASS: due-time.resolved' "$T/validate.txt" && pass "due-time resolved 
 grep -q '^PASS: reading-test-14.checkout Reading Test 14 correctly has no checkout reminder$' "$T/validate.txt" && pass "Reading Test 14 no-checkout reminder PASS is present" || fail "Reading Test 14 no-checkout reminder PASS missing"
 grep -q '^PASS: reading-test-14.checkout-announcement Reading Test 14 correctly has no Checkout 14 announcement$' "$T/validate.txt" && pass "Reading Test 14 no-checkout announcement PASS is present" || fail "Reading Test 14 no-checkout announcement PASS missing"
 grep -q '^PASS: announcement.records-present' "$T/validate.txt" && pass "announcement records PASS is present" || fail "announcement records PASS missing"
+grep -q '^PASS: newsletter.preview-safe' "$T/validate.txt" && pass "newsletter preview-safe PASS is present" || fail "newsletter preview-safe PASS missing"
+grep -q '^PASS: newsletter-update.preview-safe' "$T/validate.txt" && pass "newsletter update preview-safe PASS is present" || fail "newsletter update preview-safe PASS missing"
 grep -q '^FAIL: 0$' "$T/validate.txt" && pass "validator reported zero failures" || fail "validator reported failures"
 grep -q '^WARN: 0$' "$T/validate.txt" && pass "validator reported zero warnings" || fail "validator warning count incorrect"
 

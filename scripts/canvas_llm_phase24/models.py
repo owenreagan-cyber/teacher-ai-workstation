@@ -133,6 +133,8 @@ class WeekPrediction:
     review_state: str
     provenance: list[dict[str, Any]]
     announcement_drafts: list[dict[str, Any]] = field(default_factory=list)
+    newsletter_draft: dict[str, Any] | None = None
+    newsletter_update_announcement: dict[str, Any] | None = None
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -147,4 +149,6 @@ class WeekPrediction:
             "reviewState": self.review_state,
             "provenance": list(self.provenance),
             "announcementDrafts": list(self.announcement_drafts),
+            "newsletterDraft": self.newsletter_draft,
+            "newsletterUpdateAnnouncement": self.newsletter_update_announcement,
         }

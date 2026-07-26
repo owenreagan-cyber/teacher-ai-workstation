@@ -1243,7 +1243,134 @@
   ],
   "containsStudentData": false,
   "deploymentState": "preview-only",
-  "generatedAt": "2026-07-25T22:43:53Z",
+  "generatedAt": "2026-07-25T23:14:10Z",
+  "newsletter": {
+    "approval_revision": 0,
+    "approval_state": "Draft",
+    "approved": false,
+    "artifact_kind": "newsletter",
+    "blockers": [],
+    "body_html": "<h1>Homeroom Newsletter — August 2026</h1><h2>Important Dates</h2><ul><li>First Day of School — August 17, 2026</li><li>Curriculum Night — August 27, 2026</li></ul><h2>Homeroom News</h2><ul><li>Welcome to fourth grade.</li><li>Students will practice classroom routines and organization during the opening weeks.</li></ul><h2>School News</h2><ul><li>Families should review current school arrival and dismissal procedures.</li><li>Please check official school communications for event updates.</li></ul><h2>School Information and Event Links</h2><ul><li>&nbsp;</li></ul>",
+    "body_text": "Homeroom Newsletter — August 2026\n\nImportant Dates\n- First Day of School — August 17, 2026\n- Curriculum Night — August 27, 2026\n\nHomeroom News\n- Welcome to fourth grade.\n- Students will practice classroom routines and organization during the opening weeks.\n\nSchool News\n- Families should review current school arrival and dismissal procedures.\n- Please check official school communications for event updates.\n\nSchool Information and Event Links\n-",
+    "cadence": "monthly",
+    "canvas_writes_allowed": false,
+    "content_hash": "03f445915e8d68ee",
+    "course_id": 26427,
+    "date_range": {
+      "end": "2026-08-31",
+      "start": "2026-08-01"
+    },
+    "dependencies": [],
+    "deployment_status": "preview_only",
+    "email_sends_allowed": false,
+    "generation_reason": "monthly-homeroom-newsletter",
+    "local_object_id": "p22-ca05c1e2dda49ae0",
+    "month_code": "2026-08",
+    "month_label": "August 2026",
+    "needs_review": true,
+    "preview_only": true,
+    "provenance": [
+      {
+        "details": "structured homeroom newsletter month state",
+        "sourceRef": "2026-08",
+        "sourceType": "monthly-state"
+      }
+    ],
+    "safety_metadata": {
+      "canvasWritesAllowed": false,
+      "containsStudentData": false,
+      "curriculumResourceLinksAllowed": false,
+      "emailSendsAllowed": false,
+      "previewOnly": true,
+      "schoolLinksAllowed": true
+    },
+    "school_year": "2026-2027",
+    "sections": [
+      {
+        "items": [
+          "First Day of School — August 17, 2026",
+          "Curriculum Night — August 27, 2026"
+        ],
+        "name": "Important Dates"
+      },
+      {
+        "items": [
+          "Welcome to fourth grade.",
+          "Students will practice classroom routines and organization during the opening weeks."
+        ],
+        "name": "Homeroom News"
+      },
+      {
+        "items": [
+          "Families should review current school arrival and dismissal procedures.",
+          "Please check official school communications for event updates."
+        ],
+        "name": "School News"
+      },
+      {
+        "items": [],
+        "name": "School Information and Event Links"
+      }
+    ],
+    "snapshot_id": "p22-781b7955c631787d",
+    "source_entry_ids": [],
+    "source_revisions": [],
+    "subject": "homeroom",
+    "teacher_approval_required": true,
+    "title": "Homeroom Newsletter — August 2026",
+    "verification_status": "unverified",
+    "warnings": [
+      "Newsletter publication timing remains teacher-selected; preview-only generation only."
+    ]
+  },
+  "newsletterUpdateAnnouncement": {
+    "announcement_id": "p22-4c29836dc7e5c1f4",
+    "approval_revision": 0,
+    "approval_state": "Draft",
+    "approved": false,
+    "artifact_kind": "newsletter_update",
+    "blockers": [
+      "Newsletter page has not been created and verified.",
+      "Verified newsletter page URL is required.",
+      "Separate teacher approval is required."
+    ],
+    "body_html": "<p>The newsletter has been updated for August 2026.</p>",
+    "body_text": "The newsletter has been updated for August 2026.",
+    "canvas_writes_allowed": false,
+    "content_hash": "105530f6838c4468",
+    "dependencies": [
+      {
+        "local_object_id": "p22-ca05c1e2dda49ae0",
+        "type": "newsletter_page",
+        "verification_status": "unverified"
+      }
+    ],
+    "depends_on": "p22-ca05c1e2dda49ae0",
+    "deployment_status": "blocked_preview",
+    "email_sends_allowed": false,
+    "generation_reason": "newsletter-update-preview",
+    "local_object_id": "p22-4c29836dc7e5c1f4",
+    "logical_type": "newsletter_update",
+    "month_code": "2026-08",
+    "month_label": "August 2026",
+    "needs_review": true,
+    "page_url": null,
+    "preview_only": true,
+    "safety_metadata": {
+      "canvasWritesAllowed": false,
+      "containsStudentData": false,
+      "emailSendsAllowed": false,
+      "previewOnly": true
+    },
+    "schedule_metadata": null,
+    "subject": "homeroom",
+    "teacher_approval_required": true,
+    "title": "Homeroom Newsletter Updated — August 2026",
+    "verification_status": "unverified",
+    "warnings": [
+      "Newsletter update announcement publication timing remains unresolved."
+    ]
+  },
   "packetId": "p23-75e8b4e54ff727ca0f",
   "pages": [
     {
@@ -1488,9 +1615,33 @@
         "message": "Announcement drafts are serialized separately from reminders",
         "severity": "pass",
         "target": "announcements"
+      },
+      {
+        "code": "newsletter.preview-safe",
+        "message": "Newsletter Homeroom Newsletter — August 2026 is preview-safe",
+        "severity": "pass",
+        "target": "p22-ca05c1e2dda49ae0"
+      },
+      {
+        "code": "newsletter.forbidden-content",
+        "message": "Newsletter excludes forbidden assessment content",
+        "severity": "pass",
+        "target": "p22-ca05c1e2dda49ae0"
+      },
+      {
+        "code": "newsletter.agenda-separation",
+        "message": "Newsletter remains separate from academic agenda pages",
+        "severity": "pass",
+        "target": "p22-ca05c1e2dda49ae0"
+      },
+      {
+        "code": "newsletter-update.preview-safe",
+        "message": "Newsletter update announcement is preview-safe and blocked",
+        "severity": "pass",
+        "target": "p22-4c29836dc7e5c1f4"
       }
     ],
-    "passCount": 15,
+    "passCount": 19,
     "warnCount": 0
   },
   "weekCode": "Q1W5",

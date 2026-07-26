@@ -50,6 +50,7 @@ The operating contract retains these sections:
 Important Dates
 Homeroom News
 School News
+School Information and Event Links
 ```
 
 School and event links are permitted in the Homeroom newsletter.
@@ -60,23 +61,18 @@ Subject curriculum-resource links remain prohibited elsewhere.
 
 ## Current implementation status
 
-The current Phase 22 newsletter draft is only:
+Phase C0O generates a structured, deterministic, preview-only monthly Homeroom newsletter draft from persisted monthly state.
+
+Current runtime posture:
 
 ```text
-Title: Newsletter Draft
-Body: Preview newsletter; unsent.
 previewOnly: true
+canvasWritesAllowed: false
+emailSendsAllowed: false
+teacherApprovalRequired: true
 ```
 
-Therefore:
-
-```text
-Current newsletter runtime status: PLACEHOLDER_ONLY
-```
-
-It must not be described as complete, production-ready, or publishable.
-
-Generator alignment is scheduled for C0L and later phases.
+It must not be described as production-ready or publishable without teacher approval and verified Canvas metadata.
 
 ## Historical evidence
 
@@ -121,15 +117,18 @@ preview_only
 
 ## Newsletter page title
 
-The exact current monthly title pattern is not yet approved.
-
-Status:
+Owner-approved current monthly title pattern:
 
 ```text
-OWNER_DECISION_REQUIRED
+Homeroom Newsletter — {Month YYYY}
 ```
 
-See `unresolved-owner-decisions.md`.
+Examples:
+
+```text
+Homeroom Newsletter — August 2026
+Homeroom Newsletter — September 2026
+```
 
 ## Source behavior
 
@@ -154,10 +153,16 @@ Spelling Test 25 must not appear without approved source data.
 
 ## Newsletter-update announcement
 
-Canonical notification text:
+Owner-approved notification text:
 
 ```text
-The newsletter has been updated for {month or date range}.
+The newsletter has been updated for {Month YYYY}.
+```
+
+Owner-approved announcement title:
+
+```text
+Homeroom Newsletter Updated — {Month YYYY}
 ```
 
 This announcement:
@@ -189,8 +194,6 @@ Resource resolution is not a current publication dependency.
 Historical Phase 25 resource-resolution steps remain dormant evidence only.
 
 ## Preview behavior
-
-Until the real newsletter generator is built:
 
 ```text
 previewOnly: true
@@ -224,6 +227,6 @@ The validator must confirm:
 - school/event links are permitted only in Homeroom;
 - update announcement uses canonical notification wording;
 - page and announcement have separate approvals;
-- current placeholder is labeled preview-only;
+- preview-only posture remains active;
 - Reading Test 14 contains no Checkout 14 wording;
 - Spelling Test 25 is excluded until approved.

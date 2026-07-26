@@ -162,7 +162,17 @@ config/curriculum/canvas/weekly-agenda-standard-2026-2027.json
 
 Homeroom uses a monthly Newsletter Page rather than the standard subject agenda artifact.
 
-Exact newsletter title pattern remains in `unresolved-owner-decisions.md`.
+Approved monthly newsletter page title pattern:
+
+```text
+Homeroom Newsletter — {Month YYYY}
+```
+
+Approved newsletter-update announcement wording:
+
+```text
+The newsletter has been updated for {Month YYYY}.
+```
 
 ## Assignment points and due time
 
@@ -211,7 +221,6 @@ RM4 Spelling Test 1
 
 ## Unresolved naming decisions
 
-- Homeroom newsletter title pattern
 - Language Arts non-assessment accuracy-grade titles when not covered by operating contract
 
 Generator alignment with these naming rules is scheduled for C0L and later phases.

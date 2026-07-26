@@ -187,6 +187,14 @@ assert all((item.get('schedule_metadata') or {}).get('scheduleIntent') == 'Frida
 assert all((item.get('schedule_metadata') or {}).get('announcementDate') == '2026-08-14' for item in prediction.announcement_drafts)
 assert all((item.get('schedule_metadata') or {}).get('announcementDate') < item.get('assessment_date') for item in prediction.announcement_drafts if item.get('assessment_date'))
 print('PASS C0N announcement prediction metadata')
+assert prediction.newsletter_draft and prediction.newsletter_update_announcement
+assert prediction.newsletter_draft['title']=='Homeroom Newsletter — August 2026'
+assert prediction.newsletter_draft['course_id']==26427 and prediction.newsletter_draft['cadence']=='monthly'
+assert prediction.newsletter_update_announcement['body_text']=='The newsletter has been updated for August 2026.'
+assert prediction.newsletter_update_announcement['depends_on']==prediction.newsletter_draft['local_object_id']
+assert prediction.newsletter_update_announcement['page_url'] is None
+assert prediction.newsletter_update_announcement['schedule_metadata'] is None
+print('PASS C0O newsletter prediction metadata')
 print('PASS C0M graded-item selection metadata')
 PY
 

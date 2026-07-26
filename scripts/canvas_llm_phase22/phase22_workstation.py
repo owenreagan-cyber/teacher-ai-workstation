@@ -488,6 +488,123 @@ def build_week_announcement_drafts(rows,week_meta=None):
             if not title.startswith('SCI4:'): title=f'SCI4: Assessment {test}'
             append_draft(subject='science',assessment_type='science_assessment',assessment_number=test,row=r,title=title,body_lines=[f'The Science assessment is scheduled for {display_date}.'],generation_reason='scheduled-science-assessment')
     return drafts
+NEWSLETTER_SECTION_ORDER=('Important Dates','Homeroom News','School News','School Information and Event Links')
+HOMEROOM_NEWSLETTER_SUBJECT='homeroom'
+HOMEROOM_NEWSLETTER_COURSE_ID=26427
+FORBIDDEN_NEWSLETTER_PATTERNS=(
+    ('study guide','Study Guide language is forbidden in newsletter drafts'),
+    ('workbook','Workbook language is forbidden in newsletter drafts'),
+    ('worksheet','Worksheet language is forbidden in newsletter drafts'),
+    ('answer key','Answer key language is forbidden in newsletter drafts'),
+    ('glossary','Glossary language is forbidden in newsletter drafts'),
+    ('checkout 14','Checkout 14 wording is forbidden in newsletter drafts'),
+    ('spelling test 25','Spelling Test 25 is forbidden until approved source data exists'),
+)
+def homeroom_newsletter_course_id():
+    try: return int(resolve_course('2026-2027','production',HOMEROOM_NEWSLETTER_SUBJECT)['courseId'])
+    except Exception: return HOMEROOM_NEWSLETTER_COURSE_ID
+def month_code_for_date(value):
+    d=date.fromisoformat(value) if isinstance(value,str) else value
+    return f'{d.year}-{d.month:02d}'
+def month_bounds(month_code):
+    y,m=map(int,month_code.split('-')); start=date(y,m,1); end=date(y+1,1,1)-timedelta(days=1) if m==12 else date(y,m+1,1)-timedelta(days=1)
+    return start.isoformat(),end.isoformat(),start.strftime('%B %Y')
+def newsletter_title(month_label): return f'Homeroom Newsletter — {month_label}'
+def newsletter_update_title(month_label): return f'Homeroom Newsletter Updated — {month_label}'
+def newsletter_update_body(month_label): return f'The newsletter has been updated for {month_label}.'
+def format_newsletter_display_date(entry_date):
+    d=date.fromisoformat(entry_date); return f'{d.strftime("%B")} {d.day}, {d.year}'
+def default_newsletter_month_state(month_code,school_year='2026-2027'):
+    month_start,month_end,month_label=month_bounds(month_code)
+    state={'month_code':month_code,'month_label':month_label,'school_year':school_year,'month_start':month_start,'month_end':month_end,'important_dates':[],'homeroom_news':[],'school_news':[],'school_links':[],'source_entry_ids':[],'source_revisions':[],'verified_page_url':None,'updated_at':'2026-07-11T00:00:00Z','updated_by':'generator'}
+    if month_code=='2026-08':
+        state['important_dates']=[{'label':'First Day of School','date':'2026-08-17'},{'label':'Curriculum Night','date':'2026-08-27'}]
+        state['homeroom_news']=['Welcome to fourth grade.','Students will practice classroom routines and organization during the opening weeks.']
+        state['school_news']=['Families should review current school arrival and dismissal procedures.','Please check official school communications for event updates.']
+    return state
+def normalize_newsletter_month_state(state):
+    month_code=compact(state.get('month_code') or ''); school_year=compact(state.get('school_year') or '2026-2027'); month_start,month_end,month_label=month_bounds(month_code)
+    links=[]
+    for item in state.get('school_links') or []:
+        if not isinstance(item,dict): continue
+        label=compact(item.get('label') or ''); url=compact(item.get('url') or '')
+        if label or url: links.append({'label':label,'url':url})
+    return {'month_code':month_code,'month_label':compact(state.get('month_label') or month_label),'school_year':school_year,'month_start':compact(state.get('month_start') or month_start),'month_end':compact(state.get('month_end') or month_end),'important_dates':list(state.get('important_dates') or []),'homeroom_news':[compact(x) for x in (state.get('homeroom_news') or []) if compact(x)],'school_news':[compact(x) for x in (state.get('school_news') or []) if compact(x)],'school_links':links,'source_entry_ids':list(state.get('source_entry_ids') or []),'source_revisions':list(state.get('source_revisions') or []),'verified_page_url':state.get('verified_page_url'),'updated_at':compact(state.get('updated_at') or '2026-07-11T00:00:00Z'),'updated_by':compact(state.get('updated_by') or 'generator')}
+def newsletter_stable_id(month_code,school_year='2026-2027'): return stable_id('newsletter-page',school_year,month_code)
+def newsletter_update_stable_id(month_code,school_year='2026-2027'): return stable_id('newsletter-update',school_year,month_code)
+def newsletter_content_hash(state):
+    canonical=normalize_newsletter_month_state(state); canonical.pop('updated_at',None); canonical.pop('updated_by',None); canonical.pop('verified_page_url',None)
+    return hashlib.sha256(jd(canonical).encode()).hexdigest()[:16]
+def validate_newsletter_school_link(url):
+    cleaned=compact(url or ''); lower=cleaned.lower()
+    if not cleaned: return True
+    if 'thales' in lower or 'instructure' in lower or 'javascript:' in lower: return False
+    if any(x in lower for x in ('workbook','worksheet','textbook','study-guide','answer-key','glossary')): return False
+    return lower.startswith('https://example.com') or lower.startswith('http://example.com')
+def scan_newsletter_content_warnings(state):
+    warnings=[]; blob=jd(normalize_newsletter_month_state(state)).lower()
+    for needle,message in FORBIDDEN_NEWSLETTER_PATTERNS:
+        if needle in blob: warnings.append(message)
+    for link in state.get('school_links') or []:
+        if not validate_newsletter_school_link((link or {}).get('url')): warnings.append('School/event link rejected; only approved example.com links are allowed in preview fixtures.')
+    if not compact(state.get('verified_page_url') or ''): warnings.append('Newsletter publication timing remains teacher-selected; preview-only generation only.')
+    return list(dict.fromkeys(warnings))
+def build_newsletter_sections(state):
+    normalized=normalize_newsletter_month_state(state); sections=[]
+    important=[f"{item['label']} — {format_newsletter_display_date(item['date'])}" for item in normalized['important_dates'] if item.get('label') and item.get('date')]
+    sections.append({'name':'Important Dates','items':important})
+    sections.append({'name':'Homeroom News','items':list(normalized['homeroom_news'])})
+    sections.append({'name':'School News','items':list(normalized['school_news'])})
+    link_items=[]
+    for link in normalized['school_links']:
+        label=compact(link.get('label') or ''); url=compact(link.get('url') or '')
+        if label and url and validate_newsletter_school_link(url): link_items.append({'label':label,'url':url})
+    sections.append({'name':'School Information and Event Links','items':link_items})
+    return sections
+def render_newsletter_text(state):
+    normalized=normalize_newsletter_month_state(state); parts=[newsletter_title(normalized['month_label']),'']
+    for section in build_newsletter_sections(normalized):
+        parts.append(section['name'])
+        if section['name']=='School Information and Event Links':
+            if section['items']:
+                for item in section['items']: parts.append(f"- {item['label']}: {item['url']}")
+            else: parts.append('-')
+        else:
+            for line in section['items']: parts.append(f'- {line}')
+        parts.append('')
+    return '\n'.join(parts).strip()
+def render_newsletter_html(state):
+    normalized=normalize_newsletter_month_state(state); parts=[f'<h1>{html.escape(newsletter_title(normalized["month_label"]))}</h1>']
+    for section in build_newsletter_sections(normalized):
+        parts.append(f'<h2>{html.escape(section["name"])}</h2><ul>')
+        if section['name']=='School Information and Event Links':
+            if section['items']:
+                for item in section['items']: parts.append(f'<li><a href="{html.escape(item["url"])}">{html.escape(item["label"])}</a></li>')
+            else: parts.append('<li>&nbsp;</li>')
+        else:
+            for line in section['items']: parts.append(f'<li>{html.escape(line)}</li>')
+            if not section['items']: parts.append('<li>&nbsp;</li>')
+        parts.append('</ul>')
+    return ''.join(parts)
+def build_monthly_newsletter_draft(state,week_code=None):
+    normalized=normalize_newsletter_month_state(state); content_hash=newsletter_content_hash(normalized); warnings=scan_newsletter_content_warnings(normalized); local_object_id=newsletter_stable_id(normalized['month_code'],normalized['school_year'])
+    return {'local_object_id':local_object_id,'month_code':normalized['month_code'],'month_label':normalized['month_label'],'school_year':normalized['school_year'],'course_id':homeroom_newsletter_course_id(),'title':newsletter_title(normalized['month_label']),'date_range':{'start':normalized['month_start'],'end':normalized['month_end']},'body_text':render_newsletter_text(normalized),'body_html':render_newsletter_html(normalized),'sections':build_newsletter_sections(normalized),'source_entry_ids':list(normalized['source_entry_ids']),'source_revisions':list(normalized['source_revisions']),'content_hash':content_hash,'dependencies':[],'blockers':[],'approval_state':'Draft','approval_revision':0,'snapshot_id':stable_id('newsletter-snapshot',content_hash),'deployment_status':'preview_only','verification_status':'unverified','preview_only':True,'teacher_approval_required':True,'approved':False,'canvas_writes_allowed':False,'email_sends_allowed':False,'subject':HOMEROOM_NEWSLETTER_SUBJECT,'artifact_kind':'newsletter','cadence':'monthly','generation_reason':'monthly-homeroom-newsletter','provenance':[{'sourceType':'monthly-state','sourceRef':normalized['month_code'],'details':'structured homeroom newsletter month state'}],'safety_metadata':{'canvasWritesAllowed':False,'emailSendsAllowed':False,'previewOnly':True,'containsStudentData':False,'schoolLinksAllowed':True,'curriculumResourceLinksAllowed':False},'needs_review':bool(warnings),'warnings':warnings,'resolved_week_code':week_code,'verified_page_url':normalized.get('verified_page_url')}
+def build_newsletter_update_announcement(newsletter_draft):
+    month_code=newsletter_draft['month_code']; month_label=newsletter_draft['month_label']; body_text=newsletter_update_body(month_label); page_url=newsletter_draft.get('verified_page_url'); verified=bool(compact(page_url or ''))
+    blockers=['Newsletter page has not been created and verified.','Verified newsletter page URL is required.','Separate teacher approval is required.']
+    if verified: blockers=[item for item in blockers if 'URL is required' not in item]
+    return {'announcement_id':newsletter_update_stable_id(month_code,newsletter_draft['school_year']),'local_object_id':newsletter_update_stable_id(month_code,newsletter_draft['school_year']),'artifact_kind':'newsletter_update','logical_type':'newsletter_update','subject':HOMEROOM_NEWSLETTER_SUBJECT,'month_code':month_code,'month_label':month_label,'title':newsletter_update_title(month_label),'body_text':body_text,'body_html':f'<p>{html.escape(body_text)}</p>','depends_on':newsletter_draft['local_object_id'],'dependencies':[{'type':'newsletter_page','local_object_id':newsletter_draft['local_object_id'],'verification_status':'verified' if verified else 'unverified'}],'page_url':page_url if verified else None,'blockers':blockers,'approval_state':'Draft','approval_revision':0,'approved':False,'teacher_approval_required':True,'preview_only':True,'canvas_writes_allowed':False,'email_sends_allowed':False,'verification_status':'verified' if verified else 'unverified','deployment_status':'blocked_preview','needs_review':True,'schedule_metadata':None,'warnings':['Newsletter update announcement publication timing remains unresolved.'],'safety_metadata':{'canvasWritesAllowed':False,'emailSendsAllowed':False,'previewOnly':True,'containsStudentData':False},'content_hash':hashlib.sha256(body_text.encode()).hexdigest()[:16],'generation_reason':'newsletter-update-preview'}
+def upsert_newsletter_month_state(db,state):
+    normalized=normalize_newsletter_month_state(state); rid=stable_id('newsletter-month',normalized['school_year'],normalized['month_code'])
+    db.execute('INSERT OR REPLACE INTO homeroom_newsletter_months(id,month_code,school_year,month_label,month_start,month_end,payload,version,created_at,updated_at,updated_by) VALUES(?,?,?,?,?,?,?,COALESCE((SELECT version FROM homeroom_newsletter_months WHERE month_code=? AND school_year=?),0)+1,COALESCE((SELECT created_at FROM homeroom_newsletter_months WHERE month_code=? AND school_year=?),?),?,?)',(rid,normalized['month_code'],normalized['school_year'],normalized['month_label'],normalized['month_start'],normalized['month_end'],jd(normalized),normalized['month_code'],normalized['school_year'],normalized['month_code'],normalized['school_year'],now_utc(),now_utc(),normalized['updated_by']))
+    return normalized
+def get_newsletter_month_state(db,month_code,school_year='2026-2027'):
+    row=db.execute('SELECT payload FROM homeroom_newsletter_months WHERE month_code=? AND school_year=?',(month_code,school_year)).fetchone()
+    if row: return normalize_newsletter_month_state(jl(row['payload'],{}))
+    return upsert_newsletter_month_state(db,default_newsletter_month_state(month_code,school_year))
+def resolve_newsletter_for_week_start(starts_on,db=None,school_year='2026-2027',week_code=None):
+    month_code=month_code_for_date(starts_on); state=get_newsletter_month_state(db,month_code,school_year) if db is not None else normalize_newsletter_month_state(default_newsletter_month_state(month_code,school_year))
+    newsletter=build_monthly_newsletter_draft(state,week_code=week_code); update=build_newsletter_update_announcement(newsletter); return state,newsletter,update
 def load_quarter_subject_activation():
     global _quarter_activation_cache
     if not _quarter_activation_cache: _quarter_activation_cache=rjson('canvas/quarter-subject-activation-2026-2027.json')
@@ -786,6 +903,7 @@ CREATE TABLE IF NOT EXISTS deployment_plans(id TEXT PRIMARY KEY,weekly_plan_id T
 CREATE TABLE IF NOT EXISTS deployment_items(id TEXT PRIMARY KEY,deployment_plan_id TEXT NOT NULL,item_type TEXT NOT NULL,target TEXT NOT NULL,dependency_order INTEGER NOT NULL,status TEXT NOT NULL,approved INTEGER NOT NULL,validated INTEGER NOT NULL,current_year_mapped INTEGER NOT NULL,stale INTEGER NOT NULL,already_deployed INTEGER NOT NULL,unresolved_dependencies TEXT NOT NULL,idempotency_key TEXT NOT NULL,payload TEXT NOT NULL,version INTEGER NOT NULL DEFAULT 1,created_at TEXT NOT NULL,updated_at TEXT NOT NULL,updated_by TEXT NOT NULL);
 CREATE TABLE IF NOT EXISTS revisions(id TEXT PRIMARY KEY,record_type TEXT NOT NULL,record_id TEXT NOT NULL,record_version INTEGER NOT NULL,snapshot TEXT NOT NULL,created_at TEXT NOT NULL,created_by TEXT NOT NULL);
 CREATE TABLE IF NOT EXISTS audit_history(id TEXT PRIMARY KEY,action TEXT NOT NULL,record_type TEXT NOT NULL,record_id TEXT NOT NULL,detail TEXT NOT NULL,created_at TEXT NOT NULL,updated_by TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS homeroom_newsletter_months(id TEXT PRIMARY KEY,month_code TEXT NOT NULL,school_year TEXT NOT NULL,month_label TEXT NOT NULL,month_start TEXT NOT NULL,month_end TEXT NOT NULL,payload TEXT NOT NULL,version INTEGER NOT NULL DEFAULT 1,created_at TEXT NOT NULL,updated_at TEXT NOT NULL,updated_by TEXT NOT NULL,UNIQUE(month_code,school_year));
 '''
 def select_startup_week(workstation,today=None):
     today=today or datetime.now(EASTERN).date(); weeks=load_instructional_weeks(); first_start,last_end=weeks[0]['startsOn'],weeks[-1]['endsOn']
@@ -1034,11 +1152,16 @@ def replace_drafts(db,wid):
         insert_draft(db,wid,kind,sub,title,text,f'<p>{html.escape(text)}</p>',extra)
     for draft in build_week_announcement_drafts(active_rows,iw):
         insert_draft(db,wid,'announcement',draft['subject'],draft['title'],draft['body_text'],draft['body_html'],{'previewOnly':True,'teacherApprovalRequired':True,'announcementDraft':draft,'scheduleMetadata':draft.get('schedule_metadata',{}),'safetyMetadata':draft.get('safety_metadata',{})})
+    starts_on=plan['starts_on'] or iw.get('startsOn') or ''
+    if starts_on:
+        _,newsletter,update=resolve_newsletter_for_week_start(starts_on,db=db,school_year='2026-2027',week_code=iw.get('code'))
+        insert_draft(db,wid,'page',HOMEROOM_NEWSLETTER_SUBJECT,newsletter['title'],newsletter['body_text'],newsletter['body_html'],{'previewOnly':True,'teacherApprovalRequired':True,'artifactKind':'newsletter','cadence':'monthly','newsletterDraft':newsletter})
+        insert_draft(db,wid,'announcement',HOMEROOM_NEWSLETTER_SUBJECT,update['title'],update['body_text'],update['body_html'],{'previewOnly':True,'teacherApprovalRequired':True,'artifactKind':'newsletter_update','announcementDraft':update,'safetyMetadata':update.get('safety_metadata',{}),'scheduleMetadata':None})
     insert_draft(db,wid,'daily_brief','homeroom','Daily Teacher Brief','Recipient: owen.reagan@thalesacademy.org\nSchedule: 6:15 AM America/New_York instructional days\nWeather: placeholder only.\nClassroom-safe joke: Why did the notebook smile? It had good margins.','<pre>Recipient: owen.reagan@thalesacademy.org</pre>',{'previewOnly':True})
 def insert_draft(db,wid,kind,sub,title,text,html_body,payload): db.execute('INSERT INTO drafts(id,weekly_plan_id,kind,subject,title,body_text,body_html,status,idempotency_key,payload,created_at,updated_at,updated_by) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)',(stable_id('draft',wid,kind,sub,title),wid,kind,sub,title,text,html_body,'draft',stable_id('idem',wid,kind,sub,title),jd(payload),now_utc(),now_utc(),'generator'))
 def replace_deployment(db,wid):
     db.execute('DELETE FROM deployment_items WHERE deployment_plan_id IN (SELECT id FROM deployment_plans WHERE weekly_plan_id=?)',(wid,)); db.execute('DELETE FROM deployment_plans WHERE weekly_plan_id=?',(wid,)); pid=stable_id('deployment',wid)
-    ops=['validate local weekly inputs','generate local assignment previews','render academic agenda previews','generate minimal assessment reminder previews','generate assessment announcement previews','await teacher approval']
+    ops=['validate local weekly inputs','generate local assignment previews','render academic agenda previews','generate minimal assessment reminder previews','generate assessment announcement previews','generate monthly homeroom newsletter preview','await teacher approval']
     db.execute('INSERT INTO deployment_plans(id,weekly_plan_id,status,payload,created_at,updated_at,updated_by) VALUES(?,?,?,?,?,?,?)',(pid,wid,'preview_only',jd({'previewOnly':True,'canvasWritesAllowed':False,'emailSendsAllowed':False,'scheduleIntent':'Friday 4:00 PM America/New_York','operations':ops}),now_utc(),now_utc(),'generator'))
     for i,d in enumerate(db.execute('SELECT * FROM drafts WHERE weekly_plan_id=?',(wid,))):
         unresolved=['Teacher approval required']

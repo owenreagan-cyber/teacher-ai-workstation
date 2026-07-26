@@ -233,6 +233,37 @@ def annotate_announcement_drafts(
     return drafts, warnings, unresolved
 
 
+def annotate_newsletter_metadata(
+    week_code: str,
+) -> tuple[dict[str, Any] | None, dict[str, Any] | None, list[str], list[UnresolvedDecision]]:
+    week = phase22.instructional_week_by_code(week_code) or {}
+    starts_on = compact(week.get("startsOn") or "")
+    if not starts_on:
+        return None, None, [], []
+    _, newsletter, update = phase22.resolve_newsletter_for_week_start(
+        starts_on,
+        db=None,
+        school_year="2026-2027",
+        week_code=week_code,
+    )
+    warnings = list(newsletter.get("warnings") or []) + list(update.get("warnings") or [])
+    newsletter["predictionMetadata"] = {
+        "resolvedMonthCode": newsletter.get("month_code"),
+        "resolvedMonthLabel": newsletter.get("month_label"),
+        "cadence": newsletter.get("cadence"),
+        "needsReview": newsletter.get("needs_review"),
+        "blockers": newsletter.get("blockers"),
+        "contentHash": newsletter.get("content_hash"),
+    }
+    update["predictionMetadata"] = {
+        "dependsOn": update.get("depends_on"),
+        "verificationStatus": update.get("verification_status"),
+        "blockers": update.get("blockers"),
+        "scheduleMetadata": update.get("schedule_metadata"),
+    }
+    return newsletter, update, warnings, []
+
+
 def reading_homework_for_weekday(weekday: str) -> str:
     return phase22.reading_homework_for_weekday(weekday)
 
@@ -648,6 +679,9 @@ def predict_week_data(week_code: str, source_path: str | Path, correction_state:
     announcement_drafts, announcement_warnings, announcement_unresolved = annotate_announcement_drafts(knowledge, week_code, predictions)
     unresolved_decisions.extend(announcement_unresolved)
     warnings.extend(announcement_warnings)
+    newsletter_draft, newsletter_update, newsletter_warnings, newsletter_unresolved = annotate_newsletter_metadata(week_code)
+    unresolved_decisions.extend(newsletter_unresolved)
+    warnings.extend(newsletter_warnings)
     if "Math test cadence remains owner-unresolved" not in warnings:
         warnings.append("Math test cadence remains owner-unresolved")
     warnings = list(dict.fromkeys(warnings))
@@ -669,6 +703,8 @@ def predict_week_data(week_code: str, source_path: str | Path, correction_state:
         review_state=review_state,
         provenance=provenance,
         announcement_drafts=announcement_drafts,
+        newsletter_draft=newsletter_draft,
+        newsletter_update_announcement=newsletter_update,
     )
 
 
@@ -725,6 +761,24 @@ def validate_week_prediction(payload: dict[str, Any]) -> dict[str, Any]:
         findings.append({"severity": "pass", "code": "announcement.approval-required", "message": "Announcement drafts require teacher approval", "target": "announcementDrafts"})
     if payload.get("announcementDrafts") and all((item.get("schedule_metadata") or {}).get("scheduleIntent") == phase22.ANNOUNCEMENT_SCHEDULE_INTENT for item in payload.get("announcementDrafts", [])):
         findings.append({"severity": "pass", "code": "announcement.schedule-intent", "message": "Announcement schedule intent is Friday 4:00 PM America/New_York", "target": "announcementDrafts"})
+    newsletter = payload.get("newsletterDraft") or {}
+    update = payload.get("newsletterUpdateAnnouncement") or {}
+    if newsletter.get("course_id") == 26427 and newsletter.get("cadence") == "monthly":
+        findings.append({"severity": "pass", "code": "newsletter.monthly", "message": "Homeroom newsletter metadata is monthly on course 26427", "target": "newsletterDraft"})
+    else:
+        findings.append({"severity": "fail", "code": "newsletter.monthly", "message": "Homeroom newsletter metadata is missing or incorrect", "target": "newsletterDraft"})
+    if update.get("body_text") == phase22.newsletter_update_body(update.get("month_label") or ""):
+        findings.append({"severity": "pass", "code": "newsletter-update.wording", "message": "Newsletter update announcement uses canonical wording", "target": "newsletterUpdateAnnouncement"})
+    else:
+        findings.append({"severity": "fail", "code": "newsletter-update.wording", "message": "Newsletter update announcement wording is incorrect", "target": "newsletterUpdateAnnouncement"})
+    if update.get("depends_on") == newsletter.get("local_object_id") and not update.get("page_url"):
+        findings.append({"severity": "pass", "code": "newsletter-update.dependency", "message": "Newsletter update announcement depends on blocked newsletter page", "target": "newsletterUpdateAnnouncement"})
+    else:
+        findings.append({"severity": "fail", "code": "newsletter-update.dependency", "message": "Newsletter update announcement dependency is incorrect", "target": "newsletterUpdateAnnouncement"})
+    if update and update.get("schedule_metadata") is None:
+        findings.append({"severity": "pass", "code": "newsletter-update.schedule", "message": "Newsletter update announcement does not inherit assessment schedule", "target": "newsletterUpdateAnnouncement"})
+    else:
+        findings.append({"severity": "fail", "code": "newsletter-update.schedule", "message": "Newsletter update announcement must not inherit assessment schedule", "target": "newsletterUpdateAnnouncement"})
     pass_count = sum(1 for item in findings if item["severity"] == "pass")
     warn_count = sum(1 for item in findings if item["severity"] == "warn")
     fail_count = sum(1 for item in findings if item["severity"] == "fail")

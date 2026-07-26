@@ -32,6 +32,10 @@ if [ "${1:-}" = "--canvas-llm-artifact-health-status" ]; then
   exec python3 "scripts/canvas_llm_phase22/artifact_registry.py" health-report
 fi
 
+if [ "${1:-}" = "--approval-queue-status" ]; then
+  exec python3 "scripts/canvas_llm_phase22/approval_queue.py" queue-report
+fi
+
 if [ "${1:-}" = "--canvas-llm-phase-23-weekly-content-production-engine-status" ]; then
   exec bash "scripts/canvas-llm-phase-23-weekly-content-production-engine-status.sh"
 fi
@@ -371,6 +375,7 @@ Teacher Planning Command Organization (status only; safe sample: fractions-revie
                                        Show Canvas LLM Phase 25 curriculum source intelligence status and exit.
   --canvas-llm-phase-23-weekly-content-production-engine-status Show Canvas LLM Phase 23 weekly content production engine status and exit.
   --canvas-llm-artifact-health-status    Show read-only Canvas LLM artifact readiness and safety summary and exit.
+  --approval-queue-status                Show read-only Canvas LLM teacher approval queue summary and exit.
   --canvas-llm-phase-21d-sandbox-week-render-write-status
                                        Show Canvas LLM Phase 21D gated sandbox week render/write status and exit.
 

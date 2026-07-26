@@ -22,6 +22,7 @@ EXPECTED_MARKDOWN_FILES = {
     "agenda-page-contract.md",
     "announcement-contract.md",
     "approval-and-publish-contract.md",
+    "approval-queue-contract.md",
     "artifact-registry-contract.md",
     "assignment-contract.md",
     "calendar-disruption-contract.md",

@@ -76,6 +76,18 @@ if [ "${1:-}" = "--canvas-repair-center" ]; then
   exec python3 "scripts/canvas_llm_phase22/canvas_repair_center.py" repair-center-report
 fi
 
+if [ "${1:-}" = "--canvas-duplicate-scan" ]; then
+  exec python3 "scripts/canvas_llm_phase22/canvas_duplicate_detector.py" duplicate-scan
+fi
+
+if [ "${1:-}" = "--canvas-cleanup-preview" ]; then
+  exec python3 "scripts/canvas_llm_phase22/canvas_cleanup_manager.py" cleanup-preview
+fi
+
+if [ "${1:-}" = "--communication-status" ]; then
+  exec python3 "scripts/canvas_llm_phase22/communication_status.py" status-report
+fi
+
 if [ "${1:-}" = "--homework-rules-status" ]; then
   exec python3 "scripts/canvas_llm_phase22/homework_rules.py" status-report
 fi
@@ -434,6 +446,9 @@ Teacher Planning Command Organization (status only; safe sample: fractions-revie
   --canvas-repair-status                 Show Canvas repair drift summary and exit.
   --canvas-operations-dashboard          Show teacher-facing Canvas operations dashboard and exit.
   --canvas-repair-center                 Show Canvas repair center recommendations and exit.
+  --canvas-duplicate-scan                Show Canvas duplicate scan summary and exit.
+  --canvas-cleanup-preview               Show Canvas cleanup preview (no automatic deletion) and exit.
+  --communication-status                 Show communication readiness status and exit.
   --homework-rules-status                Show homework and assessment rules coverage summary and exit.
   --assignment-draft-preview             Show assignment draft preview for sample week and exit.
   --canvas-llm-phase-21d-sandbox-week-render-write-status

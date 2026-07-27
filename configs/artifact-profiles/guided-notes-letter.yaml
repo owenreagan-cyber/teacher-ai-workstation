@@ -1,0 +1,29 @@
+name: guided-notes-letter
+artifact_type: pdf
+paper:
+  width_points: 612
+  height_points: 792
+  orientation: portrait
+  size_tolerance_points: 2
+margins:
+  top_inches: 0.50
+  bottom_inches: 0.50
+  left_inches: 0.65
+  right_inches: 0.50
+safe_boundary_inches: 0.35
+page_utilization:
+  warning_below_percent: 70
+  bottom_gap_warning_inches: 2.25
+  boundary_warning_inches: 0.10
+  blank_page_text_threshold: 5
+requirements:
+  page_numbers_after_first: true
+  render_pages: true
+  teacher_key_must_match_page_count: true
+  require_single_line_sentences: true
+printing:
+  scale: actual-size
+  percent: 100
+subject_extensions:
+  shurley:
+    hole_punch_left_margin: true

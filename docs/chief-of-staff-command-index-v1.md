@@ -71,6 +71,9 @@ These flags exist in `bin/chief-of-staff` and work as read-only local status sur
 | `bin/chief-of-staff --canvas-write-gate-status` | Read-only Canvas write gate blocked-state summary |
 | `bin/chief-of-staff --canvas-deployment-plan-status` | Read-only deployment plan readiness summary |
 | `bin/chief-of-staff --canvas-audit-status` | Read-only deployment audit event summary |
+| `bin/chief-of-staff --canvas-duplicate-scan` | Canvas duplicate scan with risk classification (no automatic deletion) |
+| `bin/chief-of-staff --canvas-cleanup-preview` | Canvas cleanup preview with teacher approval gate |
+| `bin/chief-of-staff --communication-status` | Communication readiness status (announcements, daily brief, morning email) |
 
 ### Proof
 

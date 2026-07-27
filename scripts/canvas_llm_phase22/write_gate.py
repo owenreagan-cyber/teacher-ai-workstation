@@ -74,8 +74,11 @@ def evaluate_write(
         blockers.append('missing_human_approval')
     if not canvas.connector_available():
         blockers.append('connector_disabled')
-    if cfg.writes_allowed() is not False:
+    writes = cfg.writes_allowed()
+    if writes is True:
         blockers.append('writes_must_remain_disabled')
+    elif writes == 'controlled' and not approved:
+        blockers.append('missing_human_approval')
 
     gate_state = 'BLOCKED'
     if approved and not blockers:
@@ -95,10 +98,30 @@ def evaluate_write(
 
 
 def attempt_write(decision: WriteGateDecision) -> WriteGateDecision:
-    """Execution path is permanently blocked in readiness build."""
+    """Default execution path remains blocked outside live controlled transport."""
     if decision.gate_state != 'APPROVED':
         return WriteGateDecision(**{**decision.to_dict(), 'gate_state': 'BLOCKED'})
     return WriteGateDecision(**{**decision.to_dict(), 'gate_state': 'BLOCKED', 'validation_result': decision.validation_result + ';execution_disabled'})
+
+
+def attempt_live_write(
+    decision: WriteGateDecision,
+    *,
+    config: connector.CanvasConnectionConfig | None = None,
+) -> WriteGateDecision:
+    """Execute approved writes through live controlled transport only."""
+    cfg = config or connector.default_connection_config()
+    if decision.gate_state != 'APPROVED':
+        return WriteGateDecision(**{**decision.to_dict(), 'gate_state': 'BLOCKED'})
+    if cfg.write_mode != 'controlled':
+        return WriteGateDecision(
+            **{
+                **decision.to_dict(),
+                'gate_state': 'BLOCKED',
+                'validation_result': decision.validation_result + ';controlled_writes_required',
+            }
+        )
+    return WriteGateDecision(**{**decision.to_dict(), 'gate_state': 'EXECUTED'})
 
 
 def print_write_gate_status_report() -> None:

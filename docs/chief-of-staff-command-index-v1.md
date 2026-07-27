@@ -74,6 +74,11 @@ These flags exist in `bin/chief-of-staff` and work as read-only local status sur
 | `bin/chief-of-staff --canvas-duplicate-scan` | Canvas duplicate scan with risk classification (no automatic deletion) |
 | `bin/chief-of-staff --canvas-cleanup-preview` | Canvas cleanup preview with teacher approval gate |
 | `bin/chief-of-staff --communication-status` | Communication readiness status (announcements, daily brief, morning email) |
+| `bin/chief-of-staff --canvas-connection-status` | Canvas connection authentication and mapping validation summary |
+| `bin/chief-of-staff --live-q1w2-deployment-preview` | Live Q1W2 controlled deployment preview |
+| `bin/chief-of-staff --live-q1w2-deployment-status` | Live Q1W2 controlled deployment status and verification summary |
+| `bin/chief-of-staff --canvas-live-transport-status` | Canvas live API transport readiness summary |
+| `bin/chief-of-staff --c2c2-q1w2-live-status` | C2C2 Q1W2 live deployment status with transport verification |
 
 ### Proof
 

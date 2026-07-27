@@ -28,6 +28,12 @@ ALLOWED_LIVE_COURSE_IDS = {HOMEROOM_COURSE_ID, MATH_COURSE_ID, READING_COURSE_ID
 ALLOWED_POST_PATH_RE = re.compile(
     r'^/api/v1/courses/(?P<course_id>\d+)/(pages|assignments)$'
 )
+ALLOWED_GET_PATH_RES = (
+    re.compile(r'^/api/v1/courses/(?P<course_id>\d+)$'),
+    re.compile(r'^/api/v1/courses/(?P<course_id>\d+)/pages/[^/]+$'),
+    re.compile(r'^/api/v1/courses/(?P<course_id>\d+)/assignments/\d+$'),
+    re.compile(r'^/api/v1/courses/(?P<course_id>\d+)/assignment_groups$'),
+)
 BLOCKED_PATH_MARKERS = {
     'grades',
     'gradebook',
@@ -100,6 +106,23 @@ def _validate_course(course_id: int) -> None:
         raise PermissionError(f'BLOCKED: course {course_id} is not allowlisted for Q1W2 live writes')
 
 
+def _is_allowed_get_path(path: str) -> bool:
+    return any(pattern.match(path) for pattern in ALLOWED_GET_PATH_RES)
+
+
+def _course_id_from_get_path(path: str) -> int | None:
+    for pattern in ALLOWED_GET_PATH_RES:
+        match = pattern.match(path)
+        if match:
+            return int(match.group('course_id'))
+    return None
+
+
+def validate_live_transport_path(method: str, path: str) -> None:
+    """Validate a live transport request path against the Q1W2 allowlist."""
+    _validate_path(method, path)
+
+
 def _validate_path(method: str, path: str) -> None:
     lowered = path.lower()
     if any(marker in lowered for marker in BLOCKED_PATH_MARKERS):
@@ -111,8 +134,13 @@ def _validate_path(method: str, path: str) -> None:
         course_id = int(ALLOWED_POST_PATH_RE.match(path).group('course_id'))  # type: ignore[union-attr]
         _validate_course(course_id)
     elif upper == 'GET':
-        if not re.match(r'^/api/v1/courses/\d+/(pages/[^/]+|assignments/\d+|assignment_groups)$', path):
+        if not _is_allowed_get_path(path):
             raise PermissionError(f'BLOCKED: GET not allowlisted for live transport verification: {path}')
+        course_id = _course_id_from_get_path(path)
+        if course_id is not None:
+            _validate_course(course_id)
+    else:
+        raise PermissionError(f'BLOCKED: {upper} not allowlisted for live transport: {path}')
 
 
 @dataclass
@@ -346,6 +374,9 @@ class Phase22LiveCanvasClient:
                 return compact(group.get('id'))
         raise RuntimeError(f'assignment group not found: {group_name}')
 
+    def get_course(self, course_id: int) -> dict[str, Any]:
+        return self.request('GET', f'/api/v1/courses/{course_id}')
+
     def get_page(self, course_id: int, page_url: str) -> dict[str, Any]:
         return self.request('GET', f'/api/v1/courses/{course_id}/pages/{page_url}')
 
@@ -459,6 +490,37 @@ def command_self_test() -> int:
         raise AssertionError('unexpected course should be blocked')
     except PermissionError:
         pass
+
+    validate_live_transport_path('GET', f'/api/v1/courses/{HOMEROOM_COURSE_ID}')
+    validate_live_transport_path('GET', f'/api/v1/courses/{HOMEROOM_COURSE_ID}/pages/q1w2-weekly-agenda')
+    validate_live_transport_path('GET', f'/api/v1/courses/{MATH_COURSE_ID}/assignments/12345')
+    validate_live_transport_path('GET', f'/api/v1/courses/{READING_COURSE_ID}/assignment_groups')
+
+    for blocked_path in (
+        f'/api/v1/courses/{HOMEROOM_COURSE_ID}/students',
+        f'/api/v1/courses/{HOMEROOM_COURSE_ID}/submissions',
+        f'/api/v1/courses/{HOMEROOM_COURSE_ID}/grades',
+        f'/api/v1/courses/{HOMEROOM_COURSE_ID}/enrollments',
+        f'/api/v1/courses/{HOMEROOM_COURSE_ID}/modules',
+        f'/api/v1/courses/{HOMEROOM_COURSE_ID}/files',
+        f'/api/v1/courses/{HOMEROOM_COURSE_ID}/pages',
+        f'/api/v1/courses/{HOMEROOM_COURSE_ID}/assignments',
+    ):
+        try:
+            validate_live_transport_path('GET', blocked_path)
+            raise AssertionError(f'expected blocked path: {blocked_path}')
+        except PermissionError:
+            pass
+
+    for blocked_method, blocked_path in (
+        ('PUT', f'/api/v1/courses/{HOMEROOM_COURSE_ID}/pages/agenda'),
+        ('DELETE', f'/api/v1/courses/{HOMEROOM_COURSE_ID}/assignments/12345'),
+    ):
+        try:
+            validate_live_transport_path(blocked_method, blocked_path)
+            raise AssertionError(f'expected blocked method: {blocked_method} {blocked_path}')
+        except PermissionError:
+            pass
 
     assert transport_has_no_fake_fallback()
     assert live_mode_blocks_without_approval() or _live_approved()

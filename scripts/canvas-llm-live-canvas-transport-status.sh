@@ -14,6 +14,7 @@ fail() { FAIL_COUNT=$((FAIL_COUNT + 1)); printf 'FAIL: %s\n' "$1"; }
 TRANSPORT="scripts/canvas_llm_phase22/canvas_connection_manager.py"
 WRITER="scripts/canvas_llm_phase22/canvas_writer.py"
 TRANSPORT_TEST="tests/canvas-llm-live-canvas-transport-test.sh"
+READ_VERIFY_TEST="tests/canvas-llm-live-transport-test.sh"
 
 echo "Canvas LLM Live Canvas Transport Status"
 echo "---------------------------------------"
@@ -31,6 +32,7 @@ grep -Fq 'ENABLED' /tmp/c2c2-transport.txt && pass "live transport report shows 
 grep -Fq 'CONTROLLED' /tmp/c2c2-transport.txt && pass "live transport report shows controlled write gate" || fail "controlled write gate missing"
 
 [[ -x "$TRANSPORT_TEST" ]] && bash "$TRANSPORT_TEST" >/dev/null 2>&1 && pass "live canvas transport test passes" || fail "live canvas transport test fails"
+[[ -x "$READ_VERIFY_TEST" ]] && bash "$READ_VERIFY_TEST" >/dev/null 2>&1 && pass "live transport read verification test passes" || fail "live transport read verification test fails"
 
 echo
 echo "Summary"

@@ -81,11 +81,14 @@ class CanvasConnectionConfig:
     enabled: bool = True
     base_url: str | None = None
     credential_state: str = 'missing'
+    write_mode: str = 'disabled'
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)
 
-    def writes_allowed(self) -> bool:
+    def writes_allowed(self) -> bool | str:
+        if self.write_mode == 'controlled':
+            return 'controlled'
         return False
 
 
@@ -146,6 +149,8 @@ class CanvasConnector:
         if not self.config.enabled:
             return False
         if self.config.mode == 'fake':
+            return True
+        if self.config.mode == 'live' and self.config.write_mode == 'controlled':
             return True
         if self.config.mode == 'sandbox':
             return self.config.credential_state == 'configured'

@@ -88,6 +88,26 @@ if [ "${1:-}" = "--communication-status" ]; then
   exec python3 "scripts/canvas_llm_phase22/communication_status.py" status-report
 fi
 
+if [ "${1:-}" = "--canvas-connection-status" ]; then
+  exec python3 "scripts/canvas_llm_phase22/canvas_connection.py" status-report
+fi
+
+if [ "${1:-}" = "--live-q1w2-deployment-preview" ]; then
+  exec python3 "scripts/canvas_llm_phase22/live_q1w2_deployment.py" deployment-preview
+fi
+
+if [ "${1:-}" = "--live-q1w2-deployment-status" ]; then
+  exec python3 "scripts/canvas_llm_phase22/live_q1w2_deployment.py" deployment-status
+fi
+
+if [ "${1:-}" = "--canvas-live-transport-status" ]; then
+  exec python3 "scripts/canvas_llm_phase22/canvas_connection_manager.py" status-report
+fi
+
+if [ "${1:-}" = "--c2c2-q1w2-live-status" ]; then
+  exec python3 "scripts/canvas_llm_phase22/live_q1w2_deployment.py" c2c2-live-status
+fi
+
 if [ "${1:-}" = "--homework-rules-status" ]; then
   exec python3 "scripts/canvas_llm_phase22/homework_rules.py" status-report
 fi
@@ -449,6 +469,11 @@ Teacher Planning Command Organization (status only; safe sample: fractions-revie
   --canvas-duplicate-scan                Show Canvas duplicate scan summary and exit.
   --canvas-cleanup-preview               Show Canvas cleanup preview (no automatic deletion) and exit.
   --communication-status                 Show communication readiness status and exit.
+  --canvas-connection-status             Show Canvas connection authentication and mapping validation summary and exit.
+  --live-q1w2-deployment-preview         Show live Q1W2 deployment preview and exit.
+  --live-q1w2-deployment-status          Show live Q1W2 deployment status and exit.
+  --canvas-live-transport-status         Show Canvas live API transport readiness and exit.
+  --c2c2-q1w2-live-status                Show C2C2 Q1W2 live deployment status and exit.
   --homework-rules-status                Show homework and assessment rules coverage summary and exit.
   --assignment-draft-preview             Show assignment draft preview for sample week and exit.
   --canvas-llm-phase-21d-sandbox-week-render-write-status

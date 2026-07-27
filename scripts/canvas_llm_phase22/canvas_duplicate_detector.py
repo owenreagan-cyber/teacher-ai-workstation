@@ -359,7 +359,7 @@ def _group_duplicates(
 
 
 def detect_duplicates(objects: list[CanvasObjectRecord] | None = None) -> list[DuplicateReport]:
-    inventory = list(objects or build_fixture_objects())
+    inventory = list(build_fixture_objects() if objects is None else objects)
     reports: list[DuplicateReport] = []
     reports.extend(
         _group_duplicates(inventory, 'page', _page_key, classify_page_duplicate),

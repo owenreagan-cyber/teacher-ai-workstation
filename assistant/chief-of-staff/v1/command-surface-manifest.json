@@ -262,6 +262,11 @@
         {"flag": "--canvas-duplicate-scan", "status": "implemented", "purpose": "Canvas duplicate scan with risk classification (no automatic deletion)"},
         {"flag": "--canvas-cleanup-preview", "status": "implemented", "purpose": "Canvas cleanup preview with teacher approval gate"},
         {"flag": "--communication-status", "status": "implemented", "purpose": "Communication readiness status (announcements, daily brief, morning email)"},
+        {"flag": "--canvas-connection-status", "status": "implemented", "purpose": "Canvas connection authentication and mapping validation summary"},
+        {"flag": "--live-q1w2-deployment-preview", "status": "implemented", "purpose": "Live Q1W2 controlled deployment preview"},
+        {"flag": "--live-q1w2-deployment-status", "status": "implemented", "purpose": "Live Q1W2 controlled deployment status and verification summary"},
+        {"flag": "--canvas-live-transport-status", "status": "implemented", "purpose": "Canvas live API transport readiness summary"},
+        {"flag": "--c2c2-q1w2-live-status", "status": "implemented", "purpose": "C2C2 Q1W2 live deployment status with transport verification"},
         {"flag": "--homework-rules-status", "status": "implemented", "purpose": "Homework and assessment rules coverage summary"},
         {"flag": "--assignment-draft-preview", "status": "implemented", "purpose": "Assignment draft preview (no Canvas writes)"},
         {"flag": "--canvas-restart-status", "status": "blocked", "purpose": "Canvas restart blocked by stop marker"}

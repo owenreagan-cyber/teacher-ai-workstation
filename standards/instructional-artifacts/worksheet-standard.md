@@ -20,3 +20,7 @@ Use `worksheet-letter` for math, reading checks, history packets, and science ha
 ## Manual review
 
 Vertical alignment, symbol rendering, diagram sizing, and instructional sequencing require teacher review.
+
+## Automated educational heuristics (Phase 3)
+
+WARN-only checks: question grouping, activity-format mixing, typography, chunking, text density. Tune thresholds in profile `educational_layout` blocks. Instructional approval remains manual.

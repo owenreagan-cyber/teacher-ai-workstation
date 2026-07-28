@@ -1,5 +1,10 @@
 # History Subject Profile
 
+Automated educational heuristics (Phase 3, WARN-only):
+
+- Tiny diagram or map labels
+- Crowded diagram regions (visible-ink heuristic)
+
 Manual instructional review required for:
 
 - Timelines retain order

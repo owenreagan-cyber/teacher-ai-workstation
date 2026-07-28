@@ -190,7 +190,7 @@ class VisualGeometryTests(unittest.TestCase):
             input_path=FIXTURES / "passing" / "worksheet-letter.pdf",
         )
         self.assertIsNotNone(report.quality_score)
-        self.assertEqual(report.quality_score["instructional_status"], "Manual Review Required")
+        self.assertEqual(report.quality_score.get("instructional_approval"), "Manual Review Required")
 
     def test_visible_ink_on_synthetic(self) -> None:
         img = Image.new("RGB", (200, 200), (255, 255, 255))

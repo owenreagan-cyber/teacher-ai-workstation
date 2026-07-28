@@ -24,3 +24,7 @@ Export to PDF and run normal PDF preflight before printing.
 ## Manual review
 
 Slide design, contrast, pacing, and classroom readability require teacher visual review.
+
+## Automated educational heuristics (Phase 3)
+
+WARN-only checks: bullet count, reading load, title prominence, one-core-idea markers, projected text size. Separate educational score never overrides FAIL.

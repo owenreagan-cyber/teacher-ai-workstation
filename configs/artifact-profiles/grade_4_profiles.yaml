@@ -1,0 +1,189 @@
+# ==============================================================================
+# GRADE 4 INSTRUCTIONAL ARTIFACT QUALITY PROFILES
+# Visual Geometry & Rendered Page Intelligence Configuration
+# ==============================================================================
+
+default_settings:
+  render_dpi: 150
+  analysis_dpi: 72
+  background_lum_threshold: 245
+  visible_ink_color_distance: 15
+
+  contact_sheet:
+    enabled: true
+    max_width_px: 2400
+    columns: 4
+
+  annotated_render:
+    enabled: true
+    show_safe_bounds: true
+    show_printable_bounds: true
+    show_whitespace_line: true
+
+  comparison:
+    allow_reflow_pages: false
+    layout_shift_tolerance_px: 12.0
+
+grade_4_worksheet:
+  profile_name: "Grade 4 Independent Worksheet"
+  description: "Practice pages with ruled answer lines, diagrams, and response boxes."
+  artifact_type: pdf
+
+  writing_space_expected_range:
+    min_pct: 25.0
+    max_pct: 60.0
+    action_on_deviation: "WARN"
+
+  bottom_whitespace:
+    max_allowed_inches: 1.50
+    ignore_footer_height_inches: 0.50
+    action_on_exceeded: "WARN"
+
+  page_balance:
+    sparse_page_ink_min_pct: 5.0
+    dense_page_ink_max_pct: 65.0
+    top_heavy_ratio_threshold: 3.5
+    bottom_heavy_ratio_threshold: 0.2
+    action_on_unbalance: "WARN"
+
+  safe_margins:
+    margin_top_inches: 0.50
+    margin_bottom_inches: 0.50
+    margin_left_inches: 0.50
+    margin_right_inches: 0.50
+    action_on_clipping: "FAIL"
+    action_on_warning_zone: "WARN"
+
+  educational_layout:
+    min_body_font_pt: 14.0
+    min_direction_font_pt: 14.0
+
+grade_4_guided_notes:
+  profile_name: "Grade 4 Guided / Scaffolded Notes"
+  description: "Instructional note-catchers with fill-in prompts and structured boxes."
+  artifact_type: pdf
+
+  writing_space_expected_range:
+    min_pct: 20.0
+    max_pct: 45.0
+    action_on_deviation: "WARN"
+
+  bottom_whitespace:
+    max_allowed_inches: 1.25
+    ignore_footer_height_inches: 0.50
+    action_on_exceeded: "WARN"
+
+  page_balance:
+    sparse_page_ink_min_pct: 8.0
+    dense_page_ink_max_pct: 55.0
+    top_heavy_ratio_threshold: 3.0
+    bottom_heavy_ratio_threshold: 0.25
+    action_on_unbalance: "WARN"
+
+  safe_margins:
+    margin_top_inches: 0.50
+    margin_bottom_inches: 0.50
+    margin_left_inches: 0.50
+    margin_right_inches: 0.50
+    action_on_clipping: "FAIL"
+    action_on_warning_zone: "WARN"
+
+  educational_layout:
+    min_body_font_pt: 14.0
+    min_direction_font_pt: 14.0
+
+grade_4_quiz:
+  profile_name: "Grade 4 Quiz / Formative Assessment"
+  description: "Formal assessments, multiple choice, and brief short-response pages."
+  artifact_type: pdf
+
+  writing_space_expected_range:
+    min_pct: 10.0
+    max_pct: 30.0
+    action_on_deviation: "WARN"
+
+  bottom_whitespace:
+    max_allowed_inches: 1.75
+    ignore_footer_height_inches: 0.50
+    action_on_exceeded: "WARN"
+
+  page_balance:
+    sparse_page_ink_min_pct: 6.0
+    dense_page_ink_max_pct: 60.0
+    top_heavy_ratio_threshold: 4.0
+    bottom_heavy_ratio_threshold: 0.15
+    action_on_unbalance: "WARN"
+
+  safe_margins:
+    margin_top_inches: 0.50
+    margin_bottom_inches: 0.50
+    margin_left_inches: 0.50
+    margin_right_inches: 0.50
+    action_on_clipping: "FAIL"
+    action_on_warning_zone: "WARN"
+
+  educational_layout:
+    min_body_font_pt: 14.0
+    min_direction_font_pt: 14.0
+
+grade_4_teacher_key:
+  profile_name: "Grade 4 Teacher Answer Key"
+  description: "Authoritative answer key companion matching student page count."
+  artifact_type: pdf
+
+  writing_space_expected_range:
+    min_pct: 5.0
+    max_pct: 20.0
+    action_on_deviation: "WARN"
+
+  bottom_whitespace:
+    max_allowed_inches: 1.50
+    ignore_footer_height_inches: 0.50
+    action_on_exceeded: "WARN"
+
+  page_balance:
+    sparse_page_ink_min_pct: 10.0
+    dense_page_ink_max_pct: 70.0
+    top_heavy_ratio_threshold: 3.5
+    bottom_heavy_ratio_threshold: 0.2
+    action_on_unbalance: "WARN"
+
+  safe_margins:
+    margin_top_inches: 0.50
+    margin_bottom_inches: 0.50
+    margin_left_inches: 0.50
+    margin_right_inches: 0.50
+    action_on_clipping: "FAIL"
+    action_on_warning_zone: "WARN"
+
+  requirements:
+    teacher_key_must_match_page_count: true
+    page_numbers_after_first: true
+
+  educational_layout:
+    min_body_font_pt: 12.0
+    min_direction_font_pt: 12.0
+
+grade_4_presentation:
+  profile_name: "Grade 4 Projector Presentation"
+  description: "16:9 classroom slides with one-core-idea pacing."
+  artifact_type: pptx
+
+  page_balance:
+    sparse_page_ink_min_pct: 5.0
+    dense_page_ink_max_pct: 70.0
+    top_heavy_ratio_threshold: 3.5
+    bottom_heavy_ratio_threshold: 0.2
+    action_on_unbalance: "WARN"
+
+  slides:
+    width_inches: 13.333
+    height_inches: 7.5
+    min_title_font_pt: 28.0
+    min_body_font_pt: 22.0
+
+  educational_layout:
+    min_slide_title_font_pt: 28.0
+    min_slide_body_font_pt: 22.0
+    max_bullets_per_slide: 5
+    max_slide_words: 40

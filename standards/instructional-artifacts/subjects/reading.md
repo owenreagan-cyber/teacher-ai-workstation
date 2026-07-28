@@ -1,5 +1,11 @@
 # Reading Subject Profile
 
+Automated educational heuristics (Phase 3, WARN-only):
+
+- Visually crowded passage lines
+- Questions embedded in dense passage text
+- Large paragraph blocks without chunking
+
 Manual instructional review required for:
 
 - Passage and questions visually distinct

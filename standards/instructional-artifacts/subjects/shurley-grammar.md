@@ -2,6 +2,12 @@
 
 Mechanical checks: guided-notes margins, pagination, student/key comparison, single-line sentence heuristic when enabled.
 
+Automated educational heuristics (Phase 3, WARN-only):
+
+- Long sentences that may wrap and reduce classification room
+- Tight vertical spacing between sentence blocks
+- Mechanical single-line sentence FAIL remains separate from educational WARN
+
 Manual instructional review required for:
 
 - Sentence remains on one line

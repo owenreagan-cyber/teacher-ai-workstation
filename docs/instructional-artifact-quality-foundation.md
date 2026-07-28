@@ -2,7 +2,7 @@
 
 Last updated: 2026-07-28
 
-Status: **Phase 2 visual geometry** — local-first mechanical validation with rendered-page metrics; teacher visual review required.
+Status: **Phase 3 educational layout** — mechanical + visual + Grade 4 layout heuristics; teacher approval required.
 
 ## Implemented
 
@@ -10,35 +10,29 @@ Status: **Phase 2 visual geometry** — local-first mechanical validation with r
 - Standards under `standards/instructional-artifacts/`
 - Validators: PDF (primary), DOCX, HTML, PPTX
 - Student/teacher key comparison (structural + optional visual diff)
-- **Rendered-page geometry metrics** (`scripts/artifact_quality/visual_geometry.py`)
-- **Visible-ink analysis** at configurable DPI
-- **Contact sheets** and **annotated page previews**
-- **Visual student/key comparison** (diff + overlay images)
-- Subject extensions: math, shurley, reading, history, science
+- Rendered-page geometry metrics (`scripts/artifact_quality/visual_geometry.py`)
+- **Educational layout intelligence** (`scripts/artifact_quality/educational_layout.py`)
+- Visible-ink analysis, contact sheets, annotated previews, visual comparison
+- Subject-specific layout heuristics: math, shurley, reading, history, science
+- Instructional layout report section with separate educational score
 - CLI: `python3 scripts/artifact_quality/run_preflight.py`
 - Status: `bin/chief-of-staff --artifact-quality-status`
 
 ## Heuristic / WARN-only
 
-- Text coverage (not total utilization)
-- Drawing coverage (vector structure)
-- Estimated structured writing space
-- Bottom whitespace from rendered occupancy
-- Page balance (top-heavy, sparse, dense, title-only)
-- Visual student/key differences
-- Preliminary visual heuristic score
+- Typography, chunking, cognitive load, direction quality
+- Worksheet, guided notes, assessment, slide layout heuristics
+- Subject-specific writing-space and diagram readability checks
+- Educational layout score (never overrides FAIL)
+- Visual geometry metrics (Phase 2)
 - Font embedding confirmation
-- HTML/PPTX/DOCX final pagination without PDF export
 
 ## Manual / instructional review required
 
-- Attractiveness and instructional importance
-- Grade 4 cognitive appropriateness
-- Semantic and diagram correctness
-- Sufficient writing space for an individual class
-- Pedagogy and semantic correctness
-- Grayscale and projector readability
-- Shurley alignment quality beyond single-line heuristic
+- Instructional approval always **Manual Review Required**
+- Pedagogy, semantic correctness, attractiveness
+- Grade 4 cognitive appropriateness for a specific class
+- Sufficient writing space for individual students
 
 ## Future enhancements
 

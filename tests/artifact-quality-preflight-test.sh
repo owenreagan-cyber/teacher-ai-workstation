@@ -17,6 +17,16 @@ python3 tests/artifact_quality/test_visual_geometry.py || {
   exit 1
 }
 
+python3 tests/artifact_quality/test_educational_layout.py || {
+  echo "FAIL: artifact quality educational layout unit tests failed"
+  exit 1
+}
+
+python3 tests/artifact_quality/test_grade_4_profiles.py || {
+  echo "FAIL: artifact quality grade 4 profile unit tests failed"
+  exit 1
+}
+
 fixtures_root="fixtures/artifact-quality"
 for bucket in passing warning failing; do
   [[ -d "${fixtures_root}/${bucket}" ]] || {

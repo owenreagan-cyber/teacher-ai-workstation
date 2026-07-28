@@ -1,0 +1,50 @@
+# Reusable instructional sequence templates — planning only, not generated lessons.
+
+ela:
+  subject: ela
+  name: ELA Gradual Release
+  description: I Do → We Do → check → guided → independent → closure
+  steps:
+    - I Do
+    - We Do
+    - Student Check
+    - Guided Practice
+    - Independent Practice
+    - Closure
+
+math:
+  subject: math
+  name: Math Concrete-to-Abstract
+  description: Concrete → model → guided → independent → spiral → exit ticket
+  steps:
+    - Concrete
+    - Model
+    - Guided
+    - Independent
+    - Spiral
+    - Exit Ticket
+
+history:
+  subject: history
+  name: History Inquiry Sequence
+  description: Hook through closure with primary source emphasis
+  steps:
+    - Hook
+    - Vocabulary
+    - Background
+    - Primary Source
+    - Guided Notes
+    - Practice
+    - Closure
+
+reading:
+  subject: reading
+  name: Reading Workshop Sequence
+  description: Word attack through written response
+  steps:
+    - Word Attack
+    - Vocabulary
+    - Teacher Read
+    - Partner
+    - Independent
+    - Written Response

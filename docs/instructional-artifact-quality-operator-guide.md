@@ -205,3 +205,11 @@ When analysis runs, reports include transparent preliminary scores:
 - **Instructional approval** — always `Manual Review Required`
 
 No score overrides FAIL. PDF remains the authoritative print artifact.
+
+## Tooling validation override
+
+When critical tooling tests fail or were not run on the expected branch, treat automated artifact findings as **provisional**. Do not report geometry QA as complete or the preflight system as PASS until tooling confidence is verified separately from artifact quality.
+
+Critical tooling tests: safe-margin clipping detection, visible-ink classification, vector-only page detection, student/key page-count mismatch detection, output sandbox enforcement, source hash preservation, working-tree preservation, stash preservation.
+
+See `docs/instructional-artifact-quality-foundation.md` and Explorer Academy `docs/15_Grade_4_Chapter_Artifact_Preflight_Prompt.md` (PHASE 17).

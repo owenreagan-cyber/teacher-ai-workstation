@@ -1,0 +1,32 @@
+# Standard lesson artifact types and Artifact Quality profile gates.
+
+artifact_types:
+  presentation:
+    quality_gate: projector-slides
+    artifact_quality_phase: preflight
+  guided_notes:
+    quality_gate: guided-notes-letter
+    artifact_quality_phase: preflight
+  worksheet:
+    quality_gate: worksheet-letter
+    artifact_quality_phase: preflight
+  teacher_script:
+    quality_gate: worksheet-letter
+    artifact_quality_phase: preflight
+  vocabulary:
+    quality_gate: worksheet-letter
+    artifact_quality_phase: preflight
+  assessment:
+    quality_gate: quiz-letter
+    artifact_quality_phase: preflight
+  teacher_key:
+    quality_gate: teacher-key-letter
+    artifact_quality_phase: preflight
+  review:
+    quality_gate: quiz-letter
+    artifact_quality_phase: preflight
+
+notes:
+  generation: blocked
+  artifact_quality_system: unchanged
+  teacher_review: required

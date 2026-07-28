@@ -70,6 +70,14 @@ Cross-references:
 - Developer Mode templates
 - Workflow polish stack (command map, help examples, quick-start, section summaries)
 
+### Instructional production stack
+
+| Track | Status | Proof |
+| --- | --- | --- |
+| Instructional Artifact Quality (Phases 1–3) | **Complete** | `--artifact-quality-status`; mechanical, visual geometry, educational layout |
+| Curriculum Production Engine | **Foundation complete** | `--curriculum-production-status`; models, registry, validators only |
+| Future: manual extraction, generation, package assembly | Planned | Not implemented — see `docs/curriculum-production-engine-foundation.md` |
+
 ### Curriculum Builder — planning (complete)
 
 - Full planning stack (PRs #107–#162): schema plans, sample proofs, approval gate, closeout audits

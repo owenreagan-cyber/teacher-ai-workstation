@@ -34,6 +34,20 @@ Status: **Phase 3 educational layout** — mechanical + visual + Grade 4 layout 
 - Grade 4 cognitive appropriateness for a specific class
 - Sufficient writing space for individual students
 
+## Tooling validation override
+
+If a critical analyzer, comparison, output-sandbox, or source-preservation test fails:
+
+- automated artifact findings become **provisional**
+- do **not** mark the automated preflight system as PASS
+- do **not** claim geometry QA is fully validated
+- continue manual review
+- report **tooling confidence** separately from artifact quality
+
+Critical tooling tests include: safe-margin clipping detection, visible-ink classification, vector-only page detection, student/key page-count mismatch detection, output sandbox enforcement, source hash preservation, working-tree preservation, stash preservation.
+
+Grade 4 chapter preflight policy: Explorer Academy `docs/15_Grade_4_Chapter_Artifact_Preflight_Prompt.md` (PHASE 17).
+
 ## Future enhancements
 
 - Optional local HTML-to-PDF conversion path when approved browser tooling exists

@@ -1,0 +1,23 @@
+# Content prioritization tiers — manual classification only (no automatic assignment).
+
+tiers:
+  critical:
+    label: Critical
+    description: Must appear in student-facing artifacts and assessments.
+  high_priority:
+    label: High Priority
+    description: Important for lesson success; may appear in multiple artifacts.
+  supporting:
+    label: Supporting
+    description: Helpful context; optional in condensed versions.
+  teacher_background:
+    label: Teacher Background
+    description: Teacher script or key only — not student-facing by default.
+  omit:
+    label: Omit
+    description: Exclude from the lesson package.
+
+rules:
+  automatic_classification: false
+  teacher_approval_required: true
+  placeholder_only: true

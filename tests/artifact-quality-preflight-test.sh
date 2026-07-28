@@ -12,6 +12,11 @@ python3 tests/artifact_quality/test_preflight.py || {
   exit 1
 }
 
+python3 tests/artifact_quality/test_visual_geometry.py || {
+  echo "FAIL: artifact quality visual geometry unit tests failed"
+  exit 1
+}
+
 fixtures_root="fixtures/artifact-quality"
 for bucket in passing warning failing; do
   [[ -d "${fixtures_root}/${bucket}" ]] || {

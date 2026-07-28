@@ -34,71 +34,18 @@ def safe_rect(profile: ArtifactProfile) -> tuple[float, float, float, float]:
     return left + inset, top + inset, right - inset, bottom - inset
 
 
-def analyze_page_usage(page_bounds: PageBounds, profile: ArtifactProfile) -> list[tuple[CheckStatus, str, str | None]]:
+def analyze_blank_page(page_bounds: PageBounds, profile: ArtifactProfile) -> list[tuple[CheckStatus, str, str | None]]:
+    """Text-only blank page heuristic — visual metrics provide fuller coverage analysis."""
     findings: list[tuple[CheckStatus, str, str | None]] = []
-    left, top, right, bottom = printable_rect(profile)
-    safe_left, safe_top, safe_right, safe_bottom = safe_rect(profile)
-    printable_width = max(right - left, 1.0)
-    printable_height = max(bottom - top, 1.0)
-    printable_area = printable_width * printable_height
-
     if page_bounds.text_chars <= profile.page_utilization.blank_page_text_threshold:
         if page_bounds.content_left is None:
-            findings.append((CheckStatus.WARN, f"Page {page_bounds.page_number} appears nearly empty", "Visual review recommended."))
-            return findings
-
-    if page_bounds.content_left is None:
-        return findings
-
-    content_width = max(page_bounds.content_right - page_bounds.content_left, 0.0)
-    content_height = max(page_bounds.content_bottom - page_bounds.content_top, 0.0)
-    content_area = content_width * content_height
-    utilization = (content_area / printable_area) * 100.0
-
-    if utilization < profile.page_utilization.warning_below_percent:
-        findings.append(
-            (
-                CheckStatus.WARN,
-                f"Page {page_bounds.page_number} uses {utilization:.0f}% of the printable area",
-                f"Approximate content box: {content_width / POINTS_PER_INCH:.2f}\" x {content_height / POINTS_PER_INCH:.2f}\".",
-            )
-        )
-
-    bottom_gap_inches = (safe_bottom - page_bounds.content_bottom) / POINTS_PER_INCH
-    if bottom_gap_inches > profile.page_utilization.bottom_gap_warning_inches:
-        findings.append(
-            (
-                CheckStatus.WARN,
-                f"Page {page_bounds.page_number} has a large bottom gap ({bottom_gap_inches:.2f}\")",
-                "Content may end unusually high; confirm intentional workspace or pagination.",
-            )
-        )
-
-    distances = {
-        "left": page_bounds.content_left - safe_left,
-        "top": page_bounds.content_top - safe_top,
-        "right": safe_right - page_bounds.content_right,
-        "bottom": safe_bottom - page_bounds.content_bottom,
-    }
-    warn_threshold = profile.page_utilization.boundary_warning_inches * POINTS_PER_INCH
-    for edge, distance in distances.items():
-        if distance < 0:
-            findings.append(
-                (
-                    CheckStatus.FAIL,
-                    f"Page {page_bounds.page_number} content extends outside the safe {edge} boundary",
-                    f"Violation by {abs(distance) / POINTS_PER_INCH:.2f}\".",
-                )
-            )
-        elif distance < warn_threshold:
             findings.append(
                 (
                     CheckStatus.WARN,
-                    f"Page {page_bounds.page_number} content is close to the safe {edge} boundary",
-                    f"Only {distance / POINTS_PER_INCH:.2f}\" inside safe area.",
+                    f"Page {page_bounds.page_number} appears nearly empty (text-only check)",
+                    "Visual review recommended; drawing/ink metrics may show structure.",
                 )
             )
-
     return findings
 
 

@@ -12,13 +12,21 @@ if str(REPO_ROOT) not in sys.path:
 from scripts.artifact_quality.compare_student_key import validate_with_optional_key  # noqa: E402
 from scripts.artifact_quality.models import CheckStatus, PreflightReport  # noqa: E402
 from scripts.artifact_quality.profiles import load_profile  # noqa: E402
-from scripts.artifact_quality.render_artifact import attach_renders, render_pdf_pages  # noqa: E402
+from scripts.artifact_quality.render_artifact import (  # noqa: E402
+    attach_annotated_renders,
+    attach_contact_sheets,
+    attach_renders,
+    generate_annotated_renders,
+    generate_contact_sheet,
+    render_pdf_pages,
+)
 from scripts.artifact_quality.reporting import print_report, write_reports  # noqa: E402
 from scripts.artifact_quality.subject_checks import apply_subject_checks  # noqa: E402
 from scripts.artifact_quality.validate_docx import validate_docx  # noqa: E402
 from scripts.artifact_quality.validate_html import validate_html  # noqa: E402
-from scripts.artifact_quality.validate_pdf import validate_pdf  # noqa: E402
+from scripts.artifact_quality.validate_pdf import finalize_quality_score, validate_pdf  # noqa: E402
 from scripts.artifact_quality.validate_pptx import validate_pptx  # noqa: E402
+from scripts.artifact_quality.visual_geometry import PageVisualMetrics  # noqa: E402
 
 
 def _default_output_dir(input_path: Path) -> Path:
@@ -47,6 +55,10 @@ def run_preflight(
     teacher_path: Path | None = None,
     output_dir: Path | None = None,
     render: bool = False,
+    annotate: bool = False,
+    contact_sheet: bool = False,
+    visual_compare: bool = False,
+    analysis_dpi: int | None = None,
     json_output: bool = False,
     strict: bool = False,
 ) -> PreflightReport:
@@ -65,12 +77,27 @@ def run_preflight(
     out_dir = output_dir or _default_output_dir(primary)
     report.output_dir = str(out_dir)
 
+    effective_dpi = analysis_dpi or profile.visual_geometry.analysis_dpi
+    output_dpi = profile.visual_geometry.output_dpi
+
     doc = None
+    page_metrics: list[PageVisualMetrics] = []
+    ink_masks: list[list[list[bool]] | None] = []
+    clips = []
+
     if kind == "pdf":
         if student_path and teacher_path:
-            doc = validate_with_optional_key(student_path, teacher_path, profile, report)
+            doc, page_metrics, ink_masks, clips = validate_with_optional_key(
+                student_path,
+                teacher_path,
+                profile,
+                report,
+                analysis_dpi=effective_dpi,
+                visual_compare=visual_compare,
+                output_dir=out_dir,
+            )
         else:
-            doc = validate_pdf(primary, profile, report)
+            doc, page_metrics, ink_masks, clips = validate_pdf(primary, profile, report, analysis_dpi=effective_dpi)
         apply_subject_checks(subject, profile, report, doc=doc, source_path=primary)
     elif kind == "docx":
         validate_docx(primary, profile, report)
@@ -84,15 +111,31 @@ def run_preflight(
     else:
         report.add(CheckStatus.FAIL, f"Unsupported input type: {primary.suffix}")
 
-    should_render = render or profile.requirements.render_pages or report.final_status != CheckStatus.PASS
+    should_render = render or profile.requirements.render_pages or annotate or contact_sheet
     if doc is not None and should_render:
-        paths = render_pdf_pages(doc, out_dir)
+        paths = render_pdf_pages(doc, out_dir, dpi=output_dpi, profile=profile)
         attach_renders(report, paths)
+
+        do_annotate = annotate or profile.visual_geometry.generate_annotated_renders
+        if do_annotate and page_metrics:
+            annotated = generate_annotated_renders(
+                paths, page_metrics, profile, out_dir,
+                ink_masks=ink_masks, clips=clips, dpi=output_dpi,
+            )
+            attach_annotated_renders(report, annotated)
+
+        do_contact = contact_sheet or profile.visual_geometry.generate_contact_sheet
+        if do_contact and paths:
+            sheets = generate_contact_sheet(paths, out_dir)
+            attach_contact_sheets(report, sheets)
 
     if doc is not None:
         doc.close()
 
-    if json_output or output_dir is not None or render:
+    if page_metrics:
+        finalize_quality_score(report, page_metrics)
+
+    if json_output or output_dir is not None or render or annotate or contact_sheet:
         write_reports(report, out_dir, json_output=True)
 
     return report
@@ -110,6 +153,10 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--output-dir", type=Path, help="Write report and renders under this directory")
     parser.add_argument("--json", action="store_true", help="Also write machine-readable report.json")
     parser.add_argument("--render", action="store_true", help="Render PDF pages to PNG previews")
+    parser.add_argument("--annotate", action="store_true", help="Generate annotated page previews with metric overlays")
+    parser.add_argument("--contact-sheet", action="store_true", help="Generate contact-sheet preview PNG")
+    parser.add_argument("--visual-compare", action="store_true", help="Generate student/teacher visual comparison images")
+    parser.add_argument("--analysis-dpi", type=int, help="DPI for visual analysis (default from profile)")
     parser.add_argument("--strict", action="store_true", help="Return exit code 2 on WARN")
     return parser
 
@@ -130,6 +177,10 @@ def main(argv: list[str] | None = None) -> int:
         teacher_path=Path(args.teacher_path) if args.teacher_path else None,
         output_dir=args.output_dir,
         render=args.render,
+        annotate=args.annotate,
+        contact_sheet=args.contact_sheet,
+        visual_compare=args.visual_compare,
+        analysis_dpi=args.analysis_dpi,
         json_output=args.json,
         strict=args.strict,
     )

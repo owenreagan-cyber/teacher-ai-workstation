@@ -40,6 +40,10 @@ class PreflightReport:
     checks: list[CheckResult] = field(default_factory=list)
     output_dir: Optional[str] = None
     render_paths: list[str] = field(default_factory=list)
+    annotated_render_paths: list[str] = field(default_factory=list)
+    contact_sheet_paths: list[str] = field(default_factory=list)
+    page_metrics: list[dict[str, Any]] = field(default_factory=list)
+    quality_score: Optional[dict[str, Any]] = None
     student_path: Optional[str] = None
     teacher_path: Optional[str] = None
 
@@ -55,7 +59,7 @@ class PreflightReport:
         self.checks.append(CheckResult(status=status, message=message, details=details, page=page))
 
     def to_dict(self) -> dict[str, Any]:
-        return {
+        payload: dict[str, Any] = {
             "input_path": self.input_path,
             "profile_name": self.profile_name,
             "subject": self.subject,
@@ -64,9 +68,15 @@ class PreflightReport:
             "checks": [check.to_dict() for check in self.checks],
             "output_dir": self.output_dir,
             "render_paths": self.render_paths,
+            "annotated_render_paths": self.annotated_render_paths,
+            "contact_sheet_paths": self.contact_sheet_paths,
+            "page_metrics": self.page_metrics,
             "student_path": self.student_path,
             "teacher_path": self.teacher_path,
         }
+        if self.quality_score is not None:
+            payload["quality_score"] = self.quality_score
+        return payload
 
     def exit_code(self, strict: bool = False) -> int:
         if self.final_status == CheckStatus.FAIL:

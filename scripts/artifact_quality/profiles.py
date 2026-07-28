@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import json
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Optional
 
@@ -38,6 +38,26 @@ class UtilizationSpec:
 
 
 @dataclass
+class VisualGeometrySpec:
+    analysis_dpi: int = 96
+    output_dpi: int = 144
+    background_luminance_delta: float = 18.0
+    ink_row_coverage_ratio: float = 0.02
+    footer_band_ratio: float = 0.04
+    sparse_page_ink_percent: float = 3.0
+    dense_page_ink_percent: float = 45.0
+    bottom_gap_warning_inches: float = 2.25
+    writing_space_min_percent: float = 5.0
+    writing_space_range: tuple[float, float] = (20.0, 60.0)
+    page_balance_top_heavy_ratio: float = 3.0
+    page_balance_sparse_band: float = 0.015
+    comparison_ink_delta_warn_percent: float = 25.0
+    comparison_dimension_tolerance: float = 0.05
+    generate_annotated_renders: bool = False
+    generate_contact_sheet: bool = False
+
+
+@dataclass
 class RequirementSpec:
     page_numbers_after_first: bool = False
     render_pages: bool = False
@@ -71,6 +91,7 @@ class ArtifactProfile:
     requirements: RequirementSpec
     printing: PrintingSpec
     safe_boundary_inches: float = 0.35
+    visual_geometry: VisualGeometrySpec = field(default_factory=VisualGeometrySpec)
     slides: Optional[SlideSpec] = None
     subject_extensions: dict[str, Any] | None = None
 
@@ -138,6 +159,31 @@ def parse_profile(raw: dict[str, Any], *, expected_name: str | None = None) -> A
         boundary_warning_inches=float(util_raw.get("boundary_warning_inches", 0.10)),
         blank_page_text_threshold=int(util_raw.get("blank_page_text_threshold", 5)),
     )
+    visual_raw = raw.get("visual_geometry") or {}
+    ws_range_raw = visual_raw.get("writing_space_range") or {}
+    default_ws = _default_writing_space_range(name)
+    ws_min = float(ws_range_raw.get("min_percent", default_ws[0]))
+    ws_max = float(ws_range_raw.get("max_percent", default_ws[1]))
+    visual = VisualGeometrySpec(
+        analysis_dpi=int(visual_raw.get("analysis_dpi", 96)),
+        output_dpi=int(visual_raw.get("output_dpi", 144)),
+        background_luminance_delta=float(visual_raw.get("background_luminance_delta", 18.0)),
+        ink_row_coverage_ratio=float(visual_raw.get("ink_row_coverage_ratio", 0.02)),
+        footer_band_ratio=float(visual_raw.get("footer_band_ratio", 0.04)),
+        sparse_page_ink_percent=float(visual_raw.get("sparse_page_ink_percent", 3.0)),
+        dense_page_ink_percent=float(visual_raw.get("dense_page_ink_percent", 45.0)),
+        bottom_gap_warning_inches=float(
+            visual_raw.get("bottom_gap_warning_inches", utilization.bottom_gap_warning_inches)
+        ),
+        writing_space_min_percent=float(visual_raw.get("writing_space_min_percent", 5.0)),
+        writing_space_range=(ws_min, ws_max),
+        page_balance_top_heavy_ratio=float(visual_raw.get("page_balance_top_heavy_ratio", 3.0)),
+        page_balance_sparse_band=float(visual_raw.get("page_balance_sparse_band", 0.015)),
+        comparison_ink_delta_warn_percent=float(visual_raw.get("comparison_ink_delta_warn_percent", 25.0)),
+        comparison_dimension_tolerance=float(visual_raw.get("comparison_dimension_tolerance", 0.05)),
+        generate_annotated_renders=bool(visual_raw.get("generate_annotated_renders", False)),
+        generate_contact_sheet=bool(visual_raw.get("generate_contact_sheet", False)),
+    )
     requirements = RequirementSpec(
         page_numbers_after_first=bool(req_raw.get("page_numbers_after_first", False)),
         render_pages=bool(req_raw.get("render_pages", False)),
@@ -172,8 +218,19 @@ def parse_profile(raw: dict[str, Any], *, expected_name: str | None = None) -> A
         margins=margins,
         safe_boundary_inches=safe_boundary,
         page_utilization=utilization,
+        visual_geometry=visual,
         requirements=requirements,
         printing=printing,
         slides=slides,
         subject_extensions=subject_extensions,
     )
+
+
+def _default_writing_space_range(profile_name: str) -> tuple[float, float]:
+    if "guided-notes" in profile_name:
+        return (20.0, 45.0)
+    if "quiz" in profile_name:
+        return (10.0, 30.0)
+    if "teacher-key" in profile_name:
+        return (5.0, 20.0)
+    return (25.0, 60.0)

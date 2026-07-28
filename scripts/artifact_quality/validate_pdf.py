@@ -6,7 +6,7 @@ from typing import Iterable
 
 import fitz
 
-from .inspect_page_usage import PageBounds, analyze_page_usage, apply_usage_findings
+from .inspect_page_usage import PageBounds, analyze_blank_page, apply_usage_findings
 from .models import (
     A4_HEIGHT_PT,
     A4_WIDTH_PT,
@@ -17,6 +17,12 @@ from .models import (
     PreflightReport,
 )
 from .profiles import ArtifactProfile
+from .visual_geometry import (
+    PageVisualMetrics,
+    analyze_page_visual,
+    compute_quality_score,
+    evaluate_page_thresholds,
+)
 
 
 def _page_orientation(width: float, height: float) -> str:
@@ -78,26 +84,87 @@ def _font_inventory(doc: fitz.Document) -> dict[str, bool]:
     return fonts
 
 
-def validate_pdf(path: Path, profile: ArtifactProfile, report: PreflightReport) -> fitz.Document | None:
+def analyze_pdf_visual_geometry(
+    doc: fitz.Document,
+    profile: ArtifactProfile,
+    report: PreflightReport,
+    *,
+    analysis_dpi: int | None = None,
+) -> tuple[list[PageVisualMetrics], list[list[list[bool]] | None], list[fitz.Rect | None]]:
+    page_metrics: list[PageVisualMetrics] = []
+    ink_masks: list[list[list[bool]] | None] = []
+    clips: list[fitz.Rect | None] = []
+    all_findings: list[tuple[CheckStatus, str, str | None]] = []
+    blank_pages: list[int] = []
+
+    for index, page in enumerate(doc, start=1):
+        bounds = _collect_page_bounds(page, index)
+        all_findings.extend(analyze_blank_page(bounds, profile))
+
+        metrics, visual_findings, mask, clip = analyze_page_visual(
+            page, index, profile, dpi=analysis_dpi,
+        )
+        page_metrics.append(metrics)
+        ink_masks.append(mask)
+        clips.append(clip)
+        all_findings.extend(visual_findings)
+        all_findings.extend(evaluate_page_thresholds(metrics, profile))
+
+        if (
+            bounds.text_chars <= profile.page_utilization.blank_page_text_threshold
+            and metrics.visible_ink_percent < profile.visual_geometry.sparse_page_ink_percent
+            and metrics.drawing_coverage_percent < 1.0
+        ):
+            blank_pages.append(index)
+
+    clipped_failures = [msg for status, msg, _ in all_findings if status == CheckStatus.FAIL]
+    if clipped_failures:
+        report.add(CheckStatus.FAIL, "Essential content extends outside safe margins")
+        for message in clipped_failures:
+            report.add(CheckStatus.FAIL, message)
+    else:
+        report.add(CheckStatus.PASS, "Essential content remains inside safe margins")
+
+    apply_usage_findings(report, (f for f in all_findings if f[0] != CheckStatus.FAIL))
+
+    if blank_pages:
+        if blank_pages == [doc.page_count] and doc.page_count > 1:
+            report.add(CheckStatus.FAIL, f"Accidental blank final page detected (page {doc.page_count})")
+        elif blank_pages:
+            report.add(CheckStatus.WARN, f"Nearly blank pages detected: {blank_pages}")
+    else:
+        report.add(CheckStatus.PASS, "No accidental blank pages detected")
+
+    report.page_metrics = [m.to_dict() for m in page_metrics]
+    return page_metrics, ink_masks, clips
+
+
+def validate_pdf(
+    path: Path,
+    profile: ArtifactProfile,
+    report: PreflightReport,
+    *,
+    analysis_dpi: int | None = None,
+) -> tuple[fitz.Document | None, list[PageVisualMetrics], list[list[list[bool]] | None], list[fitz.Rect | None]]:
     if not path.exists():
         report.add(CheckStatus.FAIL, "Input file does not exist")
-        return None
+        return None, [], [], []
     if not path.is_file():
         report.add(CheckStatus.FAIL, "Input path is not a regular file")
-        return None
+        return None, [], [], []
 
     try:
         doc = fitz.open(path)
     except Exception as exc:  # noqa: BLE001
         report.add(CheckStatus.FAIL, "File is not a readable PDF", details=str(exc))
-        return None
+        return None, [], [], []
 
     report.add(CheckStatus.PASS, "File opens successfully")
     page_count = doc.page_count
     if page_count <= 0:
         report.add(CheckStatus.FAIL, "PDF has zero pages")
         doc.close()
-        return None
+        return None, [], [], []
 
     report.add(CheckStatus.PASS, f"{page_count} page{'s' if page_count != 1 else ''} detected")
 
@@ -138,31 +205,7 @@ def validate_pdf(path: Path, profile: ArtifactProfile, report: PreflightReport) 
         else:
             report.add(CheckStatus.FAIL, f"Pages not in required {expected_orientation} orientation: {unexpected}")
 
-    usage_findings: list[tuple[CheckStatus, str, str | None]] = []
-    blank_pages: list[int] = []
-    for index, page in enumerate(doc, start=1):
-        bounds = _collect_page_bounds(page, index)
-        if bounds.text_chars <= profile.page_utilization.blank_page_text_threshold and bounds.content_left is None:
-            blank_pages.append(index)
-        usage_findings.extend(analyze_page_usage(bounds, profile))
-
-    if blank_pages:
-        if blank_pages == [page_count] and page_count > 1:
-            report.add(CheckStatus.FAIL, f"Accidental blank final page detected (page {page_count})")
-        else:
-            report.add(CheckStatus.WARN, f"Nearly blank pages detected: {blank_pages}")
-    else:
-        report.add(CheckStatus.PASS, "No accidental blank pages detected")
-
-    clipped_failures = [msg for status, msg, _ in usage_findings if status == CheckStatus.FAIL]
-    if clipped_failures:
-        report.add(CheckStatus.FAIL, "Essential content extends outside safe margins")
-        for message in clipped_failures:
-            report.add(CheckStatus.FAIL, message)
-    else:
-        report.add(CheckStatus.PASS, "Essential content remains inside safe margins")
-
-    apply_usage_findings(report, (finding for finding in usage_findings if finding[0] != CheckStatus.FAIL))
+    page_metrics, ink_masks, clips = analyze_pdf_visual_geometry(doc, profile, report, analysis_dpi=analysis_dpi)
 
     full_text = "".join(page.get_text("text") for page in doc)
     placeholders = _detect_placeholders(full_text)
@@ -186,7 +229,21 @@ def validate_pdf(path: Path, profile: ArtifactProfile, report: PreflightReport) 
     else:
         report.add(CheckStatus.WARN, "Font inventory unavailable", details="No fonts detected via page scan.")
 
-    return doc
+    return doc, page_metrics, ink_masks, clips
+
+
+def finalize_quality_score(report: PreflightReport, page_metrics: list[PageVisualMetrics]) -> None:
+    pass_count = sum(1 for c in report.checks if c.status == CheckStatus.PASS)
+    total = max(len(report.checks), 1)
+    fail_count = sum(1 for c in report.checks if c.status == CheckStatus.FAIL)
+    warn_count = sum(1 for c in report.checks if c.status == CheckStatus.WARN)
+    score = compute_quality_score(pass_count / total, page_metrics, fail_count, warn_count)
+    report.quality_score = score.to_dict()
+    report.add(
+        CheckStatus.PASS,
+        f"Quality score — mechanical: {score.mechanical_score:.0f}, visual heuristic: {score.visual_heuristic_score:.0f}",
+        details=f"Instructional status: {score.instructional_status}. Scores do not override FAIL.",
+    )
 
 
 def _pages_with_numbers(doc: fitz.Document) -> list[int]:

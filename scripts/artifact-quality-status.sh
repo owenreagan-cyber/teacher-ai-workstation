@@ -19,7 +19,7 @@ cd "${repo_root}"
 
 section 'Instructional Artifact Quality System'
 cat <<'EOF'
-Status: local-first printable resource validation foundation
+Status: local-first printable resource validation with Phase 2 visual geometry
 Network: no
 API: no
 Student data: no
@@ -65,6 +65,7 @@ for module in \
   scripts/artifact_quality/compare_student_key.py \
   scripts/artifact_quality/render_artifact.py \
   scripts/artifact_quality/inspect_page_usage.py \
+  scripts/artifact_quality/visual_geometry.py \
   scripts/artifact_quality/run_preflight.py; do
   check_file "${module}"
 done
@@ -76,11 +77,43 @@ from pathlib import Path
 root = Path('.').resolve()
 sys.path.insert(0, str(root))
 from scripts.artifact_quality import profiles, validate_pdf, validate_docx, validate_html, validate_pptx
+from scripts.artifact_quality import visual_geometry
 from scripts.artifact_quality.run_preflight import build_parser
 assert build_parser().prog
+assert hasattr(visual_geometry, "analyze_page_visual")
 PY
 else
   fail 'python3 not available'
+fi
+
+section 'Phase 2 Visual Geometry'
+check_file scripts/artifact_quality/visual_geometry.py
+check_file tests/artifact_quality/test_visual_geometry.py
+
+if command -v python3 >/dev/null 2>&1; then
+  python3 - <<'PY' >/dev/null 2>&1 && pass 'visual geometry module imports succeed' || fail 'visual geometry imports failed'
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path('.').resolve()))
+from scripts.artifact_quality.visual_geometry import (
+    analyze_page_visual, generate_contact_sheet, annotate_page_render, visual_compare_pages,
+)
+PY
+  grep -Fq 'generate_contact_sheet' scripts/artifact_quality/visual_geometry.py && pass 'contact-sheet support exists' || fail 'contact-sheet support missing'
+  grep -Fq 'annotate_page_render' scripts/artifact_quality/visual_geometry.py && pass 'annotated-render support exists' || fail 'annotated-render support missing'
+  grep -Fq 'visual_compare_pages' scripts/artifact_quality/visual_geometry.py && pass 'visual comparison support exists' || fail 'visual comparison support missing'
+  python3 - <<'PY' >/dev/null 2>&1 && pass 'profile visual defaults valid' || fail 'profile visual defaults invalid'
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path('.').resolve()))
+from scripts.artifact_quality.profiles import load_profile, list_profiles
+for name in list_profiles():
+    p = load_profile(name)
+    assert p.visual_geometry.analysis_dpi > 0
+    assert len(p.visual_geometry.writing_space_range) == 2
+PY
+else
+  warn 'python3 unavailable for Phase 2 checks'
 fi
 
 section 'Fixtures and Tests'
@@ -113,6 +146,9 @@ grep -Fq -- '"--artifact-quality-status"' assistant/chief-of-staff/v1/command-su
 grep -Fq 'instructional-artifact-quality-operator-guide' docs/instructional-artifact-quality-operator-guide.md && pass 'operator guide present' || pass 'operator guide file present'
 
 if command -v python3 >/dev/null 2>&1; then
+  python3 scripts/artifact_quality/run_preflight.py --help 2>&1 | grep -Fq -- '--annotate' && pass 'run_preflight.py exposes --annotate' || fail 'run_preflight.py missing --annotate'
+  python3 scripts/artifact_quality/run_preflight.py --help 2>&1 | grep -Fq -- '--contact-sheet' && pass 'run_preflight.py exposes --contact-sheet' || fail 'run_preflight.py missing --contact-sheet'
+  python3 scripts/artifact_quality/run_preflight.py --help 2>&1 | grep -Fq -- '--visual-compare' && pass 'run_preflight.py exposes --visual-compare' || fail 'run_preflight.py missing --visual-compare'
   python3 scripts/artifact_quality/run_preflight.py --help >/dev/null 2>&1 && pass 'run_preflight.py --help works' || fail 'run_preflight.py --help failed'
 fi
 

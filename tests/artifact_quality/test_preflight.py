@@ -54,6 +54,9 @@ class ArtifactQualityTests(unittest.TestCase):
         self.assertEqual(report.final_status, CheckStatus.WARN)
         self.assertEqual(report.exit_code(strict=False), 0)
         self.assertEqual(report.exit_code(strict=True), 2)
+        messages = " ".join(c.message for c in report.checks)
+        self.assertNotIn("uses 0% of the printable area", messages)
+        self.assertIn("visual metrics", messages.lower())
 
     def test_fail_a4(self) -> None:
         report = run_preflight(

@@ -490,6 +490,7 @@ Developer and Cursor Workflow:
                                        Show agent builder compatibility and external tool governance status and exit.
   --agents-governance-status           Show repo-wide AGENTS.md governance status and exit.
   --artifact-quality-status            Show Instructional Artifact Quality System foundation status and exit.
+  --curriculum-production-status       Show Curriculum Production Engine foundation status and exit.
   --owen-architecture-decision-packets-status
                                        Show Owen architecture decision packet index and boundary proof and exit.
   --app-ecosystem-inventory-status     Show app ecosystem inventory and prototype build list status and exit.
@@ -3612,6 +3613,15 @@ while [[ $# -gt 0 ]]; do
         die "Instructional Artifact Quality status script is missing: scripts/artifact-quality-status.sh"
       fi
       bash "${artifact_quality_status_script}"
+      exit 0
+      ;;
+    --curriculum-production-status)
+      repo_root="$(resolve_repo_root)"
+      curriculum_production_status_script="${repo_root}/scripts/curriculum-production-status.sh"
+      if [[ ! -f "${curriculum_production_status_script}" ]]; then
+        die "Curriculum Production Engine status script is missing: scripts/curriculum-production-status.sh"
+      fi
+      bash "${curriculum_production_status_script}"
       exit 0
       ;;
     --owen-architecture-decision-packets-status)

@@ -81,6 +81,8 @@ Cross-references:
 | Manual metadata boundary | implemented read-only | `docs/curriculum-builder-manual-metadata-boundary.md`; field taxonomy; no real records |
 | Governance-first production registry (CB-PROD-GOV) | implemented read-only | `--curriculum-production-registry-governance-status`; blocked-write proof; candidate skeleton |
 | Curriculum Builder Registry authority map + lane hardening | implemented read-only | `--curriculum-registry-lane-status` (includes source readiness + Owen checklist); `--curriculum-registry-a4-a7-fixture-schema-status` (0 targeted WARN); see authority map + A4–A7 evidence doc |
+| Instructional Artifact Quality System | **complete (Phases 1–3)** | `--artifact-quality-status`; mechanical + visual + educational layout preflight; no classroom auto-approval |
+| Curriculum Production Engine | foundation complete | `--curriculum-production-status`; lesson models, registry, validators; no generation or curriculum scanning |
 | Curriculum Source Readiness (fake metadata inventory) | implemented read-only | `--curriculum-source-readiness-status`; fake fixtures only; no real ingestion |
 | Whole-system coherence maintenance | implemented read-only | `--whole-system-coherence-status`; audit + safe enhancement backlog |
 | Agent builder compatibility governance | implemented read-only | `--agent-builder-compatibility-governance-status`; external tool classification; no CoS agent launch |

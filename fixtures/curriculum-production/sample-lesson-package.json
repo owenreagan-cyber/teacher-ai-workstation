@@ -1,0 +1,42 @@
+{
+  "lesson": {
+    "lesson_id": "sample-g4-math-u1-l03",
+    "subject": "math",
+    "grade": 4,
+    "unit": "Unit 1 — Place Value",
+    "chapter": "Chapter 3",
+    "lesson_number": 3,
+    "title": "Sample Planning Lesson (Fictional)",
+    "objective": "Students will compare multi-digit numbers using place value reasoning.",
+    "standards": ["4.NBT.A.2"],
+    "vocabulary": ["place value", "compare", "greater than", "less than"],
+    "prerequisite_knowledge": ["Reads three- and four-digit numbers"],
+    "assessment_targets": ["Compare two four-digit numbers with justification"],
+    "instructional_sequence_id": "math",
+    "required_artifacts": [
+      "presentation",
+      "guided_notes",
+      "worksheet",
+      "assessment",
+      "teacher_key"
+    ],
+    "production_status": "planned"
+  },
+  "content_map": {
+    "lesson_id": "sample-g4-math-u1-l03",
+    "items": [
+      {
+        "content_id": "obj-compare-numbers",
+        "title": "Compare multi-digit numbers",
+        "priority": "critical",
+        "notes": "Fictional sample — manual classification example"
+      },
+      {
+        "content_id": "bg-place-value-chart",
+        "title": "Place value chart reference",
+        "priority": null,
+        "notes": "Awaiting teacher prioritization"
+      }
+    ]
+  }
+}

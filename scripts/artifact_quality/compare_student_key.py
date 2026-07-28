@@ -8,6 +8,7 @@ import fitz
 from .models import CheckStatus, PreflightReport
 from .profiles import ArtifactProfile
 from .validate_pdf import validate_pdf
+from .visual_geometry import visual_compare_pages
 
 
 def _page_signatures(doc: fitz.Document) -> list[dict[str, object]]:
@@ -33,6 +34,10 @@ def compare_student_teacher_keys(
     teacher_path: Path,
     profile: ArtifactProfile,
     report: PreflightReport,
+    *,
+    visual_compare: bool = False,
+    output_dir: Path | None = None,
+    analysis_dpi: int | None = None,
 ) -> None:
     student_doc = None
     teacher_doc = None
@@ -87,14 +92,35 @@ def compare_student_teacher_keys(
     else:
         report.add(CheckStatus.PASS, "Student and teacher structural layout appear aligned")
 
+    student_doc.close()
+    teacher_doc.close()
+
+    if visual_compare and output_dir is not None:
+        for status, message, details in visual_compare_pages(
+            student_path, teacher_path, output_dir, profile, dpi=analysis_dpi,
+        ):
+            report.add(status, message, details=details)
+
 
 def validate_with_optional_key(
     student_path: Path,
     teacher_path: Path | None,
     profile: ArtifactProfile,
     report: PreflightReport,
-) -> fitz.Document | None:
-    doc = validate_pdf(student_path, profile, report)
+    *,
+    analysis_dpi: int | None = None,
+    visual_compare: bool = False,
+    output_dir: Path | None = None,
+) -> tuple[fitz.Document | None, list, list, list]:
+    doc, page_metrics, ink_masks, clips = validate_pdf(student_path, profile, report, analysis_dpi=analysis_dpi)
     if teacher_path is not None:
-        compare_student_teacher_keys(student_path, teacher_path, profile, report)
-    return doc
+        compare_student_teacher_keys(
+            student_path,
+            teacher_path,
+            profile,
+            report,
+            visual_compare=visual_compare,
+            output_dir=output_dir,
+            analysis_dpi=analysis_dpi,
+        )
+    return doc, page_metrics, ink_masks, clips

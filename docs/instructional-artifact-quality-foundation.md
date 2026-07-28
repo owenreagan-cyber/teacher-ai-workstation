@@ -1,40 +1,49 @@
 # Instructional Artifact Quality System Foundation
 
-Last updated: 2026-07-27
+Last updated: 2026-07-28
 
-Status: **implemented foundation** — local-first mechanical validation with teacher visual review required.
+Status: **Phase 2 visual geometry** — local-first mechanical validation with rendered-page metrics; teacher visual review required.
 
 ## Implemented
 
 - Profiles under `configs/artifact-profiles/`
 - Standards under `standards/instructional-artifacts/`
 - Validators: PDF (primary), DOCX, HTML, PPTX
-- Student/teacher key comparison
-- Page utilization heuristics and PNG rendering
+- Student/teacher key comparison (structural + optional visual diff)
+- **Rendered-page geometry metrics** (`scripts/artifact_quality/visual_geometry.py`)
+- **Visible-ink analysis** at configurable DPI
+- **Contact sheets** and **annotated page previews**
+- **Visual student/key comparison** (diff + overlay images)
 - Subject extensions: math, shurley, reading, history, science
 - CLI: `python3 scripts/artifact_quality/run_preflight.py`
 - Status: `bin/chief-of-staff --artifact-quality-status`
 
 ## Heuristic / WARN-only
 
-- Page utilization on diagram-heavy or workspace-heavy pages
+- Text coverage (not total utilization)
+- Drawing coverage (vector structure)
+- Estimated structured writing space
+- Bottom whitespace from rendered occupancy
+- Page balance (top-heavy, sparse, dense, title-only)
+- Visual student/key differences
+- Preliminary visual heuristic score
 - Font embedding confirmation
 - HTML/PPTX/DOCX final pagination without PDF export
-- One-core-idea slide density
-- Student/key structural drift without pixel comparison
 
 ## Manual / instructional review required
 
+- Attractiveness and instructional importance
+- Grade 4 cognitive appropriateness
+- Semantic and diagram correctness
+- Sufficient writing space for an individual class
 - Pedagogy and semantic correctness
 - Grayscale and projector readability
 - Shurley alignment quality beyond single-line heuristic
-- Map, diagram, and timeline instructional fit
 
 ## Future enhancements
 
 - Optional local HTML-to-PDF conversion path when approved browser tooling exists
 - Richer math layout analysis
-- Visual diff previews for student/key pairs
 - Ricoh / print-shop specific profiles
 
 ## Non-activation

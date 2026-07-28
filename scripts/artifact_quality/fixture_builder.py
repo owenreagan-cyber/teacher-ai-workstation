@@ -27,21 +27,38 @@ def build_passing_worksheet(path: Path) -> None:
     doc = _new_letter_doc()
     page = doc[0]
     page.insert_text((SAFE_X, SAFE_Y), "Grade 4 Math Worksheet", fontsize=20)
-    for index in range(1, 17):
-        col = 0 if index % 2 else 1
-        row = (index - 1) // 2
-        x = SAFE_X + col * 250
-        y = SAFE_Y + 40 + row * 32
-        if y > SAFE_BOTTOM_Y - 40:
-            break
-        page.insert_text((x, y), f"{index}. Sample problem = ______", fontsize=13)
+    # Table grid with writing lines (inset within safe bounds)
+    table_left = SAFE_X + 16
+    table_right = 520
+    table_top = SAFE_Y + 50
+    for row in range(5):
+        y = table_top + row * 36
+        page.draw_line((table_left, y), (table_right, y), width=0.5)
+    for col in range(3):
+        x = table_left + col * ((table_right - table_left) // 3)
+        page.draw_line((x, table_top), (x, table_top + 4 * 36), width=0.5)
+    page.draw_line((table_right, table_top), (table_right, table_top + 4 * 36), width=0.5)
+    page.draw_line((table_left, table_top + 4 * 36), (table_right, table_top + 4 * 36), width=0.5)
+    col_width = (table_right - table_left) // 3
+    for index in range(1, 9):
+        col = (index - 1) % 3
+        row = (index - 1) // 3
+        x = table_left + col * col_width + 8
+        y = table_top + row * 36 + 22
+        page.insert_text((x, y), f"{index}.", fontsize=12)
+    # Answer boxes
+    for i in range(3):
+        box_y = table_top + 4 * 36 + 20 + i * 50
+        page.draw_rect(fitz.Rect(table_left, box_y, table_right, box_y + 36), width=0.75)
+        page.insert_text((table_left + 8, box_y + 10), f"Show work {i + 1}:", fontsize=11)
+        for line_y in range(box_y + 18, box_y + 34, 8):
+            page.draw_line((table_left + 4, line_y), (table_right - 4, line_y), width=0.3)
     directions = (
         "Directions: Complete each problem. Show your work in the space provided. "
-        "Check your answers carefully before turning in your paper. "
-        "Use pencil so you can revise your work if needed."
+        "Check your answers carefully before turning in your paper."
     )
     page.insert_textbox(
-        fitz.Rect(SAFE_X, SAFE_BOTTOM_Y - 70, 540, SAFE_BOTTOM_Y - 10),
+        fitz.Rect(SAFE_X, SAFE_BOTTOM_Y - 60, 540, SAFE_BOTTOM_Y - 10),
         directions,
         fontsize=12,
     )
@@ -57,8 +74,12 @@ def build_passing_guided_notes(path: Path) -> None:
         page.insert_text((SAFE_X + 8, SAFE_Y), f"Guided Notes — Page {page_no}", fontsize=18)
         page.insert_text((SAFE_X + 8, SAFE_Y + 40), "Main idea: sample summary line for testing.", fontsize=13)
         page.insert_text((SAFE_X + 8, SAFE_Y + 80), "Notes:", fontsize=13)
-        for y in range(SAFE_Y + 120, SAFE_BOTTOM_Y - 40, 28):
-            page.insert_text((SAFE_X + 8, y), "______________________________________________", fontsize=12)
+        for y in range(SAFE_Y + 120, SAFE_BOTTOM_Y - 120, 28):
+            page.draw_line((SAFE_X + 8, y), (520, y), width=0.4)
+        # Structured response box
+        box_y = SAFE_BOTTOM_Y - 110
+        page.draw_rect(fitz.Rect(SAFE_X + 8, box_y, 520, box_y + 80), width=0.75)
+        page.insert_text((SAFE_X + 16, box_y + 8), "Response:", fontsize=12)
         page.insert_text((500, SAFE_BOTTOM_Y), str(page_no), fontsize=10)
     doc.save(path)
     doc.close()
@@ -76,10 +97,76 @@ def build_passing_teacher_key(path: Path) -> None:
     doc.close()
 
 
+def build_passing_diagram_page(path: Path) -> None:
+    doc = _new_letter_doc()
+    page = doc[0]
+    page.insert_text((SAFE_X, SAFE_Y), "Science Diagram", fontsize=18)
+    cx, cy = 300, 380
+    page.draw_circle(fitz.Point(cx, cy), 80, width=1.5)
+    page.draw_line(fitz.Point(cx - 80, cy), fitz.Point(cx + 80, cy), width=0.75)
+    page.draw_line(fitz.Point(cx, cy - 80), fitz.Point(cx, cy + 80), width=0.75)
+    page.draw_line(fitz.Point(cx - 50, cy - 50), fitz.Point(cx + 50, cy + 50), width=0.5)
+    page.draw_rect(fitz.Rect(SAFE_X, 520, 540, 620), width=0.75)
+    page.insert_text((SAFE_X + 8, 530), "Label the diagram:", fontsize=12)
+    doc.save(path)
+    doc.close()
+
+
+def build_warn_dense_worksheet(path: Path) -> None:
+    doc = _new_letter_doc()
+    page = doc[0]
+    page.insert_text((SAFE_X, SAFE_Y), "Dense Worksheet", fontsize=16)
+    shade = fitz.Rect(SAFE_X, SAFE_Y + 30, 520, SAFE_BOTTOM_Y - 40)
+    page.draw_rect(shade, color=(0.2, 0.2, 0.2), fill=(0.92, 0.92, 0.92))
+    y = SAFE_Y + 40
+    while y < SAFE_BOTTOM_Y - 50:
+        page.insert_text((SAFE_X + 8, y), "Dense sample instructional line for testing.", fontsize=9)
+        page.draw_line((SAFE_X + 8, y + 12), (510, y + 12), width=0.4)
+        y += 16
+    doc.save(path)
+    doc.close()
+
+
+def build_warn_layout_shift_key(path: Path) -> None:
+    doc = fitz.open()
+    page = doc.new_page(width=LETTER[0], height=LETTER[1])
+    page.insert_text((SAFE_X + 8, SAFE_Y), "Teacher Key — Page 1", fontsize=18)
+    page.insert_text((SAFE_X + 8, SAFE_Y + 40), "Main idea: sample summary line for testing.", fontsize=13)
+    page.insert_text((SAFE_X + 8, SAFE_Y + 80), "Answer: sample answer text with extra teacher content.", fontsize=13)
+    page.insert_text((SAFE_X + 8, SAFE_Y + 120), "Additional notes for teacher review only.", fontsize=13)
+    page.insert_text((500, SAFE_BOTTOM_Y), "1", fontsize=10)
+    page = doc.new_page(width=LETTER[0], height=LETTER[1])
+    page.insert_text((SAFE_X + 8, SAFE_Y), "Teacher Key — Page 2", fontsize=18)
+    page.insert_text((500, SAFE_BOTTOM_Y), "2", fontsize=10)
+    doc.save(path)
+    doc.close()
+
+
+def build_passing_multipage(path: Path) -> None:
+    doc = fitz.open()
+    for page_no in range(1, 6):
+        page = doc.new_page(width=LETTER[0], height=LETTER[1])
+        page.insert_text((SAFE_X, SAFE_Y), f"Multi-page test — Page {page_no}", fontsize=16)
+        for y in range(SAFE_Y + 60, SAFE_BOTTOM_Y - 40, 30):
+            page.draw_line((SAFE_X, y), (540, y), width=0.3)
+        page.insert_text((500, SAFE_BOTTOM_Y), str(page_no), fontsize=10)
+    doc.save(path)
+    doc.close()
+
+
 def build_warn_low_utilization(path: Path) -> None:
     doc = _new_letter_doc()
     page = doc[0]
     page.insert_text((80, 80), "Short title only", fontsize=14)
+    doc.save(path)
+    doc.close()
+
+
+def build_warn_writing_space(path: Path) -> None:
+    doc = _new_letter_doc()
+    page = doc[0]
+    page.insert_text((SAFE_X, SAFE_Y), "Minimal writing space worksheet", fontsize=16)
+    page.insert_text((SAFE_X, SAFE_Y + 40), "1. Single question", fontsize=13)
     doc.save(path)
     doc.close()
 
@@ -241,12 +328,17 @@ def ensure_all_fixtures(base: Path) -> None:
         base / "passing" / "worksheet-letter.pdf": build_passing_worksheet,
         base / "passing" / "guided-notes-two-page.pdf": build_passing_guided_notes,
         base / "passing" / "teacher-key-two-page.pdf": build_passing_teacher_key,
+        base / "passing" / "diagram-minimal-text.pdf": build_passing_diagram_page,
+        base / "passing" / "multipage-five.pdf": build_passing_multipage,
         base / "passing" / "printable.html": build_passing_html,
         base / "passing" / "guided-notes.docx": build_passing_docx,
         base / "passing" / "projector.pptx": build_passing_pptx,
         base / "warning" / "low-utilization.pdf": build_warn_low_utilization,
         base / "warning" / "bottom-gap.pdf": build_warn_bottom_gap,
         base / "warning" / "near-boundary.pdf": build_warn_near_boundary,
+        base / "warning" / "dense-worksheet.pdf": build_warn_dense_worksheet,
+        base / "warning" / "writing-space-low.pdf": build_warn_writing_space,
+        base / "warning" / "layout-shift-key.pdf": build_warn_layout_shift_key,
         base / "failing" / "a4-page.pdf": build_fail_a4,
         base / "failing" / "unsafe-edge.pdf": build_fail_unsafe_edge,
         base / "failing" / "blank-final-page.pdf": build_fail_blank_final_page,

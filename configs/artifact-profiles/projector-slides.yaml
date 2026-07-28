@@ -1,0 +1,28 @@
+name: projector-slides
+artifact_type: pptx
+paper:
+  width_points: 612
+  height_points: 792
+  orientation: landscape
+margins:
+  top_inches: 0.50
+  bottom_inches: 0.50
+  left_inches: 0.55
+  right_inches: 0.55
+safe_boundary_inches: 0.35
+page_utilization:
+  warning_below_percent: 70
+  bottom_gap_warning_inches: 2.25
+  boundary_warning_inches: 0.10
+requirements:
+  page_numbers_after_first: false
+  render_pages: false
+  teacher_key_must_match_page_count: false
+printing:
+  scale: actual-size
+  percent: 100
+slides:
+  width_inches: 13.333
+  height_inches: 7.5
+  min_title_font_pt: 28
+  min_body_font_pt: 18

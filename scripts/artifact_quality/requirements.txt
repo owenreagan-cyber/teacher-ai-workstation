@@ -1,0 +1,8 @@
+# Instructional Artifact Quality System — local Python dependencies.
+# Install: pip3 install -r scripts/artifact_quality/requirements.txt
+PyMuPDF>=1.24.0
+PyYAML>=6.0
+pypdf>=4.0
+Pillow>=10.0
+python-docx>=1.1.0
+python-pptx>=1.0.0

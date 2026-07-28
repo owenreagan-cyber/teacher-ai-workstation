@@ -45,12 +45,12 @@ def build_passing_worksheet(path: Path) -> None:
         row = (index - 1) // 3
         x = table_left + col * col_width + 8
         y = table_top + row * 36 + 22
-        page.insert_text((x, y), f"{index}.", fontsize=12)
+        page.insert_text((x, y), f"{index}.", fontsize=13)
     # Answer boxes
     for i in range(3):
         box_y = table_top + 4 * 36 + 20 + i * 50
         page.draw_rect(fitz.Rect(table_left, box_y, table_right, box_y + 36), width=0.75)
-        page.insert_text((table_left + 8, box_y + 10), f"Show work {i + 1}:", fontsize=11)
+        page.insert_text((table_left + 8, box_y + 10), f"Show work {i + 1}:", fontsize=12.5)
         for line_y in range(box_y + 18, box_y + 34, 8):
             page.draw_line((table_left + 4, line_y), (table_right - 4, line_y), width=0.3)
     directions = (
@@ -60,9 +60,9 @@ def build_passing_worksheet(path: Path) -> None:
     page.insert_textbox(
         fitz.Rect(SAFE_X, SAFE_BOTTOM_Y - 60, 540, SAFE_BOTTOM_Y - 10),
         directions,
-        fontsize=12,
+        fontsize=12.5,
     )
-    page.insert_text((500, SAFE_BOTTOM_Y), "1", fontsize=10)
+    page.insert_text((500, SAFE_BOTTOM_Y), "1", fontsize=12.5)
     doc.save(path)
     doc.close()
 
@@ -323,6 +323,82 @@ def build_fail_pptx_out_of_bounds(path: Path) -> None:
     presentation.save(path)
 
 
+def build_edu_warn_tiny_font(path: Path) -> None:
+    doc = _new_letter_doc()
+    page = doc[0]
+    page.insert_text((SAFE_X, SAFE_Y), "Tiny Font Worksheet", fontsize=16)
+    y = SAFE_Y + 40
+    for i in range(12):
+        page.insert_text((SAFE_X, y), f"{i + 1}. Problem with small body text.", fontsize=9.5)
+        y += 18
+    doc.save(path)
+    doc.close()
+
+
+def build_edu_warn_huge_paragraph(path: Path) -> None:
+    doc = _new_letter_doc()
+    page = doc[0]
+    page.insert_text((SAFE_X, SAFE_Y), "Reading Passage", fontsize=18)
+    paragraph = (
+        "Directions: Read the entire passage carefully before answering. "
+        + "This intentionally long single paragraph simulates a wall of text without visual breaks "
+        * 8
+        + "for Grade 4 readability testing."
+    )
+    page.insert_textbox(fitz.Rect(SAFE_X, SAFE_Y + 40, 520, 560), paragraph, fontsize=13)
+    doc.save(path)
+    doc.close()
+
+
+def build_edu_warn_dense_slide(path: Path) -> None:
+    presentation = Presentation()
+    presentation.slide_width = PInches(13.333)
+    presentation.slide_height = PInches(7.5)
+    slide = presentation.slides.add_slide(presentation.slide_layouts[5])
+    title = slide.shapes.add_textbox(PInches(0.5), PInches(0.3), PInches(12), PInches(0.8))
+    title.text_frame.text = "Dense Slide"
+    body = slide.shapes.add_textbox(PInches(0.5), PInches(1.2), PInches(12), PInches(5.8))
+    tf = body.text_frame
+    bullets = [
+        "First concept about ecosystems and also food chains",
+        "Second concept about producers consumers decomposers",
+        "Third concept about habitats and also adaptations",
+        "Fourth concept about energy flow and also matter",
+        "Fifth concept about human impact and also conservation",
+        "Sixth concept about water cycle and also weather",
+        "Seventh concept about soil layers and also erosion",
+        "Eighth concept about plant parts and also photosynthesis",
+    ]
+    tf.text = bullets[0]
+    for item in bullets[1:]:
+        p = tf.add_paragraph()
+        p.text = item
+        p.level = 0
+    for para in tf.paragraphs:
+        for run in para.runs:
+            run.font.size = PPt(14)
+    presentation.save(path)
+
+
+def build_edu_warn_crowded_shurley(path: Path) -> None:
+    doc = _new_letter_doc()
+    page = doc[0]
+    page.insert_text((SAFE_X, SAFE_Y), "Shurley Practice", fontsize=18)
+    page.insert_text((SAFE_X, SAFE_Y + 36), "Classify each word in the sentence below.", fontsize=12)
+    page.insert_text(
+        (SAFE_X, SAFE_Y + 70),
+        "The fourth grade students classified the vocabulary words.",
+        fontsize=13,
+    )
+    page.insert_text(
+        (SAFE_X, SAFE_Y + 100),
+        "Another sample sentence with tight vertical spacing for testing.",
+        fontsize=13,
+    )
+    doc.save(path)
+    doc.close()
+
+
 def ensure_all_fixtures(base: Path) -> None:
     builders = {
         base / "passing" / "worksheet-letter.pdf": build_passing_worksheet,
@@ -339,6 +415,10 @@ def ensure_all_fixtures(base: Path) -> None:
         base / "warning" / "dense-worksheet.pdf": build_warn_dense_worksheet,
         base / "warning" / "writing-space-low.pdf": build_warn_writing_space,
         base / "warning" / "layout-shift-key.pdf": build_warn_layout_shift_key,
+        base / "warning" / "edu-tiny-font.pdf": build_edu_warn_tiny_font,
+        base / "warning" / "edu-huge-paragraph.pdf": build_edu_warn_huge_paragraph,
+        base / "warning" / "edu-dense-slide.pptx": build_edu_warn_dense_slide,
+        base / "warning" / "edu-crowded-shurley.pdf": build_edu_warn_crowded_shurley,
         base / "failing" / "a4-page.pdf": build_fail_a4,
         base / "failing" / "unsafe-edge.pdf": build_fail_unsafe_edge,
         base / "failing" / "blank-final-page.pdf": build_fail_blank_final_page,

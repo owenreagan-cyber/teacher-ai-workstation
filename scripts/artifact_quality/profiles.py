@@ -58,6 +58,40 @@ class VisualGeometrySpec:
 
 
 @dataclass
+class EducationalLayoutSpec:
+    min_body_font_pt: float = 12.5
+    min_direction_font_pt: float = 12.0
+    unreadable_body_font_pt: float = 8.0
+    max_font_families: int = 3
+    max_heading_size_spread_pt: float = 8.0
+    max_chars_per_page: int = 2200
+    max_paragraph_chars: int = 450
+    max_questions_per_page: int = 12
+    min_chars_for_chunking_check: int = 400
+    max_direction_words: int = 80
+    max_direction_single_paragraph_words: int = 35
+    max_activity_formats_per_page: int = 3
+    min_fill_in_ratio: float = 0.08
+    max_assessment_questions_per_page: int = 10
+    max_question_style_variety: int = 3
+    max_reading_lines_without_break: int = 18
+    max_reading_passage_chars: int = 1200
+    max_math_problems_per_page: int = 14
+    min_math_workspace_percent: float = 15.0
+    max_shurley_sentence_chars: int = 72
+    min_shurley_sentence_spacing_pt: float = 18.0
+    min_diagram_label_font_pt: float = 9.0
+    max_tiny_labels_per_page: int = 4
+    max_diagram_crowding_ink_percent: float = 55.0
+    max_bullets_per_slide: int = 6
+    max_slide_words: int = 45
+    min_slide_title_font_pt: float = 28.0
+    min_slide_body_font_pt: float = 18.0
+    max_slide_concept_markers: int = 3
+    subject_writing_space: dict[str, tuple[float, float]] = field(default_factory=dict)
+
+
+@dataclass
 class RequirementSpec:
     page_numbers_after_first: bool = False
     render_pages: bool = False
@@ -92,6 +126,7 @@ class ArtifactProfile:
     printing: PrintingSpec
     safe_boundary_inches: float = 0.35
     visual_geometry: VisualGeometrySpec = field(default_factory=VisualGeometrySpec)
+    educational_layout: EducationalLayoutSpec = field(default_factory=EducationalLayoutSpec)
     slides: Optional[SlideSpec] = None
     subject_extensions: dict[str, Any] | None = None
 
@@ -105,15 +140,27 @@ def profiles_dir() -> Path:
 
 
 def load_profile(name: str) -> ArtifactProfile:
-    path = profiles_dir() / f"{name}.yaml"
+    from .grade_4_profiles import load_grade_4_profile, resolve_profile_name
+
+    resolved, grade_key = resolve_profile_name(name)
+    if grade_key is not None:
+        return load_grade_4_profile(grade_key)
+    path = profiles_dir() / f"{resolved}.yaml"
     if not path.is_file():
         raise FileNotFoundError(f"Profile not found: {path}")
     raw = _load_structured_file(path)
-    return parse_profile(raw, expected_name=name)
+    return parse_profile(raw, expected_name=resolved)
 
 
 def list_profiles() -> list[str]:
-    return sorted(p.stem for p in profiles_dir().glob("*.yaml"))
+    names = sorted(p.stem for p in profiles_dir().glob("*.yaml") if p.stem != "grade_4_profiles")
+    try:
+        from .grade_4_profiles import list_grade_4_profiles
+
+        names.extend(list_grade_4_profiles())
+    except FileNotFoundError:
+        pass
+    return sorted(set(names))
 
 
 def _load_structured_file(path: Path) -> dict[str, Any]:
@@ -184,6 +231,7 @@ def parse_profile(raw: dict[str, Any], *, expected_name: str | None = None) -> A
         generate_annotated_renders=bool(visual_raw.get("generate_annotated_renders", False)),
         generate_contact_sheet=bool(visual_raw.get("generate_contact_sheet", False)),
     )
+    edu_raw = raw.get("educational_layout") or {}
     requirements = RequirementSpec(
         page_numbers_after_first=bool(req_raw.get("page_numbers_after_first", False)),
         render_pages=bool(req_raw.get("render_pages", False)),
@@ -191,6 +239,47 @@ def parse_profile(raw: dict[str, Any], *, expected_name: str | None = None) -> A
         require_single_line_sentences=bool(req_raw.get("require_single_line_sentences", False)),
         min_body_font_pt=float(req_raw.get("min_body_font_pt", 12.5)),
         max_body_font_pt=float(req_raw.get("max_body_font_pt", 14.0)),
+    )
+    subj_ws_raw = edu_raw.get("subject_writing_space") or {}
+    subject_writing_space: dict[str, tuple[float, float]] = {}
+    if isinstance(subj_ws_raw, dict):
+        for key, val in subj_ws_raw.items():
+            if isinstance(val, dict):
+                subject_writing_space[str(key)] = (
+                    float(val.get("min_percent", 15.0)),
+                    float(val.get("max_percent", 60.0)),
+                )
+    educational = EducationalLayoutSpec(
+        min_body_font_pt=float(edu_raw.get("min_body_font_pt", requirements.min_body_font_pt)),
+        min_direction_font_pt=float(edu_raw.get("min_direction_font_pt", 12.0)),
+        unreadable_body_font_pt=float(edu_raw.get("unreadable_body_font_pt", 8.0)),
+        max_font_families=int(edu_raw.get("max_font_families", 3)),
+        max_heading_size_spread_pt=float(edu_raw.get("max_heading_size_spread_pt", 8.0)),
+        max_chars_per_page=int(edu_raw.get("max_chars_per_page", 2200)),
+        max_paragraph_chars=int(edu_raw.get("max_paragraph_chars", 450)),
+        max_questions_per_page=int(edu_raw.get("max_questions_per_page", 12)),
+        min_chars_for_chunking_check=int(edu_raw.get("min_chars_for_chunking_check", 400)),
+        max_direction_words=int(edu_raw.get("max_direction_words", 80)),
+        max_direction_single_paragraph_words=int(edu_raw.get("max_direction_single_paragraph_words", 35)),
+        max_activity_formats_per_page=int(edu_raw.get("max_activity_formats_per_page", 3)),
+        min_fill_in_ratio=float(edu_raw.get("min_fill_in_ratio", 0.08)),
+        max_assessment_questions_per_page=int(edu_raw.get("max_assessment_questions_per_page", 10)),
+        max_question_style_variety=int(edu_raw.get("max_question_style_variety", 3)),
+        max_reading_lines_without_break=int(edu_raw.get("max_reading_lines_without_break", 18)),
+        max_reading_passage_chars=int(edu_raw.get("max_reading_passage_chars", 1200)),
+        max_math_problems_per_page=int(edu_raw.get("max_math_problems_per_page", 14)),
+        min_math_workspace_percent=float(edu_raw.get("min_math_workspace_percent", 15.0)),
+        max_shurley_sentence_chars=int(edu_raw.get("max_shurley_sentence_chars", 72)),
+        min_shurley_sentence_spacing_pt=float(edu_raw.get("min_shurley_sentence_spacing_pt", 18.0)),
+        min_diagram_label_font_pt=float(edu_raw.get("min_diagram_label_font_pt", 9.0)),
+        max_tiny_labels_per_page=int(edu_raw.get("max_tiny_labels_per_page", 4)),
+        max_diagram_crowding_ink_percent=float(edu_raw.get("max_diagram_crowding_ink_percent", 55.0)),
+        max_bullets_per_slide=int(edu_raw.get("max_bullets_per_slide", 6)),
+        max_slide_words=int(edu_raw.get("max_slide_words", 45)),
+        min_slide_title_font_pt=float(edu_raw.get("min_slide_title_font_pt", 28.0)),
+        min_slide_body_font_pt=float(edu_raw.get("min_slide_body_font_pt", 18.0)),
+        max_slide_concept_markers=int(edu_raw.get("max_slide_concept_markers", 3)),
+        subject_writing_space=subject_writing_space,
     )
     printing = PrintingSpec(
         scale=str(print_raw.get("scale", "actual-size")),
@@ -219,6 +308,7 @@ def parse_profile(raw: dict[str, Any], *, expected_name: str | None = None) -> A
         safe_boundary_inches=safe_boundary,
         page_utilization=utilization,
         visual_geometry=visual,
+        educational_layout=educational,
         requirements=requirements,
         printing=printing,
         slides=slides,

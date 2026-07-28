@@ -21,3 +21,7 @@ Guided notes are hole-punch friendly, margin-aware student packets with generous
 Run `guided-notes-letter` profile with optional `--student` / `--teacher` comparison.
 
 Final classroom readiness still requires teacher visual inspection.
+
+## Automated educational heuristics (Phase 3)
+
+WARN-only checks: fill-in ratio, excessive copying burden, chunking, typography. FAIL reserved for mechanical rules only.

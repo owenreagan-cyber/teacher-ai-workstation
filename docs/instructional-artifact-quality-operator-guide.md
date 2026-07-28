@@ -31,6 +31,24 @@ Preflight now reports **separate** rendered-page metrics per page:
 
 **Instructional quality remains manual review.** PASS/WARN/FAIL scores do not authorize classroom distribution without teacher visual review.
 
+## Educational layout (Phase 3)
+
+Preflight adds an **Instructional Layout** section with conservative Grade 4 heuristics:
+
+| Category | Checks |
+| --- | --- |
+| Typography | Body/direction font sizes, heading consistency, font families |
+| Visual Chunking | Headings, dividers, spacing between sections |
+| Writing Space | Subject-aware workspace estimates |
+| Text Density | Paragraph length, question density, cognitive load |
+| Directions | Length, single-block multi-step instructions |
+| Grade 4 Readability | Worksheet, guided notes, assessment, subject-specific rules |
+| Presentation Visibility | Slide bullets, title prominence, reading load (PPTX) |
+
+Educational heuristics produce **WARN** by default. FAIL is reserved for objectively unreadable text (profile threshold) or existing mechanical rules.
+
+False positives are expected — tune thresholds in profile `educational_layout` blocks.
+
 ## Examples
 
 ### Math worksheet (standard PDF preflight)
@@ -179,10 +197,11 @@ Structural checks run on source files. Authoritative pagination proof still requ
 
 ## Quality score
 
-When PDF visual analysis runs, reports include a transparent preliminary score:
+When analysis runs, reports include transparent preliminary scores:
 
 - **Mechanical score** — ratio of passing checks
-- **Visual heuristic score** — ink/margin/balance heuristics
-- **Instructional status** — always `Manual Review Required`
+- **Visual heuristic score** — ink/margin/balance heuristics (Phase 2)
+- **Educational layout score** — typography, chunking, density heuristics (Phase 3)
+- **Instructional approval** — always `Manual Review Required`
 
 No score overrides FAIL. PDF remains the authoritative print artifact.

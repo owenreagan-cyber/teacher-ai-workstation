@@ -19,7 +19,7 @@ cd "${repo_root}"
 
 section 'Instructional Artifact Quality System'
 cat <<'EOF'
-Status: local-first printable resource validation with Phase 2 visual geometry
+Status: local-first printable resource validation with Phase 2 visual geometry and Phase 3 educational layout
 Network: no
 API: no
 Student data: no
@@ -66,6 +66,7 @@ for module in \
   scripts/artifact_quality/render_artifact.py \
   scripts/artifact_quality/inspect_page_usage.py \
   scripts/artifact_quality/visual_geometry.py \
+  scripts/artifact_quality/educational_layout.py \
   scripts/artifact_quality/run_preflight.py; do
   check_file "${module}"
 done
@@ -114,6 +115,35 @@ for name in list_profiles():
 PY
 else
   warn 'python3 unavailable for Phase 2 checks'
+fi
+
+section 'Phase 3 Educational Layout'
+check_file scripts/artifact_quality/educational_layout.py
+check_file scripts/artifact_quality/grade_4_profiles.py
+check_file configs/artifact-profiles/grade_4_profiles.yaml
+check_file tests/artifact_quality/test_educational_layout.py
+check_file tests/artifact_quality/test_grade_4_profiles.py
+
+if command -v python3 >/dev/null 2>&1; then
+  python3 - <<'PY' >/dev/null 2>&1 && pass 'educational layout module imports succeed' || fail 'educational layout imports failed'
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path('.').resolve()))
+from scripts.artifact_quality.educational_layout import analyze_pdf_educational_layout, format_instructional_layout_section
+PY
+  grep -Fq 'Instructional Layout' scripts/artifact_quality/educational_layout.py && pass 'instructional layout report exists' || fail 'instructional layout report missing'
+  python3 - <<'PY' >/dev/null 2>&1 && pass 'profile educational defaults valid' || fail 'profile educational defaults invalid'
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path('.').resolve()))
+from scripts.artifact_quality.profiles import load_profile, list_profiles
+for name in list_profiles():
+    p = load_profile(name)
+    assert p.educational_layout.min_body_font_pt > 0
+    assert p.educational_layout.max_paragraph_chars > 0
+PY
+else
+  warn 'python3 unavailable for Phase 3 checks'
 fi
 
 section 'Fixtures and Tests'

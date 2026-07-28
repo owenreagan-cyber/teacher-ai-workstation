@@ -20,7 +20,6 @@ from .profiles import ArtifactProfile
 from .visual_geometry import (
     PageVisualMetrics,
     analyze_page_visual,
-    compute_quality_score,
     evaluate_page_thresholds,
 )
 
@@ -232,17 +231,35 @@ def validate_pdf(
     return doc, page_metrics, ink_masks, clips
 
 
-def finalize_quality_score(report: PreflightReport, page_metrics: list[PageVisualMetrics]) -> None:
+def finalize_quality_score(
+    report: PreflightReport,
+    page_metrics: list[PageVisualMetrics],
+    *,
+    educational_score: float | None = None,
+) -> None:
     pass_count = sum(1 for c in report.checks if c.status == CheckStatus.PASS)
     total = max(len(report.checks), 1)
     fail_count = sum(1 for c in report.checks if c.status == CheckStatus.FAIL)
     warn_count = sum(1 for c in report.checks if c.status == CheckStatus.WARN)
-    score = compute_quality_score(pass_count / total, page_metrics, fail_count, warn_count)
-    report.quality_score = score.to_dict()
+    edu = educational_score if educational_score is not None else (
+        float(report.educational_layout.get("educational_score", 100.0))
+        if report.educational_layout else 100.0
+    )
+    from .educational_layout import compute_combined_quality_score
+
+    report.quality_score = compute_combined_quality_score(
+        pass_count / total, page_metrics, fail_count, warn_count, edu,
+    )
+    mech = report.quality_score["mechanical_score"]
+    visual = report.quality_score["visual_heuristic_score"]
+    edu_disp = report.quality_score.get("educational_layout_score", edu)
     report.add(
         CheckStatus.PASS,
-        f"Quality score — mechanical: {score.mechanical_score:.0f}, visual heuristic: {score.visual_heuristic_score:.0f}",
-        details=f"Instructional status: {score.instructional_status}. Scores do not override FAIL.",
+        f"Quality score — mechanical: {mech:.0f}, visual: {visual:.0f}, educational layout: {edu_disp:.0f}",
+        details=(
+            f"Instructional approval: Manual Review Required. "
+            "Scores do not override FAIL."
+        ),
     )
 
 

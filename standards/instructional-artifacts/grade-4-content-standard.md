@@ -29,9 +29,10 @@ Define integrity expectations for printable Grade 4 student resources before cla
 
 1. **Mechanical** — page size, margins, safe boundaries, placeholders, file structure.
 2. **Visual** — rendered previews, utilization heuristics, student/key alignment.
-3. **Instructional** — teacher judgment for pedagogy, readability, and semantic correctness.
+3. **Educational layout** — conservative Grade 4 typography, chunking, density, writing-space, and subject heuristics (WARN-first).
+4. **Instructional** — teacher judgment for pedagogy, readability, and semantic correctness.
 
-Mechanical PASS does not replace final teacher visual inspection.
+Mechanical PASS does not replace final teacher visual inspection. Educational WARN does not claim pedagogy with certainty.
 
 ## PDF as final contract
 

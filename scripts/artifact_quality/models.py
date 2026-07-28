@@ -44,6 +44,7 @@ class PreflightReport:
     contact_sheet_paths: list[str] = field(default_factory=list)
     page_metrics: list[dict[str, Any]] = field(default_factory=list)
     quality_score: Optional[dict[str, Any]] = None
+    educational_layout: Optional[dict[str, Any]] = None
     student_path: Optional[str] = None
     teacher_path: Optional[str] = None
 
@@ -74,6 +75,8 @@ class PreflightReport:
             "student_path": self.student_path,
             "teacher_path": self.teacher_path,
         }
+        if self.educational_layout is not None:
+            payload["educational_layout"] = self.educational_layout
         if self.quality_score is not None:
             payload["quality_score"] = self.quality_score
         return payload

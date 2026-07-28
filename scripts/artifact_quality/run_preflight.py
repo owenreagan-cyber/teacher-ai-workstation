@@ -10,6 +10,11 @@ if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
 from scripts.artifact_quality.compare_student_key import validate_with_optional_key  # noqa: E402
+from scripts.artifact_quality.educational_layout import (  # noqa: E402
+    analyze_pdf_educational_layout,
+    analyze_pptx_educational,
+    apply_educational_layout,
+)
 from scripts.artifact_quality.models import CheckStatus, PreflightReport  # noqa: E402
 from scripts.artifact_quality.profiles import load_profile  # noqa: E402
 from scripts.artifact_quality.render_artifact import (  # noqa: E402
@@ -84,6 +89,7 @@ def run_preflight(
     page_metrics: list[PageVisualMetrics] = []
     ink_masks: list[list[list[bool]] | None] = []
     clips = []
+    educational_score: float | None = None
 
     if kind == "pdf":
         if student_path and teacher_path:
@@ -99,6 +105,10 @@ def run_preflight(
         else:
             doc, page_metrics, ink_masks, clips = validate_pdf(primary, profile, report, analysis_dpi=effective_dpi)
         apply_subject_checks(subject, profile, report, doc=doc, source_path=primary)
+        if doc is not None:
+            layout = analyze_pdf_educational_layout(doc, profile, subject, page_metrics)
+            apply_educational_layout(report, layout)
+            educational_score = layout.educational_score
     elif kind == "docx":
         validate_docx(primary, profile, report)
         apply_subject_checks(subject, profile, report, source_path=primary)
@@ -108,6 +118,9 @@ def run_preflight(
     elif kind == "pptx":
         validate_pptx(primary, profile, report)
         apply_subject_checks(subject, profile, report, source_path=primary)
+        layout = analyze_pptx_educational(primary, profile, profile.educational_layout)
+        apply_educational_layout(report, layout)
+        educational_score = layout.educational_score
     else:
         report.add(CheckStatus.FAIL, f"Unsupported input type: {primary.suffix}")
 
@@ -132,8 +145,8 @@ def run_preflight(
     if doc is not None:
         doc.close()
 
-    if page_metrics:
-        finalize_quality_score(report, page_metrics)
+    if page_metrics or educational_score is not None:
+        finalize_quality_score(report, page_metrics, educational_score=educational_score)
 
     if json_output or output_dir is not None or render or annotate or contact_sheet:
         write_reports(report, out_dir, json_output=True)

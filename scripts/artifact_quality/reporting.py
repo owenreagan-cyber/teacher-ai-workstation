@@ -22,13 +22,27 @@ def format_terminal_report(report: PreflightReport) -> str:
         lines.append(f"Teacher: {report.teacher_path}")
     lines.append("")
 
+    layout_summary: str | None = None
+    score_line: str | None = None
+
     for check in report.checks:
+        if check.message == "Instructional layout summary" and check.details:
+            layout_summary = check.details
+            continue
+        if check.message.startswith("Quality score") and check.details:
+            score_line = check.message + "\n      " + check.details.replace("\n", "\n      ")
+            continue
         prefix = check.status.value.ljust(4)
         page_suffix = f" (page {check.page})" if check.page is not None else ""
         lines.append(f"{prefix}  {check.message}{page_suffix}")
-        if check.details:
+        if check.details and check.message != "Instructional layout summary":
             for detail_line in check.details.splitlines():
                 lines.append(f"      {detail_line}")
+
+    if layout_summary:
+        lines.extend(["", layout_summary])
+    if score_line:
+        lines.extend(["", score_line])
 
     lines.extend(["", f"FINAL STATUS: {report.final_status.value}"])
     return "\n".join(lines)

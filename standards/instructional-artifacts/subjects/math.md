@@ -2,6 +2,12 @@
 
 Mechanical checks: Letter PDF, safe margins, placeholders, utilization heuristics.
 
+Automated educational heuristics (Phase 3, WARN-only):
+
+- Crowded math expressions per page
+- Insufficient computation workspace (writing-space estimate)
+- Profile thresholds in `educational_layout` blocks — tune for false positives
+
 Manual instructional review required for:
 
 - Computation space adequacy

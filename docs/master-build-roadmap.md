@@ -77,7 +77,8 @@ Cross-references:
 | Instructional Artifact Quality (Phases 1–3) | **Complete** | `--artifact-quality-status`; mechanical, visual geometry, educational layout |
 | Curriculum Production Engine | **Foundation complete** | `--curriculum-production-status`; models, registry, validators only |
 | Manual Curriculum Intake Workflow | **Complete (Phase 5)** | `--lesson-package-status`; intake → validated Lesson Package Plan |
-| Future: AI prioritization, generation, package assembly | Planned | Not implemented — see `docs/lesson-package-manual-intake-workflow.md` |
+| Lesson Specification & Blueprint System | **Complete (Milestone 2)** | `--lesson-blueprint-status`; review packet, consistency engine, artifact blueprints; no generation |
+| Future: Artifact generation, package assembly | Planned | Presentation, guided notes, worksheet, teacher script generators — not implemented |
 
 ### Curriculum Builder — planning (complete)
 

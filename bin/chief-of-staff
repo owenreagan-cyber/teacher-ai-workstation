@@ -492,6 +492,7 @@ Developer and Cursor Workflow:
   --artifact-quality-status            Show Instructional Artifact Quality System foundation status and exit.
   --curriculum-production-status       Show Curriculum Production Engine foundation status and exit.
   --lesson-package-status              Show manual curriculum intake and lesson package workflow status and exit.
+  --lesson-blueprint-status            Show lesson specification and blueprint system status and exit.
   --owen-architecture-decision-packets-status
                                        Show Owen architecture decision packet index and boundary proof and exit.
   --app-ecosystem-inventory-status     Show app ecosystem inventory and prototype build list status and exit.
@@ -3632,6 +3633,15 @@ while [[ $# -gt 0 ]]; do
         die "Lesson Package status script is missing: scripts/lesson-package-status.sh"
       fi
       bash "${lesson_package_status_script}"
+      exit 0
+      ;;
+    --lesson-blueprint-status)
+      repo_root="$(resolve_repo_root)"
+      lesson_blueprint_status_script="${repo_root}/scripts/lesson-blueprint-status.sh"
+      if [[ ! -f "${lesson_blueprint_status_script}" ]]; then
+        die "Lesson Blueprint status script is missing: scripts/lesson-blueprint-status.sh"
+      fi
+      bash "${lesson_blueprint_status_script}"
       exit 0
       ;;
     --owen-architecture-decision-packets-status)

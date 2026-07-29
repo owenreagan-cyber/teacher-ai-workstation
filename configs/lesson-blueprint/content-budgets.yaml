@@ -1,0 +1,36 @@
+# Content budget specifications — planning only, no generated artifacts.
+
+presentation:
+  min_slides: 12
+  max_slides: 16
+  label: "12–16 slides"
+
+guided_notes:
+  pages: 2
+  meaningful_blanks: 8
+  label: "2 pages, 8 meaningful blanks"
+
+worksheet:
+  pages: 2
+  activity_sections: 3
+  label: "2 pages, 3 activity sections"
+
+teacher_script:
+  instructional_stages: 8
+  label: "8 instructional stages"
+
+vocabulary:
+  pages: 1
+  label: "1 page"
+
+assessment:
+  pages: 2
+  label: "2 pages"
+
+teacher_key:
+  mirrored: true
+  label: "Mirrored to student artifacts"
+
+review:
+  pages: 1
+  label: "1 page review"

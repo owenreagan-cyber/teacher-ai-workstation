@@ -1,0 +1,9 @@
+{
+  "package_fixture": "fixtures/curriculum-production/passing/math-lesson-package.json",
+  "overrides": {
+    "vocabulary_mismatch": true,
+    "worksheet_vocab": [
+      "nonexistent-term"
+    ]
+  }
+}

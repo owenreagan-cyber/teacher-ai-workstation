@@ -1,0 +1,6 @@
+{
+  "package_fixture": "fixtures/curriculum-production/passing/math-lesson-package.json",
+  "overrides": {
+    "duplicate_sections_for": "worksheet"
+  }
+}

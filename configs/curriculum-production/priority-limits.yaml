@@ -1,0 +1,5 @@
+# Manual prioritization validation thresholds — tune for false positives.
+
+max_supporting_items: 12
+max_teacher_background_ratio: 0.40
+require_source_ref_for_high_priority: true

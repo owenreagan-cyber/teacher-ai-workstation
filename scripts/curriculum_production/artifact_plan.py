@@ -44,6 +44,9 @@ class PlannedArtifact:
     required_subject: str | None = None
     quality_gate: str = ""
     approved: bool = False
+    linked_objective: bool = False
+    linked_critical_content_ids: list[str] = field(default_factory=list)
+    linked_sequence_steps: list[str] = field(default_factory=list)
 
     def to_dict(self) -> dict[str, Any]:
         payload = asdict(self)
@@ -64,6 +67,9 @@ class PlannedArtifact:
             required_subject=raw.get("required_subject"),
             quality_gate=str(raw.get("quality_gate") or ""),
             approved=bool(raw.get("approved", False)),
+            linked_objective=bool(raw.get("linked_objective", False)),
+            linked_critical_content_ids=list(raw.get("linked_critical_content_ids") or []),
+            linked_sequence_steps=list(raw.get("linked_sequence_steps") or []),
         )
 
 
@@ -117,6 +123,19 @@ class ArtifactPlan:
                 )
             )
         return cls(lesson_id=lesson_id, artifacts=artifacts)
+
+
+def populate_artifact_plan_references(
+    plan: ArtifactPlan,
+    *,
+    critical_content_ids: list[str],
+    sequence_steps: list[str],
+) -> None:
+    """Attach objective/critical/sequence references — planning metadata only."""
+    for artifact in plan.artifacts:
+        artifact.linked_objective = True
+        artifact.linked_critical_content_ids = list(critical_content_ids)
+        artifact.linked_sequence_steps = list(sequence_steps)
 
 
 def _default_dependencies(artifact_type: str) -> list[str]:

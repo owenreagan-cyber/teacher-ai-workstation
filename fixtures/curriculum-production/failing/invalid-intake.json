@@ -1,0 +1,15 @@
+{
+  "intake": {
+    "lesson_id": "fail-invalid",
+    "subject": "math",
+    "grade": 4
+  },
+  "content_map": {
+    "lesson_id": "fail-invalid",
+    "items": []
+  },
+  "approval": {
+    "state": "draft",
+    "history": []
+  }
+}

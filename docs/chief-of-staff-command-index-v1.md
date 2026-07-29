@@ -46,6 +46,7 @@ These flags exist in `bin/chief-of-staff` and work as read-only local status sur
 | `bin/chief-of-staff --artifact-quality-status` | Instructional Artifact Quality System foundation status (local preflight validators) |
 | `bin/chief-of-staff --curriculum-production-status` | Curriculum Production Engine foundation status (lesson models, registry, validators; no generation) |
 | `bin/chief-of-staff --lesson-package-status` | Manual curriculum intake and lesson package planning workflow (Phase 5; no artifact generation) |
+| `bin/chief-of-staff --lesson-blueprint-status` | Lesson specification and blueprint system (Milestone 2; review packet, consistency, blueprints; no generation) |
 | `bin/chief-of-staff --owen-architecture-decision-packets-status` | Owen architecture decision packet index and boundary proof (Owen owns decisions) |
 | `bin/chief-of-staff --app-ecosystem-inventory-status` | App ecosystem inventory and prototype build list (52 apps; Owen owns priority) |
 | `bin/chief-of-staff --classroom-timer-stopwatch-planning-status` | Classroom Timer & Stopwatch planning lane (Owen selected; no runtime) |

@@ -20,6 +20,7 @@
         {"flag": "--artifact-quality-status", "status": "implemented", "purpose": "Instructional Artifact Quality System foundation status (local PDF/DOCX/HTML/PPTX preflight; no network)"},
         {"flag": "--curriculum-production-status", "status": "implemented", "purpose": "Curriculum Production Engine foundation status (lesson models, registry, validators; no generation)"},
         {"flag": "--lesson-package-status", "status": "implemented", "purpose": "Manual curriculum intake and lesson package planning workflow (Phase 5; no artifact generation)"},
+        {"flag": "--lesson-blueprint-status", "status": "implemented", "purpose": "Lesson specification and blueprint system (Milestone 2 Phases 6–8; review packet, consistency, blueprints; no generation)"},
         {"flag": "--owen-architecture-decision-packets-status", "status": "implemented", "purpose": "Owen architecture decision packet index and boundary proof (read-only; Owen owns decisions)"},
         {"flag": "--app-ecosystem-inventory-status", "status": "implemented", "purpose": "App ecosystem inventory and prototype build list (read-only; 52 apps; Owen owns priority)"},
         {"flag": "--classroom-timer-stopwatch-planning-status", "status": "implemented", "purpose": "Classroom Timer & Stopwatch planning lane (read-only; Owen selected)"},

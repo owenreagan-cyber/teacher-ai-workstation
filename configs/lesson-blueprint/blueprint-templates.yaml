@@ -1,0 +1,66 @@
+# Default blueprint section templates — specifications only.
+
+presentation:
+  sections:
+    - Objective
+    - Hook
+    - Vocabulary
+    - Rule
+    - Worked Example
+    - Guided Practice
+    - Student Check
+    - Guided Practice
+    - Independent Practice
+    - Review
+    - Exit Check
+    - Closure
+
+guided_notes:
+  sections:
+    - Vocabulary
+    - Rule
+    - Worked Example
+    - Guided Example
+    - Student Check
+    - Summary
+
+worksheet:
+  sections:
+    - "Section A — Guided"
+    - "Section B — Independent"
+    - "Section C — Challenge"
+    - Reflection
+
+teacher_script:
+  sections:
+    - Opening
+    - Vocabulary
+    - Model
+    - Guided Practice
+    - Check for Understanding
+    - Independent Practice
+    - Closure
+    - Transition
+
+vocabulary:
+  sections:
+    - Term List
+    - Examples
+    - Non-Examples
+
+assessment:
+  sections:
+    - Formative Check
+    - Short Response
+    - Exit Evidence
+
+teacher_key:
+  sections:
+    - Answer Key
+    - Rubric Notes
+    - Misconception Notes
+
+review:
+  sections:
+    - Spiral Review
+    - Reflection Prompt

@@ -1,0 +1,6 @@
+{
+  "package_fixture": "fixtures/curriculum-production/passing/math-lesson-package.json",
+  "overrides": {
+    "budget_exceeded_for": "presentation"
+  }
+}

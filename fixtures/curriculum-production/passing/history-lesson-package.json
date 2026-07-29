@@ -1,0 +1,60 @@
+{
+  "intake": {
+    "lesson_id": "pass-g4-history-u3-l02",
+    "subject": "history",
+    "grade": 4,
+    "unit": "Unit 3 \u2014 Colonial America",
+    "chapter": "Chapter 3",
+    "lesson_number": 3,
+    "title": "Sample History Timeline Lesson",
+    "objective": "Students will sequence fictional timeline events.",
+    "standards": [
+      "Sample.MATH.4.NBT.A.2"
+    ],
+    "vocabulary": [
+      "place value",
+      "compare",
+      "greater than",
+      "less than"
+    ],
+    "assessment_targets": [
+      "Order three timeline events"
+    ],
+    "teacher_notes": "Fictional planning sample only.",
+    "source_references": [
+      {
+        "ref_id": "manual-1",
+        "label": "Teacher notes packet",
+        "note": "Sample"
+      }
+    ],
+    "approval_status": "draft",
+    "instructional_sequence_id": "history",
+    "required_artifacts": [
+      "presentation",
+      "guided_notes",
+      "worksheet",
+      "assessment",
+      "teacher_key"
+    ]
+  },
+  "content_map": {
+    "lesson_id": "pass-g4-history-u3-l02",
+    "items": [
+      {
+        "content_id": "crit-timeline",
+        "title": "Timeline event ordering",
+        "priority": "critical",
+        "supports_objective": true,
+        "supports_assessment_target": "Order three timeline events",
+        "linked_sequence_step": "Practice",
+        "source_ref": "manual-history",
+        "subject": "history"
+      }
+    ]
+  },
+  "approval": {
+    "state": "draft",
+    "history": []
+  }
+}

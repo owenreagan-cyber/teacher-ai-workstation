@@ -2,7 +2,15 @@
 
 Last updated: 2026-07-28
 
-Status: **Foundation complete** — architecture, models, registry, validators; no lesson generation.
+Status: **Phase 5 manual intake active** — foundation plus teacher-controlled lesson package planning; no artifact generation.
+
+## Phase 5 — Manual Curriculum Intake (complete)
+
+Teacher-entered intake → content prioritization → artifact plan → validation → Lesson Package Plan.
+
+Status command: `bin/chief-of-staff --lesson-package-status`
+
+Guide: `docs/lesson-package-manual-intake-workflow.md`
 
 ## Purpose
 

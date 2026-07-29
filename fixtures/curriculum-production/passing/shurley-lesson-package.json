@@ -1,0 +1,59 @@
+{
+  "intake": {
+    "lesson_id": "pass-g4-shurley-u2-l01",
+    "subject": "shurley",
+    "grade": 4,
+    "unit": "Unit 2 \u2014 Sentence Classification",
+    "chapter": "Chapter 3",
+    "lesson_number": 3,
+    "title": "Sample Shurley Classification Lesson",
+    "objective": "Students will classify sample sentence patterns.",
+    "standards": [
+      "Sample.MATH.4.NBT.A.2"
+    ],
+    "vocabulary": [
+      "noun",
+      "verb",
+      "adjective"
+    ],
+    "assessment_targets": [
+      "Classify a sample sentence"
+    ],
+    "teacher_notes": "Fictional planning sample only.",
+    "source_references": [
+      {
+        "ref_id": "manual-1",
+        "label": "Teacher notes packet",
+        "note": "Sample"
+      }
+    ],
+    "approval_status": "draft",
+    "instructional_sequence_id": "ela",
+    "required_artifacts": [
+      "presentation",
+      "guided_notes",
+      "worksheet",
+      "assessment",
+      "teacher_key"
+    ]
+  },
+  "content_map": {
+    "lesson_id": "pass-g4-shurley-u2-l01",
+    "items": [
+      {
+        "content_id": "crit-pattern",
+        "title": "Sentence pattern A",
+        "priority": "critical",
+        "supports_objective": true,
+        "supports_assessment_target": "Classify a sample sentence",
+        "linked_sequence_step": "Guided Practice",
+        "source_ref": "manual-shurley",
+        "subject": "shurley"
+      }
+    ]
+  },
+  "approval": {
+    "state": "draft",
+    "history": []
+  }
+}

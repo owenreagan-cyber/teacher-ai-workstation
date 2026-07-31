@@ -59,3 +59,8 @@ Grade 4 chapter preflight policy: Explorer Academy `docs/15_Grade_4_Chapter_Arti
 This track validates local files only. No Canvas, Drive, network APIs, student data, or automatic classroom distribution.
 
 Operator guide: `docs/instructional-artifact-quality-operator-guide.md`
+
+Universal classroom-readiness acceptance gate:
+`docs/qa/universal-instructional-artifact-qa-standard.md`
+
+The automated Artifact Quality system provides mechanical, visual, and educational-layout evidence. It does not independently authorize the completion language defined by the universal acceptance standard.

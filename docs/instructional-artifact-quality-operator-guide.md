@@ -190,6 +190,9 @@ python3 scripts/artifact_quality/run_preflight.py \
 1. **Mechanical** — automated PASS/WARN/FAIL from profiles.
 2. **Visual heuristic** — rendered geometry metrics, contact sheets, optional diffs.
 3. **Instructional** — teacher judgment for pedagogy and classroom fit (always manual).
+4. **Final acceptance** — the eight-stage classroom-readiness gate in `docs/qa/universal-instructional-artifact-qa-standard.md`.
+
+Automated preflight PASS is evidence for final acceptance, but it is not by itself permission to call an artifact complete or classroom-ready.
 
 ## DOCX / HTML / PPTX
 

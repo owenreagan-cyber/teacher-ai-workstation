@@ -1,0 +1,63 @@
+---
+description: Required acceptance gate for instructional artifacts and lesson packages
+alwaysApply: true
+---
+
+# Instructional Artifact Acceptance Gate
+
+This rule applies whenever Cursor creates, edits, reviews, validates, exports, or reports on an instructional artifact.
+
+Canonical standard:
+
+`docs/qa/universal-instructional-artifact-qa-standard.md`
+
+## Non-negotiable rules
+
+- File generation is not completion.
+- Do not call an artifact finished, complete, ready, classroom-ready, fully validated, print-ready, approved, or final unless the full acceptance standard supports that claim.
+- Use the eight-stage validation sequence:
+  1. source validation
+  2. content-priority validation
+  3. cross-artifact alignment
+  4. educational suitability
+  5. visual and layout QA
+  6. technical QA
+  7. classroom simulation
+  8. final acceptance report
+- Render and inspect every page and slide.
+- Multi-artifact packages require a cross-artifact alignment table.
+- Use Teacher AI Workstation validators when available.
+- Missing or unavailable validator coverage produces WARN for tooling confidence.
+- Never claim a check passed when it was not run.
+- FAIL blocks delivery.
+- WARN must be explained and requires teacher review.
+- Numeric quality scores never override FAIL.
+- Preserve PASS/WARN/FAIL semantics.
+- No automated score replaces instructional judgment.
+- No source content may be invented or presented as verified without support.
+- No answer key may be accepted without comparison to the student artifact.
+- No printable DOCX, PPTX, or HTML artifact may be considered pagination-validated without authoritative rendered or PDF inspection.
+
+## Required final report
+
+Every instructional-artifact completion report must include:
+
+| Category | Required status |
+| --- | --- |
+| Source validation | PASS/WARN/FAIL |
+| Content-priority validation | PASS/WARN/FAIL |
+| Cross-artifact alignment | PASS/WARN/FAIL |
+| Educational suitability | PASS/WARN/FAIL |
+| Visual and layout QA | PASS/WARN/FAIL |
+| Technical QA | PASS/WARN/FAIL |
+| Classroom simulation | PASS/WARN/FAIL |
+| Tooling confidence | PASS/WARN/FAIL |
+| Overall status | PASS/WARN/FAIL |
+
+List all warnings, blocking issues, files inspected, validators run, and validation gaps.
+
+## Completion language
+
+Use only the approved language in the canonical standard.
+
+Overall PASS is the only state that permits an unqualified claim that a package is ready for classroom use.

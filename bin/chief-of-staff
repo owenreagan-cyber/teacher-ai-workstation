@@ -444,6 +444,7 @@ Teacher Planning Command Organization (status only; safe sample: fractions-revie
   --canvas-llm-phase-18-status         Show Canvas LLM Phase 18 write gate readiness review status and exit.
   --canvas-llm-phase-18a-status        Show Canvas LLM Phase 18A canonical WeeklyPlan and evidence model status and exit.
   --canvas-llm-phase-18b-status        Show Canvas LLM Phase 18B canonical WeeklyPlan integration status and exit.
+  --canvas-llm-phase-18c-status        Show Canvas LLM Phase 18C end-to-end preview assembly and contract hardening status and exit.
   --canvas-llm-phase-19a-archaeology-status Show Canvas LLM Phase 19A archaeology report status and exit.
   --canvas-llm-phase-19b-canonical-rules-status Show Canvas LLM Phase 19B canonical rules status and exit.
   --canvas-llm-phase-19c-evidence-vault-rule-catalog-status Show Canvas LLM Phase 19C evidence vault and rule catalog status and exit.
@@ -2863,6 +2864,16 @@ while [[ $# -gt 0 ]]; do
         die "Canvas LLM Phase 18B status script is missing: scripts/canvas-llm-phase-18b-status.sh"
       fi
       exec "${canvas_llm_phase_18b_status_script}" "$@"
+      ;;
+
+    --canvas-llm-phase-18c-status)
+      shift
+      canvas_llm_phase_18c_repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd -P)"
+      canvas_llm_phase_18c_status_script="${canvas_llm_phase_18c_repo_root}/scripts/canvas-llm-phase-18c-status.sh"
+      if [[ ! -x "${canvas_llm_phase_18c_status_script}" ]]; then
+        die "Canvas LLM Phase 18C status script is missing: scripts/canvas-llm-phase-18c-status.sh"
+      fi
+      exec "${canvas_llm_phase_18c_status_script}" "$@"
       ;;
 
     --canvas-llm-phase-19a-archaeology-status)

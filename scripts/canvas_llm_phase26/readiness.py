@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import Any
 
 
-def calculate_readiness(subjects: list[dict[str, Any]], resource_resolution: dict[str, Any], production_packet: dict[str, Any], approval_panel: dict[str, Any]) -> dict[str, Any]:
+def calculate_readiness(subjects: list[dict[str, Any]], resource_resolution: dict[str, Any], production_packet: dict[str, Any], approval_panel: dict[str, Any], *, due_time_unresolved: bool = False) -> dict[str, Any]:
     required_subjects = [subject for subject in subjects if subject.get("assignmentPolicy", "enabled") != "disabled"]
     subject_ready = sum(1 for subject in subjects if subject.get("readinessState") in {"Ready", "Approved"})
     verified_resources = len([item for item in resource_resolution.get("resolvedResources", []) if item.get("resource") and item.get("reviewState") == "resolved"])
@@ -12,7 +12,7 @@ def calculate_readiness(subjects: list[dict[str, Any]], resource_resolution: dic
     pages_ready = len(production_packet.get("pages", []))
     assignments_previewed = len(production_packet.get("assignments", []))
     approved_subjects = len([item for item in approval_panel.get("subjectApprovals", []) if item.get("status") == "approved" and item.get("active")])
-    due_time_blocker = 1 if any("due-time" in str(item.get("message", "")).lower() for item in production_packet.get("validation", {}).get("findings", [])) else 0
+    due_time_blocker = 1 if due_time_unresolved else 0
 
     max_points = 100.0
     raw_points = (

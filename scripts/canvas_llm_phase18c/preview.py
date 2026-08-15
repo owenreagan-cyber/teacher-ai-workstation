@@ -64,7 +64,7 @@ def _day_derivation(day: DayEntry, protected: bool) -> str:
     return Derivation.CANONICAL.value
 
 
-def _detect_collisions(plan: WeeklyPlan, warnings: list[str]) -> list[str]:
+def _detect_collisions(plan: WeeklyPlan) -> list[str]:
     """Detect two canonical course names mapping to the same downstream key."""
     collisions: list[str] = []
     seen: dict[str, str] = {}
@@ -205,7 +205,7 @@ def assemble_teacher_preview(plan: WeeklyPlan, runtime: RuntimeContext | None = 
     translation: TranslationResult = translate_weekly_plan(plan)
 
     warnings: list[str] = list(plan.warnings) + list(report.warnings)
-    collisions = _detect_collisions(plan, warnings)
+    collisions = _detect_collisions(plan)
     if collisions:
         raise ValueError("downstream subject-key collision: " + "; ".join(collisions))
 

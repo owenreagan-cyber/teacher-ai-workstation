@@ -9,20 +9,10 @@ from __future__ import annotations
 
 from typing import Any
 
-from scripts.canvas_llm_phase18a.models import KNOWN_COURSES, WEEKDAYS, WeeklyPlan
+from scripts.canvas_llm_phase18a.models import KNOWN_COURSES, WeeklyPlan
 from scripts.canvas_llm_phase18b.translation import SUBJECT_KEYS, TranslationResult
 
 from .contracts import DriftFinding, DriftReport
-
-# Strings that must never appear as downstream defaults for a blank canonical day.
-_FORBIDDEN_BLANK_DEFAULTS = (
-    "no homework",
-    "no class",
-    "continue",
-    "tbd",
-    "to be determined",
-    "none",
-)
 
 
 def _key(subject: str, weekday: str) -> tuple[str, str]:
@@ -56,6 +46,7 @@ def detect_drift(plan: WeeklyPlan, result: TranslationResult) -> DriftReport:
     # Index blanks and unresolved by canonical reference.
     blank_index = {(b["course"], b["weekday"]) for b in result.blanks}
     unresolved_index = {(u["course"], u["weekday"]) for u in result.unresolved}
+    agenda_days = {d.get("name"): d for d in result.agenda.get("days", [])}
 
     for course_name in KNOWN_COURSES:
         course = plan.courses.get(course_name)
@@ -65,12 +56,35 @@ def detect_drift(plan: WeeklyPlan, result: TranslationResult) -> DriftReport:
         for day in course.days:
             key = _key(subject, day.weekday)
             if day.blank:
-                # Blank must stay blank: no downstream event, no default text.
+                # Blank must stay blank across every downstream surface: no event,
+                # no agenda in-class text, no agenda homework, no default text.
+                blank_ok = True
                 if key in event_index:
                     invalid.append(f"blank {course_name} {day.weekday} gained a downstream event")
-                elif (course_name, day.weekday) not in blank_index:
+                    blank_ok = False
+                if (course_name, day.weekday) not in blank_index:
                     invalid.append(f"blank {course_name} {day.weekday} not recorded downstream")
-                else:
+                    blank_ok = False
+                agenda_day = agenda_days.get(day.weekday)
+                if agenda_day is not None:
+                    injected_in_class = (agenda_day.get("subjects") or {}).get(course_name)
+                    if injected_in_class:
+                        invalid.append(
+                            f"blank {course_name} {day.weekday} gained agenda in-class content "
+                            f"{injected_in_class!r}"
+                        )
+                        blank_ok = False
+                    injected_homework = [
+                        h for h in (agenda_day.get("homework") or [])
+                        if isinstance(h, str) and h.startswith(f"{course_name}:")
+                    ]
+                    if injected_homework:
+                        invalid.append(
+                            f"blank {course_name} {day.weekday} gained agenda homework "
+                            f"{injected_homework!r}"
+                        )
+                        blank_ok = False
+                if blank_ok:
                     findings.append(DriftFinding("exact_match", f"{subject}:{day.weekday}", "blank preserved"))
                     exact_matches += 1
                 continue

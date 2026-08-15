@@ -72,15 +72,17 @@ from scripts.canvas_llm_phase18c.preview import assemble_teacher_preview
 from scripts.canvas_llm_phase18c.contracts import RuntimeContext
 
 p = assemble_teacher_preview(build_example_plan(), RuntimeContext())
-blob = json.dumps(p.to_dict(), sort_keys=True).lower()
-for bad in ("no homework", "no class", "continue", "tbd"):
-    # The only allowed "No Homework" is teacher-authored canonical content, not a blank default.
-    pass
-# Science is blank-protected: no science events, no content invented.
+# Science is blank-protected: no science events, no agenda content, no content invented.
 assert not any(e["subject"] == "science" for e in p.prediction["predictions"])
 science = next(c for c in p.courses if c.course == "Science")
 assert all(d.status == "protected" for d in science.days)
-print("PASS test 2: blank stays blank (no downstream default)")
+# No agenda surface may inject content into a blank day.
+for day in p.agenda["days"]:
+    assert not (day.get("subjects") or {}).get("Science"), day
+    assert not any(h.startswith("Science:") for h in day.get("homework", [])), day
+# The blank invariant must be machine-checked by the drift detector too.
+assert p.drift["invalid_drift"] == [], p.drift["invalid_drift"]
+print("PASS test 2: blank stays blank on every downstream surface (no default)")
 PY
 
 # ---------------------------------------------------------------------------
@@ -452,6 +454,38 @@ assemble_teacher_preview(build_example_plan(), RuntimeContext())
 for mod in ("canvas_writer", "canvas_connector", "weekly_agenda_publisher"):
     assert mod not in sys.modules, mod
 print("PASS test 20: zero-write runtime (no write module invoked)")
+PY
+
+# ---------------------------------------------------------------------------
+# Test 21: protected course with non-blank content stays blocked end-to-end.
+# ---------------------------------------------------------------------------
+RUN_PY <<'PY'
+import sys
+sys.path.insert(0, ".")
+from scripts.canvas_llm_phase18a.models import DayEntry
+from scripts.canvas_llm_phase18a.examples import build_example_plan
+from scripts.canvas_llm_phase18c.preview import assemble_teacher_preview
+from scripts.canvas_llm_phase18c.contracts import RuntimeContext
+
+plan = build_example_plan()
+weekdays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
+dates = ["2026-08-03", "2026-08-04", "2026-08-05", "2026-08-06", "2026-08-07"]
+plan.courses["Science"].days = [
+    DayEntry(weekday=wd, date=d, in_class="Science Lesson", raw="Science Lesson",
+             decided_source="live_pacing")
+    for wd, d in zip(weekdays, dates)
+]
+p = assemble_teacher_preview(plan, RuntimeContext())
+# Protected course content must never become a write-eligible downstream event.
+assert not any(e["subject"] == "science" for e in p.prediction["predictions"])
+snap = next(s for s in p.workstation["subjects"] if s["subject"] == "science")
+assert snap["assignmentPolicy"] == "disabled"
+assert snap["readinessState"] == "Blocked"
+# The drift detector must remain clean and still classify each Science day as protected.
+assert p.drift["invalid_drift"] == [], p.drift["invalid_drift"]
+science = next(c for c in p.courses if c.course == "Science")
+assert all(d.status == "protected" and d.derivation == "protected" for d in science.days)
+print("PASS test 21: protected non-blank course produces no write-eligible object")
 PY
 
 echo "PASS: Canvas LLM Phase 18C preview assembly tests complete"

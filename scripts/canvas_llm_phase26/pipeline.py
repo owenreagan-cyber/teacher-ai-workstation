@@ -256,7 +256,8 @@ def build_workstation_packet(
             for subject_id, title, assignment_policy in subject_specs
         ]
         approval_panel = approval.build_approval_panel(subject_workspaces, approvals)
-        readiness_state = readiness.calculate_readiness(subject_workspaces, phase25_packet, production_packet, approval_panel)
+        due_time_unresolved = any("due-time" in compact(w).lower() for w in phase24_packet.get("warnings", []))
+        readiness_state = readiness.calculate_readiness(subject_workspaces, phase25_packet, production_packet, approval_panel, due_time_unresolved=due_time_unresolved)
         revision_events = storage.list_revisions(conn, week["code"])
         if not revision_events:
             storage.record_revision(conn, week["code"], "generated", "initial generation", {"packetHash": stable_hash(production_packet), "weekCode": week["code"]})

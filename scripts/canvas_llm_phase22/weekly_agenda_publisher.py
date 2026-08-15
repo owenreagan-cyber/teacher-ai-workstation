@@ -6,7 +6,6 @@ import argparse
 import hashlib
 import html
 import sys
-from dataclasses import asdict, dataclass, field
 from pathlib import Path
 from typing import Any
 
@@ -19,6 +18,7 @@ from scripts.canvas_llm_phase22 import canvas_verification as verification  # no
 from scripts.canvas_llm_phase22 import canvas_writer as writer  # noqa: E402
 from scripts.canvas_llm_phase22 import deployment_audit as audit  # noqa: E402
 from scripts.canvas_llm_phase22 import phase22_workstation as p22  # noqa: E402
+from scripts.canvas_llm_phase22.contracts import WeeklyAgendaPage  # noqa: E402
 
 DEPLOYMENT_STATUSES = ('draft', 'ready', 'blocked', 'written', 'verified')
 WEEKDAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']
@@ -33,24 +33,6 @@ def compact(value: Any) -> str:
 def content_hash(title: str, body: str) -> str:
     payload = f'{compact(title)}|{compact(body)}'.encode('utf-8')
     return hashlib.sha256(payload).hexdigest()[:16]
-
-
-@dataclass
-class WeeklyAgendaPage:
-    week_code: str
-    title: str
-    days: list[dict[str, Any]] = field(default_factory=list)
-    assignments: list[str] = field(default_factory=list)
-    assessments: list[str] = field(default_factory=list)
-    reminders: list[str] = field(default_factory=list)
-    schedule_summary: str | None = None
-    content_hash: str | None = None
-    approval_state: str = 'draft'
-    deployment_status: str = 'draft'
-    page_url: str | None = None
-
-    def to_dict(self) -> dict[str, Any]:
-        return asdict(self)
 
 
 def _week_title(week_meta: dict[str, Any]) -> str:

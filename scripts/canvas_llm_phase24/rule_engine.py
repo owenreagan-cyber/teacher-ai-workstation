@@ -652,7 +652,7 @@ def predict_week_data(week_code: str, source_path: str | Path, correction_state:
     corrections = list((correction_state or {}).get("records", []))
     predictions: list[PredictedInstructionalEvent] = []
     unresolved_decisions: list[UnresolvedDecision] = []
-    warnings: list[str] = [w for w in list(knowledge.get("warnings", [])) if "Canvas assignment due-time convention remains owner-unresolved" not in w]
+    warnings: list[str] = list(knowledge.get("warnings", []))
     teacher_overrides: list[TeacherOverride] = []
     teacher_corrections: list[TeacherCorrection] = []
     for raw in knowledge.get("pacingGuideEntries", []):
@@ -759,7 +759,7 @@ def validate_week_prediction(payload: dict[str, Any]) -> dict[str, Any]:
         findings.append({"severity": "fail", "code": "source-hierarchy", "message": "Source hierarchy is incorrect", "target": "week"})
     warnings = list(dict.fromkeys(warnings))
     if any("Canvas assignment due-time convention remains owner-unresolved" in w for w in warnings):
-        findings.append({"severity": "fail", "code": "due-time.unresolved", "message": "Canvas assignment due-time warning must not remain", "target": "week"})
+        findings.append({"severity": "warn", "code": "due-time.unresolved", "message": "Canvas assignment due-time convention remains owner-unresolved", "target": "week"})
     else:
         findings.append({"severity": "pass", "code": "due-time.resolved", "message": "Canvas assignment due-time warnings removed", "target": "week"})
     if any("Math test cadence remains owner-unresolved" in w for w in warnings):

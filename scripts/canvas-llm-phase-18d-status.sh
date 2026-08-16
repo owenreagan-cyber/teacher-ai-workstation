@@ -107,13 +107,17 @@ bare = assemble_dry_run_packet(preview, CanvasSnapshot(week_code="Q1W3", snapsho
 assert bare.readiness == "BLOCKED_MISSING_CONFIG", bare.readiness
 assert any("missing config" in b for b in bare.blocked)
 
-# Due-time unresolved propagates as policy blocker.
+# Due-time is now owner-resolved: assignments carry the canonical assigned date
+# as their due date, and no time-of-day (11:59/23:59/15:00) is fabricated here.
 due = assemble_dry_run_packet(preview, CanvasSnapshot(week_code="Q1W3", snapshot_id="s"),
                               DryRunContext(canvas_config=cfg, publish_policy="resolved", resolved_publish_state="published"))
-assert due.readiness == "BLOCKED_POLICY", due.readiness
-assert not any("11:59" in json.dumps(due.to_dict()) for _ in [0]), "fabricated due time"
+assert due.readiness == "BLOCKED_UNRESOLVED", due.readiness  # History Wednesday unresolved
 blob = json.dumps(due.to_dict())
-assert "15:00" not in blob or due.readiness == "BLOCKED_POLICY"
+assert "11:59" not in blob and "23:59" not in blob and "15:00" not in blob, "fabricated due time"
+for intent in due.intents:
+    if intent.object_type == "assignment" and intent.operation in ("CREATE", "UPDATE"):
+        assert intent.desired_state.get("assigned_date") == intent.desired_state.get("due_at")
+        assert "T" not in str(intent.desired_state.get("due_at") or ""), intent.desired_state
 
 # Protected Science -> zero writable intents.
 assert not [i for i in due.intents if i.course == "science" and i.operation not in ("SKIP",)]

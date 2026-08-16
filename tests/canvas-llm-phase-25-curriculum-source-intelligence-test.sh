@@ -27,14 +27,14 @@ from pathlib import Path
 payload = json.loads(Path(sys.argv[1]).read_text(encoding="utf-8"))
 assert payload["weekCode"] == "Q1W5"
 assert payload["validation"]["failCount"] == 0
-assert payload["validation"]["warnCount"] == 2
+assert payload["validation"]["warnCount"] == 1
 assert payload["phase23Preview"]["deploymentState"] == "preview-only"
 assert payload["phase23Preview"]["approvalState"] == "draft"
 assert payload["containsStudentData"] is False
 print("PASS packet shape")
 PY
 
-python3 "$V" "$DEMO" | grep -q '^WARN: due-time.unresolved Canvas assignment due-time convention remains owner-unresolved$'
+python3 "$V" "$DEMO" | grep -q '^PASS: due-time.resolved Canvas assignment due-time resolved by owner policy (same-day 11:59 p.m. local)$'
 python3 "$V" "$DEMO" | grep -q '^WARN: math-test-cadence.unresolved Math test cadence remains owner-unresolved$'
 python3 "$V" "$DEMO" | grep -q '^PASS: reading.checkout14 Checkout 14 is absent without warning$'
 python3 "$V" "$DEMO" | grep -q '^PASS: power-up.review-queue Power Up mapping remains a review item without becoming a global warning$'

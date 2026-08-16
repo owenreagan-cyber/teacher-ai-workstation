@@ -194,7 +194,7 @@ print("PASS test 7: missing Canvas config blocks preview with no guessed IDs")
 PY
 
 # ---------------------------------------------------------------------------
-# Test 8: due-time unresolved — no due time manufactured.
+# Test 8: due-time owner-resolved — no due time manufactured at preview.
 # ---------------------------------------------------------------------------
 RUN_PY <<'PY'
 import sys, json
@@ -203,19 +203,24 @@ from scripts.canvas_llm_phase18a.examples import build_example_plan
 from scripts.canvas_llm_phase18c.preview import assemble_teacher_preview
 from scripts.canvas_llm_phase18c.contracts import RuntimeContext
 
-ctx = RuntimeContext(canvas_config={
+cfg = {
   "math": {"course_id": "M", "module_id": "MM", "assignment_group_id": "MA"},
   "reading-spelling": {"course_id": "R", "module_id": "RM", "assignment_group_id": "RA"},
   "language-arts": {"course_id": "L", "module_id": "LM", "assignment_group_id": "LA"},
   "history": {"course_id": "H", "module_id": "HM", "assignment_group_id": "HA"},
-})  # due_time_policy defaults to "unresolved"
-p = assemble_teacher_preview(build_example_plan(), ctx)
-assert p.readiness == "BLOCKED_POLICY"
-assert any("due-time" in r.lower() for r in p.unresolved_policy)
-# 18C must not manufacture a concrete due time.
-assert "11:59" not in json.dumps(p.to_dict())
-assert "12:00" not in json.dumps(p.to_dict())
-print("PASS test 8: due-time unresolved propagated with no manufactured due time")
+}
+# Owner policy now resolves due-time (same-day 11:59); the default is resolved,
+# so the obsolete "due-time unresolved" warning no longer appears.
+p = assemble_teacher_preview(build_example_plan(), RuntimeContext(canvas_config=cfg))
+assert not any("due-time" in r.lower() for r in p.unresolved_policy), p.unresolved_policy
+assert p.readiness != "BLOCKED_POLICY", p.readiness
+# An explicitly unresolved due-time context still surfaces the warning (edge case),
+# but 18C must never manufacture a concrete due time either way.
+p2 = assemble_teacher_preview(build_example_plan(), RuntimeContext(canvas_config=cfg, due_time_policy="unresolved"))
+assert any("due-time" in r.lower() for r in p2.unresolved_policy)
+assert "11:59" not in json.dumps(p2.to_dict())
+assert "23:59" not in json.dumps(p2.to_dict())
+print("PASS test 8: due-time owner-resolved; preview never manufactures a due time")
 PY
 
 # ---------------------------------------------------------------------------

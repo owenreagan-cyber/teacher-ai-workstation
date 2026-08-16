@@ -25,13 +25,13 @@ from pathlib import Path
 payload = json.loads(Path(sys.argv[1]).read_text(encoding="utf-8"))
 assert payload["weekCode"] == "Q1W5"
 assert payload["validation"]["failCount"] == 0
-assert payload["validation"]["warnCount"] == 2
+assert payload["validation"]["warnCount"] == 1
 assert payload["reviewState"] == "needs_review"
 assert "Study Guide" not in json.dumps(payload)
 print("PASS predicted week payload shape")
 PY
 
-python3 "$V" "$DEMO" | grep -q '^WARN: due-time.unresolved Canvas assignment due-time convention remains owner-unresolved$'
+python3 "$V" "$DEMO" | grep -q '^PASS: due-time.resolved Canvas assignment due-time resolved by owner policy (same-day 11:59 p.m. local)$'
 python3 "$V" "$DEMO" | grep -q '^WARN: math-test-cadence.unresolved Math test cadence remains owner-unresolved$'
 python3 "$V" "$DEMO" | grep -q '^PASS: reading.checkout14 Checkout 14 is absent without warning$'
 python3 "$V" "$DEMO" | grep -q '^FAIL: 0$'

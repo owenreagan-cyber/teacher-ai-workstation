@@ -16,8 +16,7 @@
     "SPELL-T5-WORD-LIST"
   ],
   "expectedWarnings": [
-    "Math test cadence remains owner-unresolved",
-    "Canvas assignment due-time convention remains owner-unresolved"
+    "Math test cadence remains owner-unresolved"
   ],
   "expectedReviewQueueStatuses": [
     "Resolved",

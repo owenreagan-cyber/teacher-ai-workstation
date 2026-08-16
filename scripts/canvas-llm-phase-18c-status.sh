@@ -97,7 +97,9 @@ plan = build_example_plan()
 bare = assemble_teacher_preview(plan, RuntimeContext())
 assert bare.readiness == "BLOCKED_MISSING_CONFIG"
 
-# Due-time unresolved propagates as policy blocker.
+# Due-time is now owner-resolved (same-day 11:59). The obsolete "due-time
+# unresolved" warning must be absent, and unresolved canonical content remains
+# the blocker.
 with_config = RuntimeContext(canvas_config={
     "math": {"course_id": "M", "module_id": "MM", "assignment_group_id": "MA"},
     "reading-spelling": {"course_id": "R", "module_id": "RM", "assignment_group_id": "RA"},
@@ -105,8 +107,13 @@ with_config = RuntimeContext(canvas_config={
     "history": {"course_id": "H", "module_id": "HM", "assignment_group_id": "HA"},
 })
 p = assemble_teacher_preview(plan, with_config)
-assert p.readiness == "BLOCKED_POLICY", p.readiness
-assert any("due-time" in w.lower() for w in p.unresolved_policy)
+assert not any("due-time" in w.lower() for w in p.unresolved_policy), p.unresolved_policy
+assert p.readiness == "BLOCKED_UNRESOLVED", p.readiness
+
+# Explicit unresolved due-time is still a policy blocker (edge case only).
+p_unresolved = assemble_teacher_preview(plan, RuntimeContext(canvas_config=with_config.canvas_config, due_time_policy="unresolved"))
+assert p_unresolved.readiness == "BLOCKED_POLICY", p_unresolved.readiness
+assert any("due-time" in w.lower() for w in p_unresolved.unresolved_policy)
 
 # Resolved due-time + config -> unresolved canonical content remains the blocker.
 resolved = RuntimeContext(canvas_config=with_config.canvas_config, due_time_policy="resolved")

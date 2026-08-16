@@ -213,8 +213,9 @@ def assemble_teacher_preview(plan: WeeklyPlan, runtime: RuntimeContext | None = 
 
     unresolved_policy: list[str] = []
     if runtime.due_time_policy != "resolved":
-        unresolved_policy.append(runtime.due_time_reason)
-        warnings.append(runtime.due_time_reason)
+        reason = runtime.due_time_reason or "Canvas assignment due-time convention unresolved"
+        unresolved_policy.append(reason)
+        warnings.append(reason)
 
     # Protected / unresolved / blank canonical state.
     protected = list(dict.fromkeys(translation.protected))

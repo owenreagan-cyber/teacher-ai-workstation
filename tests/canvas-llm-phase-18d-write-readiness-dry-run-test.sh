@@ -215,15 +215,19 @@ def t10():
     assert stale and "preview" in " ".join(reasons)
 scenario("stale teacher preview invalidates packet", t10)
 
-# 11. Due time never fabricated
+# 11. Due date is canonical assigned date; no time-of-day fabricated at 18D.
 def t11():
     p = preview_of()
     pkt = assemble_dry_run_packet(p, empty_snap(), DryRunContext(canvas_config=CFG, publish_policy="resolved", resolved_publish_state="published"))
     assigns = [i for i in pkt.intents if i.object_type == "assignment"]
     assert assigns, "expected assignment intents"
-    assert all(i.operation == "BLOCKED" and any(b == "policy:due_time_unresolved" for b in i.blockers) for i in assigns)
-    assert all((i.desired_state.get("due_at") or None) is None for i in assigns)
-scenario("no due time is ever fabricated", t11)
+    assert all(i.operation == "CREATE" for i in assigns), [(i.operation, i.blockers) for i in assigns]
+    for i in assigns:
+        ad = i.desired_state.get("assigned_date")
+        assert ad and ad == i.desired_state.get("due_at"), i.desired_state
+        assert "T" not in ad, f"fabricated time-of-day in {ad!r}"
+        assert i.desired_state.get("timezone") == "America/New_York"
+scenario("assignment due date is canonical assigned date (no fabricated time)", t11)
 
 # 12. No implicit publication
 def t12():

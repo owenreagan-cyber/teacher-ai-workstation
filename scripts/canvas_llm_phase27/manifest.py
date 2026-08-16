@@ -23,9 +23,9 @@ def build_manifest(packet: dict[str, Any], diffs: list[dict[str, Any]]) -> dict[
         ],
         "dependencies": [],
         "blockers": [d["localTitle"] for d in diffs if d["comparisonStatus"] == "BLOCKED"],
-        "warnings": ["Canvas assignment due-time convention remains owner-unresolved"],
+        "warnings": [],
         "rollbackPlan": [],
-        "validationSummary": {"passCount": len(diffs), "warnCount": 1, "failCount": 0},
+        "validationSummary": {"passCount": len(diffs), "warnCount": 0, "failCount": 0},
         "provenance": [{"sourceType": "phase26", "sourceRef": "apps/unified-weekly-production/data/phase26-demo.json"}],
     }
 

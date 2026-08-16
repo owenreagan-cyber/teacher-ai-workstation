@@ -54,7 +54,7 @@ OUT="$T/phase24-demo.json"
 python3 "$M" --week Q1W5 --input "$P" --output "$OUT" >/tmp/p24build.txt 2>&1 && pass "predicted week builds" || { cat /tmp/p24build.txt; fail "predicted week build fails"; }
 python3 "$V" "$OUT" >"$T/validate.txt" 2>&1 && pass "predicted week validates" || { cat "$T/validate.txt"; fail "predicted week validation fails"; }
 
-grep -q '^WARN: due-time.unresolved Canvas assignment due-time convention remains owner-unresolved$' "$T/validate.txt" && pass "due-time unresolved warning is present" || fail "due-time unresolved warning missing"
+grep -q '^PASS: due-time.resolved Canvas assignment due-time resolved by owner policy (same-day 11:59 p.m. local)$' "$T/validate.txt" && pass "due-time resolved by owner policy" || fail "due-time resolved PASS missing"
 grep -q '^WARN: math-test-cadence.unresolved' "$T/validate.txt" && pass "math cadence unresolved warning is present" || fail "math cadence warning missing"
 grep -q '^PASS: reading.checkout14 Checkout 14 is absent without warning$' "$T/validate.txt" && pass "Reading Test 14 no-checkout PASS is present" || fail "Reading Test 14 no-checkout PASS missing"
 grep -q '^PASS: announcement.checkout14 Announcement layer excludes Checkout 14$' "$T/validate.txt" && pass "announcement Checkout 14 PASS is present" || fail "announcement Checkout 14 PASS missing"

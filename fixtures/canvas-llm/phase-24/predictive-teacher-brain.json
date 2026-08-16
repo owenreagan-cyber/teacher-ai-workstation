@@ -245,7 +245,6 @@
     }
   ],
   "warnings": [
-    "Canvas assignment due-time convention remains owner-unresolved",
     "Math test cadence remains owner-unresolved"
   ]
 }

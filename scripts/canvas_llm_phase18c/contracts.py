@@ -45,8 +45,8 @@ class RuntimeContext:
     """
 
     canvas_config: dict[str, Any] = field(default_factory=dict)
-    due_time_policy: str = "unresolved"  # "resolved" | "unresolved"
-    due_time_reason: str = "Canvas assignment due-time convention remains owner-unresolved"
+    due_time_policy: str = "resolved"  # owner-approved: same-day 11:59 p.m. local
+    due_time_reason: str = ""  # empty: due-time is owner-resolved, no unresolved reason
     legacy_fixtures: dict[str, Any] = field(default_factory=dict)
 
 

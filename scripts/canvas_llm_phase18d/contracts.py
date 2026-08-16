@@ -215,9 +215,9 @@ class DryRunContext:
     """Read-only runtime state for dry-run assembly. Never carries credentials."""
 
     canvas_config: dict[str, Any] = field(default_factory=dict)
-    due_time_policy: str = "unresolved"  # "resolved" | "unresolved"
-    due_time_reason: str = "Canvas assignment due-time convention remains owner-unresolved"
-    resolved_due_time: str = ""  # explicit; only honored when due_time_policy == "resolved"
+    due_time_policy: str = "resolved"  # owner-approved: same-day 11:59 p.m. local
+    due_time_reason: str = ""  # empty: due-time is owner-resolved, no unresolved reason
+    resolved_due_time: str = ""  # legacy hint; owner policy (23:59 local) supersedes
     publish_policy: str = "unresolved"  # "resolved" | "unresolved"
     resolved_publish_state: str = ""  # "published" | "unpublished" when publish_policy == "resolved"
     target_environment: str = "sandbox"

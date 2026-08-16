@@ -34,7 +34,7 @@ assemble_teacher_preview(weekly_plan, runtime_context)
   2. translate through Phase 18B        (builds shared contracts)
   3. detect downstream-key collisions   (fail closed)
   4. detect missing Canvas config       (block, never guess)
-  5. propagate unresolved owner policy  (due-time convention)
+  5. propagate explicitly unresolved owner policy
   6. run canonical-vs-downstream drift  (fail closed on semantic drift)
   7. evaluate readiness                 (deterministic)
   8. return deterministic TeacherPreview
@@ -92,7 +92,7 @@ TeacherPreview
   unresolved[]     canonical ambiguity records
   protected[]      write-blocked courses
   missing_config[] missing live Canvas configuration diagnostics
-  unresolved_policy[]  owner-unresolved policy (due-time convention)
+  unresolved_policy[]  explicitly owner-unresolved policy (empty by default; due-time is resolved)
   warnings[]       combined warnings
   blocked_reasons[]  human-readable blockers
   readiness        overall readiness state
@@ -131,7 +131,7 @@ BLOCKED_POLICY
 Readiness never implies publish readiness. Evaluation order (first match wins):
 
 1. missing Canvas config → `BLOCKED_MISSING_CONFIG`
-2. owner policy unresolved (due-time) → `BLOCKED_POLICY`
+2. owner policy explicitly unresolved → `BLOCKED_POLICY`
 3. canonical content unresolved → `BLOCKED_UNRESOLVED`
 4. protected course present → `BLOCKED_PROTECTED`
 5. only advisory content → `ADVISORY_ONLY`
@@ -167,21 +167,21 @@ fields are required (keyed by downstream subject key):
 Missing any required field → `BLOCKED_MISSING_CONFIG`. IDs are never guessed,
 never reused from precedent, and never derived heuristically.
 
-## Due-Time Unresolved Behavior
+## Due-Time Resolved Behavior
 
-The Canvas assignment due-time convention remains **owner-unresolved**. Phase 18C
-does not invent a due time (no midnight, no class start, no end-of-day, no copied
-prior week). The unresolved policy is:
+Superseded by owner policy approved before Phase 18E: paper homework is
+represented in Canvas as due on the assigned day at 11:59 p.m. local time.
+Phase 18C no longer invents a due time (no midnight, no class start, no
+end-of-day, no copied prior week) and no longer blocks ordinary homework on a
+missing due-time convention:
 
-1. carried by `RuntimeContext.due_time_policy` (default `"unresolved"`)
-2. surfaced in `unresolved_policy`, `warnings`, and `blocked_reasons`
-3. mapped to `BLOCKED_POLICY` readiness (when no harder blocker exists)
+1. `RuntimeContext.due_time_policy` defaults to `"resolved"`
+2. no `policy:due_time_unresolved` blocker is emitted for ordinary homework
+3. the assignment carries the canonical assigned date and timezone; the
+   time-of-day (23:59 local) is applied later by the Phase 18E owner-policy layer
 
-Phase 24 no longer strips the "Canvas assignment due-time convention remains
-owner-unresolved" warning (previously causing a Phase 26 propagation failure);
-Phase 24 validation now treats it as a WARN, and Phase 26 readiness computes
-`dueTimeBlocker` from the Phase 24 advisory warnings. The policy decision itself
-remains with the owner.
+Unresolved assignment **dates** still block. The publish-state policy remains
+unresolved and is preserved as a separate blocker.
 
 ## Failure-Mode Handling
 

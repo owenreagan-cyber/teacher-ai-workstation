@@ -108,7 +108,7 @@
         "title": "Reading Test 14",
         "body": "Reading Test 14 has no Checkout.",
         "publication": "draft",
-        "blockedReasons": ["due-time unresolved"],
+        "blockedReasons": ["publish-state unresolved"],
         "dependencies": []
       }
     },

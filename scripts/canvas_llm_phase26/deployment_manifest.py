@@ -21,7 +21,7 @@ def build_deployment_manifest(week_code: str, production_packet: dict[str, Any],
         if subject.get("assignmentPolicy", "enabled") == "disabled":
             operations.append({"type": "assignment", "subject": subject["title"], "status": "omitted", "reason": "assignment-disabled"})
         elif subject.get("readinessState") == "Blocked":
-            operations.append({"type": "assignment", "subject": subject["title"], "status": "blocked", "reason": "due-time-unresolved" if subject["subject"] == "math" else "blocked-resource"})
+            operations.append({"type": "assignment", "subject": subject["title"], "status": "blocked", "reason": "blocked-resource"})
         else:
             operations.append({"type": "assignment", "subject": subject["title"], "status": "ready", "reason": ""})
     return {

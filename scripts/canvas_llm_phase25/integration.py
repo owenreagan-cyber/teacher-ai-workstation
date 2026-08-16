@@ -101,7 +101,7 @@ def validate_packet(packet: dict[str, Any]) -> tuple[dict[str, Any], list[RiskFi
     if any("due-time" in compact(w).lower() for w in warnings):
         findings.append({"severity": "warn", "code": "due-time.unresolved", "message": "Canvas assignment due-time convention remains owner-unresolved", "target": "packet"})
     else:
-        findings.append({"severity": "fail", "code": "due-time.unresolved", "message": "Canvas assignment due-time warning missing", "target": "packet"})
+        findings.append({"severity": "pass", "code": "due-time.resolved", "message": "Canvas assignment due-time resolved by owner policy (same-day 11:59 p.m. local)", "target": "packet"})
 
     if any("math test cadence" in compact(w).lower() for w in warnings):
         findings.append({"severity": "warn", "code": "math-test-cadence.unresolved", "message": "Math test cadence remains owner-unresolved", "target": "packet"})
@@ -169,8 +169,6 @@ def validate_packet(packet: dict[str, Any]) -> tuple[dict[str, Any], list[RiskFi
     pass_count = sum(1 for item in findings if item["severity"] == "pass")
     warn_count = sum(1 for item in findings if item["severity"] == "warn")
     fail_count = sum(1 for item in findings if item["severity"] == "fail")
-    if not any(item["severity"] == "warn" and item["code"] == "due-time.unresolved" for item in findings):
-        risks.append(RiskFinding("warning", "due-time", "Canvas assignment due-time convention remains owner-unresolved", "Keep assignment dueTime fields blocked or explicitly unresolved"))
     return {"passCount": pass_count, "warnCount": warn_count, "failCount": fail_count, "findings": findings}, risks
 
 

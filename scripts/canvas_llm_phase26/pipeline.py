@@ -166,25 +166,6 @@ def build_exception_inbox(phase24_packet: dict[str, Any], phase25_packet: dict[s
                 "effectOnFinalOutput": item.get("requiredResourceClass", ""),
             }
         )
-    for warning in phase24_packet.get("warnings", []):
-        if "due-time" in compact(warning).lower():
-            inbox.append(
-                {
-                    "weekCode": phase24_packet.get("weekCode"),
-                    "subject": "canvas",
-                    "day": "",
-                    "event": "Assignment due time",
-                    "issueType": "Due-time unresolved",
-                    "explanation": warning,
-                    "confidence": 0.0,
-                    "candidates": [
-                        {"value": "12:00 AM", "status": "candidate"},
-                        {"value": "11:59 PM", "status": "candidate"},
-                    ],
-                    "recommendedAction": "Keep unresolved",
-                    "effectOnFinalOutput": "deployment readiness",
-                }
-            )
     if any((item.get("title") or "") == "Reading Test 14" for item in production_packet.get("assessmentReminders", [])):
         inbox.append(
             {
@@ -256,7 +237,9 @@ def build_workstation_packet(
             for subject_id, title, assignment_policy in subject_specs
         ]
         approval_panel = approval.build_approval_panel(subject_workspaces, approvals)
-        due_time_unresolved = any("due-time" in compact(w).lower() for w in phase24_packet.get("warnings", []))
+        # Due-time is owner-resolved (same-day 11:59 p.m. local, Phase 18E), so
+        # it is never a deployment-readiness blocker.
+        due_time_unresolved = False
         readiness_state = readiness.calculate_readiness(subject_workspaces, phase25_packet, production_packet, approval_panel, due_time_unresolved=due_time_unresolved)
         revision_events = storage.list_revisions(conn, week["code"])
         if not revision_events:
@@ -354,12 +337,12 @@ def validate_workstation_packet(packet: dict[str, Any]) -> dict[str, Any]:
     if packet.get("readiness", {}).get("dueTimeBlocker") is True:
         findings.append({"severity": "warn", "code": "due-time.unresolved", "message": "Canvas assignment due-time convention remains owner-unresolved", "target": "workstation"})
     else:
-        findings.append({"severity": "fail", "code": "due-time.unresolved", "message": "Canvas assignment due-time warning missing", "target": "workstation"})
+        findings.append({"severity": "pass", "code": "due-time.resolved", "message": "Canvas assignment due-time resolved by owner policy (same-day 11:59 p.m. local)", "target": "workstation"})
     findings.append({"severity": "pass", "code": "math-test-cadence.unresolved", "message": "Math test cadence resolved", "target": "workstation"})
     if any(item.get("issueType") == "Due-time unresolved" for item in packet.get("exceptionInbox", [])):
-        findings.append({"severity": "pass", "code": "exception.due-time", "message": "Due-time unresolved is surfaced in the exception inbox", "target": "exceptionInbox"})
+        findings.append({"severity": "fail", "code": "exception.due-time", "message": "Legacy due-time unresolved still surfaced in the exception inbox", "target": "exceptionInbox"})
     else:
-        findings.append({"severity": "fail", "code": "exception.due-time", "message": "Due-time unresolved is missing from the exception inbox", "target": "exceptionInbox"})
+        findings.append({"severity": "pass", "code": "exception.due-time", "message": "No due-time unresolved exception (owner-resolved)", "target": "exceptionInbox"})
     findings.append({"severity": "pass", "code": "exception.math-cadence", "message": "Math cadence is resolved", "target": "exceptionInbox"})
     if any(subject.get("title") == "Reading/Spelling" for subject in packet.get("subjectWorkspaces", [])):
         findings.append({"severity": "pass", "code": "workflow.unified", "message": "Unified Phase 22-25 orchestration is present", "target": "subjectWorkspaces"})

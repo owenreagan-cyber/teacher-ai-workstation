@@ -27,7 +27,7 @@ packet = build_packet(
 )
 assert packet["deploymentManifestV1"]["manifestVersion"] == 1
 assert packet["deploymentManifestV1"]["mode"] == "preview-only"
-assert packet["deploymentManifestV1"]["warnings"] == ["Canvas assignment due-time convention remains owner-unresolved"]
+assert packet["deploymentManifestV1"]["warnings"] == []
 assert any(item["comparisonStatus"] == "CREATE" for item in packet["safetyDiff"])
 assert any(item["comparisonStatus"] == "UPDATE" for item in packet["safetyDiff"])
 assert any(item["comparisonStatus"] == "UNCHANGED" for item in packet["safetyDiff"])

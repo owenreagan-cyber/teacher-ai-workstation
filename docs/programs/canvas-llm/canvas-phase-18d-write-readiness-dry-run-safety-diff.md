@@ -159,11 +159,13 @@ preview, or Canvas state.
 
 ## Due-time behavior
 
-The Canvas assignment due-time convention remains owner-unresolved. Phase 18D
-carries this blocker verbatim: assignment intents are `BLOCKED_POLICY` with no
-fabricated due time. A due time is only ever emitted when the runtime context
-explicitly supplies a resolved value (`due_time_policy == "resolved"` with a
-non-empty `resolved_due_time`); the layer never invents or copies one.
+Superseded by owner policy approved before Phase 18E: paper homework is
+represented in Canvas as due on the assigned day at 11:59 p.m. local time.
+Phase 18D no longer emits `policy:due_time_unresolved` for ordinary homework.
+Assignment intents carry the canonical assigned date (and timezone) in
+`desired_state` with no fabricated time-of-day; the 23:59 local timestamp is
+derived later by the Phase 18E owner-policy layer. Unresolved assignment
+**dates** still block.
 
 ## Approval model
 

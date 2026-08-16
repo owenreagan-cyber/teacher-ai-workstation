@@ -71,7 +71,7 @@ OUT="$T/phase26-demo.json"
 PHASE26_LOCAL_ROOT="$T/local-root" python3 "$M" build-demo --week Q1W5 --output "$OUT" >/tmp/p26build.txt 2>&1 && pass "workstation packet builds" || { cat /tmp/p26build.txt; fail "workstation packet build fails"; }
 python3 "$V" "$OUT" >"$T/validate.txt" 2>&1 && pass "workstation packet validates" || { cat "$T/validate.txt"; fail "workstation packet validation fails"; }
 
-grep -q '^WARN: due-time.unresolved Canvas assignment due-time convention remains owner-unresolved$' "$T/validate.txt" && pass "due-time unresolved warning is present" || fail "due-time warning missing"
+grep -q '^PASS: due-time.resolved Canvas assignment due-time resolved by owner policy (same-day 11:59 p.m. local)$' "$T/validate.txt" && pass "due-time resolved by owner policy" || fail "due-time resolved PASS missing"
 if grep -q '^FAIL: reading-test-14.checkout ' "$T/validate.txt"; then
   fail "Reading Test 14 produced a Checkout failure"
 else
@@ -88,10 +88,10 @@ payload = json.loads(Path(__import__('sys').argv[1]).read_text(encoding='utf-8')
 assert payload['schemaVersion'] == 1
 assert payload['weekCode'] == 'Q1W5'
 assert payload['validation']['failCount'] == 0
-assert payload['validation']['warnCount'] == 1
+assert payload['validation']['warnCount'] == 0
 assert len(payload['weekSelection']['weeks']) == 37
 assert payload['weekSelection']['quarterWeekCounts'] == {'Q1': 9, 'Q2': 9, 'Q3': 9, 'Q4': 10}
-assert any(item['issueType'] == 'Due-time unresolved' for item in payload['exceptionInbox'])
+assert not any(item['issueType'] == 'Due-time unresolved' for item in payload['exceptionInbox'])
 assert any(item['event'] == 'Reading Test 14' for item in payload['exceptionInbox'])
 assert any(item['status'] == 'blocked' for item in payload['deploymentManifestPreview']['operations'])
 print('PASS packet shape')
@@ -102,8 +102,6 @@ if git ls-files '.local/*' | grep -q .; then
 else
   pass ".local output is not tracked by git"
 fi
-
-warn "Canvas assignment due-time convention remains owner-unresolved"
 
 echo
 echo "Summary"

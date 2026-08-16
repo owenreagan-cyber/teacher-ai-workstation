@@ -761,7 +761,7 @@ def validate_week_prediction(payload: dict[str, Any]) -> dict[str, Any]:
     if any("Canvas assignment due-time convention remains owner-unresolved" in w for w in warnings):
         findings.append({"severity": "warn", "code": "due-time.unresolved", "message": "Canvas assignment due-time convention remains owner-unresolved", "target": "week"})
     else:
-        findings.append({"severity": "pass", "code": "due-time.resolved", "message": "Canvas assignment due-time warnings removed", "target": "week"})
+        findings.append({"severity": "pass", "code": "due-time.resolved", "message": "Canvas assignment due-time resolved by owner policy (same-day 11:59 p.m. local)", "target": "week"})
     if any("Math test cadence remains owner-unresolved" in w for w in warnings):
         findings.append({"severity": "warn", "code": "math-test-cadence.unresolved", "message": "Math test cadence remains owner-unresolved", "target": "week"})
     else:

@@ -38,7 +38,7 @@ temp = scrub(sys.argv[1])
 assert temp["schemaVersion"] == 1
 assert temp["weekCode"] == "Q1W5"
 assert temp["validation"]["failCount"] == 0
-assert temp["validation"]["warnCount"] == 1
+assert temp["validation"]["warnCount"] == 0
 assert temp["weekSelection"]["quarterWeekCounts"] == {"Q1": 9, "Q2": 9, "Q3": 9, "Q4": 10}
 assert temp["weekSelection"]["weeks"][0]["code"] == "Q1W1"
 assert temp["weekSelection"]["weeks"][-1]["code"] == "Q4W10"
@@ -50,7 +50,7 @@ assert temp["deploymentManifestPreview"]["operations"]
 print("PASS demo packet shape")
 PY
 
-python3 "$V" "$DEMO" | grep -q '^WARN: due-time.unresolved Canvas assignment due-time convention remains owner-unresolved$'
+python3 "$V" "$DEMO" | grep -q '^PASS: due-time.resolved Canvas assignment due-time resolved by owner policy (same-day 11:59 p.m. local)$'
 if python3 "$V" "$DEMO" | grep -q '^FAIL: reading-test-14.checkout '; then
   echo "FAIL: Reading Test 14 produced a Checkout failure"
   exit 1
@@ -205,7 +205,7 @@ Promise.resolve().then(() => new Promise((resolve) => setTimeout(resolve, 0))).t
   if (!document.getElementById('subject-grid').innerHTML.includes('Math')) {
     throw new Error('browser proof did not render subject cards');
   }
-  if (!document.getElementById('exception-inbox').innerHTML.includes('Due-time unresolved')) {
+  if (!document.getElementById('exception-inbox').innerHTML.includes('Reading Test 14')) {
     throw new Error('browser proof did not render exception inbox');
   }
   if (!document.getElementById('manifest-preview').textContent.includes('"mode": "preview-only"')) {

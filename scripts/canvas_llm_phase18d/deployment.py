@@ -44,7 +44,7 @@ REQUIRED_CONFIG_FIELDS: dict[str, list[str]] = {
 # publication, which is only asserted when the publish policy is resolved).
 CONTENT_FIELDS: dict[str, list[str]] = {
     "agenda_page": ["title", "body", "course_id"],
-    "assignment": ["title", "due_at", "course_id", "assignment_group_id"],
+    "assignment": ["title", "assigned_date", "due_at", "course_id", "assignment_group_id"],
 }
 
 _SOURCE_PRIORITY = {"teacher_instruction": 3, "live_pacing": 2, "canonical_rule": 1}
@@ -276,10 +276,9 @@ def _build_assignment_intents(
             blockers.append("read_failure")
         if missing_cfg:
             blockers.append("missing_config")
-        elif context.due_time_policy != "resolved":
-            blockers.append("policy:due_time_unresolved")
-        elif not compact(context.resolved_due_time):
-            blockers.append("missing_config:resolved_due_time")
+        # Due-time is owner-resolved (same-day 11:59 p.m. local). The canonical
+        # assigned date is the due date; the 23:59 local time is applied by the
+        # Phase 18E owner-policy layer, never fabricated here.
         if context.publish_policy != "resolved":
             blockers.append("policy:publish_state_unresolved")
 
@@ -287,7 +286,9 @@ def _build_assignment_intents(
             "title": f"{course_name} Homework — {day.weekday}",
             "course_id": str(cfg.get("course_id") or ""),
             "assignment_group_id": str(cfg.get("assignment_group_id") or ""),
-            "due_at": compact(context.resolved_due_time) if (context.due_time_policy == "resolved" and compact(context.resolved_due_time)) else None,
+            "assigned_date": day.date,
+            "due_at": day.date,  # canonical due date == assigned date (date-only)
+            "timezone": preview.timezone,
             "publication": context.resolved_publish_state if context.publish_policy == "resolved" else "unresolved",
         }
 

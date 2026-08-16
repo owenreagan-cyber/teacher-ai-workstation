@@ -1268,7 +1268,7 @@ def validate_packet(packet: dict[str, Any], fixture: dict[str, Any] | None = Non
         elif "http://" in blob or "https://" in blob or "<a " in blob.lower():
             findings.append(ValidationFinding("fail", "announcement.links", "Announcement drafts must not contain links", announcement.get("announcement_id")))
         elif announcement.get("schedule_metadata", {}).get("scheduleIntent") != phase22.ANNOUNCEMENT_SCHEDULE_INTENT:
-            findings.append(ValidationFinding("fail", "announcement.schedule-intent", "Announcement schedule intent must remain Friday 4:00 PM America/New_York", announcement.get("announcement_id")))
+            findings.append(ValidationFinding("fail", "announcement.schedule-intent", "Announcement schedule intent must remain 1-2 days before assessment date America/New_York", announcement.get("announcement_id")))
         elif not announcement.get("teacher_approval_required", announcement.get("teacherApprovalRequired")):
             findings.append(ValidationFinding("fail", "announcement.approval-required", "Announcement drafts must require teacher approval", announcement.get("announcement_id")))
         elif announcement.get("preview_only", announcement.get("previewOnly")) is False:

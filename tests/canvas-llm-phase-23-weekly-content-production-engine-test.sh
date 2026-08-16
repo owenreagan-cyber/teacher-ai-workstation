@@ -488,16 +488,17 @@ assert any(item['title']=='HIST4: Assessment 1' for item in announcements)
 assert not any(item['subject']=='science' for item in announcements)
 assert all(item['teacher_approval_required'] for item in announcements)
 assert all(item['preview_only'] for item in announcements)
-assert all(item['schedule_metadata']['scheduleIntent']=='Friday 4:00 PM America/New_York' for item in announcements)
-assert all(item['schedule_metadata']['announcementDate']=='2026-08-14' for item in announcements)
+assert all(item['schedule_metadata']['scheduleIntent']=='1-2 days before assessment date America/New_York' for item in announcements)
+assert all(item['schedule_metadata']['assessmentDate']==item['assessment_date'] for item in announcements)
+assert all(item['schedule_metadata']['announcementDate']==p22.announcement_schedule_date_for_assessment(item['assessment_date']) for item in announcements)
 assert all(item['schedule_metadata']['announcementDate'] < item['assessment_date'] for item in announcements)
-assert all(item['schedule_metadata']['scheduledDay']=='Friday' for item in announcements)
+assert all(item['schedule_metadata']['scheduledDay']==p22.announcement_schedule_day_for_date(item['schedule_metadata']['announcementDate']) for item in announcements)
 assert all(item['schedule_metadata']['scheduledTime']=='4:00 PM' for item in announcements)
 assert all(item['schedule_metadata']['timezone']=='America/New_York' for item in announcements)
 assert not any(item['schedule_metadata']['announcementDate']=='2026-08-21' for item in announcements)
 assert p22.announcement_date_for_target_week(packet['weekStart'])=='2026-08-14'
 repeat_schedule=[item['schedule_metadata'] for item in p23.build_packet('Q1W5')['announcements']]
-assert all(meta==announcements[0]['schedule_metadata'] for meta in repeat_schedule)
+assert repeat_schedule==[item['schedule_metadata'] for item in announcements]
 assert 'Study Guide' not in json.dumps(announcements)
 repeat_ids={item['announcement_id'] for item in p23.build_packet('Q1W5')['announcements']}
 assert repeat_ids=={item['announcement_id'] for item in announcements}

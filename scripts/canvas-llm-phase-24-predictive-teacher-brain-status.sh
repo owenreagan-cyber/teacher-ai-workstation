@@ -58,7 +58,7 @@ grep -q '^PASS: due-time.resolved Canvas assignment due-time resolved by owner p
 grep -q '^WARN: math-test-cadence.unresolved' "$T/validate.txt" && pass "math cadence unresolved warning is present" || fail "math cadence warning missing"
 grep -q '^PASS: reading.checkout14 Checkout 14 is absent without warning$' "$T/validate.txt" && pass "Reading Test 14 no-checkout PASS is present" || fail "Reading Test 14 no-checkout PASS missing"
 grep -q '^PASS: announcement.checkout14 Announcement layer excludes Checkout 14$' "$T/validate.txt" && pass "announcement Checkout 14 PASS is present" || fail "announcement Checkout 14 PASS missing"
-grep -q '^PASS: announcement.schedule-intent Announcement schedule intent is Friday 4:00 PM America/New_York$' "$T/validate.txt" && pass "announcement schedule intent PASS is present" || fail "announcement schedule intent PASS missing"
+grep -q '^PASS: announcement.schedule-intent Announcement schedule intent is 1-2 days before assessment date America/New_York$' "$T/validate.txt" && pass "announcement schedule intent PASS is present" || fail "announcement schedule intent PASS missing"
 grep -q '^PASS: newsletter.monthly Homeroom newsletter metadata is monthly on course 26427$' "$T/validate.txt" && pass "newsletter monthly PASS is present" || fail "newsletter monthly PASS missing"
 grep -q '^PASS: newsletter-update.wording Newsletter update announcement uses canonical wording$' "$T/validate.txt" && pass "newsletter update wording PASS is present" || fail "newsletter update wording PASS missing"
 grep -q '^PASS: daily-brief.preview-only Daily Brief previews remain blocked$' "$T/validate.txt" && pass "daily brief preview-only PASS is present" || fail "daily brief preview-only PASS missing"

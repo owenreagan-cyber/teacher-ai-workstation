@@ -210,9 +210,10 @@ drafts=p.build_week_announcement_drafts(announce_rows, week_meta)
 assert drafts
 assert all(item['teacherApprovalRequired'] for item in drafts)
 assert all(item['previewOnly'] for item in drafts)
-assert all(item['schedule_metadata']['scheduleIntent']=='Friday 4:00 PM America/New_York' for item in drafts)
-assert all(item['schedule_metadata']['announcementDate']=='2026-08-14' for item in drafts)
-assert all(item['schedule_metadata']['scheduledDay']=='Friday' for item in drafts)
+assert all(item['schedule_metadata']['scheduleIntent']=='1-2 days before assessment date America/New_York' for item in drafts)
+assert all(item['schedule_metadata']['assessmentDate']==item['assessment_date'] for item in drafts)
+assert all(item['schedule_metadata']['announcementDate']==p.announcement_schedule_date_for_assessment(item['assessment_date']) for item in drafts)
+assert all(item['schedule_metadata']['scheduledDay']==p.announcement_schedule_day_for_date(item['schedule_metadata']['announcementDate']) for item in drafts)
 assert all(item['schedule_metadata']['scheduledTime']=='4:00 PM' for item in drafts)
 assert all(item['schedule_metadata']['timezone']=='America/New_York' for item in drafts)
 assert all(item['schedule_metadata']['targetWeekStartsOn']=='2026-08-17' for item in drafts)
@@ -245,6 +246,34 @@ blob=json.dumps(drafts)
 assert 'Study Guide' not in blob and 'Focus Words' not in blob and 'sourceCheckoutKey' not in blob
 assert 'http://' not in blob and 'https://' not in blob
 print('PASS C0N announcement generation')
+
+# Focused: Math assessment announcement review-detection guardrails.
+math_no_review=rows(
+    {'subject':'math','weekday':'Monday','lesson':'14','tests':'','entry_date':'2026-08-17','title':'Lesson 14'},
+    {'subject':'math','weekday':'Tuesday','lesson':'15','tests':'','entry_date':'2026-08-18','title':'Lesson 15'},
+    {'subject':'math','weekday':'Wednesday','lesson':'16','tests':'','entry_date':'2026-08-19','title':'Lesson 16'},
+    {'subject':'math','weekday':'Thursday','lesson':'','tests':'2','entry_date':'2026-08-20','title':'SM5: Test 2'},
+)
+no_review_drafts=p.build_week_announcement_drafts(math_no_review, week_meta)
+math_written_nr=[d for d in no_review_drafts if d['assessment_type']=='written_assessment']
+math_fact_nr=[d for d in no_review_drafts if d['assessment_type']=='fact_assessment']
+assert len(math_written_nr)==1 and len(math_fact_nr)==1
+assert 'review' not in math_written_nr[0]['body_text'].lower()
+assert 'review' not in math_fact_nr[0]['body_text'].lower()
+assert 'Good afternoon,' in math_written_nr[0]['body_text']
+assert math_written_nr[0]['body_text'].rstrip().endswith('Owen Reagan')
+print('PASS C0N1 math assessment announcement omits review when pacing has none')
+
+math_with_review=rows(
+    {'subject':'math','weekday':'Monday','lesson':'14','tests':'','entry_date':'2026-08-17','title':'Lesson 14'},
+    {'subject':'math','weekday':'Tuesday','lesson':'','tests':'','entry_date':'2026-08-18','title':'Test 2 Review'},
+    {'subject':'math','weekday':'Wednesday','lesson':'','tests':'2','entry_date':'2026-08-19','title':'SM5: Test 2'},
+)
+review_drafts=p.build_week_announcement_drafts(math_with_review, week_meta)
+math_written_rv=[d for d in review_drafts if d['assessment_type']=='written_assessment']
+assert len(math_written_rv)==1
+assert 'in-class review' in math_written_rv[0]['body_text'].lower()
+print('PASS C0N2 math assessment announcement mentions review when pacing has one')
 q1w5=p.instructional_week_by_code('Q1W5'); q1w6=p.instructional_week_by_code('Q1W6'); q1w8=p.instructional_week_by_code('Q1W8')
 assert p.month_code_for_date(q1w5['startsOn'])=='2026-08'
 _,nl5,up5=p.resolve_newsletter_for_week_start(q1w5['startsOn']); _,nl6,_=p.resolve_newsletter_for_week_start(q1w6['startsOn']); _,nl8,_=p.resolve_newsletter_for_week_start(q1w8['startsOn'])

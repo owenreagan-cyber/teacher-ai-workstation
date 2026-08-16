@@ -183,8 +183,8 @@ assert not any(item.field == 'homeworkParity' for item in prediction.teacher_ove
 assert prediction.announcement_drafts
 assert not any(item.get('title') == 'RM4: Fluency Checkout 14' for item in prediction.announcement_drafts)
 assert all(item.get('teacherApprovalRequired') is not False for item in prediction.announcement_drafts)
-assert all((item.get('schedule_metadata') or {}).get('scheduleIntent') == 'Friday 4:00 PM America/New_York' for item in prediction.announcement_drafts)
-assert all((item.get('schedule_metadata') or {}).get('announcementDate') == '2026-08-14' for item in prediction.announcement_drafts)
+assert all((item.get('schedule_metadata') or {}).get('scheduleIntent') == '1-2 days before assessment date America/New_York' for item in prediction.announcement_drafts)
+assert all((item.get('schedule_metadata') or {}).get('assessmentDate') == item.get('assessment_date') for item in prediction.announcement_drafts)
 assert all((item.get('schedule_metadata') or {}).get('announcementDate') < item.get('assessment_date') for item in prediction.announcement_drafts if item.get('assessment_date'))
 print('PASS C0N announcement prediction metadata')
 assert prediction.newsletter_draft and prediction.newsletter_update_announcement

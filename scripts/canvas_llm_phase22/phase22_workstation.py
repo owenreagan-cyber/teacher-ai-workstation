@@ -338,10 +338,12 @@ def wait_for_condition(cdp,expression,timeout=20):
 def rjson(*parts): return json.loads((REPO_ROOT/'config/curriculum'/Path(*parts)).read_text())
 _quarter_activation_cache=None
 FLUENCY_PRACTICE_GENERIC='Have your child continue to practice fluency by reading a short paragraph of about 100 words aloud in less than one minute. They should make no more than 2 errors.'
-ANNOUNCEMENT_SCHEDULE_DAY='Friday'
+ASSESSMENT_REMINDER_LEAD_DAYS=2
 ANNOUNCEMENT_SCHEDULE_TIME='4:00 PM'
 ANNOUNCEMENT_TIMEZONE='America/New_York'
-ANNOUNCEMENT_SCHEDULE_INTENT='Friday 4:00 PM America/New_York'
+ANNOUNCEMENT_SCHEDULE_INTENT='1-2 days before assessment date America/New_York'
+ASSESSMENT_REVIEW_LINE='We will hold an in-class review before the assessment.'
+ASSESSMENT_PREP_LINE='Students should look back over recent lesson work, practice problems, and corrections.'
 CANONICAL_ASSESSMENT_TITLE_RE=re.compile(r'^(SM5|RM4|ELA4|HIST4|SCI4):',re.I)
 FORBIDDEN_ANNOUNCEMENT_PATTERNS=(
     ('study guide','Study Guide language is forbidden in announcement drafts'),
@@ -404,7 +406,13 @@ def announcement_date_for_target_week(target_week_starts_on):
     monday=date.fromisoformat(starts_on)
     if monday.weekday()!=0: return ''
     return (monday-timedelta(days=3)).isoformat()
-def build_announcement_schedule_metadata(week_meta=None,overrides=None):
+def announcement_schedule_date_for_assessment(assessment_date,lead_days=ASSESSMENT_REMINDER_LEAD_DAYS):
+    d=date.fromisoformat(assessment_date)
+    return (d-timedelta(days=lead_days)).isoformat()
+def announcement_schedule_day_for_date(iso_date):
+    d=date.fromisoformat(iso_date)
+    return d.strftime('%A')
+def build_announcement_schedule_metadata(week_meta=None,overrides=None,assessment_date=None):
     week_meta=week_meta or {}; overrides=overrides or {}
     week_code=canonical_week_code(week_meta.get('code') or '')
     starts_on=week_meta.get('startsOn') or week_meta.get('starts_on') or ''
@@ -412,15 +420,33 @@ def build_announcement_schedule_metadata(week_meta=None,overrides=None):
         iw=instructional_week_by_code(week_code) or {}
         starts_on=iw.get('startsOn') or ''
     announcement_date=''; schedule_warnings=[]
-    if starts_on: announcement_date=announcement_date_for_target_week(starts_on)
+    if assessment_date: announcement_date=announcement_schedule_date_for_assessment(assessment_date)
+    elif starts_on: announcement_date=announcement_date_for_target_week(starts_on)
     teacher_override_applied=bool(compact(overrides.get('announcementScheduleDay') or '') or compact(overrides.get('announcementDate') or ''))
     override_date=compact(overrides.get('announcementDate') or '')
     if teacher_override_applied and override_date: announcement_date=override_date
     closed_dates=set(compact(d or '') for d in (week_meta.get('closedAnnouncementDates') or week_meta.get('noSchoolDates') or []) if compact(d or ''))
     if announcement_date and announcement_date in closed_dates and not teacher_override_applied:
-        schedule_warnings.append('Preceding Friday announcement scheduling is unavailable due to calendar disruption; Friday 4:00 PM intent preserved for teacher review.')
-    schedule={'scheduledDay':ANNOUNCEMENT_SCHEDULE_DAY,'scheduledTime':ANNOUNCEMENT_SCHEDULE_TIME,'timezone':ANNOUNCEMENT_TIMEZONE,'scheduleIntent':ANNOUNCEMENT_SCHEDULE_INTENT,'targetWeekCode':week_code,'targetWeekStartsOn':starts_on,'announcementDate':announcement_date,'teacherOverrideApplied':teacher_override_applied,'teacherApprovalRequired':True,'previewOnly':True,'canvasWritesAllowed':False,'emailSendsAllowed':False}
+        schedule_warnings.append('Assessment reminder scheduling is unavailable on the planned date due to calendar disruption; the 1-2 day lead intent is preserved for teacher review.')
+    scheduled_day=announcement_schedule_day_for_date(announcement_date) if announcement_date else ''
+    schedule={'scheduledDay':scheduled_day,'scheduledTime':ANNOUNCEMENT_SCHEDULE_TIME,'timezone':ANNOUNCEMENT_TIMEZONE,'scheduleIntent':ANNOUNCEMENT_SCHEDULE_INTENT,'targetWeekCode':week_code,'targetWeekStartsOn':starts_on,'announcementDate':announcement_date,'assessmentDate':assessment_date or '', 'teacherOverrideApplied':teacher_override_applied,'teacherApprovalRequired':True,'previewOnly':True,'canvasWritesAllowed':False,'emailSendsAllowed':False}
     return schedule,schedule_warnings
+def has_review_before_assessment(rows,subject,assessment_date):
+    for r in rows or []:
+        if compact(r.get('subject') or '').lower()!=subject: continue
+        rd=compact(r.get('entry_date') or '')
+        if not rd or rd>=assessment_date: continue
+        blob=' '.join(compact(x) for x in [r.get('title'),r.get('normalized_title'),r.get('lesson'),r.get('in_class'),r.get('at_home'),r.get('notes')] if compact(x))
+        if 'review' in blob.lower(): return True
+    return False
+def assessment_announcement_body(statement,review_line=None,prep_lines=None,detail=None):
+    lines=['Good afternoon,',statement]
+    if review_line: lines.append(review_line)
+    for line in (prep_lines or []):
+        if compact(line): lines.append(line)
+    if detail: lines.append(detail)
+    lines+=['Thank you,','Owen Reagan']
+    return '\n'.join(lines)
 def build_week_announcement_drafts(rows,week_meta=None):
     if not rows: return []
     week_meta=week_meta or {}; week_code=canonical_week_code(week_meta.get('code') or '')
@@ -430,7 +456,6 @@ def build_week_announcement_drafts(rows,week_meta=None):
         ro=jl(r.get('resolver_output') or '{}',{}); sel=ro.get('announcementScheduleOverride') or {}
         if sel.get('announcementDate'): overrides['announcementDate']=compact(sel.get('announcementDate'))
         if sel.get('scheduledDay'): overrides['announcementScheduleDay']=compact(sel.get('scheduledDay'))
-    schedule_metadata,schedule_warnings=build_announcement_schedule_metadata(week_meta,overrides)
     drafts=[]; seen=set()
     def window_warnings_for(subject,assessment_number):
         out=[]
@@ -442,18 +467,17 @@ def build_week_announcement_drafts(rows,week_meta=None):
             elif subject=='spelling' and target==f'spelling-test-{assessment_number}': out.append(finding.get('message') or '')
             elif subject in {'history','science','language-arts','shurley'} and target.endswith(str(assessment_number)): out.append(finding.get('message') or '')
         return out
-    def append_draft(*,subject,assessment_type,assessment_number,row,title,body_lines,generation_reason):
+    def append_draft(*,subject,assessment_type,assessment_number,row,title,body_text,generation_reason):
         key=(subject,assessment_type,assessment_number,row.get('entry_date'))
         if key in seen: return
         seen.add(key)
         coverage=extract_teacher_coverage(row); coverage_status='provided' if coverage else 'missing'
+        schedule_metadata,schedule_warnings=build_announcement_schedule_metadata(week_meta,overrides,assessment_date=row.get('entry_date'))
         warnings=list(schedule_warnings); needs_review=False
         if coverage_status=='missing':
             warnings.append('Teacher-entered coverage is required before approval'); needs_review=True
         warnings.extend(window_warnings_for(subject,assessment_number))
         if any(window_warnings_for(subject,assessment_number)): needs_review=True
-        body_text='\n'.join([line for line in body_lines if compact(line)])
-        if coverage: body_text=f"{body_text}\nCoverage: {coverage}."
         safety_warnings=validate_announcement_safety({'title':title,'body_text':body_text,'coverage':coverage}); warnings.extend(safety_warnings)
         if safety_warnings: needs_review=True
         draft={'announcement_id':announcement_stable_id(week_code,subject,assessment_type,assessment_number,row.get('entry_date')),'subject':subject,'title':title,'body_text':body_text,'body_html':announcement_body_html(body_text),'assessment_type':assessment_type,'assessment_number':assessment_number,'assessment_date':row.get('entry_date'),'display_date':format_announcement_display_date(row.get('entry_date')),'target_week_code':week_code,'coverage':coverage or None,'coverage_status':coverage_status,'schedule_metadata':dict(schedule_metadata),'approval_state':'Draft','needs_review':needs_review,'warnings':list(dict.fromkeys(warnings)),'provenance':[{'sourceType':'weekly-row','sourceRef':row.get('entry_date') or '','details':generation_reason},{'sourceType':'phase22-rule','sourceRef':'build_week_announcement_drafts','details':'explicit assessment event'}],'safety_metadata':default_announcement_safety_metadata(),'teacherApprovalRequired':True,'approved':False,'previewOnly':True,'generation_reason':generation_reason}
@@ -463,30 +487,40 @@ def build_week_announcement_drafts(rows,week_meta=None):
         s=compact(r.get('subject')).lower(); test=int(r['tests']) if str(r.get('tests','')).isdigit() else None
         if not test: continue
         display_date=format_announcement_display_date(r['entry_date'])
+        coverage=extract_teacher_coverage(r)
+        review_line=ASSESSMENT_REVIEW_LINE if has_review_before_assessment(rows,s,r['entry_date']) else None
         if s=='math':
-            append_draft(subject='math',assessment_type='written_assessment',assessment_number=test,row=r,title=f'SM5: Written Assessment {test}',body_lines=[f'Math Written Assessment {test} is scheduled for {display_date}.','Students should review recent classwork and assigned practice.'],generation_reason='scheduled-written-assessment')
-            fact=math_assessment_family(test,r['entry_date'],set())['factTest']; fact_lines=[f'Math Fact Assessment {test} is scheduled for {display_date}.']
+            written_body=assessment_announcement_body(f"Students will take Math Written Assessment {test} on {display_date}.",review_line=review_line,prep_lines=[ASSESSMENT_PREP_LINE],detail=coverage or None)
+            append_draft(subject='math',assessment_type='written_assessment',assessment_number=test,row=r,title=f'SM5: Written Assessment {test}',body_text=written_body,generation_reason='scheduled-written-assessment')
+            fact=math_assessment_family(test,r['entry_date'],set())['factTest']; fact_prep=[ASSESSMENT_PREP_LINE]
             topic=sanitize_announcement_text(fact.get('practiceDescription') or '')
-            if topic and 'worksheet' not in topic.lower() and 'http' not in topic.lower(): fact_lines.append(topic)
-            append_draft(subject='math',assessment_type='fact_assessment',assessment_number=test,row=r,title=f'SM5: Fact Assessment {test}',body_lines=fact_lines,generation_reason='scheduled-fact-assessment')
+            if topic and 'worksheet' not in topic.lower() and 'http' not in topic.lower(): fact_prep.append(topic)
+            fact_body=assessment_announcement_body(f"Students will take Math Fact Assessment {test} on {display_date}.",review_line=review_line,prep_lines=fact_prep,detail=coverage or None)
+            append_draft(subject='math',assessment_type='fact_assessment',assessment_number=test,row=r,title=f'SM5: Fact Assessment {test}',body_text=fact_body,generation_reason='scheduled-fact-assessment')
         elif s=='reading':
-            append_draft(subject='reading',assessment_type='mastery_test',assessment_number=test,row=r,title=f'RM4: Mastery Test {test}',body_lines=[f'Reading Mastery Test {test} is scheduled for {display_date}.'],generation_reason='scheduled-mastery-test')
+            mastery_body=assessment_announcement_body(f"Students will take Reading Mastery Test {test} on {display_date}.",review_line=review_line,prep_lines=[ASSESSMENT_PREP_LINE],detail=coverage or None)
+            append_draft(subject='reading',assessment_type='mastery_test',assessment_number=test,row=r,title=f'RM4: Mastery Test {test}',body_text=mastery_body,generation_reason='scheduled-mastery-test')
             if reading_checkout_number(test):
-                append_draft(subject='reading',assessment_type='fluency_checkout',assessment_number=test,row=r,title=f'RM4: Fluency Checkout {test}',body_lines=[f'Reading Fluency Checkout {test} is scheduled for {display_date}.',fluency_practice_guidance(test)],generation_reason='scheduled-fluency-checkout')
+                checkout_body=assessment_announcement_body(f"Students will take Reading Fluency Checkout {test} on {display_date}.",review_line=review_line,prep_lines=[fluency_practice_guidance(test)],detail=coverage or None)
+                append_draft(subject='reading',assessment_type='fluency_checkout',assessment_number=test,row=r,title=f'RM4: Fluency Checkout {test}',body_text=checkout_body,generation_reason='scheduled-fluency-checkout')
         elif s=='spelling':
-            append_draft(subject='spelling',assessment_type='spelling_test',assessment_number=test,row=r,title=f'RM4: Spelling Test {test}',body_lines=[f'Spelling Test {test} is scheduled for {display_date}.',spelling_practice_guidance(test)],generation_reason='scheduled-spelling-test')
+            spelling_body=assessment_announcement_body(f"Students will take Spelling Test {test} on {display_date}.",review_line=review_line,prep_lines=[spelling_practice_guidance(test)],detail=coverage or None)
+            append_draft(subject='spelling',assessment_type='spelling_test',assessment_number=test,row=r,title=f'RM4: Spelling Test {test}',body_text=spelling_body,generation_reason='scheduled-spelling-test')
         elif s in {'language-arts','shurley'}:
             title=compact(r.get('title') or f'ELA4: Assessment {test}')
             if not title.startswith('ELA4:'): title=f'ELA4: {title}'
-            append_draft(subject='language-arts',assessment_type='shurley_assessment',assessment_number=test,row=r,title=title,body_lines=[f'The Language Arts assessment is scheduled for {display_date}.'],generation_reason='scheduled-language-arts-assessment')
+            body=assessment_announcement_body(f"Students will take {title} on {display_date}.",review_line=review_line,prep_lines=[ASSESSMENT_PREP_LINE],detail=coverage or None)
+            append_draft(subject='language-arts',assessment_type='shurley_assessment',assessment_number=test,row=r,title=title,body_text=body,generation_reason='scheduled-language-arts-assessment')
         elif s=='history':
             title=compact(r.get('title') or f'HIST4: Assessment {test}')
             if not title.startswith('HIST4:'): title=f'HIST4: Assessment {test}'
-            append_draft(subject='history',assessment_type='history_assessment',assessment_number=test,row=r,title=title,body_lines=[f'The History assessment is scheduled for {display_date}.'],generation_reason='scheduled-history-assessment')
+            body=assessment_announcement_body(f"Students will take {title} on {display_date}.",review_line=review_line,prep_lines=[ASSESSMENT_PREP_LINE],detail=coverage or None)
+            append_draft(subject='history',assessment_type='history_assessment',assessment_number=test,row=r,title=title,body_text=body,generation_reason='scheduled-history-assessment')
         elif s=='science':
             title=compact(r.get('title') or f'SCI4: Assessment {test}')
             if not title.startswith('SCI4:'): title=f'SCI4: Assessment {test}'
-            append_draft(subject='science',assessment_type='science_assessment',assessment_number=test,row=r,title=title,body_lines=[f'The Science assessment is scheduled for {display_date}.'],generation_reason='scheduled-science-assessment')
+            body=assessment_announcement_body(f"Students will take {title} on {display_date}.",review_line=review_line,prep_lines=[ASSESSMENT_PREP_LINE],detail=coverage or None)
+            append_draft(subject='science',assessment_type='science_assessment',assessment_number=test,row=r,title=title,body_text=body,generation_reason='scheduled-science-assessment')
     return drafts
 NEWSLETTER_SECTION_ORDER=('Important Dates','Homeroom News','School News','School Information and Event Links')
 HOMEROOM_NEWSLETTER_SUBJECT='homeroom'

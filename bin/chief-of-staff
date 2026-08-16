@@ -24,6 +24,10 @@ if [ "${1:-}" = "--canvas-llm-phase-27-canvas-readiness-and-safety-diff-status" 
   exec bash "scripts/canvas-llm-phase-27-canvas-readiness-and-safety-diff-status.sh"
 fi
 
+if [ "${1:-}" = "--canvas-llm-weekly-guardrails-status" ]; then
+  exec bash "scripts/canvas-llm-weekly-guardrails-status.sh"
+fi
+
 if [ "${1:-}" = "--canvas-llm-canonical-context-pack-status" ]; then
   exec bash "scripts/canvas-llm-canonical-context-pack-status.sh"
 fi
@@ -447,6 +451,7 @@ Teacher Planning Command Organization (status only; safe sample: fractions-revie
   --canvas-llm-phase-18c-status        Show Canvas LLM Phase 18C end-to-end preview assembly and contract hardening status and exit.
   --canvas-llm-phase-18d-status        Show Canvas LLM Phase 18D write-readiness gate, dry-run packet and safety diff status and exit.
   --canvas-llm-phase-18e-status        Show Canvas LLM Phase 18E owner policy, approval-bound preconditions and controlled write preparation status and exit.
+  --canvas-llm-weekly-guardrails-status Show weekly workflow guardrails (fresh pacing, newsletter, launch) status and exit.
   --canvas-llm-phase-19a-archaeology-status Show Canvas LLM Phase 19A archaeology report status and exit.
   --canvas-llm-phase-19b-canonical-rules-status Show Canvas LLM Phase 19B canonical rules status and exit.
   --canvas-llm-phase-19c-evidence-vault-rule-catalog-status Show Canvas LLM Phase 19C evidence vault and rule catalog status and exit.

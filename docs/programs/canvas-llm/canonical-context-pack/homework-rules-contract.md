@@ -16,7 +16,9 @@ This phase creates **Assignment Drafts**, not Canvas Assignments.
 
 - Rules are teacher-owned and configurable through the rules engine
 - Do not hardcode daily assignments directly in generators
-- Missing rules for History, Science, Shurley, and Language Arts return `needs_teacher_rule=true`
+- Missing rules for History and Science return `needs_teacher_rule=true`
+- Language Arts and Shurley assignment creation is enabled with committed routing (Spelling Tests -> Assessments, Classroom Practices -> Classwork, Shurley Chapter Tests -> Assessments in course `28171`)
+- History and Science automated assignment creation is disabled (including tests); Owen creates them manually
 - Do not guess missing curriculum rules
 
 ## Architecture

@@ -26,7 +26,12 @@
         "courseId": 26404,
         "canonicalPrefix": "SM5",
         "canonicalName": "Saxon Math 5",
-        "assignmentPolicy": "enabled"
+        "assignmentPolicy": "enabled",
+        "assignmentGroups": [
+          "Written Assessments",
+          "Fact Assessments",
+          "Homework/Class Work"
+        ]
       },
       {
         "subjectId": "reading",
@@ -34,7 +39,12 @@
         "courseId": 26442,
         "canonicalPrefix": "RM4",
         "canonicalName": "Reading Mastery 4",
-        "assignmentPolicy": "enabled"
+        "assignmentPolicy": "enabled",
+        "assignmentGroups": [
+          "Check Out",
+          "Assessments",
+          "Homework"
+        ]
       },
       {
         "subjectId": "spelling",
@@ -50,18 +60,28 @@
       {
         "subjectId": "language-arts",
         "displayName": "Language Arts",
-        "courseId": 26495,
+        "courseId": 28171,
         "canonicalPrefix": "ELA4",
         "canonicalName": "Shurley English 4",
-        "assignmentPolicy": "enabled"
+        "assignmentPolicy": "enabled",
+        "assignmentGroups": [
+          "Classwork",
+          "Assessments"
+        ],
+        "assignmentRouting": {
+          "Spelling Tests": "Assessments",
+          "Classroom Practices": "Classwork",
+          "Shurley Chapter Tests": "Assessments"
+        }
       },
       {
         "subjectId": "history",
         "displayName": "History",
-        "courseId": 26493,
+        "courseId": 28165,
         "canonicalPrefix": "HIST4",
         "canonicalName": "History 4",
         "assignmentPolicy": "quarter-gated",
+        "assignmentCreation": "manual-only",
         "activeQuarters": [
           1,
           3
@@ -71,10 +91,11 @@
       {
         "subjectId": "science",
         "displayName": "Science",
-        "courseId": 26496,
+        "courseId": 28166,
         "canonicalPrefix": "SCI4",
         "canonicalName": "Science 4",
         "assignmentPolicy": "quarter-gated",
+        "assignmentCreation": "manual-only",
         "activeQuarters": [
           2,
           4

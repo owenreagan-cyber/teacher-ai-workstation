@@ -18,7 +18,7 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 MANIFEST_PATH = REPO_ROOT / "config/canvas-llm/approved-canvas-course-manifest.json"
 
 EXPECTED_COURSE_IDS = {
-    26404, 26442, 26495, 26493, 26496, 26427,
+    26404, 26442, 28171, 28165, 28166, 26427,
     24399,
     21957, 21919, 21944, 21934, 21970, 22254,
     19428, 19419, 19426, 19422, 19423, 19424,

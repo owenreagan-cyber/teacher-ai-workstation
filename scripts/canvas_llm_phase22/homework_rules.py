@@ -18,7 +18,7 @@ from scripts.canvas_llm_phase22 import phase22_workstation as p22  # noqa: E402
 RULE_CATEGORIES = ('homework', 'practice', 'classwork', 'assessment')
 GRADING_TYPES = ('Percentage', 'Points', 'Complete/Incomplete')
 SUBJECTS_WITH_RULES = ('math', 'reading', 'spelling')
-SUBJECTS_NEEDING_TEACHER_RULES = ('language-arts', 'history', 'science', 'shurley')
+SUBJECTS_NEEDING_TEACHER_RULES = ('history', 'science')
 
 
 def compact(value: Any) -> str:

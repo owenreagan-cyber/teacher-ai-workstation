@@ -44,6 +44,7 @@ checkout_map = load_json(
 )
 
 from scripts.canvas_llm_phase22 import phase22_workstation as p
+from scripts.canvas_llm_phase23 import phase23_content_engine as p23
 
 current = {
     item["subjectId"]: item
@@ -91,16 +92,52 @@ checks.extend(
             "2026-2027 Spelling grades route through Reading",
         ),
         (
-            current["language-arts"]["courseId"] == 26495,
-            "2026-2027 Language Arts resolves to course 26495",
+            current["language-arts"]["courseId"] == 28171,
+            "2026-2027 Language Arts resolves to course 28171",
         ),
         (
             current["language-arts"]["canonicalPrefix"] == "ELA4",
             "2026-2027 Language Arts prefix is ELA4",
         ),
         (
+            current["language-arts"]["assignmentPolicy"] == "enabled",
+            "2026-2027 Language Arts assignment creation is enabled",
+        ),
+        (
+            current["language-arts"]["assignmentGroups"]
+            == ["Classwork", "Assessments"],
+            "Language Arts assignment groups are Classwork and Assessments",
+        ),
+        (
+            current["language-arts"]["assignmentRouting"]
+            == {
+                "Spelling Tests": "Assessments",
+                "Classroom Practices": "Classwork",
+                "Shurley Chapter Tests": "Assessments",
+            },
+            "Language Arts assignment routing is canonical",
+        ),
+        (
+            current["math"]["assignmentGroups"]
+            == ["Written Assessments", "Fact Assessments", "Homework/Class Work"],
+            "Math assignment groups are canonical",
+        ),
+        (
+            current["reading"]["assignmentGroups"]
+            == ["Check Out", "Assessments", "Homework"],
+            "Reading assignment groups are canonical",
+        ),
+        (
+            current["history"]["courseId"] == 28165,
+            "2026-2027 History resolves to course 28165",
+        ),
+        (
             current["history"]["canonicalPrefix"] == "HIST4",
             "2026-2027 History prefix is HIST4",
+        ),
+        (
+            current["history"]["assignmentCreation"] == "manual-only",
+            "History automated assignment creation is disabled",
         ),
         (
             current["history"]["assignmentPolicy"] == "quarter-gated",
@@ -115,8 +152,16 @@ checks.extend(
             "Inactive History policy is untouched",
         ),
         (
+            current["science"]["courseId"] == 28166,
+            "2026-2027 Science resolves to course 28166",
+        ),
+        (
             current["science"]["canonicalPrefix"] == "SCI4",
             "2026-2027 Science prefix is SCI4",
+        ),
+        (
+            current["science"]["assignmentCreation"] == "manual-only",
+            "Science automated assignment creation is disabled",
         ),
         (
             current["science"]["assignmentPolicy"] == "quarter-gated",
@@ -382,6 +427,56 @@ checks.extend(
         ),
     ]
 )
+
+# Student-facing pacing translation (established shorthand only).
+translation_checks = [
+    (
+        p23.translate_student_facing_pacing("CP6") == ("Classroom Practice 6", True),
+        "Shurley CP6 translates to Classroom Practice 6",
+    ),
+    (
+        p23.translate_student_facing_pacing("2.3") == ("Chapter 2, Lesson 3", True),
+        "Shurley 2.3 translates to Chapter 2, Lesson 3",
+    ),
+    (
+        p23.translate_student_facing_pacing("Ch.2.3") == ("Chapter 2, Lesson 3", True),
+        "Shurley Ch.2.3 translates to Chapter 2, Lesson 3",
+    ),
+    (
+        p23.translate_student_facing_pacing("CP6 / 2.3")
+        == ("Classroom Practice 6; Chapter 2, Lesson 3", True),
+        "Shurley combined shorthand translates to full-word wording",
+    ),
+    (
+        p23.translate_student_facing_pacing("MTS Ch1") == ("Mountains Chapter 1", True),
+        "MTS renders as Mountains",
+    ),
+    (
+        p23.translate_student_facing_pacing("XYZ9")[1] is False,
+        "Unknown shorthand is not guessed",
+    ),
+    (
+        p23.student_facing_subject_title("language-arts", "CP6")
+        == "ELA4: Classroom Practice 6",
+        "Language Arts shorthand translates before student-facing rendering",
+    ),
+]
+
+# Weekly Reminders section must never render blank for an active subject.
+reminder_checks = [
+    (
+        bool(p23.build_instructional_focus_reminder("math", [{"lesson": "18", "title": "Lesson 18"}])),
+        "Active week without assessment produces an instructional-focus reminder",
+    ),
+    (
+        p23.build_instructional_focus_reminder("history", [])
+        == "This week we will continue our Mountains chapters.",
+        "History fallback uses established Mountains wording",
+    ),
+]
+
+checks.extend(translation_checks)
+checks.extend(reminder_checks)
 
 failures = 0
 

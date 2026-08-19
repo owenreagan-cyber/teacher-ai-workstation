@@ -42,11 +42,18 @@ Historical note: a legacy `SPELL` routing prefix remains dormant evidence only. 
 
 ## Course routing
 
-Spelling currently shares the Reading Canvas course:
+Spelling shares the Reading Canvas course for the weekly agenda surface:
 
 ```text
 Canvas course ID: 26442
 Title prefix: RM4:
+```
+
+Spelling test assignments are created in the Language Arts Canvas course:
+
+```text
+Canvas course ID: 28171
+Assignment group: Assessments
 ```
 
 Spelling remains a separate instructional subject.

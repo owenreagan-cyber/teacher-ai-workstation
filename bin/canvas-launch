@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+# Canvas launch wrapper.
+#
+# Credential loading is handled by scripts/canvas_llm_phase22/canvas_credentials.py
+# (env-first, then ~/.config/teacher-ai-workstation/canvas.env with a mode-0600
+# check). This wrapper only delegates; it never handles or prints the token.
+set -euo pipefail
+
+REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+
+exec python3 "$REPO_ROOT/scripts/canvas_llm_phase22/canvas_launcher.py" "$@"

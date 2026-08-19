@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Weekly Canvas Workspace — Phase 23</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="eyebrow">Phase 23 · Prototype</span>
+      <h1>Weekly Canvas Workspace</h1>
+    </div>
+    <label class="week-picker">
+      <span>Week</span>
+      <select id="week-select" aria-label="Select week"></select>
+    </label>
+  </header>
+
+  <div class="statusbar" id="statusbar" aria-live="polite">
+    <span class="status-item" id="status-pacing">Pacing …</span>
+    <span class="sep">·</span>
+    <span class="status-item" id="status-decisions">… decisions</span>
+    <span class="sep">·</span>
+    <span class="status-item" id="status-assessments">… assessments</span>
+    <span class="sep">·</span>
+    <span class="status-item status-state" id="status-state">…</span>
+  </div>
+
+  <main class="layout">
+    <section class="chat-pane" aria-label="Chat">
+      <div class="chat-scroll" id="chat-log"></div>
+      <div class="chat-chips" id="chat-chips">
+        <button class="chip" data-msg="Update Q1W6">Update Q1W6</button>
+        <button class="chip" data-msg="Refresh pacing">Refresh pacing</button>
+        <button class="chip" data-msg="Show assignments">Show assignments</button>
+        <button class="chip" data-msg="Review changes">Review changes</button>
+        <button class="chip" data-msg="Launch">Launch</button>
+      </div>
+      <form class="chat-input" id="chat-form" autocomplete="off">
+        <input id="chat-text" placeholder="Type a command, e.g. “Update Q1W6”, “Looks good”, “Launch”" aria-label="Chat message">
+        <button type="submit">Send</button>
+      </form>
+    </section>
+
+    <aside class="side-pane">
+      <section class="card week-panel">
+        <div class="card-head">
+          <div>
+            <h2 id="week-code">—</h2>
+            <p class="muted" id="week-dates"></p>
+          </div>
+          <button class="link-btn" id="pacing-guide-btn" type="button">Open live pacing guide</button>
+        </div>
+        <div class="pacing-grid" id="pacing-grid"></div>
+        <div class="pacing-detail" id="pacing-detail" hidden></div>
+      </section>
+
+      <section class="card">
+        <div class="card-head">
+          <h2>Suggested assignments</h2>
+          <span class="count-badge" id="assignments-count"></span>
+        </div>
+        <ul class="assignments-list" id="assignments-list"></ul>
+      </section>
+
+      <section class="card">
+        <div class="card-head">
+          <h2>Review changes</h2>
+        </div>
+        <button class="btn btn-secondary btn-block" id="review-btn" type="button">Review changes</button>
+        <div class="review-summary" id="review-summary"></div>
+        <div class="review-details" id="review-details" hidden></div>
+      </section>
+
+      <section class="card">
+        <div class="card-head">
+          <h2>Launch</h2>
+        </div>
+        <button class="btn btn-primary btn-block" id="launch-btn" type="button">Launch</button>
+        <div class="launch-state" id="launch-state"></div>
+        <p class="launch-reason" id="launch-reason"></p>
+      </section>
+    </aside>
+  </main>
+
+  <script src="workstation.js"></script>
+</body>
+</html>

@@ -21,7 +21,6 @@ existing page.
 from __future__ import annotations
 
 import argparse
-import importlib.util
 import json
 import os
 import sys
@@ -81,20 +80,12 @@ def _actions(manifest: dict[str, Any]) -> list[dict[str, Any]]:
 
 
 def _fetch_live_inventory(*, test_mode: bool = False) -> dict[str, Any]:
-    """Fresh live GET of all audited courses. Read-only; reuses the Q1W5 audit module."""
+    """Fresh live GET of all canonical courses. Read-only; self-contained module."""
     if test_mode:
         return _fake_inventory()
-    audit_file = REPO_ROOT / "scripts" / "canvas-llm" / "q1w5_live_audit.py"
-    spec = importlib.util.spec_from_file_location("q1w5_live_audit", str(audit_file))
-    if spec is None or spec.loader is None:
-        raise LaunchError(f"cannot load audit module: {audit_file}")
-    mod = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(mod)
+    from scripts.canvas_llm_phase22 import canvas_live_inventory as inventory
 
-    report: dict[str, Any] = {"courses": {}}
-    for subject, course_id in mod.COURSES.items():
-        report["courses"][str(course_id)] = mod.audit_course(subject, course_id)
-    return report
+    return inventory.fetch_live_inventory()
 
 
 def _fake_inventory() -> dict[str, Any]:

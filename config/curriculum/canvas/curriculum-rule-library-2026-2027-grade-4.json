@@ -1,0 +1,295 @@
+{
+  "profile": {
+    "profile_id": "2026-2027-grade-4-default",
+    "label": "2026-2027 Grade 4 Default Profile",
+    "school_year": "2026-2027",
+    "teacher": "default",
+    "grade_level": "4",
+    "curriculum_programs": [
+      "Saxon Math 5",
+      "Reading Mastery 4",
+      "Spelling 4"
+    ],
+    "active_rules": [
+      "math-monday-homework",
+      "math-wednesday-homework",
+      "math-tuesday-practice-check",
+      "math-thursday-practice-check",
+      "reading-monday-workbook",
+      "reading-wednesday-workbook",
+      "reading-tuesday-comprehension",
+      "reading-thursday-comprehension",
+      "spelling-test"
+    ],
+    "created_at": "2026-07-26T00:00:00Z"
+  },
+  "rules": [
+    {
+      "rule_id": "math-monday-homework",
+      "school_year": "2026-2027",
+      "grade_level": "4",
+      "subject": "math",
+      "curriculum_program": "Saxon Math 5",
+      "rule_type": "homework",
+      "trigger": {"subject": "math", "days": ["Monday"], "requires_lesson": true},
+      "generation_pattern": "Saxon Math 5 Lesson {lesson}: Problems #12-30 even",
+      "title_template": "Saxon Math 5 - Lesson {lesson} Homework",
+      "description_template": "Problems: #12-30 Even",
+      "grading_policy": {
+        "category": "homework",
+        "points": 100,
+        "grading_type": "Percentage",
+        "counts_toward_final_grade": false,
+        "teacher_choice_required": false,
+        "requires_approval": true
+      },
+      "teacher_decision_required": false,
+      "active": true,
+      "created_at": "2026-07-26T00:00:00Z",
+      "updated_at": "2026-07-26T00:00:00Z"
+    },
+    {
+      "rule_id": "math-wednesday-homework",
+      "school_year": "2026-2027",
+      "grade_level": "4",
+      "subject": "math",
+      "curriculum_program": "Saxon Math 5",
+      "rule_type": "homework",
+      "trigger": {"subject": "math", "days": ["Wednesday"], "requires_lesson": true},
+      "generation_pattern": "Saxon Math 5 Lesson {lesson}: Problems #11-29 odd",
+      "title_template": "Saxon Math 5 - Lesson {lesson} Homework",
+      "description_template": "Problems: #11-29 Odd",
+      "grading_policy": {
+        "category": "homework",
+        "points": 100,
+        "grading_type": "Percentage",
+        "counts_toward_final_grade": false,
+        "teacher_choice_required": false,
+        "requires_approval": true
+      },
+      "teacher_decision_required": false,
+      "active": true,
+      "created_at": "2026-07-26T00:00:00Z",
+      "updated_at": "2026-07-26T00:00:00Z"
+    },
+    {
+      "rule_id": "math-tuesday-practice-check",
+      "school_year": "2026-2027",
+      "grade_level": "4",
+      "subject": "math",
+      "curriculum_program": "Saxon Math 5",
+      "rule_type": "practice",
+      "trigger": {"subject": "math", "days": ["Tuesday"], "requires_lesson": true},
+      "generation_pattern": "Saxon Math 5 Lesson {lesson}: Practice Check Problems #1-10",
+      "title_template": "Saxon Math 5 - Lesson {lesson} Practice Check",
+      "description_template": "Problems: #1-10",
+      "grading_policy": {
+        "category": "practice",
+        "points": 100,
+        "grading_type": "Percentage",
+        "counts_toward_final_grade": false,
+        "teacher_choice_required": true,
+        "requires_approval": true
+      },
+      "teacher_decision_required": true,
+      "active": true,
+      "created_at": "2026-07-26T00:00:00Z",
+      "updated_at": "2026-07-26T00:00:00Z"
+    },
+    {
+      "rule_id": "math-thursday-practice-check",
+      "school_year": "2026-2027",
+      "grade_level": "4",
+      "subject": "math",
+      "curriculum_program": "Saxon Math 5",
+      "rule_type": "practice",
+      "trigger": {"subject": "math", "days": ["Thursday"], "requires_lesson": true},
+      "generation_pattern": "Saxon Math 5 Lesson {lesson}: Practice Check Problems #1-10",
+      "title_template": "Saxon Math 5 - Lesson {lesson} Practice Check",
+      "description_template": "Problems: #1-10",
+      "grading_policy": {
+        "category": "practice",
+        "points": 100,
+        "grading_type": "Percentage",
+        "counts_toward_final_grade": false,
+        "teacher_choice_required": true,
+        "requires_approval": true
+      },
+      "teacher_decision_required": true,
+      "active": true,
+      "created_at": "2026-07-26T00:00:00Z",
+      "updated_at": "2026-07-26T00:00:00Z"
+    },
+    {
+      "rule_id": "reading-monday-workbook",
+      "school_year": "2026-2027",
+      "grade_level": "4",
+      "subject": "reading",
+      "curriculum_program": "Reading Mastery 4",
+      "rule_type": "classwork",
+      "trigger": {"subject": "reading", "days": ["Monday"], "requires_lesson": true},
+      "generation_pattern": "Reading Mastery 4 Lesson {lesson}: Workbook",
+      "title_template": "Reading Mastery 4 - Lesson {lesson} Workbook",
+      "description_template": "Workbook",
+      "grading_policy": {
+        "category": "classwork",
+        "points": 100,
+        "grading_type": "Percentage",
+        "counts_toward_final_grade": false,
+        "teacher_choice_required": true,
+        "requires_approval": true
+      },
+      "teacher_decision_required": true,
+      "active": true,
+      "created_at": "2026-07-26T00:00:00Z",
+      "updated_at": "2026-07-26T00:00:00Z"
+    },
+    {
+      "rule_id": "reading-wednesday-workbook",
+      "school_year": "2026-2027",
+      "grade_level": "4",
+      "subject": "reading",
+      "curriculum_program": "Reading Mastery 4",
+      "rule_type": "classwork",
+      "trigger": {"subject": "reading", "days": ["Wednesday"], "requires_lesson": true},
+      "generation_pattern": "Reading Mastery 4 Lesson {lesson}: Workbook",
+      "title_template": "Reading Mastery 4 - Lesson {lesson} Workbook",
+      "description_template": "Workbook",
+      "grading_policy": {
+        "category": "classwork",
+        "points": 100,
+        "grading_type": "Percentage",
+        "counts_toward_final_grade": false,
+        "teacher_choice_required": true,
+        "requires_approval": true
+      },
+      "teacher_decision_required": true,
+      "active": true,
+      "created_at": "2026-07-26T00:00:00Z",
+      "updated_at": "2026-07-26T00:00:00Z"
+    },
+    {
+      "rule_id": "reading-tuesday-comprehension",
+      "school_year": "2026-2027",
+      "grade_level": "4",
+      "subject": "reading",
+      "curriculum_program": "Reading Mastery 4",
+      "rule_type": "classwork",
+      "trigger": {"subject": "reading", "days": ["Tuesday"], "requires_lesson": true},
+      "generation_pattern": "Reading Mastery 4 Lesson {lesson}: Workbook and Comprehension",
+      "title_template": "Reading Mastery 4 - Lesson {lesson} Workbook and Comprehension",
+      "description_template": "Workbook and Comprehension Questions",
+      "grading_policy": {
+        "category": "classwork",
+        "points": 100,
+        "grading_type": "Percentage",
+        "counts_toward_final_grade": false,
+        "teacher_choice_required": true,
+        "requires_approval": true
+      },
+      "teacher_decision_required": true,
+      "active": true,
+      "created_at": "2026-07-26T00:00:00Z",
+      "updated_at": "2026-07-26T00:00:00Z"
+    },
+    {
+      "rule_id": "reading-thursday-comprehension",
+      "school_year": "2026-2027",
+      "grade_level": "4",
+      "subject": "reading",
+      "curriculum_program": "Reading Mastery 4",
+      "rule_type": "classwork",
+      "trigger": {"subject": "reading", "days": ["Thursday"], "requires_lesson": true},
+      "generation_pattern": "Reading Mastery 4 Lesson {lesson}: Workbook and Comprehension",
+      "title_template": "Reading Mastery 4 - Lesson {lesson} Workbook and Comprehension",
+      "description_template": "Workbook and Comprehension Questions",
+      "grading_policy": {
+        "category": "classwork",
+        "points": 100,
+        "grading_type": "Percentage",
+        "counts_toward_final_grade": false,
+        "teacher_choice_required": true,
+        "requires_approval": true
+      },
+      "teacher_decision_required": true,
+      "active": true,
+      "created_at": "2026-07-26T00:00:00Z",
+      "updated_at": "2026-07-26T00:00:00Z"
+    },
+    {
+      "rule_id": "spelling-test",
+      "school_year": "2026-2027",
+      "grade_level": "4",
+      "subject": "spelling",
+      "curriculum_program": "Spelling 4",
+      "rule_type": "assessment",
+      "trigger": {"subject": "spelling", "requires_test": true},
+      "generation_pattern": "Spelling Test {test}",
+      "title_template": "Spelling Test {test}",
+      "description_template": "Spelling assessment for test {test}",
+      "grading_policy": {
+        "category": "assessment",
+        "points": 100,
+        "grading_type": "Percentage",
+        "counts_toward_final_grade": true,
+        "teacher_choice_required": false,
+        "requires_approval": true
+      },
+      "teacher_decision_required": false,
+      "active": true,
+      "created_at": "2026-07-26T00:00:00Z",
+      "updated_at": "2026-07-26T00:00:00Z"
+    }
+  ],
+  "subject_behaviors": [
+    {
+      "subject": "math",
+      "generation_mode": "AUTO",
+      "classroom_activity_enabled": true,
+      "homework_generation_enabled": true,
+      "canvas_assignment_generation_enabled": "future",
+      "reference_type": "lesson"
+    },
+    {
+      "subject": "reading",
+      "generation_mode": "AUTO",
+      "classroom_activity_enabled": true,
+      "homework_generation_enabled": true,
+      "canvas_assignment_generation_enabled": "future",
+      "reference_type": "lesson"
+    },
+    {
+      "subject": "spelling",
+      "generation_mode": "AUTO",
+      "classroom_activity_enabled": true,
+      "homework_generation_enabled": false,
+      "canvas_assignment_generation_enabled": "future",
+      "reference_type": "lesson"
+    },
+    {
+      "subject": "history",
+      "generation_mode": "MANUAL",
+      "classroom_activity_enabled": true,
+      "homework_generation_enabled": false,
+      "canvas_assignment_generation_enabled": false,
+      "reference_type": "unit_chapter"
+    },
+    {
+      "subject": "science",
+      "generation_mode": "MANUAL",
+      "classroom_activity_enabled": true,
+      "homework_generation_enabled": false,
+      "canvas_assignment_generation_enabled": false,
+      "reference_type": "unit_chapter"
+    },
+    {
+      "subject": "shurley",
+      "generation_mode": "MANUAL",
+      "classroom_activity_enabled": true,
+      "homework_generation_enabled": false,
+      "canvas_assignment_generation_enabled": false,
+      "reference_type": "chapter_lesson"
+    }
+  ],
+  "subjects_needing_teacher_rules": ["language-arts"]
+}

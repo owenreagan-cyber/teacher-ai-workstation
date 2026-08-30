@@ -273,6 +273,9 @@
         {"flag": "--c2c2-q1w2-live-status", "status": "implemented", "purpose": "C2C2 Q1W2 live deployment status with transport verification"},
         {"flag": "--homework-rules-status", "status": "implemented", "purpose": "Homework and assessment rules coverage summary"},
         {"flag": "--assignment-draft-preview", "status": "implemented", "purpose": "Assignment draft preview (no Canvas writes)"},
+        {"flag": "--curriculum-rules-status", "status": "implemented", "purpose": "Curriculum rule library validation summary"},
+        {"flag": "--curriculum-behavior-preview", "status": "implemented", "purpose": "Curriculum subject generation behavior preview"},
+        {"flag": "--curriculum-profile-status", "status": "implemented", "purpose": "Active curriculum profile, rules, and overrides"},
         {"flag": "--canvas-restart-status", "status": "blocked", "purpose": "Canvas restart blocked by stop marker"}
       ]
     },

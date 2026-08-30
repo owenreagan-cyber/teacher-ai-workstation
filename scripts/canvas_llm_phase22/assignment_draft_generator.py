@@ -160,7 +160,11 @@ def build_queue_items_for_drafts(drafts: list[AssignmentDraft]) -> list[queue.Ap
 
 def generate_drafts_from_plan(plan: pacing.WeeklyInstructionalPlan) -> list[AssignmentDraft]:
     applications = rules.apply_rules(plan)
-    drafts = [application_to_draft(app) for app in applications if not app.needs_teacher_rule or app.subject in rules.SUBJECTS_NEEDING_TEACHER_RULES]
+    drafts = [
+        application_to_draft(app)
+        for app in applications
+        if app.entry_type != 'in_class' and not app.needs_teacher_rule
+    ]
     return drafts
 
 
@@ -271,7 +275,7 @@ def command_self_test() -> int:
         {'subject': 'reading', 'weekday': 'Wednesday', 'entry_date': '2026-08-12', 'lesson': '4', 'tests': '', 'title': 'Lesson 4', 'notes': ''},
         {'subject': 'reading', 'weekday': 'Thursday', 'entry_date': '2026-08-13', 'lesson': '5', 'tests': '', 'title': 'Lesson 5', 'notes': ''},
         {'subject': 'spelling', 'weekday': 'Friday', 'entry_date': '2026-08-14', 'lesson': '', 'tests': '5', 'title': 'Spelling Test 5', 'notes': ''},
-        {'subject': 'history', 'weekday': 'Monday', 'entry_date': '2026-08-10', 'lesson': '1', 'tests': '', 'title': 'Chapter 1', 'notes': ''},
+        {'subject': 'history', 'weekday': 'Monday', 'entry_date': '2026-08-10', 'lesson': '8', 'tests': '', 'title': 'Chapter 8', 'notes': '', 'unit': 'The American Revolution', 'chapter': '8'},
     ]
     plan = pacing.parse_rows_to_plan(week_meta, rows)
     drafts = generate_drafts_from_plan(plan)
@@ -282,7 +286,8 @@ def command_self_test() -> int:
     blocked = [d for d in drafts if d.queue_status == 'BLOCKED']
     assert ready
     assert needs_review
-    assert blocked
+    assert not blocked
+    assert not any(d.subject in rules.MANUAL_SUBJECTS for d in drafts)
 
     for draft in drafts:
         assert draft.artifact_id

@@ -29,6 +29,8 @@ class SubjectLessonEntry:
     test: str | None = None
     title: str | None = None
     notes: str | None = None
+    unit: str | None = None
+    chapter: str | None = None
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)
@@ -116,6 +118,8 @@ def parse_rows_to_plan(
                 test=test,
                 title=compact(row.get('title') or '') or None,
                 notes=compact(row.get('notes') or '') or None,
+                unit=compact(row.get('unit') or '') or None,
+                chapter=compact(row.get('chapter') or '') or None,
             )
             entries.append(entry)
             if test and str(test).isdigit():

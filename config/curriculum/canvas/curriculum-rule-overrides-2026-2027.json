@@ -1,0 +1,42 @@
+{
+  "overrides": [
+    {
+      "override_id": "override-math-practice-grade-choice",
+      "rule_id": "math-tuesday-practice-check",
+      "school_year": "2026-2027",
+      "field_changed": "grading_policy.counts_toward_final_grade",
+      "old_value": false,
+      "new_value": true,
+      "reason": "Need three Math grades this week",
+      "active": true,
+      "reversible": true,
+      "created_at": "2026-07-26T00:00:00Z"
+    },
+    {
+      "override_id": "override-reading-workbook-points",
+      "rule_id": "reading-monday-workbook",
+      "school_year": "2026-2027",
+      "field_changed": "grading_policy.points",
+      "old_value": 100,
+      "new_value": 50,
+      "reason": "Partial credit workbook week",
+      "active": true,
+      "reversible": true,
+      "created_at": "2026-07-26T00:00:00Z"
+    }
+  ],
+  "audit_history": [
+    {
+      "event": "override_created",
+      "override_id": "override-math-practice-grade-choice",
+      "rule_id": "math-tuesday-practice-check",
+      "timestamp": "2026-07-26T00:00:00Z"
+    },
+    {
+      "event": "override_created",
+      "override_id": "override-reading-workbook-points",
+      "rule_id": "reading-monday-workbook",
+      "timestamp": "2026-07-26T00:00:00Z"
+    }
+  ]
+}

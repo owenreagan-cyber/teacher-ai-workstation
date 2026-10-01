@@ -1,0 +1,55 @@
+{
+  "$schema": "https://www.raycast.com/schemas/extension.json",
+  "name": "chief-of-staff",
+  "title": "Chief of Staff",
+  "description": "Ask Owen's local Chief of Staff (M1: read-only, local models only).",
+  "icon": "icon.png",
+  "author": "owen",
+  "license": "MIT",
+  "private": true,
+  "commands": [
+    {
+      "name": "ask-chief",
+      "title": "Ask Chief",
+      "description": "Ask the local Chief of Staff a question.",
+      "mode": "view",
+      "arguments": [
+        {
+          "name": "question",
+          "placeholder": "Question",
+          "type": "text",
+          "required": false
+        }
+      ]
+    },
+    {
+      "name": "daily-brief",
+      "title": "Daily Brief",
+      "description": "Show today's Chief of Staff brief.",
+      "mode": "view"
+    }
+  ],
+  "preferences": [
+    {
+      "name": "cosPath",
+      "title": "Path to bin/cos",
+      "description": "Absolute path (or ~/...) to the cos launcher in teacher-ai-workstation.",
+      "type": "textfield",
+      "required": true,
+      "default": "~/Projects/teacher-ai-workstation/bin/cos"
+    }
+  ],
+  "dependencies": {
+    "@raycast/api": "^1.80.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "@types/react": "^18.3.0",
+    "typescript": "^5.4.0"
+  },
+  "scripts": {
+    "dev": "ray develop",
+    "build": "ray build -e dist",
+    "lint": "ray lint"
+  }
+}

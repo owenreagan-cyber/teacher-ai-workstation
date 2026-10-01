@@ -1,0 +1,15 @@
+
+Chief of Staff Daily Status (Deterministic)
+----------------------------------------
+Status: read-only daily operations aggregate only
+PASS: daily operations doc exists
+Git branch: feature/example
+Working tree: clean
+Roadmap immediate mission: Example Mission (approval-gated)
+Canvas LLM: frozen (stop marker active)
+
+Summary
+----------------------------------------
+PASS: 5
+WARN: 0
+FAIL: 0

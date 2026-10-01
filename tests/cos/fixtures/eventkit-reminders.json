@@ -1,0 +1,5 @@
+{"status": "ok", "reminders": [
+  {"title": "Copy math packets", "due": "2026-10-01T14:00:00-04:00", "date_only": false, "list": "School"},
+  {"title": "Return library books", "due": "2026-09-29T09:00:00-04:00", "date_only": false, "list": "Personal"},
+  {"title": "Order printer toner", "due": "2026-10-01T00:00:00-04:00", "date_only": true, "list": "School"}
+]}

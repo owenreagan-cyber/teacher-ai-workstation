@@ -1,0 +1,7 @@
+Chief of Staff Next Action (Deterministic)
+----------------------------------------
+Status: read-only recommendation only
+WARN: major program not found in build queue
+Recommended daily focus: Example focus for the synthetic fixture.
+Roadmap immediate mission heading: Example Mission (approval-gated)
+FAIL: 0

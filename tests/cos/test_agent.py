@@ -138,7 +138,7 @@ class AgentTests(StateDirTest):
         with self.assertRaises(Stopped):
             agent.run("what time is it")
         self.assertEqual(self.model.calls, [])
-        self.assertEqual(self.events[-1][1].get("refused"), "kill_switch")
+        self.assertEqual(self.kinds(), ["request", "decision", "request_stopped"])
 
     def test_kill_switch_set_mid_turn_blocks_next_model_call(self):
         ks = self.ks

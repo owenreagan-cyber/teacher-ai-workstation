@@ -87,6 +87,10 @@ def validate_args(tool: Tool, args) -> dict:
 class Registry:
     def __init__(self):
         self._tools: dict[str, Tool] = {}
+        self.disabled: dict[str, str] = {}  # tool name -> why it was refused registration
+
+    def disable(self, name: str, reason: str) -> None:
+        self.disabled[name] = reason
 
     def register(self, tool: Tool) -> Tool:
         if not NAME_RE.match(tool.name):

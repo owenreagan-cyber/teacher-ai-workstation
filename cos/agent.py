@@ -3,11 +3,16 @@
 Limits per turn: at most MAX_TOOLS_OFFERED tools offered and MAX_ITERATIONS
 tool rounds. A malformed tool call is retried once; a second one drops that
 tool and the answer says so. Every answer reports the tools it used.
+
+The kill switch is checked before every model request and again as soon as
+the response returns. If it was set while the request was in flight, the
+response is discarded unread and the turn raises Stopped.
 """
 from __future__ import annotations
 
 import json
 import re
+import time
 from dataclasses import dataclass, field
 
 from cos.audit import text_digest
@@ -94,15 +99,40 @@ class Agent:
         self.system_prompt = system_prompt
         self.audit = audit or (lambda *a, **k: None)
 
-    def _model_turn(self, messages, schemas):
-        if not self.gate.check_model_call().allowed:
+    def _model_turn(self, messages, schemas, timing):
+        if not self.gate.check_model_call("before_request").allowed:
             raise Stopped("kill switch is set")
-        return self.model.chat(messages, schemas or None)
+        started = time.monotonic()
+        try:
+            msg, model_used = self.model.chat(messages, schemas or None)
+        finally:
+            timing["model_ms"] += int((time.monotonic() - started) * 1000)
+        if not self.gate.check_model_call("after_response").allowed:
+            # Set while the request was in flight: discard the response unread.
+            self.audit("model_response_discarded", model=model_used, reason="kill_switch")
+            raise Stopped("kill switch was set during the model call")
+        return msg, model_used
 
     def run(self, question: str, history: list[dict] | None = None, mode: str = "ask") -> AgentResult:
-        if not self.gate.check_model_call().allowed:
-            self.audit("request", mode=mode, prompt=text_digest(question), refused="kill_switch")
-            raise Stopped("kill switch is set")
+        started = time.monotonic()
+        timing = {"model_ms": 0, "tool_ms": 0}
+
+        def close(kind, **fields):
+            self.audit(kind, model_ms=timing["model_ms"], tool_ms=timing["tool_ms"],
+                       total_ms=int((time.monotonic() - started) * 1000), **fields)
+
+        try:
+            result = self._run(question, history, mode, timing)
+        except Stopped as e:
+            close("request_stopped", reason=str(e))
+            raise
+        except ModelError as e:
+            close("request_failed", error=str(e)[:200])
+            raise
+        close("answer", model=result.model, tools_used=result.tools_used, chars=len(result.answer))
+        return result
+
+    def _run(self, question, history, mode, timing) -> AgentResult:
         offered = select_tools(question, self.registry)
         self.audit("request", mode=mode, prompt=text_digest(question),
                    tools_offered=[t.name for t in offered])
@@ -139,7 +169,7 @@ class Agent:
 
         for _ in range(MAX_ITERATIONS):
             try:
-                msg, model_used = self._model_turn(messages, list(schemas.values()))
+                msg, model_used = self._model_turn(messages, list(schemas.values()), timing)
             except ModelError as e:
                 if not e.malformed_tool_call:
                     raise
@@ -168,7 +198,9 @@ class Agent:
                 elif tool.wire_name not in schemas:
                     content = json.dumps({"error": f"{tool.name} was not offered for this question"})
                 else:
+                    tool_started = time.monotonic()
                     result = run_tool(tool, args, decision, audit=self.audit)
+                    timing["tool_ms"] += int((time.monotonic() - tool_started) * 1000)
                     if tool.name not in used:
                         used.append(tool.name)
                     content = result_text(result)
@@ -176,11 +208,10 @@ class Agent:
         if answer is None:
             notices.append(f"Stopped after {MAX_ITERATIONS} tool rounds.")
             messages.append({"role": "user", "content": "Tool budget used up. Answer now with what you have."})
-            msg, model_used = self._model_turn(messages, None)
+            msg, model_used = self._model_turn(messages, None, timing)
             answer = clean_content(msg.get("content"))
         if not answer:
             answer = "(The model returned an empty answer.)"
-        self.audit("answer", model=model_used, tools_used=used, chars=len(answer))
         return AgentResult(answer, used, model_used, notices)
 
 

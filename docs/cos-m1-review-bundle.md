@@ -3,238 +3,277 @@
 ```text
 Milestone:        M1 — Simple Siri (fully local, read-only)
 Branch:           feature/cos-m1 (worktree ~/Projects/taw-cos-m1), from main 31cb330
-Reviewed range:   31cb330..d7bbbee (code); this bundle is committed on top
-Diff SHA-256:     3c505e7fac121c5f3aa51d55b2168164989291c6a7343f7d6bc0922e1dffb36a
-                  = shasum -a 256 of `git diff 31cb330..d7bbbee`
-Tests:            83 passed, 0 failed (python3.12 -m unittest discover -s tests/cos -p 'test_*.py')
-Builder:          Claude Code · Reviewer: one fresh cross-model reviewer (security / authority code)
+Original review:  31cb330..d7bbbee, diff SHA-256 3c505e7fac121c5f3aa51d55b2168164989291c6a7343f7d6bc0922e1dffb36a
+Hardening pass:   4ce9521..<hardening commit> (one checkpoint: COS-M1-001..005 plus addendum A-F)
+Hardening diff:   SHA-256 6d3ba006e72e8dba1b8a816dd65b1940a7a79319d34bf8d2a36acac2c40b4964
+                  = git diff 4ce9521 <hardening commit> -- . ':(exclude)docs/cos-m1-review-bundle.md' | shasum -a 256
+Tests:            114 passed, 0 failed (83 original + 31 new)
+                  python3.12 -m unittest discover -s tests/cos -p 'test_*.py'
 Not done:         no push, no merge
 ```
 
-## Commits
+**Entry point.** `bin/cos` is the public entry point for the Chief of Staff, and the Raycast
+extension calls it. `bin/chief-of-staff` is legacy: `cos` may wrap its read-only status commands
+(M1 wraps three, each gated by a static contract check), but new features are not added to it.
 
-| SHA | Step | Summary |
-|---|---|---|
-| `70633f3` | 1 + 3 | cos core: CLI, local model loop, policy gate, kill switch, audit chain, egress allowlist, tools, tests; adds `CHIEF-OF-STAFF.md` |
-| `e32639d` | 2 | Swift EventKit reader helper (read-only JSON) |
-| `d7bbbee` | 4 | Raycast extension (Ask Chief, Daily Brief) |
-| (this) | 5 | live-check instructions and this bundle |
+## Development incident during this pass (read first)
 
-Step 3 (the control foundation) landed in the Step 1 commit because the agent loop needs it.
+The hardening task said not to trigger Calendar or Reminders permission. One test triggered it.
 
-## Diff stat (31cb330..d7bbbee)
+1. **What happened.** A new regression test ran `cos brief` through the real CLI. The rebuilt
+   helper `.app` was at its default path, so cos launched it for real with `events` and
+   `reminders`. Before this pass, the helper prompted when access was undetermined. Both prompts
+   appeared and were approved within the test's 15-second window.
+2. **Current state.** `status` (read-only, no prompt) reports `calendar: ok`, `reminders: ok`
+   for the **ad-hoc-signed** helper identity `local.chief-of-staff.eventkit-reader`.
+   Terminal and Raycast did not receive a grant from this; the helper was its own responsible
+   process.
+3. **Data.** The events and reminders read during that test went only to temporary files in a
+   temporary test state directory. Both were deleted when the test finished. Nothing was
+   printed, logged to a persistent audit, or committed.
+4. **Fixes in this checkpoint:**
+   - every cos launch passes `COS_EVENTKIT_NO_PROMPT=1` (verified through `open --env`), so
+     cos itself can never prompt;
+   - `tests/cos/support.py` points the default helper path at a nonexistent location and makes
+     any test that tries to run `/usr/bin/open` or the helper fail;
+   - the CLI brief test uses synthetic tools.
 
-```text
- .gitignore                                                     |   3 +
- CHIEF-OF-STAFF.md                                              | 364 +++++
- apps/raycast-chief-of-staff/README.md                          |  44 ++
- apps/raycast-chief-of-staff/assets/icon.png                    | Bin 0 -> 4064 bytes
- apps/raycast-chief-of-staff/package.json                       |  55 ++
- apps/raycast-chief-of-staff/src/ask-chief.tsx                  |  55 ++
- apps/raycast-chief-of-staff/src/cos.ts                         |  44 ++
- apps/raycast-chief-of-staff/src/daily-brief.tsx                |  30 ++
- apps/raycast-chief-of-staff/tsconfig.json                      |  16 +
- bin/cos                                                        |  16 +
- cos/__init__.py                                                |   3 +
- cos/__main__.py                                                |   5 +
- cos/agent.py                                                   | 191 +++
- cos/audit.py                                                   | 110 ++
- cos/brief.py                                                   | 109 ++
- cos/cli.py                                                     | 196 +++
- cos/config.py                                                  | 114 ++
- cos/egress.py                                                  |  96 ++
- cos/executor.py                                                |  48 +
- cos/helpers/eventkit-reader/Package.swift                      |  23 +
- cos/helpers/eventkit-reader/Sources/eventkit-reader/Info.plist |  20 +
- cos/helpers/eventkit-reader/Sources/eventkit-reader/main.swift | 137 ++
- cos/identity.md                                                |  32 +
- cos/memory.py                                                  |  70 +
- cos/model.py                                                   | 103 ++
- cos/policy.py                                                  | 105 ++
- cos/registry.py                                                | 128 ++
- cos/tools/__init__.py                                          |  56 +
- cos/tools/calendar.py                                          |  86 +
- cos/tools/mac_status.py                                        | 101 ++
- cos/tools/reminders.py                                         |  47 +
- cos/tools/status_scripts.py                                    |  46 +
- cos/tools/time_tool.py                                         |  59 +
- cos/tools/weather.py                                           |  93 ++
- tests/cos/fixtures/ (10 synthetic files)                       |  48 +
- tests/cos/support.py                                           | 119 ++
- tests/cos/test_agent.py                                        | 166 +++
- tests/cos/test_brief_and_cli.py                                | 133 ++
- tests/cos/test_control.py                                      | 249 +++
- tests/cos/test_egress_and_model.py                             | 192 +++
- tests/cos/test_tools.py                                        | 197 +++
- 50 files changed, 3709 insertions(+)
-```
+   After these fixes the suite takes 2 s instead of 32 s, and no helper process runs.
+5. **Owen action.** Reset the grant before the live checks: `docs/cos-m1-live-checks.md`
+   step 2.0 (`tccutil reset Calendar|Reminders local.chief-of-staff.eventkit-reader`). I did
+   not change TCC state myself.
 
-## Architecture in one screen
+## Independent findings and dispositions
 
-```text
-bin/cos (python3.12 -s -E -P) → cos/cli.py
-  ask/chat → agent.py: keyword router (≤6 tools) → model.py (local Ollama only)
-                │  tool call → policy.py gate (kill switch → registered → side_effect none → args)
-                │            → executor.py (timeout, size cap) → tools/*
-                └─ ≤6 rounds; malformed tool JSON retried once, then dropped and noted
-  brief      → brief.py: same gate + executor, no model, ≤15 lines
-  every HTTP → egress.py allowlist {http 127.0.0.1|localhost:11434, https api.open-meteo.com:443}
-  every step → audit.py hash-chained JSONL (request, model_call, tool_call, decision, tool_result, answer)
-State: ~/Library/Application Support/ChiefOfStaff/ (0700; files 0600; COS_STATE_DIR override for tests)
-```
+| ID | Sev | Finding | Disposition |
+|---|---|---|---|
+| COS-M1-001 | MAJOR | A model response that arrives after `cos stop` could still be shown | **Fixed.** `Agent._model_turn` checks the gate before the request and again immediately after the response returns, before tool calls are interpreted or text is returned. A post-response deny audits `decision(subject=model_call, phase=after_response, allowed=false)` and `model_response_discarded`, then raises `Stopped`, and the CLI prints only the stopped error. No cancellation machinery. |
+| COS-M1-002 | MAJOR | EventKit grant attributed to Terminal or Raycast | **Fixed.** The helper is now `ChiefOfStaffEventKitReader.app` with a stable bundle id, launched only via LaunchServices (`open -W -n -g -j --env COS_EVENTKIT_NO_PROMPT=1 --stdout F --stderr F App --args …`). The helper refuses EventKit commands (`wrong_launch`) unless it is inside the expected bundle **and** is its own TCC-responsible process. Docs state that macOS has no read-only EventKit tier and read-only behavior is enforced in code. Verification below. |
+| COS-M1-003 | MINOR | The egress claim was broader than the mechanism | **Fixed.** `egress.py` docstring now scopes itself to cos's own HTTP and documents the subprocess boundary. New `cos/tools/script_contract.py` statically checks each wrapped `bin/chief-of-staff` command (details below). A violating command is **not registered**; its reason goes to `registry.disabled` and `cos tools` shows it as DISABLED. |
+| COS-M1-004 | MINOR | A missing audit log was reported as healthy | **Fixed.** The first append creates `audit.initialized` (0600). `verify` returns `ok`, `uninitialized` (no log, no marker), or `fail` (tampered, or marker present while the log is missing or empty). `cos audit verify` prints OK / EMPTY / FAIL and exits 1 on FAIL. |
+| COS-M1-005 | MINOR | Model-call authority decisions were not audited | **Fixed.** `PolicyGate.check_model_call(phase)` writes a `decision` record (`subject=model_call`, `phase`, `allowed`, `rule`, `reason`) for both allow and deny. Tool decisions now carry `subject=tool_call`. |
 
-Trusted path (stdlib-only Python 3.12): `policy.py`, `registry.py`, `executor.py`,
-`egress.py`, `audit.py`, `config.py`. The whole `cos/` package is stdlib-only.
+### Addendum
 
-## Tool list (`cos tools`)
+| Item | Result |
+|---|---|
+| A. Signing and LaunchServices | `scripts/cos-build-eventkit-helper.sh [identity]` builds the `.app` and signs it, ad-hoc by default. I tested ad-hoc only and never touched the keychain. Owen runs it with `"Apple Development: <Name> (<TEAMID>)"` (live checks 2.1). Launch is through `open`, and attribution was verified without a prompt (below). |
+| B. Known-gaps table | Below. Every gap is classified BLOCKER / ACCEPTED-M1 / DEFERRED-M2+. |
+| C. Legacy label | Brief lines copied from wrapped `bin/chief-of-staff` output now read `Workstation status (legacy): …`. The legacy scripts are unchanged. |
+| D. Latency | `model_call.model_ms`, `tool_result.tool_ms`, and request-closing records (`answer`, `request_stopped`, `request_failed`, and brief `answer`) carry `model_ms`, `tool_ms`, `total_ms`. |
+| E. Entry point | Stated in `CHIEF-OF-STAFF.md` §3 "Entry points" (and its decision list) and at the top of this bundle. |
+| F. Raycast hygiene | `.gitignore` covers `apps/raycast-chief-of-staff/node_modules/`, `dist/`, the generated `raycast-env.d.ts`, and the helper `build/`. `package-lock.json` is committed. |
 
-| Tool | side_effect | data_class | timeout | Source |
+## EventKit architecture result (COS-M1-002 / addendum A)
+
+The helper was verified without any permission prompt. `identity` uses no EventKit; `status` only
+reads `authorizationStatus`, which never prompts.
+
+| Launch | `ppid` | responsible pid | `self_responsible` | `events` / `status` |
 |---|---|---|---|---|
-| `time.now` | none | P2 | 2 s | clock; days and weekdays until a date |
-| `weather.today` | none | P2 | 15 s | Open-Meteo, coordinates rounded to 2 dp, 30-min cache |
-| `mac.status` | none | P1 | 15 s | `pmset -g batt`, `memory_pressure`, `df -k /`, `sysctl kern.boottime`, Ollama `/api/ps` |
-| `calendar.today` | none | P1 | 20 s | `eventkit-reader events --days 1` |
-| `reminders.due` | none | P1 | 20 s | `eventkit-reader reminders --due-within-days 1` |
-| `status.daily` | none | P1 | 25 s | `bin/chief-of-staff --daily-status` (output unchanged, capped at 4000 chars) |
-| `status.next_action` | none | P1 | 25 s | `bin/chief-of-staff --next-action` |
-| `status.local_llm` | none | P1 | 25 s | `bin/chief-of-staff --local-llm-workstation-status` |
+| Bare `Contents/MacOS/eventkit-reader` from a shell | shell | 686 = `/System/Applications/Utilities/Terminal.app` | false | refused: `wrong_launch` |
+| `open … App --args identity` (LaunchServices) | 1 (launchd) | itself | **true** | allowed |
+| Same path through cos's Python launcher (minimal env) | 1 | itself | true; `no_prompt: true` (env reached the helper) | allowed |
 
-## Test output
+Before the incident above, `status` via LaunchServices returned `not_determined` for both, which
+shows the helper's TCC identity is separate from Terminal's. The responsible pid comes from
+`responsibility_get_pid_responsible_for_pid` via `dlsym`. If that API is unavailable the helper
+fails closed (`wrong_launch`).
+
+Signing: an ad-hoc build gives `Identifier=local.chief-of-staff.eventkit-reader`,
+`Signature=adhoc`, and `designated => cdhash …`. That changes on every rebuild, so a grant can be
+orphaned. An Apple Development signature gives a designated requirement of identifier plus team,
+which is stable across rebuilds.
+
+The read-only surface is enforced by tests: the helper's `case` commands are exactly `events`,
+`reminders`, `status`, `identity`, and `--version`; the source contains no EventKit mutation API
+(`save(`, `remove(`, `commit(`, …); and every EventKit command calls `requireOwnIdentity()`.
+
+## COS-M1-003 — static contract for wrapped status commands
+
+For each wrapped flag, `check_flag` scans the code that actually runs:
+- top-level `bin/chief-of-staff` statements before the argument loop (other flags' `if` blocks
+  and uncalled functions are skipped);
+- the flag's dispatch arm;
+- every function called from those, transitively;
+- every script launched via `bash`/`sh`/`source`/`python`, recursively.
+
+It rejects:
+- network-capable commands (curl, wget, nc, ssh, git fetch/push, ollama, open, osascript, …)
+  and `/dev/tcp|udp`;
+- mutating commands (rm, mv, tee, mkdir, …) and file redirections other than `/dev/null`;
+- `eval`, `bash -c` / `python -c`, awk `system()`/pipes/redirects, `sed -i`, dynamic command
+  names, and unresolvable launched scripts;
+- in Python: network, subprocess, and file-mutation imports or calls (via `ast`).
+
+Results on the real repo:
+- `--daily-status`, `--next-action`, `--local-llm-workstation-status`: **0 violations**.
+  The checker visited the dispatch arm, `resolve_repo_root`, `is_repo_root`, `script_dir`,
+  `source_dir`, `die`, `usage`, and the launched script.
+- `--approval-queue-status` (not wrapped): flagged, because
+  `scripts/canvas_llm_phase22/approval_queue.py:272` calls `.unlink()`.
+
+## Files changed in the hardening checkpoint
+
+```text
+new:      cos/tools/script_contract.py               static network-free/read-only contract
+new:      scripts/cos-build-eventkit-helper.sh        build + sign ChiefOfStaffEventKitReader.app
+new:      tests/cos/test_hardening.py                 27 regression tests (001-005, D, helper source)
+new:      apps/raycast-chief-of-staff/package-lock.json
+moved:    cos/helpers/eventkit-reader/Sources/eventkit-reader/Info.plist -> App/Info.plist (bundle plist, LSUIElement)
+modified: cos/agent.py            post-response kill-switch gate, discard + request_stopped, timing
+modified: cos/policy.py           check_model_call(phase) audited; subject on decisions
+modified: cos/audit.py            initialization marker; VerifyResult ok/uninitialized/fail
+modified: cos/cli.py              audit verify OK/EMPTY/FAIL; brief timing; DISABLED tools listed
+modified: cos/brief.py            "Workstation status (legacy):" label; tool timing
+modified: cos/egress.py           scope + subprocess boundary documented
+modified: cos/executor.py, cos/model.py   tool_ms / model_ms field names
+modified: cos/registry.py         registry.disabled
+modified: cos/tools/__init__.py   eventkit_app; status tools registered via contract
+modified: cos/tools/calendar.py   LaunchServices launch, --env no-prompt, output polling, wrong_launch
+modified: cos/tools/status_scripts.py     contract gate at registration
+modified: cos/helpers/eventkit-reader/Package.swift   no linker-embedded plist
+modified: cos/helpers/eventkit-reader/Sources/eventkit-reader/main.swift  identity, attribution guard, lazy store
+modified: tests/cos/support.py, test_agent.py, test_brief_and_cli.py, test_control.py, test_tools.py
+modified: apps/raycast-chief-of-staff/package.json, README.md
+modified: .gitignore, CHIEF-OF-STAFF.md, docs/cos-m1-live-checks.md, docs/cos-m1-review-bundle.md
+```
+
+## Test results
 
 ```text
 $ python3.12 -m unittest discover -s tests/cos -p 'test_*.py'
-Ran 83 tests in 0.180s
+Ran 114 tests in 1.955s
 OK
 
-per module:  test_agent 17 · test_brief_and_cli 8 · test_control 23 · test_egress_and_model 13 · test_tools 22
+per module: test_agent 17 · test_brief_and_cli 8 · test_control 23 · test_egress_and_model 13
+            test_hardening 27 · test_tools 26          (original 83 + new 31 = 114)
+egress/local-only alone: test_egress_and_model.py — Ran 13 tests, OK
+git diff --check: clean
 ```
 
-Coverage against the prompt's required tests:
+The new tests cover:
+- **001:** a blocking fake model, released after `cos stop`, for plain-text and tool-call
+  responses; a CLI-level test asserts no model text is printed and the exit code is 3.
+- **005:** denied and allowed model-call decisions are audited, and a stopped `cos ask` writes
+  the denial to the on-disk chain.
+- **004:** never initialized, valid, tampered, initialized-then-deleted, and
+  initialized-then-truncated logs.
+- **003:**
+  - the three real commands pass and the approval-queue script is caught;
+  - 20 synthetic violation forms are detected;
+  - a clean script with "curl" in comments, strings, and quoted heredocs passes;
+  - nested and Python launches are followed;
+  - called functions and the prelude are checked, while uncalled functions are not;
+  - a missing dispatch block or unresolvable script fails closed;
+  - a violating command is not registered.
+- **D:** timing fields on all record types, including brief.
+- **002:** launch argv uses `open` with `--env COS_EVENTKIT_NO_PROMPT=1`, never the bare
+  binary; temp output is removed; `wrong_launch` and no-output are handled; the helper source
+  is checked statically; the test suite is shown unable to reach the real helper.
 
-| Required | Where |
-|---|---|
-| Every tool against mocked command/API output | `test_tools.py` (all 8 tools + registry contents) |
-| A policy-gate deny case for each rule | `test_control.PolicyGateTests`: unregistered, side_effect, bad_arguments, kill_switch, gate_error, gate_timeout |
-| Audit chain integrity and tamper | `AuditChainTests`: edit, rehashed edit, delete, reorder, 4-thread concurrent append |
-| Kill switch blocks everything | gate (tools + model), agent before the model and mid-turn, brief gather, CLI ask/brief |
-| Egress refuses cloud model hosts and any non-allowlisted host | `test_egress_and_model.py`: Anthropic, OpenAI, Gemini, OpenRouter, Mistral plus 14 other forms; asserts no socket is opened; structural test that only `egress.py` imports networking modules |
-| Model client refuses a non-local base URL | `ModelClientLocalOnlyTests` (9 URLs) plus egress refusal if `base_url` is mutated later |
-| Agent loop malformed-JSON retry | retry-then-succeed, twice-then-drop-with-note, Ollama parse-error path |
-| Brief formatting deterministic | exact 14-line expected output; ≤15 lines with 12 events and 9 reminders |
-| State directory created 0700 | under umask 022, tightening of a 0755 dir, files 0600 |
+CLI check with a scratch state dir:
+- fresh → `EMPTY: no audit log yet (never initialized)`, exit 0;
+- after `stop` and `ask` → `OK: chain intact (5 records)`, exit 0;
+- log moved away → `FAIL: audit log is missing but was initialized`, exit 1.
 
-### Dev smoke checks (run by Claude Code with a scratch `COS_STATE_DIR`)
+`cos tools` lists 8 tools with none disabled.
 
-- Real `mac.status`, `time.now`, and the 3 status tools ran against this Mac. All exited 0 and
-  none were truncated. EventKit was **not** run (no permission prompts were triggered).
-- One live `cos ask "what time is it"` against local `qwen3.6:35b`: correct answer,
-  `Tools used: time.now`, 19 s cold. The audit chain for that request has 7 records and verifies
-  (request → model_call → tool_call → decision → tool_result → model_call → answer, all on host
-  `127.0.0.1:11434`).
-- Open-Meteo was never called (no coordinates are configured yet).
+## Raycast static validation
 
-## D1 change for the state directory (applied by Owen, 2026-10-01)
+- `npm install` inside `apps/raycast-chief-of-staff/` only installed 87 packages, pinned in
+  `package-lock.json`. npm 11 skipped esbuild's postinstall script; I left it unapproved, and the
+  build works without it.
+- The first `tsc --noEmit` **failed** (TS2786 on every JSX component): `@raycast/api@1.104.25`
+  bundles `@types/react@19.0.10`, while the package declared `@types/react@^18`. I aligned the
+  dev types with the API (`@types/react@^19.0.10`, `@types/node@^22.19.17`) and pinned
+  `@raycast/api@^1.104.25`. **`npm run typecheck` (new script, `tsc --noEmit`) → exit 0.**
+- **`npm run build` (`ray build -e dist`) → "built extension successfully"** (compiled both
+  entry points, generated types, checked TypeScript). It writes its output into
+  `~/.config/raycast/extensions/chief-of-staff/` rather than the repo. Because that folder is
+  how Raycast imports extensions, I moved the folder my build created
+  (`~/.config/raycast/extensions/`, timestamps 02:23) into my session scratchpad, leaving
+  Owen's existing `~/.config/raycast/{ai,config.json}` untouched. The Raycast app was not
+  opened or automated.
+- **`npm run lint` (`ray lint`): not run.** The package declares no ESLint or Prettier
+  configuration or dependencies, so lint has nothing to run against. Deferred (gap 27).
 
-Owen applied and verified this change, reporting: integrity PASS, hook 371/371, boundary 33/33.
+## Known gaps, classified
 
-1. `tools/dev_safety/dev_guard.py` (recovery branch `feature/cos-pacing-intelligence`):
-   `DENIED_ROOT_RELS` gains `"Library/Application Support/ChiefOfStaff"`, and the hook is
-   reinstalled to `~/.claude/hooks/cos/dev_guard.py` with a matching SHA.
-2. `.claude/settings.json` `permissions.deny` (Read+Edit form; Write rules removed):
-   ```json
-   "Read(~/Library/Application Support/ChiefOfStaff/**)",
-   "Edit(~/Library/Application Support/ChiefOfStaff/**)"
-   ```
+| # | Gap | Class | Reason |
+|---|---|---|---|
+| 1 | `--daily-status` prints the stale `Canvas LLM: frozen` line (repeated in the brief) | ACCEPTED-M1 | Output passes through unchanged by Owen's decision; it is now labeled "Workstation status (legacy)". |
+| 2 | `--next-action` parse WARNs (`major program not found`, `(not parsed)`, gate/stop-marker wording) | ACCEPTED-M1 | Legacy script content, passed through unchanged; fixing it is outside M1. |
+| 3 | `--approval-queue-status` crashes (TypeError), and its script deletes a file | DEFERRED-M2+ | Not wrapped; the contract check would refuse it anyway. Fix in the legacy track. |
+| 4 | `--dashboard` takes about 101 s | DEFERRED-M2+ | Not wrapped; too slow for an interactive tool. |
+| 5 | EventKit grant owned by Terminal or Raycast | ACCEPTED-M1 (residual) | Resolved by 002. Residual: the build stays ad-hoc until Owen signs with Apple Development (live checks 2.1), which is an owner step, not a code gap. |
+| 6 | Raycast extension not type-checked or built | ACCEPTED-M1 (residual) | Resolved: typecheck and build pass. Residual: lint (gap 27). |
+| 7 | Open-Meteo never called live | ACCEPTED-M1 | Fixture-tested; Owen's live check covers it once coordinates are set. |
+| 8 | Audit log is tamper-evident, not tamper-proof; no rotation | ACCEPTED-M1 | Local, single-user threat model; anchoring and rotation fit with M3 memory work. |
+| 9 | Kill switch during an in-flight model call | ACCEPTED-M1 (residual) | Resolved by 001 (response discarded). Residual: the Ollama request still runs to completion (up to 300 s) on the local GPU; cancellation was explicitly out of scope. |
+| 10 | A timed-out tool thread cannot be killed | ACCEPTED-M1 | Subprocess and HTTP tools carry their own timeouts; nothing lingers in practice. |
+| 11 | Keyword-only router | ACCEPTED-M1 | Router v1 is the M2 milestone. |
+| 12 | School-day math ignores holidays | DEFERRED-M2+ | Needs the school calendar, which belongs to the Canvas/pacing track. |
+| 13 | Chat history has no retention policy | DEFERRED-M2+ | It sits in the 0700 directory; retention belongs to M3 memory. |
+| 14 | `active-priorities.md` "Now" section is stale (July) | ACCEPTED-M1 | Memory is read as-is by design; content cleanup is Owen's. |
+| 15 | cos tests not wired into CI | DEFERRED-M2+ | Run locally; CI wiring belongs to the consolidation work. |
+| 16 | `PROMPT-M1.md` referenced but not in the repo | ACCEPTED-M1 | Documentation pointer only; the spec was supplied in the session. |
+| 17 | D1 source and CoS design docs only on `feature/cos-pacing-intelligence` | DEFERRED-M2+ | Option (a): consolidate in a separate Stage 0 PR. D1 is active locally. |
+| 18 | **Ad-hoc helper currently holds full Calendar and Reminders access (development incident)** | **BLOCKER** | It must be reset (live checks 2.0) before the live checks, so the only grant is to Owen's signed build. Owen's action; I did not change TCC state. |
+| 19 | `egress.py` is not an OS firewall; the subprocess contract is a denylist | ACCEPTED-M1 | The review asked for exactly this narrowing. Obfuscated or unknown network tools could evade a denylist; an OS sandbox is out of M1. |
+| 20 | Contract check depends on `bin/chief-of-staff` layout (column-0 functions, the main `while` loop) | ACCEPTED-M1 | It fails closed: a layout change disables the tool rather than trusting it. |
+| 21 | `open -W` can return before a fast helper finishes ("Unable to block on application") | ACCEPTED-M1 | Handled by polling for a complete JSON line until the timeout. |
+| 22 | Attribution guard uses the private `responsibility_get_pid_responsible_for_pid` | ACCEPTED-M1 | Looked up with `dlsym`; if Apple removes it, the helper fails closed (`wrong_launch`). |
+| 23 | First grant needs the explicit commands; cos reports `not_determined` until then | ACCEPTED-M1 | By design: cos never prompts. |
+| 24 | `ray build` / `ray develop` write to `~/.config/raycast/extensions/` | ACCEPTED-M1 | That is how Raycast imports private extensions; it is documented in the README. |
+| 25 | esbuild postinstall not approved under npm 11 | ACCEPTED-M1 | The build succeeds without it; approving install scripts is Owen's call. |
+| 26 | Helper read-only checks are source-text tests, not a binary audit | ACCEPTED-M1 | Proportionate for an approximately 200-line helper; the reviewer can read the source. |
+| 27 | No ESLint/Prettier configuration, so `ray lint` is not run | DEFERRED-M2+ | Adding lint dependencies and configuration is new tooling, not hardening. |
+| 28 | Deleting both `audit.jsonl` and `audit.initialized` looks like never-initialized | ACCEPTED-M1 | It needs write access to the 0700 state directory (same limit as gap 8). |
 
-Tests never touch the real directory. `support.StateDirTest` sets `COS_STATE_DIR` to a fresh
-temporary directory for every test.
+## Architecture in one screen (after hardening)
 
-## Known gaps
-
-**Wrapped status scripts (output passed through unchanged, per Owen):**
-1. **Stale lines.** `--daily-status` prints `Canvas LLM: frozen (stop marker active)`, but recent
-   `main` commits (#358–#360) show active Canvas work. The brief repeats this line as a status
-   highlight.
-2. **Parse warnings.** `--next-action` prints `WARN: major program not found in build queue`,
-   `Recommended major program: (not parsed)`,
-   `WARN: implementation gate missing not approved by default wording`, and
-   `WARN: canvas llm stop marker wording incomplete`.
-3. **`--approval-queue-status` crashes.** It fails with
-   `TypeError: '>' not supported between instances of 'NoneType' and 'str'`, so it is not wrapped.
-4. **`--dashboard` is too slow.** It takes about 101 s, so it is not wrapped.
-
-**Platform and surfaces:**
-
-5. **EventKit permission goes to the launching app.** macOS attributes the grant to the app that
-   launches the helper (Terminal or Raycast), not the helper itself. Giving the helper its own
-   identity would need an `.app` bundle launched with `open --stdout`. Deferred.
-6. **Raycast extension not type-checked or built.** npm dependencies were not installed during
-   development (new network download, so Owen does it in the live checks).
-7. **Weather never called live.** Open-Meteo is covered only by the fixture until Owen sets
-   coordinates.
-
-**Control layer:**
-
-8. **The audit log is tamper-evident, not tamper-proof.** Someone with write access to the state
-   directory could rewrite the whole chain. There is no external anchor and no rotation.
-9. **The kill switch doesn't interrupt work already running.** It is checked before every model
-   call and every tool call. An in-flight Ollama request (up to `model_timeout_s`, 300 s) runs to
-   completion. Any tool call it proposes is then denied, but a plain-text final answer from that
-   request is still printed.
-10. **Timed-out tool threads can't be killed.** The executor's timeout returns an error, but a
-    Python thread cannot be killed. Subprocess-backed tools pass their own `timeout` to
-    `subprocess.run`, and HTTP has its own timeout, so nothing lingers in practice.
-
-**Behaviour limits:**
-
-11. **The router is keyword-only.** Questions with no matching keyword are offered no tools.
-12. **School-day math ignores holidays.** `time.now` counts Mon–Fri only.
-13. **Chat history has no retention policy.** It sits in `history/` (0700 directory, 0600 files)
-    and grows without limit.
-14. **Memory loads a stale "Now" section.** The `active-priorities.md` "Now" section contains
-    July 2026 entries; it is loaded condensed and as-is.
-
-**Repo and process:**
-
-15. **Not in CI.** The `cos` tests are not wired into `.github/workflows`; run them locally with
-    the command above.
-16. **Missing reference.** `CHIEF-OF-STAFF.md` says the M1 spec lives in `PROMPT-M1.md`, but that
-    file is not in the repo; the spec was pasted into the session.
-17. **D1 isn't committed on `main`.** The D1 source (`tools/dev_safety/`) and the CoS design docs
-    live only on `feature/cos-pacing-intelligence`. Owen chose option (a): build M1 on `main` and
-    consolidate in a separate PR.
+```text
+bin/cos (public entry point; python3.12 -s -E -P) → cos/cli.py
+  ask/chat → agent.py: keyword router (≤6 tools)
+               gate.check_model_call(before_request) → model.py (local Ollama only)
+               gate.check_model_call(after_response)  → deny ⇒ discard response, Stopped
+               tool call → gate.decide (kill switch → registered → side_effect none → args)
+                         → executor.py (timeout, size cap) → tools/*
+  brief    → brief.py: same gate + executor, no model, ≤15 lines, legacy lines labeled
+  HTTP     → egress.py allowlist {http 127.0.0.1|localhost:11434, https api.open-meteo.com:443}
+  subprocs → fixed argv (mac.status) · `open` LaunchServices → ChiefOfStaffEventKitReader.app
+             · bin/chief-of-staff flags gated by script_contract.py at registration
+  audit    → audit.py hash chain + audit.initialized marker; decisions for model and tool calls;
+             model_ms / tool_ms / total_ms
+State: ~/Library/Application Support/ChiefOfStaff/ (0700; files 0600; COS_STATE_DIR for tests)
+```
 
 ## Instructions for the fresh reviewer
 
-You are reviewing `feature/cos-m1`, range `31cb330..d7bbbee`. Check the diff hash in the header
-first. Do not modify files. Focus areas, in priority order:
+Review `4ce9521..<hardening commit>`. Check the hardening diff hash in the header first, and do
+not modify files. Confirm each finding's disposition:
 
-1. **Egress and local-only:** can any path in `cos/` make a network request that does not go
-   through `egress.request`, or reach a host outside the allowlist (redirects, proxies,
-   userinfo, IPv6, DNS tricks, `base_url` mutation)?
-2. **Authority:** can a model-proposed tool call execute without an allow decision? Does every
-   gate failure deny? Can a non-`none` side effect run?
-3. **Audit:** are records written for every request, model call, tool call, and decision? Is
-   `verify` sound?
-4. **Prompt injection:** is tool output (calendar titles, status text) ever treated as
-   instructions or used to choose tools beyond what the model proposes?
-5. **Privacy:** what student-adjacent data could reach disk outside the 0700 state directory,
-   or leave the Mac?
-6. **Tests:** do they prove what they claim? Any non-determinism?
+1. **001:** can any model output reach the CLI, or a tool call execute, after the switch is set
+   mid-request?
+2. **002:** can the helper touch EventKit when it is not its own responsible process? Can cos
+   ever prompt? Does any helper command mutate?
+3. **003:** can a wrapped command reach the network or write files without the contract
+   flagging it? Are the false-negative paths acceptable for M1?
+4. **004 / 005:** are all authority decisions in the chain, and does `verify` distinguish the
+   three states?
 
-Return findings as a JSON array, one object per finding:
+Return findings as a JSON array (`[]` if none):
 
 ```json
 [
   {
-    "id": "M1-001",
+    "id": "M1-H-001",
     "severity": "blocking | major | minor | info",
     "category": "egress | authority | audit | privacy | injection | correctness | tests | docs",
-    "path": "cos/egress.py:61",
+    "path": "cos/agent.py:110",
     "evidence": "What you observed, quoting code or a concrete input → output.",
     "required_condition": "The specific, testable condition that resolves the finding."
   }
 ]
 ```
-
-Return `[]` if you find nothing. Blocking findings are fixed once and then reconfirmed.

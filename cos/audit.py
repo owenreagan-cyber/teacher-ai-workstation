@@ -7,6 +7,11 @@ record's prev is 64 zeros. verify() recomputes the whole chain.
 Request text is not stored, only its sha256 and length; chat history holds
 the text. Appends hold an exclusive flock so concurrent cos processes chain
 correctly.
+
+After the first record is written, a marker file (audit.initialized) is
+created next to the log. verify() reports three states: "ok" (valid chain),
+"uninitialized" (no log and no marker: nothing has run yet), and "fail"
+(tampered chain, or the marker exists but the log is missing or empty).
 """
 from __future__ import annotations
 
@@ -14,12 +19,18 @@ import fcntl
 import hashlib
 import json
 import os
+from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
 
 from cos.config import FILE_MODE
 
 GENESIS = "0" * 64
+MARKER_SUFFIX = ".initialized"
+
+
+def marker_path(log_path: Path) -> Path:
+    return Path(log_path).with_suffix(MARKER_SUFFIX)
 
 
 def _canonical(record: dict) -> bytes:
@@ -76,35 +87,66 @@ class AuditLog:
                 fh.write(_canonical(record) + b"\n")
                 fh.flush()
                 os.fsync(fh.fileno())
+                self._mark_initialized(record)
             finally:
                 fcntl.flock(fh, fcntl.LOCK_UN)
         return record
+
+    def _mark_initialized(self, record: dict) -> None:
+        marker = marker_path(self.path)
+        if marker.exists():
+            return
+        try:
+            fd = os.open(marker, os.O_WRONLY | os.O_CREAT | os.O_EXCL, FILE_MODE)
+        except FileExistsError:
+            return
+        with os.fdopen(fd, "w", encoding="utf-8") as fh:
+            fh.write(json.dumps({"initialized": record["ts"], "first_hash": record["hash"]}) + "\n")
 
     def __call__(self, kind: str, **fields) -> dict:
         return self.append(kind, **fields)
 
 
-def verify(path: Path) -> tuple[bool, int, str]:
-    """Return (ok, records_checked, message)."""
+@dataclass(frozen=True)
+class VerifyResult:
+    status: str  # "ok" | "uninitialized" | "fail"
+    records: int
+    message: str
+
+    @property
+    def ok(self) -> bool:
+        return self.status != "fail"
+
+
+def verify(path: Path) -> VerifyResult:
     path = Path(path)
+    initialized = marker_path(path).exists()
     if not path.exists():
-        return True, 0, "no audit log yet"
+        if initialized:
+            return VerifyResult("fail", 0, "audit log is missing but was initialized "
+                                           f"({marker_path(path).name} exists)")
+        return VerifyResult("uninitialized", 0, "no audit log yet (never initialized)")
     prev, n = GENESIS, 0
     with open(path, "rb") as fh:
         for lineno, raw in enumerate(fh, 1):
             if not raw.strip():
-                return False, n, f"line {lineno}: blank line"
+                return VerifyResult("fail", n, f"line {lineno}: blank line")
             try:
                 rec = json.loads(raw)
             except json.JSONDecodeError:
-                return False, n, f"line {lineno}: not valid JSON"
+                return VerifyResult("fail", n, f"line {lineno}: not valid JSON")
             if not isinstance(rec, dict):
-                return False, n, f"line {lineno}: not a JSON object"
+                return VerifyResult("fail", n, f"line {lineno}: not a JSON object")
             if rec.get("seq") != n:
-                return False, n, f"line {lineno}: seq {rec.get('seq')} != expected {n}"
+                return VerifyResult("fail", n, f"line {lineno}: seq {rec.get('seq')} != expected {n}")
             if rec.get("prev") != prev:
-                return False, n, f"line {lineno}: prev hash does not match previous record"
+                return VerifyResult("fail", n, f"line {lineno}: prev hash does not match previous record")
             if rec.get("hash") != record_hash(rec):
-                return False, n, f"line {lineno}: record hash mismatch (edited record)"
+                return VerifyResult("fail", n, f"line {lineno}: record hash mismatch (edited record)")
             prev, n = rec["hash"], n + 1
-    return True, n, f"chain intact ({n} records)"
+    if n == 0:
+        if initialized:
+            return VerifyResult("fail", 0, "audit log is empty but was initialized")
+        return VerifyResult("uninitialized", 0, "audit log is empty (never initialized)")
+    note = "" if initialized else f"; warning: {marker_path(path).name} is missing"
+    return VerifyResult("ok", n, f"chain intact ({n} records){note}")

@@ -36,7 +36,7 @@ def run_tool(tool: Tool, args: dict, decision: Decision, audit=None) -> dict:
         result = {"error": "tool returned a non-object result"}
     ok = "error" not in result
     if audit is not None:
-        audit("tool_result", tool=tool.name, ok=ok, ms=elapsed_ms,
+        audit("tool_result", tool=tool.name, ok=ok, tool_ms=elapsed_ms,
               chars=len(json.dumps(result, default=str)))
     return result
 

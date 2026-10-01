@@ -64,6 +64,13 @@ Outside products were studied for logic and features to rebuild, not to adopt.
 | `~/Projects/math-presenter-studio` | Lesson build, staging, certification pipeline | Future Lesson specialist. |
 | `~/.teacher-ai-workstation/` | Local runtime state, student-bearing data | Never read by dev agents. |
 
+### Entry points
+- **`bin/cos` is the public entry point** for the Chief of Staff (`cos ask`, `chat`, `brief`,
+  `stop`/`resume`, `tools`, `audit verify`), and the Raycast extension calls it.
+- **`bin/chief-of-staff` is legacy.** `cos` may wrap its read-only status commands as tools
+  (M1 wraps `--daily-status`, `--next-action`, and `--local-llm-workstation-status`, each gated by
+  a static network-free/read-only check), but new features are not added to it.
+
 ### Works today
 - Typed one-shot questions in Terminal: `bin/chief-of-staff --workflow <name> --question "…"`,
   with chosen memory files, through the `llm` CLI.
@@ -321,7 +328,8 @@ keep one compact chat surface (Raycast first) rather than maintaining two.
 ### Decisions Owen needs to make
 - **Student-data wording** (§2 #1): confirm or edit. Needed before M2.
 - **Monthly cloud budget cap and first cloud model** (Claude suggested). Needed before M2.
-- **`cos` as the single entry point**, wrapping `bin/chief-of-staff`. Default: yes.
+- **`cos` as the single entry point**, wrapping `bin/chief-of-staff`. Decided in M1: `bin/cos` is the
+  public entry point; `bin/chief-of-staff` is legacy that `cos` may wrap (see §3 Entry points).
 - **NAS backups** of student data: default no until decided.
 - **Thales email:** is API access allowed by school IT? Default path: Apple Mail read-only.
 - **P1 standing grants:** which personal sources may go to which cloud models.

@@ -32,28 +32,70 @@ EOF
 chmod 600 ~/Library/Application\ Support/ChiefOfStaff/config.json
 ```
 
-## 2. First EventKit run (grants Calendar and Reminders access)
+## 2. EventKit helper: build, sign, and the one-time grant
 
-Build the helper, then run it once for each data type. macOS shows a permission prompt
-the first time. Choose **Allow Full Access**.
+The helper is `ChiefOfStaffEventKitReader.app` (bundle id `local.chief-of-staff.eventkit-reader`).
+cos launches it only through LaunchServices (`open`), so macOS gives the Calendar and
+Reminders permission to **this helper's own identity**, not to Terminal or Raycast. The helper
+refuses EventKit commands when launched any other way (`wrong_launch`).
+
+> **Permission scope:** macOS has no read-only EventKit tier for reading events. The grant
+> you approve is "Full Access". Chief of Staff enforces read-only behavior in its own code:
+> the helper has no command that creates, edits, or deletes events or reminders, and it calls
+> no EventKit mutation API (a test checks the source). cos itself never prompts, because
+> every cos launch sets `COS_EVENTKIT_NO_PROMPT=1`. The only prompts come from the explicit
+> commands below.
+
+**2.0 — Clear the grant left by the development incident (2026-10-01).** A test run during
+hardening launched the ad-hoc-signed helper, and both prompts were approved. Reset that grant
+so the first real grant goes to your signed build:
 
 ```bash
-swift build -c release --package-path cos/helpers/eventkit-reader
-H=cos/helpers/eventkit-reader/.build/release/eventkit-reader
-$H status                    # shows current access; never prompts
-$H events --days 1           # Calendar prompt → Allow Full Access
-$H reminders --due-within-days 1   # Reminders prompt → Allow Full Access
-$H status                    # expect {"calendar":"ok","reminders":"ok","status":"ok"}
+tccutil reset Calendar local.chief-of-staff.eventkit-reader
+tccutil reset Reminders local.chief-of-staff.eventkit-reader
 ```
 
-> **About who gets the permission:** the helper is a plain command-line tool, so macOS
-> attributes the grant to the app that launches it. For these commands that's Terminal
-> (or iTerm). The Raycast **Daily Brief** asks once more for Raycast itself (step 4).
-> Revoke anytime in **System Settings → Privacy & Security → Calendars / Reminders**.
-> Giving the helper its own identity is listed as a known gap.
+**2.1 — Build and sign with your Apple Development identity.** TCC ties the grant to the code
+signature. An ad-hoc signature changes on every rebuild, which can silently reset the grant.
 
-- [ ] Both prompts were shown and granted, and `status` reports `ok` for both.
-- [ ] `events` output contains only title, start, end, all_day, and calendar fields.
+```bash
+security find-identity -v -p codesigning        # copy the "Apple Development: …" name
+scripts/cos-build-eventkit-helper.sh "Apple Development: <Your Name> (<TEAMID>)"
+# expect: Identifier=local.chief-of-staff.eventkit-reader, TeamIdentifier=<TEAMID>,
+#         designated => identifier "local.chief-of-staff.eventkit-reader" and anchor apple generic …
+```
+
+**2.2 — Confirm attribution (no prompt).**
+
+```bash
+APP=cos/helpers/eventkit-reader/build/ChiefOfStaffEventKitReader.app
+OUT="$(mktemp)"
+open -W -n -g -j --stdout "$OUT" --stderr "$OUT" "$APP" --args identity; sleep 1; cat "$OUT"
+# expect "self_responsible":true and "ppid":1 (launched by launchd, not by Terminal)
+"$APP/Contents/MacOS/eventkit-reader" status
+# expect {"status":"wrong_launch",...}: a bare run is refused, so Terminal can never be granted
+```
+
+**2.3 — Grant access once (these two commands show the prompts).** Choose **Allow Full Access**.
+The dialog names "Chief of Staff EventKit Reader".
+
+```bash
+open -W -n --stdout "$OUT" --stderr "$OUT" "$APP" --args events --days 1; sleep 1; cat "$OUT"
+open -W -n --stdout "$OUT" --stderr "$OUT" "$APP" --args reminders --due-within-days 1; sleep 1; cat "$OUT"
+open -W -n -g -j --stdout "$OUT" --stderr "$OUT" "$APP" --args status; sleep 1; cat "$OUT"
+# expect {"calendar":"ok","reminders":"ok","status":"ok"}
+rm -f "$OUT"
+```
+
+`open -W` sometimes prints `Unable to block on application` when the helper exits very quickly.
+That message is harmless; the output file is complete after the `sleep`.
+Revoke anytime in **System Settings → Privacy & Security → Calendars / Reminders**.
+
+- [ ] 2.0 reset done; 2.1 build shows your TeamIdentifier.
+- [ ] 2.2 shows `self_responsible: true`, and the bare run is refused.
+- [ ] 2.3 prompts named the Chief of Staff helper, and `status` reports `ok` for both.
+- [ ] Terminal and Raycast do **not** appear under Calendars or Reminders in System Settings
+      (unless you granted them earlier for other reasons).
 
 ## 3. CLI checks
 
@@ -92,7 +134,8 @@ Follow `apps/raycast-chief-of-staff/README.md`:
 
 ```bash
 cd apps/raycast-chief-of-staff
-npm install
+npm ci            # installs exactly what package-lock.json pins
+npm run typecheck
 npm run dev        # Raycast imports "Chief of Staff"; then Ctrl-C to stop the dev watcher
 ```
 
@@ -100,7 +143,7 @@ Then in Raycast: **Settings → Extensions → Chief of Staff**. Set **Path to b
 needed, and give **Ask Chief** a hotkey.
 
 - [ ] Hotkey → "what time is it" → answer shows, with `Tools used: time.now` and the model.
-- [ ] **Daily Brief** renders (approve the Raycast Calendar/Reminders prompt if shown).
+- [ ] **Daily Brief** renders, and no Calendar/Reminders prompt appears for Raycast.
 - [ ] `npm run dev` was stopped. Check with `pgrep -fl "ray develop"`, which should print nothing.
 
 ## 5. Week of use (exit criterion)

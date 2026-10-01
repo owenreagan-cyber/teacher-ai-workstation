@@ -86,7 +86,7 @@ class ModelClient:
         finally:
             if self.audit is not None:
                 self.audit("model_call", model=model, host=self.host, ok=ok,
-                           ms=int((time.monotonic() - started) * 1000),
+                           model_ms=int((time.monotonic() - started) * 1000),
                            tools_offered=len(tools or []), error=err)
 
     def chat(self, messages, tools=None, fmt=None) -> tuple[dict, str]:

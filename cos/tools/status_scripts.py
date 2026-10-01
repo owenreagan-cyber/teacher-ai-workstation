@@ -1,13 +1,20 @@
 """status.*: existing read-only bin/chief-of-staff status commands, wrapped.
 
-Output is passed through unchanged except for a size cap. --dashboard (about
-100 s) and --approval-queue-status (currently crashes) are not wrapped.
+bin/cos is the public entry point; bin/chief-of-staff is legacy that cos may
+wrap. Output is passed through unchanged except for a size cap. --dashboard
+(about 100 s) and --approval-queue-status (currently crashes, and its script
+deletes a file) are not wrapped.
+
+Each command must pass the static network-free / read-only contract in
+script_contract.py at registration. A command that fails is not registered;
+the reason is recorded in registry.disabled and shown by `cos tools`.
 """
 from __future__ import annotations
 
 import subprocess
 
 from cos.registry import Tool
+from cos.tools.script_contract import check_flag
 
 OUTPUT_CAP = 4000
 TIMEOUT_S = 20
@@ -37,10 +44,19 @@ def run_status(ctx, flag: str) -> dict:
             "output": output[:OUTPUT_CAP], "truncated": truncated}
 
 
-def tools(ctx):
-    return [Tool(
-        name=name, description=desc,
-        parameters={"type": "object", "properties": {}, "additionalProperties": False},
-        side_effect="none", data_class="P1", timeout_s=TIMEOUT_S + 5,
-        func=(lambda flag: (lambda args: run_status(ctx, flag)))(flag), keywords=kws,
-    ) for name, flag, desc, kws in SCRIPTS]
+def tools(ctx, on_disabled=None):
+    out = []
+    for name, flag, desc, kws in SCRIPTS:
+        violations = check_flag(ctx.config.repo_root, flag)
+        if violations:
+            if on_disabled is not None:
+                on_disabled(name, f"contract violation in bin/chief-of-staff {flag}: "
+                                  + "; ".join(violations[:3]))
+            continue
+        out.append(Tool(
+            name=name, description=desc,
+            parameters={"type": "object", "properties": {}, "additionalProperties": False},
+            side_effect="none", data_class="P1", timeout_s=TIMEOUT_S + 5,
+            func=(lambda flag: (lambda args: run_status(ctx, flag)))(flag), keywords=kws,
+        ))
+    return out

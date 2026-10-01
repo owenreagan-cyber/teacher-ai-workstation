@@ -20,6 +20,24 @@ time.tzset()
 
 from cos.config import Config, REPO_ROOT as COS_REPO_ROOT  # noqa: E402
 from cos.tools import CmdResult, ToolContext  # noqa: E402
+import cos.tools.calendar as _calendar  # noqa: E402
+import subprocess as _subprocess  # noqa: E402
+
+# Safety: tests must never reach the real EventKit helper app or launch apps.
+# A built helper at the default path would otherwise be launched by any test
+# that uses real tools, and EventKit could show a permission prompt.
+_calendar.DEFAULT_APP = Path("/nonexistent/cos-tests/ChiefOfStaffEventKitReader.app")
+_real_subprocess_run = _subprocess.run
+
+
+def _guarded_run(argv, *args, **kwargs):
+    first = argv[0] if isinstance(argv, (list, tuple)) and argv else argv
+    if str(first) in ("/usr/bin/open", "open") or "eventkit-reader" in str(first):
+        raise AssertionError(f"tests must not launch apps or the EventKit helper: {argv!r}")
+    return _real_subprocess_run(argv, *args, **kwargs)
+
+
+_subprocess.run = _guarded_run
 
 FIXTURES = Path(__file__).resolve().parent / "fixtures"
 EDT = timezone(timedelta(hours=-4), "EDT")
@@ -71,6 +89,34 @@ class FakeRunner:
                 raise value
             return value if isinstance(value, CmdResult) else CmdResult(0, value)
         raise AssertionError(f"unexpected command {argv}")
+
+
+class FakeOpenRunner:
+    """Stands in for `/usr/bin/open ... --stdout F App.app --args ...`: writes the scripted
+    helper output for the given helper argv into F. Never launches anything."""
+
+    def __init__(self, table: dict):
+        self.table = table
+        self.calls = []
+
+    def __call__(self, argv, timeout, cwd=None):
+        self.calls.append(list(argv))
+        assert argv[0] == "/usr/bin/open", argv
+        helper_args = tuple(argv[argv.index("--args") + 1:])
+        out = Path(argv[argv.index("--stdout") + 1])
+        value = self.table[helper_args]
+        if isinstance(value, Exception):
+            raise value
+        out.write_text(value if value.endswith("\n") else value + "\n", encoding="utf-8")
+        return CmdResult(0, "")
+
+
+def fake_helper_app(root: Path) -> Path:
+    app = root / "ChiefOfStaffEventKitReader.app"
+    exe = app / "Contents" / "MacOS" / "eventkit-reader"
+    exe.parent.mkdir(parents=True, exist_ok=True)
+    exe.write_text("#!/bin/sh\nexit 99\n")  # never executed: the runner is faked
+    return app
 
 
 class FakeHttp:

@@ -5,6 +5,8 @@ kill switch and deny rules apply. format_brief() is pure for testing.
 """
 from __future__ import annotations
 
+import time
+
 from cos.executor import run_tool
 from cos.tools.mac_status import one_line
 
@@ -17,6 +19,7 @@ STATUS_PREFIXES = (
     ("status.next_action", "Roadmap immediate mission heading:"),
     ("status.daily", "Canvas LLM:"),
 )
+LEGACY_LABEL = "Workstation status (legacy):"
 BRIEF_TOOLS = ("time.now", "weather.today", "calendar.today", "reminders.due", "mac.status",
                "status.daily", "status.next_action")
 
@@ -67,17 +70,18 @@ def _reminder_lines(r: dict) -> list[str]:
 
 
 def _status_lines(results: dict) -> list[str]:
+    """Lines copied verbatim from the legacy bin/chief-of-staff status output, labeled."""
     picked = []
     for tool, prefix in STATUS_PREFIXES:
         out = results.get(tool, {}).get("output", "")
         for line in out.splitlines():
             if line.startswith(prefix):
-                picked.append("  " + line)
+                picked.append(f"{LEGACY_LABEL} {line}")
                 break
     errors = [t for t in ("status.daily", "status.next_action") if "error" in results.get(t, {})]
     if errors:
-        picked.append("  (unavailable: " + ", ".join(errors) + ")")
-    return ["Status:", *picked] if picked else ["Status: no highlights"]
+        picked.append(f"{LEGACY_LABEL} unavailable ({', '.join(errors)})")
+    return picked or [f"{LEGACY_LABEL} no highlights"]
 
 
 def format_brief(results: dict) -> list[str]:
@@ -93,11 +97,11 @@ def format_brief(results: dict) -> list[str]:
     status = _status_lines(results)
     room = MAX_LINES - len(lines)
     if len(status) > room:
-        status = status[:room - 1] + [status[-1]] if status[-1].startswith("  (unavailable") else status[:room]
+        status = status[:room - 1] + [status[-1]] if " unavailable (" in status[-1] else status[:room]
     return [_clip(l) for l in lines + status]
 
 
-def gather(registry, gate, audit=None) -> dict:
+def gather(registry, gate, audit=None, timing: dict | None = None) -> dict:
     results = {}
     for name in BRIEF_TOOLS:
         decision = gate.decide(name, {})
@@ -105,5 +109,8 @@ def gather(registry, gate, audit=None) -> dict:
         if not decision.allowed or tool is None:
             results[name] = {"error": f"denied: {decision.reason}"}
             continue
+        started = time.monotonic()
         results[name] = run_tool(tool, {}, decision, audit=audit)
+        if timing is not None:
+            timing["tool_ms"] = timing.get("tool_ms", 0) + int((time.monotonic() - started) * 1000)
     return results

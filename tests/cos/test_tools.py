@@ -8,7 +8,8 @@ import subprocess
 from datetime import timedelta
 from pathlib import Path
 
-from support import FIXED_NOW, FakeHttp, FakeRunner, StateDirTest, fixture, make_ctx
+from support import (FIXED_NOW, FakeHttp, FakeOpenRunner, FakeRunner, StateDirTest,
+                     fake_helper_app, fixture, make_ctx)
 
 from cos.config import ensure_state_dir
 from cos.tools import CmdResult, build_registry
@@ -122,12 +123,12 @@ class MacStatusTests(StateDirTest):
 class EventKitToolTests(StateDirTest):
     def setUp(self):
         super().setUp()
-        self.helper = self.state / "fake-eventkit-reader"
         ensure_state_dir(self.state)
-        self.helper.write_text("#!/bin/sh\nexit 99\n")  # never executed: runner is faked
+        self.app = fake_helper_app(self.state)
 
     def ctx(self, table):
-        return make_ctx(self.config(), run=FakeRunner(table), eventkit_helper=self.helper)
+        self.runner = FakeOpenRunner(table)
+        return make_ctx(self.config(), run=self.runner, eventkit_app=self.app)
 
     def test_calendar_today(self):
         out = calendar.today(self.ctx({("events", "--days", "1"): fixture("eventkit-events.json")}), {})
@@ -136,6 +137,31 @@ class EventKitToolTests(StateDirTest):
         self.assertEqual(titles, [("Spirit Week", None), ("Planning block", "8:00 AM"),
                                   ("Staff meeting", "3:30 PM")])
         self.assertEqual(set(out["events"][1]), {"title", "all_day", "start", "end", "start_iso", "calendar"})
+
+    def test_launched_through_launchservices_only(self):
+        calendar.today(self.ctx({("events", "--days", "1"): fixture("eventkit-events.json")}), {})
+        argv = self.runner.calls[0]
+        self.assertEqual(argv[:8], ["/usr/bin/open", "-W", "-n", "-g", "-j",
+                                    "--env", "COS_EVENTKIT_NO_PROMPT=1", "--stdout"])
+        self.assertEqual(argv[argv.index("--args") - 1], str(self.app))
+        self.assertNotIn(str(self.app / "Contents" / "MacOS" / "eventkit-reader"), argv)
+        self.assertEqual(sorted((self.state / "eventkit").iterdir()), [], "temp output removed")
+
+    def test_every_launch_disables_prompting(self):
+        table = {("events", "--days", "1"): fixture("eventkit-events.json"),
+                 ("reminders", "--due-within-days", "1"): fixture("eventkit-reminders.json")}
+        ctx = self.ctx(table)
+        calendar.today(ctx, {})
+        reminders.due(ctx, {})
+        for argv in self.runner.calls:
+            i = argv.index("--env")
+            self.assertEqual(argv[i + 1], "COS_EVENTKIT_NO_PROMPT=1")
+            self.assertLess(i, argv.index("--args"))
+
+    def test_test_suite_cannot_reach_real_helper(self):
+        self.assertFalse(calendar.DEFAULT_APP.exists())
+        with self.assertRaises(AssertionError):
+            subprocess.run(["/usr/bin/open", "-W", "--args", "status"])
 
     def test_reminders_due(self):
         out = reminders.due(self.ctx({("reminders", "--due-within-days", "1"): fixture("eventkit-reminders.json")}), {})
@@ -150,12 +176,20 @@ class EventKitToolTests(StateDirTest):
         self.assertIn("EventKit access denied", out["error"])
         self.assertIn("cos-m1-live-checks", out["error"])
 
-    def test_non_json_output(self):
-        out = reminders.due(self.ctx({("reminders", "--due-within-days", "1"): CmdResult(1, "crash")}), {})
-        self.assertIn("non-JSON", out["error"])
+    def test_wrong_launch_refusal_is_reported(self):
+        data = json.dumps({"status": "wrong_launch", "message": "launched as a child of pid 686"})
+        out = calendar.today(self.ctx({("events", "--days", "1"): data}), {})
+        self.assertIn("refused", out["error"])
+
+    def test_no_output_within_timeout(self):
+        runner = lambda argv, timeout, cwd=None: CmdResult(1, "")  # helper wrote nothing
+        ctx = make_ctx(self.config(), run=runner, eventkit_app=self.app)
+        with self.assertRaises(calendar.HelperError) as cm:
+            calendar.call_helper(ctx, ["reminders", "--due-within-days", "1"], timeout=0.2)
+        self.assertIn("no JSON", str(cm.exception))
 
     def test_helper_not_built(self):
-        ctx = make_ctx(self.config(), eventkit_helper=self.state / "missing")
+        ctx = make_ctx(self.config(), eventkit_app=self.state / "missing.app")
         self.assertIn("not built", calendar.today(ctx, {})["error"])
 
     def test_long_titles_capped(self):

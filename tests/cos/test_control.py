@@ -9,7 +9,7 @@ import time
 
 from support import StateDirTest
 
-from cos.audit import GENESIS, AuditLog, verify
+from cos.audit import GENESIS, AuditLog, VerifyResult, verify
 from cos.config import ConfigError, ensure_state_dir, load_config, open_private
 from cos.executor import run_tool
 from cos.policy import Decision, KillSwitch, PolicyGate
@@ -72,10 +72,10 @@ class PolicyGateTests(StateDirTest):
         for name in ("test.echo", "mail.send"):
             d = self.gate.decide(name, {})
             self.assertEqual((d.allowed, d.rule), (False, "kill_switch"))
-        self.assertFalse(self.gate.check_model_call().allowed)
+        self.assertFalse(self.gate.check_model_call("before_request").allowed)
         self.assertTrue(self.ks.resume())
         self.assertTrue(self.gate.decide("test.echo", {}).allowed)
-        self.assertTrue(self.gate.check_model_call().allowed)
+        self.assertTrue(self.gate.check_model_call("before_request").allowed)
 
     def test_unreadable_kill_switch_counts_as_set(self):
         class Broken(KillSwitch):
@@ -165,7 +165,7 @@ class AuditChainTests(StateDirTest):
         self.assertEqual([r["seq"] for r in records], [0, 1, 2])
         self.assertEqual(records[0]["prev"], GENESIS)
         self.assertEqual(records[1]["prev"], records[0]["hash"])
-        self.assertEqual(verify(self.path), (True, 3, "chain intact (3 records)"))
+        self.assertEqual(verify(self.path), VerifyResult("ok", 3, "chain intact (3 records)"))
         self.assertEqual(stat.S_IMODE(os.stat(self.path).st_mode), 0o600)
 
     def test_tamper_edit_detected(self):
@@ -175,9 +175,9 @@ class AuditChainTests(StateDirTest):
         rec["allowed"] = False
         lines[1] = json.dumps(rec)
         self.path.write_text("\n".join(lines) + "\n")
-        ok, n, msg = verify(self.path)
-        self.assertFalse(ok)
-        self.assertIn("line 2", msg)
+        result = verify(self.path)
+        self.assertEqual(result.status, "fail")
+        self.assertIn("line 2", result.message)
 
     def test_tamper_rehashed_record_breaks_next_link(self):
         from cos.audit import record_hash
@@ -188,9 +188,9 @@ class AuditChainTests(StateDirTest):
         rec["hash"] = record_hash(rec)
         lines[1] = json.dumps(rec)
         self.path.write_text("\n".join(lines) + "\n")
-        ok, _, msg = verify(self.path)
-        self.assertFalse(ok)
-        self.assertIn("line 3", msg)
+        result = verify(self.path)
+        self.assertEqual(result.status, "fail")
+        self.assertIn("line 3", result.message)
 
     def test_deleted_and_reordered_records_detected(self):
         self._write_three()
@@ -198,7 +198,7 @@ class AuditChainTests(StateDirTest):
         for mutated in (lines[:1] + lines[2:], [lines[1], lines[0], lines[2]]):
             with self.subTest():
                 self.path.write_text("\n".join(mutated) + "\n")
-                self.assertFalse(verify(self.path)[0])
+                self.assertEqual(verify(self.path).status, "fail")
 
     def test_concurrent_appends_keep_chain(self):
         threads = [threading.Thread(target=lambda: [AuditLog(self.path).append("t") for _ in range(10)])
@@ -207,7 +207,7 @@ class AuditChainTests(StateDirTest):
             t.start()
         for t in threads:
             t.join()
-        self.assertEqual(verify(self.path), (True, 40, "chain intact (40 records)"))
+        self.assertEqual(verify(self.path), VerifyResult("ok", 40, "chain intact (40 records)"))
 
 
 class StateDirectoryTests(StateDirTest):

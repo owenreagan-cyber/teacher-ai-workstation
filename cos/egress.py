@@ -1,4 +1,15 @@
-"""Network egress allowlist. Every HTTP request in cos goes through request().
+"""Network egress allowlist for HTTP requests made by cos's own Python code.
+
+Scope: this module governs HTTP that cos itself makes. Every such request goes
+through request(), and a test enforces that no other cos module imports a
+networking library. It is not an OS firewall: it cannot see traffic from
+subprocesses. The subprocess boundary is covered separately:
+  - mac.status runs fixed system binaries (pmset, memory_pressure, df, sysctl)
+    that do not use the network;
+  - the EventKit helper is cos's own code and makes no network calls;
+  - each wrapped bin/chief-of-staff status command is statically checked at
+    registration (cos/tools/script_contract.py) and is disabled if its script
+    tree invokes a network-capable or mutating command.
 
 Allowed destinations (scheme, host, port) are fixed in code:
   - local Ollama on 127.0.0.1 / localhost, port 11434, plain http

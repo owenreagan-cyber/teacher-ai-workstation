@@ -42,7 +42,7 @@ class ToolContext:
     run: Callable[..., CmdResult] = run_cmd
     http: Callable[..., bytes] = egress.request
     audit: Callable | None = None
-    eventkit_helper: Path | None = None
+    eventkit_app: Path | None = None
     loaded_models: Callable[[], list[str]] | None = None
 
 
@@ -50,7 +50,9 @@ def build_registry(ctx: ToolContext) -> Registry:
     from cos.tools import calendar, mac_status, reminders, status_scripts, time_tool, weather
 
     registry = Registry()
-    for module in (time_tool, weather, mac_status, calendar, reminders, status_scripts):
+    for module in (time_tool, weather, mac_status, calendar, reminders):
         for tool in module.tools(ctx):
             registry.register(tool)
+    for tool in status_scripts.tools(ctx, on_disabled=registry.disable):
+        registry.register(tool)
     return registry

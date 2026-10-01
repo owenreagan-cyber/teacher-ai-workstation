@@ -55,3 +55,9 @@ fixtures/artifact-quality/
 
 # cos EventKit helper build output
 cos/helpers/eventkit-reader/.build/
+cos/helpers/eventkit-reader/build/
+
+# cos Raycast extension: dependencies and generated build artifacts
+apps/raycast-chief-of-staff/node_modules/
+apps/raycast-chief-of-staff/dist/
+apps/raycast-chief-of-staff/raycast-env.d.ts

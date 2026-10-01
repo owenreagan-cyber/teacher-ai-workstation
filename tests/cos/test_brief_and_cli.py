@@ -41,10 +41,9 @@ EXPECTED = [
     "  - Return library books (overdue since Tue Sep 29)",
     "  - Copy math packets (due 2:00 PM)",
     "Mac: battery 80% (AC attached) · memory 60% free · disk 1128 GB free · up 2d 10h · Ollama: no model loaded",
-    "Status:",
-    "  Recommended daily focus: Example focus for the synthetic fixture.",
-    "  Roadmap immediate mission heading: Example Mission (approval-gated)",
-    "  Canvas LLM: frozen (stop marker active)",
+    "Workstation status (legacy): Recommended daily focus: Example focus for the synthetic fixture.",
+    "Workstation status (legacy): Roadmap immediate mission heading: Example Mission (approval-gated)",
+    "Workstation status (legacy): Canvas LLM: frozen (stop marker active)",
 ]
 
 
@@ -63,14 +62,14 @@ class BriefFormatTests(StateDirTest):
         self.assertLessEqual(len(lines), MAX_LINES)
         self.assertIn("Calendar (12, showing 4):", lines)
         self.assertIn("Reminders due (9, showing 3):", lines)
-        self.assertIn("Status:", lines)
+        self.assertTrue(lines[-1].startswith("Workstation status (legacy): "))
         self.assertTrue(all(len(l) <= 120 for l in lines))
 
     def test_failures_are_one_line_each(self):
         lines = format_brief({"time.now": {"display": "Thursday, October 1, 2026"}})
         self.assertEqual(lines[1], "Weather: unavailable (not run)")
         self.assertEqual(lines[2], "Calendar: unavailable (not run)")
-        self.assertEqual(lines[-1], "Status: no highlights")
+        self.assertEqual(lines[-1], "Workstation status (legacy): no highlights")
 
     def test_gather_uses_gate_and_kill_switch_blocks_it(self):
         ensure_state_dir(self.state)
@@ -79,7 +78,7 @@ class BriefFormatTests(StateDirTest):
                           "/": fixture("df-k.txt"), "kern.boottime": fixture("boottime.txt"),
                           "--daily-status": fixture("status-daily.txt"),
                           "--next-action": fixture("status-next-action.txt")})
-        ctx = make_ctx(cfg, run=run, eventkit_helper=self.state / "missing")
+        ctx = make_ctx(cfg, run=run, eventkit_app=self.state / "missing.app")
         reg = build_registry(ctx)
         ks = KillSwitch(self.state)
         results = gather(reg, PolicyGate(reg, ks))

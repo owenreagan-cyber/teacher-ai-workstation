@@ -95,11 +95,22 @@ class PolicyGate:
         worker.join(self.timeout_s)
         decision = box[0] if box else Decision(False, "gate_timeout", "policy gate timed out")
         if self.audit is not None:
-            self.audit("decision", tool=str(tool_name)[:80], allowed=decision.allowed,
-                       rule=decision.rule, reason=decision.reason)
+            self.audit("decision", subject="tool_call", tool=str(tool_name)[:80],
+                       allowed=decision.allowed, rule=decision.rule, reason=decision.reason)
         return decision
 
-    def check_model_call(self) -> Decision:
-        if self.kill_switch.is_set():
-            return Decision(False, "kill_switch", "kill switch is set (cos resume to clear)")
-        return Decision(True, "allow", "local model call")
+    def check_model_call(self, phase: str) -> Decision:
+        """Authorize a model call. phase is "before_request" or "after_response"; a deny
+        after the response means the caller must discard what the model returned."""
+        try:
+            stopped = self.kill_switch.is_set()
+        except Exception:  # noqa: BLE001 - any gate failure denies
+            stopped = True
+        if stopped:
+            decision = Decision(False, "kill_switch", "kill switch is set (cos resume to clear)")
+        else:
+            decision = Decision(True, "allow", "local model call")
+        if self.audit is not None:
+            self.audit("decision", subject="model_call", phase=phase, allowed=decision.allowed,
+                       rule=decision.rule, reason=decision.reason)
+        return decision

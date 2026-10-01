@@ -12,6 +12,7 @@ from __future__ import annotations
 import argparse
 import json
 import sys
+import time
 from dataclasses import dataclass
 from datetime import datetime
 
@@ -122,8 +123,12 @@ def cmd_brief(rt: Runtime, args) -> int:
     if rt.kill_switch.is_set():
         _emit_error(args.json, f"stopped by kill switch ({rt.kill_switch.reason()}); run cos resume")
         return EXIT_STOPPED
+    started = time.monotonic()
+    timing = {"tool_ms": 0}
     rt.audit("request", mode="brief")
-    lines = format_brief(gather(rt.registry, rt.gate, audit=rt.audit))
+    lines = format_brief(gather(rt.registry, rt.gate, audit=rt.audit, timing=timing))
+    rt.audit("answer", mode="brief", model_ms=0, tool_ms=timing["tool_ms"],
+             total_ms=int((time.monotonic() - started) * 1000), lines=len(lines))
     print(json.dumps({"ok": True, "lines": lines}) if args.json else "\n".join(lines))
     return EXIT_OK
 
@@ -147,6 +152,8 @@ def cmd_tools(rt: Runtime, args) -> int:
     for t in rt.registry.all():
         print(f"{t.name:<20} side_effect={t.side_effect:<5} data_class={t.data_class} "
               f"timeout={t.timeout_s:g}s  {t.description}")
+    for name, reason in sorted(rt.registry.disabled.items()):
+        print(f"{name:<20} DISABLED  {reason}")
     state = "STOPPED (kill switch set)" if rt.kill_switch.is_set() else "active"
     print(f"\n{len(rt.registry.all())} tools · mode: read-only · model: {rt.config.model} "
           f"(fallback {rt.config.fallback_model}) at {rt.model.base_url} · {state}")
@@ -154,9 +161,10 @@ def cmd_tools(rt: Runtime, args) -> int:
 
 
 def cmd_audit(rt: Runtime, args) -> int:
-    ok, n, message = verify(rt.config.audit_path)
-    print(f"{'OK' if ok else 'FAIL'}: {message} — {rt.config.audit_path}")
-    return EXIT_OK if ok else 1
+    result = verify(rt.config.audit_path)
+    label = {"ok": "OK", "uninitialized": "EMPTY", "fail": "FAIL"}[result.status]
+    print(f"{label}: {result.message} — {rt.config.audit_path}")
+    return EXIT_OK if result.ok else 1
 
 
 def parser() -> argparse.ArgumentParser:

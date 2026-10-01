@@ -126,9 +126,17 @@ def cmd_brief(rt: Runtime, args) -> int:
     started = time.monotonic()
     timing = {"tool_ms": 0}
     rt.audit("request", mode="brief")
-    lines = format_brief(gather(rt.registry, rt.gate, audit=rt.audit, timing=timing))
+    results = gather(rt.registry, rt.gate, audit=rt.audit, timing=timing)
+    total_ms = int((time.monotonic() - started) * 1000)
+    if rt.kill_switch.is_set():
+        # Set while the brief was being gathered: show nothing from it.
+        rt.audit("request_stopped", mode="brief", reason="kill_switch", model_ms=0,
+                 tool_ms=timing["tool_ms"], total_ms=total_ms)
+        _emit_error(args.json, f"stopped by kill switch ({rt.kill_switch.reason()}); run cos resume")
+        return EXIT_STOPPED
+    lines = format_brief(results)
     rt.audit("answer", mode="brief", model_ms=0, tool_ms=timing["tool_ms"],
-             total_ms=int((time.monotonic() - started) * 1000), lines=len(lines))
+             total_ms=total_ms, lines=len(lines))
     print(json.dumps({"ok": True, "lines": lines}) if args.json else "\n".join(lines))
     return EXIT_OK
 

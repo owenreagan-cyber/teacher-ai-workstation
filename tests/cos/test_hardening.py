@@ -15,7 +15,7 @@ from support import REPO_ROOT, FakeModel, StateDirTest, answer, make_ctx, tool_c
 
 from cos import cli
 from cos.agent import Agent, Stopped
-from cos.audit import AuditLog, marker_path, verify
+from cos.audit import AuditLog, VerifyResult, marker_path, verify
 from cos.config import ensure_state_dir
 from cos.model import ModelClient
 from cos.policy import KillSwitch, PolicyGate
@@ -132,6 +132,53 @@ class KillSwitchInFlightTests(StateDirTest):
         self.assertIn("kill switch", payload["error"])
 
 
+class BriefKillSwitchTests(StateDirTest):
+    """M1-H-001: kill switch set while the brief is being gathered."""
+
+    def test_switch_set_mid_gather_prints_nothing(self):
+        state = self.state
+        real_gather = cli.gather
+
+        def gather_then_stop(*args, **kwargs):
+            results = real_gather(*args, **kwargs)
+            KillSwitch(state).stop("mid-gather test")
+            return results
+
+        fake_registry = lambda ctx: build_registry(make_ctx(self.config()))  # synthetic tools only
+        out, err = io.StringIO(), io.StringIO()
+        with contextlib.redirect_stdout(out), contextlib.redirect_stderr(err), \
+                mock.patch.object(cli, "build_registry", fake_registry), \
+                mock.patch.object(cli, "gather", gather_then_stop):
+            code = cli.main(["brief"])
+        self.assertEqual(code, cli.EXIT_STOPPED)
+        self.assertEqual(out.getvalue(), "")
+        self.assertNotIn("Daily Brief", err.getvalue())
+        self.assertIn("kill switch", err.getvalue())
+        records = [json.loads(l) for l in (self.state / "audit.jsonl").read_text().splitlines()]
+        self.assertEqual(records[-1]["kind"], "request_stopped")
+        self.assertEqual((records[-1]["mode"], records[-1]["reason"]), ("brief", "kill_switch"))
+        self.assertNotIn("answer", [r["kind"] for r in records])
+
+    def test_switch_set_mid_gather_json_has_no_lines(self):
+        state = self.state
+        real_gather = cli.gather
+
+        def gather_then_stop(*args, **kwargs):
+            results = real_gather(*args, **kwargs)
+            KillSwitch(state).stop("mid-gather test")
+            return results
+
+        fake_registry = lambda ctx: build_registry(make_ctx(self.config()))
+        out = io.StringIO()
+        with contextlib.redirect_stdout(out), mock.patch.object(cli, "build_registry", fake_registry), \
+                mock.patch.object(cli, "gather", gather_then_stop):
+            code = cli.main(["brief", "--json"])
+        self.assertEqual(code, cli.EXIT_STOPPED)
+        payload = json.loads(out.getvalue())
+        self.assertEqual(payload["ok"], False)
+        self.assertNotIn("lines", payload)
+
+
 # ----------------------------------------------------------------------------- COS-M1-005
 
 class ModelCallDecisionAuditTests(StateDirTest):
@@ -220,6 +267,38 @@ class AuditPresenceTests(StateDirTest):
         AuditLog(self.path).append("request", mode="ask")
         self.path.write_text("")
         self.assertEqual(verify(self.path).status, "fail")
+
+    # M1-H-002 -------------------------------------------------------------
+    def test_marker_first_hash_matches(self):
+        first = AuditLog(self.path).append("request", mode="ask")
+        AuditLog(self.path).append("answer", chars=1)
+        self.assertEqual(json.loads(marker_path(self.path).read_text())["first_hash"], first["hash"])
+        self.assertEqual(verify(self.path), VerifyResult("ok", 2, "chain intact (2 records)"))
+
+    def test_mismatched_first_hash_fails(self):
+        AuditLog(self.path).append("request", mode="ask")
+        marker = marker_path(self.path)
+        # A replaced log: a fresh, internally valid chain under the old marker.
+        self.path.unlink()
+        marker_text = marker.read_text()
+        marker.unlink()
+        AuditLog(self.path).append("request", mode="chat")
+        marker.write_text(marker_text)
+        result = verify(self.path)
+        self.assertEqual(result.status, "fail")
+        self.assertIn("first_hash", result.message)
+        code, out = self.cli_verify()
+        self.assertEqual(code, 1)
+        self.assertTrue(out.startswith("FAIL:"))
+
+    def test_marker_without_first_hash_is_presence_only(self):
+        AuditLog(self.path).append("request", mode="ask")
+        marker_path(self.path).write_text(json.dumps({"initialized": "2026-09-30T00:00:00Z"}) + "\n")
+        result = verify(self.path)
+        self.assertEqual(result.status, "ok")
+        self.assertIn("presence-only", result.message)
+        self.path.unlink()
+        self.assertEqual(verify(self.path).status, "fail")  # presence still detects deletion
 
 
 # ----------------------------------------------------------------------------- COS-M1-003

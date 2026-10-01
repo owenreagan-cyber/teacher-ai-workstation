@@ -4,10 +4,11 @@
 Milestone:        M1 — Simple Siri (fully local, read-only)
 Branch:           feature/cos-m1 (worktree ~/Projects/taw-cos-m1), from main 31cb330
 Original review:  31cb330..d7bbbee, diff SHA-256 3c505e7fac121c5f3aa51d55b2168164989291c6a7343f7d6bc0922e1dffb36a
-Hardening pass:   4ce9521..<hardening commit> (one checkpoint: COS-M1-001..005 plus addendum A-F)
+Hardening pass:   4ce9521..589f672 (one checkpoint: COS-M1-001..005 plus addendum A-F)
+Re-review fixes:  589f672..<this commit> (M1-H-001, M1-H-002)
 Hardening diff:   SHA-256 6d3ba006e72e8dba1b8a816dd65b1940a7a79319d34bf8d2a36acac2c40b4964
-                  = git diff 4ce9521 <hardening commit> -- . ':(exclude)docs/cos-m1-review-bundle.md' | shasum -a 256
-Tests:            114 passed, 0 failed (83 original + 31 new)
+                  = git diff 4ce9521 589f672 -- . ':(exclude)docs/cos-m1-review-bundle.md' | shasum -a 256
+Tests:            119 passed, 0 failed (83 original + 31 hardening + 5 re-review)
                   python3.12 -m unittest discover -s tests/cos -p 'test_*.py'
 Not done:         no push, no merge
 ```
@@ -52,6 +53,15 @@ The hardening task said not to trigger Calendar or Reminders permission. One tes
 | COS-M1-003 | MINOR | The egress claim was broader than the mechanism | **Fixed.** `egress.py` docstring now scopes itself to cos's own HTTP and documents the subprocess boundary. New `cos/tools/script_contract.py` statically checks each wrapped `bin/chief-of-staff` command (details below). A violating command is **not registered**; its reason goes to `registry.disabled` and `cos tools` shows it as DISABLED. |
 | COS-M1-004 | MINOR | A missing audit log was reported as healthy | **Fixed.** The first append creates `audit.initialized` (0600). `verify` returns `ok`, `uninitialized` (no log, no marker), or `fail` (tampered, or marker present while the log is missing or empty). `cos audit verify` prints OK / EMPTY / FAIL and exits 1 on FAIL. |
 | COS-M1-005 | MINOR | Model-call authority decisions were not audited | **Fixed.** `PolicyGate.check_model_call(phase)` writes a `decision` record (`subject=model_call`, `phase`, `allowed`, `rule`, `reason`) for both allow and deny. Tool decisions now carry `subject=tool_call`. |
+
+### Cross-model re-review of 4ce9521..589f672
+
+| ID | Sev | Finding | Disposition |
+|---|---|---|---|
+| M1-H-001 | info | `cos brief` printed its lines even if the kill switch was set while tools were being gathered | **Fixed.** `cmd_brief` checks the kill switch again after `gather()` returns. If it is set, nothing from the brief is printed, a `request_stopped` record (`mode=brief`, `reason=kill_switch`, timings) is written, and the exit code is 3. Tests set the switch mid-gather in text and `--json` modes and assert that no brief lines are printed and no `answer` record is written. |
+| M1-H-002 | info | `verify()` ignored the marker's `first_hash`, so a replaced but internally valid log passed | **Fixed.** `verify()` compares the first record's hash with the marker's `first_hash` and returns `fail` ("log replaced") when they differ. A marker without `first_hash` (older runs) is treated as presence-only; the check still passes, with a note in the message. Tests: matching marker passes, mismatched first_hash fails (also via `cos audit verify`, exit 1), and a presence-only marker passes with the note and still detects deletion. |
+
+Files changed: `cos/cli.py`, `cos/audit.py`, `tests/cos/test_hardening.py`, this bundle.
 
 ### Addendum
 
@@ -143,11 +153,11 @@ modified: .gitignore, CHIEF-OF-STAFF.md, docs/cos-m1-live-checks.md, docs/cos-m1
 
 ```text
 $ python3.12 -m unittest discover -s tests/cos -p 'test_*.py'
-Ran 114 tests in 1.955s
+Ran 119 tests in 1.993s
 OK
 
 per module: test_agent 17 · test_brief_and_cli 8 · test_control 23 · test_egress_and_model 13
-            test_hardening 27 · test_tools 26          (original 83 + new 31 = 114)
+            test_hardening 32 · test_tools 26          (original 83 + hardening 31 + re-review 5 = 119)
 egress/local-only alone: test_egress_and_model.py — Ran 13 tests, OK
 git diff --check: clean
 ```
@@ -230,6 +240,7 @@ CLI check with a scratch state dir:
 | 26 | Helper read-only checks are source-text tests, not a binary audit | ACCEPTED-M1 | Proportionate for an approximately 200-line helper; the reviewer can read the source. |
 | 27 | No ESLint/Prettier configuration, so `ray lint` is not run | DEFERRED-M2+ | Adding lint dependencies and configuration is new tooling, not hardening. |
 | 28 | Deleting both `audit.jsonl` and `audit.initialized` looks like never-initialized | ACCEPTED-M1 | It needs write access to the 0700 state directory (same limit as gap 8). |
+| 29 | Presence-only markers from earlier runs cannot detect a replaced log | ACCEPTED-M1 | They are reported as presence-only in the verify message; new markers record `first_hash` (M1-H-002). |
 
 ## Architecture in one screen (after hardening)
 

@@ -9,9 +9,12 @@ the text. Appends hold an exclusive flock so concurrent cos processes chain
 correctly.
 
 After the first record is written, a marker file (audit.initialized) is
-created next to the log. verify() reports three states: "ok" (valid chain),
-"uninitialized" (no log and no marker: nothing has run yet), and "fail"
-(tampered chain, or the marker exists but the log is missing or empty).
+created next to the log, holding the first record's hash. verify() reports
+three states: "ok" (valid chain), "uninitialized" (no log and no marker:
+nothing has run yet), and "fail" (tampered chain, the marker exists but the
+log is missing or empty, or the log's first record is not the one the marker
+recorded, e.g. a replaced log). A marker without first_hash (older runs) is
+treated as presence-only, and the result message says so.
 """
 from __future__ import annotations
 
@@ -118,9 +121,20 @@ class VerifyResult:
         return self.status != "fail"
 
 
+def _marker_first_hash(marker: Path) -> str | None:
+    """first_hash recorded in the marker, or None for a presence-only (older) marker."""
+    try:
+        data = json.loads(marker.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return None
+    value = data.get("first_hash") if isinstance(data, dict) else None
+    return value if isinstance(value, str) and value else None
+
+
 def verify(path: Path) -> VerifyResult:
     path = Path(path)
     initialized = marker_path(path).exists()
+    expected_first = _marker_first_hash(marker_path(path)) if initialized else None
     if not path.exists():
         if initialized:
             return VerifyResult("fail", 0, "audit log is missing but was initialized "
@@ -143,10 +157,18 @@ def verify(path: Path) -> VerifyResult:
                 return VerifyResult("fail", n, f"line {lineno}: prev hash does not match previous record")
             if rec.get("hash") != record_hash(rec):
                 return VerifyResult("fail", n, f"line {lineno}: record hash mismatch (edited record)")
+            if n == 0 and expected_first is not None and rec["hash"] != expected_first:
+                return VerifyResult("fail", 0, "first record does not match "
+                                               f"{marker_path(path).name} first_hash (log replaced)")
             prev, n = rec["hash"], n + 1
     if n == 0:
         if initialized:
             return VerifyResult("fail", 0, "audit log is empty but was initialized")
         return VerifyResult("uninitialized", 0, "audit log is empty (never initialized)")
-    note = "" if initialized else f"; warning: {marker_path(path).name} is missing"
+    if not initialized:
+        note = f"; warning: {marker_path(path).name} is missing"
+    elif expected_first is None:
+        note = f"; note: {marker_path(path).name} has no first_hash (presence-only check)"
+    else:
+        note = ""
     return VerifyResult("ok", n, f"chain intact ({n} records){note}")

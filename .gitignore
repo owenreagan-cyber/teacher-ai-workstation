@@ -52,3 +52,6 @@ assistant/lesson-planning/drafts/*.md
 # Instructional Artifact Quality renders and reports; never commit local build output.
 .local/artifact-quality/
 fixtures/artifact-quality/
+
+# cos EventKit helper build output
+cos/helpers/eventkit-reader/.build/

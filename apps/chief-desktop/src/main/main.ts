@@ -263,6 +263,5 @@ function registerIpc(): void {
   handle("chief:resume", () => cos.resume());
   handle("chief:set-pin", (pinned) => setPin(pinned === true));
   handle("chief:set-protection", (enabled) => setProtection(enabled === true));
-  handle("chief:minimize", () => win?.minimize());
   handle("chief:hide", () => win?.hide());
 }

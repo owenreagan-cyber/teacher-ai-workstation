@@ -30,7 +30,7 @@ npm ci
 npm run typecheck && npm test && npm run build
 ```
 
-Expected: `pass 14`, `fail 0`, and `static checks: … passed, 0 failed`.
+Expected: `pass 18`, `fail 0`, and `static checks: … passed, 0 failed`.
 
 `npm ci` reports that `electron-winstaller` (Windows only) has an install script that isn't
 allowed. That's expected. Don't approve it, because the Mac build doesn't need it.
@@ -137,6 +137,21 @@ Then quit Chief (**menu bar ring → Quit Chief**) and open it again. Both keys 
 
 Do these in order. Write down anything that doesn't match.
 
+### Classroom projector (read first)
+
+Screen protection keeps Chief out of screenshots, recordings, and screen sharing. A projector
+that **mirrors** your screen over HDMI or USB-C shows the screen directly, so Chief can appear on
+it. Before teaching, do one of these:
+
+- **Hide Chief before you connect.** Press **⌃⌥C** (Control-Option-C) until Chief is hidden, then
+  connect the projector. If Chief is behind another window, the first press brings it to the
+  front and the second press hides it. Press **⌃⌥C** again only when the projector is off or disconnected.
+- **Or use the projector as an extended display.** Open **System Settings → Displays**, select
+  the projector, and set **Use as:** to **Extended display**. Keep Chief on the Mac's built-in
+  screen. The projector then shows only what you drag onto it.
+
+Check 7.8 tests this with a real mirrored display.
+
 ### 7.1 Hotkey
 1. Click into another app, such as Safari.
 2. Press **⌃⌥C** (Control-Option-C). Chief comes to the front with the cursor in the input.
@@ -229,9 +244,24 @@ shield updates to match.
   may not honor it, especially newer ScreenCaptureKit-based apps, so the checks above are the
   proof. Test with the exact tools you use: Zoom, Meet, Teams, and so on.
 - A **wired HDMI or USB-C projector in mirror mode** shows the screen directly, not through
-  capture, so Chief would probably **be visible on it**. Until this is tested and handled
-  (M1.5B), hide Chief (**⌃⌥C** or **Escape**) before mirroring to a projector, or use the
-  projector as an extended display and keep Chief on the Mac screen.
+  capture, so Chief can **be visible on it**. Follow **Classroom projector** at the top of this
+  section, and run check 7.8.
+
+### 7.8 Mirrored display (wired projector or monitor)
+
+Use a projector, TV, or spare monitor connected by HDMI or USB-C. Don't do this in front of
+students.
+
+1. With Chief visible and the shield on, connect the display.
+2. Open **System Settings → Displays**, select the external display, and set **Use as:** to
+   **Mirror for Built-in Display** (wording varies by macOS version).
+3. Look at the external display. Write down whether Chief's window shows there.
+   - Expected for M1.5A: it may show. Screen protection doesn't cover hardware mirroring.
+4. Click Chief, then press **⌃⌥C** (or **Escape**). Chief disappears from both screens.
+5. Change **Use as:** to **Extended display**. Drag a Finder window onto the external display to
+   confirm it is extended. Press **⌃⌥C**: Chief should appear only on the built-in screen. If it
+   opens on the external display, drag it back to the built-in screen. Chief remembers that position.
+6. Disconnect the display, and record what you saw in step 3 for the next review.
 
 ---
 

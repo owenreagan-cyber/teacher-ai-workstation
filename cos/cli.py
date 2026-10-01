@@ -30,7 +30,8 @@ from cos.memory import load_identity, load_memory
 from cos.model import ModelClient, ModelError, ModelRefused
 from cos.policy import KillSwitch, PolicyGate
 from cos.registry import Registry
-from cos.sessions import SessionIdError, append_turn, check_session_id, history_messages, read_turns
+from cos.sessions import (SessionIdError, TurnError, append_turn, check_session_id, history_messages,
+                          read_session, read_turns)
 from cos.tools import ToolContext, build_registry
 
 EXIT_OK, EXIT_INTERNAL, EXIT_USAGE, EXIT_STOPPED, EXIT_MODEL = 0, 1, 2, 3, 4
@@ -108,10 +109,13 @@ def cmd_ask(rt: Runtime, args) -> int:
         return EXIT_INTERNAL
     stamp = _now_stamp()
     if session_id:
-        append_turn(rt.config.state_dir, session_id, {
-            "ts": stamp, "question": question, "answer": result.answer,
-            "tools_used": result.tools_used, "fast_path": result.fast_path, "model": result.model,
-            "notices": result.notices, "total_ms": total_ms})
+        try:
+            append_turn(rt.config.state_dir, session_id, {
+                "ts": stamp, "question": question, "answer": result.answer,
+                "tools_used": result.tools_used, "fast_path": result.fast_path, "model": result.model,
+                "notices": result.notices, "total_ms": total_ms})
+        except TurnError as e:
+            print(f"cos: turn not recorded in session ({e})", file=sys.stderr)
     if args.json:
         print(json.dumps({**result.as_json(), "session_id": session_id, "ts": stamp,
                           "total_ms": total_ms}))
@@ -210,11 +214,17 @@ def cmd_tools(rt: Runtime, args) -> int:
 
 
 def cmd_history(cfg: Config, args) -> int:
-    """Read-only: no audit record, nothing created."""
-    turns = read_turns(cfg.state_dir, args.session)
+    """Read-only: no audit record, nothing created.
+
+    --json prints the array of valid turns on stdout (unchanged shape) and one JSON
+    note on stderr, {"skipped_lines": N}, counting lines that were not valid turns."""
+    turns, skipped = read_session(cfg.state_dir, args.session)
     if args.json:
         print(json.dumps(turns))
+        print(json.dumps({"skipped_lines": skipped}), file=sys.stderr)
         return EXIT_OK
+    if skipped:
+        print(f"cos: skipped {skipped} invalid line(s) in session {args.session}", file=sys.stderr)
     for t in turns:
         print(f"[{t['ts']}] you> {t['question']}\nchief> {t['answer']}\n")
     return EXIT_OK

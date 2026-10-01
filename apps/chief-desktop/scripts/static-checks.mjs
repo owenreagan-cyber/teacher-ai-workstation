@@ -76,13 +76,13 @@ check("dev server only when unpackaged and on localhost", securityTs.includes("!
 
 // 6. Preload: exactly the allowed bridge, fixed channels only.
 const preload = read("src/preload/preload.ts");
-const ALLOWED = ["ask", "history", "brief", "status", "stop", "resume", "setPin", "setProtection", "minimize", "hide", "onEvent"];
+const ALLOWED = ["ask", "history", "brief", "status", "stop", "resume", "setPin", "setProtection", "hide", "onEvent"];
 const bridgeBody = preload.match(/const bridge: PreloadBridge = \{([\s\S]*?)\n\};/)?.[1] ?? "";
 const keys = [...bridgeBody.matchAll(/^ {2}(\w+):/gm)].map((m) => m[1]);
 check("preload exposes exactly the allowed functions", JSON.stringify(keys) === JSON.stringify(ALLOWED), keys.join(","));
 check("preload exposes only window.chief", (preload.match(/exposeInMainWorld\(/g) ?? []).length === 1 && preload.includes('exposeInMainWorld("chief", bridge)'));
 const invokes = [...preload.matchAll(/ipcRenderer\.invoke\(([^,)]+)/g)].map((m) => m[1]);
-check("every invoke uses a literal chief: channel", invokes.length === 10 && invokes.every((c) => /^"chief:[a-z-]+"$/.test(c)), invokes.join(","));
+check("every invoke uses a literal chief: channel", invokes.length === 9 && invokes.every((c) => /^"chief:[a-z-]+"$/.test(c)), invokes.join(","));
 check("preload never sends or exposes ipcRenderer", !/ipcRenderer\.(send|sendSync|postMessage)\b/.test(preload) && !/exposeInMainWorld\([^)]*ipcRenderer/.test(preload));
 
 if (failures.length) {

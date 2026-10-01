@@ -72,7 +72,6 @@ export interface ChiefBridge {
   resume(): Promise<ControlResult>;
   setPin(pinned: boolean): Promise<WindowState>;
   setProtection(enabled: boolean): Promise<WindowState>;
-  minimize(): Promise<void>;
   hide(): Promise<void>;
   onEvent(listener: (event: ShellEvent) => void): () => void;
 }

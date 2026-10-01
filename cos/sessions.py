@@ -9,6 +9,10 @@ Session ids must fully match [a-z0-9-]{1,40}, so an id can never name a path
 outside the sessions directory. Reading never creates anything; only a
 completed turn is appended (a stopped or failed ask appends nothing).
 
+Every turn is shape-checked (check_turn) before it is written, and every line
+is checked again on read: a line that is not JSON or not a valid turn is
+skipped and counted, never passed on.
+
 Prior turns are offered to the model as history, capped at MAX_TURNS turns and
 MAX_HISTORY_CHARS characters (oldest turns dropped first).
 """
@@ -33,6 +37,37 @@ class SessionIdError(ValueError):
     pass
 
 
+class TurnError(ValueError):
+    pass
+
+
+def _is_str_list(value) -> bool:
+    return isinstance(value, list) and all(isinstance(v, str) for v in value)
+
+
+def check_turn(turn) -> dict:
+    """Return the turn with exactly TURN_FIELDS, or raise TurnError if any field has the wrong type."""
+    if not isinstance(turn, dict):
+        raise TurnError("turn is not an object")
+    checks = {
+        "ts": lambda v: isinstance(v, str),
+        "question": lambda v: isinstance(v, str),
+        "answer": lambda v: isinstance(v, str),
+        "tools_used": _is_str_list,
+        "fast_path": lambda v: isinstance(v, bool),
+        "model": lambda v: v is None or isinstance(v, str),
+        "notices": _is_str_list,
+        # bool is a subclass of int; a duration is never a bool
+        "total_ms": lambda v: isinstance(v, int) and not isinstance(v, bool) and v >= 0,
+    }
+    for name, ok in checks.items():
+        if name not in turn:
+            raise TurnError(f"turn is missing {name}")
+        if not ok(turn[name]):
+            raise TurnError(f"turn field {name} has the wrong type")
+    return {k: turn[k] for k in TURN_FIELDS}
+
+
 def check_session_id(session_id) -> str:
     if not isinstance(session_id, str) or not SESSION_ID_RE.fullmatch(session_id):
         raise SessionIdError("session id must be 1-40 characters of a-z, 0-9, or '-'")
@@ -43,26 +78,33 @@ def session_path(state_dir: Path, session_id: str) -> Path:
     return Path(state_dir) / SUBDIR / f"{check_session_id(session_id)}.jsonl"
 
 
-def read_turns(state_dir: Path, session_id: str) -> list[dict]:
-    """All turns of a session, oldest first; [] if it does not exist. Never writes."""
+def read_session(state_dir: Path, session_id: str) -> tuple[list[dict], int]:
+    """(valid turns oldest first, number of skipped lines). ([], 0) if missing. Never writes."""
     path = session_path(state_dir, session_id)
     try:
         fd = os.open(path, os.O_RDONLY | os.O_NOFOLLOW)
     except FileNotFoundError:
-        return []
-    turns = []
-    with os.fdopen(fd, "r", encoding="utf-8") as fh:
+        return [], 0
+    turns, skipped = [], 0
+    with os.fdopen(fd, "r", encoding="utf-8", errors="replace") as fh:
         for line in fh:
+            if not line.strip():
+                continue
             try:
-                rec = json.loads(line)
-            except json.JSONDecodeError:
-                continue  # a torn or edited line is skipped, not fatal
-            if isinstance(rec, dict):
-                turns.append({k: rec.get(k) for k in TURN_FIELDS})
-    return turns
+                turns.append(check_turn(json.loads(line)))
+            except (json.JSONDecodeError, TurnError):
+                skipped += 1  # a torn, edited, or wrongly typed line is skipped, not fatal
+    return turns, skipped
+
+
+def read_turns(state_dir: Path, session_id: str) -> list[dict]:
+    """Valid turns of a session, oldest first; [] if it does not exist. Never writes."""
+    return read_session(state_dir, session_id)[0]
 
 
 def append_turn(state_dir: Path, session_id: str, turn: dict) -> None:
+    """Append one turn; raises TurnError (and writes nothing) if its shape is wrong."""
+    record = check_turn(turn)
     path = session_path(state_dir, session_id)
     ensure_private_subdir(SUBDIR, Path(state_dir))
     fd = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_APPEND | os.O_NOFOLLOW, FILE_MODE)
@@ -70,7 +112,7 @@ def append_turn(state_dir: Path, session_id: str, turn: dict) -> None:
         os.fchmod(fh.fileno(), FILE_MODE)
         fcntl.flock(fh, fcntl.LOCK_EX)
         try:
-            fh.write(json.dumps({k: turn.get(k) for k in TURN_FIELDS}, ensure_ascii=False) + "\n")
+            fh.write(json.dumps(record, ensure_ascii=False) + "\n")
             fh.flush()
         finally:
             fcntl.flock(fh, fcntl.LOCK_UN)

@@ -5,15 +5,27 @@ Milestone:   M1.5A — Chief desktop shell (compact, persistent)
 Branch:      feature/cos-m15a (worktree ~/Projects/taw-cos-m1), from feature/cos-m1 3708de2 (M1 not merged)
 Commits:     d23cd3c  cos: sessions, history, status for desktop shell
              efcde38  chief-desktop: M1.5A compact shell
-             (this)   docs: chief-desktop M1.5A guide and review bundle
-Diff:        SHA-256 e0b859399e395702e49f6bef17b6889e9eb570e2fae7aae5653a4b008df47fc4
-             = git diff 3708de2 HEAD -- . ':(exclude)docs/chief-desktop-m15a-review-bundle.md' | shasum -a 256
-Python:      164 passed, 0 failed (137 existing, unchanged + 27 new)
-App:         14 passed, 0 failed (node:test) + 198 static checks passed, 0 failed
+             804dd13  docs: chief-desktop M1.5A guide and review bundle
+             (this)   M15A hardening: turn validation (002), minimize removed (010), projector docs (001)
+Diff:        SHA-256 e0b859399e395702e49f6bef17b6889e9eb570e2fae7aae5653a4b008df47fc4  (original review range)
+             = git diff 3708de2 804dd13 -- . ':(exclude)docs/chief-desktop-m15a-review-bundle.md' | shasum -a 256
+Hardening:   SHA-256 2887879d4d8d68bc5e55c1ecbe3a5edecd4918f525106eee4c8a08017eda96ea
+             = git diff 804dd13 HEAD -- . ':(exclude)docs/chief-desktop-m15a-review-bundle.md' | shasum -a 256
+Python:      170 passed, 0 failed (137 M1, unchanged + 27 M1.5A + 6 hardening)
+App:         18 passed, 0 failed (node:test; 14 + 4 hardening) + 198 static checks passed, 0 failed
 Typecheck:   npm run typecheck — clean (renderer, main, preload projects)
 Build:       npm run build — dist/renderer (Vite) + out/main, out/preload (tsc)
 Not done:    no push, no merge; npm run dev, the packaged app, windows, hotkeys not launched
 ```
+
+## Independent review findings and dispositions (M15A-001 … M15A-010)
+
+| ID | Finding | Disposition |
+|---|---|---|
+| M15A-001 | A hardware-mirrored projector shows Chief despite content protection. | **Docs fixed.** The guide now opens its live checks with **Classroom projector**: hide Chief with ⌃⌥C before connecting, or set the projector to Extended display (System Settings → Displays → select the projector → Use as: Extended display). New live check **7.8 Mirrored display** records what a real mirrored display shows. Auto-hide on mirroring stays M1.5B work, and the known-gap row remains a classroom blocker until 7.8 is run. |
+| M15A-002 | Session turns were not shape-checked, so a wrongly typed field could reach the renderer. | **Fixed in both layers.** Core: `cos/sessions.py:48-68` `check_turn` requires `ts`, `question`, `answer` (str), `tools_used` and `notices` (list of str), `fast_path` (bool), `model` (str or null), and `total_ms` (int ≥ 0, not bool). It runs on every write (`append_turn`, `:107`; an invalid turn is not written, and `cos ask` notes this on stderr) and on every read (`read_session`, `:81-97`; bad lines, including non-JSON lines, are skipped and counted, and extra fields are dropped). `cos history --json` keeps its stdout array unchanged and writes `{"skipped_lines": N}` to stderr (`cos/cli.py:220-224`). Model history uses only valid turns. Shell: `src/main/cos.ts:39-55` rebuilds every turn field by field (`toTurn`, `answerFields`). History drops invalid turns (`:135`), and ask returns `internal` if any field is wrong (`:125-129`). Only known fields are passed on, and brief `lines` must be a list of strings. Tests: 6 Python (`TurnValidationTests`), 4 app. |
+| M15A-003 … M15A-009 | **Finding text was not provided to Claude in this pass.** | **Pending.** Dispositions to be added when the findings are supplied. |
+| M15A-010 | `minimize()` in the bridge was unused. | **Fixed.** Removed from the preload, the `chief:minimize` handler, and `ChiefBridge`. The static check's allowed list now has 10 functions and 9 invoke channels. The native yellow button still minimizes, and the hotkey restores a minimized window. |
 
 ## Scope
 
@@ -49,7 +61,7 @@ Not done:    no push, no merge; npm run dev, the packaged app, windows, hotkeys 
 
 ```text
 $ python3.12 -m unittest discover -s tests/cos -p 'test_*.py'
-Ran 164 tests in 3.267s
+Ran 170 tests
 OK
 
 New (tests/cos/test_sessions_status.py), all ok:
@@ -66,6 +78,11 @@ New (tests/cos/test_sessions_status.py), all ok:
   StatusTests        test_fields_with_ollama_up, test_ollama_down, test_kill_switch_reported_with_reason,
                      test_cli_status_makes_zero_model_calls_and_writes_no_audit, test_cli_status_with_ollama_down,
                      test_audit_states
+  TurnValidationTests (M15A-002)  test_each_malformed_line_is_skipped_valid_lines_return (tools_used not a
+                     list / item not str, notices missing, fast_path string, total_ms negative / string / bool,
+                     model number, answer null, non-JSON line, JSON non-object), test_history_json_array_unchanged_and_
+                     skip_count_on_stderr, test_skip_count_zero_when_clean, test_extra_fields_are_dropped,
+                     test_invalid_turn_is_never_written, test_malformed_history_lines_are_not_sent_to_the_model
 All tests use StateDirTest (COS_STATE_DIR temp directory).
 
 $ cd apps/chief-desktop && npm ci && npm run typecheck && npm test && npm run build
@@ -84,7 +101,11 @@ added 321 packages
 ✔ unparseable output becomes an internal error
 ✔ cos error kinds pass through
 ✔ stop and resume succeed on exit 0 and fail otherwise
-ℹ tests 14  ℹ pass 14  ℹ fail 0
+✔ history drops each malformed turn and keeps the valid ones       (M15A-002, same cases as Python)
+✔ history with a non-JSON line from cos is an internal error, not a partial array
+✔ ask with any malformed turn field is rejected, never passed on
+✔ a valid ask passes only known fields
+ℹ tests 18  ℹ pass 18  ℹ fail 0
 static checks: 198 passed, 0 failed
 dist/renderer/index.html  0.65 kB · assets/index-*.css 14.49 kB · assets/index-*.js 229.33 kB
 
@@ -124,20 +145,21 @@ Paths are relative to `apps/chief-desktop/` unless they start with `cos/`.
 | 12 | Local content only; dev URL only `http://localhost:<port>` and only when `!app.isPackaged` | PASS | `src/main/security.ts:15-20`; load at `src/main/main.ts:117`; renderer served from the bundle by `app://chief/` with a path-traversal check at `src/main/security.ts:47` |
 | 13 | Deny all permissions | PASS | `src/main/security.ts:74-76` (request, check, and device handlers all deny) |
 | 14 | No network from the app | PASS | `src/main/security.ts:78-80` (`onBeforeRequest` cancels everything except `app://chief/`, plus the dev server and devtools when unpackaged); static checks: no `fetch(`/`XMLHttpRequest`/`WebSocket`/`EventSource`/`sendBeacon` in the renderer, no `node:http(s)`/`net`/`tls`/`fetch(`/`net.request` in main |
-| 15 | Preload exposes only `window.chief`, with named functions | PASS* | `src/preload/preload.ts:19-41`; every call uses a literal `chief:*` channel; there is no `send`/`invoke(channel)` passthrough, and `ipcRenderer` is never exposed. *See deviation D1 (`onEvent`) |
+| 15 | Preload exposes only `window.chief`, with named functions | PASS* | `src/preload/preload.ts:19-40`; every call uses a literal `chief:*` channel; there is no `send`/`invoke(channel)` passthrough, and `ipcRenderer` is never exposed. *See deviation D1 (`onEvent`) |
 | 16 | IPC accepts only the app's own frame | PASS | `src/main/main.ts:240-250` (`event.sender === win.webContents`, plus a frame URL prefix check) |
-| 17 | `execFile`, never `exec` or a shell | PASS | `src/main/cos.ts:45-48`; static checks ban `exec(`, `execSync`, `spawn(`, `fork(`, and a `shell:` option in main/preload |
+| 17 | `execFile`, never `exec` or a shell | PASS | `src/main/cos.ts:65-68`; static checks ban `exec(`, `execSync`, `spawn(`, `fork(`, and a `shell:` option in main/preload |
 | 18 | One pure `buildArgs(action, params)` with session ID and length checks | PASS | `src/main/args.ts:4-5,33-50`; `--` before the question (`:36`) |
 | 19 | Minimal env and timeout | PASS | `src/main/cos.ts:29-35` (PATH, HOME, LANG), timeouts at `:19-26` |
-| 20 | `cosPath` from `desktop.json`, with a default and a setup message | PASS | `src/main/config.ts:6-9,17-48`; `src/main/cos.ts:64-68` |
-| 21 | JSON parse failure → `{ok:false, error_kind:"internal"}` | PASS | `src/main/cos.ts:81-85` and envelope validation at `:88-99` |
+| 20 | `cosPath` from `desktop.json`, with a default and a setup message | PASS | `src/main/config.ts:6-9,17-48`; `src/main/cos.ts:84-88` |
+| 21 | JSON parse failure → `{ok:false, error_kind:"internal"}` | PASS | `src/main/cos.ts:101-105` and envelope validation at `:108-121` |
 | 22 | Content protection on by default, and every launch starts protected | PASS | `src/main/main.ts:95-97`; toggle at `:148-154` |
 | 23 | Window title always "Chief" | PASS | `src/main/main.ts:24,100`; `src/renderer/index.html:10` |
 | 24 | Close hides; quit only via the tray or ⌘Q | PASS | `src/main/main.ts:101-106`, `before-quit` |
 | 25 | Tray: template image, no text or tooltip | PASS | `src/main/trayIcon.ts` (`setTemplateImage(true)`); `src/main/main.ts:163` (no `setTitle`/`setToolTip`) |
 | 26 | Hardened runtime, minimal entitlements | PASS | `electron-builder.yml:27`; `build/entitlements.mac.plist:7` (allow-jit only); Electron fuses at `electron-builder.yml:15-21` (RunAsNode, NODE_OPTIONS, and inspect disabled; asar-only plus integrity) |
-| 27 | Session ID validation in the core | PASS | `cos/sessions.py:25,37`; CLI at `cos/cli.py:307` |
-| 28 | Status makes no model call | PASS | `cos/cli.py:223-246` (only `ModelClient.loaded_models` → `GET /api/ps`, 2 s); test `test_cli_status_makes_zero_model_calls_and_writes_no_audit` |
+| 27 | Session ID validation in the core | PASS | `cos/sessions.py:29,72`; CLI at `cos/cli.py:317` |
+| 28 | Status makes no model call | PASS | `cos/cli.py:233-256` (only `ModelClient.loaded_models` → `GET /api/ps`, 2 s); test `test_cli_status_makes_zero_model_calls_and_writes_no_audit` |
+| 29 | Turn shape validated before display (M15A-002) | PASS | core `cos/sessions.py:48-68` (write and read); shell `src/main/cos.ts:39-55,125-135` |
 
 ## Where the UI's state comes from
 
@@ -175,7 +197,7 @@ only) and, on some runs, `fsevents`. **Neither was approved, and none is needed.
 
 | ID | Deviation | Reason |
 |---|---|---|
-| D1 | The preload exposes an 11th function, `onEvent(listener)`. | Tray actions (Daily Brief, Stop/Resume, Screen protection) must reach the window. It is one fixed channel (`chief:event`), main → renderer only, with three event kinds (`brief-requested`, `status-changed`, `window-state`) and no cos payload. The preload replays the last window state to a late subscriber. |
+| D1 | The preload exposes `onEvent(listener)`, which is not in the prompt's list. (`minimize()` was removed per M15A-010, so the bridge has 10 functions.) | Tray actions (Daily Brief, Stop/Resume, Screen protection) must reach the window. It is one fixed channel (`chief:event`), main → renderer only, with three event kinds (`brief-requested`, `status-changed`, `window-state`) and no cos payload. The preload replays the last window state to a late subscriber. |
 | D2 | `cos ask --json` also returns `total_ms`. | So the answer footer can be rendered from the ask JSON when the history reload fails. Additive. |
 | D3 | The shell adds two error kinds, `setup` and `timeout`. | They describe failures before or around a cos call: missing `cos`, a bad `desktop.json`, or an execFile timeout. cos's own kinds are passed through unchanged, and unknown kinds become `internal`. |
 | D4 | Copy uses `document.execCommand("copy")`. | `navigator.clipboard` needs a clipboard permission, and the app denies every permission. |
@@ -187,7 +209,7 @@ only) and, on some runs, `fsevents`. **Neither was approved, and none is needed.
 
 | Gap | Class |
 |---|---|
-| **Projector via HDMI or USB-C mirroring.** Content protection removes the window from screen *capture*, but a hardware-mirrored display shows the screen directly, so Chief is probably visible on a mirrored projector. The guide tells Owen to hide Chief or use extended mode. Auto-hiding on a mirrored display is M1.5B work. | **BLOCKER for classroom use until tested; not a code defect** |
+| **Projector via HDMI or USB-C mirroring.** Content protection removes the window from screen *capture*, but a hardware-mirrored display shows the screen directly, so Chief is probably visible on a mirrored projector. The guide now opens its live checks with **Classroom projector** (hide with ⌃⌥C before connecting, or use Extended display) and adds live check 7.8 (M15A-001). Auto-hiding on a mirrored display is M1.5B work. | **BLOCKER for classroom use until tested; not a code defect** |
 | Content protection depends on each capture path honoring macOS window sharing settings, and some ScreenCaptureKit-based apps may not. The live checks (screenshot, QuickTime, AirPlay) are the proof; video-call apps should be tested too. | ACCEPTED-M1.5A, live check |
 | Not launched by Claude: `npm run dev`, the packaged app, windows, the tray, the hotkey, or the macOS dialogs. All UI behavior is verified only by typecheck, static checks, and Owen's live checks. | ACCEPTED-M1.5A |
 | `cos status` runs `audit verify` over the whole log on every 30 s poll, so its cost grows with the log. | DEFERRED-M2 |
@@ -208,8 +230,8 @@ You are an independent security and architecture reviewer. You did not write thi
 - Scope: `git diff 3708de2 HEAD` on branch `feature/cos-m15a` (verify the SHA-256 above).
 
 **Review focus**
-1. **Preload surface.** `src/preload/preload.ts`: exactly the listed functions plus `onEvent`
-   (D1)? Any way to reach `ipcRenderer` or an arbitrary channel from the page?
+1. **Preload surface.** `src/preload/preload.ts`: exactly the listed functions minus
+   `minimize` (M15A-010) plus `onEvent` (D1)? Any way to reach `ipcRenderer` or an arbitrary channel from the page?
 2. **execFile usage.** `src/main/cos.ts`, `src/main/args.ts`: is any path to a shell, `exec`, or
    argument injection possible? Does a question beginning with `-` stay a question? Is the
    environment minimal?
@@ -236,7 +258,7 @@ You are an independent security and architecture reviewer. You did not write thi
     "id": "M15A-001",
     "severity": "BLOCKER | MAJOR | MINOR | INFO",
     "category": "preload | execfile | csp | navigation | permissions | network | content-protection | state-provenance | core | packaging | other",
-    "path": "apps/chief-desktop/src/main/cos.ts:45",
+    "path": "apps/chief-desktop/src/main/cos.ts:65",
     "evidence": "what the code does, quoted or paraphrased, and how you verified it",
     "required_condition": "the condition that must hold for this finding to be closed"
   }

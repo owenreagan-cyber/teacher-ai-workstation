@@ -34,6 +34,26 @@ export function minimalEnv(): Record<string, string> {
   };
 }
 
+const isStr = (v: unknown): v is string => typeof v === "string";
+const isStrList = (v: unknown): v is string[] => Array.isArray(v) && v.every(isStr);
+
+/** The answer half of a turn, rebuilt field by field (same rules as cos/sessions.py check_turn), or null. */
+function answerFields(o: Record<string, unknown>): Omit<Turn, "question"> | null {
+  const { ts, answer, tools_used, fast_path, model, notices, total_ms } = o;
+  if (!isStr(ts) || !isStr(answer) || !isStrList(tools_used) || typeof fast_path !== "boolean") return null;
+  if (!(model === null || isStr(model)) || !isStrList(notices)) return null;
+  if (typeof total_ms !== "number" || !Number.isSafeInteger(total_ms) || total_ms < 0) return null;
+  return { ts, answer, tools_used: [...tools_used], fast_path, model, notices: [...notices], total_ms };
+}
+
+/** A full Turn with exactly the known fields and correct types, or null (dropped). */
+export function toTurn(value: unknown): Turn | null {
+  if (typeof value !== "object" || value === null || Array.isArray(value)) return null;
+  const o = value as Record<string, unknown>;
+  const rest = answerFields(o);
+  return rest && isStr(o.question) ? { ...rest, question: o.question } : null;
+}
+
 function fail(error_kind: ErrorKind, error: string): Failure {
   return { ok: false, error, error_kind };
 }
@@ -85,7 +105,8 @@ export class CosRunner {
     }
   }
 
-  private static envelope<T>(value: unknown, valid: (v: Record<string, unknown>) => boolean): T | Failure {
+  // pick rebuilds the success value from known, correctly typed fields only (null = invalid).
+  private static envelope<T>(value: unknown, pick: (v: Record<string, unknown>) => T | null): T | Failure {
     if (typeof value !== "object" || value === null || Array.isArray(value)) {
       return fail("internal", "Chief returned an unexpected response.");
     }
@@ -95,31 +116,36 @@ export class CosRunner {
       const kind = kinds.includes(v.error_kind as ErrorKind) ? (v.error_kind as ErrorKind) : "internal";
       return fail(kind, typeof v.error === "string" ? v.error : "error");
     }
-    return v.ok === true && valid(v) ? (v as T) : fail("internal", "Chief returned an unexpected response.");
+    const picked = v.ok === true ? pick(v) : null;
+    return picked ?? fail("internal", "Chief returned an unexpected response.");
   }
 
   async ask(question: unknown, sessionId: unknown): Promise<AskResult> {
     const v = await this.json("ask", { question, sessionId });
-    return CosRunner.envelope<AskResult>(v, (o) => typeof o.answer === "string" && Array.isArray(o.tools_used));
+    return CosRunner.envelope<AskResult>(v, (o) => {
+      const fields = answerFields(o);
+      if (!fields || !(o.session_id === null || isStr(o.session_id))) return null;
+      return { ok: true, ...fields, session_id: o.session_id };
+    });
   }
 
   async history(sessionId: unknown): Promise<HistoryResult> {
     const v = await this.json("history", { sessionId });
     if (Array.isArray(v)) {
-      const turns = v.filter((t): t is Turn => typeof t === "object" && t !== null && typeof t.answer === "string");
+      const turns = v.map(toTurn).filter((t): t is Turn => t !== null); // invalid turns are dropped
       return { ok: true, turns };
     }
-    return CosRunner.envelope<HistoryResult>(v, () => false);
+    return CosRunner.envelope<HistoryResult>(v, () => null);
   }
 
   async brief(): Promise<BriefResult> {
     const v = await this.json("brief");
-    return CosRunner.envelope<BriefResult>(v, (o) => Array.isArray(o.lines));
+    return CosRunner.envelope<BriefResult>(v, (o) => (isStrList(o.lines) ? { ok: true, lines: [...o.lines] } : null));
   }
 
   async status(): Promise<StatusResult> {
     const v = await this.json("status");
-    return CosRunner.envelope<StatusResult>(v, (o) => typeof o.kill_switch === "boolean");
+    return CosRunner.envelope<StatusResult>(v, (o) => (typeof o.kill_switch === "boolean" ? (o as StatusResult) : null));
   }
 
   // stop/resume print text; success is exit code 0. The UI re-reads status for the truth.

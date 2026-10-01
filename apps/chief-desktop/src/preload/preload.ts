@@ -25,7 +25,6 @@ const bridge: PreloadBridge = {
   resume: () => electron.ipcRenderer.invoke("chief:resume"),
   setPin: (pinned) => electron.ipcRenderer.invoke("chief:set-pin", pinned === true),
   setProtection: (enabled) => electron.ipcRenderer.invoke("chief:set-protection", enabled === true),
-  minimize: () => electron.ipcRenderer.invoke("chief:minimize"),
   hide: () => electron.ipcRenderer.invoke("chief:hide"),
   onEvent: (listener) => {
     const wrapped = (event: PreloadEvent) => listener(event);

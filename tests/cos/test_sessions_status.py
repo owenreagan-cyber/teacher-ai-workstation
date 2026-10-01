@@ -14,7 +14,8 @@ from cos import cli, sessions
 from cos.egress import EgressError
 from cos.model import ModelClient, ModelError
 from cos.policy import KillSwitch
-from cos.sessions import SessionIdError, append_turn, check_session_id, history_messages, read_turns
+from cos.sessions import (SessionIdError, TurnError, append_turn, check_session_id, history_messages,
+                          read_session, read_turns)
 
 
 def turn(i, chars=10):
@@ -94,6 +95,76 @@ class SessionStoreTests(StateDirTest):
             fh.write('{"ts": "broken\n')
         append_turn(self.state, "default", turn(2))
         self.assertEqual(len(read_turns(self.state, "default")), 2)
+
+
+class TurnValidationTests(CliCase):
+    """M15A-002: every turn is shape-checked on write and on read."""
+
+    BAD = {
+        "tools_used not a list": dict(tools_used="time.now"),
+        "tools_used item not str": dict(tools_used=["time.now", 3]),
+        "fast_path is a string": dict(fast_path="false"),
+        "total_ms negative": dict(total_ms=-1),
+        "total_ms is a string": dict(total_ms="5"),
+        "total_ms is a bool": dict(total_ms=True),
+        "model is a number": dict(model=7),
+        "notices item not str": dict(notices=[None]),
+        "answer is null": dict(answer=None),
+    }
+
+    def write_lines(self, lines):
+        self.config()
+        sdir = self.state / "sessions"
+        sdir.mkdir(mode=0o700, exist_ok=True)
+        (sdir / "default.jsonl").write_text("".join(l + "\n" for l in lines), encoding="utf-8")
+
+    def test_each_malformed_line_is_skipped_valid_lines_return(self):
+        cases = {name: json.dumps({**turn(1), **patch}) for name, patch in self.BAD.items()}
+        missing = turn(1)
+        del missing["notices"]
+        cases["notices missing"] = json.dumps(missing)
+        cases["non-JSON line"] = "this is not json {"
+        cases["JSON but not an object"] = "[1, 2, 3]"
+        for name, bad in cases.items():
+            with self.subTest(name):
+                self.write_lines([json.dumps(turn(1)), bad, json.dumps(turn(2))])
+                turns, skipped = read_session(self.state, "default")
+                self.assertEqual([t["question"][:2] for t in turns], ["q1", "q2"])
+                self.assertEqual(skipped, 1)
+
+    def test_history_json_array_unchanged_and_skip_count_on_stderr(self):
+        self.write_lines([json.dumps(turn(1)), "garbage", json.dumps({**turn(2), "fast_path": "yes"}),
+                          json.dumps(turn(3))])
+        code, out, err = self.run_cli("history", "--session", "default", "--json")
+        self.assertEqual(code, 0)
+        turns = json.loads(out)
+        self.assertIsInstance(turns, list)
+        self.assertEqual([t["question"][:2] for t in turns], ["q1", "q3"])
+        self.assertEqual(json.loads(err), {"skipped_lines": 2})
+
+    def test_skip_count_zero_when_clean(self):
+        code, out, err = self.run_cli("history", "--session", "default", "--json")
+        self.assertEqual((json.loads(out), json.loads(err)), ([], {"skipped_lines": 0}))
+
+    def test_extra_fields_are_dropped(self):
+        self.write_lines([json.dumps({**turn(1), "secret": "x"})])
+        self.assertEqual(set(read_turns(self.state, "default")[0]), set(sessions.TURN_FIELDS))
+
+    def test_invalid_turn_is_never_written(self):
+        self.config()
+        for name, patch in self.BAD.items():
+            with self.subTest(name), self.assertRaises(TurnError):
+                append_turn(self.state, "default", {**turn(1), **patch})
+        self.assertFalse((self.state / "sessions" / "default.jsonl").exists())
+
+    def test_malformed_history_lines_are_not_sent_to_the_model(self):
+        self.write_lines([json.dumps({**turn(1), "answer": None}), json.dumps(turn(2))])
+        chat = ScriptedChat(answer("ok"))
+        with mock.patch.object(ModelClient, "chat", chat):
+            code, _, _ = self.run_cli("ask", "--session", "default", "--json", "tell me something")
+        self.assertEqual(code, 0)
+        convo = [m["content"][:2] for m in chat.calls[0] if m["role"] in ("user", "assistant")]
+        self.assertEqual(convo, ["q2", "a2", "te"])
 
 
 class AskSessionTests(CliCase):

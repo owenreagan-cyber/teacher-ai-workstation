@@ -31,6 +31,11 @@ def due(ctx, args: dict) -> dict:
         data = call_helper(ctx, ["reminders", "--due-within-days", "1"])
     except HelperError as e:
         return {"error": str(e)}
+    return reminders_result(ctx, data)
+
+
+def reminders_result(ctx, data: dict) -> dict:
+    """The tool result for helper output (also used by fixture mode)."""
     now = ctx.clock()
     items = [normalize(r, now) for r in data.get("reminders", []) if isinstance(r, dict)]
     items.sort(key=lambda r: (not r["overdue"], r["due_iso"] or "~"))

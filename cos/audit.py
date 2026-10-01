@@ -8,6 +8,9 @@ Request text is not stored, only its sha256 and length; chat history holds
 the text. Appends hold an exclusive flock so concurrent cos processes chain
 correctly.
 
+Fields given as extra (fixture mode passes {"fixture": True}) are added to
+every record, after the caller's fields, so a caller cannot override them.
+
 After the first record is written, a marker file (audit.initialized) is
 created next to the log, holding the first record's hash. verify() reports
 three states: "ok" (valid chain), "uninitialized" (no log and no marker:
@@ -68,9 +71,10 @@ def _last_record(fh) -> dict | None:
 
 
 class AuditLog:
-    def __init__(self, path: Path, clock=None):
+    def __init__(self, path: Path, clock=None, extra: dict | None = None):
         self.path = Path(path)
         self._clock = clock or (lambda: datetime.now(timezone.utc))
+        self._extra = dict(extra or {})
 
     def append(self, kind: str, **fields) -> dict:
         fd = os.open(self.path, os.O_RDWR | os.O_CREAT | os.O_APPEND, FILE_MODE)
@@ -83,6 +87,7 @@ class AuditLog:
                     "ts": self._clock().isoformat(timespec="milliseconds"),
                     "kind": kind,
                     **fields,
+                    **self._extra,
                     "prev": last["hash"] if last else GENESIS,
                 }
                 record["hash"] = record_hash(record)

@@ -3,6 +3,11 @@
 State lives in ~/Library/Application Support/ChiefOfStaff/ (0700). It holds
 chat history, the audit log, the kill-switch flag, caches, and config.json.
 COS_STATE_DIR overrides the location; tests always use a temp directory.
+
+COS_FIXTURE_DIR turns on fixture mode (synthetic tool data for the evals/
+harness; see cos/fixture.py). It is honored only when COS_STATE_DIR is also
+set and does not resolve to the real state directory; otherwise every command
+refuses to start. The check runs before the state directory is created.
 """
 from __future__ import annotations
 
@@ -70,6 +75,7 @@ class Config:
     longitude: float | None
     state_dir: Path
     repo_root: Path = field(default=REPO_ROOT)
+    fixture_dir: Path | None = None
 
     @property
     def audit_path(self) -> Path:
@@ -88,7 +94,46 @@ def _coord(value, lo, hi, name):
     return v
 
 
+def _is_real_state_dir(path: Path) -> bool:
+    """True if path is, or is inside, the real state directory (symlinks resolved;
+    compared case-insensitively, as APFS is by default)."""
+    real = DEFAULT_STATE_DIR.expanduser().resolve()
+    candidate = path.expanduser().resolve()
+    folded = str(real).casefold()
+    if str(candidate).casefold() == folded:
+        return True
+    if any(str(parent).casefold() == folded for parent in candidate.parents):
+        return True
+    try:
+        return candidate.exists() and real.exists() and os.path.samefile(candidate, real)
+    except OSError:
+        return True  # cannot tell -> treat as the real directory
+
+
+def fixture_dir_from_env(root: Path | None = None) -> Path | None:
+    """The fixture directory if fixture mode is requested and allowed, else None.
+
+    Raises ConfigError (refuse to start) if COS_FIXTURE_DIR is set but COS_STATE_DIR
+    is not, the state directory is the real one, or the fixture directory is missing."""
+    raw = os.environ.get("COS_FIXTURE_DIR")
+    if raw is None:
+        return None
+    if not raw.strip():
+        raise ConfigError("fixture mode refused: COS_FIXTURE_DIR is set but empty")
+    if root is None and not (os.environ.get("COS_STATE_DIR") or "").strip():
+        raise ConfigError("fixture mode refused: COS_FIXTURE_DIR requires COS_STATE_DIR "
+                          "set to a temporary state directory")
+    if _is_real_state_dir(Path(root) if root is not None else state_dir()):
+        raise ConfigError("fixture mode refused: COS_STATE_DIR resolves to the real Chief of "
+                          f"Staff state directory ({DEFAULT_STATE_DIR})")
+    fixtures = Path(raw).expanduser().resolve()
+    if not fixtures.is_dir():
+        raise ConfigError(f"fixture mode refused: fixture directory not found: {fixtures}")
+    return fixtures
+
+
 def load_config(root: Path | None = None) -> Config:
+    fixtures = fixture_dir_from_env(root)  # before anything is created
     root = ensure_state_dir(root)
     data = dict(DEFAULTS)
     cfg_file = root / "config.json"
@@ -111,4 +156,5 @@ def load_config(root: Path | None = None) -> Config:
         latitude=_coord(data["latitude"], -90, 90, "latitude"),
         longitude=_coord(data["longitude"], -180, 180, "longitude"),
         state_dir=root,
+        fixture_dir=fixtures,
     )

@@ -1,0 +1,5 @@
+{"status": "ok", "reminders": [
+  {"title": "Test Reminder A", "due": "2026-10-01T16:00:00-04:00", "date_only": false, "list": "Test List 1"},
+  {"title": "Test Reminder B", "due": "2026-09-29T09:00:00-04:00", "date_only": false, "list": "Test List 2"},
+  {"title": "Test Reminder C", "due": "2026-10-01T00:00:00-04:00", "date_only": true, "list": "Test List 1"}
+]}

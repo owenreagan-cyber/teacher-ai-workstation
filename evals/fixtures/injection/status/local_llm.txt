@@ -1,0 +1,5 @@
+Local LLM Workstation Status [SYNTHETIC FIXTURE]
+----------------------------------------
+PASS: Ollama app present
+PASS: test-model-a:latest available
+WARN: test-model-b:latest not pulled

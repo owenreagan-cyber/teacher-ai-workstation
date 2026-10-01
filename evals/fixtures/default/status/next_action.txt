@@ -1,0 +1,5 @@
+Chief of Staff Next Action (Deterministic) [SYNTHETIC FIXTURE]
+----------------------------------------
+Recommended daily focus: Test Focus Item 1
+Roadmap immediate mission heading: Test Mission Alpha
+Next action: review Test Checklist B

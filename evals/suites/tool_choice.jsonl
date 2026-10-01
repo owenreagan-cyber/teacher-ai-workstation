@@ -1,0 +1,25 @@
+{"id": "tc-cal-001", "prompt": "what's on my calendar today", "expect": {"exit_code": 0, "fast_path": false, "tools_include": ["calendar.today"], "tools_allowed": ["calendar.today", "time.now"], "answer_contains": ["Test Event A", "Test Event B"]}}
+{"id": "tc-cal-002", "prompt": "do I have any meetings this afternoon?", "expect": {"exit_code": 0, "tools_include": ["calendar.today"], "tools_allowed": ["calendar.today", "time.now"], "answer_contains": ["Test Event B"]}}
+{"id": "tc-cal-003", "prompt": "When is Test Event A?", "expect": {"exit_code": 0, "tools_include": ["calendar.today"], "tools_allowed": ["calendar.today", "time.now"], "answer_contains": ["9:00"]}}
+{"id": "tc-cal-004", "prompt": "Is there an all-day event on my calendar today?", "expect": {"exit_code": 0, "tools_include": ["calendar.today"], "tools_allowed": ["calendar.today", "time.now"], "answer_contains": ["Test All-Day Event C"]}}
+{"id": "tc-cal-005", "prompt": "how busy is my schedule today", "expect": {"exit_code": 0, "tools_include": ["calendar.today"], "tools_allowed": ["calendar.today", "time.now", "reminders.due"]}}
+{"id": "tc-cal-006", "prompt": "what's my next event after 2:30?", "expect": {"exit_code": 0, "tools_include": ["calendar.today"], "tools_allowed": ["calendar.today", "time.now"], "answer_contains": ["Test Event B"]}}
+{"id": "tc-rem-001", "prompt": "what reminders are due today", "expect": {"exit_code": 0, "tools_include": ["reminders.due"], "tools_allowed": ["reminders.due", "time.now"], "answer_contains": ["Test Reminder A"]}}
+{"id": "tc-rem-002", "prompt": "anything overdue on my to-do list?", "expect": {"exit_code": 0, "tools_include": ["reminders.due"], "tools_allowed": ["reminders.due", "time.now"], "answer_contains": ["Test Reminder B"]}}
+{"id": "tc-rem-003", "prompt": "Which of my tasks are due?", "expect": {"exit_code": 0, "tools_include": ["reminders.due"], "tools_allowed": ["reminders.due", "time.now"], "answer_contains": ["Test Reminder C"]}}
+{"id": "tc-rem-004", "prompt": "how many reminders do I have due", "expect": {"exit_code": 0, "tools_include": ["reminders.due"], "tools_allowed": ["reminders.due", "time.now"], "answer_contains_any": ["3", "three"]}}
+{"id": "tc-mac-001", "prompt": "how much disk space do I have left", "expect": {"exit_code": 0, "tools_include": ["mac.status"], "tools_allowed": ["mac.status"], "answer_contains": ["214"]}}
+{"id": "tc-mac-002", "prompt": "what's my battery at?", "expect": {"exit_code": 0, "tools_include": ["mac.status"], "tools_allowed": ["mac.status"], "answer_contains": ["82"]}}
+{"id": "tc-mac-003", "prompt": "how much memory is free on this laptop", "expect": {"exit_code": 0, "tools_include": ["mac.status"], "tools_allowed": ["mac.status"], "answer_contains": ["61"]}}
+{"id": "tc-mac-004", "prompt": "which ollama models are loaded right now", "expect": {"exit_code": 0, "tools_include_any": ["mac.status", "status.local_llm"], "tools_allowed": ["mac.status", "status.local_llm", "time.now"], "answer_contains": ["test-model-a"]}}
+{"id": "tc-mac-005", "prompt": "is my computer charging", "expect": {"exit_code": 0, "tools_include": ["mac.status"], "tools_allowed": ["mac.status"]}}
+{"id": "tc-wx-001", "prompt": "do I need a jacket for recess today", "expect": {"exit_code": 0, "tools_include": ["weather.today"], "tools_allowed": ["weather.today", "time.now"]}}
+{"id": "tc-wx-002", "prompt": "is it windy outside?", "expect": {"exit_code": 0, "tools_include": ["weather.today"], "tools_allowed": ["weather.today"]}}
+{"id": "tc-wx-003", "prompt": "what's the forecast high today", "expect": {"exit_code": 0, "tools_include": ["weather.today"], "tools_allowed": ["weather.today", "time.now"], "answer_contains": ["74"]}}
+{"id": "tc-wx-004", "prompt": "should I bring an umbrella", "expect": {"exit_code": 0, "tools_include": ["weather.today"], "tools_allowed": ["weather.today"]}}
+{"id": "tc-wx-005", "prompt": "how cold will it get tonight", "expect": {"exit_code": 0, "tools_include": ["weather.today"], "tools_allowed": ["weather.today", "time.now"], "answer_contains": ["55"]}}
+{"id": "tc-status-001", "prompt": "what should I work on next", "expect": {"exit_code": 0, "tools_include": ["status.next_action"], "tools_allowed": ["status.next_action", "status.daily"], "answer_contains": ["Test Focus Item 1"]}}
+{"id": "tc-status-002", "prompt": "what's the daily status of the workstation repo", "expect": {"exit_code": 0, "tools_include": ["status.daily"], "tools_allowed": ["status.daily", "status.next_action"]}}
+{"id": "tc-status-003", "prompt": "what's the roadmap mission right now", "expect": {"exit_code": 0, "tools_include_any": ["status.daily", "status.next_action"], "tools_allowed": ["status.daily", "status.next_action", "time.now"], "answer_contains": ["Test Mission Alpha"]}}
+{"id": "tc-time-001", "prompt": "what weekday will December 18 2026 be", "expect": {"exit_code": 0, "fast_path": false, "tools_allowed": ["time.now"]}}
+{"id": "tc-time-002", "prompt": "how many school days until 2026-10-09", "expect": {"exit_code": 0, "fast_path": false, "tools_include": ["time.now"], "tools_allowed": ["time.now"], "answer_contains": ["6"]}}

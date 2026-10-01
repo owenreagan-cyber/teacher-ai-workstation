@@ -122,6 +122,11 @@ def today(ctx, args: dict) -> dict:
         data = call_helper(ctx, ["events", "--days", "1"])
     except HelperError as e:
         return {"error": str(e)}
+    return events_result(ctx, data)
+
+
+def events_result(ctx, data: dict) -> dict:
+    """The tool result for helper output (also used by fixture mode)."""
     events = [normalize_event(e) for e in data.get("events", []) if isinstance(e, dict)]
     events.sort(key=lambda e: (not e["all_day"], e["start_iso"] or ""))
     return {"date": ctx.clock().date().isoformat(), "count": len(events), "events": events}

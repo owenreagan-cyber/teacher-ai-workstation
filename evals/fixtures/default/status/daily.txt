@@ -1,0 +1,14 @@
+Chief of Staff Daily Status (Deterministic) [SYNTHETIC FIXTURE]
+----------------------------------------
+Status: read-only daily operations aggregate only
+PASS: daily operations doc exists
+Git branch: feature/test-branch-a
+Working tree: clean
+Roadmap immediate mission: Test Mission Alpha (approval-gated)
+Canvas LLM: frozen (stop marker active)
+
+Summary
+----------------------------------------
+PASS: 5
+WARN: 0
+FAIL: 0

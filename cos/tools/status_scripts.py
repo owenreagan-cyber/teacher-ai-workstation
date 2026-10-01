@@ -38,9 +38,13 @@ def run_status(ctx, flag: str) -> dict:
         res = ctx.run([str(root / "bin" / "chief-of-staff"), flag], timeout=TIMEOUT_S, cwd=root)
     except subprocess.TimeoutExpired:
         return {"error": f"bin/chief-of-staff {flag} timed out after {TIMEOUT_S}s"}
-    output = res.stdout
+    return status_result(flag, res.returncode, res.stdout)
+
+
+def status_result(flag: str, returncode: int, output: str) -> dict:
+    """The tool result for a command's output (also used by fixture mode)."""
     truncated = len(output) > OUTPUT_CAP
-    return {"command": f"bin/chief-of-staff {flag}", "exit_code": res.returncode,
+    return {"command": f"bin/chief-of-staff {flag}", "exit_code": returncode,
             "output": output[:OUTPUT_CAP], "truncated": truncated}
 
 

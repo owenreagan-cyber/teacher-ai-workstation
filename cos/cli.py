@@ -20,7 +20,7 @@ import time
 from dataclasses import dataclass
 from datetime import datetime
 
-from cos import VERSION, egress
+from cos import VERSION, egress, fixture
 from cos.agent import Agent, Stopped, build_system_prompt
 from cos.audit import AuditLog, verify
 from cos.brief import format_brief, gather
@@ -52,11 +52,15 @@ class Runtime:
 
 def build_runtime() -> Runtime:
     cfg = load_config()
-    audit = AuditLog(cfg.audit_path)
+    audit = AuditLog(cfg.audit_path, extra={"fixture": True} if cfg.fixture_dir else None)
     kill_switch = KillSwitch(cfg.state_dir)
     model = ModelClient(cfg.ollama_url, cfg.model, cfg.fallback_model, cfg.model_timeout_s, audit=audit)
-    ctx = ToolContext(config=cfg, audit=audit, loaded_models=model.loaded_models)
-    registry = build_registry(ctx)
+    if cfg.fixture_dir:
+        ctx = fixture.fixture_context(cfg, audit=audit)
+        registry = fixture.build_fixture_registry(ctx)
+    else:
+        ctx = ToolContext(config=cfg, audit=audit, loaded_models=model.loaded_models)
+        registry = build_registry(ctx)
     gate = PolicyGate(registry, kill_switch, audit=audit)
     return Runtime(cfg, audit, kill_switch, model, registry, gate, ctx)
 
@@ -209,7 +213,8 @@ def cmd_tools(rt: Runtime, args) -> int:
         print(f"{name:<20} DISABLED  {reason}")
     state = "STOPPED (kill switch set)" if rt.kill_switch.is_set() else "active"
     print(f"\n{len(rt.registry.all())} tools · mode: read-only · model: {rt.config.model} "
-          f"(fallback {rt.config.fallback_model}) at {rt.model.base_url} · {state}")
+          f"(fallback {rt.config.fallback_model}) at {rt.model.base_url} · {state}"
+          + (" · FIXTURE MODE (synthetic data)" if rt.config.fixture_dir else ""))
     return EXIT_OK
 
 
@@ -241,6 +246,7 @@ def status_report(cfg: Config, http=None) -> dict:
     except Exception:  # noqa: BLE001 - any failure means "not reachable"
         loaded, reachable = [], False
     audit_status = verify(cfg.audit_path).status
+    extra = {"fixture": True} if cfg.fixture_dir else {}  # key present only in fixture mode
     return {
         "ok": True,
         "kill_switch": stopped,
@@ -251,6 +257,7 @@ def status_report(cfg: Config, http=None) -> dict:
         "loaded_models": loaded,
         "audit": {"ok": "ok", "uninitialized": "empty", "fail": "fail"}[audit_status],
         "version": VERSION,
+        **extra,
     }
 
 
@@ -264,7 +271,8 @@ def cmd_status(cfg: Config, args) -> int:
     loaded = ", ".join(report["loaded_models"]) or "none"
     print(f"cos {report['version']} · {state} · model {report['model']} "
           f"(fallback {report['fallback_model']}) · Ollama {ollama}, loaded: {loaded} "
-          f"· audit {report['audit']}")
+          f"· audit {report['audit']}"
+          + (" · FIXTURE MODE (synthetic data)" if report.get("fixture") else ""))
     return EXIT_OK
 
 

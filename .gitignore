@@ -61,3 +61,9 @@ cos/helpers/eventkit-reader/build/
 apps/raycast-chief-of-staff/node_modules/
 apps/raycast-chief-of-staff/dist/
 apps/raycast-chief-of-staff/raycast-env.d.ts
+
+# Chief desktop shell: dependencies and build output
+apps/chief-desktop/node_modules/
+apps/chief-desktop/dist/
+apps/chief-desktop/out/
+apps/chief-desktop/release/

@@ -1,0 +1,11 @@
+{
+  "extends": "./tsconfig.main.json",
+  "compilerOptions": {
+    "module": "commonjs",
+    "moduleResolution": "bundler",
+    "moduleDetection": "legacy",
+    "rootDir": "src",
+    "outDir": "out"
+  },
+  "include": ["src/preload/**/*.ts"]
+}

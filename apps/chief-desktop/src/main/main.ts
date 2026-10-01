@@ -1,0 +1,268 @@
+// Chief desktop shell, main process. A client of cos: it displays what cos returns and asks cos to
+// act. Policy, routing, the fast path, model calls, audit, the kill switch, and data handling all
+// stay in the Python core.
+import path from "node:path";
+
+import {
+  app,
+  BrowserWindow,
+  globalShortcut,
+  ipcMain,
+  type IpcMainInvokeEvent,
+  Menu,
+  type MenuItemConstructorOptions,
+  screen,
+  Tray,
+} from "electron";
+
+import type { ShellEvent, StatusResult, WindowState } from "../shared/types.js";
+import { loadDesktopConfig, loadWindowState, MAX_SIZE, MIN_SIZE, type SavedWindow, saveWindowState } from "./config.js";
+import { CosRunner } from "./cos.js";
+import { APP_URL, devServerUrl, lockDownContents, lockDownSession, registerAppScheme, serveRenderer } from "./security.js";
+import { trayTemplateImage } from "./trayIcon.js";
+
+const TITLE = "Chief";
+
+let win: BrowserWindow | null = null;
+let tray: Tray | null = null;
+let quitting = false;
+let hotkeyNotice: string | null = null;
+let lastKillSwitch: boolean | null = null; // from the latest cos status, for the tray label only
+let saved: SavedWindow;
+let windowState: WindowState = { pinned: false, protected: true };
+
+const config = loadDesktopConfig();
+const cos = new CosRunner(config.cosPath, config.error);
+const devUrl = devServerUrl();
+const stateFile = () => path.join(app.getPath("userData"), "window-state.json");
+
+registerAppScheme();
+app.on("web-contents-created", (_event, contents) => lockDownContents(contents));
+
+if (!app.requestSingleInstanceLock()) {
+  app.quit();
+} else {
+  app.on("second-instance", () => showWindow());
+  app.whenReady().then(start);
+}
+
+function start(): void {
+  lockDownSession(devUrl);
+  serveRenderer(path.join(__dirname, "..", "..", "dist", "renderer"));
+  Menu.setApplicationMenu(appMenu());
+  saved = loadWindowState(stateFile());
+  createWindow();
+  createTray();
+  registerHotkey();
+  registerIpc();
+}
+
+// ----------------------------------------------------------------------------- window
+
+function onScreen(x: number | undefined, y: number | undefined, width: number): boolean {
+  if (x === undefined || y === undefined) return false;
+  return screen.getAllDisplays().some(({ workArea: a }) =>
+    x >= a.x - width / 2 && y >= a.y && x + width / 2 <= a.x + a.width && y + 40 <= a.y + a.height);
+}
+
+function createWindow(): void {
+  const placed = onScreen(saved.x, saved.y, saved.width);
+  win = new BrowserWindow({
+    title: TITLE,
+    width: saved.width,
+    height: saved.height,
+    ...(placed ? { x: saved.x, y: saved.y } : {}),
+    minWidth: MIN_SIZE.width,
+    minHeight: MIN_SIZE.height,
+    maxWidth: MAX_SIZE.width,
+    maxHeight: MAX_SIZE.height,
+    titleBarStyle: "hiddenInset",
+    show: false,
+    fullscreenable: false,
+    backgroundColor: "#00000000",
+    webPreferences: {
+      preload: path.join(__dirname, "..", "preload", "preload.js"),
+      contextIsolation: true,
+      nodeIntegration: false,
+      sandbox: true,
+      webSecurity: true,
+      devTools: !app.isPackaged,
+      webviewTag: false,
+      spellcheck: false,
+    },
+  });
+
+  // Every launch starts protected, whatever was remembered.
+  windowState = { pinned: saved.pinned, protected: true };
+  win.setContentProtection(true);
+  if (windowState.pinned) win.setAlwaysOnTop(true, "floating");
+
+  win.on("page-title-updated", (event) => event.preventDefault());
+  win.on("close", (event) => {
+    if (!quitting) {
+      event.preventDefault(); // the red button hides; quit is ⌘Q or the menu bar icon
+      win?.hide();
+    }
+  });
+  let saveTimer: NodeJS.Timeout | undefined;
+  const scheduleSave = () => {
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(rememberWindow, 500);
+  };
+  win.on("resize", scheduleSave);
+  win.on("move", scheduleSave);
+  win.webContents.on("did-finish-load", () => sendEvent({ kind: "window-state", state: windowState }));
+  win.once("ready-to-show", () => win?.show());
+
+  void (devUrl ? win.loadURL(devUrl) : win.loadURL(APP_URL));
+}
+
+function rememberWindow(): void {
+  if (!win || win.isDestroyed()) return;
+  const b = win.getBounds();
+  saved = { x: b.x, y: b.y, width: b.width, height: b.height, pinned: windowState.pinned, protected: windowState.protected };
+  saveWindowState(stateFile(), saved);
+}
+
+function showWindow(): void {
+  if (!win) return;
+  if (win.isMinimized()) win.restore();
+  win.show();
+  win.focus();
+}
+
+function toggleWindow(): void {
+  if (!win) return;
+  if (win.isVisible() && !win.isMinimized() && win.isFocused()) win.hide();
+  else showWindow();
+}
+
+function setPin(pinned: boolean): WindowState {
+  windowState = { ...windowState, pinned };
+  win?.setAlwaysOnTop(pinned, "floating");
+  rememberWindow();
+  sendEvent({ kind: "window-state", state: windowState });
+  return windowState;
+}
+
+function setProtection(enabled: boolean): WindowState {
+  windowState = { ...windowState, protected: enabled };
+  win?.setContentProtection(enabled);
+  rememberWindow();
+  sendEvent({ kind: "window-state", state: windowState });
+  return windowState;
+}
+
+function sendEvent(event: ShellEvent): void {
+  if (win && !win.isDestroyed()) win.webContents.send("chief:event", event);
+}
+
+// ----------------------------------------------------------------------------- tray and hotkey
+
+function createTray(): void {
+  tray = new Tray(trayTemplateImage()); // no title, no tooltip: nothing from conversations
+  const open = async () => {
+    await refreshKillSwitch();
+    tray?.popUpContextMenu(trayMenu());
+  };
+  tray.on("click", () => void open());
+  tray.on("right-click", () => void open());
+}
+
+async function refreshKillSwitch(): Promise<void> {
+  const status = await cos.status();
+  lastKillSwitch = status.ok ? status.kill_switch : null;
+}
+
+function trayMenu(): Menu {
+  const items: MenuItemConstructorOptions[] = [];
+  if (hotkeyNotice) items.push({ label: hotkeyNotice, enabled: false }, { type: "separator" });
+  items.push(
+    { label: win?.isVisible() ? "Hide Chief" : "Show Chief", click: () => toggleWindow() },
+    {
+      label: "Daily Brief",
+      click: () => {
+        showWindow();
+        sendEvent({ kind: "brief-requested" });
+      },
+    },
+    { type: "separator" },
+    lastKillSwitch
+      ? { label: "Resume Chief", click: () => void control("resume") }
+      : { label: "Stop Chief", enabled: lastKillSwitch !== null, click: () => void control("stop") },
+    {
+      label: `Screen protection: ${windowState.protected ? "on" : "off"}`,
+      type: "checkbox",
+      checked: windowState.protected,
+      click: () => setProtection(!windowState.protected),
+    },
+    { type: "separator" },
+    { label: "Quit Chief", click: () => app.quit() },
+  );
+  return Menu.buildFromTemplate(items);
+}
+
+async function control(action: "stop" | "resume"): Promise<void> {
+  await (action === "stop" ? cos.stop() : cos.resume());
+  sendEvent({ kind: "status-changed" });
+}
+
+function registerHotkey(): void {
+  let ok = false;
+  try {
+    ok = globalShortcut.register(config.hotkey, toggleWindow);
+  } catch {
+    ok = false; // malformed accelerator
+  }
+  hotkeyNotice = ok ? null : `Hotkey ${config.hotkey} could not be registered`;
+}
+
+function appMenu(): Menu {
+  return Menu.buildFromTemplate([
+    { role: "appMenu" },
+    { role: "editMenu" }, // copy / paste / select all in the input
+    { role: "windowMenu" },
+  ]);
+}
+
+app.on("activate", () => showWindow());
+app.on("before-quit", () => {
+  quitting = true;
+  rememberWindow();
+});
+app.on("will-quit", () => globalShortcut.unregisterAll());
+app.on("window-all-closed", () => {
+  // Closing hides the window; the app keeps running in the menu bar until Quit.
+});
+
+// ----------------------------------------------------------------------------- IPC
+
+function trusted(event: IpcMainInvokeEvent): boolean {
+  const url = event.senderFrame?.url ?? "";
+  if (!win || event.sender !== win.webContents) return false;
+  return url.startsWith(APP_URL.replace("index.html", "")) || (devUrl !== null && url.startsWith(new URL(devUrl).origin + "/"));
+}
+
+function handle(channel: string, fn: (...args: unknown[]) => unknown): void {
+  ipcMain.handle(channel, (event, ...args) => {
+    if (!trusted(event)) throw new Error("untrusted sender");
+    return fn(...args);
+  });
+}
+
+function registerIpc(): void {
+  handle("chief:ask", (question, sessionId) => cos.ask(question, sessionId));
+  handle("chief:history", (sessionId) => cos.history(sessionId));
+  handle("chief:brief", () => cos.brief());
+  handle("chief:status", async () => {
+    const status: StatusResult = await cos.status();
+    lastKillSwitch = status.ok ? status.kill_switch : null;
+    return status;
+  });
+  handle("chief:stop", () => cos.stop());
+  handle("chief:resume", () => cos.resume());
+  handle("chief:set-pin", (pinned) => setPin(pinned === true));
+  handle("chief:set-protection", (enabled) => setProtection(enabled === true));
+  handle("chief:minimize", () => win?.minimize());
+  handle("chief:hide", () => win?.hide());
+}

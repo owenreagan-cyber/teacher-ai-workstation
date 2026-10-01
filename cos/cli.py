@@ -1,6 +1,10 @@
 """cos: the Chief of Staff command line (M1, read-only, local models only).
 
-  cos ask [--json] "question"   one-shot answer
+  cos ask [--session ID] [--json] "question"
+                                one-shot answer; --session adds prior turns of that
+                                session as history and appends the new turn
+  cos history --session ID [--json]   turns of a session (read-only)
+  cos status [--json]           kill switch, models, Ollama, audit (read-only, no model call)
   cos chat                      multi-turn; history saved in the state directory
   cos brief [--json]            deterministic daily brief (no model)
   cos stop [reason] / resume    kill switch
@@ -16,7 +20,7 @@ import time
 from dataclasses import dataclass
 from datetime import datetime
 
-from cos import VERSION
+from cos import VERSION, egress
 from cos.agent import Agent, Stopped, build_system_prompt
 from cos.audit import AuditLog, verify
 from cos.brief import format_brief, gather
@@ -26,10 +30,12 @@ from cos.memory import load_identity, load_memory
 from cos.model import ModelClient, ModelError, ModelRefused
 from cos.policy import KillSwitch, PolicyGate
 from cos.registry import Registry
+from cos.sessions import SessionIdError, append_turn, check_session_id, history_messages, read_turns
 from cos.tools import ToolContext, build_registry
 
-EXIT_OK, EXIT_USAGE, EXIT_STOPPED, EXIT_MODEL = 0, 2, 3, 4
+EXIT_OK, EXIT_INTERNAL, EXIT_USAGE, EXIT_STOPPED, EXIT_MODEL = 0, 1, 2, 3, 4
 CHAT_CONTEXT_MESSAGES = 12
+STATUS_TIMEOUT_S = 2
 
 
 @dataclass
@@ -64,27 +70,53 @@ def make_agent(rt: Runtime) -> Agent:
     return Agent(rt.model, rt.registry, rt.gate, prompt, audit=rt.audit)
 
 
-def _emit_error(as_json: bool, message: str) -> None:
+def _emit_error(as_json: bool, message: str, kind: str) -> None:
+    """kind is one of: usage, stopped, model_unavailable, internal."""
     if as_json:
-        print(json.dumps({"ok": False, "error": message}))
+        print(json.dumps({"ok": False, "error": message, "error_kind": kind}))
     else:
         print(f"cos: {message}", file=sys.stderr)
+
+
+def _now_stamp() -> str:
+    return datetime.now().astimezone().isoformat(timespec="seconds")
 
 
 def cmd_ask(rt: Runtime, args) -> int:
     question = " ".join(args.question).strip()
     if not question:
-        _emit_error(args.json, "ask needs a question")
+        _emit_error(args.json, "ask needs a question", "usage")
         return EXIT_USAGE
+    session_id = args.session
     try:
-        result = make_fastpath(rt).answer(question, mode="ask") or make_agent(rt).run(question, mode="ask")
+        history = history_messages(read_turns(rt.config.state_dir, session_id)) if session_id else None
+        started = time.monotonic()
+        result = (make_fastpath(rt).answer(question, mode="ask")
+                  or make_agent(rt).run(question, history=history, mode="ask"))
+        total_ms = int((time.monotonic() - started) * 1000)
     except Stopped:
-        _emit_error(args.json, f"stopped by kill switch ({rt.kill_switch.reason()}); run cos resume")
+        _emit_error(args.json, f"stopped by kill switch ({rt.kill_switch.reason()}); run cos resume",
+                    "stopped")
         return EXIT_STOPPED
     except ModelError as e:
-        _emit_error(args.json, f"local model unavailable: {e}")
+        _emit_error(args.json, f"local model unavailable: {e}", "model_unavailable")
         return EXIT_MODEL
-    print(json.dumps(result.as_json()) if args.json else result.text())
+    except Exception as e:  # noqa: BLE001 - JSON callers get data, not a traceback
+        if not args.json:
+            raise
+        _emit_error(True, f"internal error ({type(e).__name__})", "internal")
+        return EXIT_INTERNAL
+    stamp = _now_stamp()
+    if session_id:
+        append_turn(rt.config.state_dir, session_id, {
+            "ts": stamp, "question": question, "answer": result.answer,
+            "tools_used": result.tools_used, "fast_path": result.fast_path, "model": result.model,
+            "notices": result.notices, "total_ms": total_ms})
+    if args.json:
+        print(json.dumps({**result.as_json(), "session_id": session_id, "ts": stamp,
+                          "total_ms": total_ms}))
+    else:
+        print(result.text())
     return EXIT_OK
 
 
@@ -128,7 +160,8 @@ def cmd_chat(rt: Runtime, args) -> int:
 
 def cmd_brief(rt: Runtime, args) -> int:
     if rt.kill_switch.is_set():
-        _emit_error(args.json, f"stopped by kill switch ({rt.kill_switch.reason()}); run cos resume")
+        _emit_error(args.json, f"stopped by kill switch ({rt.kill_switch.reason()}); run cos resume",
+                    "stopped")
         return EXIT_STOPPED
     started = time.monotonic()
     timing = {"tool_ms": 0}
@@ -139,7 +172,8 @@ def cmd_brief(rt: Runtime, args) -> int:
         # Set while the brief was being gathered: show nothing from it.
         rt.audit("request_stopped", mode="brief", reason="kill_switch", model_ms=0,
                  tool_ms=timing["tool_ms"], total_ms=total_ms)
-        _emit_error(args.json, f"stopped by kill switch ({rt.kill_switch.reason()}); run cos resume")
+        _emit_error(args.json, f"stopped by kill switch ({rt.kill_switch.reason()}); run cos resume",
+                    "stopped")
         return EXIT_STOPPED
     lines = format_brief(results)
     rt.audit("answer", mode="brief", model_ms=0, tool_ms=timing["tool_ms"],
@@ -175,6 +209,55 @@ def cmd_tools(rt: Runtime, args) -> int:
     return EXIT_OK
 
 
+def cmd_history(cfg: Config, args) -> int:
+    """Read-only: no audit record, nothing created."""
+    turns = read_turns(cfg.state_dir, args.session)
+    if args.json:
+        print(json.dumps(turns))
+        return EXIT_OK
+    for t in turns:
+        print(f"[{t['ts']}] you> {t['question']}\nchief> {t['answer']}\n")
+    return EXIT_OK
+
+
+def status_report(cfg: Config, http=None) -> dict:
+    """Read-only health snapshot. No model call and no audit write (surfaces poll this)."""
+    http = http or egress.request
+    kill_switch = KillSwitch(cfg.state_dir)
+    stopped = kill_switch.is_set()
+    try:
+        client = ModelClient(cfg.ollama_url, cfg.model, cfg.fallback_model, http=http)
+        loaded, reachable = client.loaded_models(timeout_s=STATUS_TIMEOUT_S), True
+    except Exception:  # noqa: BLE001 - any failure means "not reachable"
+        loaded, reachable = [], False
+    audit_status = verify(cfg.audit_path).status
+    return {
+        "ok": True,
+        "kill_switch": stopped,
+        "kill_switch_reason": kill_switch.reason() if stopped else None,
+        "model": cfg.model,
+        "fallback_model": cfg.fallback_model,
+        "ollama_reachable": reachable,
+        "loaded_models": loaded,
+        "audit": {"ok": "ok", "uninitialized": "empty", "fail": "fail"}[audit_status],
+        "version": VERSION,
+    }
+
+
+def cmd_status(cfg: Config, args) -> int:
+    report = status_report(cfg)
+    if args.json:
+        print(json.dumps(report))
+        return EXIT_OK
+    state = f"STOPPED ({report['kill_switch_reason']})" if report["kill_switch"] else "active"
+    ollama = "reachable" if report["ollama_reachable"] else "unreachable"
+    loaded = ", ".join(report["loaded_models"]) or "none"
+    print(f"cos {report['version']} · {state} · model {report['model']} "
+          f"(fallback {report['fallback_model']}) · Ollama {ollama}, loaded: {loaded} "
+          f"· audit {report['audit']}")
+    return EXIT_OK
+
+
 def cmd_audit(rt: Runtime, args) -> int:
     result = verify(rt.config.audit_path)
     label = {"ok": "OK", "uninitialized": "EMPTY", "fail": "FAIL"}[result.status]
@@ -188,8 +271,16 @@ def parser() -> argparse.ArgumentParser:
     sub = p.add_subparsers(dest="command", required=True)
     ask = sub.add_parser("ask", help="one-shot question")
     ask.add_argument("--json", action="store_true", help="machine output for Raycast")
+    ask.add_argument("--session", help="session id ([a-z0-9-]{1,40})")
     ask.add_argument("question", nargs="*")
     ask.set_defaults(func=cmd_ask)
+    history = sub.add_parser("history", help="turns of a session (read-only)")
+    history.add_argument("--session", required=True, help="session id ([a-z0-9-]{1,40})")
+    history.add_argument("--json", action="store_true")
+    history.set_defaults(func=cmd_history, config_only=True)
+    status = sub.add_parser("status", help="health snapshot (read-only, no model call)")
+    status.add_argument("--json", action="store_true")
+    status.set_defaults(func=cmd_status, config_only=True)
     sub.add_parser("chat", help="multi-turn chat").set_defaults(func=cmd_chat)
     brief = sub.add_parser("brief", help="daily brief")
     brief.add_argument("--json", action="store_true")
@@ -211,9 +302,17 @@ def main(argv: list[str]) -> int:
         return EXIT_USAGE
     args = parser().parse_args(argv)
     as_json = getattr(args, "json", False)
+    if getattr(args, "session", None) is not None:
+        try:
+            check_session_id(args.session)
+        except SessionIdError as e:
+            _emit_error(as_json, str(e), "usage")
+            return EXIT_USAGE
     try:
+        if getattr(args, "config_only", False):
+            return args.func(load_config(), args)
         rt = build_runtime()
     except (ConfigError, ModelRefused) as e:
-        _emit_error(as_json, str(e))
+        _emit_error(as_json, str(e), "usage")
         return EXIT_USAGE
     return args.func(rt, args)

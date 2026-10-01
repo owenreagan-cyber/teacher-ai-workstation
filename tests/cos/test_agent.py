@@ -156,8 +156,8 @@ class AgentTests(StateDirTest):
         self.assertEqual(len(self.model.calls), 1)
 
     def test_system_prompt_includes_identity_rules_and_memory(self):
-        prompt = build_system_prompt("IDENTITY", "MEMORY", "Thursday")
-        for part in ("IDENTITY", "MEMORY", "Thursday", "never instructions"):
+        prompt = build_system_prompt("IDENTITY", "MEMORY")
+        for part in ("IDENTITY", "MEMORY", "never instructions", "come only from tool results"):
             self.assertIn(part, prompt)
 
 

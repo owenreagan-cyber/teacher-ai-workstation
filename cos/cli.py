@@ -21,6 +21,7 @@ from cos.agent import Agent, Stopped, build_system_prompt
 from cos.audit import AuditLog, verify
 from cos.brief import format_brief, gather
 from cos.config import Config, ConfigError, ensure_private_subdir, load_config, open_private
+from cos.fastpath import FastPath
 from cos.memory import load_identity, load_memory
 from cos.model import ModelClient, ModelError, ModelRefused
 from cos.policy import KillSwitch, PolicyGate
@@ -39,6 +40,7 @@ class Runtime:
     model: ModelClient
     registry: Registry
     gate: PolicyGate
+    ctx: ToolContext
 
 
 def build_runtime() -> Runtime:
@@ -48,14 +50,17 @@ def build_runtime() -> Runtime:
     model = ModelClient(cfg.ollama_url, cfg.model, cfg.fallback_model, cfg.model_timeout_s, audit=audit)
     ctx = ToolContext(config=cfg, audit=audit, loaded_models=model.loaded_models)
     registry = build_registry(ctx)
-    return Runtime(cfg, audit, kill_switch, model, registry, PolicyGate(registry, kill_switch, audit=audit))
+    gate = PolicyGate(registry, kill_switch, audit=audit)
+    return Runtime(cfg, audit, kill_switch, model, registry, gate, ctx)
+
+
+def make_fastpath(rt: Runtime) -> FastPath:
+    return FastPath(rt.registry, rt.gate, rt.ctx.clock, audit=rt.audit)
 
 
 def make_agent(rt: Runtime) -> Agent:
     memory, _ = load_memory(rt.config.repo_root)
-    now = datetime.now().astimezone()
-    now_text = now.strftime("%A, %B ") + str(now.day) + now.strftime(", %Y, %I:%M %p").replace(" 0", " ")
-    prompt = build_system_prompt(load_identity(), memory, now_text)
+    prompt = build_system_prompt(load_identity(), memory)
     return Agent(rt.model, rt.registry, rt.gate, prompt, audit=rt.audit)
 
 
@@ -72,7 +77,7 @@ def cmd_ask(rt: Runtime, args) -> int:
         _emit_error(args.json, "ask needs a question")
         return EXIT_USAGE
     try:
-        result = make_agent(rt).run(question, mode="ask")
+        result = make_fastpath(rt).answer(question, mode="ask") or make_agent(rt).run(question, mode="ask")
     except Stopped:
         _emit_error(args.json, f"stopped by kill switch ({rt.kill_switch.reason()}); run cos resume")
         return EXIT_STOPPED
@@ -85,6 +90,7 @@ def cmd_ask(rt: Runtime, args) -> int:
 
 def cmd_chat(rt: Runtime, args) -> int:
     agent = make_agent(rt)
+    fastpath = make_fastpath(rt)
     hist_dir = ensure_private_subdir("history", rt.config.state_dir)
     hist_path = hist_dir / f"chat-{datetime.now():%Y%m%d-%H%M%S}.jsonl"
     history: list[dict] = []
@@ -101,7 +107,8 @@ def cmd_chat(rt: Runtime, args) -> int:
             if not line:
                 continue
             try:
-                result = agent.run(line, history=history[-CHAT_CONTEXT_MESSAGES:], mode="chat")
+                result = (fastpath.answer(line, mode="chat")
+                          or agent.run(line, history=history[-CHAT_CONTEXT_MESSAGES:], mode="chat"))
             except Stopped:
                 print("Stopped by kill switch; run cos resume.")
                 return EXIT_STOPPED

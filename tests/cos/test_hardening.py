@@ -204,7 +204,7 @@ class ModelCallDecisionAuditTests(StateDirTest):
         out = io.StringIO()
         with contextlib.redirect_stdout(out):
             cli.main(["stop", "audit test"])
-            code = cli.main(["ask", "--json", "what time is it"])
+            code = cli.main(["ask", "--json", "what time is my meeting"])  # not a fast-path question
         self.assertEqual(code, cli.EXIT_STOPPED)
         records = [json.loads(l) for l in (self.state / "audit.jsonl").read_text().splitlines()]
         denials = [r for r in records if r["kind"] == "decision" and r.get("subject") == "model_call"]

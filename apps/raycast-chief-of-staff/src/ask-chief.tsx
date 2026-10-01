@@ -8,7 +8,8 @@ function render(question: string, result: AskResult | null): string {
   if (!result.ok) return `${header}**Error:** ${result.error}`;
   const notices = result.notices.map((n) => `> Note: ${n}`).join("\n");
   const tools = result.tools_used.length ? result.tools_used.join(", ") : "none";
-  return `${header}${result.answer}\n\n${notices ? `${notices}\n\n` : ""}---\nTools used: \`${tools}\` · Model: \`${result.model ?? "?"}\``;
+  const model = result.fast_path ? "fast path (no model)" : (result.model ?? "?");
+  return `${header}${result.answer}\n\n${notices ? `${notices}\n\n` : ""}---\nTools used: \`${tools}\` · Model: \`${model}\``;
 }
 
 function AnswerView({ question }: { question: string }) {

@@ -5,10 +5,11 @@ Milestone:        M1 — Simple Siri (fully local, read-only)
 Branch:           feature/cos-m1 (worktree ~/Projects/taw-cos-m1), from main 31cb330
 Original review:  31cb330..d7bbbee, diff SHA-256 3c505e7fac121c5f3aa51d55b2168164989291c6a7343f7d6bc0922e1dffb36a
 Hardening pass:   4ce9521..589f672 (one checkpoint: COS-M1-001..005 plus addendum A-F)
-Re-review fixes:  589f672..<this commit> (M1-H-001, M1-H-002)
+Re-review fixes:  589f672..9a91e40 (M1-H-001, M1-H-002)
+M1 polish:        9a91e40..<this commit> (deterministic fast path, live-fact authority)
 Hardening diff:   SHA-256 6d3ba006e72e8dba1b8a816dd65b1940a7a79319d34bf8d2a36acac2c40b4964
                   = git diff 4ce9521 589f672 -- . ':(exclude)docs/cos-m1-review-bundle.md' | shasum -a 256
-Tests:            119 passed, 0 failed (83 original + 31 hardening + 5 re-review)
+Tests:            137 passed, 0 failed (83 original + 31 hardening + 5 re-review + 18 polish)
                   python3.12 -m unittest discover -s tests/cos -p 'test_*.py'
 Not done:         no push, no merge
 ```
@@ -62,6 +63,59 @@ The hardening task said not to trigger Calendar or Reminders permission. One tes
 | M1-H-002 | info | `verify()` ignored the marker's `first_hash`, so a replaced but internally valid log passed | **Fixed.** `verify()` compares the first record's hash with the marker's `first_hash` and returns `fail` ("log replaced") when they differ. A marker without `first_hash` (older runs) is treated as presence-only; the check still passes, with a note in the message. Tests: matching marker passes, mismatched first_hash fails (also via `cos audit verify`, exit 1), and a presence-only marker passes with the note and still detects deletion. |
 
 Files changed: `cos/cli.py`, `cos/audit.py`, `tests/cos/test_hardening.py`, this bundle.
+
+### M1 polish: deterministic fast path and live-fact authority
+
+**Fast path (`cos/fastpath.py`).** A few exact questions are answered from a tool with no
+model call:
+
+| Intent | Example questions | Tool | Template |
+|---|---|---|---|
+| time | "what time is it", "time?", "what's the time" | `time.now` | `It's 7:30 AM on Thursday, October 1, 2026.` |
+| date | "what day is it", "what's the date", "what's today's date" | `time.now` | `Today is Thursday, October 1, 2026.` |
+| days until | "how many days until friday", "… until 2026-12-18" | `time.now` (`days_until`) | `1 day until Friday, October 2 (1 weekday, holidays not counted).` |
+| weather | "what's the weather", "weather", "is it going to rain" | `weather.today` | `Now 61°F and partly cloudy (feels like 60°F). Today: high 75°F, low 55°F, 10% chance of rain.` |
+| Mac | "how's my mac", "mac status" | `mac.status` | `Mac: <one-line status>.` |
+
+How matching and execution work:
+- **Matching.** The question is normalized (lowercased, apostrophes dropped, other
+  punctuation turned into spaces) and must **fully match** an anchored pattern. Questions that
+  only contain a keyword fall through to the agent loop unchanged. Tests cover "what time is
+  my meeting", "what's the weather like for Saturday's field trip", "is my mac fast enough for
+  X", and 12 more.
+- **Weekday targets.** "Until friday" means the next Friday; asking on a Friday means a week
+  out.
+- **Same authority path as agent tool calls.**
+  - The tool runs through `PolicyGate.decide(…, subject="fast_path")` and the executor.
+  - The kill switch is checked by the gate before the tool and again after it.
+  - The audit sequence is `request(path=fast_path)` → `decision(subject=fast_path)` →
+    `tool_result(tool_ms)` → `answer(model_ms=0, tool_ms, total_ms)`, or `request_stopped`.
+- **Output.**
+  - Text output ends with `Tools used: <tool> · fast path (no model)`.
+  - `--json` carries `"fast_path": true, "model": null`, and Raycast shows
+    `Model: fast path (no model)`.
+  - It applies to `cos ask` and `cos chat`.
+- **Measured.** `bin/cos ask "what time is it"` with no model loaded (`/api/ps` empty before
+  and after): 0.09 s, 0.08 s, 0.08 s wall time over three runs, with zero `model_call` records.
+  For comparison, the first M1 smoke test took 19 s on the model path from a cold start.
+
+**Live-fact authority.**
+- The system prompt no longer contains the current date or time (`build_system_prompt` no
+  longer takes `now_text`).
+- `identity.md` and the tool rules now say that current time, date, weather, calendar, and
+  reminders come only from tool results, never from memory.
+- A test checks the prompt for today's date and current time strings, and confirms the prompt
+  is identical under a mocked clock.
+
+Files changed: new `cos/fastpath.py`, `tests/cos/test_fastpath.py`; modified `cos/agent.py`
+(`fast_path` result flag, prompt), `cos/policy.py` (`decide(subject=…)`), `cos/cli.py`
+(fast path before the agent; `Runtime.ctx`), `cos/identity.md`,
+`apps/raycast-chief-of-staff/src/{cos.ts,ask-chief.tsx}`,
+`tests/cos/{test_agent,test_hardening}.py`, this bundle. The 005 CLI regression test now asks a
+non-fast-path question, so it still exercises the model-call gate.
+
+**M2 note:** chat history in Raycast (multi-turn context in the Ask Chief view) is deferred to
+M2. In M1, Raycast is one-shot, and multi-turn chat with saved history is `cos chat` in Terminal.
 
 ### Addendum
 
@@ -153,11 +207,13 @@ modified: .gitignore, CHIEF-OF-STAFF.md, docs/cos-m1-live-checks.md, docs/cos-m1
 
 ```text
 $ python3.12 -m unittest discover -s tests/cos -p 'test_*.py'
-Ran 119 tests in 1.993s
+Ran 137 tests in 2.545s
 OK
 
 per module: test_agent 17 · test_brief_and_cli 8 · test_control 23 · test_egress_and_model 13
-            test_hardening 32 · test_tools 26          (original 83 + hardening 31 + re-review 5 = 119)
+            test_fastpath 18 · test_hardening 32 · test_tools 26
+            (original 83 + hardening 31 + re-review 5 + polish 18 = 137)
+Raycast: npm run typecheck → exit 0
 egress/local-only alone: test_egress_and_model.py — Ran 13 tests, OK
 git diff --check: clean
 ```
@@ -241,6 +297,8 @@ CLI check with a scratch state dir:
 | 27 | No ESLint/Prettier configuration, so `ray lint` is not run | DEFERRED-M2+ | Adding lint dependencies and configuration is new tooling, not hardening. |
 | 28 | Deleting both `audit.jsonl` and `audit.initialized` looks like never-initialized | ACCEPTED-M1 | It needs write access to the 0700 state directory (same limit as gap 8). |
 | 29 | Presence-only markers from earlier runs cannot detect a replaced log | ACCEPTED-M1 | They are reported as presence-only in the verify message; new markers record `first_hash` (M1-H-002). |
+| 30 | Fast path covers only five exact intents with fixed English phrasings | ACCEPTED-M1 | It is anchored on purpose; anything else goes to the agent, so no question goes unanswered. |
+| 31 | Raycast Ask Chief has no multi-turn chat history | DEFERRED-M2+ | Raycast is one-shot in M1; `cos chat` provides history in Terminal. |
 
 ## Architecture in one screen (after hardening)
 

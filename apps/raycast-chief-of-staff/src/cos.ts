@@ -4,7 +4,14 @@ import { execFile } from "node:child_process";
 import { homedir } from "node:os";
 
 export type AskResult =
-  | { ok: true; answer: string; tools_used: string[]; model: string | null; notices: string[] }
+  | {
+      ok: true;
+      answer: string;
+      tools_used: string[];
+      model: string | null;
+      notices: string[];
+      fast_path?: boolean;
+    }
   | { ok: false; error: string };
 
 export type BriefResult = { ok: true; lines: string[] } | { ok: false; error: string };

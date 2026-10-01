@@ -81,7 +81,7 @@ class PolicyGate:
             return Decision(False, "bad_arguments", str(e))
         return Decision(True, "allow", f"{tool.name} is registered and read-only")
 
-    def decide(self, tool_name: str, args) -> Decision:
+    def decide(self, tool_name: str, args, subject: str = "tool_call") -> Decision:
         box: list = []
 
         def run():
@@ -95,7 +95,7 @@ class PolicyGate:
         worker.join(self.timeout_s)
         decision = box[0] if box else Decision(False, "gate_timeout", "policy gate timed out")
         if self.audit is not None:
-            self.audit("decision", subject="tool_call", tool=str(tool_name)[:80],
+            self.audit("decision", subject=subject, tool=str(tool_name)[:80],
                        allowed=decision.allowed, rule=decision.rule, reason=decision.reason)
         return decision
 

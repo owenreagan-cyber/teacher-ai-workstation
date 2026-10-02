@@ -14,6 +14,7 @@ HARNESS = REPO_ROOT / "evals" / "harness"
 sys.path.insert(0, str(HARNESS))
 
 import checks  # noqa: E402
+import report  # noqa: E402
 import run as harness_run  # noqa: E402
 
 SUBSET = ["fp-time-001", "fp-near-001", "tc-cal-001", "cd-email-001", "inj-cal-001", "ks-session-002",
@@ -107,11 +108,40 @@ class HarnessRunTests(unittest.TestCase):
         self.assertEqual((ls["turns_recorded"], ls["skipped_lines"], ls["failing_turns"]), (4, 0, 0))
         self.assertTrue(ls["samples"])
 
+    def test_fake_model_latency_is_labeled(self):
+        s = self.summary("t1-fake")
+        self.assertEqual(s["latency_ms"]["model_path_source"], "fake model")
+        html = (self.out / "reports" / "t1-fake" / "report.html").read_text()
+        for label in ("model-path p50 (wall) (fake model)", "model path (fake model), cos total_ms",
+                      "model path (fake model), wall", "20 slowest (fake model)", "not real model speed"):
+            self.assertIn(label, html)
+        self.assertNotIn("model-path p50 (wall)</span>", html)
+
     def test_second_run_compares_with_first(self):
         self.assertEqual(self.second.returncode, 0, self.second.stderr[-2000:])
         b = self.summary("t2-fake")["baseline"]
         self.assertEqual(b["run_id"], "t1-fake")
         self.assertEqual((b["new_failures"], b["fixed"], b["cert_changes"]), ([], [], []))
+
+
+class ReportLabelTests(unittest.TestCase):
+    def render(self, mode, **meta_extra):
+        rec = {"case_id": "x-001", "suite": "tool_choice", "turn": 0, "command": "ask", "exit_code": 0,
+               "fast_path": False, "total_ms": 900, "wall_ms": 1000, "passed": True, "checks": [],
+               "prompt": "p", "answer": "a", "model_calls": 1}
+        meta = {"run_id": "r", "model_mode": mode, "real_state_dir_changes": [], **meta_extra}
+        summary = report.summarize([rec], meta, [], None)
+        return summary, report.render_html(summary, [rec], [], [])
+
+    def test_real_run_has_no_fake_label(self):
+        summary, html = self.render("real")
+        self.assertEqual(summary["latency_ms"]["model_path_source"], "real model")
+        self.assertNotIn("fake model", html)
+
+    def test_fake_run_labels_model_path(self):
+        summary, html = self.render("fake")
+        self.assertEqual(summary["latency_ms"]["model_path_source"], "fake model")
+        self.assertIn("model path (fake model), wall", html)
 
 
 class SuiteFileTests(unittest.TestCase):

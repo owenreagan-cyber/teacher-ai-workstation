@@ -22,6 +22,7 @@ from pathlib import Path
 from checks import CERTS
 
 EVALS = Path(__file__).resolve().parents[1]
+FAKE_LABEL = "fake model"
 
 
 # ----------------------------------------------------------------------------- data
@@ -113,6 +114,8 @@ def summarize(records: list[dict], meta: dict, resources: list[dict], baseline: 
         "model_wall_ms": _pct(r["wall_ms"] for r in asks if not r["fast_path"]),
         "all_wall_ms": _pct(r["wall_ms"] for r in records),
         "by_suite": {s: _pct(r["wall_ms"] for r in records if r["suite"] == s) for s in suites},
+        # fake-model runs: model-path figures measure the scripted fake, not real model speed
+        "model_path_source": FAKE_LABEL if meta.get("model_mode") == "fake" else "real model",
     }
     mem = [x["memory_free_pct"] for x in resources if isinstance(x.get("memory_free_pct"), int)]
     models: dict[str, int] = {}
@@ -257,7 +260,7 @@ def _fmt(v, unit) -> str:
     return f"{v:g}"
 
 
-def range_chart(rows: list[tuple[str, dict]], width=640) -> str:
+def range_chart(rows: list[tuple[str, dict]], width=640, note="") -> str:
     """Per-suite latency: p50 dot and p50-p95 range on a log axis (ms)."""
     rows = [(l, p) for l, p in rows if p.get("n")]
     if not rows:
@@ -287,7 +290,7 @@ def range_chart(rows: list[tuple[str, dict]], width=640) -> str:
                    f'<circle cx="{x(p["p50"]):.1f}" cy="{y}" r="5" fill="var(--s1)" stroke="var(--panel)" stroke-width="2"/></g>')
     out.append("</svg>")
     return ('<div class="legend"><span><i class="sw" style="background:var(--s1)"></i>p50</span>'
-            '<span><i class="sw" style="background:var(--s2)"></i>p95</span><span>log scale, wall time</span></div>'
+            '<span><i class="sw" style="background:var(--s2)"></i>p95</span><span>log scale, wall time' + e(note) + '</span></div>'
             + "".join(out))
 
 
@@ -367,6 +370,8 @@ PCT_HEAD = ("<tr><th>Measure (ms)</th><th class='num'>n</th><th class='num'>p50<
 def render_html(summary: dict, records: list[dict], resources: list[dict], soak_rows: list[dict]) -> str:
     run = summary["run"]
     o = summary["overall"]
+    fake = run.get("model_mode") == "fake"
+    mp = f" ({FAKE_LABEL})" if fake else ""  # every model-path figure in a fake run says so
     parts = [f"<!doctype html><html lang='en'><head><meta charset='utf-8'>"
              f"<meta name='viewport' content='width=device-width,initial-scale=1'>"
              f"<title>Chief Certification Report</title><style>{CSS}</style></head><body><main>",
@@ -390,7 +395,7 @@ def render_html(summary: dict, records: list[dict], resources: list[dict], soak_
                  f"<div class='tile'><b>{_fmt(summary['latency_ms']['fast_path_wall_ms'].get('p50', 0), 'ms')}</b>"
                  f"<span>fast-path p50 (wall)</span></div>"
                  f"<div class='tile'><b>{_fmt(summary['latency_ms']['model_wall_ms'].get('p50', 0), 'ms')}</b>"
-                 f"<span>model-path p50 (wall)</span></div></div>")
+                 f"<span>model-path p50 (wall){mp}</span></div></div>")
 
     b = summary.get("baseline")
     parts.append("<h2>Compared with baseline</h2>")
@@ -432,13 +437,16 @@ def render_html(summary: dict, records: list[dict], resources: list[dict], soak_
 
     parts.append("<h2>Latency</h2>")
     lat = summary["latency_ms"]
-    parts.append(f"<div class='scroll'>{range_chart(list(lat['by_suite'].items()))}</div>")
+    if fake:
+        parts.append(f"<p class='meta'><b>Model-path figures here are from the scripted {FAKE_LABEL}</b>; "
+                     "they are not real model speed. Run with <code>--model real</code> for that.</p>")
+    parts.append(f"<div class='scroll'>{range_chart(list(lat['by_suite'].items()), note=mp)}</div>")
     parts.append("<table>" + PCT_HEAD + pct_row("fast path, cos total_ms", lat["fast_path_total_ms"])
                  + pct_row("fast path, wall (incl. process start)", lat["fast_path_wall_ms"])
-                 + pct_row("model path, cos total_ms", lat["model_total_ms"])
-                 + pct_row("model path, wall", lat["model_wall_ms"]) + "</table>")
+                 + pct_row(f"model path{mp}, cos total_ms", lat["model_total_ms"])
+                 + pct_row(f"model path{mp}, wall", lat["model_wall_ms"]) + "</table>")
     slow = sorted(records, key=lambda r: r["wall_ms"] or 0, reverse=True)[:20]
-    parts.append("<h3>20 slowest</h3><table><tr><th>Case</th><th>Suite</th><th>Prompt</th>"
+    parts.append(f"<h3>20 slowest{mp}</h3><table><tr><th>Case</th><th>Suite</th><th>Prompt</th>"
                  "<th class='num'>wall ms</th><th class='num'>cos ms</th><th class='num'>model calls</th></tr>")
     for r in slow:
         parts.append(f"<tr><td>{e(r['case_id'])} #{r['turn']}</td><td>{e(r['suite'])}</td>"

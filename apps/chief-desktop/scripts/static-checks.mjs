@@ -85,6 +85,23 @@ const invokes = [...preload.matchAll(/ipcRenderer\.invoke\(([^,)]+)/g)].map((m) 
 check("every invoke uses a literal chief: channel", invokes.length === 9 && invokes.every((c) => /^"chief:[a-z-]+"$/.test(c)), invokes.join(","));
 check("preload never sends or exposes ipcRenderer", !/ipcRenderer\.(send|sendSync|postMessage)\b/.test(preload) && !/exposeInMainWorld\([^)]*ipcRenderer/.test(preload));
 
+// 7. Dev script: no package-internal paths (TypeScript 7 stopped exporting typescript/bin/tsc,
+// which broke `npm run dev` with ERR_PACKAGE_PATH_NOT_EXPORTED). Compile through build:main.
+const devMjs = read("scripts/dev.mjs");
+const devCode = devMjs.split("\n").filter((l) => !l.trimStart().startsWith("//")).join("\n");
+const specifiers = [
+  ...devCode.matchAll(/\b(?:require(?:\.resolve)?|import)\s*\(\s*["']([^"']+)["']/g),
+  ...devCode.matchAll(/\bfrom\s+["']([^"']+)["']/g),
+].map((m) => m[1]);
+const internal = specifiers.filter((s) => {
+  if (s.startsWith("node:") || s.startsWith(".") || s.startsWith("/")) return false;
+  const parts = s.split("/");
+  return parts.length > (s.startsWith("@") ? 2 : 1); // "pkg/sub" or "@scope/pkg/sub"
+});
+check("dev.mjs resolves no package-internal paths", internal.length === 0, internal.join(","));
+check("dev.mjs never names typescript/bin", !/typescript\/bin/.test(devCode));
+check("dev.mjs compiles main + preload via npm run build:main", /"run",\s*"build:main"/.test(devCode));
+
 if (failures.length) {
   console.error(`static checks: ${failures.length} failed, ${passed} passed`);
   for (const f of failures) console.error(`  FAIL ${f}`);

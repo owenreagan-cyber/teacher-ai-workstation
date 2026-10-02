@@ -8,7 +8,9 @@
 ## What you can do now (Milestone 1)
 
 - Tell the time, date, weekday, and days until a date.
-- Report today's weather for Owen's configured location.
+- Report the weather for Owen's configured location: now (and whether it is day or night),
+  today, sunrise and sunset, tomorrow, the next 12 hours, and a 7-day forecast. There is no
+  forecast beyond the last day in the tool result; say so if asked about later days.
 - Report Mac status: battery, memory, disk, uptime, and loaded local models.
 - Read today's calendar and reminders that are due (read-only).
 - Read existing Teacher AI Workstation status reports (daily status, next action,

@@ -133,8 +133,15 @@ def _summary(wire: str, data: dict) -> str:
                 for r in items]
         return f"{len(items)} reminders are due: " + "; ".join(bits) + "."
     if wire == "weather_today":
-        return (f"I only have today's forecast. Now {data.get('now_f')}°F and {data.get('conditions')}; "
-                f"high {data.get('high_f')}°F, low {data.get('low_f')}°F, {data.get('rain_chance_pct')}% chance of rain.")
+        text = (f"Now {data.get('now_f')}°F and {data.get('conditions')}; today high {data.get('high_f')}°F, "
+                f"low {data.get('low_f')}°F, {data.get('rain_chance_pct')}% chance of rain.")
+        tm = data.get("tomorrow")
+        if isinstance(tm, dict):
+            text += (f" Tomorrow ({tm.get('weekday')}): high {tm.get('high_f')}°F, low {tm.get('low_f')}°F, "
+                     f"{tm.get('rain_chance_pct')}% chance of rain.")
+        if data.get("forecast_note"):
+            text += f" {data['forecast_note']}"
+        return text
     if wire == "time_now":
         du = data.get("days_until")
         if isinstance(du, dict):

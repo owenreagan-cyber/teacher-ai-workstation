@@ -1,18 +1,27 @@
-"""weather.today: today's forecast from Open-Meteo for the configured lat/lon.
+"""weather.today: current conditions and the forecast from Open-Meteo for the configured lat/lon.
 
 Coordinates come from config.json (Owen fills them in) and are rounded to
 two decimals (~1 km) before leaving the Mac. Responses are cached for 30
 minutes in the state directory.
+
+The result keeps today's flat fields (now_f, high_f, low_f, rain_chance_pct,
+conditions, ...) and adds is_day, sunrise, sunset, "tomorrow", "daily" (7 days,
+today first, each labeled today / tomorrow / weekday), "hourly" (the next 12
+hours from the current hour), and forecast_note, which states the last day
+covered so the model can say it has nothing beyond it.
 """
 from __future__ import annotations
 
 import json
 import urllib.parse
+from datetime import date, datetime
 
 from cos.config import ensure_private_subdir, open_private
 from cos.registry import Tool
 
 API = "https://api.open-meteo.com/v1/forecast"
+FORECAST_DAYS = 7
+FORECAST_HOURS = 12
 CACHE_SECONDS = 30 * 60
 KEYWORDS = ("weather", "rain", "raining", "temperature", "cold", "hot", "warm", "jacket",
             "umbrella", "forecast", "outside", "snow", "wind", "windy", "recess", "sunny", "storm")
@@ -29,24 +38,104 @@ WMO = {0: "clear", 1: "mostly clear", 2: "partly cloudy", 3: "overcast", 45: "fo
 def build_url(lat: float, lon: float) -> str:
     query = urllib.parse.urlencode({
         "latitude": f"{lat:.2f}", "longitude": f"{lon:.2f}",
-        "current": "temperature_2m,apparent_temperature,weather_code,wind_speed_10m",
-        "daily": "temperature_2m_max,temperature_2m_min,precipitation_probability_max,weather_code",
+        "current": "temperature_2m,apparent_temperature,weather_code,wind_speed_10m,is_day",
+        "daily": ("temperature_2m_max,temperature_2m_min,precipitation_probability_max,weather_code,"
+                  "sunrise,sunset"),
+        "hourly": "temperature_2m,precipitation_probability,weather_code,is_day",
         "temperature_unit": "fahrenheit", "wind_speed_unit": "mph",
-        "timezone": "auto", "forecast_days": 1,
+        "timezone": "auto", "forecast_days": FORECAST_DAYS, "forecast_hours": FORECAST_HOURS,
     })
     return f"{API}?{query}"
 
 
+def _num(v):
+    return round(v) if isinstance(v, (int, float)) and not isinstance(v, bool) else None
+
+
+def _local(value) -> datetime | None:
+    """Open-Meteo local time ("2026-10-01T07:13", timezone=auto) as a naive datetime."""
+    try:
+        return datetime.fromisoformat(str(value))
+    except ValueError:
+        return None
+
+
+def _clock(value) -> str | None:
+    dt = _local(value)
+    return dt.strftime("%I:%M %p").lstrip("0") if dt else None
+
+
+def _at(table: dict, key: str, i: int):
+    values = table.get(key)
+    return values[i] if isinstance(values, list) and i < len(values) else None
+
+
+def _daily(daily: dict) -> list[dict]:
+    days = []
+    times = daily.get("time") if isinstance(daily.get("time"), list) else []
+    for i, day in enumerate(times[:FORECAST_DAYS]):
+        try:
+            d = date.fromisoformat(str(day))
+        except ValueError:
+            continue
+        label = "today" if i == 0 else "tomorrow" if i == 1 else d.strftime("%A")
+        days.append({"date": d.isoformat(), "label": label, "weekday": d.strftime("%A"),
+                     "high_f": _num(_at(daily, "temperature_2m_max", i)),
+                     "low_f": _num(_at(daily, "temperature_2m_min", i)),
+                     "rain_chance_pct": _num(_at(daily, "precipitation_probability_max", i)),
+                     "conditions": WMO.get(_at(daily, "weather_code", i), "unknown"),
+                     "sunrise": _clock(_at(daily, "sunrise", i)), "sunset": _clock(_at(daily, "sunset", i))})
+    return days
+
+
+def _hourly(hourly: dict, now_local) -> list[dict]:
+    """The next FORECAST_HOURS hours, starting with the current hour."""
+    start = now_local.replace(minute=0, second=0, microsecond=0) if now_local else None
+    out = []
+    times = hourly.get("time") if isinstance(hourly.get("time"), list) else []
+    for i, t in enumerate(times):
+        dt = _local(t)
+        if dt is None or (start is not None and dt < start):
+            continue
+        is_day = _at(hourly, "is_day", i)
+        out.append({"time": dt.strftime("%I %p").lstrip("0"), "temp_f": _num(_at(hourly, "temperature_2m", i)),
+                    "rain_chance_pct": _num(_at(hourly, "precipitation_probability", i)),
+                    "conditions": WMO.get(_at(hourly, "weather_code", i), "unknown"),
+                    "is_day": bool(is_day) if is_day in (0, 1) else None})
+        if len(out) == FORECAST_HOURS:
+            break
+    return out
+
+
 def parse(data: dict) -> dict:
     cur, daily = data.get("current", {}), data.get("daily", {})
+    hourly = data.get("hourly") if isinstance(data.get("hourly"), dict) else {}
 
     def first(key):
         values = daily.get(key) or [None]
         return values[0]
 
-    def num(v):
-        return round(v) if isinstance(v, (int, float)) else None
+    num = _num
+    days = _daily(daily)
+    tomorrow = ({k: days[1][k] for k in ("date", "weekday", "high_f", "low_f", "rain_chance_pct", "conditions")}
+                if len(days) > 1 else None)
+    last = days[-1] if days else None
+    note = (f"The forecast covers today through {last['weekday']}, {last['date']} ({len(days)} days). "
+            "There is no forecast beyond that day." if last else "No daily forecast available.")
+    is_day = cur.get("is_day")
+    extra = {
+        "is_day": bool(is_day) if is_day in (0, 1) else None,
+        "sunrise": _clock(first("sunrise")),
+        "sunset": _clock(first("sunset")),
+        "tomorrow": tomorrow,
+        "daily": days,
+        "hourly": _hourly(hourly, _local(cur.get("time"))),
+        "forecast_note": note,
+    }
+    return {**_flat(cur, first, num), **extra}
 
+
+def _flat(cur, first, num) -> dict:
     return {
         "now_f": num(cur.get("temperature_2m")),
         "feels_like_f": num(cur.get("apparent_temperature")),
@@ -86,7 +175,9 @@ def today(ctx, args: dict) -> dict:
 def tools(ctx):
     return [Tool(
         name="weather.today",
-        description="Today's weather at Owen's configured location: now, high/low, rain chance, wind.",
+        description=("Weather at Owen's configured location: now (temperature, conditions, wind, day or "
+                     "night), today's high/low and rain chance, sunrise and sunset, tomorrow, a 7-day daily "
+                     "forecast, and the next 12 hours."),
         parameters={"type": "object", "properties": {}, "additionalProperties": False},
         side_effect="none", data_class="P2", timeout_s=15,
         func=lambda args: today(ctx, args), keywords=KEYWORDS,

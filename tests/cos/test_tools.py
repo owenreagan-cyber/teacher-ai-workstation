@@ -1,6 +1,8 @@
 """Every M1 tool against mocked command and API output (synthetic fixtures)."""
 from __future__ import annotations
 
+import urllib.parse
+
 import json
 import os
 import stat
@@ -45,6 +47,22 @@ class TimeToolTests(StateDirTest):
         self.assertIn("error", time_tool.now_info(make_ctx(self.config()), {"days_until": "soon"}))
 
 
+class WeatherParseTests(StateDirTest):
+    def test_partial_or_odd_responses_degrade_without_errors(self):
+        out = weather.parse({"current": {"temperature_2m": 50, "is_day": 0},
+                             "daily": {"time": ["2026-10-01"], "temperature_2m_max": [60]}})
+        self.assertEqual((out["now_f"], out["is_day"], out["tomorrow"], len(out["daily"])), (50, False, None, 1))
+        self.assertEqual(out["hourly"], [])
+        self.assertIn("through Thursday, 2026-10-01 (1 days)", out["forecast_note"])
+        empty = weather.parse({})
+        self.assertEqual((empty["daily"], empty["hourly"], empty["sunrise"]), ([], [], None))
+        self.assertEqual(empty["forecast_note"], "No daily forecast available.")
+        odd = weather.parse({"daily": {"time": ["not a date", "2026-10-02"], "temperature_2m_max": [True, 70]},
+                             "hourly": {"time": ["bad"], "temperature_2m": [1]}})
+        self.assertEqual([d["date"] for d in odd["daily"]], ["2026-10-02"])
+        self.assertEqual(odd["hourly"], [])
+
+
 class WeatherToolTests(StateDirTest):
     def test_unconfigured_location_reports_how_to_fix(self):
         out = weather.today(make_ctx(self.config()), {})
@@ -53,10 +71,27 @@ class WeatherToolTests(StateDirTest):
     def test_fetch_parse_and_round_coordinates(self):
         http = FakeHttp([fixture("open-meteo.json").encode()])
         out = weather.today(make_ctx(self.config(latitude=35.78712, longitude=-78.64431), http=http), {})
-        self.assertEqual(out, {"now_f": 61, "feels_like_f": 60, "conditions": "partly cloudy",
-                               "wind_mph": 5, "high_f": 75, "low_f": 55, "rain_chance_pct": 10,
-                               "day_conditions": "overcast", "cached": False, "as_of": "7:30 AM"})
+        flat = {k: out[k] for k in ("now_f", "feels_like_f", "conditions", "wind_mph", "high_f", "low_f",
+                                    "rain_chance_pct", "day_conditions", "cached", "as_of")}
+        self.assertEqual(flat, {"now_f": 61, "feels_like_f": 60, "conditions": "partly cloudy",
+                                "wind_mph": 5, "high_f": 75, "low_f": 55, "rain_chance_pct": 10,
+                                "day_conditions": "overcast", "cached": False, "as_of": "7:30 AM"})
+        self.assertEqual((out["is_day"], out["sunrise"], out["sunset"]), (True, "7:13 AM", "6:58 PM"))
+        self.assertEqual(out["tomorrow"], {"date": "2026-10-02", "weekday": "Friday", "high_f": 66, "low_f": 48,
+                                           "rain_chance_pct": 60, "conditions": "light rain"})
+        self.assertEqual([d["label"] for d in out["daily"]],
+                         ["today", "tomorrow", "Saturday", "Sunday", "Monday", "Tuesday", "Wednesday"])
+        self.assertEqual(out["daily"][0]["high_f"], out["high_f"])
+        self.assertEqual(len(out["hourly"]), 12)
+        self.assertEqual(out["hourly"][0]["time"], "7 AM")  # starts at the current hour, skips earlier ones
+        self.assertIn("through Wednesday, 2026-10-07", out["forecast_note"])
+        self.assertIn("no forecast beyond", out["forecast_note"])
         url = http.calls[0]["url"]
+        query = urllib.parse.parse_qs(urllib.parse.urlsplit(url).query)
+        self.assertEqual((query["forecast_days"], query["forecast_hours"]), (["7"], ["12"]))
+        self.assertIn("is_day", query["current"][0])
+        self.assertIn("sunrise,sunset", query["daily"][0])
+        self.assertEqual(query["hourly"], ["temperature_2m,precipitation_probability,weather_code,is_day"])
         self.assertTrue(url.startswith("https://api.open-meteo.com/v1/forecast?"))
         self.assertIn("latitude=35.79", url)
         self.assertIn("longitude=-78.64", url)

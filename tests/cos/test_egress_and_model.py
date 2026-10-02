@@ -256,6 +256,23 @@ class ModelClientLocalOnlyTests(unittest.TestCase):
         self.assertEqual((check["remote_host"], check["family"], check["quantization_level"]),
                          (None, "qwen35moe", "Q4_K_M"))
 
+    def test_num_ctx_default_sent_and_audited(self):
+        http = FakeHttp([{"message": answer("hello")}])
+        client, audit = self.audited_client(http)
+        client.chat([{"role": "user", "content": "hi"}])
+        self.assertEqual(json.loads(http.calls[0]["body"])["options"], {"num_ctx": 16384})
+        self.assertEqual(audit[0][1]["num_ctx"], 16384)
+
+    def test_num_ctx_configured_value_on_every_request_including_fallback(self):
+        http = FakeHttp([EgressError("HTTP 404", status=404, body=b'{"error":"model not found"}'),
+                         {"message": answer("from fallback")}])
+        audit = []
+        client = ModelClient("http://127.0.0.1:11434", "qwen3.6:35b", "gpt-oss:20b", http=http, num_ctx=8192,
+                             audit=lambda k, **f: audit.append((k, f)))
+        client.chat([{"role": "user", "content": "hi"}])
+        self.assertEqual([json.loads(c["body"])["options"] for c in http.calls], [{"num_ctx": 8192}] * 2)
+        self.assertEqual([f["num_ctx"] for _, f in audit], [8192, 8192])
+
     def test_falls_back_once_on_primary_failure(self):
         http = FakeHttp([EgressError("HTTP 404", status=404, body=b'{"error":"model not found"}'),
                          {"message": answer("from fallback")}])

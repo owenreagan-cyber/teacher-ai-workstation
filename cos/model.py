@@ -7,6 +7,7 @@ output (format). Falls back to the fallback model once if the primary fails.
 
 Every request sends "think" (config model_think, default false): Qwen3 models
 reason before answering unless told not to, which costs most of the latency.
+Every request also sends options.num_ctx (config model_num_ctx, default 16384).
 
 Local models only: before every chat request the client refuses a cloud model
 name (":cloud" / "-cloud") and asks Ollama's /api/show (same local host, via
@@ -56,7 +57,8 @@ def check_local(base_url: str) -> str:
 
 class ModelClient:
     def __init__(self, base_url: str, model: str, fallback_model: str | None = None,
-                 timeout_s: float = 300, audit=None, http=egress.request, think: bool = False):
+                 timeout_s: float = 300, audit=None, http=egress.request, think: bool = False,
+                 num_ctx: int = 16384):
         self.base_url = check_local(base_url)
         self.host = urllib.parse.urlsplit(self.base_url).netloc
         self.model = model
@@ -65,6 +67,7 @@ class ModelClient:
         self.audit = audit
         self.http = http
         self.think = bool(think)
+        self.num_ctx = int(num_ctx)
 
     def _post(self, path: str, payload: dict) -> dict:
         body = json.dumps(payload).encode("utf-8")
@@ -100,7 +103,8 @@ class ModelClient:
                                         ("format", "family", "parameter_size", "quantization_level")}}
 
     def _chat_once(self, model: str, messages, tools, fmt) -> dict:
-        payload = {"model": model, "messages": messages, "stream": False, "think": self.think}
+        payload = {"model": model, "messages": messages, "stream": False, "think": self.think,
+                   "options": {"num_ctx": self.num_ctx}}
         if tools:
             payload["tools"] = tools
         if fmt is not None:
@@ -132,7 +136,8 @@ class ModelClient:
         finally:
             if self.audit is not None and not refused:
                 self.audit("model_call", model=model, host=self.host, ok=ok,
-                           think=self.think, model_ms=int((time.monotonic() - started) * 1000),
+                           think=self.think, num_ctx=self.num_ctx,
+                           model_ms=int((time.monotonic() - started) * 1000),
                            tools_offered=len(tools or []), local_check=local_check, error=err)
 
     def chat(self, messages, tools=None, fmt=None) -> tuple[dict, str]:

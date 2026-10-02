@@ -32,6 +32,7 @@ DEFAULTS = {
     "ollama_url": "http://127.0.0.1:11434",
     "model_timeout_s": 300,
     "model_think": False,
+    "model_num_ctx": 16384,
     "latitude": None,
     "longitude": None,
 }
@@ -97,6 +98,7 @@ class Config:
     repo_root: Path = field(default=REPO_ROOT)
     fixture_dir: Path | None = None
     model_think: bool = False
+    model_num_ctx: int = 16384
 
     @property
     def audit_path(self) -> Path:
@@ -174,6 +176,9 @@ def load_config(root: Path | None = None) -> Config:
             raise CloudModelError(name, str(data[name]), root, fixtures is not None)
     if not isinstance(data["model_think"], bool):
         raise ConfigError("model_think must be true or false")
+    num_ctx = data["model_num_ctx"]
+    if not isinstance(num_ctx, int) or isinstance(num_ctx, bool) or num_ctx <= 0:
+        raise ConfigError("model_num_ctx must be a positive integer")
     return Config(
         model=str(data["model"]),
         fallback_model=str(data["fallback_model"]) if data["fallback_model"] else None,
@@ -184,4 +189,5 @@ def load_config(root: Path | None = None) -> Config:
         state_dir=root,
         fixture_dir=fixtures,
         model_think=data["model_think"],
+        model_num_ctx=num_ctx,
     )

@@ -269,6 +269,22 @@ class StateDirectoryTests(StateDirTest):
                 with self.assertRaises(ConfigError):
                     load_config()
 
+    def test_model_num_ctx_default_and_validation(self):
+        self.assertEqual(load_config().model_num_ctx, 16384)
+        (self.state / "config.json").write_text(json.dumps({"model_num_ctx": 32768}))
+        self.assertEqual(load_config().model_num_ctx, 32768)
+        for bad in (0, -1, "16384", 1.5, True, None):
+            with self.subTest(bad=bad):
+                (self.state / "config.json").write_text(json.dumps({"model_num_ctx": bad}))
+                with self.assertRaises(ConfigError):
+                    load_config()
+
+    def test_runtime_model_client_uses_model_num_ctx(self):
+        from cos import cli
+        self.assertEqual(cli.build_runtime().model.num_ctx, 16384)
+        (self.state / "config.json").write_text(json.dumps({"model_num_ctx": 8192}))
+        self.assertEqual(cli.build_runtime().model.num_ctx, 8192)
+
     def test_runtime_model_client_uses_model_think(self):
         from cos import cli
         self.assertIs(cli.build_runtime().model.think, False)

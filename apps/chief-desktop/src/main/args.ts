@@ -5,7 +5,7 @@ export const SESSION_ID_RE = /^[a-z0-9-]{1,40}$/; // must match cos/sessions.py
 export const MAX_QUESTION_CHARS = 4000;
 export const STOP_REASON = "chief-desktop";
 
-export type Action = "ask" | "history" | "brief" | "status" | "stop" | "resume";
+export type Action = "ask" | "history" | "brief" | "status" | "stop" | "resume" | "warm";
 
 export type Params = { question?: unknown; sessionId?: unknown };
 
@@ -44,6 +44,8 @@ export function buildArgs(action: Action, params: Params = {}): string[] {
       return ["stop", STOP_REASON];
     case "resume":
       return ["resume"];
+    case "warm":
+      return ["warm", "--json"];
     default:
       throw new ArgsError(`unknown action: ${String(action)}`);
   }

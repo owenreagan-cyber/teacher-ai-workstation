@@ -5,6 +5,7 @@
                                 session as history and appends the new turn
   cos history --session ID [--json]   turns of a session (read-only)
   cos status [--json]           kill switch, models, Ollama, audit (read-only, no model call)
+  cos warm [--json]             load the configured model and keep it loaded (keep_alive)
   cos chat                      multi-turn; history saved in the state directory
   cos brief [--json]            deterministic daily brief (no model)
   cos stop [reason] / resume    kill switch
@@ -294,6 +295,31 @@ def cmd_status(cfg: Config, args) -> int:
     return EXIT_OK
 
 
+def cmd_warm(rt: Runtime, args) -> int:
+    """Load the configured model with the configured keep_alive (one empty-prompt request,
+    one model_warm audit record). Refused while the kill switch is set."""
+    if rt.kill_switch.is_set():
+        _emit_error(args.json, f"stopped by kill switch ({rt.kill_switch.reason()}); run cos resume",
+                    "stopped")
+        return EXIT_STOPPED
+    try:
+        result = rt.model.warm()
+    except ModelError as e:
+        _emit_error(args.json, f"local model unavailable: {e}", "model_unavailable")
+        return EXIT_MODEL
+    except CloudModelRefused as e:
+        _emit_error(args.json, str(e), "internal")
+        return EXIT_INTERNAL
+    report = {"ok": True, "model": rt.config.model, "loaded": result["loaded"],
+              "keep_alive": rt.model.keep_alive, "load_ms": result["load_ms"]}
+    if args.json:
+        print(json.dumps(report))
+    else:
+        state = "loaded" if report["loaded"] else "not loaded"
+        print(f"{report['model']}: {state} (keep_alive {report['keep_alive']}, {report['load_ms']} ms)")
+    return EXIT_OK
+
+
 def cmd_audit(rt: Runtime, args) -> int:
     result = verify(rt.config.audit_path)
     label = {"ok": "OK", "uninitialized": "EMPTY", "fail": "FAIL"}[result.status]
@@ -317,6 +343,9 @@ def parser() -> argparse.ArgumentParser:
     status = sub.add_parser("status", help="health snapshot (read-only, no model call)")
     status.add_argument("--json", action="store_true")
     status.set_defaults(func=cmd_status, config_only=True)
+    warm = sub.add_parser("warm", help="load the configured model and keep it loaded")
+    warm.add_argument("--json", action="store_true")
+    warm.set_defaults(func=cmd_warm)
     sub.add_parser("chat", help="multi-turn chat").set_defaults(func=cmd_chat)
     brief = sub.add_parser("brief", help="daily brief")
     brief.add_argument("--json", action="store_true")

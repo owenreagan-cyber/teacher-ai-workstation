@@ -290,6 +290,47 @@ class ModelClientLocalOnlyTests(unittest.TestCase):
         self.assertEqual([json.loads(c["body"])["keep_alive"] for c in http.calls], ["30m", "30m"])
         self.assertEqual([f["keep_alive"] for _, f in audit], ["30m", "30m"])
 
+    def test_warm_sends_one_empty_prompt_load_and_audits_model_warm(self):
+        http = FakeHttp([{"done": True}, {"models": [{"name": "qwen3.6:35b"}]}])
+        audit = []
+        client = ModelClient("http://127.0.0.1:11434", "qwen3.6:35b", "gpt-oss:20b", http=http,
+                             keep_alive="30m", num_ctx=8192, audit=lambda k, **f: audit.append((k, f)))
+        result = client.warm()
+        self.assertTrue(result["loaded"])
+        self.assertEqual(http.show_calls, [{"model": "qwen3.6:35b"}])
+        load, ps = http.calls
+        self.assertEqual((load["method"], load["url"]), ("POST", "http://127.0.0.1:11434/api/generate"))
+        self.assertEqual(json.loads(load["body"]), {"model": "qwen3.6:35b", "prompt": "", "keep_alive": "30m",
+                                                    "options": {"num_ctx": 8192}})
+        self.assertEqual((ps["method"], ps["url"]), ("GET", "http://127.0.0.1:11434/api/ps"))
+        self.assertEqual([k for k, _ in audit], ["model_warm"])
+        rec = audit[0][1]
+        self.assertEqual((rec["ok"], rec["loaded"], rec["keep_alive"], rec["host"]),
+                         (True, True, "30m", "127.0.0.1:11434"))
+
+    def test_warm_reports_not_loaded(self):
+        http = FakeHttp([{"done": True}, {"models": [{"name": "gpt-oss:20b"}]}])
+        client, audit = self.audited_client(http)
+        self.assertFalse(client.warm()["loaded"])
+        self.assertEqual(audit[0][1]["loaded"], False)
+
+    def test_warm_with_ollama_down_is_model_error_with_one_failed_record(self):
+        down = EgressError("request to 127.0.0.1 failed: connection refused")
+        http = FakeHttp([], show=down)
+        client, audit = self.audited_client(http)
+        with self.assertRaises(ModelError):
+            client.warm()
+        self.assertEqual(http.calls, [])
+        self.assertEqual([(k, f["ok"]) for k, f in audit], [("model_warm", False)])
+
+    def test_warm_refuses_a_cloud_model(self):
+        http = FakeHttp([], show={"remote_host": "https://ollama.com:443", "remote_model": "x"})
+        client, audit = self.audited_client(http)
+        with self.assertRaises(CloudModelRefused):
+            client.warm()
+        self.assertEqual(http.calls, [])
+        self.assertEqual([k for k, _ in audit], ["model_refused"])
+
     def test_falls_back_once_on_primary_failure(self):
         http = FakeHttp([EgressError("HTTP 404", status=404, body=b'{"error":"model not found"}'),
                          {"message": answer("from fallback")}])

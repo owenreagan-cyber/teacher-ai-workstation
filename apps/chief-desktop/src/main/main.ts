@@ -22,6 +22,7 @@ import { APP_URL, devServerUrl, lockDownContents, lockDownSession, registerAppSc
 import { trayTemplateImage } from "./trayIcon.js";
 
 const TITLE = "Chief";
+const REWARM_AFTER_HIDDEN_MS = 90 * 60 * 1000; // re-warm the model when shown after this long hidden
 
 let win: BrowserWindow | null = null;
 let tray: Tray | null = null;
@@ -30,6 +31,8 @@ let hotkeyNotice: string | null = null;
 let lastKillSwitch: boolean | null = null; // from the latest cos status, for the tray label only
 let saved: SavedWindow;
 let windowState: WindowState = { pinned: false, protected: true };
+let hiddenSince: number | null = null;
+let warming = false;
 
 const config = loadDesktopConfig();
 const cos = new CosRunner(config.cosPath, config.error);
@@ -55,6 +58,17 @@ function start(): void {
   createTray();
   registerHotkey();
   registerIpc();
+  warmModel(); // in the background: the first question should not wait for a cold model load
+}
+
+// Main process only (no preload bridge): `cos warm --json` loads the model with its keep_alive.
+// Fire and forget; at most one at a time. cos refuses it while the kill switch is set.
+function warmModel(): void {
+  if (warming) return;
+  warming = true;
+  void cos.warm().finally(() => {
+    warming = false;
+  });
 }
 
 // ----------------------------------------------------------------------------- window
@@ -109,6 +123,13 @@ function createWindow(): void {
     clearTimeout(saveTimer);
     saveTimer = setTimeout(rememberWindow, 500);
   };
+  win.on("hide", () => {
+    hiddenSince = Date.now();
+  });
+  win.on("show", () => {
+    if (hiddenSince !== null && Date.now() - hiddenSince > REWARM_AFTER_HIDDEN_MS) warmModel();
+    hiddenSince = null;
+  });
   win.on("resize", scheduleSave);
   win.on("move", scheduleSave);
   win.webContents.on("did-finish-load", () => sendEvent({ kind: "window-state", state: windowState }));

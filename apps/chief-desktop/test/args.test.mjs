@@ -15,6 +15,7 @@ test("every action produces the exact expected argv", () => {
   assert.deepEqual(buildArgs("status"), ["status", "--json"]);
   assert.deepEqual(buildArgs("stop"), ["stop", "chief-desktop"]);
   assert.deepEqual(buildArgs("resume"), ["resume"]);
+  assert.deepEqual(buildArgs("warm"), ["warm", "--json"]);
 });
 
 test("question is trimmed and kept as one argv element after --", () => {
@@ -49,7 +50,7 @@ test("no argument is ever a shell string", () => {
   assert.ok(argv.every((a) => typeof a === "string"));
   assert.equal(argv.length, 6);
   assert.equal(argv[5], nasty, "the question is passed verbatim as a single argv element");
-  for (const action of ["brief", "status", "stop", "resume"]) {
+  for (const action of ["brief", "status", "stop", "resume", "warm"]) {
     for (const a of buildArgs(action)) assert.match(a, /^[a-z-]+$/);
   }
 });

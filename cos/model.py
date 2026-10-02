@@ -142,6 +142,42 @@ class ModelClient:
                            model_ms=int((time.monotonic() - started) * 1000),
                            tools_offered=len(tools or []), local_check=local_check, error=err)
 
+    def warm(self) -> dict:
+        """Load the configured model and keep it loaded for keep_alive: the local-model check,
+        then one empty-prompt /api/generate request (same num_ctx as chat, so chat reuses the
+        loaded model), then /api/ps. Audits exactly one model_warm record (a cloud model is
+        refused and audited as model_refused instead). Raises ModelError if Ollama is unreachable.
+        Returns {"loaded", "loaded_models", "load_ms"}."""
+        started = time.monotonic()
+        ok, err, refused, loaded, local_check = False, None, False, False, None
+        try:
+            local_check = self.check_local_model(self.model)
+            self._post("/api/generate", {"model": self.model, "prompt": "", "keep_alive": self.keep_alive,
+                                         "options": {"num_ctx": self.num_ctx}})
+            models = self.loaded_models()
+            loaded = any(m in (self.model, f"{self.model}:latest") for m in models)
+            ok = True
+            return {"loaded": loaded, "loaded_models": models,
+                    "load_ms": int((time.monotonic() - started) * 1000)}
+        except egress.EgressError as e:
+            text = e.body.decode("utf-8", "replace") if e.body else ""
+            err = f"{e} {text[:200]}".strip()
+            raise ModelError(err)
+        except (json.JSONDecodeError, UnicodeDecodeError) as e:
+            err = f"invalid JSON from model: {e}"
+            raise ModelError(err)
+        except ModelError as e:
+            err = str(e)
+            raise
+        except CloudModelRefused:
+            refused = True
+            raise
+        finally:
+            if self.audit is not None and not refused:
+                self.audit("model_warm", model=self.model, host=self.host, ok=ok, loaded=loaded,
+                           keep_alive=self.keep_alive, num_ctx=self.num_ctx, local_check=local_check,
+                           model_ms=int((time.monotonic() - started) * 1000), error=err)
+
     def chat(self, messages, tools=None, fmt=None) -> tuple[dict, str]:
         """Return (message, model_used)."""
         try:

@@ -51,6 +51,9 @@ export type StatusResult =
     }
   | Failure;
 
+// cos warm --json. Main process only (app launch, window shown after a long hide); no bridge.
+export type WarmResult = { ok: true; model: string; loaded: boolean; keep_alive: string } | Failure;
+
 // cos stop / resume print text, not JSON: success is exit code 0. The UI then re-reads status.
 export type ControlResult = { ok: true } | Failure;
 

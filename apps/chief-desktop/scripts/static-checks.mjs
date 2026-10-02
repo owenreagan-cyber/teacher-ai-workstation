@@ -85,6 +85,14 @@ const invokes = [...preload.matchAll(/ipcRenderer\.invoke\(([^,)]+)/g)].map((m) 
 check("every invoke uses a literal chief: channel", invokes.length === 9 && invokes.every((c) => /^"chief:[a-z-]+"$/.test(c)), invokes.join(","));
 check("preload never sends or exposes ipcRenderer", !/ipcRenderer\.(send|sendSync|postMessage)\b/.test(preload) && !/exposeInMainWorld\([^)]*ipcRenderer/.test(preload));
 
+// 6b. cos warm: main process only, on launch and when shown after more than 90 minutes hidden.
+check("buildArgs has warm", /case "warm":\s*return \["warm", "--json"\];/.test(read("src/main/args.ts")));
+check("main warms the model on launch", /registerIpc\(\);\s*warmModel\(\);/.test(mainTs));
+check("main re-warms after more than 90 minutes hidden",
+  mainTs.includes("REWARM_AFTER_HIDDEN_MS = 90 * 60 * 1000") && /Date\.now\(\) - hiddenSince > REWARM_AFTER_HIDDEN_MS\) warmModel\(\)/.test(mainTs));
+check("warm runs through cos warm --json", /this\.json\("warm"\)/.test(cosTs));
+check("warm has no preload bridge or IPC channel", !/warm/i.test(preload) && !/chief:warm/.test(mainTs));
+
 // 7. Dev script: no package-internal paths (TypeScript 7 stopped exporting typescript/bin/tsc,
 // which broke `npm run dev` with ERR_PACKAGE_PATH_NOT_EXPORTED). Compile through build:main.
 const devMjs = read("scripts/dev.mjs");

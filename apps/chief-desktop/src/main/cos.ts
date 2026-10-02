@@ -13,6 +13,7 @@ import type {
   HistoryResult,
   StatusResult,
   Turn,
+  WarmResult,
 } from "../shared/types.js";
 import { type Action, ArgsError, buildArgs, type Params } from "./args.js";
 
@@ -23,6 +24,7 @@ const TIMEOUT_MS: Record<Action, number> = {
   status: 10_000,
   stop: 10_000,
   resume: 10_000,
+  warm: 300_000, // loading the model from disk
 };
 const MAX_BUFFER = 2_000_000;
 
@@ -146,6 +148,14 @@ export class CosRunner {
   async status(): Promise<StatusResult> {
     const v = await this.json("status");
     return CosRunner.envelope<StatusResult>(v, (o) => (typeof o.kill_switch === "boolean" ? (o as StatusResult) : null));
+  }
+
+  async warm(): Promise<WarmResult> {
+    const v = await this.json("warm");
+    return CosRunner.envelope<WarmResult>(v, (o) =>
+      isStr(o.model) && typeof o.loaded === "boolean" && isStr(o.keep_alive)
+        ? { ok: true, model: o.model, loaded: o.loaded, keep_alive: o.keep_alive }
+        : null);
   }
 
   // stop/resume print text; success is exit code 0. The UI re-reads status for the truth.

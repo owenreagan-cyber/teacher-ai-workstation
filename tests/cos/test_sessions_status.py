@@ -330,6 +330,78 @@ class ErrorKindTests(CliCase):
         self.assertEqual(json.loads(out)["error_kind"], "stopped")
 
 
+class WarmTests(CliCase):
+    """cos warm with a fake HTTP layer (ModelClient._post / loaded_models); never a real Ollama."""
+
+    def fake_ollama(self, ps=("qwen3.6:35b",), down=False):
+        posts = []
+
+        def post(client, path, payload):
+            posts.append((path, payload))
+            if down:
+                raise EgressError("request to 127.0.0.1 failed: connection refused")
+            return {"details": {"family": "qwen35moe"}} if path == "/api/show" else {"done": True}
+
+        p1 = mock.patch.object(ModelClient, "_post", post)
+        p2 = mock.patch.object(ModelClient, "loaded_models", lambda self, timeout_s=3: list(ps))
+        for p in (p1, p2):
+            p.start()
+            self.addCleanup(p.stop)
+        return posts
+
+    def records(self):
+        path = self.state / "audit.jsonl"
+        return [json.loads(l) for l in path.read_text().splitlines()] if path.exists() else []
+
+    def test_warm_json_loads_model_and_audits_one_record(self):
+        posts = self.fake_ollama()
+        code, out, err = self.run_cli("warm", "--json")
+        self.assertEqual(code, 0, err)
+        payload = json.loads(out)
+        self.assertEqual(payload, {"ok": True, "model": "qwen3.6:35b", "loaded": True, "keep_alive": "2h",
+                                   "load_ms": payload["load_ms"]})
+        self.assertEqual([p for p, _ in posts], ["/api/show", "/api/generate"])
+        self.assertEqual(posts[1][1], {"model": "qwen3.6:35b", "prompt": "", "keep_alive": "2h",
+                                       "options": {"num_ctx": 16384}})
+        warm = [r for r in self.records() if r["kind"] == "model_warm"]
+        self.assertEqual(len(warm), 1)
+        self.assertEqual([r["kind"] for r in self.records()], ["model_warm"])
+        self.assertTrue(warm[0]["ok"])
+
+    def test_warm_uses_configured_keep_alive(self):
+        self.config()
+        (self.state / "config.json").write_text(json.dumps({"model_keep_alive": "30m"}))
+        posts = self.fake_ollama(ps=())
+        code, out, _ = self.run_cli("warm", "--json")
+        self.assertEqual(code, 0)
+        self.assertEqual((json.loads(out)["loaded"], json.loads(out)["keep_alive"]), (False, "30m"))
+        self.assertEqual(posts[1][1]["keep_alive"], "30m")
+
+    def test_warm_with_ollama_down_is_model_unavailable(self):
+        self.fake_ollama(down=True)
+        code, out, err = self.run_cli("warm", "--json")
+        self.assertEqual(code, cli.EXIT_MODEL)
+        self.assertEqual(json.loads(out)["error_kind"], "model_unavailable")
+        self.assertNotIn("Traceback", out + err)
+        self.assertEqual([(r["kind"], r["ok"]) for r in self.records()], [("model_warm", False)])
+
+    def test_warm_while_stopped_sends_nothing(self):
+        posts = self.fake_ollama()
+        self.run_cli("stop", "test")
+        before = len(self.records())
+        code, out, _ = self.run_cli("warm", "--json")
+        self.assertEqual(code, cli.EXIT_STOPPED)
+        self.assertEqual(json.loads(out)["error_kind"], "stopped")
+        self.assertEqual(posts, [])
+        self.assertEqual(len(self.records()), before)
+
+    def test_warm_text_output(self):
+        self.fake_ollama()
+        code, out, _ = self.run_cli("warm")
+        self.assertEqual(code, 0)
+        self.assertTrue(out.startswith("qwen3.6:35b: loaded (keep_alive 2h, "))
+
+
 class HistoryTests(CliCase):
     def test_returns_turns_with_all_fields(self):
         self.config()

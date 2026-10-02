@@ -87,6 +87,24 @@ test("stop and resume succeed on exit 0 and fail otherwise", async () => {
   assert.deepEqual([res.ok, res.error_kind], [false, "internal"]);
 });
 
+test("warm runs cos warm --json and passes only known fields", async () => {
+  const fake = fakeCos("warm-cos",
+    `if (JSON.stringify(process.argv.slice(2)) !== '["warm","--json"]') process.exit(9);
+     console.log(JSON.stringify({ ok: true, model: "qwen3.6:35b", loaded: true, keep_alive: "2h", load_ms: 5, extra: "x" }));`);
+  assert.deepEqual(await new CosRunner(fake).warm(), { ok: true, model: "qwen3.6:35b", loaded: true, keep_alive: "2h" });
+});
+
+test("warm failures come back as data", async () => {
+  const down = fakeCos("warm-down-cos",
+    `console.log(JSON.stringify({ ok: false, error: "local model unavailable: refused", error_kind: "model_unavailable" })); process.exit(4);`);
+  assert.deepEqual([(await new CosRunner(down).warm()).error_kind], ["model_unavailable"]);
+  const stopped = fakeCos("warm-stopped-cos",
+    `console.log(JSON.stringify({ ok: false, error: "stopped by kill switch", error_kind: "stopped" })); process.exit(3);`);
+  assert.equal((await new CosRunner(stopped).warm()).error_kind, "stopped");
+  const bad = fakeCos("warm-bad-cos", `console.log(JSON.stringify({ ok: true, model: "m", loaded: "yes", keep_alive: "2h" }));`);
+  assert.deepEqual([(await new CosRunner(bad).warm()).error_kind], ["internal"]);
+});
+
 // M15A-002: the full Turn shape is validated before anything reaches the renderer.
 const VALID = { ts: "t", question: "q", answer: "a", tools_used: ["time.now"], fast_path: false, model: "m", notices: [], total_ms: 5 };
 const { notices: _dropped, ...MISSING_NOTICES } = VALID;

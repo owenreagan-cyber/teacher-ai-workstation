@@ -279,6 +279,24 @@ class StateDirectoryTests(StateDirTest):
                 with self.assertRaises(ConfigError):
                     load_config()
 
+    def test_model_keep_alive_default_and_validation(self):
+        self.assertEqual(load_config().model_keep_alive, "2h")
+        for good in ("30m", "2h", "0", "1h30m", "90s", "1.5h"):
+            with self.subTest(good=good):
+                (self.state / "config.json").write_text(json.dumps({"model_keep_alive": good}))
+                self.assertEqual(load_config().model_keep_alive, good)
+        for bad in ("", "2 hours", "forever", "h", "2d", "-1", 7200, None, True):
+            with self.subTest(bad=bad):
+                (self.state / "config.json").write_text(json.dumps({"model_keep_alive": bad}))
+                with self.assertRaises(ConfigError):
+                    load_config()
+
+    def test_runtime_model_client_uses_model_keep_alive(self):
+        from cos import cli
+        self.assertEqual(cli.build_runtime().model.keep_alive, "2h")
+        (self.state / "config.json").write_text(json.dumps({"model_keep_alive": "30m"}))
+        self.assertEqual(cli.build_runtime().model.keep_alive, "30m")
+
     def test_runtime_model_client_uses_model_num_ctx(self):
         from cos import cli
         self.assertEqual(cli.build_runtime().model.num_ctx, 16384)

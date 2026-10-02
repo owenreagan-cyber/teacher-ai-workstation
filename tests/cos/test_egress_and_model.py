@@ -273,6 +273,23 @@ class ModelClientLocalOnlyTests(unittest.TestCase):
         self.assertEqual([json.loads(c["body"])["options"] for c in http.calls], [{"num_ctx": 8192}] * 2)
         self.assertEqual([f["num_ctx"] for _, f in audit], [8192, 8192])
 
+    def test_keep_alive_default_sent_and_audited(self):
+        http = FakeHttp([{"message": answer("hello")}])
+        client, audit = self.audited_client(http)
+        client.chat([{"role": "user", "content": "hi"}])
+        self.assertEqual(json.loads(http.calls[0]["body"])["keep_alive"], "2h")
+        self.assertEqual(audit[0][1]["keep_alive"], "2h")
+
+    def test_keep_alive_configured_value_on_every_request_including_fallback(self):
+        http = FakeHttp([EgressError("HTTP 404", status=404, body=b'{"error":"model not found"}'),
+                         {"message": answer("from fallback")}])
+        audit = []
+        client = ModelClient("http://127.0.0.1:11434", "qwen3.6:35b", "gpt-oss:20b", http=http,
+                             keep_alive="30m", audit=lambda k, **f: audit.append((k, f)))
+        client.chat([{"role": "user", "content": "hi"}])
+        self.assertEqual([json.loads(c["body"])["keep_alive"] for c in http.calls], ["30m", "30m"])
+        self.assertEqual([f["keep_alive"] for _, f in audit], ["30m", "30m"])
+
     def test_falls_back_once_on_primary_failure(self):
         http = FakeHttp([EgressError("HTTP 404", status=404, body=b'{"error":"model not found"}'),
                          {"message": answer("from fallback")}])

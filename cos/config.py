@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import stat
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -33,9 +34,14 @@ DEFAULTS = {
     "model_timeout_s": 300,
     "model_think": False,
     "model_num_ctx": 16384,
+    "model_keep_alive": "2h",
     "latitude": None,
     "longitude": None,
 }
+
+
+# Ollama keep_alive: "0" (unload right after the request) or a duration such as "30m", "2h", "1h30m".
+KEEP_ALIVE_RE = re.compile(r"0|(?:\d+(?:\.\d+)?(?:ms|s|m|h))+")
 
 
 class ConfigError(Exception):
@@ -99,6 +105,7 @@ class Config:
     fixture_dir: Path | None = None
     model_think: bool = False
     model_num_ctx: int = 16384
+    model_keep_alive: str = "2h"
 
     @property
     def audit_path(self) -> Path:
@@ -179,6 +186,9 @@ def load_config(root: Path | None = None) -> Config:
     num_ctx = data["model_num_ctx"]
     if not isinstance(num_ctx, int) or isinstance(num_ctx, bool) or num_ctx <= 0:
         raise ConfigError("model_num_ctx must be a positive integer")
+    keep_alive = data["model_keep_alive"]
+    if not isinstance(keep_alive, str) or not KEEP_ALIVE_RE.fullmatch(keep_alive):
+        raise ConfigError('model_keep_alive must be an Ollama duration such as "30m", "2h", or "0"')
     return Config(
         model=str(data["model"]),
         fallback_model=str(data["fallback_model"]) if data["fallback_model"] else None,
@@ -190,4 +200,5 @@ def load_config(root: Path | None = None) -> Config:
         fixture_dir=fixtures,
         model_think=data["model_think"],
         model_num_ctx=num_ctx,
+        model_keep_alive=keep_alive,
     )

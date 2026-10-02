@@ -139,6 +139,20 @@ bin/cos ask "look up photosynthesis for kids"
 To replace the key, run `security delete-generic-password -s chief-search-brave` and repeat
 step 2. Until a key is stored, a search answers "web search not set up" and points here.
 
+### Home card
+
+The compact window opens with a card instead of an empty chat: a greeting, the date, the next
+event and today's event count, reminders due (and how many are overdue), and a one-line weather
+summary.
+
+- It is built by `cos brief --json` (the `card` field), deterministically, with no model.
+- Tap it to see the full brief. After your first question it shrinks to a one-line header; tap
+  that to open it again. It rebuilds itself when a new day starts.
+- Missing data shows plainly: "Nothing scheduled", "Calendar unavailable" (EventKit not
+  granted), "Weather unavailable". It never shows an error trace.
+- It appears only inside the window, which is hidden from screenshots and screen sharing by
+  default. The menu bar icon, window title, and notifications never show card content.
+
 ---
 
 ## 4. Architecture

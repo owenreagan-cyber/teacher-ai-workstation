@@ -1,11 +1,14 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 
+import { isStale } from "../shared/homeCard";
 import type { ErrorKind, StatusResult, Turn, WindowState } from "../shared/types";
+import { HomeCardView, type HomeState } from "./HomeCard";
 import { BriefIcon, ExpandIcon, PinIcon, PlayIcon, ShieldIcon, StopIcon } from "./icons";
 import { errorMessage, statusDot } from "./messages";
 
 const SESSION = "default";
 const STATUS_POLL_MS = 30_000;
+const NEW_DAY_CHECK_MS = 60_000;
 const MAX_INPUT_LINES = 4;
 
 // Display-only cards (Daily Brief, errors). Never saved into the session.
@@ -132,6 +135,9 @@ export function App() {
   const [briefing, setBriefing] = useState(false);
   const [status, setStatus] = useState<StatusResult | null>(null);
   const [windowState, setWindowState] = useState<WindowState | null>(null);
+  const [home, setHome] = useState<HomeState>({ state: "loading" });
+  const [homeExpanded, setHomeExpanded] = useState(false);
+  const [homeCollapsed, setHomeCollapsed] = useState(false);
 
   const feedRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
@@ -172,6 +178,29 @@ export function App() {
       void refreshStatus();
     }
   }, [addCard, addError, refreshStatus]);
+
+  // The home card comes from the same deterministic `cos brief --json` (no model).
+  const loadHome = useCallback(async () => {
+    const res = await window.chief.brief();
+    if (res.ok && res.card) setHome({ state: "ready", card: res.card, lines: res.lines });
+    else if (res.ok) setHome({ state: "error", text: "Today's summary is unavailable." });
+    else setHome({ state: "error", text: errorMessage(res.error_kind, res.error) });
+  }, []);
+
+  // Launch, and again when a new day starts: a fresh, uncollapsed card.
+  useEffect(() => {
+    void loadHome();
+  }, [loadHome]);
+  useEffect(() => {
+    const timer = setInterval(() => {
+      if (home.state === "ready" && isStale(home.card, new Date())) {
+        setHomeCollapsed(false);
+        setHomeExpanded(false);
+        void loadHome();
+      }
+    }, NEW_DAY_CHECK_MS);
+    return () => clearInterval(timer);
+  }, [home, loadHome]);
 
   // Launch: history, status, and subscribe to tray notices.
   useEffect(() => {
@@ -219,6 +248,8 @@ export function App() {
     const question = input.trim();
     if (!question || asking) return;
     stickToBottom.current = true;
+    setHomeCollapsed(true); // the card becomes a thin header after the first question
+    setHomeExpanded(false);
     setAsking(true);
     setPending(question);
     setInput("");
@@ -253,6 +284,7 @@ export function App() {
     const res = await (status.kill_switch ? window.chief.resume() : window.chief.stop());
     if (!res.ok) addError(res.error_kind, res.error);
     await refreshStatus();
+    if (home.state === "error") void loadHome(); // e.g. "Chief is stopped" until Resume
   };
 
   const dot = statusDot(status, asking || briefing);
@@ -292,9 +324,27 @@ export function App() {
         </HeaderButton>
       </header>
 
+      <div className="shrink-0 px-3 pt-2">
+        <HomeCardView
+          home={home}
+          expanded={homeExpanded}
+          collapsed={homeCollapsed}
+          onToggle={() => {
+            if (homeCollapsed && !homeExpanded) setHomeCollapsed(false);
+            else setHomeExpanded((v) => !v);
+          }}
+          onRetry={() => {
+            setHome({ state: "loading" });
+            void loadHome();
+          }}
+        />
+      </div>
+
       <div ref={feedRef} onScroll={onScroll} className="flex-1 space-y-3 overflow-y-auto px-3 py-3">
         {feed.length === 0 && pending === null && (
-          <div className="mt-10 text-center text-[12px] text-neutral-500">Ask Chief anything. Conversations stay on this Mac.</div>
+          <div className="mt-6 text-center text-[12px] text-neutral-500">
+            Ask Chief anything, or type "search …" to search the web. Conversations stay on this Mac.
+          </div>
         )}
         {feed}
         {pending !== null && (

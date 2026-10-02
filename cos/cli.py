@@ -7,7 +7,8 @@
   cos status [--json]           kill switch, models, Ollama, audit (read-only, no model call)
   cos warm [--json]             load the configured model and keep it loaded (keep_alive)
   cos chat                      multi-turn; history saved in the state directory
-  cos brief [--json]            deterministic daily brief (no model)
+  cos brief [--json]            deterministic daily brief (no model); --json adds the
+                                home card's structured fields ("card")
   cos stop [reason] / resume    kill switch
   cos tools                     registered tools and their modes
   cos audit verify              check the audit hash chain
@@ -24,7 +25,7 @@ from datetime import datetime
 from cos import VERSION, egress, fixture
 from cos.agent import Agent, Stopped, build_system_prompt
 from cos.audit import AuditLog, verify
-from cos.brief import format_brief, gather
+from cos.brief import format_brief, gather, home_card
 from cos.config import (CloudModelError, Config, ConfigError, ensure_private_subdir, load_config,
                         open_private)
 from cos.fastpath import FastPath
@@ -201,7 +202,10 @@ def cmd_brief(rt: Runtime, args) -> int:
     lines = format_brief(results)
     rt.audit("answer", mode="brief", model_ms=0, tool_ms=timing["tool_ms"],
              total_ms=total_ms, lines=len(lines))
-    print(json.dumps({"ok": True, "lines": lines}) if args.json else "\n".join(lines))
+    if args.json:
+        print(json.dumps({"ok": True, "lines": lines, "card": home_card(results, rt.ctx.clock())}))
+    else:
+        print("\n".join(lines))
     return EXIT_OK
 
 

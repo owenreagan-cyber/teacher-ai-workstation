@@ -35,7 +35,20 @@ export type AskResult =
 
 export type HistoryResult = { ok: true; turns: Turn[] } | Failure;
 
-export type BriefResult = { ok: true; lines: string[] } | Failure;
+// The home card (cos brief --json "card"): deterministic, built by cos from the same tool results.
+// Each part has a status and display text; "unavailable" text never carries the underlying error.
+export type CardStatus = "ok" | "empty" | "unavailable";
+export type HomeCard = {
+  greeting: string;
+  date: string;
+  date_iso: string;
+  calendar: { status: CardStatus; text: string; count: number; next: { title: string; start: string | null } | null };
+  reminders: { status: CardStatus; text: string; due: number; overdue: number };
+  weather: { status: CardStatus; text: string };
+};
+
+// card is null when cos sent none or it failed validation; the brief lines still show.
+export type BriefResult = { ok: true; lines: string[]; card: HomeCard | null } | Failure;
 
 export type StatusResult =
   | {

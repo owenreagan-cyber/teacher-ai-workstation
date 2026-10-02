@@ -15,6 +15,7 @@ import type {
   Turn,
   WarmResult,
 } from "../shared/types.js";
+import { toHomeCard } from "../shared/homeCard.js";
 import { type Action, ArgsError, buildArgs, type Params } from "./args.js";
 
 const TIMEOUT_MS: Record<Action, number> = {
@@ -142,7 +143,8 @@ export class CosRunner {
 
   async brief(): Promise<BriefResult> {
     const v = await this.json("brief");
-    return CosRunner.envelope<BriefResult>(v, (o) => (isStrList(o.lines) ? { ok: true, lines: [...o.lines] } : null));
+    return CosRunner.envelope<BriefResult>(v, (o) =>
+      isStrList(o.lines) ? { ok: true, lines: [...o.lines], card: toHomeCard(o.card) } : null);
   }
 
   async status(): Promise<StatusResult> {

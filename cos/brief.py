@@ -2,10 +2,18 @@
 
 Tools run through the same policy gate and executor as the agent, so the
 kill switch and deny rules apply. format_brief() is pure for testing.
+
+home_card() builds the desktop home card from the same tool results, also
+pure and deterministic: a time-of-day greeting, the date, the next event and
+today's event count, reminders due and overdue, and a one-line weather
+summary. Each part carries a status ("ok", "empty", "unavailable") and display
+text, so a surface shows it without parsing brief lines. An unavailable part
+says only "Calendar unavailable" (etc.), never the underlying error.
 """
 from __future__ import annotations
 
 import time
+from datetime import datetime
 
 from cos.executor import run_tool
 from cos.tools.mac_status import one_line
@@ -22,6 +30,7 @@ STATUS_PREFIXES = (
 LEGACY_LABEL = "Workstation status (legacy):"
 BRIEF_TOOLS = ("time.now", "weather.today", "calendar.today", "reminders.due", "mac.status",
                "status.daily", "status.next_action")
+OWNER_NAME = "Owen"
 
 
 def _clip(line: str) -> str:
@@ -99,6 +108,68 @@ def format_brief(results: dict) -> list[str]:
     if len(status) > room:
         status = status[:room - 1] + [status[-1]] if " unavailable (" in status[-1] else status[:room]
     return [_clip(l) for l in lines + status]
+
+
+def _plural(n: int, word: str) -> str:
+    return f"{n} {word}" if n == 1 else f"{n} {word}s"
+
+
+def greeting(now: datetime) -> str:
+    part = "morning" if 5 <= now.hour < 12 else "afternoon" if 12 <= now.hour < 17 else "evening"
+    return f"Good {part}, {OWNER_NAME}"
+
+
+def _start(ev: dict) -> datetime | None:
+    try:
+        return datetime.fromisoformat(str(ev.get("start_iso")).replace("Z", "+00:00"))
+    except ValueError:
+        return None
+
+
+def _card_calendar(c: dict, now: datetime) -> dict:
+    if "error" in c:
+        return {"status": "unavailable", "count": 0, "next": None, "text": "Calendar unavailable"}
+    events = [e for e in c.get("events", []) if isinstance(e, dict)]
+    if not events:
+        return {"status": "empty", "count": 0, "next": None, "text": "Nothing scheduled"}
+    upcoming = sorted(((s, e) for e in events if not e.get("all_day")
+                       for s in [_start(e)] if s is not None and s >= now), key=lambda se: se[0])
+    count = _plural(len(events), "event") + " today"
+    if not upcoming:
+        return {"status": "ok", "count": len(events), "next": None, "text": f"No more events · {count}"}
+    ev = upcoming[0][1]
+    nxt = {"title": str(ev.get("title") or "(no title)"), "start": ev.get("start")}
+    return {"status": "ok", "count": len(events), "next": nxt,
+            "text": f"Next: {nxt['start']} {nxt['title']} · {count}"}
+
+
+def _card_reminders(r: dict) -> dict:
+    if "error" in r:
+        return {"status": "unavailable", "due": 0, "overdue": 0, "text": "Reminders unavailable"}
+    items = [it for it in r.get("reminders", []) if isinstance(it, dict)]
+    overdue = sum(1 for it in items if it.get("overdue"))
+    if not items:
+        return {"status": "empty", "due": 0, "overdue": 0, "text": "No reminders due"}
+    text = _plural(len(items), "reminder") + " due" + (f" ({overdue} overdue)" if overdue else "")
+    return {"status": "ok", "due": len(items), "overdue": overdue, "text": text}
+
+
+def _card_weather(w: dict) -> dict:
+    if "error" in w:
+        return {"status": "unavailable", "text": "Weather unavailable"}
+    return {"status": "ok", "text": _weather_line(w).removeprefix("Weather: ")}
+
+
+def home_card(results: dict, now: datetime) -> dict:
+    """The home card for the desktop shell (deterministic, no model)."""
+    return {
+        "greeting": greeting(now),
+        "date": now.strftime("%A, %B ") + str(now.day),
+        "date_iso": now.date().isoformat(),
+        "calendar": _card_calendar(results.get("calendar.today", {"error": "not run"}), now),
+        "reminders": _card_reminders(results.get("reminders.due", {"error": "not run"})),
+        "weather": _card_weather(results.get("weather.today", {"error": "not run"})),
+    }
 
 
 def gather(registry, gate, audit=None, timing: dict | None = None) -> dict:

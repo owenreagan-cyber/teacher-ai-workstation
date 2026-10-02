@@ -93,6 +93,29 @@ check("main re-warms after more than 90 minutes hidden",
 check("warm runs through cos warm --json", /this\.json\("warm"\)/.test(cosTs));
 check("warm has no preload bridge or IPC channel", !/warm/i.test(preload) && !/chief:warm/.test(mainTs));
 
+// 6c. Home card: rendered only inside the content-protected window. Its content never reaches the
+// tray, a window or document title, a notification, or the dock; the main process never reads it.
+const rendererFiles = walk("src/renderer", [".ts", ".tsx", ".html"]);
+const mainFiles = [...walk("src/main", [".ts"]), ...walk("src/preload", [".ts"])];
+for (const file of mainFiles) {
+  const text = read(file);
+  check("main never sets a tray title or tooltip", !/\.(setTitle|setToolTip)\s*\(/.test(text), file);
+  check("main shows no notifications", !/\bNotification\b/.test(text), file);
+  check("main never touches the dock badge or menu", !/\bapp\.dock\b|setBadge/.test(text), file);
+  // cos.ts only validates the card and returns it to the renderer; the window and tray code never see it.
+  if (file !== path.join("src", "main", "cos.ts")) {
+    check("main never reads home card content", !/\bcard\b|homeCard|HomeCard/.test(text.replace(/^\s*\/\/.*$/gm, "")), file);
+  }
+}
+for (const file of rendererFiles) {
+  const text = read(file);
+  check("renderer never sets document.title", !/document\.title/.test(text), file);
+  check("renderer shows no notifications", !/\bNotification\b/.test(text), file);
+}
+check("index.html title is the fixed name", /<title>Chief<\/title>/.test(html));
+check("home card renders only from App", rendererFiles.filter((f) => /<HomeCardView\b/.test(read(f))).join() === path.join("src", "renderer", "App.tsx"));
+check("cos runner validates the card", /card: toHomeCard\(o\.card\)/.test(cosTs));
+
 // 7. Dev script: no package-internal paths (TypeScript 7 stopped exporting typescript/bin/tsc,
 // which broke `npm run dev` with ERR_PACKAGE_PATH_NOT_EXPORTED). Compile through build:main.
 const devMjs = read("scripts/dev.mjs");

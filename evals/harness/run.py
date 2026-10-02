@@ -2,7 +2,7 @@
 """Chief certification harness runner (E1 Part 1: core + CLI). Stdlib only.
 
   python3.12 evals/harness/run.py --model fake                    # everything, fast
-  python3.12 evals/harness/run.py --model real --repeat-fast-path 300 --long-session 500
+  python3.12 evals/harness/run.py --model real --repeat-fast-path 360 --long-session 500   # overnight
   python3.12 evals/harness/run.py --suite injection --model real
 
 Every case gets a fresh temporary COS_STATE_DIR and runs the real cos in

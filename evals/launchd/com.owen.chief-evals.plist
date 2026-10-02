@@ -18,7 +18,7 @@
     <string>--model</string>
     <string>real</string>
     <string>--repeat-fast-path</string>
-    <string>300</string>
+    <string>360</string>
     <string>--long-session</string>
     <string>500</string>
     <string>--quiet</string>

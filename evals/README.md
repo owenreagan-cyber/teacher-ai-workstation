@@ -21,7 +21,7 @@ It never touches Owen's real calendar, reminders, state directory, or audit log:
 ```sh
 python3.12 evals/harness/run.py --model fake                    # everything, scripted fake model (~20 s)
 python3.12 evals/harness/run.py --suite injection --model real  # one suite against local Ollama
-python3.12 evals/harness/run.py --model real --repeat-fast-path 300 --long-session 500   # overnight
+python3.12 evals/harness/run.py --model real --repeat-fast-path 360 --long-session 500   # overnight
 python3.12 evals/harness/report.py <run-id> [--baseline <run-id>]                       # rebuild a report
 ```
 
@@ -194,7 +194,7 @@ Expected duration is about 2–2.5 hours, mostly real-model time:
 - 160 cases, with 110 model-path invocations. The first real smoke run (qwen3.6:35b)
   averaged about 56 s per model answer, with a p95 of 154 s, so this part takes about
   1.7 hours.
-- the 8,400-run fast-path soak, at about 0.1 s each (about 15 minutes)
+- the 10,080-run fast-path soak (28 cases × 360), at about 0.1 s each (about 17 minutes)
 - 500 fake-model long-session turns (about 1 minute)
 
 While qwen3.6:35b is loaded, free memory falls to about 19%.

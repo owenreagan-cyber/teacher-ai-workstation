@@ -1,0 +1,69 @@
+{
+  "sandbox": {
+    "enabled": true,
+    "failIfUnavailable": true,
+    "allowUnsandboxedCommands": false,
+    "filesystem": {
+      "denyRead": [
+        "~/.teacher-ai-workstation",
+        "~/Downloads",
+        "~/Library/Application Support/ChiefOfStaff",
+        "~/.ssh",
+        "~/.aws",
+        "~/.gnupg",
+        "~/.config/gh",
+        "~/.netrc",
+        "~/.docker",
+        "~/.kube",
+        "~/.npmrc",
+        "~/.pgpass",
+        "~/.config/op",
+        "~/.config/gcloud",
+        "~/.claude.json",
+        "~/.claude/settings.json",
+        "~/.claude/settings.local.json",
+        "~/.claude/projects"
+      ],
+      "allowWrite": [
+        "/tmp",
+        "/private/tmp"
+      ]
+    },
+    "network": {
+      "allowedDomains": [
+        "registry.npmjs.org",
+        "pypi.org",
+        "files.pythonhosted.org",
+        "codeload.github.com",
+        "objects.githubusercontent.com",
+        "raw.githubusercontent.com",
+        "localhost:11434"
+      ],
+      "strictAllowlist": true
+    },
+    "credentials": {
+      "envVars": [
+        {
+          "name": "GITHUB_TOKEN",
+          "mode": "deny"
+        },
+        {
+          "name": "GH_TOKEN",
+          "mode": "deny"
+        },
+        {
+          "name": "NPM_TOKEN",
+          "mode": "deny"
+        },
+        {
+          "name": "ANTHROPIC_API_KEY",
+          "mode": "deny"
+        },
+        {
+          "name": "OPENAI_API_KEY",
+          "mode": "deny"
+        }
+      ]
+    }
+  }
+}

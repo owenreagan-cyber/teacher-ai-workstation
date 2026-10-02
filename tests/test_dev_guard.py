@@ -21,6 +21,7 @@ sys.path.insert(0, PKG)
 import dev_guard  # noqa: E402
 import dev_safety_probe as probe  # noqa: E402
 import install_dev_guard  # noqa: E402
+import render_settings  # noqa: E402
 
 SOURCE = os.path.join(PKG, "dev_guard.py")
 
@@ -164,6 +165,46 @@ class TestInstaller(unittest.TestCase):
             r2 = install_dev_guard.install(dest_dir=dest)  # reinstall over the read-only copy
             self.assertEqual(r1["installed_sha256"], r2["installed_sha256"])
             self.assertEqual([n for n in os.listdir(dest) if n.endswith(".tmp")], [])
+
+
+class TestRenderedSettings(unittest.TestCase):
+    """The committed settings files match render_settings.py and carry the sandbox rules."""
+
+    def test_committed_files_are_current(self):
+        for path, text in render_settings.render().items():
+            with self.subTest(path=os.path.basename(path)):
+                with open(path) as f:
+                    self.assertEqual(f.read(), text, "run tools/dev_safety/render_settings.py")
+
+    def test_sandbox_rules(self):
+        for doc in (render_settings.proposed(), render_settings.lock()):
+            sb = doc["sandbox"]
+            self.assertTrue(sb["enabled"])
+            self.assertTrue(sb["failIfUnavailable"])
+            self.assertFalse(sb["allowUnsandboxedCommands"])
+            self.assertNotIn("excludedCommands", sb)
+            for need in ("~/.ssh", "~/.claude.json", "~/.claude/projects", "~/Downloads",
+                         "~/.teacher-ai-workstation", "~/Library/Application Support/ChiefOfStaff"):
+                self.assertIn(need, sb["filesystem"]["denyRead"])
+            self.assertEqual(sb["filesystem"]["allowWrite"], ["/tmp", "/private/tmp"])
+            for host in sb["network"]["allowedDomains"]:
+                self.assertNotIn(host.split(":")[0], ("github.com", "api.github.com"))
+        self.assertTrue(render_settings.lock()["sandbox"]["network"]["strictAllowlist"])
+
+    def test_permission_rules_cover_claude_state(self):
+        deny = render_settings.proposed()["permissions"]["deny"]
+        for rule in ("Read(~/.claude.json)", "Edit(~/.claude/settings.json)",
+                     "Read(~/.claude/settings.local.json)", "Read(~/.claude/projects/**)",
+                     "Edit(~/.claude/projects/**)", "Edit(.claude/**)"):
+            self.assertIn(rule, deny)
+
+    def test_installer_installs_lock(self):
+        with tempfile.TemporaryDirectory() as d:
+            r = install_dev_guard.install(dest_dir=d)
+            self.assertEqual(set(r["files"]), set(install_dev_guard.FILES))
+            with open(os.path.join(d, "dev_guard.sha256")) as f:
+                names = [line.split()[1] for line in f]
+            self.assertEqual(names, list(install_dev_guard.FILES))
 
 
 class TestBoundaryClassification(unittest.TestCase):

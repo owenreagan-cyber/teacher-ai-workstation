@@ -119,12 +119,26 @@ def fake_helper_app(root: Path) -> Path:
     return app
 
 
+LOCAL_SHOW = {"details": {"format": "gguf", "family": "qwen35moe", "parameter_size": "35.5B",
+                          "quantization_level": "Q4_K_M"}, "capabilities": ["completion", "tools"]}
+
+
 class FakeHttp:
-    def __init__(self, responses=None):
+    """Scripted responses in order. Ollama's /api/show (the client's local-model check) is
+    answered from `show` (default: a local model) and recorded in show_calls, not calls."""
+
+    def __init__(self, responses=None, show=LOCAL_SHOW):
         self.responses = list(responses or [])
         self.calls = []
+        self.show = show
+        self.show_calls = []
 
     def __call__(self, method, url, body=None, headers=None, timeout=30, audit=None):
+        if url.endswith("/api/show"):
+            self.show_calls.append(json.loads(body))
+            if isinstance(self.show, Exception):
+                raise self.show
+            return json.dumps(self.show).encode()
         self.calls.append({"method": method, "url": url, "body": body, "headers": headers})
         if not self.responses:
             raise AssertionError(f"unexpected http call {url}")

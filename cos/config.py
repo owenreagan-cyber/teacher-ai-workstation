@@ -8,6 +8,10 @@ COS_FIXTURE_DIR turns on fixture mode (synthetic tool data for the evals/
 harness; see cos/fixture.py). It is honored only when COS_STATE_DIR is also
 set and does not resolve to the real state directory; otherwise every command
 refuses to start. The check runs before the state directory is created.
+
+model and fallback_model must be local: a name ending in ":cloud" or containing
+"-cloud" (an Ollama cloud model) is refused (CloudModelError). ModelClient also
+asks /api/show before every call and refuses a model that reports a remote host.
 """
 from __future__ import annotations
 
@@ -35,6 +39,21 @@ DEFAULTS = {
 
 class ConfigError(Exception):
     pass
+
+
+class CloudModelError(ConfigError):
+    """model or fallback_model names an Ollama cloud model. cos uses local models only;
+    the CLI refuses with error_kind "internal" and audits the refusal."""
+
+    def __init__(self, field_name: str, model: str, state_dir: Path, fixture: bool):
+        super().__init__(f"{field_name} {model!r} is an Ollama cloud model; cos uses local models only")
+        self.field_name, self.model, self.state_dir, self.fixture = field_name, model, state_dir, fixture
+
+
+def is_cloud_model_name(name) -> bool:
+    """Ollama cloud models are named <model>:cloud or <model>:<size>-cloud."""
+    n = str(name or "").strip().lower()
+    return n.endswith(":cloud") or "-cloud" in n
 
 
 def state_dir() -> Path:
@@ -150,6 +169,9 @@ def load_config(root: Path | None = None) -> Config:
         if unknown:
             raise ConfigError(f"unknown config keys: {sorted(unknown)}")
         data.update(user)
+    for name in ("model", "fallback_model"):
+        if data[name] and is_cloud_model_name(data[name]):
+            raise CloudModelError(name, str(data[name]), root, fixtures is not None)
     if not isinstance(data["model_think"], bool):
         raise ConfigError("model_think must be true or false")
     return Config(

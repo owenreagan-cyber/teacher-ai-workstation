@@ -3,7 +3,8 @@
 Usage (the harness builds this): python3.12 -s -E -P fake_cos.py <cos args...>
 
 Only the model client's HTTP layer is replaced: ModelClient._post answers
-/api/chat from fake_model.reply(), and loaded_models() returns the fake name.
+/api/chat from fake_model.reply() and /api/show from fake_model.show(), and
+loaded_models() returns the fake name.
 Everything else is the real cos: config and fixture-mode checks, fast path,
 router, policy gate, executor, audit (model_call records are still written by
 the real client, with the real local host), sessions, and the kill switch.
@@ -32,6 +33,8 @@ def main(argv: list[str]) -> int:
     from cos import cli, model
 
     def fake_post(self, path, payload):
+        if path == "/api/show":  # the client's local-model check
+            return fake_model.show(payload)
         if path != "/api/chat":
             raise model.ModelError(f"fake model: unexpected path {path}")
         return {"model": payload.get("model"), "message": fake_model.reply(payload), "done": True}

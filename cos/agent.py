@@ -17,7 +17,7 @@ from dataclasses import dataclass, field
 
 from cos.audit import text_digest
 from cos.executor import result_text, run_tool
-from cos.model import ModelError
+from cos.model import CloudModelRefused, ModelError
 from cos.policy import PolicyGate
 from cos.registry import Registry, Tool
 
@@ -131,7 +131,7 @@ class Agent:
         except Stopped as e:
             close("request_stopped", reason=str(e))
             raise
-        except ModelError as e:
+        except (ModelError, CloudModelRefused) as e:
             close("request_failed", error=str(e)[:200])
             raise
         close("answer", model=result.model, tools_used=result.tools_used, chars=len(result.answer))

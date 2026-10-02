@@ -243,6 +243,22 @@ class StateDirectoryTests(StateDirTest):
                 with self.assertRaises(ConfigError):
                     load_config()
 
+    def test_cloud_model_names_refused_for_model_and_fallback(self):
+        from cos.config import CloudModelError, is_cloud_model_name
+        ensure_state_dir()
+        for name in ("gpt-oss:120b-cloud", "kimi-k2:cloud", "qwen3-coder:480b-cloud", "x:CLOUD"):
+            self.assertTrue(is_cloud_model_name(name), name)
+            for field_name in ("model", "fallback_model"):
+                with self.subTest(name=name, field=field_name):
+                    (self.state / "config.json").write_text(json.dumps({field_name: name}))
+                    with self.assertRaises(CloudModelError) as cm:
+                        load_config()
+                    self.assertEqual((cm.exception.field_name, cm.exception.model), (field_name, name))
+        for name in ("qwen3.6:35b", "gpt-oss:20b", "llama3.2:latest", "cloudy:7b"):
+            self.assertFalse(is_cloud_model_name(name), name)
+        (self.state / "config.json").write_text(json.dumps({"fallback_model": None}))
+        self.assertIsNone(load_config().fallback_model)
+
     def test_model_think_defaults_false_and_must_be_bool(self):
         self.assertIs(load_config().model_think, False)
         (self.state / "config.json").write_text(json.dumps({"model_think": True}))

@@ -138,6 +138,8 @@ class ScriptedOllama:
 
     def __call__(self, client, path, payload):
         self.paths.append((client.base_url, path))
+        if path == "/api/show":
+            return {"details": {"format": "gguf", "family": "qwen35moe"}}
         return {"message": self.messages.pop(0)}
 
 
@@ -233,7 +235,7 @@ class FixtureModeTests(EnvMixin, StateDirTest):
                          "request_stopped"} <= kinds, kinds)
         self.assertTrue(all(r.get("fixture") is True for r in records))
         self.assertTrue(verify(self.state / "audit.jsonl").ok)
-        self.assertEqual({path for _, path in ollama.paths}, {"/api/chat"})
+        self.assertEqual({path for _, path in ollama.paths}, {"/api/show", "/api/chat"})
         self.assertEqual({base for base, _ in ollama.paths}, {"http://127.0.0.1:11434"})
         model_hosts = {r["host"] for r in records if r["kind"] == "model_call"}
         self.assertEqual(model_hosts, {"127.0.0.1:11434"})

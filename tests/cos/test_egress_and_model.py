@@ -12,7 +12,7 @@ from support import REPO_ROOT, FakeHttp, answer  # noqa: F401
 
 from cos import egress
 from cos.egress import EgressDenied, EgressError, check_url
-from cos.model import ModelClient, ModelError, ModelRefused, check_local
+from cos.model import CloudModelRefused, ModelClient, ModelError, ModelRefused, check_local
 
 CLOUD_MODEL_URLS = (
     "https://api.anthropic.com/v1/messages",
@@ -198,6 +198,63 @@ class ModelClientLocalOnlyTests(unittest.TestCase):
         client.chat([{"role": "user", "content": "hi"}])
         self.assertEqual([json.loads(c["body"])["think"] for c in http.calls], [False, False])
         self.assertEqual([(f["ok"], f["think"]) for _, f in audit], [(False, False), (True, False)])
+
+    def audited_client(self, http, model="qwen3.6:35b", fallback="gpt-oss:20b"):
+        audit = []
+        client = ModelClient("http://127.0.0.1:11434", model, fallback, http=http,
+                             audit=lambda k, **f: audit.append((k, f)))
+        return client, audit
+
+    def test_cloud_model_name_refused_before_any_request(self):
+        for name in ("gpt-oss:120b-cloud", "qwen3-coder:480b-cloud", "kimi-k2:cloud", "GLM-4.6:CLOUD"):
+            with self.subTest(name):
+                http = FakeHttp([])
+                client, audit = self.audited_client(http, model=name)
+                with self.assertRaises(CloudModelRefused):
+                    client.chat([{"role": "user", "content": "hi"}])
+                self.assertEqual((http.calls, http.show_calls), ([], []))
+                self.assertEqual([k for k, _ in audit], ["model_refused"])
+                self.assertEqual(audit[0][1]["model"], name)
+
+    def test_api_show_remote_host_refused_without_chat_or_fallback(self):
+        remote = {"remote_model": "gpt-oss:120b", "remote_host": "https://ollama.com:443",
+                  "details": {"family": "gptoss"}}
+        http = FakeHttp([], show=remote)
+        client, audit = self.audited_client(http, model="my-alias")
+        with self.assertRaises(CloudModelRefused) as cm:
+            client.chat([{"role": "user", "content": "hi"}])
+        self.assertIn("local models only", str(cm.exception))
+        self.assertEqual(http.show_calls, [{"model": "my-alias"}])  # fallback never tried
+        self.assertEqual(http.calls, [])  # no /api/chat
+        self.assertEqual([k for k, _ in audit], ["model_refused"])
+        self.assertEqual(audit[0][1]["remote_host"], "https://ollama.com:443")
+
+    def test_api_show_remote_model_alone_is_refused(self):
+        http = FakeHttp([], show={"remote_model": "deepseek-v3.1:671b"})
+        client, _ = self.audited_client(http, fallback=None)
+        with self.assertRaises(CloudModelRefused):
+            client.chat([{"role": "user", "content": "hi"}])
+        self.assertEqual(http.calls, [])
+
+    def test_api_show_failure_is_model_error_and_chat_is_not_sent(self):
+        http = FakeHttp([], show=EgressError("HTTP 500", status=500, body=b"boom"))
+        client, audit = self.audited_client(http, fallback=None)
+        with self.assertRaises(ModelError):
+            client.chat([{"role": "user", "content": "hi"}])
+        self.assertEqual(http.calls, [])
+        self.assertEqual(audit[0][1]["local_check"], None)
+        self.assertFalse(audit[0][1]["ok"])
+
+    def test_every_call_checks_api_show_and_records_local_details(self):
+        http = FakeHttp([{"message": answer("one")}, {"message": answer("two")}])
+        client, audit = self.audited_client(http)
+        client.chat([{"role": "user", "content": "hi"}])
+        client.chat([{"role": "user", "content": "again"}])
+        self.assertEqual(http.show_calls, [{"model": "qwen3.6:35b"}] * 2)
+        self.assertEqual([c["url"] for c in http.calls], ["http://127.0.0.1:11434/api/chat"] * 2)
+        check = audit[0][1]["local_check"]
+        self.assertEqual((check["remote_host"], check["family"], check["quantization_level"]),
+                         (None, "qwen35moe", "Q4_K_M"))
 
     def test_falls_back_once_on_primary_failure(self):
         http = FakeHttp([EgressError("HTTP 404", status=404, body=b'{"error":"model not found"}'),

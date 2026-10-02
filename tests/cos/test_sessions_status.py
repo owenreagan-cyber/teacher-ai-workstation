@@ -284,6 +284,45 @@ class ErrorKindTests(CliCase):
         self.assertNotIn("Traceback", out + err)
         self.assertNotIn("boom secret", out)
 
+    def audit_kinds(self):
+        path = self.state / "audit.jsonl"
+        return [json.loads(l) for l in path.read_text().splitlines()] if path.exists() else []
+
+    def test_cloud_model_in_config_is_refused_and_audited(self):
+        self.config()
+        (self.state / "config.json").write_text(json.dumps({"model": "gpt-oss:120b-cloud"}))
+        for argv in (("ask", "--json", "what time is it"), ("history", "--session", "default", "--json")):
+            with self.subTest(argv=argv):
+                code, out, err = self.run_cli(*argv)
+                self.assertEqual(code, cli.EXIT_INTERNAL)
+                payload = json.loads(out)
+                self.assertEqual((payload["ok"], payload["error_kind"]), (False, "internal"))
+                self.assertIn("cloud model", payload["error"])
+                self.assertNotIn("Traceback", out + err)
+        code, out, err = self.run_cli("ask", "what time is it")
+        self.assertEqual((code, out), (cli.EXIT_INTERNAL, ""))
+        self.assertIn("cos: model 'gpt-oss:120b-cloud' is an Ollama cloud model", err)
+        records = self.audit_kinds()
+        self.assertEqual([r["kind"] for r in records], ["model_refused"] * 3)
+        self.assertEqual(records[0]["model"], "gpt-oss:120b-cloud")
+        self.assertNotIn("model_call", [r["kind"] for r in records])
+
+    def test_api_show_remote_model_is_refused_at_ask(self):
+        def post(client, path, payload):
+            if path == "/api/show":
+                return {"remote_model": "gpt-oss:120b", "remote_host": "https://ollama.com:443"}
+            raise AssertionError(f"no {path} request may be sent for a cloud model")
+        with mock.patch.object(ModelClient, "_post", post):
+            code, out, err = self.run_cli("ask", "--json", "tell me something interesting")
+        self.assertEqual(code, cli.EXIT_INTERNAL)
+        payload = json.loads(out)
+        self.assertEqual(payload["error_kind"], "internal")
+        self.assertIn("local models only", payload["error"])
+        kinds = [r["kind"] for r in self.audit_kinds()]
+        self.assertIn("model_refused", kinds)
+        self.assertNotIn("model_call", kinds)
+        self.assertNotIn("answer", kinds)
+
     def test_stopped_brief(self):
         self.run_cli("stop")
         code, out, _ = self.run_cli("brief", "--json")

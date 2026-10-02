@@ -45,6 +45,12 @@ PREFERENCE = (
 DATE_RE = re.compile(r"\b(\d{4}-\d{2}-\d{2})\b")
 
 
+def show(payload: dict) -> dict:
+    """Stand-in for Ollama's /api/show: a local model's details."""
+    return {"details": {"format": "fake", "family": "fake-scripted", "parameter_size": "0",
+                        "quantization_level": "none"}, "capabilities": ["completion", "tools"]}
+
+
 def _text(msg) -> str:
     return str(msg.get("content") or "")
 

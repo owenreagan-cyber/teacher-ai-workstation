@@ -24,10 +24,11 @@ from cos import VERSION, egress, fixture
 from cos.agent import Agent, Stopped, build_system_prompt
 from cos.audit import AuditLog, verify
 from cos.brief import format_brief, gather
-from cos.config import Config, ConfigError, ensure_private_subdir, load_config, open_private
+from cos.config import (CloudModelError, Config, ConfigError, ensure_private_subdir, load_config,
+                        open_private)
 from cos.fastpath import FastPath
 from cos.memory import load_identity, load_memory
-from cos.model import ModelClient, ModelError, ModelRefused
+from cos.model import CloudModelRefused, ModelClient, ModelError, ModelRefused
 from cos.policy import KillSwitch, PolicyGate
 from cos.registry import Registry
 from cos.sessions import (SessionIdError, SessionReadError, TurnError, append_turn, check_session_id,
@@ -107,6 +108,9 @@ def cmd_ask(rt: Runtime, args) -> int:
     except ModelError as e:
         _emit_error(args.json, f"local model unavailable: {e}", "model_unavailable")
         return EXIT_MODEL
+    except CloudModelRefused as e:
+        _emit_error(args.json, str(e), "internal")
+        return EXIT_INTERNAL
     except SessionReadError as e:
         _emit_error(args.json, str(e), "internal")
         return EXIT_INTERNAL
@@ -159,6 +163,9 @@ def cmd_chat(rt: Runtime, args) -> int:
             except ModelError as e:
                 print(f"Local model unavailable: {e}")
                 continue
+            except CloudModelRefused as e:
+                print(f"Refused: {e}")
+                return EXIT_INTERNAL
             print(f"chief> {result.text()}\n")
             stamp = datetime.now().astimezone().isoformat(timespec="seconds")
             for role, content in (("user", line), ("assistant", result.answer)):
@@ -340,6 +347,11 @@ def main(argv: list[str]) -> int:
         if getattr(args, "config_only", False):
             return args.func(load_config(), args)
         rt = build_runtime()
+    except CloudModelError as e:
+        AuditLog(e.state_dir / "audit.jsonl", extra={"fixture": True} if e.fixture else None)(
+            "model_refused", model=e.model, field=e.field_name, reason="cloud model name in config")
+        _emit_error(as_json, str(e), "internal")
+        return EXIT_INTERNAL
     except (ConfigError, ModelRefused) as e:
         _emit_error(as_json, str(e), "usage")
         return EXIT_USAGE

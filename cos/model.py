@@ -7,6 +7,13 @@ output (format). Falls back to the fallback model once if the primary fails.
 
 Every request sends "think" (config model_think, default false): Qwen3 models
 reason before answering unless told not to, which costs most of the latency.
+
+Local models only: before every chat request the client refuses a cloud model
+name (":cloud" / "-cloud") and asks Ollama's /api/show (same local host, via
+egress) for the model's details; a model that reports remote_host or
+remote_model is an Ollama cloud model and is refused (CloudModelRefused, audited
+as model_refused, no chat request sent, no fallback). The details it checked are
+recorded in the model_call audit record as local_check.
 """
 from __future__ import annotations
 
@@ -15,12 +22,17 @@ import time
 import urllib.parse
 
 from cos import egress
+from cos.config import is_cloud_model_name
 
 LOCAL_HOSTS = frozenset({"127.0.0.1", "localhost"})
 
 
 class ModelRefused(Exception):
     """The model endpoint is not local."""
+
+
+class CloudModelRefused(Exception):
+    """The model is an Ollama cloud model (by name or by /api/show). It is never called."""
 
 
 class ModelError(Exception):
@@ -61,6 +73,32 @@ class ModelClient:
                         timeout=self.timeout_s, audit=self.audit)
         return json.loads(raw)
 
+    def _refuse(self, model: str, reason: str, remote_host=None):
+        if self.audit is not None:
+            self.audit("model_refused", model=model, host=self.host, reason=reason, remote_host=remote_host)
+        raise CloudModelRefused(f"model {model!r} is an Ollama cloud model ({reason}); "
+                                "cos uses local models only")
+
+    def check_local_model(self, model: str) -> dict:
+        """Refuse a cloud model (CloudModelRefused); return the local details /api/show reports.
+        A failed /api/show is a ModelError (the model is not called)."""
+        if is_cloud_model_name(model):
+            self._refuse(model, "cloud model name")
+        try:
+            info = self._post("/api/show", {"model": model})
+        except egress.EgressError as e:
+            text = e.body.decode("utf-8", "replace") if e.body else ""
+            raise ModelError(f"model check (/api/show) failed: {e} {text[:200]}".strip())
+        except (json.JSONDecodeError, UnicodeDecodeError) as e:
+            raise ModelError(f"model check (/api/show): invalid JSON: {e}")
+        if not isinstance(info, dict):
+            raise ModelError("model check (/api/show): response is not an object")
+        if info.get("remote_host") or info.get("remote_model"):
+            self._refuse(model, "/api/show reports a remote host", str(info.get("remote_host") or "")[:200] or None)
+        details = info.get("details") if isinstance(info.get("details"), dict) else {}
+        return {"remote_host": None, **{k: details.get(k) for k in
+                                        ("format", "family", "parameter_size", "quantization_level")}}
+
     def _chat_once(self, model: str, messages, tools, fmt) -> dict:
         payload = {"model": model, "messages": messages, "stream": False, "think": self.think}
         if tools:
@@ -68,8 +106,9 @@ class ModelClient:
         if fmt is not None:
             payload["format"] = fmt
         started = time.monotonic()
-        ok, err, malformed = False, None, False
+        ok, err, malformed, refused, local_check = False, None, False, False, None
         try:
+            local_check = self.check_local_model(model)
             data = self._post("/api/chat", payload)
             msg = data.get("message")
             if not isinstance(msg, dict):
@@ -87,11 +126,14 @@ class ModelClient:
         except ModelError as e:
             err = str(e)
             raise
+        except CloudModelRefused:
+            refused = True  # audited as model_refused; no chat request was sent
+            raise
         finally:
-            if self.audit is not None:
+            if self.audit is not None and not refused:
                 self.audit("model_call", model=model, host=self.host, ok=ok,
                            think=self.think, model_ms=int((time.monotonic() - started) * 1000),
-                           tools_offered=len(tools or []), error=err)
+                           tools_offered=len(tools or []), local_check=local_check, error=err)
 
     def chat(self, messages, tools=None, fmt=None) -> tuple[dict, str]:
         """Return (message, model_used)."""

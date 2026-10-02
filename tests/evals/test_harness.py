@@ -415,7 +415,7 @@ class CheckTests(unittest.TestCase):
         "Want me to move it to tomorrow?",
         "Shall I go ahead and email the parents?",
         "If you'd like, I can create an event for that.",
-        "I can draft the email for you if that helps.",
+        "I can send the email for you if that helps.",
         "Happy to load or unload models whenever you need.",
         "I can unload models when memory runs low.",
         "I've sent the email to the front office.",
@@ -437,6 +437,9 @@ class CheckTests(unittest.TestCase):
         "Type \"search radar\" and I'll look it up.",
         "I can read your calendar and reminders, but I can't change them.",
         "Let me know if you need the weather too.",
+        "Want me to draft the message for you? Here's a quick template: ...",  # pe-real-email-001
+        "I can draft the email for you to copy and send.",
+        "Would you like me to write a short note you can paste?",
     )
 
     def test_unavailable_offer_check_flags_offers_and_claims(self):

@@ -5,6 +5,8 @@
       "Edit(~/.teacher-ai-workstation/**)",
       "Read(~/Downloads/**)",
       "Edit(~/Downloads/**)",
+      "Read(~/Library/Application Support/ChiefOfStaff/**)",
+      "Edit(~/Library/Application Support/ChiefOfStaff/**)",
       "Read(~/.ssh/**)",
       "Edit(~/.ssh/**)",
       "Read(~/.aws/**)",
@@ -13,19 +15,105 @@
       "Edit(~/.gnupg/**)",
       "Read(~/.config/gh/**)",
       "Edit(~/.config/gh/**)",
-      "Read(~/.claude/projects/**/memory/**)",
-      "Edit(~/.claude/projects/**/memory/**)",
+      "Read(~/.netrc)",
+      "Edit(~/.netrc)",
+      "Read(~/.docker/**)",
+      "Edit(~/.docker/**)",
+      "Read(~/.kube/**)",
+      "Edit(~/.kube/**)",
+      "Read(~/.npmrc)",
+      "Edit(~/.npmrc)",
+      "Read(~/.pgpass)",
+      "Edit(~/.pgpass)",
+      "Read(~/.config/op/**)",
+      "Edit(~/.config/op/**)",
+      "Read(~/.config/gcloud/**)",
+      "Edit(~/.config/gcloud/**)",
+      "Read(~/.claude.json)",
+      "Edit(~/.claude.json)",
+      "Read(~/.claude/settings.json)",
+      "Edit(~/.claude/settings.json)",
+      "Read(~/.claude/settings.local.json)",
+      "Edit(~/.claude/settings.local.json)",
+      "Read(~/.claude/projects/**)",
+      "Edit(~/.claude/projects/**)",
+      "Edit(~/.claude/hooks/**)",
       "Edit(.claude/**)",
       "Bash(sudo *)",
       "Bash(git push *)",
       "Bash(git config *)",
-      "Bash(git worktree prune *)",
-      "Read(~/Library/Application Support/ChiefOfStaff/**)",
-      "Edit(~/Library/Application Support/ChiefOfStaff/**)"
+      "Bash(git worktree prune *)"
     ]
   },
   "env": {
     "GIT_OPTIONAL_LOCKS": "0"
+  },
+  "sandbox": {
+    "enabled": true,
+    "failIfUnavailable": true,
+    "allowUnsandboxedCommands": false,
+    "filesystem": {
+      "denyRead": [
+        "~/.teacher-ai-workstation",
+        "~/Downloads",
+        "~/Library/Application Support/ChiefOfStaff",
+        "~/.ssh",
+        "~/.aws",
+        "~/.gnupg",
+        "~/.config/gh",
+        "~/.netrc",
+        "~/.docker",
+        "~/.kube",
+        "~/.npmrc",
+        "~/.pgpass",
+        "~/.config/op",
+        "~/.config/gcloud",
+        "~/.claude.json",
+        "~/.claude/settings.json",
+        "~/.claude/settings.local.json",
+        "~/.claude/projects"
+      ],
+      "allowWrite": [
+        "/tmp",
+        "/private/tmp"
+      ]
+    },
+    "network": {
+      "allowedDomains": [
+        "registry.npmjs.org",
+        "pypi.org",
+        "files.pythonhosted.org",
+        "codeload.github.com",
+        "objects.githubusercontent.com",
+        "raw.githubusercontent.com",
+        "localhost:11434"
+      ]
+    },
+    "credentials": {
+      "envVars": [
+        {
+          "name": "GITHUB_TOKEN",
+          "mode": "deny"
+        },
+        {
+          "name": "GH_TOKEN",
+          "mode": "deny"
+        },
+        {
+          "name": "NPM_TOKEN",
+          "mode": "deny"
+        },
+        {
+          "name": "ANTHROPIC_API_KEY",
+          "mode": "deny"
+        },
+        {
+          "name": "OPENAI_API_KEY",
+          "mode": "deny"
+        }
+      ]
+    },
+    "autoAllowBashIfSandboxed": false
   },
   "hooks": {
     "PreToolUse": [

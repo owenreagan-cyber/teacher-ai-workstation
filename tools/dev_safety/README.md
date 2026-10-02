@@ -93,6 +93,18 @@ settings, so a host outside the list prompts (in auto mode, the classifier may a
 Claude names on the command) instead of being refused. The repo's own files could also loosen
 the sandbox. Use the lock.
 
+## Tests and probes
+
+```bash
+python3.12 -m unittest discover -s tests -p 'test_dev_guard*.py'   # unit tests, fake HOME
+python3.12 tools/dev_safety/dev_safety_probe.py --synthetic        # 586 payloads vs the repo source
+```
+
+The synthetic cases use real Claude Code tool-input shapes (MultiEdit `edits[]`,
+NotebookEdit `notebook_path`) and include every Codex P1A-D1 bypass plus the build commands
+that must stay allowed. After installing, Owen runs the same probe against the installed hook
+and a ten-request tool-boundary check in a fresh session: `docs/d1-1-owen-steps.md`.
+
 ## Add a student-data root
 
 1. Add one line to `tools/dev_safety/student_data_roots.txt`, for example

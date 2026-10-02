@@ -76,6 +76,63 @@ class TestSyntheticCases(FakeHome):
             self.assertIn(need, ids)
 
 
+class TestD11Bypasses(FakeHome):
+    """Each Codex P1A-D1 bypass, as a real Claude Code tool-input payload."""
+
+    REQUIRED_DENY = (
+        "d1-001:python-c-push", "d1-001:node-e", "d1-001:perl-e", "d1-001:osascript-e",
+        "d1-001:env-python-c", "d1-001:xargs-sh-c",
+        "d1-002:multiedit-edits[]:ssh", "d1-002:multiedit-edits[]:chiefofstaff",
+        "d1-002:multiedit-top:ssh", "d1-002:multiedit-top:chiefofstaff", "d1-002:multiedit-no-path",
+        "d1-003:write-claude-settings", "d1-003:read-claude-json", "d1-003:read-transcript",
+        "d1-006:cat-relative-ssh", "d1-006:redirect-relative-ssh",
+        "d1-004:rm-rf-sibling", "d1-004:find-delete", "d1-004:diskutil-erase",
+    )
+    REQUIRED_ALLOW = ("allow:unittest-cos", "allow:npm-test", "allow:git-status-plain", "allow:rm-rf-build")
+
+    def cases(self):
+        return {c["id"]: c for c in probe.synthetic_cases(self.home, self.cwd, self.links)}
+
+    def test_required_cases_present_and_decided(self):
+        cases = self.cases()
+        for cid in self.REQUIRED_DENY + self.REQUIRED_ALLOW:
+            with self.subTest(cid):
+                self.assertIn(cid, cases)
+                want = "deny" if cid in self.REQUIRED_DENY else "allow"
+                self.assertEqual(cases[cid]["expect"], want)
+                reason = self.decide(cases[cid]["payload"])
+                self.assertEqual("allow" if reason is None else "deny", want, reason)
+
+    def test_exact_prompt_commands(self):
+        wt = os.path.join(self.home, probe.PROBE_WORKTREE_REL)
+        at = lambda cmd, cwd: self.decide({"tool_name": "Bash", "tool_input": {"command": cmd}, "cwd": cwd})
+        for cmd in ("python3 -c \"import subprocess; subprocess.run(['git','push','--force'])\"",
+                    "node -e 'x'", "perl -e 'x'", "osascript -e 'x'", "env python3 -c 'x'",
+                    "echo a | xargs sh -c 'x'", "rm -rf ../sibling-repo", "find ~ -name x -delete",
+                    "diskutil eraseDisk APFS X /dev/disk99"):
+            with self.subTest(cmd=cmd):
+                self.assertIsNotNone(self.bash(cmd))
+        self.assertIn("denied root", at("cat ../../.ssh/id_rsa", wt))
+        self.assertIn("denied root", at("echo x > ../../.ssh/config", wt))
+        for cmd in ("python3 -m unittest discover -s tests/cos -p 'test_*.py'", "npm test", "git status",
+                    "rm -rf ./build"):
+            with self.subTest(cmd=cmd):
+                self.assertIsNone(self.bash(cmd))
+
+    def test_multiedit_real_shape_project_allowed(self):
+        tin = {"file_path": os.path.join(self.cwd, "a.py"), "edits": [{"old_string": "a", "new_string": "b"}]}
+        self.assertIsNone(self.decide({"tool_name": "MultiEdit", "tool_input": tin, "cwd": self.cwd}))
+
+    def test_unknown_write_tool_without_path_denied(self):
+        self.assertIn("no recognizable path", self.decide(
+            {"tool_name": "SuperWrite", "tool_input": {"target": "/x"}, "cwd": self.cwd}))
+
+    def test_temp_is_a_safe_area(self):
+        p = {"tool_name": "Bash", "tool_input": {"command": "rm -rf /tmp/d1-probe-x"}, "cwd": self.cwd}
+        self.assertIsNone(dev_guard.evaluate(p, home=self.home, temp_roots=["/tmp", "/private/tmp"]))
+        self.assertIsNotNone(dev_guard.evaluate(p, home=self.home, temp_roots=[]))
+
+
 class TestGitPolicy(FakeHome):
     def test_feature_worktree_allowed_only_for_exact_path(self):
         feat = os.path.join(os.path.dirname(self.cwd), "feature-wt")
@@ -251,6 +308,17 @@ class TestRenderedSettings(unittest.TestCase):
                      "Read(~/.claude/settings.local.json)", "Read(~/.claude/projects/**)",
                      "Edit(~/.claude/projects/**)", "Edit(.claude/**)"):
             self.assertIn(rule, deny)
+
+    def test_integrity_covers_every_installed_file(self):
+        with tempfile.TemporaryDirectory() as d:
+            install_dev_guard.install(dest_dir=d)
+            r = probe.integrity("HEAD", install_dir=d)
+            self.assertEqual(set(r["files"]), set(install_dev_guard.FILES))
+            for name, f in r["files"].items():
+                with self.subTest(name=name):
+                    self.assertEqual(f["installed_sha256"], f["worktree_sha256"])
+                    self.assertEqual(f["recorded_sha256"], f["installed_sha256"])
+                    self.assertEqual(f["installed_mode"], "0o444")
 
     def test_installer_installs_lock(self):
         with tempfile.TemporaryDirectory() as d:

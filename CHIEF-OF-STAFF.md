@@ -76,13 +76,13 @@ Outside products were studied for logic and features to rebuild, not to adopt.
   with chosen memory files, through the `llm` CLI.
 - Read-only status: daily status, dashboard, approval and blocker queues, next action.
 - Canvas weekly-production and readiness tooling (per its own phase status).
-- D1 safety for Claude Code (hook layer only): denied paths (student data, Downloads,
-  credentials, Claude memory), git protections, process-listing protections, symlink escape
-  protection. Source is versioned in `tools/dev_safety/`; this repo reproduces its unit tests
-  (`tests/test_dev_guard.py`) against the source. The 371/371 hook and 33/33 tool-boundary
-  probe results were recorded in the recovery worktree and are not re-run from here. Known
-  gaps (inline interpreters, relative paths, MultiEdit shape) are open; see
-  `tools/dev_safety/README.md`.
+- D1.1 safety for Claude Code, versioned in `tools/dev_safety/`: the Claude Code Bash
+  sandbox (macOS Seatbelt) as the boundary, plus the `dev_guard` hook as a second layer
+  (credentials, student-data roots, Claude Code state, Downloads; git, inline-code,
+  destructive-command, and process-listing denials). Reproducible here: 38 unit tests and
+  586/586 synthetic probes against the repo source. **Not yet live:** Owen installs it and runs
+  the installed-hook and fresh-session probes (`docs/d1-1-owen-steps.md`); until then the
+  older D1 hook is what runs. Limits: `tools/dev_safety/README.md`.
 
 ### Missing
 App icon / menu bar, hotkey, multi-turn chat, tool calling, time/date/weather, Mac status, email,

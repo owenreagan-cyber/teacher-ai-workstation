@@ -170,6 +170,35 @@ class ModelClientLocalOnlyTests(unittest.TestCase):
         self.assertEqual(audit[0][1]["host"], "127.0.0.1:11434")
         self.assertEqual(audit[0][1]["model"], "qwen3.6:35b")
 
+    def test_think_false_is_sent_and_audited_by_default(self):
+        http = FakeHttp([{"message": answer("hello")}])
+        audit = []
+        client = ModelClient("http://127.0.0.1:11434", "qwen3.6:35b", http=http,
+                             audit=lambda k, **f: audit.append((k, f)))
+        client.chat([{"role": "user", "content": "hi"}])
+        payload = json.loads(http.calls[0]["body"])
+        self.assertIs(payload["think"], False)
+        self.assertIs(audit[0][1]["think"], False)
+
+    def test_think_true_when_turned_back_on(self):
+        http = FakeHttp([{"message": answer("hello")}])
+        audit = []
+        client = ModelClient("http://127.0.0.1:11434", "qwen3.6:35b", http=http, think=True,
+                             audit=lambda k, **f: audit.append((k, f)))
+        client.chat([{"role": "user", "content": "hi"}])
+        self.assertIs(json.loads(http.calls[0]["body"])["think"], True)
+        self.assertIs(audit[0][1]["think"], True)
+
+    def test_think_is_sent_on_fallback_and_failed_calls(self):
+        http = FakeHttp([EgressError("HTTP 404", status=404, body=b'{"error":"model not found"}'),
+                         {"message": answer("from fallback")}])
+        audit = []
+        client = ModelClient("http://127.0.0.1:11434", "qwen3.6:35b", "gpt-oss:20b", http=http,
+                             audit=lambda k, **f: audit.append((k, f)))
+        client.chat([{"role": "user", "content": "hi"}])
+        self.assertEqual([json.loads(c["body"])["think"] for c in http.calls], [False, False])
+        self.assertEqual([(f["ok"], f["think"]) for _, f in audit], [(False, False), (True, False)])
+
     def test_falls_back_once_on_primary_failure(self):
         http = FakeHttp([EgressError("HTTP 404", status=404, body=b'{"error":"model not found"}'),
                          {"message": answer("from fallback")}])

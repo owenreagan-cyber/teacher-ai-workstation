@@ -54,7 +54,8 @@ def build_runtime() -> Runtime:
     cfg = load_config()
     audit = AuditLog(cfg.audit_path, extra={"fixture": True} if cfg.fixture_dir else None)
     kill_switch = KillSwitch(cfg.state_dir)
-    model = ModelClient(cfg.ollama_url, cfg.model, cfg.fallback_model, cfg.model_timeout_s, audit=audit)
+    model = ModelClient(cfg.ollama_url, cfg.model, cfg.fallback_model, cfg.model_timeout_s, audit=audit,
+                        think=cfg.model_think)
     if cfg.fixture_dir:
         ctx = fixture.fixture_context(cfg, audit=audit)
         registry = fixture.build_fixture_registry(ctx)

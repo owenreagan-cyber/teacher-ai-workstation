@@ -27,6 +27,7 @@ DEFAULTS = {
     "fallback_model": "gpt-oss:20b",
     "ollama_url": "http://127.0.0.1:11434",
     "model_timeout_s": 300,
+    "model_think": False,
     "latitude": None,
     "longitude": None,
 }
@@ -76,6 +77,7 @@ class Config:
     state_dir: Path
     repo_root: Path = field(default=REPO_ROOT)
     fixture_dir: Path | None = None
+    model_think: bool = False
 
     @property
     def audit_path(self) -> Path:
@@ -148,6 +150,8 @@ def load_config(root: Path | None = None) -> Config:
         if unknown:
             raise ConfigError(f"unknown config keys: {sorted(unknown)}")
         data.update(user)
+    if not isinstance(data["model_think"], bool):
+        raise ConfigError("model_think must be true or false")
     return Config(
         model=str(data["model"]),
         fallback_model=str(data["fallback_model"]) if data["fallback_model"] else None,
@@ -157,4 +161,5 @@ def load_config(root: Path | None = None) -> Config:
         longitude=_coord(data["longitude"], -180, 180, "longitude"),
         state_dir=root,
         fixture_dir=fixtures,
+        model_think=data["model_think"],
     )

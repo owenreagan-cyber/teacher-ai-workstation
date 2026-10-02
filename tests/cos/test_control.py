@@ -243,6 +243,22 @@ class StateDirectoryTests(StateDirTest):
                 with self.assertRaises(ConfigError):
                     load_config()
 
+    def test_model_think_defaults_false_and_must_be_bool(self):
+        self.assertIs(load_config().model_think, False)
+        (self.state / "config.json").write_text(json.dumps({"model_think": True}))
+        self.assertIs(load_config().model_think, True)
+        for bad in ("false", 0, None):
+            with self.subTest(bad=bad):
+                (self.state / "config.json").write_text(json.dumps({"model_think": bad}))
+                with self.assertRaises(ConfigError):
+                    load_config()
+
+    def test_runtime_model_client_uses_model_think(self):
+        from cos import cli
+        self.assertIs(cli.build_runtime().model.think, False)
+        (self.state / "config.json").write_text(json.dumps({"model_think": True}))
+        self.assertIs(cli.build_runtime().model.think, True)
+
 
 if __name__ == "__main__":
     import unittest

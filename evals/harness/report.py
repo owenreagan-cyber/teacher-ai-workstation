@@ -367,6 +367,11 @@ def pct_row(label, p) -> str:
             f"<td class='num'>{p['mean']}</td></tr>")
 
 
+def card_ms(p) -> str:
+    """p50 for a summary card; "—" when the run had no such invocations (not "0ms")."""
+    return _fmt(p["p50"], "ms") if p and p.get("n") else "—"
+
+
 PCT_HEAD = ("<tr><th>Measure (ms)</th><th class='num'>n</th><th class='num'>p50</th><th class='num'>p95</th>"
             "<th class='num'>p99</th><th class='num'>max</th><th class='num'>mean</th></tr>")
 
@@ -401,9 +406,9 @@ def render_html(summary: dict, records: list[dict], resources: list[dict], soak_
                  f"<div class='tile'><b>{o['passed']}/{o['cases']}</b><span>cases pass "
                  f"({(o['pass_rate'] or 0) * 100:.1f}%)</span></div>"
                  f"<div class='tile'><b>{o['turns']}</b><span>cos invocations checked</span></div>"
-                 f"<div class='tile'><b>{_fmt(summary['latency_ms']['fast_path_wall_ms'].get('p50', 0), 'ms')}</b>"
+                 f"<div class='tile'><b>{card_ms(summary['latency_ms']['fast_path_wall_ms'])}</b>"
                  f"<span>fast-path p50 (wall)</span></div>"
-                 f"<div class='tile'><b>{_fmt(summary['latency_ms']['model_wall_ms'].get('p50', 0), 'ms')}</b>"
+                 f"<div class='tile'><b>{card_ms(summary['latency_ms']['model_wall_ms'])}</b>"
                  f"<span>model-path p50 (wall){mp}</span></div></div>")
 
     b = summary.get("baseline")

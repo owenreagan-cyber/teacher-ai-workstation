@@ -225,6 +225,27 @@ class CertificationFlagTests(unittest.TestCase):
         self.assertIs(summary["certification"], False)
 
 
+class SummaryCardTests(unittest.TestCase):
+    def render(self, fast_path):
+        rec = {"case_id": "x-001", "suite": "tool_choice", "turn": 0, "command": "ask", "exit_code": 0,
+               "fast_path": fast_path, "total_ms": 1500, "wall_ms": 1600, "passed": True, "checks": [],
+               "prompt": "p", "answer": "a", "model_calls": 0 if fast_path else 1}
+        summary = report.summarize([rec], {"run_id": "r", "model_mode": "real", "real_state_dir_changes": []},
+                                   [], None)
+        return report.render_html(summary, [rec], [], [])
+
+    def test_no_fast_path_cases_shows_dash_not_0ms(self):
+        html = self.render(fast_path=False)
+        self.assertIn("<b>—</b><span>fast-path p50 (wall)</span>", html)
+        self.assertIn("<b>1600ms</b><span>model-path p50 (wall)</span>", html)
+        self.assertNotIn("<b>0ms</b>", html)
+
+    def test_no_model_path_cases_shows_dash(self):
+        html = self.render(fast_path=True)
+        self.assertIn("<b>1600ms</b><span>fast-path p50 (wall)</span>", html)
+        self.assertIn("<b>—</b><span>model-path p50 (wall)</span>", html)
+
+
 class SuiteFileTests(unittest.TestCase):
     def test_suites_load_with_unique_ids(self):
         cases = harness_run.load_cases(None, None)

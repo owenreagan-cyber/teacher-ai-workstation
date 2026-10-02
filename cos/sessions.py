@@ -24,6 +24,7 @@ import fcntl
 import json
 import os
 import re
+import stat
 from pathlib import Path
 
 from cos.config import FILE_MODE, ensure_private_subdir
@@ -41,6 +42,11 @@ class SessionIdError(ValueError):
 
 class TurnError(ValueError):
     pass
+
+
+class SessionReadError(Exception):
+    """The session path exists but is not a readable regular file (a directory, a symlink,
+    or unreadable). Callers refuse cleanly; nothing is read or written."""
 
 
 def _is_str_list(value) -> bool:
@@ -81,21 +87,31 @@ def session_path(state_dir: Path, session_id: str) -> Path:
 
 
 def read_session(state_dir: Path, session_id: str) -> tuple[list[dict], int]:
-    """(valid turns oldest first, number of skipped lines). ([], 0) if missing. Never writes."""
+    """(valid turns oldest first, number of skipped lines). ([], 0) if missing. Never writes.
+
+    Raises SessionReadError if the path is a directory, a symlink, or otherwise unreadable."""
     path = session_path(state_dir, session_id)
     try:
-        fd = os.open(path, os.O_RDONLY | os.O_NOFOLLOW)
+        fd = os.open(path, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK)
     except FileNotFoundError:
         return [], 0
+    except OSError as e:  # ELOOP for a symlink, EACCES, ...
+        raise SessionReadError(f"session {session_id} cannot be read ({e.strerror or type(e).__name__})")
+    if not stat.S_ISREG(os.fstat(fd).st_mode):
+        os.close(fd)
+        raise SessionReadError(f"session {session_id} cannot be read (not a regular file)")
     turns, skipped = [], 0
     with os.fdopen(fd, "r", encoding="utf-8", errors="replace") as fh:
-        for line in fh:
-            if not line.strip():
-                continue
-            try:
-                turns.append(check_turn(json.loads(line)))
-            except (json.JSONDecodeError, TurnError):
-                skipped += 1  # a torn, edited, or wrongly typed line is skipped, not fatal
+        try:
+            for line in fh:
+                if not line.strip():
+                    continue
+                try:
+                    turns.append(check_turn(json.loads(line)))
+                except (json.JSONDecodeError, TurnError):
+                    skipped += 1  # a torn, edited, or wrongly typed line is skipped, not fatal
+        except OSError as e:
+            raise SessionReadError(f"session {session_id} cannot be read ({e.strerror or type(e).__name__})")
     return turns, skipped
 
 

@@ -30,8 +30,8 @@ from cos.memory import load_identity, load_memory
 from cos.model import ModelClient, ModelError, ModelRefused
 from cos.policy import KillSwitch, PolicyGate
 from cos.registry import Registry
-from cos.sessions import (SessionIdError, TurnError, append_turn, check_session_id, history_messages,
-                          read_session, read_turns)
+from cos.sessions import (SessionIdError, SessionReadError, TurnError, append_turn, check_session_id,
+                          history_messages, read_session, read_turns)
 from cos.tools import ToolContext, build_registry
 
 EXIT_OK, EXIT_INTERNAL, EXIT_USAGE, EXIT_STOPPED, EXIT_MODEL = 0, 1, 2, 3, 4
@@ -106,6 +106,9 @@ def cmd_ask(rt: Runtime, args) -> int:
     except ModelError as e:
         _emit_error(args.json, f"local model unavailable: {e}", "model_unavailable")
         return EXIT_MODEL
+    except SessionReadError as e:
+        _emit_error(args.json, str(e), "internal")
+        return EXIT_INTERNAL
     except Exception as e:  # noqa: BLE001 - JSON callers get data, not a traceback
         if not args.json:
             raise
@@ -222,8 +225,14 @@ def cmd_history(cfg: Config, args) -> int:
     """Read-only: no audit record, nothing created.
 
     --json prints the array of valid turns on stdout (unchanged shape) and one JSON
-    note on stderr, {"skipped_lines": N}, counting lines that were not valid turns."""
-    turns, skipped = read_session(cfg.state_dir, args.session)
+    note on stderr, {"skipped_lines": N}, counting lines that were not valid turns.
+    A session path that is a directory, a symlink, or unreadable gets the same refusal
+    as ask (error_kind "internal", exit 1), never a traceback."""
+    try:
+        turns, skipped = read_session(cfg.state_dir, args.session)
+    except SessionReadError as e:
+        _emit_error(args.json, str(e), "internal")
+        return EXIT_INTERNAL
     if args.json:
         print(json.dumps(turns))
         print(json.dumps({"skipped_lines": skipped}), file=sys.stderr)

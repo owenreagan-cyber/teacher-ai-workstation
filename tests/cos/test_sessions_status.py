@@ -317,6 +317,53 @@ class HistoryTests(CliCase):
         self.run_cli("history", "--session", "default", "--json")
         self.assertEqual(path.read_bytes(), before)
 
+    def bad_session(self, kind, sid="default"):
+        """Make sessions/<sid>.jsonl a directory, a symlink, or an unreadable file."""
+        self.config()
+        sdir = self.state / "sessions"
+        sdir.mkdir(mode=0o700, exist_ok=True)
+        path = sdir / f"{sid}.jsonl"
+        if kind == "directory":
+            path.mkdir(mode=0o700)
+        elif kind == "symlink":
+            target = self.state / f"{sid}-target.jsonl"
+            target.write_text(json.dumps(turn(1)) + "\n", encoding="utf-8")
+            path.symlink_to(target)
+        else:
+            path.write_text(json.dumps(turn(1)) + "\n", encoding="utf-8")
+            path.chmod(0o000)  # removable with the temp dir: deletion needs only the dir's mode
+        return path
+
+    def test_bad_session_path_is_a_clean_refusal(self):
+        """se-bad-007 / se-bad-008: history refuses like ask, never with a traceback."""
+        for kind in ("directory", "symlink", "unreadable"):
+            for command in ("history", "ask"):
+                with self.subTest(kind=kind, command=command):
+                    sid = f"{kind}-{command}"
+                    self.bad_session(kind, sid)
+                    argv = [command, "--session", sid, "--json"]
+                    argv += ["what time is it"] if command == "ask" else []
+                    code, out, err = self.run_cli(*argv)
+                    self.assertEqual(code, cli.EXIT_INTERNAL)
+                    payload = json.loads(out)
+                    self.assertEqual((payload["ok"], payload["error_kind"]), (False, "internal"))
+                    self.assertIn(f"session {sid} cannot be read", payload["error"])
+                    self.assertNotIn("Traceback", out + err)
+                    code, out, err = self.run_cli(*[a for a in argv if a != "--json"])
+                    self.assertEqual(code, cli.EXIT_INTERNAL)
+                    self.assertEqual(out, "")
+                    self.assertIn(f"cos: session {sid} cannot be read", err)
+                    self.assertNotIn("Traceback", err)
+
+    def test_symlinked_session_target_is_never_read_or_written(self):
+        self.bad_session("symlink")
+        target = self.state / "default-target.jsonl"
+        before = target.read_bytes()
+        code, out, _ = self.run_cli("ask", "--session", "default", "--json", "what time is it")
+        self.assertEqual(code, cli.EXIT_INTERNAL)
+        self.assertNotIn("answer", json.loads(out))
+        self.assertEqual(target.read_bytes(), before)
+
     def test_history_works_while_stopped(self):
         self.run_cli("stop")
         code, out, _ = self.run_cli("history", "--session", "default", "--json")

@@ -58,17 +58,29 @@ def now_iso() -> str:
     return datetime.now().astimezone().isoformat(timespec="seconds")
 
 
-def git_sha() -> str:
+# Local Claude Code settings, not code under test; untracked in this checkout.
+GIT_STATUS_EXCLUDE = (":(exclude).claude",)
+
+
+def git_state() -> dict:
+    """{"git_sha", "certification", "dirty_paths"}. certification is True only when the whole
+    tree is clean (no staged, unstaged, or untracked non-ignored files, apart from
+    GIT_STATUS_EXCLUDE) and git answered; a dirty tree marks git_sha with -dirty."""
+    env = {**os.environ, "GIT_OPTIONAL_LOCKS": "0"}
     try:
-        out = subprocess.run(["git", "-C", str(REPO_ROOT), "rev-parse", "HEAD"], capture_output=True,
-                             text=True, timeout=10, check=False, env={**os.environ, "GIT_OPTIONAL_LOCKS": "0"})
-        sha = out.stdout.strip()
-        dirty = subprocess.run(["git", "-C", str(REPO_ROOT), "status", "--porcelain", "--", "cos", "bin"],
-                               capture_output=True, text=True, timeout=10, check=False,
-                               env={**os.environ, "GIT_OPTIONAL_LOCKS": "0"}).stdout.strip()
-        return sha + ("-dirty" if dirty else "") if sha else "unknown"
+        head = subprocess.run(["git", "-C", str(REPO_ROOT), "rev-parse", "HEAD"], capture_output=True,
+                              text=True, timeout=10, check=False, env=env)
+        status = subprocess.run(["git", "-C", str(REPO_ROOT), "status", "--porcelain", "--untracked-files=all",
+                                 "--", ".", *GIT_STATUS_EXCLUDE],
+                                capture_output=True, text=True, timeout=10, check=False, env=env)
     except (OSError, subprocess.SubprocessError):
-        return "unknown"
+        return {"git_sha": "unknown", "certification": False, "dirty_paths": None}
+    sha = head.stdout.strip()
+    if head.returncode or status.returncode or not sha:
+        return {"git_sha": sha or "unknown", "certification": False, "dirty_paths": None}
+    dirty = [line[3:] for line in status.stdout.splitlines() if line.strip()]
+    return {"git_sha": sha + ("-dirty" if dirty else ""), "certification": not dirty,
+            "dirty_paths": dirty[:50]}
 
 
 def real_state_fingerprint() -> dict:
@@ -632,7 +644,7 @@ def main(argv=None) -> int:
     sampler = ResourceSampler(results_dir / "resources.jsonl", args.sample_interval)
     sampler.record()
     sampler.start()
-    meta = {"run_id": run_id, "git_sha": git_sha(), "model_mode": args.model,
+    meta = {"run_id": run_id, **git_state(), "model_mode": args.model,
             "model_name": "fake-scripted" if args.model == "fake" else (args.model_name or "cos default"),
             "started": started_at, "suites": sorted({c["suite"] for c in cases}),
             "case_count": len(cases), "argv": sys.argv[1:] if argv is None else list(argv),
@@ -682,6 +694,8 @@ def main(argv=None) -> int:
         log(f"{cert['id']} {cert['status']:<4} ({cert['checked']} checked) {cert['title']}")
     for suite, s in summary["suites"].items():
         log(f"  {suite:<14} {s['passed']}/{s['cases']} cases pass")
+    print("certification: true" if summary["certification"]
+          else "certification: false (UNCOMMITTED CODE — not a certification run)")
     print(f"Report: {html_path}")
     print(f"Summary: {summary_path}")
     return 0

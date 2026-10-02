@@ -128,9 +128,11 @@ def summarize(records: list[dict], meta: dict, resources: list[dict], baseline: 
     certs = certs_from(records, meta)
     total_cases = len(cases)
     summary = {
-        "run": {k: meta.get(k) for k in ("run_id", "git_sha", "model_mode", "model_name", "started",
-                                          "ended", "seconds", "suites", "case_count", "argv", "tz",
-                                          "real_state_dir_exists", "real_state_dir_changes")},
+        "run": {k: meta.get(k) for k in ("run_id", "git_sha", "dirty_paths", "model_mode", "model_name",
+                                          "started", "ended", "seconds", "suites", "case_count", "argv",
+                                          "tz", "real_state_dir_exists", "real_state_dir_changes")},
+        # True only for a run of committed code (clean tree); runs without the flag count as false
+        "certification": meta.get("certification") is True,
         "certs": certs,
         "overall": {"cases": total_cases, "passed": sum(c["passed"] for c in cases.values()),
                     "turns": len(records),
@@ -216,6 +218,8 @@ svg text{fill:var(--ink2);font-size:11px}svg .axis{stroke:var(--rule)}svg .gridl
 .legend{display:flex;gap:16px;color:var(--ink2);font-size:12px;margin:4px 0}
 .sw{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
 details summary{cursor:pointer;color:var(--ink2)}.note{color:var(--muted);font-size:12px}
+.banner{background:var(--bad);color:#fff;font-weight:700;font-size:16px;border-radius:8px;padding:12px 16px;
+margin:0 0 16px}.banner span{display:block;font-weight:400;font-size:12px;margin-top:4px;word-break:break-word}
 """
 
 
@@ -375,6 +379,11 @@ def render_html(summary: dict, records: list[dict], resources: list[dict], soak_
     parts = [f"<!doctype html><html lang='en'><head><meta charset='utf-8'>"
              f"<meta name='viewport' content='width=device-width,initial-scale=1'>"
              f"<title>Chief Certification Report</title><style>{CSS}</style></head><body><main>",
+             "" if summary["certification"] else
+             ("<div class='banner'>UNCOMMITTED CODE — not a certification run"
+              + (f"<span>{e(len(run['dirty_paths']))} uncommitted path(s): "
+                 + e(", ".join(run["dirty_paths"][:8])) + ("…" if len(run["dirty_paths"]) > 8 else "")
+                 + "</span>" if run.get("dirty_paths") else "") + "</div>"),
              f"<h1>Chief certification report</h1><p class='meta'>Run <code>{e(run['run_id'])}</code> · "
              f"git <code>{e(run['git_sha'])}</code> · model {e(run['model_mode'])} ({e(run['model_name'])}) · "
              f"{e(run['started'])} → {e(run['ended'])} ({e(run['seconds'])} s) · synthetic fixtures only</p>"]

@@ -66,6 +66,11 @@ class HarnessRunTests(unittest.TestCase):
         self.assertEqual(s["run"]["model_name"], "fake-scripted")
         self.assertEqual(s["run"]["case_count"], len(SUBSET))
         self.assertTrue(s["run"]["git_sha"])
+        self.assertIsInstance(s["certification"], bool)
+        self.assertEqual(s["certification"], not s["run"]["git_sha"].endswith("-dirty"))
+        meta = json.loads((self.out / "results" / "t1-fake" / "meta.json").read_text())
+        self.assertEqual(meta["certification"], s["certification"])
+        self.assertIn(f"certification: {str(s['certification']).lower()}", self.first.stdout)
         self.assertEqual(s["run"]["real_state_dir_changes"], [])
         self.assertIsNone(s["baseline"])
         self.assertEqual(s["judge"], {"status": "not_run"})
@@ -142,6 +147,81 @@ class ReportLabelTests(unittest.TestCase):
         summary, html = self.render("fake")
         self.assertEqual(summary["latency_ms"]["model_path_source"], "fake model")
         self.assertIn("model path (fake model), wall", html)
+
+
+class CertificationFlagTests(unittest.TestCase):
+    """Clean-tree marking: only committed code gives a certification run."""
+
+    def setUp(self):
+        self._tmp = tempfile.TemporaryDirectory(prefix="cos-evals-git-")
+        self.repo = Path(self._tmp.name)
+        env = {"PATH": os.environ.get("PATH", "/usr/bin:/bin"), "HOME": self._tmp.name,
+               "GIT_CONFIG_NOSYSTEM": "1"}
+        self.git = lambda *a: subprocess.run(["git", "-C", str(self.repo), *a], env=env, check=True,
+                                             capture_output=True, text=True)
+        self.git("init", "-q")
+        self.git("config", "user.email", "test@example.invalid")
+        self.git("config", "user.name", "Test")
+        (self.repo / "code.py").write_text("x = 1\n")
+        (self.repo / ".gitignore").write_text("ignored/\n")
+        self.git("add", ".")
+        self.git("commit", "-q", "-m", "init")
+        self._old_root = harness_run.REPO_ROOT
+        harness_run.REPO_ROOT = self.repo
+
+    def tearDown(self):
+        harness_run.REPO_ROOT = self._old_root
+        self._tmp.cleanup()
+
+    def test_clean_tree_certifies(self):
+        st = harness_run.git_state()
+        self.assertIs(st["certification"], True)
+        self.assertEqual(st["dirty_paths"], [])
+        self.assertNotIn("dirty", st["git_sha"])
+
+    def test_ignored_and_claude_settings_do_not_count(self):
+        (self.repo / "ignored").mkdir()
+        (self.repo / "ignored" / "out.json").write_text("{}")
+        (self.repo / ".claude").mkdir()
+        (self.repo / ".claude" / "settings.json").write_text("{}")
+        self.assertIs(harness_run.git_state()["certification"], True)
+
+    def test_dirty_tree_is_not_certification(self):
+        for name, mutate in (("modified", lambda: (self.repo / "code.py").write_text("x = 2\n")),
+                             ("untracked", lambda: (self.repo / "new.py").write_text("y = 1\n")),
+                             ("staged", lambda: ((self.repo / "s.py").write_text("z\n"), self.git("add", "s.py")))):
+            with self.subTest(name):
+                mutate()
+                st = harness_run.git_state()
+                self.assertIs(st["certification"], False)
+                self.assertTrue(st["git_sha"].endswith("-dirty"))
+                self.assertTrue(st["dirty_paths"])
+                self.git("reset", "-q", "--hard")
+                self.git("clean", "-qfd", "--", "new.py", "s.py")
+
+    def test_not_a_repo_is_not_certification(self):
+        harness_run.REPO_ROOT = self.repo / "nowhere"
+        self.assertIs(harness_run.git_state()["certification"], False)
+
+    def render(self, **meta):
+        rec = {"case_id": "x-001", "suite": "tool_choice", "turn": 0, "command": "ask", "exit_code": 0,
+               "fast_path": True, "total_ms": 1, "wall_ms": 100, "passed": True, "checks": [],
+               "prompt": "p", "answer": "a", "model_calls": 0}
+        summary = report.summarize([rec], {"run_id": "r", "model_mode": "real", "real_state_dir_changes": [],
+                                           **meta}, [], None)
+        return summary, report.render_html(summary, [rec], [], [])
+
+    def test_report_banner_and_summary_flag(self):
+        summary, html = self.render(certification=False, dirty_paths=["cos/model.py"])
+        self.assertIs(summary["certification"], False)
+        self.assertIn("UNCOMMITTED CODE — not a certification run", html)
+        self.assertLess(html.index("UNCOMMITTED CODE"), html.index("<h1>"))
+        self.assertIn("cos/model.py", html)
+        summary, html = self.render(certification=True, dirty_paths=[])
+        self.assertIs(summary["certification"], True)
+        self.assertNotIn("UNCOMMITTED CODE", html)
+        summary, _ = self.render()  # older runs without the flag never count as certification
+        self.assertIs(summary["certification"], False)
 
 
 class SuiteFileTests(unittest.TestCase):

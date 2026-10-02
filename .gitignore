@@ -71,3 +71,7 @@ apps/chief-desktop/release/
 # Chief certification harness outputs (E1); never commit run results.
 evals/results/
 evals/reports/
+
+# Claude Code: share the project profile, never personal/local files
+.claude/*
+!.claude/settings.json

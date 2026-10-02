@@ -14,6 +14,7 @@ subprocesses. The subprocess boundary is covered separately:
 Allowed destinations (scheme, host, port) are fixed in code:
   - local Ollama on 127.0.0.1 / localhost, port 11434, plain http
   - Open-Meteo forecast API over https
+  - Brave Search API over https (web.search; the query is only ever text Owen typed)
 
 Anything else raises EgressDenied before a socket is opened. Redirects are
 refused (a 3xx could point elsewhere) and environment proxies are ignored.
@@ -29,6 +30,7 @@ ALLOWED = frozenset({
     ("http", "127.0.0.1", 11434),
     ("http", "localhost", 11434),
     ("https", "api.open-meteo.com", 443),
+    ("https", "api.search.brave.com", 443),
 })
 MAX_RESPONSE_BYTES = 2_000_000
 DEFAULT_PORTS = {"http": 80, "https": 443}

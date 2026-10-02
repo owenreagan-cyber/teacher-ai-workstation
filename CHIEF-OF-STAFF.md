@@ -93,6 +93,52 @@ workers, delegation to cloud agents.
 - SM5 curriculum-identity draft and Canvas pacing mission drafted; open owner decisions remain
   (see §13).
 
+## Daily use (P1a messenger)
+
+The compact window (Chief.app), Raycast, and `bin/cos ask` all reach the same `cos` core.
+
+### Web search
+
+Type a message that starts with **`search`**, **`look up`**, **`google`**, or **`web search`**:
+
+```sh
+bin/cos ask "search weather radar wilson nc"
+bin/cos ask "look up photosynthesis for kids"
+```
+
+- Only the whole message counts: "search my calendar" is a web search for "my calendar";
+  "what's the search engine" and "can you search for …" are ordinary questions, and the model
+  cannot search on its own (D-011, CERT-009).
+- The words after the command go to Brave Search exactly as typed (trimmed, at most 200
+  characters). **They leave the Mac: never type student names or other student details**
+  (D-001).
+- The answer is 2–4 sentences from the local model, followed by numbered sources. If the local
+  model is unavailable, you get the raw results list instead. Results are untrusted data (D-002).
+- The kill switch (`cos stop`) blocks search like every other tool.
+- The query text and its source (`typed`) are recorded in the audit log; the API key never is.
+
+#### Web search setup (once)
+
+1. Get a Brave Search API key: sign in at <https://api-dashboard.search.brave.com>, subscribe to
+   a Search plan (a free tier is enough if one is offered), then **API Keys → Add API key** and
+   copy the key.
+2. Store it in the macOS Keychain. The command prompts for the key twice and does not echo it,
+   so it never lands in your shell history:
+
+   ```sh
+   security add-generic-password -a "$USER" -s chief-search-brave -w
+   ```
+
+3. Check that it is stored (prints nothing secret), then test:
+
+   ```sh
+   security find-generic-password -s chief-search-brave >/dev/null && echo "key stored"
+   bin/cos ask "search weather radar wilson nc"
+   ```
+
+To replace the key, run `security delete-generic-password -s chief-search-brave` and repeat
+step 2. Until a key is stored, a search answers "web search not set up" and points here.
+
 ---
 
 ## 4. Architecture

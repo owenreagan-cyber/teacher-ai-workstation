@@ -162,7 +162,8 @@ class FixtureModeTests(EnvMixin, StateDirTest):
     def test_tools_read_fixtures_without_subprocess_or_network(self):
         rt = cli.build_runtime()
         self.assertEqual(rt.config.fixture_dir, FIXTURES.resolve())
-        results = {t.name: t.func({}) for t in rt.registry.all()}
+        typed = {"web.search": {"query": "test query", "query_source": "typed"}}
+        results = {t.name: t.func(typed.get(t.name, {})) for t in rt.registry.all()}
         self.assertEqual(results["time.now"]["time"], "2:30 PM")
         self.assertEqual(results["time.now"]["display"], "Thursday, October 1, 2026")
         self.assertEqual((results["weather.today"]["now_f"], results["weather.today"]["high_f"],
@@ -177,6 +178,8 @@ class FixtureModeTests(EnvMixin, StateDirTest):
         self.assertIn("Test Mission Alpha", results["status.daily"]["output"])
         self.assertIn("Test Focus Item 1", results["status.next_action"]["output"])
         self.assertIn("test-model-a", results["status.local_llm"]["output"])
+        self.assertEqual([r["title"] for r in results["web.search"]["results"]][1:],
+                         ["Test Result B", "Test Result C", "Test Result D", "Test Result E"])
         for name, result in results.items():
             self.assertNotIn("error", result, name)
         self.assertEqual(self.recorder.calls, [])

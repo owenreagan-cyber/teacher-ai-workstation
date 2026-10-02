@@ -22,6 +22,12 @@ Fixture directory layout (all synthetic):
   calendar.json    EventKit helper output: {"status": "ok", "events": [...]}
   reminders.json   EventKit helper output: {"status": "ok", "reminders": [...]}
   status/<name>.txt  output of the wrapped status command for status.<name>
+  search.json      a Brave web search response, returned for every web.search query.
+                   Its presence stands for "API key stored": without it web.search
+                   reports "web search not set up". The real web.search code still
+                   builds the request, checks it against the egress allowlist, and
+                   writes the egress_request audit record; only the transport and
+                   the Keychain read are replaced.
 A missing or unreadable file makes that tool return an error result.
 """
 from __future__ import annotations
@@ -35,7 +41,7 @@ from pathlib import Path
 from cos import egress
 from cos.config import Config, ConfigError
 from cos.registry import Registry
-from cos.tools import ToolContext, build_registry, calendar, reminders, status_scripts, weather
+from cos.tools import ToolContext, build_registry, calendar, reminders, status_scripts, weather, web_search
 from cos.tools.time_tool import fmt_time
 
 STATUS_FLAGS = {name: flag for name, flag, _desc, _kws in status_scripts.SCRIPTS}
@@ -121,6 +127,24 @@ def _status(fixture_dir, tool_name):
     return func
 
 
+def _search(ctx, fixture_dir):
+    path = fixture_dir / "search.json"
+
+    def http(method, url, headers=None, timeout=None, audit=None):
+        dest = egress.check_url(url)  # the real allowlist still applies
+        if dest[1] != web_search.BRAVE.host:
+            raise egress.EgressDenied(f"fixture mode: unexpected search host {dest[1]}")
+        try:
+            return path.read_bytes()
+        except OSError as e:
+            raise egress.EgressError(f"fixture search.json unreadable ({type(e).__name__})")
+
+    def key():
+        return "fixture-key" if path.exists() else None
+
+    return lambda args: web_search.search(ctx, args, key_source=key, http=http)
+
+
 def _missing(tool_name):
     return lambda args: {"error": f"{tool_name} has no fixture reader (fixture mode)"}
 
@@ -138,6 +162,8 @@ def _reader(tool, ctx, fixture_dir):
         return _helper(ctx, fixture_dir, "reminders.json", reminders.reminders_result)
     if tool.name in STATUS_FLAGS:
         return _status(fixture_dir, tool.name)
+    if tool.name == "web.search":
+        return _search(ctx, fixture_dir)
     return _missing(tool.name)
 
 

@@ -10,6 +10,15 @@ tool calls. The gate decision is audited with subject=fast_path, the kill
 switch is checked before the tool and again after it, and the request closes
 with an answer record carrying model_ms=0, tool_ms, and total_ms. The answer
 uses a fixed template and reports "Tools used: <tool> · fast path (no model)".
+
+Web search (D-011) is matched separately, on the raw text: the whole trimmed
+message must be "search <q>", "look up <q>", "google <q>", or "web search <q>"
+(prefix case-insensitive, <q> one line). <q> goes to web.search exactly as
+typed (trimmed, at most 200 characters; longer is refused, never cut), with
+query_source "typed". The model never writes or edits it. The local model then
+writes a 2-4 sentence answer from the results (Agent.answer_from_search), and
+cos appends numbered sources. If the model is unavailable the answer is the raw
+results list instead, still marked fast path (no model).
 """
 from __future__ import annotations
 
@@ -22,9 +31,11 @@ from typing import Callable
 from cos.agent import AgentResult, Stopped
 from cos.audit import text_digest
 from cos.executor import run_tool
+from cos.model import ModelError
 from cos.policy import PolicyGate
 from cos.registry import Registry
 from cos.tools.mac_status import one_line
+from cos.tools.web_search import MAX_QUERY_CHARS, QUERY_SOURCE
 
 WEEKDAYS = ("monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday")
 _NOW = r"(?: (?:now|right now|today))?"
@@ -133,6 +144,32 @@ INTENTS = (
 )
 
 
+SEARCH_TOOL = "web.search"
+SEARCH_RE = re.compile(r"(?:web[ \t]+search|search|look[ \t]+up|google)[ \t]+(?P<q>[^\x00-\x1f\x7f]+)",
+                       re.IGNORECASE)
+
+
+def match_search(question: str) -> str | None:
+    """The query if the whole message is a typed search command, else None. Not length-checked."""
+    m = SEARCH_RE.fullmatch(question.strip())
+    if not m:
+        return None
+    q = m.group("q").strip()
+    return q or None
+
+
+def _sources(results: list[dict]) -> str:
+    return "Sources:\n" + "\n".join(f"{i}. {r['title']} — {r['url']}" for i, r in enumerate(results, 1))
+
+
+def _raw_results(query: str, results: list[dict]) -> str:
+    lines = [f'Web results for "{query}":']
+    for i, r in enumerate(results, 1):
+        lines.append(f"{i}. {r['title']}" + (f" — {r['snippet']}" if r["snippet"] else ""))
+        lines.append(f"   {r['url']}")
+    return "\n".join(lines)
+
+
 def match(question: str) -> tuple[Intent, re.Match] | None:
     q = normalize(question)
     for intent in INTENTS:
@@ -143,14 +180,20 @@ def match(question: str) -> tuple[Intent, re.Match] | None:
 
 
 class FastPath:
-    def __init__(self, registry: Registry, gate: PolicyGate, clock, audit=None):
+    def __init__(self, registry: Registry, gate: PolicyGate, clock, audit=None, summarize=None):
+        """summarize(question, result, timing) -> (answer, model) writes the search answer
+        (normally Agent.answer_from_search); without it searches show the raw results."""
         self.registry = registry
         self.gate = gate
         self.clock = clock
         self.audit = audit or (lambda *a, **k: None)
+        self.summarize = summarize
 
     def answer(self, question: str, mode: str = "ask") -> AgentResult | None:
         """Return a fast-path answer, None if the question does not match, or raise Stopped."""
+        query = match_search(question)
+        if query is not None:
+            return self._search(question, query, mode)
         hit = match(question)
         if hit is None:
             return None
@@ -184,3 +227,60 @@ class FastPath:
         text = intent.render(result)
         close("answer", tools_used=[tool.name], chars=len(text))
         return AgentResult(text, [tool.name], None, fast_path=True)
+
+    def _search(self, question: str, query: str, mode: str) -> AgentResult:
+        started = time.monotonic()
+        timing = {"tool_ms": 0, "model_ms": 0}
+
+        def close(kind, **fields):
+            self.audit(kind, path="fast_path", intent="web_search", model_ms=timing["model_ms"],
+                       tool_ms=timing["tool_ms"], total_ms=int((time.monotonic() - started) * 1000),
+                       **fields)
+
+        self.audit("request", mode=mode, path="fast_path", intent="web_search",
+                   prompt=text_digest(question), tools_offered=[SEARCH_TOOL], query_source=QUERY_SOURCE)
+        if len(query) > MAX_QUERY_CHARS:
+            close("answer", tools_used=[], denied="query_too_long")
+            return AgentResult(f"That search is {len(query)} characters; the limit is {MAX_QUERY_CHARS}. "
+                               "Shorten it and try again.", [], None, fast_path=True)
+        args = {"query": query, "query_source": QUERY_SOURCE}
+        decision = self.gate.decide(SEARCH_TOOL, args, subject="fast_path")
+        tool = self.registry.get(SEARCH_TOOL)
+        if not decision.allowed or tool is None:
+            if decision.rule == "kill_switch":
+                close("request_stopped", reason="kill_switch")
+                raise Stopped("kill switch is set")
+            close("answer", tools_used=[], denied=decision.rule)
+            return AgentResult(f"I can't search right now ({decision.reason}).", [], None, fast_path=True)
+        tool_started = time.monotonic()
+        result = run_tool(tool, args, decision, audit=self.audit)
+        timing["tool_ms"] = int((time.monotonic() - tool_started) * 1000)
+        if self.gate.kill_switch.is_set():
+            close("request_stopped", reason="kill_switch")
+            raise Stopped("kill switch was set during the web search")
+        if "error" in result:
+            text = f"Web search is unavailable: {result['error']}."
+            close("answer", tools_used=[tool.name], chars=len(text))
+            return AgentResult(text, [tool.name], None, fast_path=True)
+        results = result.get("results") or []
+        if not results:
+            text = f'No web results for "{query}".'
+            close("answer", tools_used=[tool.name], chars=len(text))
+            return AgentResult(text, [tool.name], None, fast_path=True)
+        summary, model_used, notices = None, None, []
+        if self.summarize is not None:
+            try:
+                summary, model_used = self.summarize(question, result, timing)
+            except Stopped:
+                close("request_stopped", reason="kill_switch")
+                raise
+            except ModelError as e:
+                notices.append("The local model is unavailable, so these are the raw results.")
+                self.audit("search_summary_failed", error=str(e)[:200])
+        if summary:
+            text = f"{summary}\n\n{_sources(results)}"
+            close("answer", tools_used=[tool.name], model=model_used, chars=len(text))
+            return AgentResult(text, [tool.name], model_used, notices)
+        text = _raw_results(query, results)
+        close("answer", tools_used=[tool.name], chars=len(text))
+        return AgentResult(text, [tool.name], None, notices, fast_path=True)

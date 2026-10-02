@@ -1,7 +1,9 @@
 """Tool registry: declarations, argument validation, and the model-facing schema.
 
 Every tool declares name, description, parameters (a small JSON-schema
-subset), side_effect, data_class, timeout_s, and router keywords. Canonical
+subset), side_effect, data_class, timeout_s, and router keywords. A tool marked
+fast_path_only is never offered to the model, and the policy gate denies it to
+any caller except the deterministic fast path. Canonical
 names use dots (time.now); the wire name sent to the model uses underscores
 (time_now) because many models are trained on that format.
 """
@@ -35,6 +37,7 @@ class Tool:
     timeout_s: float
     func: Callable[[dict], dict]
     keywords: tuple[str, ...] = field(default=())
+    fast_path_only: bool = False
 
     @property
     def wire_name(self) -> str:

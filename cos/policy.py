@@ -4,7 +4,9 @@ Rules, in order (any failure, exception, or timeout inside the gate denies):
   1. kill switch set           -> deny everything
   2. tool not registered        -> deny
   3. side_effect is not "none"  -> deny (M1 has no write tools)
-  4. arguments fail the schema  -> deny
+  4. fast_path_only tool asked for by anything but the fast path -> deny
+     (web.search: the query must be text Owen typed, never model-written)
+  5. arguments fail the schema  -> deny
   otherwise                     -> allow
 """
 from __future__ import annotations
@@ -66,7 +68,7 @@ class PolicyGate:
         self.audit = audit
         self.timeout_s = timeout_s
 
-    def _rules(self, tool_name: str, args) -> Decision:
+    def _rules(self, tool_name: str, args, subject: str) -> Decision:
         if self.kill_switch.is_set():
             return Decision(False, "kill_switch", "kill switch is set (cos resume to clear)")
         tool = self.registry.get(tool_name)
@@ -75,6 +77,9 @@ class PolicyGate:
         if tool.side_effect != "none":
             return Decision(False, "side_effect",
                             f"{tool.name} has side_effect {tool.side_effect!r}; M1 allows none")
+        if tool.fast_path_only and subject != "fast_path":
+            return Decision(False, "fast_path_only",
+                            f"{tool.name} runs only from text Owen types, never from a model call")
         try:
             validate_args(tool, args)
         except ArgumentError as e:
@@ -86,7 +91,7 @@ class PolicyGate:
 
         def run():
             try:
-                box.append(self._rules(tool_name, args))
+                box.append(self._rules(tool_name, args, subject))
             except Exception as e:  # noqa: BLE001 - any gate failure denies
                 box.append(Decision(False, "gate_error", f"policy gate error: {type(e).__name__}"))
 

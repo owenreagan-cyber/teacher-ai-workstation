@@ -70,7 +70,9 @@ def build_runtime() -> Runtime:
 
 
 def make_fastpath(rt: Runtime) -> FastPath:
-    return FastPath(rt.registry, rt.gate, rt.ctx.clock, audit=rt.audit)
+    def summarize(question, result, timing):  # the agent (and its memory files) only when searching
+        return make_agent(rt).answer_from_search(question, result, timing)
+    return FastPath(rt.registry, rt.gate, rt.ctx.clock, audit=rt.audit, summarize=summarize)
 
 
 def make_agent(rt: Runtime) -> Agent:

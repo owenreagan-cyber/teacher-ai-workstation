@@ -21,7 +21,7 @@ class RegistryContentsTests(StateDirTest):
         reg = build_registry(make_ctx(self.config()))
         expected = {"time.now": "P2", "weather.today": "P2", "mac.status": "P1",
                     "calendar.today": "P1", "reminders.due": "P1", "status.daily": "P1",
-                    "status.next_action": "P1", "status.local_llm": "P1"}
+                    "status.next_action": "P1", "status.local_llm": "P1", "web.search": "P2"}
         self.assertEqual({t.name: t.data_class for t in reg.all()}, expected)
         self.assertTrue(all(t.side_effect == "none" for t in reg.all()))
         self.assertTrue(all(t.timeout_s > 0 for t in reg.all()))

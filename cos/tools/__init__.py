@@ -1,4 +1,4 @@
-"""M1 tools. All read-only (side_effect "none").
+"""M1 tools. All read-only (side_effect "none"). web.search is also fast_path_only.
 
 Tools receive a ToolContext so tests can inject a clock, a command runner,
 an HTTP function, and paths. build_registry() registers every M1 tool.
@@ -47,10 +47,10 @@ class ToolContext:
 
 
 def build_registry(ctx: ToolContext) -> Registry:
-    from cos.tools import calendar, mac_status, reminders, status_scripts, time_tool, weather
+    from cos.tools import calendar, mac_status, reminders, status_scripts, time_tool, weather, web_search
 
     registry = Registry()
-    for module in (time_tool, weather, mac_status, calendar, reminders):
+    for module in (time_tool, weather, mac_status, calendar, reminders, web_search):
         for tool in module.tools(ctx):
             registry.register(tool)
     for tool in status_scripts.tools(ctx, on_disabled=registry.disable):

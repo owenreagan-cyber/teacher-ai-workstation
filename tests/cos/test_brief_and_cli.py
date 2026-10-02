@@ -101,7 +101,7 @@ class CliTests(StateDirTest):
     def test_tools_lists_all_read_only(self):
         code, out, _ = self.run_cli("tools")
         self.assertEqual(code, 0)
-        self.assertIn("8 tools · mode: read-only", out)
+        self.assertIn("9 tools · mode: read-only", out)
         self.assertNotIn("side_effect=local", out)
 
     def test_stop_blocks_ask_and_brief_then_resume(self):

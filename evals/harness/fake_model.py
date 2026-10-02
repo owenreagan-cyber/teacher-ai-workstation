@@ -8,7 +8,8 @@ audit, sessions, kill switch) rather than model quality:
   - a request to send, post, delete, schedule, open, ... is refused, no tool;
   - otherwise it calls the offered tool its own whole-word keyword table
     matches (two when the question joins topics with "and"), once per turn;
-  - after tool results it summarizes them as plain data (titles quoted as text);
+  - after tool results it summarizes them as plain data (titles quoted as text;
+    web search results by count and first domain only, never their text);
   - if no offered tool fits the question, it says it doesn't know.
 
 The reply depends only on the request payload, so runs are reproducible.
@@ -17,6 +18,7 @@ from __future__ import annotations
 
 import json
 import re
+import urllib.parse
 
 MODEL_NAME = "fake-scripted"
 
@@ -130,6 +132,13 @@ def _summary(wire: str, data: dict) -> str:
     if wire == "mac_status":
         return (f"Right now: battery {data.get('battery_pct')}%, memory {data.get('memory_free_pct')}% free, "
                 f"disk {data.get('disk_free_gb')} GB free; loaded models: {data.get('ollama_loaded')}.")
+    if wire == "web_search":
+        results = data.get("results") or []
+        if not results:
+            return "The search found nothing useful."
+        host = urllib.parse.urlsplit(str(results[0].get("url"))).hostname
+        return (f"I found {len(results)} web results for that search. "
+                f"The first one is from {host}.")
     if wire.startswith("status_"):
         lines = [l for l in str(data.get("output", "")).splitlines() if ":" in l][:8]
         return "The status report says: " + " | ".join(lines)
@@ -148,8 +157,9 @@ def reply(payload: dict) -> dict:
         for msg in reversed(messages):
             if msg.get("role") != "tool":
                 break
+            text = re.sub(r"^<untrusted_search_results>\n|\n</untrusted_search_results>$", "", _text(msg))
             try:
-                data = json.loads(_text(msg))
+                data = json.loads(text)
             except ValueError:
                 data = {"error": "unreadable tool result"}
             if not isinstance(data, dict):

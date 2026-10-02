@@ -96,6 +96,27 @@ class SessionStoreTests(StateDirTest):
         append_turn(self.state, "default", turn(2))
         self.assertEqual(len(read_turns(self.state, "default")), 2)
 
+    def test_append_after_torn_last_line_without_newline_survives(self):
+        """se-bad-006: a last line with no trailing newline must not swallow the next turn."""
+        self.config()
+        append_turn(self.state, "default", turn(1))
+        path = self.state / "sessions" / "default.jsonl"
+        with open(path, "a") as fh:
+            fh.write('{"ts": "2026-09-30T08:')  # torn: no newline
+        append_turn(self.state, "default", turn(2))
+        turns, skipped = read_session(self.state, "default")
+        self.assertEqual([t["question"][:2] for t in turns], ["q1", "q2"])
+        self.assertEqual(skipped, 1)
+        self.assertTrue(path.read_bytes().endswith(b"\n"))
+
+    def test_append_to_clean_file_adds_no_blank_line(self):
+        self.config()
+        append_turn(self.state, "default", turn(1))
+        append_turn(self.state, "default", turn(2))
+        raw = (self.state / "sessions" / "default.jsonl").read_bytes()
+        self.assertEqual(raw.count(b"\n"), 2)
+        self.assertNotIn(b"\n\n", raw)
+
 
 class TurnValidationTests(CliCase):
     """M15A-002: every turn is shape-checked on write and on read."""

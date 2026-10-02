@@ -7,7 +7,9 @@ file 0600), one completed turn per line:
 
 Session ids must fully match [a-z0-9-]{1,40}, so an id can never name a path
 outside the sessions directory. Reading never creates anything; only a
-completed turn is appended (a stopped or failed ask appends nothing).
+completed turn is appended (a stopped or failed ask appends nothing). If the
+last line is torn (no trailing newline), a newline is written first so the torn
+line stays a separate, skipped line and the new turn survives.
 
 Every turn is shape-checked (check_turn) before it is written, and every line
 is checked again on read: a line that is not JSON or not a valid turn is
@@ -107,12 +109,15 @@ def append_turn(state_dir: Path, session_id: str, turn: dict) -> None:
     record = check_turn(turn)
     path = session_path(state_dir, session_id)
     ensure_private_subdir(SUBDIR, Path(state_dir))
-    fd = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_APPEND | os.O_NOFOLLOW, FILE_MODE)
+    fd = os.open(path, os.O_RDWR | os.O_CREAT | os.O_APPEND | os.O_NOFOLLOW, FILE_MODE)
     with os.fdopen(fd, "a", encoding="utf-8") as fh:
         os.fchmod(fh.fileno(), FILE_MODE)
         fcntl.flock(fh, fcntl.LOCK_EX)
         try:
-            fh.write(json.dumps(record, ensure_ascii=False) + "\n")
+            size = os.fstat(fd).st_size
+            # A torn last line (no newline) stays its own, skipped line; the new turn starts fresh.
+            lead = "\n" if size and os.pread(fd, 1, size - 1) != b"\n" else ""
+            fh.write(lead + json.dumps(record, ensure_ascii=False) + "\n")
             fh.flush()
         finally:
             fcntl.flock(fh, fcntl.LOCK_UN)

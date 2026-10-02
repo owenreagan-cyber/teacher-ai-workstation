@@ -75,3 +75,7 @@ evals/reports/
 # Claude Code: share the project profile, never personal/local files
 .claude/*
 !.claude/settings.json
+
+# Claude Code: share the project profile, never personal/local files
+.claude/*
+!.claude/settings.json

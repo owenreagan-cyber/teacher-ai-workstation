@@ -1,9 +1,13 @@
 #!/usr/bin/env python3
 """Developer safety guard: a Claude Code PreToolUse hook (stdlib only).
 
-Source of truth: tools/dev_safety/dev_guard.py in the recovery repo.
+Source of truth: tools/dev_safety/dev_guard.py in the teacher-ai-workstation repo.
 Running copy: ~/.claude/hooks/cos/dev_guard.py, installed read-only by
 install_dev_guard.py. Never edit the installed copy directly.
+
+This hook is the second layer. It checks the command text, so it cannot see what
+a program it allows (python3 x.py, npm test, make) goes on to do; the Claude Code
+Bash sandbox (tools/dev_safety/README.md) is what contains those.
 
 Reads one PreToolUse JSON payload on stdin. Allowed calls exit 0 with no
 output; denied calls print a hookSpecificOutput deny decision. Anything the
@@ -11,17 +15,29 @@ guard cannot parse is denied (fail closed).
 
 Bash policy
   - git (after normalizing `git -C ..`, `git -c k=v ..`, `env X=1 git ..`,
-    `/usr/bin/git ..`, `bash -c '..'`, `$(..)`): deny push, config, clean,
-    gc, update-ref, reset --hard, any force flag, `-c alias.*`, and
-    worktree add/remove/move/prune unless the target is exactly
-    $COS_FEATURE_WORKTREE (prune is always denied).
-  - sudo / doas: always denied.
+    `/usr/bin/git ..`, `$(..)`): deny push, config, clean, gc, update-ref,
+    reset --hard, any force flag, `-c alias.*`, and worktree add/remove/move/prune
+    unless the target is exactly $COS_FEATURE_WORKTREE (prune is always denied).
+  - sudo / doas / su: always denied.
+  - inline code: shells (sh, bash, zsh, ...) with or without arguments,
+    `python -c`, `node -e/-p`, `perl -e/-E`, `ruby -e`, `php -r`, `osascript`,
+    awk programs that call system() or pipe, and interpreters reading their
+    program from stdin. Wrappers (env, xargs, nice, timeout, exec, find -exec)
+    are peeled recursively. Running a file or module stays allowed.
+  - destructive: rm -r / rmdir outside the project or system temp, find -delete,
+    shred, dd, mkfs/newfs, diskutil erase/zero/reformat/partition, tmutil delete,
+    brew uninstall/autoremove/cleanup, docker rm/rmi/prune.
   - ps: allowed only with an explicit -o format made of safe keywords
     (e.g. `ps -o pid,ppid,comm`); full-command-line forms are denied.
   - pgrep: deny -a, and -f combined with -l.
-  - any token that resolves into a denied root.
+  - any path-like word or redirection target (absolute, relative, ~, $HOME,
+    following `cd` within the command and symlinks) that resolves into a denied
+    root, or a glob / variable whose literal prefix contains one.
 
-File-tool policy (Read, Edit, Write, MultiEdit, NotebookEdit, Glob, Grep)
+File-tool policy (Read, Edit, Write, MultiEdit, NotebookEdit, Glob, Grep, and any
+other tool whose input carries a path)
+  - every path-bearing key (file_path, notebook_path, path, edits[].file_path, ...)
+    is checked; a write-like tool with no recognizable path is denied;
   - deny any path that resolves (after symlinks) into a denied root;
   - deny Glob/Grep whose search base contains a denied root;
   - deny Edit/Write-family calls into <project>/.claude or the installed
@@ -34,19 +50,14 @@ import os
 import re
 import shlex
 import sys
+import tempfile
 
 TAG = "[dev_guard]"
 
-FILE_PATH_KEYS = {
-    "Read": ("file_path",),
-    "Edit": ("file_path",),
-    "Write": ("file_path",),
-    "MultiEdit": ("file_path",),
-    "NotebookEdit": ("notebook_path",),
-    "Glob": ("path",),
-    "Grep": ("path",),
-}
+PATH_KEYS = ("file_path", "notebook_path", "path", "filePath", "notebookPath")
 WRITE_TOOLS = {"Edit", "Write", "MultiEdit", "NotebookEdit"}
+WRITE_LIKE_RE = re.compile(r"(Edit|Write)", re.I)
+NON_FILE_TOOLS = {"TodoWrite"}  # name looks write-like, but it never touches a file
 SEARCH_TOOLS = {"Glob", "Grep"}
 
 DENIED_ROOT_RELS = (
@@ -57,9 +68,13 @@ DENIED_ROOT_RELS = (
     ".gnupg",
     ".config/gh",
     "Library/Application Support/ChiefOfStaff",
+    # Claude Code's own state: settings, account file, and every session transcript.
+    ".claude.json",
+    ".claude/settings.json",
+    ".claude/settings.local.json",
+    ".claude/projects",
 )
 HOOK_DIR_REL = ".claude/hooks/cos"
-MEMORY_PARENT_REL = ".claude/projects"
 
 GIT_DENIED_SUBCOMMANDS = {"push", "send-pack", "http-push", "config", "clean", "gc", "update-ref"}
 # Global options that take a separate value. `=`-only options (--exec-path,
@@ -84,10 +99,16 @@ PS_SAFE_KEYWORDS = {
 PS_PLAIN_FLAGS = set("AaxrmchXS")
 PS_VALUE_FLAGS = set("opUGt")
 
-SHELLS = {"sh", "bash", "zsh", "dash", "ksh", "fish"}
-PASSTHROUGH = {"command", "builtin", "exec", "nohup", "time", "caffeinate"}
+SHELLS = {"sh", "bash", "zsh", "dash", "ksh", "fish", "csh", "tcsh"}
+PASSTHROUGH = {"command", "builtin", "exec", "nohup", "time", "caffeinate", "arch", "stdbuf"}
 PRIV = {"sudo", "doas", "su", "run0", "pkexec"}
 ASSIGN_RE = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*=")
+PYTHON_RE = re.compile(r"^(python|pypy)(\d+(\.\d+)?)?$")
+AWKS = {"awk", "gawk", "nawk", "mawk"}
+# Tools that walk a directory tree: a base that contains a denied root reaches it.
+TREE_WALKERS = {"find", "rg", "ag", "tar", "zip", "rsync", "ditto", "du", "tree"}
+# Characters after which a word's value is unknown to the guard (globs, variables, expansions).
+OPAQUE_RE = re.compile(r"[*?\[{$`]")
 MAX_DEPTH = 6
 
 
@@ -103,7 +124,7 @@ def _home(ctx):
 
 def _roots(ctx):
     h = _home(ctx)
-    return [os.path.join(h, r) for r in DENIED_ROOT_RELS]
+    return [os.path.join(h, r) for r in DENIED_ROOT_RELS] + list(ctx.get("extra_roots", ()))
 
 
 def _variants(path):
@@ -121,6 +142,14 @@ def _under(path, root):
     return False
 
 
+def _strictly_under(path, root):
+    for p in _variants(path):
+        for q in _variants(root):
+            if p.startswith(q.rstrip("/") + "/"):
+                return True
+    return False
+
+
 def _expand(raw, ctx, base=None):
     s = raw.replace("${HOME}", _home(ctx)).replace("$HOME", _home(ctx))
     if s == "~" or s.startswith("~/"):
@@ -130,30 +159,21 @@ def _expand(raw, ctx, base=None):
     return os.path.normpath(s)
 
 
-def _is_memory(path, ctx):
-    parent = os.path.join(_home(ctx), MEMORY_PARENT_REL)
-    for p in _variants(path):
-        for q in _variants(parent):
-            if p.startswith(q.rstrip("/") + "/"):
-                parts = os.path.relpath(p, q).split(os.sep)
-                if "memory" in parts[1:]:
-                    return True
-    return False
+def _resolve_all(raw, ctx):
+    """raw resolved against every working directory the command may be in."""
+    return sorted({_expand(raw, ctx, c) for c in ctx.get("cwds") or [ctx["cwd"]]})
 
 
 def denied_root_for(path, ctx):
     for root in _roots(ctx):
         if _under(path, root):
             return root
-    if _is_memory(path, ctx):
-        return os.path.join(_home(ctx), MEMORY_PARENT_REL, "**/memory")
     return None
 
 
 def _contains_denied_root(base, ctx):
-    """True when a recursive search from base would reach a denied root."""
-    targets = _roots(ctx) + [os.path.join(_home(ctx), MEMORY_PARENT_REL)]
-    for t in targets:
+    """The denied root a recursive walk from base would reach, if any."""
+    for t in _roots(ctx):
         if _under(t, base):
             return t
     return None
@@ -161,26 +181,56 @@ def _contains_denied_root(base, ctx):
 
 def _glob_prefix(pattern):
     """Literal directory prefix of a glob pattern ('' when it starts with a wildcard)."""
-    m = re.search(r"[*?\[{]", pattern)
+    m = OPAQUE_RE.search(pattern)
     if m is None:
         return pattern
     head = pattern[:m.start()]
     return head.rsplit("/", 1)[0] if "/" in head else ""
 
 
+def _protected_write(p, ctx):
+    proj_claude = os.path.join(ctx["project_dir"], ".claude")
+    if _under(p, proj_claude):
+        return f"{proj_claude} is denied (profile is immutable to the agent)"
+    hook_dir = os.path.join(_home(ctx), HOOK_DIR_REL)
+    if _under(p, hook_dir):
+        return f"installed hook directory {hook_dir} is denied"
+    return None
+
+
 # ---------------------------------------------------------------- file tools
 
+def _collect_paths(obj, tool, where=""):
+    """Every value under a path-bearing key, at any depth (MultiEdit edits[], ...)."""
+    out = []
+    if isinstance(obj, dict):
+        for k, v in obj.items():
+            if k in PATH_KEYS:
+                if v is None:
+                    continue
+                if not isinstance(v, str):
+                    raise Deny(f"{tool}.{where}{k} is not a string")
+                if v:
+                    out.append(v)
+            elif isinstance(v, (dict, list)):
+                out += _collect_paths(v, tool, f"{where}{k}.")
+    elif isinstance(obj, list):
+        for i, v in enumerate(obj):
+            out += _collect_paths(v, tool, f"{where}[{i}].")
+    return out
+
+
 def check_file_tool(tool, tin, ctx):
-    keys = FILE_PATH_KEYS[tool]
-    paths = []
-    for k in keys:
-        v = tin.get(k)
-        if v is not None and not isinstance(v, str):
-            raise Deny(f"{tool}.{k} is not a string")
-        if v:
-            paths.append(_expand(v, ctx))
+    is_write = tool in WRITE_TOOLS or (tool not in NON_FILE_TOOLS and bool(WRITE_LIKE_RE.search(tool)))
+    if tool == "MultiEdit" and "edits" in tin and not isinstance(tin["edits"], list):
+        raise Deny("MultiEdit.edits is not a list")
+    raw = _collect_paths(tin, tool)
+    if is_write and not raw:
+        raise Deny(f"{tool} payload has no recognizable path (unknown write-tool shape)")
+    paths = [_expand(v, ctx) for v in raw]
     if tool in SEARCH_TOOLS:
-        base = paths[0] if paths else ctx["cwd"]
+        top = tin.get("path")
+        base = _expand(top, ctx) if isinstance(top, str) and top else ctx["cwd"]
         pat = tin.get("pattern") if tool == "Glob" else tin.get("glob")
         if isinstance(pat, str) and pat:
             pre = _glob_prefix(pat)
@@ -195,13 +245,10 @@ def check_file_tool(tool, tin, ctx):
         root = denied_root_for(p, ctx)
         if root:
             raise Deny(f"{tool} path {p} resolves into denied root {root}")
-        if tool in WRITE_TOOLS:
-            proj_claude = os.path.join(ctx["project_dir"], ".claude")
-            if _under(p, proj_claude):
-                raise Deny(f"{tool} into {proj_claude} is denied (profile is immutable to the agent)")
-            hook_dir = os.path.join(_home(ctx), HOOK_DIR_REL)
-            if _under(p, hook_dir):
-                raise Deny(f"{tool} into installed hook directory {hook_dir} is denied")
+        if is_write:
+            why = _protected_write(p, ctx)
+            if why:
+                raise Deny(f"{tool} into {why}")
 
 
 # ---------------------------------------------------------------- shell parsing
@@ -432,23 +479,249 @@ def check_pgrep(args):
         raise Deny("pgrep -f with -l prints full command lines")
 
 
-# ---------------------------------------------------------------- bash
+# ---------------------------------------------------------------- inline code
 
-def check_bash_paths(words, ctx):
-    for w in words:
-        if not (w.startswith("~") or w.startswith("/") or "$HOME" in w or "${HOME}" in w):
+def _inline(prog, how):
+    raise Deny(f"inline code execution ({prog} {how}) is denied; write a file and run it instead")
+
+
+def _check_short_flag_interp(prog, args, code_letters, value_letters="", stop_letters=""):
+    """Generic scan for perl/ruby/php/lua-style interpreters.
+
+    Denies when a short-option cluster before the script contains a code letter, or when
+    no script is named (program read from stdin). Returns normally when a file runs.
+    """
+    i = 0
+    while i < len(args):
+        a = args[i]
+        if a == "-":
+            _inline(prog, "- (program on stdin)")
+        if a == "--":
+            if i + 1 < len(args):
+                return
+            break
+        if a.startswith("--"):
+            if a in ("--version", "--help"):
+                return
+            i += 1
             continue
-        for piece in re.split(r"[=:]", w):
-            if not piece or not (piece.startswith("~") or piece.startswith("/") or "HOME" in piece):
-                continue
-            p = _expand(piece, ctx)
-            root = denied_root_for(p, ctx)
-            if root:
-                raise Deny(f"Bash argument {w} resolves into denied root {root}")
-            hook_dir = os.path.join(_home(ctx), HOOK_DIR_REL)
-            if _under(p, hook_dir):
-                raise Deny(f"Bash access to installed hook directory {hook_dir} is denied")
+        if a.startswith("-") and len(a) > 1:
+            for k, ch in enumerate(a[1:], start=1):
+                if ch in code_letters:
+                    _inline(prog, f"-{ch}")
+                if ch in stop_letters:
+                    return
+                if ch in value_letters:
+                    if k == len(a) - 1:
+                        i += 1
+                    break
+            i += 1
+            continue
+        return  # a script file
+    _inline(prog, "with no script (program on stdin)")
 
+
+def check_python(prog, args):
+    _check_short_flag_interp(prog, args, code_letters="c", value_letters="WXQ", stop_letters="mVh?")
+
+
+def check_node(prog, args):
+    i = 0
+    while i < len(args):
+        a = args[i]
+        if a in ("-e", "--eval", "-p", "--print") or a.startswith(("--eval=", "--print=")):
+            _inline(prog, a)
+        if a in ("-v", "--version", "-h", "--help", "--test", "--run", "--check", "-c"):
+            return
+        if a in ("-r", "--require", "--import", "--loader", "--experimental-loader", "--input-type",
+                 "--env-file", "--conditions", "-C"):
+            i += 2
+            continue
+        if a == "-":
+            _inline(prog, "- (program on stdin)")
+        if re.fullmatch(r"-[a-z]+", a) and set(a[1:]) & set("ep"):
+            _inline(prog, a)
+        if a.startswith("-"):
+            i += 1
+            continue
+        return  # a script file
+    _inline(prog, "with no script (program on stdin)")
+
+
+def check_bun_deno(prog, args):
+    if prog == "bun":
+        for a in args:
+            if a in ("-e", "--eval", "-p", "--print") or a.startswith(("--eval=", "--print=")):
+                _inline(prog, a)
+        return
+    sub = next((a for a in args if not a.startswith("-")), None)
+    if sub in ("eval", "repl") or sub is None and "-" in args:
+        _inline(prog, sub or "-")
+
+
+def check_awk(prog, args):
+    i = 0
+    while i < len(args):
+        a = args[i]
+        if a == "-f" or a.startswith("--file"):
+            return  # program from a file
+        if a in ("-v", "-F", "--assign", "--field-separator"):
+            i += 2
+            continue
+        if a == "--":
+            i += 1
+            break
+        if a.startswith("-") and len(a) > 1:
+            i += 1
+            continue
+        break
+    if i < len(args):
+        program = args[i]
+        if "system" in program or "|" in program:
+            raise Deny(f"{prog} program that runs commands (system() or a pipe) is denied")
+
+
+def check_interpreters(prog, args):
+    if prog in SHELLS:
+        raise Deny(f"running a shell ({prog}{' ' + args[0] if args else ''}) is denied; "
+                   "run the command directly")
+    if prog == "osascript":
+        _inline(prog, "(AppleScript/JXA)")
+    if PYTHON_RE.match(prog):
+        check_python(prog, args)
+    elif prog in ("node", "nodejs"):
+        check_node(prog, args)
+    elif prog in ("bun", "deno"):
+        check_bun_deno(prog, args)
+    elif prog == "perl" or re.fullmatch(r"perl5(\.\d+)*", prog):
+        _check_short_flag_interp(prog, args, code_letters="eE", value_letters="IMmdDxC")
+    elif prog == "ruby":
+        _check_short_flag_interp(prog, args, code_letters="e", value_letters="IrCEFKTx0")
+    elif prog == "php":
+        _check_short_flag_interp(prog, args, code_letters="ra", value_letters="cdz", stop_letters="vhim")
+    elif prog in ("lua", "luajit"):
+        _check_short_flag_interp(prog, args, code_letters="e", value_letters="l", stop_letters="v")
+    elif prog in ("Rscript", "R"):
+        if any(a == "-e" or a.startswith("--expr") for a in args):
+            _inline(prog, "-e")
+    elif prog in AWKS:
+        check_awk(prog, args)
+
+
+# ---------------------------------------------------------------- destructive
+
+def _safe_areas(ctx):
+    return [ctx["project_dir"]] + list(ctx.get("temp_roots", ()))
+
+
+def _require_safe_targets(prog, targets, ctx):
+    """Every target (all cwd readings) must be strictly inside the project or system temp."""
+    if not targets:
+        return
+    for t in targets:
+        literal = _glob_prefix(t) if OPAQUE_RE.search(t) else t
+        for p in _resolve_all(literal or ".", ctx):
+            if not any(_strictly_under(p, area) for area in _safe_areas(ctx)):
+                raise Deny(f"{prog} {t}: target {p} is outside the project and system temp")
+
+
+def _positional(args, value_opts=()):
+    out, i, end = [], 0, False
+    while i < len(args):
+        a = args[i]
+        if not end and a == "--":
+            end = True
+        elif not end and a in value_opts:
+            i += 1
+        elif end or not a.startswith("-") or a == "-":
+            out.append(a)
+        i += 1
+    return out
+
+
+def check_destructive(prog, args, ctx):
+    low = [a.lower() for a in args]
+    if prog == "rm":
+        recursive = any(a in ("--recursive",) or (re.fullmatch(r"-[A-Za-z]+", a) and set(a[1:]) & set("rR"))
+                        for a in args if a != "--")
+        if recursive:
+            _require_safe_targets(prog, _positional(args), ctx)
+    elif prog == "rmdir":
+        _require_safe_targets(prog, _positional(args), ctx)
+    elif prog in ("shred", "srm"):
+        raise Deny(f"{prog} is denied")
+    elif prog == "dd":
+        if any(a.startswith(("if=", "of=")) for a in args):
+            raise Deny("dd with if=/of= is denied")
+    elif prog.startswith(("mkfs", "newfs")):
+        raise Deny(f"{prog} is denied")
+    elif prog == "diskutil":
+        if any(a.startswith(("erase", "zero", "reformat", "partition", "secureerase", "randomdisk",
+                             "delete", "resize")) for a in low):
+            raise Deny(f"diskutil {' '.join(args[:2])} is denied")
+    elif prog == "tmutil":
+        if any(a.startswith(("delete", "thinlocal")) for a in low):
+            raise Deny(f"tmutil {' '.join(args[:1])} is denied")
+    elif prog == "brew":
+        sub = next((a for a in low if not a.startswith("-")), "")
+        if sub in ("uninstall", "remove", "rm", "autoremove", "cleanup"):
+            raise Deny(f"brew {sub} is denied")
+    elif prog in ("docker", "podman"):
+        words = [a for a in low if not a.startswith("-")]
+        sub = words[0] if words else ""
+        nxt = words[1] if len(words) > 1 else ""
+        if sub in ("rm", "rmi") or (sub in ("system", "volume", "image", "container", "network",
+                                            "builder", "buildx") and nxt in ("prune", "rm", "remove")):
+            raise Deny(f"{prog} {sub} {nxt}".rstrip() + " is denied")
+
+
+def check_find(args, ctx, depth):
+    if "-delete" in args:
+        raise Deny("find -delete is denied")
+    i = 0
+    while i < len(args):
+        if args[i] in ("-exec", "-execdir", "-ok", "-okdir"):
+            j = i + 1
+            while j < len(args) and args[j] not in (";", "+"):
+                j += 1
+            analyze_words(args[i + 1:j], ctx, depth + 1)
+            i = j
+        i += 1
+
+
+# ---------------------------------------------------------------- bash paths
+
+def _pathish(piece):
+    return (piece.startswith(("~", "/", "."))
+            or "/" in piece or "$HOME" in piece or "${HOME}" in piece)
+
+
+def check_bash_paths(items, ctx, walker=False):
+    """items: [(kind, token)]. Checks words and redirection targets against denied roots."""
+    hook_dir = os.path.join(_home(ctx), HOOK_DIR_REL)
+    for kind, w in items:
+        for piece in re.split(r"[=:]", w):
+            if not piece or piece.startswith("-") or not _pathish(piece):
+                continue
+            opaque = bool(OPAQUE_RE.search(piece.replace("${HOME}", "").replace("$HOME", "")))
+            literal = _glob_prefix(piece) if opaque else piece
+            for p in _resolve_all(literal or ".", ctx):
+                root = denied_root_for(p, ctx)
+                if root:
+                    raise Deny(f"Bash argument {w} resolves into denied root {root}")
+                if (opaque or walker) and kind == "word":
+                    hit = _contains_denied_root(p, ctx)
+                    if hit:
+                        raise Deny(f"Bash argument {w} can reach denied root {hit}")
+                if _under(p, hook_dir):
+                    raise Deny(f"Bash access to installed hook directory {hook_dir} is denied")
+                if kind == "redir-target":
+                    why = _protected_write(p, ctx)
+                    if why:
+                        raise Deny(f"Bash redirection into {why}")
+
+
+# ---------------------------------------------------------------- bash
 
 def analyze_words(words, ctx, depth):
     words = _strip_wrappers(words, ctx, depth)
@@ -458,15 +731,13 @@ def analyze_words(words, ctx, depth):
     args = words[1:]
     if prog in PRIV:
         raise Deny(f"privilege escalation via {prog} is denied")
-    if prog in SHELLS or prog == "eval":
-        if prog == "eval":
-            analyze_command(" ".join(args), ctx, depth + 1)
-            return
-        for k, a in enumerate(args):
-            if a.startswith("-") and not a.startswith("--") and "c" in a[1:]:
-                if k + 1 < len(args):
-                    analyze_command(args[k + 1], ctx, depth + 1)
-                return
+    if prog == "eval":
+        analyze_command(" ".join(args), ctx, depth + 1)
+        return
+    check_interpreters(prog, args)
+    check_destructive(prog, args, ctx)
+    if prog == "find":
+        check_find(args, ctx, depth)
     if prog == "git":
         check_git(args, ctx)
     elif prog == "ps":
@@ -475,21 +746,52 @@ def analyze_words(words, ctx, depth):
         check_pgrep(args)
 
 
+def _is_walker(words):
+    words = [w for w in words if not ASSIGN_RE.match(w)]
+    if not words:
+        return False
+    prog = os.path.basename(words[0])
+    if prog in TREE_WALKERS:
+        return True
+    flags = "".join(a[1:] for a in words[1:] if re.fullmatch(r"-[A-Za-z]+", a))
+    if prog in ("grep", "egrep", "fgrep") and set(flags) & set("rR"):
+        return True
+    if prog in ("cp", "scp", "chmod", "chown") and set(flags) & set("rRa"):
+        return True
+    if prog == "ls" and "R" in flags:
+        return True
+    return "--recursive" in words
+
+
 def analyze_command(command, ctx, depth=0):
     if depth > MAX_DEPTH:
         raise Deny("shell nesting too deep to analyze")
     tokens = tokenize(command)
+    ctx = dict(ctx, cwds=list(ctx.get("cwds") or [ctx["cwd"]]))
     for cmd in split_commands(tokens):
         words = [t for kind, t in cmd if kind == "word"]
-        check_bash_paths([t for _, t in cmd], ctx)
+        check_bash_paths(cmd, ctx, walker=_is_walker(words))
         analyze_words(words, ctx, depth)
+        stripped = [w for w in words if not ASSIGN_RE.match(w)]
+        if stripped and stripped[0] in ("cd", "pushd"):
+            dest = next((a for a in stripped[1:] if not a.startswith("-")), "~")
+            # A cd may or may not take effect (subshells, failures): keep every candidate.
+            new = [_expand(dest, ctx, c) for c in ctx["cwds"]]
+            ctx["cwds"] = sorted(set(ctx["cwds"]) | set(new))
     for body in substitutions(command):
         analyze_command(body, ctx, depth + 1)
 
 
 # ---------------------------------------------------------------- entry
 
-def evaluate(payload, home=None):
+def default_temp_roots():
+    roots = {tempfile.gettempdir(), "/tmp", "/private/tmp"}
+    if os.environ.get("TMPDIR"):
+        roots.add(os.environ["TMPDIR"])
+    return sorted(os.path.realpath(r) for r in roots)
+
+
+def evaluate(payload, home=None, temp_roots=None):
     """Return None to allow, or a deny reason string."""
     if not isinstance(payload, dict):
         return "malformed hook payload"
@@ -502,6 +804,7 @@ def evaluate(payload, home=None):
         "home": os.path.normpath(home or os.path.expanduser("~")),
         "cwd": cwd,
         "project_dir": os.environ.get("CLAUDE_PROJECT_DIR") or cwd,
+        "temp_roots": default_temp_roots() if temp_roots is None else list(temp_roots),
     }
     try:
         if tool == "Bash":
@@ -509,7 +812,7 @@ def evaluate(payload, home=None):
             if not isinstance(cmd, str):
                 raise Deny("Bash.command is not a string")
             analyze_command(cmd, ctx)
-        elif tool in FILE_PATH_KEYS:
+        else:
             check_file_tool(tool, tin, ctx)
     except Deny as d:
         return str(d)

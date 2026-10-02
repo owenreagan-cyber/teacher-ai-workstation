@@ -10,13 +10,29 @@ Claude Code's own configuration and transcripts, and destructive or outward-faci
   (`~/Library/Application Support/ChiefOfStaff`).
 - **Credentials:** `~/.ssh`, `~/.aws`, `~/.gnupg`, `~/.config/gh`.
 - **Downloads:** `~/Downloads`.
-- **Claude memory:** `~/.claude/projects/**/memory`.
+- **Claude Code state:** `~/.claude.json`, `~/.claude/settings.json`,
+  `~/.claude/settings.local.json`, and everything under `~/.claude/projects` (session
+  transcripts and memory), for reads and writes.
 - **The profile itself:** `<project>/.claude` and the installed hook directory
   `~/.claude/hooks/cos`.
 - **Git:** push, config, clean, gc, update-ref, `reset --hard`, force flags, `-c alias.*`, and
   worktree add/remove/move/prune outside `$COS_FEATURE_WORKTREE`.
+- **Inline code:** any shell run as a program (`bash x`, `sh -c`, `xargs sh -c`), `python -c`,
+  `node -e/--eval/-p`, `perl -e/-E`, `ruby -e`, `php -r`, `osascript`, `deno eval`, `bun -e`,
+  `lua -e`, `Rscript -e`, `awk` programs with `system(` or a pipe, and interpreters reading
+  their program from stdin, also behind `env`, `xargs`, `nice`, `timeout`, `exec`, and
+  `find -exec`. Running a file or module (`python3 -m unittest`, `python3 x.py`, `npm test`)
+  stays allowed.
+- **Destructive commands:** `rm -r` and `rmdir` outside the worktree or system temp,
+  `find -delete`, `shred`, `dd if=/of=`, `mkfs`/`newfs`, `diskutil erase*/zero*/reformat/
+  partition*`, `tmutil delete*`, `brew uninstall/autoremove/cleanup`, `docker rm/rmi/… prune`.
 - **Process listings** that print full command lines (`ps aux`, `pgrep -fl`, and similar).
 - **Privilege escalation:** `sudo`, `doas`, `su`.
+
+Bash paths are resolved like the shell would: relative words and redirection targets against
+the working directory (including any `cd` earlier in the same command), `~`, `$HOME`, and
+symlinks. A glob or variable is judged by its literal prefix, and a recursive tool (`grep -r`,
+`find`, `rg`, `tar`, `cp -r`, …) whose base contains a denied root is denied.
 
 ## The layers
 
@@ -27,7 +43,8 @@ Claude Code's own configuration and transcripts, and destructive or outward-faci
    Write), which the sandbox does not cover, and add simple Bash prefix denials.
 3. **The PreToolUse hook** `dev_guard.py` (the second layer), installed read-only to
    `~/.claude/hooks/cos/`. It parses each Bash command and file-tool payload and denies what the
-   rules would miss (normalized git forms, symlinks, `$HOME`, `~`, nested `bash -c`).
+   rules would miss (normalized git forms, symlinks, relative paths, inline interpreters,
+   nested wrappers, MultiEdit `edits[].file_path`).
 
 ### What the sandbox enforces
 
@@ -87,10 +104,14 @@ the sandbox. Use the lock.
   not set `allowLocalBinding`: that would open every localhost port.
 - The sandbox reads `student_data_roots.txt` only when `render_settings.py` runs. After editing
   the roots, re-render, re-copy, and re-install.
-- Inline interpreters (`python3 -c`, `node -e`, `perl -e`, `osascript -e`) are not inspected
-  by this version.
-- Only absolute, `~`, and `$HOME` Bash arguments are path-checked; relative paths such as
-  `../../.ssh` are not.
+- **Hook limits.** The inline-code list is not exhaustive: an interpreter the hook doesn't
+  know, or a tool with its own scripting (`make`, `git` hooks in a repo it creates, `vim -c`,
+  `sqlite3 .shell`), still runs code. A variable set outside the command (`$X` from the
+  environment) is opaque; the hook only judges its literal prefix. `rm -rf <worktree root>`
+  and `rm -rf *` at the worktree root are denied (not strictly inside), which is deliberate.
+- **Denying `~/.claude/projects` blocks Claude Code's own transcripts and auto-memory for the
+  agent's tools too.** Persisted large tool outputs live there, so the agent can no longer
+  Read them back; memory writes are denied as well.
 
 ## Files
 

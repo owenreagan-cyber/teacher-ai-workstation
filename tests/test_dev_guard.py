@@ -48,7 +48,9 @@ class FakeHome(unittest.TestCase):
         self._tmp.cleanup()
 
     def decide(self, payload):
-        return dev_guard.evaluate(payload, home=self.home)
+        # The fake home and project live in system temp; treat temp as unsafe so the
+        # destructive-command checks see the sibling paths as outside the project.
+        return dev_guard.evaluate(payload, home=self.home, temp_roots=[])
 
     def bash(self, cmd):
         return self.decide({"tool_name": "Bash", "tool_input": {"command": cmd}, "cwd": self.cwd})
@@ -111,8 +113,9 @@ class TestFilePolicy(FakeHome):
     def test_memory_any_project(self):
         p = os.path.join(self.home, ".claude", "projects", "-Users-someone-else", "memory", "MEMORY.md")
         self.assertIsNotNone(self.decide({"tool_name": "Read", "tool_input": {"file_path": p}, "cwd": self.cwd}))
+        # D1-003: every transcript under ~/.claude/projects is denied, not only memory.
         other = os.path.join(self.home, ".claude", "projects", "-x", "session.jsonl")
-        self.assertIsNone(self.decide({"tool_name": "Read", "tool_input": {"file_path": other}, "cwd": self.cwd}))
+        self.assertIsNotNone(self.decide({"tool_name": "Read", "tool_input": {"file_path": other}, "cwd": self.cwd}))
 
     def test_project_claude_is_read_only(self):
         p = os.path.join(self.cwd, ".claude", "settings.json")

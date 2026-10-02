@@ -1,0 +1,43 @@
+{
+  "permissions": {
+    "deny": [
+      "Read(~/.teacher-ai-workstation/**)",
+      "Edit(~/.teacher-ai-workstation/**)",
+      "Read(~/Downloads/**)",
+      "Edit(~/Downloads/**)",
+      "Read(~/.ssh/**)",
+      "Edit(~/.ssh/**)",
+      "Read(~/.aws/**)",
+      "Edit(~/.aws/**)",
+      "Read(~/.gnupg/**)",
+      "Edit(~/.gnupg/**)",
+      "Read(~/.config/gh/**)",
+      "Edit(~/.config/gh/**)",
+      "Read(~/.claude/projects/**/memory/**)",
+      "Edit(~/.claude/projects/**/memory/**)",
+      "Edit(.claude/**)",
+      "Bash(sudo *)",
+      "Bash(git push *)",
+      "Bash(git config *)",
+      "Bash(git worktree prune *)",
+      "Read(~/Library/Application Support/ChiefOfStaff/**)",
+      "Edit(~/Library/Application Support/ChiefOfStaff/**)"
+    ]
+  },
+  "env": {
+    "GIT_OPTIONAL_LOCKS": "0"
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash|Read|Edit|Write|MultiEdit|NotebookEdit|Glob|Grep",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$HOME/.claude/hooks/cos/dev_guard.py\""
+          }
+        ]
+      }
+    ]
+  }
+}

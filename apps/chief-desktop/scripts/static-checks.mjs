@@ -116,6 +116,17 @@ check("index.html title is the fixed name", /<title>Chief<\/title>/.test(html));
 check("home card renders only from App", rendererFiles.filter((f) => /<HomeCardView\b/.test(read(f))).join() === path.join("src", "renderer", "App.tsx"));
 check("cos runner validates the card", /card: toHomeCard\(o\.card\)/.test(cosTs));
 
+// 6d. Start at login: set only by the main process (never from preload, renderer, or an IPC call),
+// only in the packaged app; a login launch starts hidden and still warms the model.
+const loginSetters = [...mainFiles, ...rendererFiles].filter((f) => /setLoginItemSettings/.test(read(f)));
+check("login item is set only in src/main/main.ts", loginSetters.join() === path.join("src", "main", "main.ts"), loginSetters.join());
+check("login item calls are main-process only (no IPC channel)", !/chief:[a-z-]*login/i.test(mainTs) && !/login/i.test(preload));
+check("login item is only set by the packaged app", /function setStartAtLogin[\s\S]*?if \(!app\.isPackaged\) return;[\s\S]*?setLoginItemSettings\(\{ openAtLogin: enabled \}\)/.test(mainTs));
+check("first run turns start at login on", /if \(prefs\.startAtLogin === null\) setStartAtLogin\(true\)/.test(mainTs));
+check("a login launch starts hidden", /createWindow\(!openedAtLogin\(\)\)/.test(mainTs) && /wasOpenedAtLogin/.test(mainTs));
+check("tray has a Start at login toggle", /label: app\.isPackaged \? "Start at login"/.test(mainTs) && /click: \(\) => setStartAtLogin\(!startAtLoginChecked\(\)\)/.test(mainTs));
+check("the model still warms on every launch", /createTray\(\);\s*registerHotkey\(\);\s*registerIpc\(\);\s*warmModel\(\);/.test(mainTs));
+
 // 7. Dev script: no package-internal paths (TypeScript 7 stopped exporting typescript/bin/tsc,
 // which broke `npm run dev` with ERR_PACKAGE_PATH_NOT_EXPORTED). Compile through build:main.
 const devMjs = read("scripts/dev.mjs");

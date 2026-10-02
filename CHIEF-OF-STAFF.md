@@ -167,6 +167,16 @@ summary.
   (`python3.12 evals/harness/run.py --suite personality --model real`), including a check that
   Chief never offers an action it can't do ("Let me know if you'd like me to send …").
 
+### Start at login
+
+The installed Chief.app adds itself as a login item on its first run. At login it starts hidden
+in the menu bar and loads the local model in the background (`cos warm`), so the first question
+after the hotkey (Control+Option+C) does not wait for a cold model.
+
+- Turn it off or on from the menu bar icon: **Start at login**. The choice is remembered, and the
+  checkbox follows macOS (System Settings → General → Login Items) if you change it there.
+- Only the packaged app registers itself; `npm run dev` never does.
+
 ---
 
 ## 4. Architecture

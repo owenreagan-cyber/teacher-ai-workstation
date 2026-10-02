@@ -80,13 +80,33 @@ export function loadWindowState(file: string): SavedWindow {
   }
 }
 
-export function saveWindowState(file: string, state: SavedWindow): void {
+// App preferences (written by the app). startAtLogin is null until the first run has set it.
+export type Prefs = { startAtLogin: boolean | null };
+
+export function loadPrefs(file: string): Prefs {
+  try {
+    const d = JSON.parse(fs.readFileSync(file, "utf-8")) as Record<string, unknown>;
+    return { startAtLogin: typeof d.startAtLogin === "boolean" ? d.startAtLogin : null };
+  } catch {
+    return { startAtLogin: null };
+  }
+}
+
+export function savePrefs(file: string, prefs: Prefs): void {
+  writePrivateJson(file, prefs);
+}
+
+function writePrivateJson(file: string, value: unknown): void {
   try {
     fs.mkdirSync(path.dirname(file), { recursive: true, mode: 0o700 });
     const tmp = `${file}.tmp`;
-    fs.writeFileSync(tmp, JSON.stringify(state), { mode: 0o600 });
+    fs.writeFileSync(tmp, JSON.stringify(value), { mode: 0o600 });
     fs.renameSync(tmp, file);
   } catch {
-    // Losing window geometry is harmless; never crash over it.
+    // Losing a preference or window geometry is harmless; never crash over it.
   }
+}
+
+export function saveWindowState(file: string, state: SavedWindow): void {
+  writePrivateJson(file, state);
 }

@@ -16,7 +16,17 @@ import {
 } from "electron";
 
 import type { ShellEvent, StatusResult, WindowState } from "../shared/types.js";
-import { loadDesktopConfig, loadWindowState, MAX_SIZE, MIN_SIZE, type SavedWindow, saveWindowState } from "./config.js";
+import {
+  loadDesktopConfig,
+  loadPrefs,
+  loadWindowState,
+  MAX_SIZE,
+  MIN_SIZE,
+  type Prefs,
+  type SavedWindow,
+  savePrefs,
+  saveWindowState,
+} from "./config.js";
 import { CosRunner } from "./cos.js";
 import { APP_URL, devServerUrl, lockDownContents, lockDownSession, registerAppScheme, serveRenderer } from "./security.js";
 import { trayTemplateImage } from "./trayIcon.js";
@@ -33,11 +43,13 @@ let saved: SavedWindow;
 let windowState: WindowState = { pinned: false, protected: true };
 let hiddenSince: number | null = null;
 let warming = false;
+let prefs: Prefs = { startAtLogin: null };
 
 const config = loadDesktopConfig();
 const cos = new CosRunner(config.cosPath, config.error);
 const devUrl = devServerUrl();
 const stateFile = () => path.join(app.getPath("userData"), "window-state.json");
+const prefsFile = () => path.join(app.getPath("userData"), "prefs.json");
 
 registerAppScheme();
 app.on("web-contents-created", (_event, contents) => lockDownContents(contents));
@@ -54,7 +66,9 @@ function start(): void {
   serveRenderer(path.join(__dirname, "..", "..", "dist", "renderer"));
   Menu.setApplicationMenu(appMenu());
   saved = loadWindowState(stateFile());
-  createWindow();
+  prefs = loadPrefs(prefsFile());
+  if (prefs.startAtLogin === null) setStartAtLogin(true); // first run: on by default
+  createWindow(!openedAtLogin());
   createTray();
   registerHotkey();
   registerIpc();
@@ -71,6 +85,28 @@ function warmModel(): void {
   });
 }
 
+// ----------------------------------------------------------------------------- login item
+
+// Main process only: no preload bridge or IPC channel can change it. Only the packaged app registers
+// itself, so `npm run dev` never adds the bare Electron binary as a login item.
+// Electron 44 dropped `openAsHidden` (macOS 13+ ignores it under SMAppService), so a login launch
+// is detected with wasOpenedAtLogin and the window simply stays hidden; the model still warms.
+function setStartAtLogin(enabled: boolean): void {
+  if (!app.isPackaged) return;
+  app.setLoginItemSettings({ openAtLogin: enabled });
+  prefs = { ...prefs, startAtLogin: enabled };
+  savePrefs(prefsFile(), prefs);
+}
+
+function startAtLoginChecked(): boolean {
+  // macOS is the truth (Owen may remove it in System Settings); the remembered choice otherwise.
+  return app.isPackaged ? app.getLoginItemSettings().openAtLogin : prefs.startAtLogin === true;
+}
+
+function openedAtLogin(): boolean {
+  return app.isPackaged && app.getLoginItemSettings().wasOpenedAtLogin;
+}
+
 // ----------------------------------------------------------------------------- window
 
 function onScreen(x: number | undefined, y: number | undefined, width: number): boolean {
@@ -79,7 +115,7 @@ function onScreen(x: number | undefined, y: number | undefined, width: number): 
     x >= a.x - width / 2 && y >= a.y && x + width / 2 <= a.x + a.width && y + 40 <= a.y + a.height);
 }
 
-function createWindow(): void {
+function createWindow(showWhenReady: boolean): void {
   const placed = onScreen(saved.x, saved.y, saved.width);
   win = new BrowserWindow({
     title: TITLE,
@@ -133,7 +169,10 @@ function createWindow(): void {
   win.on("resize", scheduleSave);
   win.on("move", scheduleSave);
   win.webContents.on("did-finish-load", () => sendEvent({ kind: "window-state", state: windowState }));
-  win.once("ready-to-show", () => win?.show());
+  // Started at login: stay hidden in the menu bar until the hotkey or the tray opens the window.
+  win.once("ready-to-show", () => {
+    if (showWhenReady) win?.show();
+  });
 
   void (devUrl ? win.loadURL(devUrl) : win.loadURL(APP_URL));
 }
@@ -216,6 +255,13 @@ function trayMenu(): Menu {
       type: "checkbox",
       checked: windowState.protected,
       click: () => setProtection(!windowState.protected),
+    },
+    {
+      label: app.isPackaged ? "Start at login" : "Start at login (packaged app only)",
+      type: "checkbox",
+      checked: startAtLoginChecked(),
+      enabled: app.isPackaged,
+      click: () => setStartAtLogin(!startAtLoginChecked()),
     },
     { type: "separator" },
     { label: "Quit Chief", click: () => app.quit() },

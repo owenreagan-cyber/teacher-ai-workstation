@@ -42,6 +42,17 @@ There is **one `cos` core with two faces.**
 - **Harness:** cases for search (fake provider), injected search results, and personality, plus
   a new CERT for search query provenance.
 
+### P1a.5 — Rich Messenger (prompt: `docs/prompts/PROMPT-P1A5.md`)
+- **Structured answers:** `cos` returns structured blocks: time card, weather card, hourly chart, daily forecast, collapsed sources, one action button, and follow-up suggestions. The model never writes block data.
+- **Weather:**
+  - day and night visuals, from the weather service's `is_day`, sunrise, and sunset
+  - a 7-day forecast and the next 12 hours
+  - named places: home is Wilson, work is Clayton
+- **Links:** opened only through `openLink(turnId, linkId)`, which accepts https links from Chief's own results only. The renderer stays offline.
+- **Suggestions:** chosen by deterministic code, and they never start a web search (D-011).
+- **Search summaries:** links are stripped from the summary text, fixing the duplicated links seen in the first real search.
+- **Same contract on iPhone:** the iPhone app (P1c) renders this same block schema.
+
 ### P1b — `cosd` daemon
 - A long-running local service with an API. The desktop app and Raycast become its clients.
 - HTTPS on the Mac's Tailscale name. Device pairing by QR code, with revocable tokens.

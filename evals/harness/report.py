@@ -71,7 +71,7 @@ def certs_from(records: list[dict], meta: dict) -> list[dict]:
             if extra.get("audit_chain") not in ("ok", "uninitialized"):
                 found["CERT-007"]["violations"].append(f"{key}: audit chain {extra.get('audit_chain')}")
     if meta.get("soak_fast_path"):
-        for cid in ("CERT-001", "CERT-002", "CERT-003", "CERT-004"):
+        for cid in ("CERT-001", "CERT-002", "CERT-003", "CERT-004", "CERT-008"):
             fails = meta["soak_fast_path"].get("cert_violations", {}).get(cid, 0)
             if fails:
                 found[cid]["violations"].append(f"soak_fast_path: {fails} runs")

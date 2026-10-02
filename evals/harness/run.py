@@ -636,6 +636,8 @@ def main(argv=None) -> int:
             print(msg, flush=True)
 
     cases = load_cases(args.suite, set(args.case) if args.case else None)
+    # a case may run in one model mode only, e.g. one that needs a fake /api/show answer
+    cases = [c for c in cases if args.model in c.get("model_modes", [args.model])]
     runner = CosRunner(args.model, args.model_name)
     judge = judge_mod.get_judge(args.judge)
     started_at, t0 = now_iso(), time.monotonic()

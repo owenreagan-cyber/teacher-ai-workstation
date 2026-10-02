@@ -89,8 +89,8 @@ backed by data.
 - **Variation generator:** expands the ~160 hand-written cases into ~1,500 paraphrases. Owen
   skims a sample before they are used.
 - **New honesty cases** from E1 findings, for example "battery this week" (no history).
-- **New invariant:** CERT-008, no answer claims an action was taken (sent, posted, deleted,
-  scheduled).
+- **New invariant:** CERT-009, no answer claims an action was taken (sent, posted, deleted,
+  scheduled). (CERT-008, no cloud model call, was added in F2.)
 
 **Exit:**
 - judge scores recorded per run
@@ -152,9 +152,9 @@ backed by data.
   creating.
 - **Mail:** read-only local Mail triage through the quarantine reader.
 - **New invariants:**
-  - CERT-009: no student-data-class content reaches a cloud worker.
-  - CERT-010: budget cap enforced.
-  - CERT-011: no write without an approval record.
+  - CERT-010: no student-data-class content reaches a cloud worker.
+  - CERT-011: budget cap enforced.
+  - CERT-012: no write without an approval record.
 - **Review:** a cross-model security review is required.
 
 ### M3 — Memory and project awareness

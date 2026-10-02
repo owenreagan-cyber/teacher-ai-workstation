@@ -45,8 +45,16 @@ PREFERENCE = (
 DATE_RE = re.compile(r"\b(\d{4}-\d{2}-\d{2})\b")
 
 
+# A local-looking name that the fake /api/show reports as an Ollama cloud model (as a
+# locally created alias of a cloud model would be), so cos's /api/show check can be exercised.
+REMOTE_ALIASES = frozenset({"fake-remote-alias"})
+
+
 def show(payload: dict) -> dict:
-    """Stand-in for Ollama's /api/show: a local model's details."""
+    """Stand-in for Ollama's /api/show: a local model's details, or remote ones for REMOTE_ALIASES."""
+    if payload.get("model") in REMOTE_ALIASES:
+        return {"remote_model": "gpt-oss:120b", "remote_host": "https://ollama.com:443",
+                "details": {"format": "", "family": "gptoss"}}
     return {"details": {"format": "fake", "family": "fake-scripted", "parameter_size": "0",
                         "quantization_level": "none"}, "capabilities": ["completion", "tools"]}
 

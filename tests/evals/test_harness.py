@@ -18,9 +18,9 @@ import report  # noqa: E402
 import run as harness_run  # noqa: E402
 
 SUBSET = ["fp-time-001", "fp-near-001", "tc-cal-001", "cd-email-001", "inj-cal-001", "ks-session-002",
-          "se-bad-001", "rb-dash-001", "ho-email-001"]
+          "se-bad-001", "rb-dash-001", "ho-email-001", "lo-show-001"]
 EXPECTED_SUITES = {"fast_path", "tool_choice", "cant_do_yet", "injection", "kill_switch", "sessions",
-                   "robustness", "honesty"}
+                   "robustness", "honesty", "local_only"}
 
 
 def harness(out_root: Path, *extra: str) -> subprocess.CompletedProcess:
@@ -57,7 +57,7 @@ class HarnessRunTests(unittest.TestCase):
 
     def test_summary_shape(self):
         s = self.summary("t1-fake")
-        self.assertEqual([c["id"] for c in s["certs"]], [f"CERT-00{i}" for i in range(1, 8)])
+        self.assertEqual([c["id"] for c in s["certs"]], [f"CERT-00{i}" for i in range(1, 9)])
         for c in s["certs"]:
             self.assertEqual(c["status"], "PASS", c)
         self.assertEqual(set(s["suites"]), EXPECTED_SUITES)
@@ -86,6 +86,7 @@ class HarnessRunTests(unittest.TestCase):
             self.assertTrue(cases[cid]["passed"], (cid, cases[cid]["failed_checks"]))
         self.assertGreater(next(c for c in s["certs"] if c["id"] == "CERT-005")["checked"], 0)
         self.assertGreater(next(c for c in s["certs"] if c["id"] == "CERT-006")["checked"], 0)
+        self.assertGreater(next(c for c in s["certs"] if c["id"] == "CERT-008")["checked"], 0)
 
     def test_results_records(self):
         rows = [json.loads(l) for l in (self.out / "results" / "t1-fake" / "results.jsonl").read_text().splitlines()]
@@ -235,6 +236,16 @@ class SuiteFileTests(unittest.TestCase):
         for c in cases:
             self.assertTrue((REPO_ROOT / "evals" / "fixtures" / c.get("fixtures", "default")).is_dir(), c["id"])
 
+    def test_cloud_model_cases(self):
+        cases = {c["id"]: c for c in harness_run.load_cases(["local_only"], None)}
+        self.assertGreaterEqual(len(cases), 5)
+        for c in cases.values():
+            self.assertEqual(c["expect"]["error_kind"], "internal", c["id"])
+            self.assertEqual(c["expect"]["model_calls"], 0, c["id"])
+            self.assertIn("model_refused", c["expect"]["audit_kinds_include"], c["id"])
+        self.assertTrue(any(":cloud" in c["state_mutation"]["config_raw"] for c in cases.values()))
+        self.assertEqual(cases["lo-show-001"]["model_modes"], ["fake"])  # needs the fake /api/show
+
     def test_fixture_titles_are_obviously_synthetic(self):
         for name in ("default", "injection"):
             base = REPO_ROOT / "evals" / "fixtures" / name
@@ -281,6 +292,31 @@ class CheckTests(unittest.TestCase):
         audit = [{"kind": "model_call", "host": "api.example.com:443"}]
         res = checks.check_turn({}, self.obs(audit=audit), {})
         self.assertTrue({"model_host_local", "audit_fixture_flag"} <= self.failed(res))
+
+    def cert_008(self, *records):
+        res = checks.check_turn({}, self.obs(audit=[{"fixture": True, **r} for r in records]), {})
+        return next(c for c in res if c["name"] == "model_local_only")
+
+    def test_cert_008_flags_cloud_model_calls(self):
+        local = {"remote_host": None, "family": "qwen35moe"}
+        bad = (
+            {"kind": "model_call", "model": "gpt-oss:120b-cloud", "ok": True, "local_check": local},
+            {"kind": "model_call", "model": "kimi-k2:cloud", "ok": False, "local_check": None},
+            {"kind": "model_call", "model": "alias", "ok": True,
+             "local_check": {"remote_host": "https://ollama.com:443"}},
+            {"kind": "model_call", "model": "qwen3.6:35b", "ok": True},  # no local check recorded
+        )
+        for rec in bad:
+            with self.subTest(rec=rec):
+                c = self.cert_008(rec)
+                self.assertEqual((c["ok"], c["cert"]), (False, "CERT-008"))
+
+    def test_cert_008_passes_local_and_refused_models(self):
+        c = self.cert_008({"kind": "model_call", "model": "qwen3.6:35b", "ok": True,
+                           "local_check": {"remote_host": None}},
+                          {"kind": "model_call", "model": "qwen3.6:35b", "ok": False, "local_check": None},
+                          {"kind": "model_refused", "model": "gpt-oss:120b-cloud"})
+        self.assertTrue(c["ok"], c)
 
     def test_kill_switch_quiet(self):
         audit = [{"kind": "tool_result", "fixture": True}]

@@ -32,7 +32,7 @@ Every run prints the report path at the end. Useful flags:
 | `--model fake\|real` | `fake`: the real cos code with the scripted fake model (`harness/fake_cos.py`), fast and deterministic. `real`: `bin/cos` with local Ollama. |
 | `--model-name NAME` | real mode: the Ollama model cos uses (default: cos's configured default). |
 | `--suite NAME`, `--case ID` | run a subset (repeatable). |
-| `--repeat-fast-path [N]` | soak: every single-turn case expected to take the fast path, N times (bare flag: 300). There are 28 such cases, so 300 gives 8,400 runs. Records p50/p95/p99 and any non-deterministic result. |
+| `--repeat-fast-path [N]` | soak: every single-turn case expected to take the fast path, N times (bare flag: 300). There are 30 such cases, so 300 gives 9,000 runs. Records p50/p95/p99 and any non-deterministic result. |
 | `--long-session [N]` | one session of N turns (bare flag: 500), always with the fake model. Samples file size, in-process history load time, `cos history` time, and ask time about 25 times. |
 | `--baseline RUN_ID` | compare against this run (default: the latest earlier run with the same model mode). |
 | `--out-root DIR` | parent of `results/` and `reports/` (tests use a temp dir). |
@@ -220,10 +220,10 @@ checkout at `/Users/owen/Projects/taw-cos-m1`; edit them if it moves.
 
 Expected duration is about 2–2.5 hours, mostly real-model time:
 
-- 164 cases (165 in a fake run; `lo-show-001` is fake-only), with 110 model-path invocations. The first real smoke run (qwen3.6:35b)
+- 198 cases in a real run (192 in a fake run: `lo-show-001` and the five `pe-fake-*` cases are fake-only, the twelve `pe-real-*` cases real-only), with about 140 model-path invocations. The first real smoke run (qwen3.6:35b)
   averaged about 56 s per model answer, with a p95 of 154 s, so this part takes about
   1.7 hours.
-- the 10,080-run fast-path soak (28 cases × 360), at about 0.1 s each (about 17 minutes)
+- the 10,800-run fast-path soak (30 cases × 360), at about 0.1 s each (about 17 minutes)
 - 500 fake-model long-session turns (about 1 minute)
 
 While qwen3.6:35b is loaded, free memory falls to about 19%.

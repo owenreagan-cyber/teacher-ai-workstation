@@ -153,6 +153,20 @@ summary.
 - It appears only inside the window, which is hidden from screenshots and screen sharing by
   default. The menu bar icon, window title, and notifications never show card content.
 
+### Personality
+
+`cos/personality.md` is Chief's voice: tone, length, when to use your name, and honesty rules.
+**Edit it freely**; the next question uses the new text (no restart).
+
+- It is loaded into the system prompt after `cos/identity.md` and before the tool rules and a
+  fixed block of safety rules. Those rules always come after it and say they win, so the
+  personality can change how Chief sounds but not what Chief is allowed to do or claim.
+- Keep it under about 3,000 characters; longer text is cut off.
+- If the file is missing, Chief runs without it.
+- The harness `personality` suite checks the voice against the local model
+  (`python3.12 evals/harness/run.py --suite personality --model real`), including a check that
+  Chief never offers an action it can't do ("Let me know if you'd like me to send …").
+
 ---
 
 ## 4. Architecture

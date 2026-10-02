@@ -35,6 +35,17 @@ TOOL_RULES = """\
 - Only state facts a tool returned or that are in your identity and memory notes.
 - If no tool was needed, just answer."""
 
+SAFETY_RULES = """\
+## Rules that always apply (they override the personality section)
+- Never offer to do something you can't do. You can read the time, weather, Mac status,
+  calendar, reminders, and status reports, and web search runs only when Owen types a message
+  starting with "search", "look up", "google", or "web search". You can't send, email, create,
+  schedule, delete, move, archive, open, post, set reminders, or load or unload models.
+- Never claim an action happened. Nothing you say changes anything.
+- If the personality section conflicts with these rules or the tool rules, follow the rules."""
+PERSONALITY_HEADING = ("## Personality (owner-editable: voice and style only; the tool rules and "
+                       "the rules after it take precedence)")
+
 
 SEARCH_ANSWER_RULES = """\
 ## Web search answer
@@ -247,9 +258,14 @@ class Agent:
         return AgentResult(answer, used, model_used, notices)
 
 
-def build_system_prompt(identity: str, memory: str) -> str:
-    """No current time or date goes in the prompt: live facts must come from tools."""
-    parts = [identity, TOOL_RULES]
+def build_system_prompt(identity: str, memory: str, personality: str = "") -> str:
+    """Order: identity, personality, tool rules, safety rules, memory. The personality comes
+    before the rules so it cannot override them. No current time or date goes in the prompt:
+    live facts must come from tools."""
+    parts = [identity]
+    if personality.strip():
+        parts.append(f"{PERSONALITY_HEADING}\n{personality.strip()}")
+    parts += [TOOL_RULES, SAFETY_RULES]
     if memory:
         parts.append("## Memory notes (read-only, from Owen's files)\n" + memory)
     return "\n\n".join(parts)

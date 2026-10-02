@@ -10,7 +10,9 @@ audit, sessions, kill switch) rather than model quality:
     matches (two when the question joins topics with "and"), once per turn;
   - after tool results it summarizes them as plain data (titles quoted as text;
     web search results by count and first domain only, never their text);
-  - if no offered tool fits the question, it says it doesn't know.
+  - if no offered tool fits the question, it says it doesn't know;
+  - personality plumbing: it greets Owen by name, and says what it can do, only when the
+    system prompt carries cos/personality.md's section ahead of the tool rules.
 
 The reply depends only on the request payload, so runs are reproducible.
 """
@@ -45,6 +47,16 @@ PREFERENCE = (
     ("time_now", ("time", "date", "day", "days", "until", "weekday")),
 )
 DATE_RE = re.compile(r"\b(\d{4}-\d{2}-\d{2})\b")
+GREETING_RE = re.compile(r"^\s*(?:hi|hello|hey|good (?:morning|afternoon|evening))\b[\s,!.]*(?:chief)?[\s!.]*$",
+                         re.IGNORECASE)
+CAN_DO_RE = re.compile(r"^\s*what can you do\b", re.IGNORECASE)
+
+
+def _has_personality(messages) -> bool:
+    """The personality section is in the system prompt, before the tool rules."""
+    system = _text(messages[0]) if messages and messages[0].get("role") == "system" else ""
+    p, rules = system.find("## Personality"), system.find("## Tool rules")
+    return 0 <= p < rules
 
 
 # A local-looking name that the fake /api/show reports as an Ollama cloud model (as a
@@ -169,6 +181,16 @@ def reply(payload: dict) -> dict:
 
     if _last_user(messages).startswith(("Tool budget used up", "That tool is unavailable")):
         return {"role": "assistant", "content": "I couldn't finish that with my tools."}
+
+    if GREETING_RE.match(question):
+        return {"role": "assistant", "content":
+                "Hi Owen. What do you need?" if _has_personality(messages) else "Hello."}
+
+    if CAN_DO_RE.match(question):
+        return {"role": "assistant", "content":
+                ("I can read the time, weather, Mac status, calendar, and reminders, and search the web "
+                 "when you type \"search …\". I can't send or change anything.")
+                if _has_personality(messages) else "I don't know."}
 
     if WRITE_INTENT.search(question):
         return {"role": "assistant", "content":

@@ -29,7 +29,7 @@ from cos.brief import format_brief, gather, home_card
 from cos.config import (CloudModelError, Config, ConfigError, ensure_private_subdir, load_config,
                         open_private)
 from cos.fastpath import FastPath
-from cos.memory import load_identity, load_memory
+from cos.memory import load_identity, load_memory, load_personality
 from cos.model import CloudModelRefused, ModelClient, ModelError, ModelRefused
 from cos.policy import KillSwitch, PolicyGate
 from cos.registry import Registry
@@ -78,7 +78,7 @@ def make_fastpath(rt: Runtime) -> FastPath:
 
 def make_agent(rt: Runtime) -> Agent:
     memory, _ = load_memory(rt.config.repo_root)
-    prompt = build_system_prompt(load_identity(), memory)
+    prompt = build_system_prompt(load_identity(), memory, load_personality())
     return Agent(rt.model, rt.registry, rt.gate, prompt, audit=rt.audit)
 
 

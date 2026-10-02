@@ -9,6 +9,10 @@ from __future__ import annotations
 from pathlib import Path
 
 IDENTITY_PATH = Path(__file__).resolve().parent / "identity.md"
+# Owner-editable voice and style. Loaded after identity and before the tool and safety rules,
+# which take precedence over it (agent.build_system_prompt).
+PERSONALITY_PATH = Path(__file__).resolve().parent / "personality.md"
+PERSONALITY_BUDGET = 3000
 
 # (repo-relative path, section heading to start at or None, char budget)
 CORE_FILES = (
@@ -48,6 +52,16 @@ def condense(text: str, budget: int, start_heading: str | None = None) -> str:
 
 def load_identity(path: Path = IDENTITY_PATH) -> str:
     return path.read_text(encoding="utf-8").strip()
+
+
+def load_personality(path: Path = PERSONALITY_PATH) -> str:
+    """The personality spec, or "" if the file is missing or unreadable (Chief still runs).
+    Capped so an edit cannot crowd out the rules that follow it."""
+    try:
+        text = path.read_text(encoding="utf-8").strip()
+    except (OSError, UnicodeDecodeError):
+        return ""
+    return text if len(text) <= PERSONALITY_BUDGET else text[:PERSONALITY_BUDGET] + "\n[…truncated]"
 
 
 def load_memory(repo_root: Path) -> tuple[str, list[str]]:

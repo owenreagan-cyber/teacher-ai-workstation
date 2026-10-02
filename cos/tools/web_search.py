@@ -13,6 +13,13 @@ read with a fixed argv, no shell. It is sent only in the request header: never
 in config, logs, audit records, results, or error text. With no key the tool
 reports "web search not set up".
 
+Budget: every real provider call is counted in the state directory
+(search_usage.json, local calendar day and month). At search_daily_limit
+(default 30) or search_monthly_limit (default 600) the tool refuses with a
+plain message and makes no provider call. Fixture mode reads the counts (so the
+harness can test the refusal) but never records a call. An unreadable usage
+file refuses search until it is fixed or deleted, so the cap cannot be lost.
+
 Results (D-002) are untrusted data: titles, URLs, and snippets are stripped of
 markup and control characters and truncated, and untrusted_block() wraps them
 for the model. Providers sit behind a small interface (SearchProvider) so
@@ -21,13 +28,19 @@ allowlist.
 """
 from __future__ import annotations
 
+import fcntl
 import html
 import json
+import os
 import re
 import subprocess
 import urllib.parse
 from dataclasses import dataclass
+from datetime import date, datetime
+from pathlib import Path
 from typing import Callable, Protocol
+
+from cos.config import FILE_MODE, ensure_state_dir
 
 from cos.egress import EgressDenied, EgressError
 from cos.registry import Tool
@@ -128,6 +141,89 @@ def untrusted_block(result: dict) -> str:
     return f"<{UNTRUSTED_TAG}>\n{json.dumps(body, ensure_ascii=False)}\n</{UNTRUSTED_TAG}>"
 
 
+USAGE_FILE = "search_usage.json"
+KEEP_DAYS = 62
+KEEP_MONTHS = 13
+
+
+def _next_month(d: date) -> date:
+    return date(d.year + (d.month == 12), d.month % 12 + 1, 1)
+
+
+class SearchBudget:
+    """Daily and monthly caps on real provider calls, counted in the state directory.
+
+    acquire() returns None and (when record is True) counts one call, or returns the refusal
+    message. The read-check-write runs under an exclusive flock, so concurrent cos processes
+    cannot overspend."""
+
+    def __init__(self, state_dir: Path, daily_limit: int, monthly_limit: int,
+                 clock: Callable[[], datetime], record: bool = True):
+        self.path = Path(state_dir) / USAGE_FILE
+        self.state_dir = Path(state_dir)
+        self.daily_limit, self.monthly_limit = daily_limit, monthly_limit
+        self.clock, self.record = clock, record
+        self.last_counts: tuple[int, int] = (0, 0)
+
+    def acquire(self) -> tuple[str | None, str | None]:
+        """(refusal message, reason) or (None, None) when the call may go ahead."""
+        today = self.clock().date()
+        day, month = today.isoformat(), today.strftime("%Y-%m")
+        if not self.record and not self.path.exists():
+            usage = {"days": {}, "months": {}}
+            return self._decide(usage, day, month, today)
+        ensure_state_dir(self.state_dir)
+        fd = os.open(self.path, os.O_RDWR | os.O_CREAT, FILE_MODE)
+        with os.fdopen(fd, "r+", encoding="utf-8") as fh:
+            fcntl.flock(fh, fcntl.LOCK_EX)
+            try:
+                raw = fh.read()
+                try:
+                    usage = json.loads(raw) if raw.strip() else {"days": {}, "months": {}}
+                    if not (isinstance(usage, dict) and isinstance(usage.get("days"), dict)
+                            and isinstance(usage.get("months"), dict)):
+                        raise ValueError("bad shape")
+                except ValueError:
+                    return (f"Search is paused: the search usage record ({self.path}) is unreadable. "
+                            "Fix or delete it to search again.", "usage_unreadable")
+                refusal = self._decide(usage, day, month, today)
+                if refusal[0] is None and self.record:
+                    usage["days"][day] = usage["days"].get(day, 0) + 1
+                    usage["months"][month] = usage["months"].get(month, 0) + 1
+                    usage["days"] = dict(sorted(usage["days"].items())[-KEEP_DAYS:])
+                    usage["months"] = dict(sorted(usage["months"].items())[-KEEP_MONTHS:])
+                    self.last_counts = (usage["days"][day], usage["months"][month])
+                    fh.seek(0)
+                    fh.truncate()
+                    fh.write(json.dumps(usage, sort_keys=True))
+                    fh.flush()
+                    os.fsync(fh.fileno())
+                return refusal
+            finally:
+                fcntl.flock(fh, fcntl.LOCK_UN)
+
+    def _decide(self, usage, day, month, today) -> tuple[str | None, str | None]:
+        def count(table, key):
+            v = usage[table].get(key, 0)
+            return v if isinstance(v, int) and v >= 0 else 0
+        used_day, used_month = count("days", day), count("months", month)
+        self.last_counts = (used_day, used_month)
+        if used_month >= self.monthly_limit:
+            nxt = _next_month(today)
+            return (f"Search limit reached for this month: {used_month}/{self.monthly_limit}. "
+                    f"Resets on {nxt.strftime('%B')} {nxt.day}.", "monthly_limit")
+        if used_day >= self.daily_limit:
+            return (f"Search limit reached for today: {used_day}/{self.daily_limit}. Resets tomorrow.",
+                    "daily_limit")
+        return None, None
+
+
+def budget_for(ctx, record: bool = True) -> SearchBudget:
+    cfg = ctx.config
+    return SearchBudget(cfg.state_dir, cfg.search_daily_limit, cfg.search_monthly_limit, ctx.clock,
+                        record=record)
+
+
 def keychain_key(ctx) -> str | None:
     """The API key from the Keychain, or None if it is missing or unreadable. Fixed argv, no shell."""
     try:
@@ -142,7 +238,7 @@ def keychain_key(ctx) -> str | None:
 
 def search(ctx, args: dict, provider: SearchProvider = BRAVE,
            key_source: Callable[[], str | None] | None = None,
-           http: Callable[..., bytes] | None = None) -> dict:
+           http: Callable[..., bytes] | None = None, budget: SearchBudget | None = None) -> dict:
     query, source = args.get("query"), args.get("query_source")
     if source != QUERY_SOURCE or not isinstance(query, str) or not query.strip() \
             or len(query) > MAX_QUERY_CHARS:
@@ -150,10 +246,18 @@ def search(ctx, args: dict, provider: SearchProvider = BRAVE,
     key = (key_source or (lambda: keychain_key(ctx)))()
     if not key:
         return {"error": SETUP_HINT, "setup_needed": True}
+    budget = budget or budget_for(ctx)
+    refusal, reason = budget.acquire()  # counts this call when it may go ahead
+    if refusal:
+        if ctx.audit is not None:
+            ctx.audit("search_refused", reason=reason, day_count=budget.last_counts[0],
+                      month_count=budget.last_counts[1])
+        return {"error": refusal, "limit_reached": True}
     url, headers = provider.request(query, key)
     if ctx.audit is not None:
         ctx.audit("egress_request", tool="web.search", provider=provider.name, url_host=provider.host,
-                  query=query, query_source=source)
+                  query=query, query_source=source, counted=budget.record,
+                  day_count=budget.last_counts[0], month_count=budget.last_counts[1])
     try:
         raw = (http or ctx.http)("GET", url, headers=headers, timeout=10, audit=ctx.audit)
     except EgressError as e:

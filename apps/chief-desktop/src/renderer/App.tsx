@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 
+import { searchAttribution } from "../shared/attribution";
 import { isStale } from "../shared/homeCard";
 import type { ErrorKind, StatusResult, Turn, WindowState } from "../shared/types";
 import { HomeCardView, type HomeState } from "./HomeCard";
@@ -90,6 +91,9 @@ function TurnView({ turn }: { turn: Turn }) {
               Note: {n}
             </div>
           ))}
+          {searchAttribution(turn) && (
+            <div className="mt-1 text-[10.5px] font-medium text-neutral-500">{searchAttribution(turn)}</div>
+          )}
           <div className="flex items-end justify-between gap-2">
             <AnswerFooter turn={turn} />
             <button

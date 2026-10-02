@@ -258,6 +258,10 @@ class FastPath:
         if self.gate.kill_switch.is_set():
             close("request_stopped", reason="kill_switch")
             raise Stopped("kill switch was set during the web search")
+        if result.get("limit_reached"):
+            text = result["error"]
+            close("answer", tools_used=[tool.name], chars=len(text), denied="search_limit")
+            return AgentResult(text, [tool.name], None, fast_path=True)
         if "error" in result:
             text = f"Web search is unavailable: {result['error']}."
             close("answer", tools_used=[tool.name], chars=len(text))

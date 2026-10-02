@@ -127,6 +127,9 @@ check("a login launch starts hidden", /createWindow\(!openedAtLogin\(\)\)/.test(
 check("tray has a Start at login toggle", /label: app\.isPackaged \? "Start at login"/.test(mainTs) && /click: \(\) => setStartAtLogin\(!startAtLoginChecked\(\)\)/.test(mainTs));
 check("the model still warms on every launch", /createTray\(\);\s*registerHotkey\(\);\s*registerIpc\(\);\s*warmModel\(\);/.test(mainTs));
 
+// 6e. Search answers carry "Search by Brave" in the window.
+check("search answers show Brave attribution", /searchAttribution\(turn\)/.test(read("src/renderer/App.tsx")));
+
 // 7. Dev script: no package-internal paths (TypeScript 7 stopped exporting typescript/bin/tsc,
 // which broke `npm run dev` with ERR_PACKAGE_PATH_NOT_EXPORTED). Compile through build:main.
 const devMjs = read("scripts/dev.mjs");

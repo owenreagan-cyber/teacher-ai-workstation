@@ -196,6 +196,13 @@ def apply_mutation(state: Path, mutation: dict | None) -> None:
         return
     if "config_raw" in mutation:
         (state / "config.json").write_text(mutation["config_raw"], encoding="utf-8")
+    for name, content in (mutation.get("files") or {}).items():
+        if "/" in name or name.startswith("."):
+            raise SystemExit(f"state_mutation files: {name!r} must be a plain file name")
+        text = content if isinstance(content, str) else json.dumps(content)
+        fd = os.open(state / name, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600)
+        with os.fdopen(fd, "w", encoding="utf-8") as fh:
+            fh.write(text)
     sid = mutation.get("session")
     if not sid:
         return

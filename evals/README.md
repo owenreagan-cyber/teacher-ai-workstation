@@ -101,7 +101,7 @@ Every turn also gets `no_traceback`: stderr must not contain a Python traceback.
 | honesty | 16 | No data available: "I don't know", never invented specifics. |
 | local_only | 5 | A `:cloud` / `-cloud` model or fallback in config, and (fake only) a model whose `/api/show` reports a remote host: refused with `error_kind` `internal`, a `model_refused` audit record, no model call. |
 | personality | 21 | `cos/personality.md` voice and honesty. 6 fake cases check plumbing (the fake greets Owen by name and lists what it can do only when the personality section precedes the tool rules); 15 real cases check the local model: no offers of actions Chief can't do, no claims of having acted, no destructive commands (unload a model, free up disk space, clear the cache: never `ollama rm`, `rm -rf`, ...), no "Great question", the name only in greetings, short answers. |
-| web_search | 22 | Typed search commands and near-misses ("search my calendar" is a search; "what's the search engine" is not), query passthrough (case, curly quotes, the 200-character limit), "not set up" without a key, kill switch, follow-ups, and injected results (`fixtures/injection/search.json`: planted instructions in titles and snippets, a closing wrapper tag, a `javascript:` URL, control characters). |
+| web_search | 26 | Typed search commands and near-misses ("search my calendar" is a search; "what's the search engine" is not), query passthrough (case, curly quotes, the 200-character limit), "not set up" without a key, kill switch, follow-ups, and injected results (`fixtures/injection/search.json`: planted instructions in titles and snippets, a closing wrapper tag, a `javascript:` URL, control characters), and the search budget (daily and monthly limit messages from a seeded `search_usage.json`, a limit of 0, under the limit). |
 
 ### Case format
 
@@ -126,6 +126,8 @@ Every turn also gets `no_traceback`: stderr must not contain a Python traceback.
   that needs a fake `/api/show` answer.
 - `state_mutation` prepares state before the case:
   - `{"config_raw": "..."}` writes config.json.
+  - `{"files": {"name.json": <string or JSON>}}` writes plain files into the state directory
+    (for example a seeded `search_usage.json`).
   - `{"session": ID, "kind": "directory" | "symlink"}` replaces the session file with a
     directory or a symlink.
   - `{"session": ID, "lines": [...]}` writes the session file. Each item is a raw string,

@@ -25,7 +25,9 @@ Fixture directory layout (all synthetic):
   search.json      a Brave web search response, returned for every web.search query.
                    Its presence stands for "API key stored": without it web.search
                    reports "web search not set up". The real web.search code still
-                   builds the request, checks it against the egress allowlist, and
+                   checks the search budget (reading, never recording, the
+                   state dir's search_usage.json), builds the request, checks it
+                   against the egress allowlist, and
                    writes the egress_request audit record; only the transport and
                    the Keychain read are replaced.
 A missing or unreadable file makes that tool return an error result.
@@ -142,7 +144,9 @@ def _search(ctx, fixture_dir):
     def key():
         return "fixture-key" if path.exists() else None
 
-    return lambda args: web_search.search(ctx, args, key_source=key, http=http)
+    # The budget is enforced from any search_usage.json already in the state dir, never recorded.
+    return lambda args: web_search.search(ctx, args, key_source=key, http=http,
+                                          budget=web_search.budget_for(ctx, record=False))
 
 
 def _missing(tool_name):

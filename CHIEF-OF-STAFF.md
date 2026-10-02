@@ -116,6 +116,13 @@ bin/cos ask "look up photosynthesis for kids"
   model is unavailable, you get the raw results list instead. Results are untrusted data (D-002).
 - The kill switch (`cos stop`) blocks search like every other tool.
 - The query text and its source (`typed`) are recorded in the audit log; the API key never is.
+- **Budget:** at most 30 searches a day and 600 a month by default (local time). Every real call
+  to Brave counts, even one that fails. At either limit Chief answers, for example, "Search limit
+  reached for today: 30/30. Resets tomorrow." and makes no call. Change the limits in
+  `config.json` in the state directory (`"search_daily_limit": 30, "search_monthly_limit": 600`;
+  0 turns search off). Counts live in `search_usage.json` there; if that file is damaged, search
+  pauses until you delete it.
+- In the desktop app, answers built from results show "Search by Brave".
 
 #### Web search setup (once)
 

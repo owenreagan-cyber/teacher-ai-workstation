@@ -37,6 +37,8 @@ DEFAULTS = {
     "model_keep_alive": "2h",
     "latitude": None,
     "longitude": None,
+    "search_daily_limit": 30,
+    "search_monthly_limit": 600,
 }
 
 
@@ -106,6 +108,8 @@ class Config:
     model_think: bool = False
     model_num_ctx: int = 16384
     model_keep_alive: str = "2h"
+    search_daily_limit: int = 30
+    search_monthly_limit: int = 600
 
     @property
     def audit_path(self) -> Path:
@@ -189,6 +193,10 @@ def load_config(root: Path | None = None) -> Config:
     keep_alive = data["model_keep_alive"]
     if not isinstance(keep_alive, str) or not KEEP_ALIVE_RE.fullmatch(keep_alive):
         raise ConfigError('model_keep_alive must be an Ollama duration such as "30m", "2h", or "0"')
+    for name in ("search_daily_limit", "search_monthly_limit"):
+        v = data[name]
+        if not isinstance(v, int) or isinstance(v, bool) or v < 0:
+            raise ConfigError(f"{name} must be a whole number of searches (0 turns search off)")
     return Config(
         model=str(data["model"]),
         fallback_model=str(data["fallback_model"]) if data["fallback_model"] else None,
@@ -201,4 +209,6 @@ def load_config(root: Path | None = None) -> Config:
         model_think=data["model_think"],
         model_num_ctx=num_ctx,
         model_keep_alive=keep_alive,
+        search_daily_limit=data["search_daily_limit"],
+        search_monthly_limit=data["search_monthly_limit"],
     )

@@ -1,6 +1,6 @@
 """Unit tests for the D1 developer safety guard, installer, and probe logic.
 
-Run: python3 -m unittest discover -s tools/dev_safety/tests -v
+Run: python3 -m unittest discover -s tests -p 'test_dev_guard*.py' -v
 Uses a fake HOME in a temp dir; never touches the real denied roots.
 """
 from __future__ import annotations
@@ -15,7 +15,7 @@ import unittest
 from unittest import mock
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-PKG = os.path.dirname(HERE)
+PKG = os.path.join(os.path.dirname(HERE), "tools", "dev_safety")
 sys.path.insert(0, PKG)
 
 import dev_guard  # noqa: E402

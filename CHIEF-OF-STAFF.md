@@ -76,9 +76,13 @@ Outside products were studied for logic and features to rebuild, not to adopt.
   with chosen memory files, through the `llm` CLI.
 - Read-only status: daily status, dashboard, approval and blocker queues, next action.
 - Canvas weekly-production and readiness tooling (per its own phase status).
-- D1 safety for Claude Code: denied paths (student data, Downloads, credentials, Claude memory),
-  git protections, process-listing protections, symlink escape protection; 371/371 hook probes
-  and 33/33 tool-boundary probes passed.
+- D1 safety for Claude Code (hook layer only): denied paths (student data, Downloads,
+  credentials, Claude memory), git protections, process-listing protections, symlink escape
+  protection. Source is versioned in `tools/dev_safety/`; this repo reproduces its unit tests
+  (`tests/test_dev_guard.py`) against the source. The 371/371 hook and 33/33 tool-boundary
+  probe results were recorded in the recovery worktree and are not re-run from here. Known
+  gaps (inline interpreters, relative paths, MultiEdit shape) are open; see
+  `tools/dev_safety/README.md`.
 
 ### Missing
 App icon / menu bar, hotkey, multi-turn chat, tool calling, time/date/weather, Mac status, email,
@@ -407,7 +411,8 @@ keep one compact chat surface (Raycast first) rather than maintaining two.
   blocking findings fixed once, then reconfirmed.
 - **Owner stops:** architecture changes, new dependencies, privacy questions, destructive
   actions, teacher-rule ambiguity, merge/push.
-- **Safety:** D1 profile active; synthetic fixtures for anything student-shaped; lock-free git
+- **Safety:** D1 hook profile (see `tools/dev_safety/README.md` for what it does and does not
+  cover); synthetic fixtures for anything student-shaped; lock-free git
   reads; no push without Owen.
 - **Fewer voices:** planning models are consulted for architecture and large phase prompts, not
   relayed on every step.

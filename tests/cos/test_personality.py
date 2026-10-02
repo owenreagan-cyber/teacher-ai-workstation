@@ -51,6 +51,15 @@ class PromptOrderTests(StateDirTest):
         self.assertIn("override the personality section", SAFETY_RULES)
         self.assertIn("load or unload models", SAFETY_RULES)
 
+    def test_destructive_command_rule_and_ollama_facts(self):
+        self.assertIn("Never suggest a command that deletes, removes, overwrites, or resets", SAFETY_RULES)
+        self.assertIn("say so plainly before it", SAFETY_RULES)
+        ident = load_identity()
+        self.assertIn("## Local tools facts", ident)
+        self.assertIn("`ollama stop <model>`", ident)
+        self.assertIn("`ollama rm <model>` deletes the model from disk", ident)
+        self.assertIn("`ollama ps`", ident)
+
     def test_no_personality_section_without_text(self):
         for empty in ("", "   \n"):
             self.assertNotIn(PERSONALITY_HEADING, build_system_prompt("IDENTITY", "", empty))

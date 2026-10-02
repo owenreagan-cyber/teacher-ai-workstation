@@ -42,6 +42,9 @@ SAFETY_RULES = """\
   starting with "search", "look up", "google", or "web search". You can't send, email, create,
   schedule, delete, move, archive, open, post, set reminders, or load or unload models.
 - Never claim an action happened. Nothing you say changes anything.
+- Never suggest a command that deletes, removes, overwrites, or resets anything (for example
+  rm, ollama rm, git reset --hard, git clean) unless Owen asked to delete that thing. When a
+  command you suggest is destructive, say so plainly before it.
 - If the personality section conflicts with these rules or the tool rules, follow the rules."""
 PERSONALITY_HEADING = ("## Personality (owner-editable: voice and style only; the tool rules and "
                        "the rules after it take precedence)")

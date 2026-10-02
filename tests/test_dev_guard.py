@@ -170,6 +170,57 @@ class TestInstaller(unittest.TestCase):
             self.assertEqual([n for n in os.listdir(dest) if n.endswith(".tmp")], [])
 
 
+class TestStudentRootsAndCredentials(FakeHome):
+    """D1-005: credential stores and the student-data roots file, in both layers."""
+
+    def roots_file(self, text):
+        path = os.path.join(os.path.dirname(self.home), "roots.txt")
+        with open(path, "w") as f:
+            f.write(text)
+        return path
+
+    def read(self, path, roots_file):
+        return dev_guard.evaluate({"tool_name": "Read", "tool_input": {"file_path": path}, "cwd": self.cwd},
+                                  home=self.home, temp_roots=[], roots_file=roots_file)
+
+    def test_credential_stores_denied(self):
+        for rel in (".netrc", ".docker/config.json", ".kube/config", ".npmrc", ".pgpass",
+                    ".config/op/config", ".config/gcloud/credentials.db"):
+            with self.subTest(rel=rel):
+                self.assertIsNotNone(self.decide({"tool_name": "Read", "cwd": self.cwd,
+                                                  "tool_input": {"file_path": os.path.join(self.home, rel)}}))
+                self.assertIsNotNone(self.bash(f"cat ~/{rel}"))
+
+    def test_roots_file_entries(self):
+        f = self.roots_file("# comment\n\n~/School/Gradebooks\n~/Drive-*/Student Work\n")
+        self.assertIsNotNone(self.read(os.path.join(self.home, "School/Gradebooks/q1.csv"), f))
+        self.assertIsNotNone(self.read(os.path.join(self.home, "Drive-abc/Student Work/a/b.pdf"), f))
+        self.assertIsNone(self.read(os.path.join(self.home, "School/Lessons/l1.md"), f))
+        self.assertIsNone(self.read(os.path.join(self.home, "Documents/x.md"), f))
+
+    def test_missing_or_invalid_file_fails_closed(self):
+        for f in (os.path.join(self.home, "no-such-file.txt"), self.roots_file("relative/path\n")):
+            with self.subTest(f=f):
+                self.assertIsNotNone(self.read(os.path.join(self.home, "Documents", "x.md"), f))
+                self.assertIsNotNone(self.read(os.path.join(self.home, "Desktop", "x.md"), f))
+                self.assertIsNone(self.read(os.path.join(self.cwd, "README.md"), f))
+
+    def test_repo_roots_file_is_valid(self):
+        roots, globs = dev_guard.load_student_roots(dev_guard.ROOTS_FILE, self.home)
+        self.assertIn(os.path.join(self.home, ".teacher-ai-workstation"), roots)
+        self.assertNotIn(os.path.join(self.home, "Documents"), roots)
+
+    def test_renderer_uses_roots_file(self):
+        f = self.roots_file("~/School/Gradebooks\n/Volumes/Share/Students\n")
+        self.assertEqual(render_settings.student_roots(f), ["~/School/Gradebooks", "/Volumes/Share/Students"])
+        self.assertEqual(render_settings.student_roots(os.path.join(self.home, "missing")),
+                         ["~/Documents", "~/Desktop"])
+        with mock.patch.object(render_settings, "ROOTS_FILE", f):
+            deny = render_settings.permission_denies()
+            self.assertIn("Read(//Volumes/Share/Students/**)", deny)
+            self.assertIn("/Volumes/Share/Students", render_settings.lock()["sandbox"]["filesystem"]["denyRead"])
+
+
 class TestRenderedSettings(unittest.TestCase):
     """The committed settings files match render_settings.py and carry the sandbox rules."""
 

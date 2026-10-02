@@ -6,9 +6,15 @@ Claude Code's own configuration and transcripts, and destructive or outward-faci
 
 ## What it protects
 
-- **Student data:** `~/.teacher-ai-workstation` and the Chief of Staff state directory
-  (`~/Library/Application Support/ChiefOfStaff`).
-- **Credentials:** `~/.ssh`, `~/.aws`, `~/.gnupg`, `~/.config/gh`.
+- **Student data:** every root in `student_data_roots.txt` (initially
+  `~/.teacher-ai-workstation`) and the Chief of Staff state directory
+  (`~/Library/Application Support/ChiefOfStaff`). If the roots file is missing, unreadable, or
+  has an invalid (relative) line, D1 also denies everything under `~/Documents` and
+  `~/Desktop` until it is fixed.
+- **Credentials:** `~/.ssh`, `~/.aws`, `~/.gnupg`, `~/.config/gh`, `~/.netrc`,
+  `~/.docker/config.json`, `~/.kube/config`, `~/.npmrc`, `~/.pgpass`, `~/.config/op`
+  (1Password CLI), `~/.config/gcloud`. The sandbox denies the whole `~/.docker` and `~/.kube`
+  folders.
 - **Downloads:** `~/Downloads`.
 - **Claude Code state:** `~/.claude.json`, `~/.claude/settings.json`,
   `~/.claude/settings.local.json`, and everything under `~/.claude/projects` (session
@@ -87,6 +93,20 @@ settings, so a host outside the list prompts (in auto mode, the classifier may a
 Claude names on the command) instead of being refused. The repo's own files could also loosen
 the sandbox. Use the lock.
 
+## Add a student-data root
+
+1. Add one line to `tools/dev_safety/student_data_roots.txt`, for example
+   `~/Documents/Gradebooks` or `~/Library/CloudStorage/GoogleDrive-*/My Drive/Student Work`.
+   Use `~` or a full path starting with `/`; a relative path makes D1 fail closed.
+2. Re-render the settings and check them:
+   `python3 tools/dev_safety/render_settings.py && python3 tools/dev_safety/render_settings.py --check`
+3. Copy the profile: `cp tools/dev_safety/settings.proposed.json .claude/settings.json`
+4. Re-install the hook, roots file, and lock: `python3 tools/dev_safety/install_dev_guard.py`
+5. Commit the roots file and the two generated files, then start a fresh `claude` session.
+
+The hook reads its installed copy of the roots file on every call, so step 4 is what makes a
+new root live for the hook. The sandbox picks it up at the next session start.
+
 ## Known limits
 
 - **A command denylist is a speed bump, not a boundary.** An agent that can write a file and
@@ -120,6 +140,7 @@ the sandbox. Use the lock.
 | `dev_guard.py` | The hook (stdlib only). Source of truth; never edit the installed copy. |
 | `install_dev_guard.py` | Copies the hook and `sandbox-lock.json` to `~/.claude/hooks/cos/`, read-only, and records their SHA-256. Owen runs it, outside an agent session. |
 | `render_settings.py` | Generates `settings.proposed.json` and `sandbox-lock.json`; `--check` reports drift. |
+| `student_data_roots.txt` | Student-data roots, one per line; both layers load it. |
 | `settings.proposed.json` | The project profile, for Owen to copy to `.claude/settings.json`. |
 | `sandbox-lock.json` | The sandbox lock, passed with `claude --settings`. |
 | `dev_safety_probe.py` | Integrity, synthetic hook, and tool-boundary probes. |

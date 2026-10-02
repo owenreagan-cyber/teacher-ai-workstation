@@ -38,13 +38,17 @@ File-tool policy (Read, Edit, Write, MultiEdit, NotebookEdit, Glob, Grep, and an
 other tool whose input carries a path)
   - every path-bearing key (file_path, notebook_path, path, edits[].file_path, ...)
     is checked; a write-like tool with no recognizable path is denied;
-  - deny any path that resolves (after symlinks) into a denied root;
+  - deny any path that resolves (after symlinks) into a denied root. Denied roots are
+    the credential stores, Claude Code state, and private folders in DENIED_ROOT_RELS,
+    plus the student-data roots in student_data_roots.txt (beside this file); if that
+    file is missing, unreadable, or invalid, ~/Documents and ~/Desktop are denied too;
   - deny Glob/Grep whose search base contains a denied root;
   - deny Edit/Write-family calls into <project>/.claude or the installed
     hook directory.
 """
 from __future__ import annotations
 
+import fnmatch
 import json
 import os
 import re
@@ -67,6 +71,13 @@ DENIED_ROOT_RELS = (
     ".aws",
     ".gnupg",
     ".config/gh",
+    ".netrc",
+    ".docker/config.json",
+    ".kube/config",
+    ".npmrc",
+    ".pgpass",
+    ".config/op",
+    ".config/gcloud",
     "Library/Application Support/ChiefOfStaff",
     # Claude Code's own state: settings, account file, and every session transcript.
     ".claude.json",
@@ -75,6 +86,12 @@ DENIED_ROOT_RELS = (
     ".claude/projects",
 )
 HOOK_DIR_REL = ".claude/hooks/cos"
+# Student-data roots, one per line (~ and globs allowed). Read from beside this file, so the
+# installed hook reads its installed, read-only copy.
+ROOTS_FILE = os.path.join(os.path.dirname(os.path.realpath(__file__)), "student_data_roots.txt")
+# Denied when ROOTS_FILE is missing, unreadable, or has an invalid line (fail closed).
+FALLBACK_ROOT_RELS = ("Documents", "Desktop")
+GLOB_RE = re.compile(r"[*?\[]")
 
 GIT_DENIED_SUBCOMMANDS = {"push", "send-pack", "http-push", "config", "clean", "gc", "update-ref"}
 # Global options that take a separate value. `=`-only options (--exec-path,
@@ -164,10 +181,51 @@ def _resolve_all(raw, ctx):
     return sorted({_expand(raw, ctx, c) for c in ctx.get("cwds") or [ctx["cwd"]]})
 
 
+def load_student_roots(path, home):
+    """(literal roots, glob patterns) from the roots file; fails closed to ~/Documents, ~/Desktop."""
+    roots, globs, ok = [], [], True
+    try:
+        with open(path, encoding="utf-8") as f:
+            lines = f.read().splitlines()
+    except (OSError, UnicodeDecodeError):
+        lines, ok = [], False
+    for line in lines:
+        s = line.strip()
+        if not s or s.startswith("#"):
+            continue
+        s = s.replace("${HOME}", home).replace("$HOME", home)
+        if s == "~" or s.startswith("~/"):
+            s = home + s[1:]
+        if not os.path.isabs(s):
+            ok = False  # a relative root has no meaning for the hook: fail closed
+            continue
+        s = os.path.normpath(s)
+        (globs if GLOB_RE.search(s) else roots).append(s)
+    if not ok:
+        roots += [os.path.join(home, r) for r in FALLBACK_ROOT_RELS]
+    return roots, globs
+
+
+def _glob_hit(path, pattern):
+    """True when path, or a folder above it, matches the glob pattern."""
+    for p in _variants(path):
+        while True:
+            if fnmatch.fnmatchcase(p, pattern):
+                return True
+            parent = os.path.dirname(p)
+            if parent == p:
+                break
+            p = parent
+    return False
+
+
 def denied_root_for(path, ctx):
     for root in _roots(ctx):
         if _under(path, root):
             return root
+    for pattern in ctx.get("root_globs", ()):
+        if _glob_hit(path, pattern):
+            return pattern
     return None
 
 
@@ -176,6 +234,10 @@ def _contains_denied_root(base, ctx):
     for t in _roots(ctx):
         if _under(t, base):
             return t
+    for pattern in ctx.get("root_globs", ()):
+        prefix = _glob_prefix(pattern) or "/"
+        if _under(prefix, base) or _under(base, prefix):
+            return pattern
     return None
 
 
@@ -791,7 +853,7 @@ def default_temp_roots():
     return sorted(os.path.realpath(r) for r in roots)
 
 
-def evaluate(payload, home=None, temp_roots=None):
+def evaluate(payload, home=None, temp_roots=None, roots_file=None):
     """Return None to allow, or a deny reason string."""
     if not isinstance(payload, dict):
         return "malformed hook payload"
@@ -800,11 +862,15 @@ def evaluate(payload, home=None, temp_roots=None):
     if not isinstance(tool, str) or not isinstance(tin, dict):
         return "malformed hook payload (tool_name/tool_input)"
     cwd = payload.get("cwd") or os.getcwd()
+    home = os.path.normpath(home or os.path.expanduser("~"))
+    extra_roots, root_globs = load_student_roots(roots_file or ROOTS_FILE, home)
     ctx = {
-        "home": os.path.normpath(home or os.path.expanduser("~")),
+        "home": home,
         "cwd": cwd,
         "project_dir": os.environ.get("CLAUDE_PROJECT_DIR") or cwd,
         "temp_roots": default_temp_roots() if temp_roots is None else list(temp_roots),
+        "extra_roots": extra_roots,
+        "root_globs": root_globs,
     }
     try:
         if tool == "Bash":

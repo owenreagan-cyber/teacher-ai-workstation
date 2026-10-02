@@ -6,7 +6,8 @@
 3. make the installed copy read-only (0444)
 4. write every installed SHA-256 to ~/.claude/hooks/cos/dev_guard.sha256
 
-FILES: dev_guard.py (the hook), sandbox-lock.json (passed to `claude --settings`).
+FILES: dev_guard.py (the hook), student_data_roots.txt (read by the hook from beside
+itself), sandbox-lock.json (passed to `claude --settings`).
 
 Run by Owen, outside a Claude Code session running under the profile (the
 profile's hook denies agent access to the install directory). Stdlib only.
@@ -22,7 +23,7 @@ import tempfile
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 SOURCE = os.path.join(HERE, "dev_guard.py")
-FILES = ("dev_guard.py", "sandbox-lock.json")
+FILES = ("dev_guard.py", "student_data_roots.txt", "sandbox-lock.json")
 DEFAULT_DEST_DIR = os.path.join(os.path.expanduser("~"), ".claude", "hooks", "cos")
 READ_ONLY = stat.S_IRUSR | stat.S_IRGRP | stat.S_IROTH
 

@@ -33,7 +33,9 @@ CREDENTIAL_PATHS = [
 ]
 CLAUDE_PATHS = ["~/.claude.json", "~/.claude/settings.json", "~/.claude/settings.local.json",
                 "~/.claude/projects"]
-PRIVATE_PATHS = ["~/Downloads", "~/Library/Application Support/ChiefOfStaff"]
+PRIVATE_PATHS = ["~/.teacher-ai-workstation", "~/Downloads", "~/Library/Application Support/ChiefOfStaff"]
+ROOTS_FILE = os.path.join(HERE, "student_data_roots.txt")
+FALLBACK_ROOTS = ["~/Documents", "~/Desktop"]  # denied when ROOTS_FILE is missing or invalid
 
 # Sandboxed commands may reach only these hosts. github.com and api.github.com are left out on
 # purpose: a domain filter cannot tell a fetch from a push, so allowing them would allow push.
@@ -53,8 +55,28 @@ HOOKS = {"PreToolUse": [{
 }]}
 
 
-def student_roots() -> list[str]:
-    return ["~/.teacher-ai-workstation"]
+def student_roots(path: str | None = None) -> list[str]:
+    """Roots from student_data_roots.txt; fails closed to ~/Documents and ~/Desktop."""
+    roots, ok = [], True
+    try:
+        with open(path or ROOTS_FILE, encoding="utf-8") as f:
+            lines = f.read().splitlines()
+    except (OSError, UnicodeDecodeError):
+        lines, ok = [], False
+    for line in lines:
+        s = line.strip()
+        if not s or s.startswith("#"):
+            continue
+        s = s.replace("${HOME}", "~").replace("$HOME", "~")
+        if s == "~":
+            s = "~/"
+        if not (s.startswith("~/") or os.path.isabs(s)):
+            ok = False
+            continue
+        roots.append(s.rstrip("/") if s != "~/" else s)
+    if not ok:
+        roots += FALLBACK_ROOTS
+    return roots
 
 
 def denied_paths() -> list[str]:

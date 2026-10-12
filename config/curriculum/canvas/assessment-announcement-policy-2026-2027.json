@@ -1,0 +1,182 @@
+{
+  "schemaVersion": 1,
+  "status": "owner-approved",
+  "approvedAt": "2026-10-10",
+  "schoolYear": "2026-2027",
+  "authority": "OWNER_POLICY",
+  "approvedBy": "Owen Reagan",
+  "subject": "assessment-and-announcement",
+  "source": "explicit teacher instruction (Phase 3.2) + docs/programs/canvas-llm/2026-2027-fpk-canvas-operating-contract.md + canonical-context-pack/announcement-contract.md",
+  "scope": "Deterministic assessment pairing, announcement planning, scheduling, and duplicate identity for the Phase 3 Chief of Staff weekly loop. Preview/planning only; no Canvas writes.",
+  "announcementFamilies": [
+    "math_assessment",
+    "reading_assessment",
+    "spelling_assessment",
+    "reading_spelling_combined_assessment",
+    "language_arts_assessment",
+    "history_assessment",
+    "science_assessment",
+    "weekly_update",
+    "newsletter_update",
+    "custom"
+  ],
+  "twoNoticePolicy": {
+    "authority": "OWNER_POLICY",
+    "rule": "When an approved pacing interpretation contains a test/assessment that requires communication, Chief generates an announcement plan for teacher review.",
+    "firstNotice": {
+      "purpose": "FIRST_NOTICE",
+      "targetLeadDays": 5,
+      "leadDaysAuthority": "OWNER_POLICY (Phase 3.2 ~5 days)"
+    },
+    "reminder": {
+      "purpose": "REMINDER",
+      "targetLeadDaysMin": 1,
+      "targetLeadDaysMax": 2,
+      "defaultLeadDays": 2,
+      "leadDaysAuthority": "OWNER_POLICY (Phase 3.2 ~1-2 days) consistent with existing ASSESSMENT_REMINDER_LEAD_DAYS=2"
+    },
+    "draftedTogether": true,
+    "separateScheduledObjects": true,
+    "notRecurring": true,
+    "calendarBoundaryBehavior": "produce scheduling warning/proposal instead of silently choosing a bad date"
+  },
+  "scheduling": {
+    "timezone": "America/New_York",
+    "sendTime": {
+      "value": "4:00 PM",
+      "authority": "LIVE_CANVAS_PRECEDENT",
+      "note": "Live assessment reminders use delayed_post_at 20:00Z (4:00 PM ET); weekly agenda updates Friday 4:00 PM ET."
+    },
+    "spellingReminderSendTime": {
+      "value": "4:30 PM",
+      "authority": "LIVE_CANVAS_PRECEDENT",
+      "note": "Live Spelling reminders use delayed_post_at 20:30Z (4:30 PM ET)."
+    },
+    "weeklyUpdateDay": {
+      "value": "Friday",
+      "time": "4:00 PM",
+      "authority": "OWNER_POLICY",
+      "source": "announcement-contract.md §Scheduling rule"
+    },
+    "weekendAndBreakAware": true,
+    "moveToPriorInstructionalDay": true
+  },
+  "mathAssessment": {
+    "pairing": {
+      "authority": "OWNER_POLICY",
+      "rule": "A regular Math test is a cumulative assessment. Math cumulative assessments and Fact Tests are given on the same day. They create TWO separate Canvas gradebook assignments.",
+      "assignments": [
+        {"kind": "written_assessment", "group": "Written Assessments", "title": "SM5: Written Assessment {n}"},
+        {"kind": "fact_assessment", "group": "Fact Assessments", "title": "SM5: Fact Assessment {n}"}
+      ],
+      "combinedCommunication": true,
+      "note": "For family/student communication they are normally communicated in ONE combined Math assessment announcement."
+    },
+    "resourceRule": {
+      "authority": "OWNER_POLICY",
+      "rule": "The Fact Test section of the Math assessment announcement should include the fact skill, the correct mapped Power Up, and a verified Canvas Power Up PDF attachment/link. Power Up selection is deterministic; Qwen never selects a Power Up.",
+      "factSkillSource": "config/curriculum/math/saxon-math-5/fact-test-practice-map.json (practiceDescription)",
+      "powerUpLetterSource": "config/curriculum/math/saxon-math-5/fact-test-practice-map.json (powerUpCode)",
+      "canvasFileSource": "UNRESOLVED",
+      "canvasFileNote": "No verified Canvas Power Up PDF file ID exists in repo config. Resolution requires a future GET-only Canvas Files sweep. FAIL CLOSED until verified."
+    }
+  },
+  "readingAssessment": {
+    "pairing": {
+      "authority": "OWNER_POLICY",
+      "rule": "Reading Mastery Tests and Fluency Checkouts are normally given on the same day. They create TWO separate assignments in different categories.",
+      "assignments": [
+        {"kind": "mastery_test", "group": "Assessments", "title": "RM4: Mastery Test {n}"},
+        {"kind": "fluency_checkout", "group": "Check Out", "title": "RM4: Fluency Checkout {n}"}
+      ],
+      "combinedCommunication": true,
+      "note": "Communication normally uses a combined Reading assessment announcement discussing preparation for the Mastery Test and fluency practice for the Checkout. Do not collapse the two gradebook assignments."
+    },
+    "testToCheckoutMap": {
+      "source": "config/curriculum/reading/reading-mastery-4/checkout-passage-map.json",
+      "checkouts": "1-13",
+      "test14Exception": {
+        "authority": "OWNER_POLICY",
+        "rule": "Reading Test 14 has no Checkout; omit Checkout 14 from announcements and assignments."
+      },
+      "fluency": {
+        "checkouts1to7": {"wpm": 100, "maxErrors": 2, "authority": "OWNER_POLICY (CHECKOUT_FLUENCY_CONFIRMED)"},
+        "checkouts8to13": {"wpm": null, "maxErrors": null, "authority": "UNRESOLVED", "note": "WPM/error targets unresolved; owner source required."}
+      }
+    }
+  },
+  "spellingAssessment": {
+    "numberingSource": "config/curriculum/spelling/cumulative-test-word-lists.json (Tests 1-24)",
+    "test25Gated": true,
+    "practiceRangeRule": "For Spelling Test N, practice Lessons (N-4) through (N-1).",
+    "standaloneWhenNoReadingAssessment": true,
+    "combinedWithReadingWhenSameWeek": true,
+    "title": "RM4: Spelling Test {n}"
+  },
+  "languageArtsAssessment": {
+    "trigger": "Shurley chapter test/checkup",
+    "firstNotice": true,
+    "reminder": true,
+    "category": "Assessments",
+    "titlePattern": "ELA4: {topic}",
+    "note": "Audit found live precedent for Shurley chapter test first notices and reminders (e.g. 'Chapter 2 Shurley Test', 'Reminder - Chapter 2 Shurley Test Tomorrow')."
+  },
+  "historyAssessment": {
+    "trigger": "History assessment (Q1/Q3 active)",
+    "firstNotice": true,
+    "reminder": true,
+    "note": "Live precedent shows History first notices + reminders + move-notice announcements. Auto assignment creation remains disabled."
+  },
+  "scienceAssessment": {
+    "trigger": "Science assessment (Q2/Q4 active)",
+    "firstNotice": true,
+    "reminder": true,
+    "note": "Live Science announcement precedent is empty in the normalized sweep; do not manufacture rules."
+  },
+  "customAnnouncement": {
+    "authority": "OWNER_POLICY",
+    "rule": "Owen may supply raw text; Chief collects deterministic facts (raw message, target course(s), requested send date/time, optional reminder), Qwen rewrites for style, teacher approves/edits/regenerates.",
+    "multiCourseBehavior": "one intended Canvas object per course unless live Canvas proves another supported architecture."
+  },
+  "duplicateIdentity": {
+    "components": ["course", "announcement_family", "source_event", "assessment_date", "notice_type"],
+    "example": "Math | Assessment | Test6+Fact6 | 2026-10-20 | FIRST_NOTICE",
+    "rule": "Retries must not create duplicates; update/reconcile the existing intended object where Canvas semantics permit."
+  },
+  "announcementStateMachine": {
+    "states": [
+      "SOURCE_TRIGGER",
+      "FACTS_RESOLVED",
+      "DRAFTED",
+      "TEACHER_APPROVED",
+      "SCHEDULED_INTENT",
+      "PUBLISHED_VERIFIED"
+    ],
+    "phase32StopAt": ["TEACHER_APPROVED", "SCHEDULED_INTENT"],
+    "blockedTarget": "PUBLISHED_VERIFIED"
+  },
+  "localModelRole": {
+    "job": "style, not truth",
+    "allowed": ["warmth", "clarity", "flow", "natural teacher voice", "shorter reminder variant"],
+    "forbidden": [
+      "change assessment dates",
+      "change assessment numbers",
+      "add assessments",
+      "invent homework",
+      "invent study requirements",
+      "change Power Up mappings",
+      "choose resources",
+      "invent school events",
+      "add unsupported facts",
+      "change course",
+      "change send time"
+    ],
+    "factsBlockRequired": true
+  },
+  "provenance": {
+    "authority": "OWNER_POLICY",
+    "approvedBy": "Owen Reagan",
+    "source": "explicit teacher instruction",
+    "approvedAt": "2026-10-10"
+  }
+}

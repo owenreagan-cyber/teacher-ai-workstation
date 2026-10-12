@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "status": "owner-approved-2026-2027",
+  "states": [
+    "SOURCE",
+    "PROPOSED",
+    "TEACHER_APPROVED",
+    "PUBLISHED_VERIFIED"
+  ],
+  "description": {
+    "SOURCE": "Raw weekly item from an authoritative source (pacing guide, live Canvas read, or uploaded material).",
+    "PROPOSED": "Model-generated draft awaiting teacher review.",
+    "TEACHER_APPROVED": "Teacher explicitly approved the proposal.",
+    "PUBLISHED_VERIFIED": "Published to Canvas and confirmed by a read-back verification."
+  },
+  "provenancePreservedAcrossStates": true,
+  "note": "Every future weekly item must preserve provenance across all four states."
+}

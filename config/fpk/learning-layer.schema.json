@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "status": "planning-only",
+  "localDataPath": ".local/learning/",
+  "note": "Schema and plan only. No embeddings, vector DB, or fine-tuning in this phase. The actual data files stay local and gitignored per repo convention (local workstation state).",
+  "files": [
+    {
+      "name": "teacher-corrections.jsonl",
+      "format": "jsonl",
+      "recordFields": [
+        "subject",
+        "raw_pacing_value",
+        "artifact_type",
+        "model_proposal",
+        "teacher_final",
+        "approved_date",
+        "authority",
+        "source_provenance"
+      ],
+      "description": "One line per teacher correction of a model proposal. authority must use OWNER_POLICY | LIVE_CANVAS_PRECEDENT | MODEL_INFERENCE from config/fpk/rule-authority.json."
+    },
+    {
+      "name": "approved-language.jsonl",
+      "format": "jsonl",
+      "recordFields": [
+        "subject",
+        "context",
+        "approved_wording",
+        "approved_date",
+        "authority",
+        "source_provenance"
+      ],
+      "description": "Owner-approved wording snippets that future generations may reuse verbatim."
+    },
+    {
+      "name": "artifact-precedent.jsonl",
+      "format": "jsonl",
+      "recordFields": [
+        "subject",
+        "artifact_type",
+        "week_code",
+        "canonical_sample_path",
+        "authority",
+        "captured_date"
+      ],
+      "description": "Pointers to canonical sample artifacts (e.g. the preserved Q1W7 Math agenda page)."
+    },
+    {
+      "name": "promoted-rules.json",
+      "format": "json",
+      "recordFields": [
+        "rule",
+        "authority",
+        "source",
+        "promoted_date",
+        "requires_teacher_approval"
+      ],
+      "description": "Rules promoted to OWNER_POLICY by explicit owner action."
+    },
+    {
+      "name": "rejected-suggestions.jsonl",
+      "format": "jsonl",
+      "recordFields": [
+        "subject",
+        "model_proposal",
+        "rejection_reason",
+        "rejected_date",
+        "source_provenance"
+      ],
+      "description": "Model suggestions the teacher rejected, so future models do not repeat them."
+    }
+  ],
+  "doNotFineTuneInThisPhase": true
+}

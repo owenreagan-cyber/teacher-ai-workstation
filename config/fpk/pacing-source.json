@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "status": "owner-approved-2026-2027",
+  "authority": "docs/chief-of-staff/FPK_CANVAS_PROJECT.md",
+  "schoolYear": "2026-2027",
+  "workbookName": "2026-2027 FPK Pacing Guides",
+  "authoritativeSheet": "4A - Reagan",
+  "freshReadRequired": true,
+  "blankCellPolicy": "leave-blank",
+  "inventCurriculumForbidden": true,
+  "failClosedOnAmbiguity": true,
+  "sourcePriority": [
+    "Owen's newest explicit instruction",
+    "live pacing / live Canvas reads",
+    "current canonical handoff and locked decisions",
+    "approved project examples",
+    "uploaded curriculum/source materials",
+    "older project precedent",
+    "model inference"
+  ],
+  "notes": "workbookName and authoritativeSheet are supported by repo evidence (scripts/canvas-llm/q1w9_build.py) and the locked rule that the authoritative pacing tab is '4A - Reagan'. blankCellPolicy encodes the locked rule 'blank pacing stays blank'."
+}

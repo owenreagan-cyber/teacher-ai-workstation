@@ -40,9 +40,18 @@
     "resourceSectionAllowed": false,
     "subjectAgendaLinksAllowed": false,
     "curriculumResourceLinksAllowed": false,
-    "homeworkLabel": "Homework",
+    "homeworkLabel": "At Home",
     "inactiveQuarterSubjectPolicy": "untouched",
     "quarterSubjectActivationConfig": "config/curriculum/canvas/quarter-subject-activation-2026-2027.json"
+  },
+  "provenance": {
+    "atHomeColumnLabel": {
+      "value": "At Home",
+      "authority": "OWNER_POLICY",
+      "approvedBy": "Owen Reagan",
+      "supportedBy": "Phase 2A LIVE_CANVAS_PRECEDENT sweep (19 'At Home', 0 'Homework')",
+      "approvedAt": "2026-10-10"
+    }
   },
   "unresolvedPolicies": {
     "automaticFrontPagePublication": {

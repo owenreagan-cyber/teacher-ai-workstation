@@ -1,0 +1,75 @@
+{
+  "schemaVersion": 1,
+  "status": "owner-approved-2026-2027",
+  "purpose": "Live Canvas observations that must NOT be retrieved as positive precedent or learned as policy. These are anomalies, not rules.",
+  "authority": "LIVE_CANVAS_PRECEDENT",
+  "note": "These items came from the Phase 2A live sweep. They remain precedent/anomaly evidence only. A precedent retriever or local model must never treat them as desired behavior.",
+  "exclusions": [
+    {
+      "id": "ELA4A-ELA4B-PREFIX",
+      "match": "title_prefix",
+      "pattern": "^ELA4[AB]:",
+      "reason": "Language Arts assignment prefix drift (ELA4A:/ELA4B:). Canonical naming not settled; keep as precedent."
+    },
+    {
+      "id": "HIST-PREFIX-DRIFT",
+      "match": "title_prefix",
+      "pattern": "^HIST ?4[AB]?:",
+      "reason": "History assignment prefix drift (HIST 4B:/HIST4A:). Canonical naming not settled."
+    },
+    {
+      "id": "DUPLICATED-HIST-PREFIX",
+      "match": "title_substring",
+      "pattern": "HIST 4B: HIST 4B:",
+      "reason": "Duplicated HIST 4B: prefix anomaly. Never reproduce."
+    },
+    {
+      "id": "TRAILING-SPACE-TITLE",
+      "match": "title_suffix",
+      "pattern": "\\s$",
+      "reason": "Trailing whitespace in a live assignment title. Never reproduce."
+    },
+    {
+      "id": "READING-Q1W8-SINGLE-COLUMN",
+      "match": "layout_pattern",
+      "pattern": "reading single-column full-width (Q1W8-Q1W9)",
+      "reason": "Reading agenda layout drift. Not a universal Reading rule."
+    },
+    {
+      "id": "SM5-L18-NONE-SUBMISSION",
+      "match": "assignment_setting",
+      "pattern": "SM5: Lesson 18 Homework submission_types=['none']",
+      "reason": "One-off submission_type anomaly; all siblings are on_paper."
+    },
+    {
+      "id": "RM4-L17-PASS-FAIL",
+      "match": "assignment_setting",
+      "pattern": "RM4: Lesson 17 Workbook grading_type=pass_fail",
+      "reason": "One-off grading_type anomaly; all siblings are percent."
+    },
+    {
+      "id": "STRAY-HOMEROOM-SAMPLE",
+      "match": "assignment_title",
+      "pattern": "^sample$",
+      "reason": "Stray unpublished Homeroom 'sample' assignment (0 pts, online_text_entry)."
+    },
+    {
+      "id": "DUPLICATE-Q3W7-SLUG",
+      "match": "page_slug",
+      "pattern": "q3w7-february-22-26-2027-2",
+      "reason": "Duplicate Q3W7 page slug with '-2' suffix."
+    },
+    {
+      "id": "EARLY-OMIT-FROM-FINAL",
+      "match": "assignment_setting",
+      "pattern": "omit_from_final_grade=true on early-week assignments",
+      "reason": "Early-week omit_from_final_grade anomalies."
+    },
+    {
+      "id": "MATH-LESSON-N-VS-N-HOMEWORK",
+      "match": "assignment_title",
+      "pattern": "^SM5: Lesson \\d+$",
+      "reason": "Math 'SM5: Lesson N' vs 'SM5: Lesson N Homework' naming drift. Unresolved; settle in Phase 3 preview."
+    }
+  ]
+}

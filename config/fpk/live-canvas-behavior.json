@@ -1,0 +1,41 @@
+{
+  "schemaVersion": 1,
+  "status": "live-read-canonical",
+  "authority": "LIVE_CANVAS_PRECEDENT",
+  "source": ".local/canvas-llm/phase2-live-sweep/ (2026-10-11, GET-only)",
+  "note": "Canonical record of live-verified Canvas behaviors and capabilities. LIVE_CANVAS_PRECEDENT only; do not silently promote to OWNER_POLICY. Verified by GET, not inferred.",
+  "modulePlacement": {
+    "weeklyAgendaPages": {
+      "rule": "Weekly agenda pages must exist in the course's '2026-2027 Agenda Pages' module.",
+      "classification": "LIVE_CANVAS_PRECEDENT",
+      "verifiedPages": ["Q1W7", "Q1W8", "Q1W9", "Q2W1", "Q2W2"],
+      "note": "All sampled weekly pages appear in the agenda module with module item IDs, positions, and published=true. Front-page status does not affect module membership."
+    },
+    "assignments": {
+      "rule": "Assignments are not currently placed into modules; assignment-group membership alone is sufficient.",
+      "classification": "LIVE_CANVAS_PRECEDENT",
+      "requirement": "optional / no module insertion required"
+    }
+  },
+  "observerCapability": {
+    "status": "AVAILABLE",
+    "structuralFields": [
+      "associated_user_id (observer -> student linkage)",
+      "user_id",
+      "role/type"
+    ],
+    "linkageResolvableWithoutGradesOrSubmissions": true,
+    "piiBoundary": "Only schema field names recorded; no observer/student names or emails stored."
+  },
+  "conversationCapability": {
+    "status": "REQUIRES_WRITE_TEST",
+    "documented": {
+      "createApiSupportsAttachmentIds": true,
+      "repoTransportHasConversationWriteMethod": false,
+      "liveAttachmentBehaviorVerified": false,
+      "inlineImageBehavior": "unresolved",
+      "htmlPreservation": "unresolved"
+    },
+    "note": "Canvas Conversations create API documents attachment_ids; repo transport currently has no Conversation write method. Live attachment behavior cannot be proven without a write test (not performed)."
+  }
+}

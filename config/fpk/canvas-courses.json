@@ -1,0 +1,80 @@
+{
+  "schemaVersion": 2,
+  "status": "owner-approved-2026-2027",
+  "derivedFrom": "config/curriculum/canvas-course-mappings.json",
+  "note": "Course IDs and policy mirror the canonical mapping in config/curriculum/canvas-course-mappings.json (edit that file for course ID/policy changes). This normalized FPK view additionally records LIVE_READ verified assignment-group IDs and agenda-module IDs from the Phase 2 GET-only sweep.",
+  "schoolYear": "2026-2027",
+  "liveReadSource": ".local/canvas-llm/phase2-live-sweep/ (2026-10-11, GET-only)",
+  "courses": [
+    {
+      "subject": "Math",
+      "courseId": 26404,
+      "status": "active",
+      "automatedAssignmentCreationAllowed": true,
+      "agendaModuleId": 89636,
+      "assignmentGroups": [
+        {"name": "Written Assessments", "id": 60319},
+        {"name": "Fact Assessments", "id": 60320},
+        {"name": "Homework/Class Work", "id": 60321}
+      ]
+    },
+    {
+      "subject": "Reading/Spelling",
+      "courseId": 26442,
+      "status": "active",
+      "automatedAssignmentCreationAllowed": true,
+      "agendaModuleId": 89635,
+      "assignmentGroups": [
+        {"name": "Check Out", "id": 63350},
+        {"name": "Assessments", "id": 63351},
+        {"name": "Homework", "id": 63352}
+      ]
+    },
+    {
+      "subject": "Language Arts",
+      "courseId": 28171,
+      "status": "active",
+      "automatedAssignmentCreationAllowed": true,
+      "agendaModuleId": 92920,
+      "assignmentGroups": [
+        {"name": "Classwork", "id": 63424},
+        {"name": "Assessments", "id": 63628}
+      ]
+    },
+    {
+      "subject": "History",
+      "courseId": 28165,
+      "status": "quarter-gated",
+      "automatedAssignmentCreationAllowed": false,
+      "agendaModuleId": 92921,
+      "assignmentGroups": [
+        {"name": "Assignments", "id": 63423}
+      ]
+    },
+    {
+      "subject": "Science",
+      "courseId": 28166,
+      "status": "quarter-gated",
+      "automatedAssignmentCreationAllowed": false,
+      "agendaModuleId": 92922,
+      "assignmentGroups": [
+        {"name": "Assignments", "id": 63355}
+      ]
+    },
+    {
+      "subject": "Homeroom",
+      "courseId": 26429,
+      "status": "newsletter-only",
+      "automatedAssignmentCreationAllowed": false,
+      "agendaModuleId": 89637,
+      "assignmentGroups": [
+        {"name": "Assignments", "id": 59086}
+      ]
+    }
+  ],
+  "authority": {
+    "courseIdsAndPolicy": "OWNER_POLICY (config/curriculum/canvas-course-mappings.json)",
+    "assignmentGroupIds": "LIVE_CANVAS_PRECEDENT (verified by GET, Phase 2)",
+    "agendaModuleIds": "LIVE_CANVAS_PRECEDENT (verified by GET, Phase 2)"
+  }
+}

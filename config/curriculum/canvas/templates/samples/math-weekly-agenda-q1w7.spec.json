@@ -1,0 +1,69 @@
+{
+  "schemaVersion": 1,
+  "status": "sample-derived-spec",
+  "samplePath": "config/curriculum/canvas/templates/samples/math-weekly-agenda-q1w7.html",
+  "sampleSource": "live Canvas Q1W7 Math agenda page (owner-preserved, non-generated)",
+  "canonicalStandard": "config/curriculum/canvas/weekly-agenda-standard-2026-2027.json",
+  "note": "Structural spec derived from the preserved Q1W7 Math sample. The canonical structural standard is config/curriculum/canvas/weekly-agenda-standard-2026-2027.json; this file records the specific Q1W7-observed facts and marks sample content as precedent, not policy.",
+  "structure": {
+    "wrapperId": "kl_wrapper_3",
+    "wrapperClasses": [
+      "kl_circle_left",
+      "kl_wrapper"
+    ],
+    "banner": "Weekly Agenda (18pt white text on blue, centered)",
+    "remindersBlock": {
+      "label": "Reminders",
+      "background": "#c51062",
+      "text": "#ffffff"
+    },
+    "dayHeaders": [
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday"
+    ],
+    "subsectionClass": "kl_solid_border",
+    "subheaderBackground": "#333333",
+    "subheaderText": "#ffffff",
+    "normalWeekdayLayout": {
+      "inClass": "49% column",
+      "atHome": "49% column"
+    },
+    "noHomeworkDayLayout": {
+      "omitAtHome": true,
+      "inClassWidth": "100%"
+    }
+  },
+  "colors": {
+    "primaryBlue": "#0065a7",
+    "reminderPink": "#c51062",
+    "subheaderGray": "#333333",
+    "whiteText": "#ffffff"
+  },
+  "sampleContentPrecedent": {
+    "authority": "LIVE_CANVAS_PRECEDENT",
+    "requires_teacher_approval": true,
+    "items": [
+      {
+        "rule": "Monday At Home uses 'Problems 12-30 Evens' language",
+        "authority": "LIVE_CANVAS_PRECEDENT",
+        "source": "config/curriculum/canvas/templates/samples/math-weekly-agenda-q1w7.html",
+        "requires_teacher_approval": true
+      },
+      {
+        "rule": "Wednesday At Home uses 'Problems 11-29 Odds' language",
+        "authority": "LIVE_CANVAS_PRECEDENT",
+        "source": "config/curriculum/canvas/templates/samples/math-weekly-agenda-q1w7.html",
+        "requires_teacher_approval": true
+      },
+      {
+        "rule": "No-homework math day uses 'If you do not finish Problems 1-10 in class, complete them at home. These problems will be checked and graded.' language",
+        "authority": "LIVE_CANVAS_PRECEDENT",
+        "source": "config/curriculum/canvas/templates/samples/math-weekly-agenda-q1w7.html",
+        "requires_teacher_approval": true
+      }
+    ]
+  }
+}

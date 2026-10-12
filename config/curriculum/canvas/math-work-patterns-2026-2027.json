@@ -1,0 +1,155 @@
+{
+  "schemaVersion": 1,
+  "status": "owner-approved",
+  "approvedAt": "2026-07-25",
+  "schoolYear": "2026-2027",
+  "authority": "OWNER_POLICY",
+  "approvedBy": "Owen Reagan",
+  "subject": "math",
+  "subjectKey": "math",
+  "displayName": "Math",
+  "curriculum": "Saxon Math 4 — Course 1",
+  "canonicalPrefix": "SM5",
+  "source": "docs/programs/canvas-llm/2026-2027-fpk-canvas-operating-contract.md §3, §4, §6, §8, §9, §10, §11",
+  "scope": "Deterministic Math pacing translation and graded-assignment rules for the Phase 3 Chief of Staff weekly loop. Historical Canvas behavior is precedent, not policy.",
+  "tokenTranslation": {
+    "lesson": {
+      "sourcePattern": "L{n}",
+      "render": "Lesson {n}",
+      "variants": ["L31", "L 31", "Lesson 31"]
+    },
+    "investigation": {
+      "sourcePattern": "INV {n}",
+      "render": "Investigation {n}",
+      "variants": ["INV 3", "Inv 3", "Investigation 3"]
+    },
+    "writtenAssessment": {
+      "sourcePattern": "WA{n}",
+      "render": "Written Assessment {n}"
+    },
+    "factAssessment": {
+      "sourcePattern": "FA{n}",
+      "render": "Fact Assessment {n}"
+    }
+  },
+  "dailyClassworkGoal": {
+    "value": "#1-10",
+    "appliesToAllWeekdays": true,
+    "note": "Operating contract §4 daily classwork goal, Monday-Friday."
+  },
+  "homeworkSchedule": {
+    "Monday": {"kind": "homework", "value": "#12-30 evens"},
+    "Tuesday": {"kind": "no_homework"},
+    "Wednesday": {"kind": "homework", "value": "#11-29 odds"},
+    "Thursday": {"kind": "no_homework"},
+    "Friday": {"kind": "no_homework"}
+  },
+  "noHomeworkWording": "No Homework",
+  "weeklyAccuracyGrades": {
+    "count": 3,
+    "mondayHomework": true,
+    "wednesdayHomework": true,
+    "classworkDayDefault": "Tuesday",
+    "classworkDayDisplacement": {
+      "trigger": "Tuesday contains a Math assessment",
+      "then": "Thursday"
+    },
+    "doNotGrade": ["fact classwork", "fact homework"],
+    "assessmentsExcludedFromAccuracyGrades": true,
+    "teacherMayOverrideClassworkDay": true
+  },
+  "assessmentSchedule": {
+    "writtenAssessmentDay": "Tuesday",
+    "factAssessmentDay": "Tuesday",
+    "outputOnly": ["Written Assessment", "Fact Assessment"],
+    "mondayTestProhibited": true
+  },
+  "investigation": {
+    "artifactType": "investigation",
+    "inheritsLessonHomework": false,
+    "inClass": "Investigation {n}",
+    "atHome": "No Homework",
+    "assignmentCreation": "none",
+    "assessmentBehavior": "none",
+    "specialDescription": "unresolved (contract silent)"
+  },
+  "assignments": {
+    "base": {
+      "pointsPossible": 100,
+      "gradingType": "percent",
+      "submissionTypes": "on_paper",
+      "dueDate": "same calendar day as pacing",
+      "dueTime": "23:59",
+      "dueTimeDisplay": "11:59 PM",
+      "timezone": "America/New_York",
+      "previewOnly": true
+    },
+    "groups": {
+      "writtenAssessment": {
+        "name": "Written Assessments",
+        "numericId": null,
+        "numericIdAuthority": "LIVE_CANVAS_PRECEDENT (unverified; resolve by fresh-GET at deployment)"
+      },
+      "factAssessment": {
+        "name": "Fact Assessments",
+        "numericId": null,
+        "numericIdAuthority": "LIVE_CANVAS_PRECEDENT (unverified; resolve by fresh-GET at deployment)"
+      },
+      "homeworkClasswork": {
+        "name": "Homework/Class Work",
+        "numericId": null,
+        "numericIdAuthority": "LIVE_CANVAS_PRECEDENT (unverified; resolve by fresh-GET at deployment)"
+      }
+    },
+    "titles": {
+      "homework": {
+        "pattern": "SM5: Lesson {n} Homework",
+        "authority": "OWNER_POLICY",
+        "source": "operating contract §9 example"
+      },
+      "classwork": {
+        "pattern": "SM5: Lesson {n} Classwork",
+        "authority": "OWNER_POLICY",
+        "source": "explicit teacher instruction (Phase 3.4)"
+      },
+      "writtenAssessment": {
+        "pattern": "SM5: Written Assessment {n}",
+        "authority": "OWNER_POLICY",
+        "source": "operating contract §8, §9"
+      },
+      "factAssessment": {
+        "pattern": "SM5: Fact Assessment {n}",
+        "authority": "OWNER_POLICY",
+        "source": "operating contract §8, §9"
+      }
+    }
+  },
+  "gradingWeights": {
+    "writtenAssessments": "60%",
+    "factAssessments": "20%",
+    "homework": "20%",
+    "writtenAssessmentRetest": "mastery only, minus 1 point per missing or incorrect label",
+    "factAssessmentRetests": "none"
+  },
+  "notPromoted": [
+    {
+      "rule": "unfinished-classwork wording",
+      "wording": "If you do not finish Problems 1-10 in class, complete them at home. These problems will be checked and graded.",
+      "authority": "LIVE_CANVAS_PRECEDENT",
+      "source": "config/curriculum/canvas/templates/samples/math-weekly-agenda-q1w7.spec.json",
+      "requiresTeacherApproval": true,
+      "note": "Not present in the operating contract. Not encoded as OWNER_POLICY."
+    },
+    {
+      "rule": "classwork accuracy-grade title",
+      "authority": "OWNER_POLICY",
+      "note": "Resolved Phase 3.4: 'SM5: Lesson {n} Classwork' (approved by Owen Reagan)."
+    }
+  ],
+  "provenance": {
+    "authority": "OWNER_POLICY",
+    "approvedBy": "Owen Reagan",
+    "source": "explicit teacher instruction + operating contract",
+    "approvedAt": "2026-07-25"
+  }
+}

@@ -1,0 +1,103 @@
+{
+  "schemaVersion": 1,
+  "status": "owner-approved",
+  "approvedAt": "2026-10-11",
+  "schoolYear": "2026-2027",
+  "authority": "OWNER_POLICY",
+  "approvedBy": "Owen Reagan",
+  "subject": "assignment-category-and-grading",
+  "source": "explicit teacher instruction (Phase 3.5A) + live Canvas assignment groups verified by fresh GET",
+  "scope": "Canonical assignment-group routing and universal generated-assignment settings. Every Teacher AI Workstation assignment resolves through this contract. Future weeks must never re-derive category routing.",
+  "verifiedAt": "2026-10-11",
+  "verification": "fresh GET of assignment groups for all five courses; all groups present, no missing/renamed/duplicated/ambiguous groups",
+  "courses": {
+    "math": {
+      "courseId": 26404,
+      "displayName": "Math",
+      "routing": {
+        "written_assessment": {"group": "Written Assessments", "aliases": ["Math Test", "Written Assessment"]},
+        "fact_assessment": {"group": "Fact Assessments", "aliases": ["Fact Assessment"]},
+        "homework": {"group": "Homework/Class Work", "aliases": ["Homework"]},
+        "classwork": {"group": "Homework/Class Work", "aliases": ["Classwork"]}
+      }
+    },
+    "reading_spelling": {
+      "courseId": 26442,
+      "displayName": "Reading/Spelling",
+      "routing": {
+        "workbook": {"group": "Homework", "aliases": ["Workbook"]},
+        "workbook_and_comprehension": {"group": "Homework", "aliases": ["Workbook and Comprehension"]},
+        "mastery_test": {"group": "Assessments", "aliases": ["Reading Mastery Test"]},
+        "fluency_checkout": {"group": "Check Out", "aliases": ["Fluency Checkout"]},
+        "spelling_test": {"group": "Assessments", "aliases": ["Spelling Test"]}
+      }
+    },
+    "language_arts": {
+      "courseId": 28171,
+      "displayName": "Language Arts / Shurley",
+      "routing": {
+        "classroom_practice": {"group": "Classwork", "aliases": ["Classroom Practice"]},
+        "chapter_test": {"group": "Assessments", "aliases": ["Chapter Test"]}
+      }
+    },
+    "history": {
+      "courseId": 28165,
+      "displayName": "History",
+      "routing": {
+        "chapter_test": {"group": "Assignments", "aliases": ["Chapter Test"]},
+        "quiz": {"group": "Assignments", "aliases": ["Quiz"]}
+      },
+      "autoCreateOnlyFor": ["chapter_test", "quiz"]
+    },
+    "science": {
+      "courseId": 28166,
+      "displayName": "Science",
+      "routing": {
+        "chapter_test": {"group": "Assignments", "aliases": ["Chapter Test"]},
+        "quiz": {"group": "Assignments", "aliases": ["Quiz"]}
+      },
+      "autoCreateOnlyFor": ["chapter_test", "quiz"]
+    }
+  },
+  "universalSettings": {
+    "points_possible": 100,
+    "grading_type": "percent",
+    "submission_types": ["on_paper"],
+    "canvasDisplay": {
+      "points": "100",
+      "displayGradeAs": "Percentage",
+      "submissionType": "On Paper"
+    },
+    "forbiddenAnomalies": [
+      "pass_fail",
+      "none",
+      "different point totals",
+      "omit_from_final_grade=true"
+    ],
+    "forbiddenUnlessOwenApproves": "any exception to these settings"
+  },
+  "readbackVerification": {
+    "requiredAfterEveryWrite": true,
+    "fields": [
+      "exact course",
+      "exact assignment group",
+      "exact title",
+      "points_possible == 100",
+      "grading_type == percent",
+      "submission_types includes on_paper",
+      "correct due date/time",
+      "omit_from_final_grade is not unexpectedly true"
+    ],
+    "mismatchBehavior": "FAIL and report the exact object"
+  },
+  "failClosedRule": {
+    "rule": "If the expected assignment group is missing, renamed, duplicated, or ambiguous, do NOT create that assignment.",
+    "doNotGuessCategory": true
+  },
+  "provenance": {
+    "authority": "OWNER_POLICY",
+    "approvedBy": "Owen Reagan",
+    "source": "explicit teacher instruction",
+    "approvedAt": "2026-10-11"
+  }
+}

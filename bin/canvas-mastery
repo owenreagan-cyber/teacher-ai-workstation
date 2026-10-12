@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+# Assessment Mastery Tracker (read-only). No Canvas writes; GET-only.
+set -euo pipefail
+REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+exec python3 -m scripts.canvas_llm_mastery.cli "$@"

@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "status": "owner-approved-2026-2027",
+  "authorityTypes": [
+    "OWNER_POLICY",
+    "LIVE_CANVAS_PRECEDENT",
+    "MODEL_INFERENCE"
+  ],
+  "recordShape": {
+    "rule": "string",
+    "authority": "OWNER_POLICY | LIVE_CANVAS_PRECEDENT | MODEL_INFERENCE",
+    "source": "string",
+    "requires_teacher_approval": "boolean"
+  },
+  "example": {
+    "rule": "Lesson 21: Problems 12-30 Evens",
+    "authority": "LIVE_CANVAS_PRECEDENT",
+    "source": "config/curriculum/canvas/templates/samples/math-weekly-agenda-q1w7.html",
+    "requires_teacher_approval": true
+  },
+  "semantics": {
+    "OWNER_POLICY": "Explicit owner-approved rule. Binding unless a newer owner instruction changes it.",
+    "LIVE_CANVAS_PRECEDENT": "Observed live Canvas behavior or content. Precedent only; not automatically a universal rule.",
+    "MODEL_INFERENCE": "Inferred by a model. Must never silently become policy; requires_teacher_approval must be true."
+  },
+  "modelInferenceNeverBecomesPolicySilently": true
+}

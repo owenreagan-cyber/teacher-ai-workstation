@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+# Grade Check health check (read-only).
+#
+# Answers: is Grade Check healthy and actually running? Safe to run anytime.
+#
+# Guarantees:
+#   - no Canvas writes (no Canvas access at all)
+#   - no email sent (no transport invoked)
+#   - no Grade Check state mutation (state file read-only)
+#   - no OAuth tokens, client secrets, SMTP passwords, or grade data printed
+#
+# Exit codes: 0 = PASS, 1 = WARN, 2 = FAIL
+#
+# Usage:
+#   bin/grade-check-health            run the health check
+#   bin/grade-check-health --status   same as default
+#   bin/grade-check-health self-test  deterministic health tests
+set -euo pipefail
+
+REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+
+cd "$REPO_ROOT"
+exec python3 "$REPO_ROOT/scripts/canvas_llm_grade_check/health.py" "$@"

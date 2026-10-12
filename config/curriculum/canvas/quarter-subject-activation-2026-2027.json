@@ -15,6 +15,21 @@
     "inactiveSubjectUnpublishChangesForbidden": true,
     "inactiveSubjectFrontPageChangesForbidden": true
   },
+  "inactiveSubjectRedirect": {
+    "status": "owner-approved",
+    "approvedBy": "Owen Reagan",
+    "approvedAt": "2026-10-10",
+    "appliesToInactiveSubject": "history",
+    "appliesWhenActiveSubject": "science",
+    "quarters": [
+      "Q2",
+      "Q4"
+    ],
+    "behavior": "When History is the inactive rotating content course, do not generate normal weekly History instructional content. Instead maintain a simple redirect message/announcement on the History course pointing families to the active Science course.",
+    "canonicalMessage": "We are learning Science this track! Please check the Science Canvas page for this week's agenda, assignments, and updates.",
+    "finalWordingTeacherEditable": true,
+    "scienceInactiveBehavior": "Science receives no weekly instructional builds unless Owen explicitly overrides. No redirect is maintained on Science during Q1/Q3."
+  },
   "quarters": {
     "Q1": {
       "quarter": 1,

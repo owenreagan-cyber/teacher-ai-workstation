@@ -1,0 +1,138 @@
+{
+  "schemaVersion": 1,
+  "status": "owner-approved",
+  "approvedAt": "2026-10-10",
+  "schoolYear": "2026-2027",
+  "authority": "OWNER_POLICY",
+  "approvedBy": "Owen Reagan",
+  "scope": "Deterministic Reading/Spelling pacing translation, assessment pairing, and graded-assignment preview for the Phase 3 Chief of Staff weekly loop. Preview only; no Canvas writes.",
+  "source": "docs/programs/canvas-llm/2026-2027-fpk-canvas-operating-contract.md §3, §5, §6, §8, §9, §10, §11 + canonical-context-pack/reading-rules-and-maps.md + spelling-rules-and-maps.md",
+  "reading": {
+    "subjectKey": "reading",
+    "displayName": "Reading",
+    "courseId": 26442,
+    "canonicalPrefix": "RM4",
+    "curriculum": "Reading Mastery 4-5",
+    "assignmentGroups": ["Check Out", "Assessments", "Homework"],
+    "tokenTranslation": {
+      "lesson": {"sourcePattern": "L{n}", "render": "Lesson {n}"},
+      "masteryTestPlusCheckout": {"sourcePattern": "RMT+FCO", "render": "Reading Mastery Test {n} + Fluency Checkout {n}"}
+    },
+    "dailyClassworkGoal": "Workbook",
+    "homeworkSchedule": {
+      "Monday": {"kind": "no_homework"},
+      "Tuesday": {"kind": "homework", "value": "Comprehension Questions"},
+      "Wednesday": {"kind": "no_homework"},
+      "Thursday": {"kind": "homework", "value": "Comprehension Questions"},
+      "Friday": {"kind": "no_homework"}
+    },
+    "weeklyAccuracyGrades": {
+      "count": 3,
+      "tuesdayComprehensionHomework": true,
+      "thursdayComprehensionHomework": true,
+      "classworkDayDefault": "Monday",
+      "classworkDayDisplacement": {"trigger": "Monday contains a Reading assessment", "then": "Wednesday"},
+      "assessmentsExcluded": true,
+      "teacherMayOverrideClassworkDay": true
+    },
+    "testToCheckout": {
+      "rule": "Reading Test N -> Checkout N for N in 1-13",
+      "test14Exception": {"authority": "OWNER_POLICY", "rule": "Reading Test 14 has no Checkout"},
+      "fluency": {
+        "checkouts1to7": {"wpm": 100, "maxErrors": 2, "authority": "OWNER_POLICY"},
+        "checkouts8to13": {"wpm": null, "maxErrors": null, "authority": "UNRESOLVED"}
+      },
+      "source": "config/curriculum/reading/reading-mastery-4/checkout-passage-map.json"
+    },
+    "assessmentAssignments": {
+      "masteryTest": {"group": "Assessments", "title": "RM4: Mastery Test {n}"},
+      "fluencyCheckout": {"group": "Check Out", "title": "RM4: Fluency Checkout {n}"},
+      "separateGradebookItems": true,
+      "neverMerge": true
+    }
+  },
+  "spelling": {
+    "subjectKey": "spelling",
+    "displayName": "Spelling",
+    "canonicalPrefix": "RM4",
+    "curriculum": "Spelling 4",
+    "assignmentGroups": ["Assessments"],
+    "testNumbering": {
+      "authority": "OWNER_POLICY",
+      "rule": "Spelling tests occur every fifth lesson. The test following lesson L is Spelling Test ceil(L/5)*5.",
+      "practiceRangeRule": "For Spelling Test N, practice Lessons (N-4) through (N-1).",
+      "example": "Spelling Test 35 -> practice Lessons 31-34",
+      "wordListMap": "config/curriculum/spelling/cumulative-test-word-lists.json (cumulative tests 1-24, each covering lessons 1 through 5*N)",
+      "test25Gated": true
+    },
+    "tokenTranslation": {
+      "numberedLesson": {"sourcePattern": "{n}", "render": "Spelling Lesson {n}"},
+      "test": {"sourcePattern": "Test", "render": "Spelling Test {n}"},
+      "review": {"sourcePattern": "review", "render": "Spelling Review"}
+    },
+    "assignment": {
+      "title": "RM4: Spelling Test {n}",
+      "group": "Assessments",
+      "course": 26442,
+      "courseName": "Reading/Spelling",
+      "instructionalCourse": 26442,
+      "announcementCourse": 26442,
+      "gradebookRouting": "preserve canonical Spelling gradebook routing already established by current Canvas structure",
+      "courseResolution": {
+        "authority": "OWNER_POLICY",
+        "approvedBy": "Owen Reagan",
+        "approvedAt": "2026-10-10",
+        "decision": "Spelling belongs to the combined Reading/Spelling Canvas course 26442. The conflicting spelling-rules-and-maps.md route to 28171 is superseded/conflicting documentation."
+      }
+    },
+    "announcement": {
+      "standaloneWhenNoReadingAssessment": true,
+      "combinedWithReadingWhenSameWeek": false,
+      "combineRule": "Combine Reading + Spelling only when both have an assessment in the same week_code AND the operating contract supports it. Q2W1 has Spelling on Thursday and Reading on Friday (different days); do not combine automatically.",
+      "sendTime": "4:30 PM",
+      "sendTimeAuthority": "LIVE_CANVAS_PRECEDENT",
+      "practiceWording": "For Spelling Test {n}, students should practice lessons {start} through {end}."
+    }
+  },
+  "weeklyPagePolicy": {
+    "authority": "OWNER_POLICY",
+    "rule": "All weekly agenda pages Q1W1-Q4W10 are already pre-created in Canvas Pages for every subject course and are included in the '2026-2027 Agenda Pages' module.",
+    "neverCreateNewPage": true,
+    "publishPath": [
+      "locate exact existing QxWx page",
+      "verify unique identity",
+      "verify course",
+      "verify module placement",
+      "GET current page",
+      "update body of SAME page",
+      "save/update",
+      "fresh GET readback",
+      "verify",
+      "set SAME page as front page when activation is due",
+      "fresh GET front-page verification"
+    ],
+    "missingPage": "FAIL (do not create replacement)",
+    "duplicatePage": "FAIL"
+  },
+  "frontPageActivation": {
+    "authority": "OWNER_POLICY",
+    "rule": "Friday at 4:00 PM America/New_York, the upcoming week's existing QxWx page becomes the front page.",
+    "idempotent": true,
+    "q2w1Exception": {
+      "authority": "OWNER_POLICY",
+      "rule": "Because the normal Friday activation window has passed, once Owen approves Q2W1, update existing Q2W1 pages, make them front pages ASAP, and verify immediately. Next Friday's normal activation targets Q2W2."
+    },
+    "timezone": "America/New_York",
+    "sendTime": "4:00 PM",
+    "blockedInPhase33": true
+  },
+  "notPromoted": [
+    {"rule": "Checkout 8-13 WPM/error targets", "authority": "UNRESOLVED", "note": "Existence of Checkout resolves; detailed WPM/error preparation remains unresolved."}
+  ],
+  "provenance": {
+    "authority": "OWNER_POLICY",
+    "approvedBy": "Owen Reagan",
+    "source": "explicit teacher instruction + operating contract",
+    "approvedAt": "2026-10-10"
+  }
+}

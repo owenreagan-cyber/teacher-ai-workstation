@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "status": "owner-approved-2026-2027",
+  "authority": "docs/programs/canvas-llm/2026-2027-fpk-canvas-operating-contract.md and docs/programs/canvas-llm/canonical-context-pack/newsletter-homeroom-contract.md",
+  "rules": {
+    "homeroomNewsletterIsRollingFamilyNewsletter": true,
+    "subjectAcademicRemindersStayInSubjectCourses": true,
+    "privateBirthdayFamilyCommunicationUsesDirectCommunication": true,
+    "canvasConversationsShouldNotRelyOnRichHtmlRendering": true
+  },
+  "notes": "The Homeroom newsletter is family/Homeroom content, not a subject academic summary. Subject academic reminders belong in their own subject courses. Private birthday/family communication uses direct communication, not a public announcement. Canvas Conversations must not depend on rich HTML rendering."
+}

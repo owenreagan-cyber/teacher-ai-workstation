@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+# Chief of Staff weekly planning loop (read-only).
+#
+# Delegates to scripts/canvas_llm_phase3/week_workflow.py. No Canvas writes;
+# the Phase 3 package performs no Canvas network I/O at all.
+set -euo pipefail
+
+REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+
+exec python3 -m scripts.canvas_llm_phase3.week_workflow "$@"

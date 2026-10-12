@@ -3,7 +3,7 @@
   "authority": "OWNER_APPROVED",
   "status": "APPROVED",
   "approvedBy": "Owen Reagan",
-  "approvedAt": "2026-10-11",
+  "approvedAt": "2026-10-12",
   "season": "Track 2 / Fall",
   "schoolYear": "2026-2027",
   "subject": "homeroom-newsletter-content",
@@ -49,6 +49,102 @@
       "title": "Class 4A: Level Up Together.",
       "motto": "Think sharp. Choose well. Work hard. Have each other's back.",
       "description": "In Class 4A, success is not just about what one person can do. We get better when we challenge ourselves, make smart choices, encourage our teammates, and help the people around us succeed too. We are one class, one team, and we level up together."
+    },
+    "importantDates": {
+      "title": "Important Dates",
+      "dates": [
+        { "date": "October 20", "event": "Make-Up Picture Day" },
+        { "date": "October 30", "event": "Book Character Day OR Spirit Shirt with uniform bottoms" },
+        { "date": "November 6", "event": "Progress Reports" },
+        { "date": "November 6", "event": "Movie Night", "time": "6:00–8:00 PM" },
+        { "date": "November 11", "event": "Veterans Day Performance, Grades 2–5", "time": "9:00–10:00 AM" },
+        { "date": "November 20", "event": "Spirit Shirt with uniform bottoms" },
+        { "date": "November 23–27", "event": "Thanksgiving Break" },
+        { "date": "December 10", "event": "5th Grade Winter Performance", "time": "6:00–7:00 PM" },
+        { "date": "December 18", "event": "Spirit Shirt with uniform bottoms" },
+        { "date": "December 22", "event": "Report Cards" },
+        { "date": "December 21–January 8", "event": "Track Out" }
+      ]
+    },
+    "bookCharacterDay": {
+      "title": "Book Character Day",
+      "date": "Friday, October 30",
+      "intro": "On Friday, October 30, our school is celebrating Book Character Day! Participation is optional. Students who choose not to participate will follow the approved school attire option for that day: Spirit Shirt with uniform bottoms.",
+      "participating": [
+        "Students who participate may dress as their favorite character from a children's fiction book.",
+        "Outfits must be school-appropriate.",
+        "Students must bring the book to school.",
+        "Students should be prepared to talk about their book and character."
+      ],
+      "characterRestrictions": [
+        "Costumes and outfits may NOT represent celebrities, political figures, or pop-culture figures.",
+        "Costumes and outfits may NOT represent ghosts, monsters, witches, or wizards.",
+        "Costumes and outfits may NOT represent characters from TV shows, movies, or video games."
+      ],
+      "prohibitedItems": [
+        "Masks, weapons, and Halloween costumes are not permitted."
+      ],
+      "image": {
+        "filename": "bookcharacterday.png",
+        "altText": "Book Character Day information flyer"
+      }
+    },
+    "movieNight": {
+      "title": "Family Movie Night",
+      "date": "November 6",
+      "time": "6:00–8:00 PM",
+      "body": "Save the date for Family Movie Night on Thursday, November 6, from 6:00 to 8:00 PM. We hope to see your family there!"
+    },
+    "progressReportsAndReportCards": {
+      "title": "Progress Reports & Report Cards",
+      "body": [
+        "Progress Reports go home on November 6, and Report Cards go home on December 22.",
+        "These are great checkpoints for students to celebrate their growth and set a goal for what comes next."
+      ]
+    },
+    "afterSchoolClubs": {
+      "title": "After-School Clubs",
+      "body": "Quarter 2 after-school clubs are starting soon! Visit the After-School Clubs link in Family Quick Links below to view current offerings and sign-up details."
+    },
+    "carpool": {
+      "title": "Carpool Reminders",
+      "morningTime": "7:05–7:40 AM",
+      "afternoonTime": "2:40–3:05 PM",
+      "rules": [
+        "Students should enter and exit from the passenger side only.",
+        "Parents should remain inside their vehicles.",
+        "Pull all the way forward.",
+        "Do not pass other vehicles.",
+        "Do not change lanes while in the carpool line.",
+        "The afternoon carpool tag should be clearly visible from the rearview mirror.",
+        "Please avoid cell phone use during carpool.",
+        "K–5 families should not enter campus for afternoon pickup before 2:00 PM.",
+        "K–5 afternoon families normally follow the purple arrows.",
+        "Staff may direct vehicles to the blue route when needed while preserving arrival order."
+      ]
+    },
+    "familyQuickLinks": {
+      "title": "Family Quick Links",
+      "links": [
+        { "label": "Academic Calendar", "url": "https://www.thalesacademy.org/parents/academic-calendar" },
+        { "label": "Canvas", "url": "https://thalesacademy.instructure.com/login/canvas" },
+        { "label": "My Hot Lunchbox", "url": "https://ordernow.myhotlunchbox.com/sign-up" },
+        { "label": "School Spirit Store", "url": "https://thalesflowersgear.itemorder.com/shop/sale/" },
+        { "label": "Lands' End Uniform Store", "url": "https://www.landsend.com/co/account/school-uniforms?launchSearch=true" },
+        { "label": "After-School Care", "url": "https://docs.google.com/forms/d/e/1FAIpQLSeQ9RJtiKBvoT_OMDh1Z6FqKUGRGF6lruVtvFat1SKBbTKN1w/viewform?usp=sharing&ouid=113773781621524452028" },
+        { "label": "After-School Clubs", "url": "https://docs.google.com/spreadsheets/d/18b4ICbBdqidlAO4OWJ8iw_9cyaZtFLg3siIh2W6MeGc/edit?usp=sharing" },
+        { "label": "Carpool Map", "url": "https://drive.google.com/file/d/1uFyXXkvKZIpJD0YYrgkr1fVW1_kfNu6E/view?usp=sharing" },
+        { "label": "4th Grade Supply List", "url": "https://drive.google.com/file/d/1VjVPylNtT8HnrePG1cIs5VxwsMHz6Pzz/view" },
+        { "label": "Student Handbook", "url": "https://drive.google.com/file/d/1ToEnfIP90VBqwMjf_NyadHP5TiZoi7yb/view?usp=sharing" },
+        { "label": "Attendance Policy", "url": "https://www.thalesacademy.org/parents/student-expectations/expectations#attendance" }
+      ]
+    },
+    "contactGuidance": {
+      "title": "Questions? Start with Mr. Reagan",
+      "body": [
+        "For questions about your child's academics, behavior, assignments, or classroom experience, please reach out to Mr. Reagan first. I am usually the person who can give you the quickest and most accurate answer.",
+        "For school-wide needs such as tuition, technology, or front-office questions, families can use the school's official contact channels."
+      ]
     }
   },
   "privacy": {
@@ -62,7 +158,7 @@
   "provenance": {
     "authority": "OWNER_APPROVED",
     "approvedBy": "Owen Reagan",
-    "source": "explicit teacher instruction (Homeroom Track 2 content package)",
-    "approvedAt": "2026-10-11"
+    "source": "explicit teacher instruction (Homeroom Track 2 content package + Q2 school-wide update)",
+    "approvedAt": "2026-10-12"
   }
 }

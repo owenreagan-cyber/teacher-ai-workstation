@@ -1,0 +1,68 @@
+{
+  "schemaVersion": 1,
+  "authority": "OWNER_APPROVED",
+  "status": "APPROVED",
+  "approvedBy": "Owen Reagan",
+  "approvedAt": "2026-10-11",
+  "season": "Track 2 / Fall",
+  "schoolYear": "2026-2027",
+  "subject": "homeroom-newsletter-content",
+  "purpose": "Canonical approved content source for the rolling Homeroom family newsletter (Track 2 / Fall). Future theme/layout changes may consume these sections; the theme must not invent or modify these sections without a new approval.",
+  "sourceAuthorityRule": "These sections are now approved content sources. Future Homeroom theme/layout changes may consume these sections. The theme must not invent or modify these sections without a new approval.",
+  "sections": {
+    "behaviorTracker": {
+      "title": "Behavior Tracker",
+      "body": "Beginning Monday, October 12, we are adding a new behavior tracker to the back of each student's stamp sheet. This system is designed to keep communication clear between school and home while helping students recognize patterns, make smart choices, and grow.",
+      "leadIn": "After one verbal reminder, continued behaviors such as talking out, not tapping and tracking, or distracting others may result in a warning tally.",
+      "rules": [
+        "Tallies reset every week, giving students a fresh start each Monday.",
+        "5 tallies in one week: the student will not visit the prize box that Friday, and a Grow Note will come home.",
+        "More than 5 tallies: an additional consequence may be needed, such as a 5-minute recess sit-out.",
+        "If patterns continue into future weeks, we may reach out to schedule a parent meeting so we can work together."
+      ],
+      "note": "More serious choices, including lying, cheating, physical contact, or disrespect, may result in a Grow Note immediately."
+    },
+    "waterBottlesAndDrinks": {
+      "title": "Water Bottles & Drinks",
+      "body": [
+        "Please send water bottles only for use throughout the school day.",
+        "To help keep our classroom quieter, we ask that students avoid straw cups when possible. Silicone sleeves on metal bottles or plastic bottles are appreciated to help reduce noise, but they are not required.",
+        "Juice boxes and cans should be finished during snack or lunch."
+      ]
+    },
+    "scienceAndHistoryNotes": {
+      "title": "Science & History Notes",
+      "body": [
+        "Students will take daily notes in a class packet as we work through each Science and History unit.",
+        "The completed packet will come home approximately two days before each test and will include the key concepts and vocabulary students should review.",
+        "These notes are designed to help students prepare using the same information we practiced together in class."
+      ]
+    },
+    "holidayPlans": {
+      "title": "Holiday Plans",
+      "body": [
+        "Plans for upcoming holiday lunches, performances, and possible family invitations are still being finalized.",
+        "We will share dates and details with families as soon as plans are confirmed."
+      ]
+    },
+    "classMotto": {
+      "title": "Class 4A: Level Up Together.",
+      "motto": "Think sharp. Choose well. Work hard. Have each other's back.",
+      "description": "In Class 4A, success is not just about what one person can do. We get better when we challenge ourselves, make smart choices, encourage our teammates, and help the people around us succeed too. We are one class, one team, and we level up together."
+    }
+  },
+  "privacy": {
+    "noStudentNames": true,
+    "noBirthdays": true,
+    "noStaffFavorites": true,
+    "noCanvasIds": true,
+    "noTokensOrSecrets": true,
+    "noLivePageHtml": true
+  },
+  "provenance": {
+    "authority": "OWNER_APPROVED",
+    "approvedBy": "Owen Reagan",
+    "source": "explicit teacher instruction (Homeroom Track 2 content package)",
+    "approvedAt": "2026-10-11"
+  }
+}

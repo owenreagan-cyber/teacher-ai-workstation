@@ -77,3 +77,46 @@ Phase 2 GET-only sweep completed (2026-10-11). Reusable read-only sweep tool: `s
 - Placement / observer / conversation capability: `config/fpk/live-canvas-behavior.json`
 
 Both are `LIVE_CANVAS_PRECEDENT` (verified by GET), not `OWNER_POLICY`.
+
+## Guarded live deployment pattern
+
+Proven workflow for updating an existing rolling page (Homeroom or subject) in place:
+
+```text
+SOURCE CONTENT  (owner-approved)
++ THEME         (approved/candidate)
++ COMPATIBILITY CONTRACT
+        ↓
+ASSEMBLED PREVIEW  (local, gitignored)
+        ↓
+VALIDATION  (content checklist, UTF-8/mojibake, privacy, Canvas-safe HTML)
+        ↓
+BACKUP  (GET current body → .local, before any write)
+        ↓
+EXISTING PAGE UPDATE ONLY  (PUT; never POST a replacement page)
+        ↓
+READBACK VERIFICATION  (GET + checklist)
+```
+
+Required guards:
+
+- verify page identity (`page_id` + slug) before write
+- preserve slug and title
+- preserve `front_page` status
+- preserve `published` state
+- backup the current body locally before any write
+- verify via GET readback after every write
+
+Never:
+
+- create replacement pages for existing rolling pages
+- deploy unverified assembled content
+
+## Canvas readback normalization (not corruption)
+
+- Canvas prepends `<link rel="stylesheet" ... canvas_global_app.css>` and appends
+  `<script ... canvas_global_app.js>` around submitted page bodies. These are
+  platform wrappers, not generated content; validators must ignore them.
+- Canvas may normalize HTML entities — e.g. `Water Bottles & Drinks` reads back
+  as `Water Bottles &amp; Drinks`. This renders identically; do not treat normal
+  HTML escaping as corruption.

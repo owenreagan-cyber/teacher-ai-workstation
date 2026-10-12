@@ -49,6 +49,22 @@ Authority: `config/curriculum/canvas/quarter-subject-activation-2026-2027.json`.
   - Exact final wording remains teacher-editable.
 - Never infer activity from the quarter number alone; the quarter-activation config is authority.
 
+## Guarded deployment rules (locked)
+
+- existing rolling pages update in place only (never create replacement pages)
+- verify page identity (`page_id` + slug) before every write
+- preserve slug, title, `front_page` status, and `published` state
+- backup the current body locally before any write
+- verify via GET readback after every write
+- never deploy unverified assembled content
+
+Canvas readback normalization is platform behavior, not corruption:
+
+- Canvas adds its global wrapper (`canvas_global_app.css` / `canvas_global_app.js`)
+  around submitted page bodies; validators must ignore these platform wrappers.
+- Canvas normalizes HTML entities (`&` → `&amp;`); this renders identically and
+  must not be treated as corruption.
+
 ## Rule authority
 
 These decisions are `OWNER_POLICY`. Anything observed from live Canvas is `LIVE_CANVAS_PRECEDENT` (precedent, not policy). Model inferences are `MODEL_INFERENCE` and must never silently become policy. See `config/fpk/rule-authority.json`.

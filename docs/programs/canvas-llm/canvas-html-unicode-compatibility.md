@@ -158,7 +158,18 @@ CSS animation
 ```text
 the page body wrapper — Canvas prepends a global <link rel=stylesheet ... canvas_global_app.css>
 and appends a global <script ... canvas_global_app.js> around the submitted body
+HTML entities — Canvas normalizes raw ampersands, e.g. "Water Bottles & Drinks"
+    reads back as "Water Bottles &amp; Drinks"; renders identically
 ```
+
+### Validator guidance
+
+- Generated body fragments must NOT contain `<script>`, `<link>`, external CSS,
+  or external JS. Canvas may add its own global wrapper
+  (`canvas_global_app.css` / `canvas_global_app.js`) on readback; these platform
+  wrappers are expected and validators must ignore them.
+- Normal HTML escaping (e.g. `&` → `&amp;`) is normalization, not corruption.
+  Validators must not flag a single, correctly-escaped entity as a mismatch.
 
 Still `REQUIRES_MORE_TESTING`:
 

@@ -1,0 +1,68 @@
+{
+  "schemaVersion": 1,
+  "status": "owner-approved",
+  "approvedAt": "2026-10-11",
+  "schoolYear": "2026-2027",
+  "authority": "OWNER_POLICY",
+  "approvedBy": "Owen Reagan",
+  "source": "explicit teacher instruction",
+  "subject": "canvas-test-sandbox",
+  "purpose": "Controlled Canvas API / HTML / Unicode / attachment / rendering experiments. The one non-negotiable invariant is that the sandbox course must remain unpublished at all times.",
+  "sandbox": {
+    "courseId": 24399,
+    "courseName": "Math Automation Sandbox",
+    "canonicalPrefix": "SM5",
+    "courseRole": "demo_sandbox_course",
+    "mirrors": "config/canvas-llm/approved-canvas-course-manifest.json (demo sandbox entry)",
+    "sandboxOnly": true,
+    "mustRemainUnpublished": true,
+    "noStudentsParentsObservers": true,
+    "hardInvariant": "published == false BEFORE test AND published == false AFTER test"
+  },
+  "allowed": [
+    "create/update/delete test pages",
+    "create test announcements",
+    "test HTML sanitization",
+    "test inline styles",
+    "test gradients",
+    "test flex layouts",
+    "test emoji / Unicode",
+    "test links/buttons",
+    "test images/attachments",
+    "test Canvas readback normalization",
+    "test page/announcement HTML differences",
+    "test mobile/iPad rendering",
+    "test API behavior",
+    "test LLM-generated Canvas-safe HTML"
+  ],
+  "forbidden": [
+    "publishing the course",
+    "inviting/enrolling users",
+    "adding students",
+    "adding observers",
+    "cross-listing",
+    "changing term/account settings",
+    "touching production courses during experiments"
+  ],
+  "guardSequence": [
+    "GET course 24399",
+    "verify published == false",
+    "verify course ID == 24399",
+    "perform only approved sandbox writes",
+    "read back exact Canvas-rendered HTML",
+    "verify published == false again",
+    "optionally delete test artifact",
+    "record findings locally"
+  ],
+  "privacy": {
+    "noSchoolCanvasUrlCommitted": true,
+    "noTokensOrSecrets": true,
+    "noStudentData": true
+  },
+  "provenance": {
+    "authority": "OWNER_POLICY",
+    "approvedBy": "Owen Reagan",
+    "source": "explicit teacher instruction",
+    "approvedAt": "2026-10-11"
+  }
+}

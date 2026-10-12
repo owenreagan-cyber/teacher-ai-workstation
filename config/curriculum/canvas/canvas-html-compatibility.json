@@ -1,0 +1,130 @@
+{
+  "schemaVersion": 1,
+  "status": "evidence-recorded",
+  "authority": "OWNER_POLICY",
+  "approvedBy": "Owen Reagan",
+  "source": "explicit teacher instruction + sandbox 24399 write-test readback",
+  "subject": "canvas-html-unicode-compatibility",
+  "sandbox": "config/curriculum/canvas/canvas-test-sandbox.json (course 24399, mustRemainUnpublished=true)",
+  "note": "Evidence-backed Canvas HTML/Unicode rulebook. Statuses below are derived from deliberate guard-gated sandbox write tests in course 24399 (readback + diff), not from generic web HTML knowledge.",
+  "evidenceTimestamp": "2026-10-11",
+  "canvasNormalization": {
+    "finding": "Canvas page readback PREPENDS a global CSS <link rel=stylesheet ... canvas_global_app.css> and APPENDS a global <script ... canvas_global_app.js> around the submitted body. The submitted content itself is otherwise preserved byte-for-byte except where a property is explicitly stripped.",
+    "classification": "VERIFIED_WITH_NORMALIZATION"
+  },
+  "statusVocabulary": [
+    "VERIFIED_SAFE",
+    "VERIFIED_WITH_NORMALIZATION",
+    "UNSUPPORTED",
+    "DEVICE_VARIANT",
+    "REQUIRES_MORE_TESTING"
+  ],
+  "captureFields": [
+    "sourceHtml",
+    "canvasApiAccepted",
+    "canvasReadbackHtml",
+    "desktopBrowserRender",
+    "ipadA16Render",
+    "sanitizedOrChanged",
+    "safeForFutureUse",
+    "status"
+  ],
+  "htmlMatrix": [
+    {"element": "h1", "status": "VERIFIED_SAFE"},
+    {"element": "h2", "status": "VERIFIED_SAFE"},
+    {"element": "h3", "status": "VERIFIED_SAFE"},
+    {"element": "div", "status": "VERIFIED_SAFE"},
+    {"element": "span", "status": "VERIFIED_SAFE"},
+    {"element": "p", "status": "VERIFIED_SAFE"},
+    {"element": "strong", "status": "VERIFIED_SAFE"},
+    {"element": "em", "status": "VERIFIED_SAFE"},
+    {"element": "ul", "status": "VERIFIED_SAFE"},
+    {"element": "ol", "status": "VERIFIED_SAFE"},
+    {"element": "li", "status": "VERIFIED_SAFE"},
+    {"element": "table", "status": "VERIFIED_SAFE"},
+    {"element": "thead", "status": "VERIFIED_SAFE"},
+    {"element": "tbody", "status": "VERIFIED_SAFE"},
+    {"element": "flex", "status": "VERIFIED_SAFE"},
+    {"element": "flex-wrap", "status": "VERIFIED_SAFE"},
+    {"element": "border-radius", "status": "VERIFIED_SAFE"},
+    {"element": "borders", "status": "VERIFIED_SAFE"},
+    {"element": "gradients", "status": "VERIFIED_SAFE"},
+    {"element": "box-shadow", "status": "UNSUPPORTED"},
+    {"element": "text-align", "status": "VERIFIED_SAFE"},
+    {"element": "inline-font-sizing", "status": "VERIFIED_SAFE"},
+    {"element": "inline-spacing", "status": "VERIFIED_SAFE"},
+    {"element": "position-absolute", "status": "VERIFIED_SAFE"},
+    {"element": "css-animation", "status": "UNSUPPORTED"},
+    {"element": "links", "status": "REQUIRES_MORE_TESTING"},
+    {"element": "buttons", "status": "REQUIRES_MORE_TESTING"},
+    {"element": "details", "status": "REQUIRES_MORE_TESTING"},
+    {"element": "summary", "status": "REQUIRES_MORE_TESTING"},
+    {"element": "hr", "status": "REQUIRES_MORE_TESTING"},
+    {"element": "blockquote", "status": "REQUIRES_MORE_TESTING"}
+  ],
+  "unicodeMatrix": [
+    {"char": "en dash", "codepoint": "U+2013", "sample": "–", "status": "VERIFIED_SAFE"},
+    {"char": "em dash", "codepoint": "U+2014", "sample": "—", "status": "VERIFIED_SAFE"},
+    {"char": "bullet", "codepoint": "U+2022", "sample": "•", "status": "VERIFIED_SAFE"},
+    {"char": "arrow", "codepoint": "U+2192", "sample": "→", "status": "VERIFIED_SAFE"},
+    {"char": "check", "codepoint": "U+2713", "sample": "✓", "status": "VERIFIED_SAFE"},
+    {"char": "heavy check", "codepoint": "U+2714", "sample": "✔", "status": "VERIFIED_SAFE"},
+    {"char": "star", "codepoint": "U+2605", "sample": "★", "status": "VERIFIED_SAFE"},
+    {"char": "white star", "codepoint": "U+2B50", "sample": "⭐", "status": "VERIFIED_SAFE"},
+    {"char": "lightning", "codepoint": "U+26A1", "sample": "⚡", "status": "VERIFIED_SAFE"},
+    {"char": "leaf", "codepoint": "U+1F342", "sample": "🍂", "status": "VERIFIED_SAFE"},
+    {"char": "maple", "codepoint": "U+1F341", "sample": "🍁", "status": "VERIFIED_SAFE"},
+    {"char": "book", "codepoint": "U+1F4DA", "sample": "📚", "status": "VERIFIED_SAFE"},
+    {"char": "calendar", "codepoint": "U+1F4C5", "sample": "📅", "status": "VERIFIED_SAFE"},
+    {"char": "link", "codepoint": "U+1F517", "sample": "🔗", "status": "VERIFIED_SAFE"},
+    {"char": "birthday", "codepoint": "U+1F382", "sample": "🎂", "status": "VERIFIED_SAFE"},
+    {"char": "microscope", "codepoint": "U+1F52C", "sample": "🔬", "status": "VERIFIED_SAFE"},
+    {"char": "water", "codepoint": "U+1F4A7", "sample": "💧", "status": "VERIFIED_SAFE"},
+    {"char": "party", "codepoint": "U+1F389", "sample": "🎉", "status": "VERIFIED_SAFE"},
+    {"char": "smart quotes", "codepoint": "U+201C", "sample": "“", "status": "VERIFIED_SAFE"},
+    {"char": "variation selector heart", "codepoint": "U+2764 U+FE0F", "sample": "❤️", "status": "VERIFIED_SAFE"},
+    {"char": "ZWJ family", "codepoint": "U+1F468 U+200D U+1F469 U+200D U+1F467 U+200D U+1F466", "sample": "👨‍👩‍👧‍👦", "status": "VERIFIED_SAFE"}
+  ],
+  "unicodeRiskier": [
+    {"category": "variation-selector emoji", "status": "VERIFIED_SAFE"},
+    {"category": "ZWJ sequences", "status": "VERIFIED_SAFE"},
+    {"category": "skin-tone modifiers", "status": "REQUIRES_MORE_TESTING"},
+    {"category": "flags", "status": "REQUIRES_MORE_TESTING"},
+    {"category": "combined family/person emoji", "status": "REQUIRES_MORE_TESTING"}
+  ],
+  "results": [
+    {
+      "key": "unicode",
+      "page": "Canvas HTML Compatibility Test - Unicode",
+      "accepted": true,
+      "readback_published": false,
+      "allCoreUnicodePreserved": true,
+      "normalization": "global CSS/JS wrapper prepended/appended; content verbatim",
+      "status": "VERIFIED_SAFE"
+    },
+    {
+      "key": "layout",
+      "page": "Canvas HTML Compatibility Test - Layout",
+      "accepted": true,
+      "readback_published": false,
+      "structurePreserved": true,
+      "normalization": "global CSS/JS wrapper prepended/appended; content verbatim",
+      "status": "VERIFIED_SAFE"
+    },
+    {
+      "key": "css",
+      "page": "Canvas HTML Compatibility Test - CSS",
+      "accepted": true,
+      "readback_published": false,
+      "stripped": ["box-shadow", "css-animation"],
+      "preserved": ["background-color", "color", "border", "border-radius", "padding", "margin", "font-size", "text-align", "linear-gradient", "position-absolute"],
+      "status": "VERIFIED_WITH_NORMALIZATION"
+    }
+  ],
+  "provenance": {
+    "authority": "OWNER_POLICY",
+    "approvedBy": "Owen Reagan",
+    "source": "explicit teacher instruction + sandbox 24399 write-test readback",
+    "status": "evidence-recorded; ipad/desktop visual render + links/buttons/details/hr/blockquote + skin-tone/flags pending"
+  }
+}

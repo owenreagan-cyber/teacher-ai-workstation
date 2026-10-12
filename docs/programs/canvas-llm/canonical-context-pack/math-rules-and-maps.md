@@ -36,6 +36,16 @@ Canvas course ID: 26404
 Canonical prefix: SM5:
 ```
 
+## Assignment groups
+
+Exact Canvas assignment groups:
+
+```text
+Written Assessments
+Fact Assessments
+Homework/Class Work
+```
+
 ## Daily classwork goal
 
 Monday through Friday:

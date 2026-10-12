@@ -1,0 +1,53 @@
+{
+  "schemaVersion": 1,
+  "status": "owner-approved",
+  "approvedAt": "2026-10-11",
+  "schoolYear": "2026-2027",
+  "authority": "OWNER_POLICY",
+  "approvedBy": "Owen Reagan",
+  "subject": "weekly-update-announcement-contract",
+  "source": "explicit teacher instruction (Phase 3.5B post-deployment audit)",
+  "scope": "Every active subject's weekly-update announcement must embed the complete, verified upcoming weekly agenda. Permanent weekly workflow, not a one-off.",
+  "structure": {
+    "1": "Greeting.",
+    "2": "Concise recap of the week just completed, when appropriate.",
+    "3": "Concise preview of important upcoming instruction, assessments, resources, or reminders.",
+    "4": "Transition, e.g. 'The Canvas Math page has been updated. Please see the upcoming week ahead.' (substitute the subject name).",
+    "5": "Embed the complete, verified upcoming weekly agenda HTML exactly as rendered on that subject's Canvas page.",
+    "6": "Closing: 'Have a great weekend!' then 'Mr. Reagan'"
+  },
+  "mustNot": [
+    "summarize only part of the agenda",
+    "omit days",
+    "omit Reminders",
+    "omit applicable At Home sections",
+    "rebuild the agenda separately from the verified page",
+    "invent information not present in the page/fact packet",
+    "replace the full agenda with a link"
+  ],
+  "verificationContract": {
+    "weeklyUpdateContainsFullVerifiedAgenda": "PASS",
+    "weeklyUpdateAgendaHashEqualsPageAgendaHash": "PASS",
+    "allWeekdaysPreserved": "PASS",
+    "remindersPreserved": "PASS",
+    "atHomeSectionsPreservedExactly": "PASS"
+  },
+  "transitionSubjectMapping": {
+    "Math": "The Canvas Math page has been updated. Please see the upcoming week ahead.",
+    "Reading/Spelling": "The Canvas Reading/Spelling page has been updated. Please see the upcoming week ahead.",
+    "Language Arts": "The Canvas Language Arts page has been updated. Please see the upcoming week ahead.",
+    "Science": "The Canvas Science page has been updated. Please see the upcoming week ahead.",
+    "History": "The Canvas History page has been updated. Please see the upcoming week ahead."
+  },
+  "q2w1AuditResult": {
+    "finding": "The four Q2W1 weekly-update announcements (Math 166383, Reading/Spelling 166384, Language Arts 166385, Science 166386) contained only the transition sentence and OMITTED the full agenda.",
+    "classification": "content-format-regression",
+    "remediation": "update each existing announcement in place to embed the complete verified agenda; do not create duplicate announcements"
+  },
+  "provenance": {
+    "authority": "OWNER_POLICY",
+    "approvedBy": "Owen Reagan",
+    "source": "explicit teacher instruction",
+    "approvedAt": "2026-10-11"
+  }
+}

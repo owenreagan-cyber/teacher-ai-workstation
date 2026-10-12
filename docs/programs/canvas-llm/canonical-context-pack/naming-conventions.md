@@ -32,6 +32,8 @@ Punctuation, capitalization, spacing, prefixes, and number placement are part of
 
 Reading and Spelling may share a Canvas course and agenda page while retaining separate instructional and assignment identities.
 
+Language Arts is split by class section in live Canvas. Owen's class uses the section-specific prefix `ELA4A:` on live assignment titles; the parallel class uses `ELA4B:`. The program-level `ELA4:` remains the canonical prefix for Shurley English 4.
+
 ## Approved assignment-title examples
 
 These examples are authoritative acceptance cases:
@@ -123,6 +125,15 @@ Final writing drafts use titles such as:
 ELA4: Persuasive Writing Final Draft
 ```
 
+Live assignment titles in Owen's Language Arts course use the class-section prefix `ELA4A:`:
+
+```text
+ELA4A: Spelling Test 15
+ELA4A: Ch. 2 Test
+```
+
+The parallel class uses `ELA4B:`. `ELA4:` remains the program-level canonical prefix.
+
 ## History and Science assignment patterns
 
 History and Science assignments are generated only during their active quarters per:
@@ -208,6 +219,47 @@ Teacher-entered shorthand must be normalized without changing meaning.
 | `lesson 1` | `Lesson 1` |
 
 Normalization must not guess an assessment number, topic, resource, due time, or assignment group when those values are unresolved.
+
+## Student-facing pacing translation
+
+Raw pacing shorthand is allowed internally for teacher review, but must not be pasted directly onto student-facing Canvas pages once its meaning is established. Established shorthand is translated into short, clear, full-word wording.
+
+| Raw shorthand | Student-facing wording |
+|---|---|
+| `CP6` | `Classroom Practice 6` |
+| `2.3` | `Chapter 2, Lesson 3` |
+| `Ch.2.3` | `Chapter 2, Lesson 3` |
+| `2.3 / Ch.2.3` | `Chapter 2, Lesson 3` |
+| `CP6 / 2.3` | `Classroom Practice 6; Chapter 2, Lesson 3` |
+| `MTS Ch1` | `Mountains Chapter 1` |
+
+For Shurley English:
+
+```text
+CP   = Classroom Practice
+2.3  = Chapter 2, Lesson 3   (numeric lesson shorthand)
+Ch   = Chapter
+```
+
+For History, `MTS` means **Mountains**. Render `MTS Ch1` as `Mountains Chapter 1`.
+
+Rules:
+
+- keep wording concise;
+- use plain, student-friendly language;
+- do not add instructional details not supported by pacing;
+- if the meaning of a code is not established, do not guess;
+- unresolved codes must be surfaced for teacher review instead of published raw or expanded incorrectly.
+
+This rule applies to:
+
+```text
+weekly Canvas pages
+weekly announcements
+parent-facing summaries/newsletters where pacing is translated
+```
+
+Internal teacher/debug views may retain the original pacing code.
 
 ## Validation requirements
 

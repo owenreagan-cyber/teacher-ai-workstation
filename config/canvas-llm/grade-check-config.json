@@ -1,0 +1,80 @@
+{
+  "schemaVersion": 1,
+  "status": "owner-approved-read-only-grade-check",
+  "approvedAt": "2026-09-08",
+  "purpose": "Read-only Canvas grade scan and teacher alert. This workflow MUST NOT modify grades, assignments, submissions, or student records. Parent communication is never sent automatically; only copy-ready templates are produced for the teacher.",
+  "evidenceSource": "docs/programs/canvas-llm/2026-2027-fpk-canvas-operating-contract.md",
+  "recipient": {
+    "email": "owen.reagan@thalesacademy.org",
+    "displayName": "Owen Reagan — Teacher",
+    "reportSubject": "4A Grade Check - Student Flags",
+    "sendRequiresApproval": true,
+    "suppressEmptyReport": true,
+    "suppressUnchangedReport": true,
+    "scheduling": {
+      "weekdaysOnly": true,
+      "hourLocal": 16,
+      "minuteLocal": 15,
+      "timezone": "America/New_York",
+      "note": "Local launchd LaunchAgent runs Mon-Fri 04:15 PM. launchd uses the Mac's local wall clock; this Mac is on America/New_York."
+    }
+  },
+  "threshold": {
+    "atOrBelow": 85,
+    "rule": "score <= 85"
+  },
+  "quarters": {
+    "1": ["reading-spelling", "math", "language-arts", "history"],
+    "2": ["science"],
+    "3": ["reading-spelling", "math", "language-arts", "history"],
+    "4": ["science"]
+  },
+  "subjects": {
+    "reading-spelling": {
+      "displayName": "Reading/Spelling",
+      "courseId": 26442,
+      "assessmentGroups": ["Assessments", "Check Out"],
+      "nonAssessmentGroups": ["Homework"]
+    },
+    "math": {
+      "displayName": "Math",
+      "courseId": 26404,
+      "assessmentGroups": ["Written Assessments", "Fact Assessments"],
+      "nonAssessmentGroups": ["Homework/Class Work"]
+    },
+    "language-arts": {
+      "displayName": "Language Arts",
+      "courseId": 28171,
+      "assessmentGroups": ["Assessments"],
+      "nonAssessmentGroups": ["Classwork"]
+    },
+    "history": {
+      "displayName": "History",
+      "courseId": 28165,
+      "assessmentGroups": [],
+      "nonAssessmentGroups": [],
+      "manualOnly": true,
+      "note": "Assignment groups are manual-only; classify by verified test title keywords."
+    },
+    "science": {
+      "displayName": "Science",
+      "courseId": 28166,
+      "assessmentGroups": [],
+      "nonAssessmentGroups": [],
+      "manualOnly": true,
+      "note": "Assignment groups are manual-only; classify by verified test title keywords."
+    }
+  },
+  "classification": {
+    "testTitleKeywords": ["test", "assessment", "mastery test", "checkout", "check out", "exam"],
+    "note": "Title keywords are applied only when the assignment group is not a canonical assessment or non-assessment group. Ambiguous classifications are reported as unresolved and never guessed."
+  },
+  "missing": {
+    "gradeMarkers": ["MI", "MISSING"],
+    "note": "A submission is treated as missing when Canvas reports missing=true or the grade string matches a marker (case-insensitive)."
+  },
+  "state": {
+    "directory": ".local/canvas-llm/grade-check",
+    "stateFile": "state.json"
+  }
+}

@@ -1,0 +1,77 @@
+{
+  "schemaVersion": 2,
+  "status": "owner-approved",
+  "approvedAt": "2026-10-11",
+  "schoolYear": "2026-2027",
+  "authority": "OWNER_POLICY",
+  "approvedBy": "Owen Reagan",
+  "subject": "assessment-mastery-tracker",
+  "phase": "active (Phase 3 mastery + grade-check foundation)",
+  "masteryThresholdExclusive": 85,
+  "masteryThresholdRule": "mastery = score > 85% (exclusive). Do not round up/down to change classification. Use the exact Canvas numeric value when available.",
+  "lowAssessmentThresholdInclusive": 85,
+  "lowAssessmentThresholdRule": "LOW_ASSESSMENT_SCORE flag when score <= 85 (inclusive), on verified assessment/test assignments only.",
+  "lowCourseAverageThresholdInclusive": 85,
+  "lowCourseAverageThresholdRule": "LOW_COURSE_AVERAGE flag when current overall course average <= 85 (inclusive).",
+  "provisionalAbsenceCountsAsMastery": true,
+  "missingGradeDoesNotEqualAbsence": true,
+  "emailRecipient": "owen.reagan@thalesacademy.org",
+  "teacherOnly": true,
+  "masteryThreshold": {
+    "rule": "mastery = score > 85%",
+    "atOrBelow85Percent": "does not demonstrate mastery"
+  },
+  "absencePolicy": {
+    "rule": "absent / not-yet-tested student temporarily counts as mastery for the reporting numerator",
+    "resultMarker": "PROVISIONAL_ABSENCE",
+    "recalculation": "recalculate after grade is entered",
+    "absenceMustBeAuthoritative": true,
+    "absenceSources": [
+      "authoritative attendance data",
+      "explicit teacher override",
+      "another approved absence source"
+    ],
+    "neverInferAbsenceFrom": [
+      "blank score",
+      "missing submission",
+      "excused-looking state",
+      "no submission"
+    ]
+  },
+  "statusModel": {
+    "CONFIRMED": "score exists and classification is trusted",
+    "PROVISIONAL_ABSENCE": "absence authoritatively indicated and score not yet present",
+    "MISSING_GRADES": "expected assessment exists but one or more scores are missing",
+    "NEEDS_UPDATE": "prior provisional state should be recalculated because a score is now present",
+    "UNRESOLVED": "classification/source ambiguity prevents safe calculation"
+  },
+  "assessmentFamilies": {
+    "math": ["Written Assessments", "Fact Assessments"],
+    "reading_spelling": ["Assessments", "Check Out"],
+    "language_arts": ["Assessments"],
+    "history": ["Assignments (Chapter Test / Quiz only)"],
+    "science": ["Assignments (Chapter Test / Quiz only)"]
+  },
+  "assessmentTitleKeywords": [
+    "Written Assessment", "Fact Assessment", "Mastery Test", "Fluency Checkout",
+    "Spelling Test", "Chapter Test", "Quiz"
+  ],
+  "confirmedResults": [
+    {
+      "assessment": "Shurley Chapter 5 Test",
+      "mastery": "20/20",
+      "source": "Owen manual entry",
+      "status": "CONFIRMED"
+    }
+  ],
+  "notifications": {
+    "email": "owen.reagan@thalesacademy.org",
+    "channel": "daily Canvas grade checker"
+  },
+  "provenance": {
+    "authority": "OWNER_POLICY",
+    "approvedBy": "Owen Reagan",
+    "source": "explicit teacher instruction (Phase 3)",
+    "approvedAt": "2026-10-11"
+  }
+}

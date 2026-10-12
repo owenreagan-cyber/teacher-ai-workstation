@@ -36,6 +36,16 @@ Canonical prefix: RM4:
 
 Reading and Spelling share this Canvas course and weekly agenda surface while remaining separate instructional subjects.
 
+## Assignment groups
+
+Exact Canvas assignment groups:
+
+```text
+Check Out
+Assessments
+Homework
+```
+
 ## Daily classwork goal
 
 Monday through Friday:

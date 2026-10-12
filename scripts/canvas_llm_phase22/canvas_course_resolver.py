@@ -14,7 +14,7 @@ if str(REPO_ROOT) not in sys.path:
 from scripts.canvas_llm_phase22 import canvas_connection as connection  # noqa: E402
 from scripts.canvas_llm_phase22 import phase22_workstation as p22  # noqa: E402
 
-MANUAL_SUBJECTS = ('ELA4', 'HIST4', 'SCI4')
+MANUAL_SUBJECTS = ('HIST4', 'SCI4')
 
 
 def compact(value: Any) -> str:
@@ -38,7 +38,7 @@ ROUTES = {
     'reading': CourseRoute('reading', connection.READING_COURSE_ID, 'RM4', True),
     'spelling': CourseRoute('spelling', connection.READING_COURSE_ID, 'RM4', True),
     'homeroom': CourseRoute('homeroom', connection.HOMEROOM_COURSE_ID, '', True),
-    'language-arts': CourseRoute('language-arts', connection.ELA_COURSE_ID, 'ELA4', False, 'MANUAL'),
+    'language-arts': CourseRoute('language-arts', connection.ELA_COURSE_ID, 'ELA4', True),
     'history': CourseRoute('history', connection.HISTORY_COURSE_ID, 'HIST4', False, 'MANUAL'),
     'science': CourseRoute('science', connection.SCIENCE_COURSE_ID, 'SCI4', False, 'MANUAL'),
 }

@@ -39,8 +39,10 @@ blocked = [
     ('GET', f'/api/v1/courses/{HOMEROOM}/enrollments'),
     ('GET', f'/api/v1/courses/{MATH}/modules'),
     ('GET', f'/api/v1/courses/{READING}/files'),
-    ('PUT', f'/api/v1/courses/{HOMEROOM}/pages/agenda'),
-    ('DELETE', f'/api/v1/courses/{MATH}/assignments/987654'),
+    ('PATCH', f'/api/v1/courses/{HOMEROOM}/assignments/987654'),
+    ('DELETE', f'/api/v1/courses/{HOMEROOM}/pages/agenda'),
+    ('POST', f'/api/v1/courses/{HOMEROOM}/files'),
+    ('PUT', f'/api/v1/courses/{HOMEROOM}/modules/5'),
 ]
 for method, path in blocked:
     try:
@@ -48,6 +50,18 @@ for method, path in blocked:
     except PermissionError:
         continue
     raise AssertionError(f'expected blocked path: {method} {path}')
+
+# Update/remove operations are now allowlisted for the approved manifest.
+update_allowed = [
+    ('PUT', f'/api/v1/courses/{MATH}/assignments/987654'),
+    ('DELETE', f'/api/v1/courses/{MATH}/assignments/987654'),
+    ('PUT', f'/api/v1/courses/{HOMEROOM}/pages/agenda'),
+    ('PUT', f'/api/v1/courses/{HOMEROOM}/discussion_topics/987'),
+    ('DELETE', f'/api/v1/courses/{HOMEROOM}/discussion_topics/987'),
+    ('POST', f'/api/v1/courses/{HOMEROOM}/discussion_topics'),
+]
+for method, path in update_allowed:
+    transport.validate_live_transport_path(method, path)
 
 print('PASS GET course allowed')
 print('PASS GET page verification allowed')

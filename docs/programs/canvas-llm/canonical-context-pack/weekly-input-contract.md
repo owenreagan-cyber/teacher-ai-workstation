@@ -200,6 +200,29 @@ Normalization must not guess:
 - a teacher override;
 - an unresolved assessment relationship.
 
+## Assignment-intake rule
+
+Keep intake fast. Infer Canvas assignments only from established course rules and unmistakable assignment/assessment language.
+
+Entries that are clearly instructional activities do NOT create Canvas assignments by default. Examples:
+
+```text
+Review
+Editing Rough Drafts
+discussion
+practice
+writing activity
+instructional lesson activity
+```
+
+Only when a pacing entry is genuinely ambiguous and could reasonably be intended as an Assignment-tab item, surface one short question:
+
+```text
+Create as an assignment? Yes / No
+```
+
+Do not turn weekly intake into an interview. Group ambiguous items together when possible. History and Science never need this question because automated assignment creation is disabled there.
+
 ## Assignment intent values
 
 ```text

@@ -153,6 +153,22 @@ There is no Resources section on subject agenda pages.
 
 ## Reminders
 
+Every active-course weekly Canvas page must contain meaningful content in the pink Reminders section. The Reminders section must never be blank.
+
+If an assessment/test is supported by the pacing, mention the assessment and its supported date/details.
+
+If no assessment is scheduled, provide a short message describing the chapter, unit, lessons, or instructional focus for that week. Examples:
+
+```text
+This week we will continue working through Lessons 18–21.
+This week we will continue working in Chapter 2.
+This week we will continue our Mountains chapters.
+```
+
+Do not invent topics or details. The fallback message must be grounded only in the week's own pacing.
+
+The Science rule remains authoritative: if Science has no pacing or is inactive, leave Science untouched rather than fabricating a reminder just to fill the section.
+
 Reminders may list upcoming assessment names and dates only.
 
 Reminders must not contain:
@@ -318,6 +334,7 @@ The validator must confirm:
 - Monday–Friday blocks exist;
 - In Class and Homework columns exist;
 - Reminders section exists without a Resources section;
+- Reminders section is non-empty on every active page (assessment or instructional-focus fallback);
 - quarter activation rules match `quarter-subject-activation-2026-2027.json`;
 - inactive History/Science pages remain untouched;
 - page approval becomes stale after a source edit;

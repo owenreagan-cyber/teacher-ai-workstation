@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+# Grade Check scheduler wrapper (macOS launchd LaunchAgent).
+#
+# Installs/loads/removes a per-user LaunchAgent that runs the stable Grade Check
+# send workflow Mon-Fri at 4:15 PM local time and emails Owen ONLY when there is
+# something NEW or RESOLVED.
+#
+# Safety: recipient/sender allowlists, transactional persistence, and Canvas
+# GET-only behavior all remain the workflow's responsibility. This wrapper only
+# manages the schedule; it never handles secrets or prints tokens.
+#
+# Usage:
+#   bin/grade-check-schedule install      install + load the LaunchAgent
+#   bin/grade-check-schedule status       read-only readiness report
+#   bin/grade-check-schedule run-now      one non-baseline run via the same gates
+#   bin/grade-check-schedule uninstall    remove only the Grade Check agent
+#   bin/grade-check-schedule preview      print the plist (installs nothing)
+#   bin/grade-check-schedule self-test    deterministic scheduler tests
+set -euo pipefail
+
+REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+
+cd "$REPO_ROOT"
+exec python3 "$REPO_ROOT/scripts/canvas_llm_grade_check/scheduler.py" "$@"

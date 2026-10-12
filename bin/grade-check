@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+# Canvas Grade Check / Teacher Alert wrapper (READ-ONLY).
+#
+# Credential loading is handled by scripts/canvas_llm_phase22/canvas_credentials.py
+# (env-first, then ~/.config/teacher-ai-workstation/canvas.env with a mode-0600
+# check). This wrapper only delegates; it never handles or prints the token.
+#
+# Usage:
+#   bin/grade-check --preview                        concise routine teacher review
+#   bin/grade-check --preview --details              expanded detail + parent templates
+#   bin/grade-check --preview --parent-templates     copy/paste parent drafts only
+#   bin/grade-check --send [--baseline]
+#   bin/grade-check --oauth-setup
+#   bin/grade-check --oauth-status
+#   bin/grade-check --transport-check
+#   bin/grade-check --self-test
+set -euo pipefail
+
+REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+
+exec python3 "$REPO_ROOT/scripts/canvas_llm_grade_check/cli.py" "$@"

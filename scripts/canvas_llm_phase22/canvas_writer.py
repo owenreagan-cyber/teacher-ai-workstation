@@ -36,6 +36,27 @@ def body_hash(title: str, body: str) -> str:
     return hashlib.sha256(payload).hexdigest()[:16]
 
 
+def _transport_blocked(
+    *,
+    target_type: str,
+    target_id: str,
+    course_id: int,
+    title: str,
+    exc: BaseException,
+) -> CanvasWriteResult:
+    """Convert a Canvas transport failure into a clean BLOCKED result."""
+    return CanvasWriteResult(
+        target_type=target_type,
+        target_id=target_id,
+        course_id=course_id,
+        title=title,
+        body_hash='',
+        write_status='BLOCKED',
+        gate_state='BLOCKED',
+        blockers=[f'canvas_transport_error:{exc}'],
+    )
+
+
 @dataclass
 class CanvasWriteResult:
     target_type: str
@@ -80,9 +101,10 @@ def _evaluate_write_gate(
     approved_by: str | None,
     approved_at: str | None,
     config: connector.CanvasConnectionConfig | None = None,
+    operation: str = 'create',
 ) -> gate.WriteGateDecision:
     return gate.evaluate_write(
-        'create',
+        operation,
         target_type,
         target_id,
         approved=approved,
@@ -338,7 +360,7 @@ def create_page_live(
 
     if not approved:
         blockers.append('teacher_approval_missing')
-    if not transport.use_live_transport(test_mode=test_mode):
+    if client is None and not transport.use_live_transport(test_mode=test_mode):
         blockers.append('live_transport_not_enabled')
 
     gate_decision = _evaluate_write_gate(
@@ -379,13 +401,18 @@ def create_page_live(
         )
 
     api = client or transport.get_transport_client(test_mode=test_mode)
-    created = api.create_page(
-        course_id,
-        title=title,
-        body=body,
-        published=published,
-        front_page=front_page,
-    )
+    try:
+        created = api.create_page(
+            course_id,
+            title=title,
+            body=body,
+            published=published,
+            front_page=front_page,
+        )
+    except transport.CanvasTransportError as exc:
+        return _transport_blocked(
+            target_type='page', target_id=target_id, course_id=course_id, title=title, exc=exc
+        )
     object_id = compact(created.get('url') or created.get('id') or target_id)
     event = log.record(object_id, 'validation', approved_by or 'teacher', 'live_page_create:CREATED')
     return CanvasWriteResult(
@@ -428,7 +455,7 @@ def create_assignment_live(
 
     if not approved:
         blockers.append('teacher_approval_missing')
-    if not transport.use_live_transport(test_mode=test_mode):
+    if client is None and not transport.use_live_transport(test_mode=test_mode):
         blockers.append('live_transport_not_enabled')
 
     gate_decision = _evaluate_write_gate(
@@ -469,18 +496,23 @@ def create_assignment_live(
         )
 
     api = client or transport.get_transport_client(test_mode=test_mode)
-    created = api.create_assignment(
-        course_id,
-        title=title,
-        description=description,
-        assignment_group=assignment_group,
-        points=points,
-        grading_type=grading_type,
-        submission_type=submission_type,
-        due_at=due_at,
-        counts_toward_final_grade=counts_toward_final_grade,
-        published=published,
-    )
+    try:
+        created = api.create_assignment(
+            course_id,
+            title=title,
+            description=description,
+            assignment_group=assignment_group,
+            points=points,
+            grading_type=grading_type,
+            submission_type=submission_type,
+            due_at=due_at,
+            counts_toward_final_grade=counts_toward_final_grade,
+            published=published,
+        )
+    except transport.CanvasTransportError as exc:
+        return _transport_blocked(
+            target_type='assignment', target_id=target_id, course_id=course_id, title=title, exc=exc
+        )
     object_id = compact(created.get('id') or target_id)
     event = log.record(object_id, 'validation', approved_by or 'teacher', f'live_assignment_create:{title}')
     return CanvasWriteResult(
@@ -536,6 +568,569 @@ def verify_assignment_live(
         bool(stored.get('counts_toward_final_grade')) == counts_toward_final_grade,
     ]
     return 'PASS' if all(checks) else 'FAIL'
+
+
+def verify_announcement_live(
+    *,
+    course_id: int,
+    topic_id: str,
+    title: str,
+    client: transport.MockPhase22CanvasClient | transport.Phase22LiveCanvasClient | None = None,
+    test_mode: bool = False,
+) -> str:
+    api = client or transport.get_transport_client(test_mode=test_mode)
+    stored = api.get_announcement(course_id, topic_id)
+    checks = [
+        compact(stored.get('title')) == compact(title),
+        int(stored.get('course_id') or course_id) == int(course_id),
+    ]
+    return 'PASS' if all(checks) else 'FAIL'
+
+
+def create_announcement_live(
+    *,
+    course_id: int,
+    title: str,
+    message: str = '',
+    published: bool = True,
+    delayed_post_at: str | None = None,
+    approved: bool = False,
+    approved_by: str | None = 'teacher',
+    approved_at: str | None = None,
+    audit_log: audit.DeploymentAuditLog | None = None,
+    client: transport.MockPhase22CanvasClient | transport.Phase22LiveCanvasClient | None = None,
+    test_mode: bool = False,
+) -> CanvasWriteResult:
+    """Create a Canvas announcement through live API transport (ANNOUNCEMENT_CREATE)."""
+    cfg = _live_connection_config()
+    log = audit_log or audit.DeploymentAuditLog()
+    target_id = p22.stable_id('announcement', course_id, title)
+    blockers: list[str] = []
+
+    if not approved:
+        blockers.append('teacher_approval_missing')
+    if client is None and not transport.use_live_transport(test_mode=test_mode):
+        blockers.append('live_transport_not_enabled')
+
+    gate_decision = _evaluate_write_gate(
+        'announcement',
+        target_id,
+        approved=approved,
+        approved_by=approved_by,
+        approved_at=approved_at,
+        config=cfg,
+        operation='create',
+    )
+    if gate_decision.gate_state != 'APPROVED':
+        blockers.append('write_gate_blocked')
+
+    if blockers:
+        log.record(target_id, 'validation', 'system', 'BLOCKED:' + ','.join(blockers))
+        return CanvasWriteResult(
+            target_type='announcement',
+            target_id=target_id,
+            course_id=course_id,
+            title=title,
+            body_hash=body_hash(title, message),
+            write_status='BLOCKED',
+            gate_state=gate_decision.gate_state,
+            blockers=blockers,
+        )
+
+    executed = gate.attempt_live_write(gate_decision, config=cfg)
+    if executed.gate_state != 'EXECUTED':
+        return CanvasWriteResult(
+            target_type='announcement',
+            target_id=target_id,
+            course_id=course_id,
+            title=title,
+            body_hash=body_hash(title, message),
+            write_status='BLOCKED',
+            gate_state='BLOCKED',
+            blockers=['write_gate_execution_blocked'],
+        )
+
+    api = client or transport.get_transport_client(test_mode=test_mode)
+    try:
+        created = api.create_announcement(
+            course_id,
+            title=title,
+            message=message,
+            published=published,
+            delayed_post_at=delayed_post_at,
+        )
+    except transport.CanvasTransportError as exc:
+        return _transport_blocked(
+            target_type='announcement', target_id=target_id, course_id=course_id, title=title, exc=exc
+        )
+    object_id = compact(created.get('id') or target_id)
+    event = log.record(object_id, 'validation', approved_by or 'teacher', f'live_announcement_create:{title}')
+    return CanvasWriteResult(
+        target_type='announcement',
+        target_id=object_id,
+        course_id=course_id,
+        title=title,
+        body_hash=body_hash(title, message),
+        write_status='WRITTEN',
+        gate_state='EXECUTED',
+        blockers=[],
+        audit_id=event.event_id,
+    )
+
+
+def update_assignment_live(
+    *,
+    course_id: int,
+    assignment_id: str,
+    title: str,
+    new_title: str | None = None,
+    due_at: str | None = None,
+    omit_from_final_grade: bool | None = None,
+    published: bool | None = None,
+    approved: bool = False,
+    approved_by: str | None = 'teacher',
+    approved_at: str | None = None,
+    audit_log: audit.DeploymentAuditLog | None = None,
+    client: transport.MockPhase22CanvasClient | transport.Phase22LiveCanvasClient | None = None,
+    test_mode: bool = False,
+) -> CanvasWriteResult:
+    """Update an existing Canvas assignment through live transport (ASSIGNMENT_UPDATE)."""
+    cfg = _live_connection_config()
+    log = audit_log or audit.DeploymentAuditLog()
+    target_id = compact(assignment_id)
+    blockers: list[str] = []
+
+    if not approved:
+        blockers.append('teacher_approval_missing')
+    if client is None and not transport.use_live_transport(test_mode=test_mode):
+        blockers.append('live_transport_not_enabled')
+    if not target_id:
+        blockers.append('missing_assignment_id')
+
+    gate_decision = _evaluate_write_gate(
+        'assignment',
+        target_id,
+        approved=approved,
+        approved_by=approved_by,
+        approved_at=approved_at,
+        config=cfg,
+        operation='update',
+    )
+    if gate_decision.gate_state != 'APPROVED':
+        blockers.append('write_gate_blocked')
+
+    if blockers:
+        log.record(target_id or title, 'validation', 'system', 'BLOCKED:' + ','.join(blockers))
+        return CanvasWriteResult(
+            target_type='assignment',
+            target_id=target_id,
+            course_id=course_id,
+            title=title,
+            body_hash=body_hash(title, ''),
+            write_status='BLOCKED',
+            gate_state=gate_decision.gate_state,
+            blockers=blockers,
+        )
+
+    executed = gate.attempt_live_write(gate_decision, config=cfg)
+    if executed.gate_state != 'EXECUTED':
+        return CanvasWriteResult(
+            target_type='assignment',
+            target_id=target_id,
+            course_id=course_id,
+            title=title,
+            body_hash=body_hash(title, ''),
+            write_status='BLOCKED',
+            gate_state='BLOCKED',
+            blockers=['write_gate_execution_blocked'],
+        )
+
+    api = client or transport.get_transport_client(test_mode=test_mode)
+    try:
+        updated = api.update_assignment(
+            course_id,
+            target_id,
+            title=new_title,
+            due_at=due_at,
+            omit_from_final_grade=omit_from_final_grade,
+            published=published,
+        )
+    except transport.CanvasTransportError as exc:
+        return _transport_blocked(
+            target_type='assignment', target_id=target_id, course_id=course_id,
+            title=new_title or title, exc=exc,
+        )
+    object_id = compact(updated.get('id') or target_id)
+    event = log.record(object_id, 'validation', approved_by or 'teacher', f'live_assignment_update:{title}')
+    return CanvasWriteResult(
+        target_type='assignment',
+        target_id=object_id,
+        course_id=course_id,
+        title=new_title or title,
+        body_hash=body_hash(new_title or title, ''),
+        write_status='WRITTEN',
+        gate_state='EXECUTED',
+        blockers=[],
+        audit_id=event.event_id,
+    )
+
+
+def delete_assignment_live(
+    *,
+    course_id: int,
+    assignment_id: str,
+    title: str,
+    approved: bool = False,
+    approved_by: str | None = 'teacher',
+    approved_at: str | None = None,
+    audit_log: audit.DeploymentAuditLog | None = None,
+    client: transport.MockPhase22CanvasClient | transport.Phase22LiveCanvasClient | None = None,
+    test_mode: bool = False,
+) -> CanvasWriteResult:
+    """Delete an existing Canvas assignment through live transport (ASSIGNMENT_REMOVE)."""
+    cfg = _live_connection_config()
+    log = audit_log or audit.DeploymentAuditLog()
+    target_id = compact(assignment_id)
+    blockers: list[str] = []
+
+    if not approved:
+        blockers.append('teacher_approval_missing')
+    if client is None and not transport.use_live_transport(test_mode=test_mode):
+        blockers.append('live_transport_not_enabled')
+    if not target_id:
+        blockers.append('missing_assignment_id')
+
+    gate_decision = _evaluate_write_gate(
+        'assignment',
+        target_id,
+        approved=approved,
+        approved_by=approved_by,
+        approved_at=approved_at,
+        config=cfg,
+        operation='delete',
+    )
+    if gate_decision.gate_state != 'APPROVED':
+        blockers.append('write_gate_blocked')
+
+    if blockers:
+        log.record(target_id or title, 'validation', 'system', 'BLOCKED:' + ','.join(blockers))
+        return CanvasWriteResult(
+            target_type='assignment',
+            target_id=target_id,
+            course_id=course_id,
+            title=title,
+            body_hash=body_hash(title, ''),
+            write_status='BLOCKED',
+            gate_state=gate_decision.gate_state,
+            blockers=blockers,
+        )
+
+    executed = gate.attempt_live_write(gate_decision, config=cfg)
+    if executed.gate_state != 'EXECUTED':
+        return CanvasWriteResult(
+            target_type='assignment',
+            target_id=target_id,
+            course_id=course_id,
+            title=title,
+            body_hash=body_hash(title, ''),
+            write_status='BLOCKED',
+            gate_state='BLOCKED',
+            blockers=['write_gate_execution_blocked'],
+        )
+
+    api = client or transport.get_transport_client(test_mode=test_mode)
+    try:
+        api.delete_assignment(course_id, target_id)
+    except transport.CanvasTransportError as exc:
+        return _transport_blocked(
+            target_type='assignment', target_id=target_id, course_id=course_id, title=title, exc=exc
+        )
+    event = log.record(target_id, 'validation', approved_by or 'teacher', f'live_assignment_delete:{title}')
+    return CanvasWriteResult(
+        target_type='assignment',
+        target_id=target_id,
+        course_id=course_id,
+        title=title,
+        body_hash=body_hash(title, ''),
+        write_status='WRITTEN',
+        gate_state='EXECUTED',
+        blockers=[],
+        audit_id=event.event_id,
+    )
+
+
+def update_announcement_live(
+    *,
+    course_id: int,
+    topic_id: str,
+    title: str,
+    new_title: str | None = None,
+    message: str | None = None,
+    published: bool | None = None,
+    approved: bool = False,
+    approved_by: str | None = 'teacher',
+    approved_at: str | None = None,
+    audit_log: audit.DeploymentAuditLog | None = None,
+    client: transport.MockPhase22CanvasClient | transport.Phase22LiveCanvasClient | None = None,
+    test_mode: bool = False,
+) -> CanvasWriteResult:
+    """Update an existing Canvas announcement through live transport (ANNOUNCEMENT_UPDATE)."""
+    cfg = _live_connection_config()
+    log = audit_log or audit.DeploymentAuditLog()
+    target_id = compact(topic_id)
+    blockers: list[str] = []
+
+    if not approved:
+        blockers.append('teacher_approval_missing')
+    if client is None and not transport.use_live_transport(test_mode=test_mode):
+        blockers.append('live_transport_not_enabled')
+    if not target_id:
+        blockers.append('missing_announcement_id')
+
+    gate_decision = _evaluate_write_gate(
+        'announcement',
+        target_id,
+        approved=approved,
+        approved_by=approved_by,
+        approved_at=approved_at,
+        config=cfg,
+        operation='update',
+    )
+    if gate_decision.gate_state != 'APPROVED':
+        blockers.append('write_gate_blocked')
+
+    if blockers:
+        log.record(target_id or title, 'validation', 'system', 'BLOCKED:' + ','.join(blockers))
+        return CanvasWriteResult(
+            target_type='announcement',
+            target_id=target_id,
+            course_id=course_id,
+            title=title,
+            body_hash=body_hash(title, ''),
+            write_status='BLOCKED',
+            gate_state=gate_decision.gate_state,
+            blockers=blockers,
+        )
+
+    executed = gate.attempt_live_write(gate_decision, config=cfg)
+    if executed.gate_state != 'EXECUTED':
+        return CanvasWriteResult(
+            target_type='announcement',
+            target_id=target_id,
+            course_id=course_id,
+            title=title,
+            body_hash=body_hash(title, ''),
+            write_status='BLOCKED',
+            gate_state='BLOCKED',
+            blockers=['write_gate_execution_blocked'],
+        )
+
+    api = client or transport.get_transport_client(test_mode=test_mode)
+    try:
+        updated = api.update_announcement(
+            course_id,
+            target_id,
+            title=new_title,
+            message=message,
+            published=published,
+        )
+    except transport.CanvasTransportError as exc:
+        return _transport_blocked(
+            target_type='announcement', target_id=target_id, course_id=course_id,
+            title=new_title or title, exc=exc,
+        )
+    object_id = compact(updated.get('id') or target_id)
+    event = log.record(object_id, 'validation', approved_by or 'teacher', f'live_announcement_update:{title}')
+    return CanvasWriteResult(
+        target_type='announcement',
+        target_id=object_id,
+        course_id=course_id,
+        title=new_title or title,
+        body_hash=body_hash(new_title or title, ''),
+        write_status='WRITTEN',
+        gate_state='EXECUTED',
+        blockers=[],
+        audit_id=event.event_id,
+    )
+
+
+def delete_announcement_live(
+    *,
+    course_id: int,
+    topic_id: str,
+    title: str,
+    approved: bool = False,
+    approved_by: str | None = 'teacher',
+    approved_at: str | None = None,
+    audit_log: audit.DeploymentAuditLog | None = None,
+    client: transport.MockPhase22CanvasClient | transport.Phase22LiveCanvasClient | None = None,
+    test_mode: bool = False,
+) -> CanvasWriteResult:
+    """Delete an existing Canvas announcement through live transport (ANNOUNCEMENT_REMOVE)."""
+    cfg = _live_connection_config()
+    log = audit_log or audit.DeploymentAuditLog()
+    target_id = compact(topic_id)
+    blockers: list[str] = []
+
+    if not approved:
+        blockers.append('teacher_approval_missing')
+    if client is None and not transport.use_live_transport(test_mode=test_mode):
+        blockers.append('live_transport_not_enabled')
+    if not target_id:
+        blockers.append('missing_announcement_id')
+
+    gate_decision = _evaluate_write_gate(
+        'announcement',
+        target_id,
+        approved=approved,
+        approved_by=approved_by,
+        approved_at=approved_at,
+        config=cfg,
+        operation='delete',
+    )
+    if gate_decision.gate_state != 'APPROVED':
+        blockers.append('write_gate_blocked')
+
+    if blockers:
+        log.record(target_id or title, 'validation', 'system', 'BLOCKED:' + ','.join(blockers))
+        return CanvasWriteResult(
+            target_type='announcement',
+            target_id=target_id,
+            course_id=course_id,
+            title=title,
+            body_hash=body_hash(title, ''),
+            write_status='BLOCKED',
+            gate_state=gate_decision.gate_state,
+            blockers=blockers,
+        )
+
+    executed = gate.attempt_live_write(gate_decision, config=cfg)
+    if executed.gate_state != 'EXECUTED':
+        return CanvasWriteResult(
+            target_type='announcement',
+            target_id=target_id,
+            course_id=course_id,
+            title=title,
+            body_hash=body_hash(title, ''),
+            write_status='BLOCKED',
+            gate_state='BLOCKED',
+            blockers=['write_gate_execution_blocked'],
+        )
+
+    api = client or transport.get_transport_client(test_mode=test_mode)
+    try:
+        api.delete_announcement(course_id, target_id)
+    except transport.CanvasTransportError as exc:
+        return _transport_blocked(
+            target_type='announcement', target_id=target_id, course_id=course_id, title=title, exc=exc
+        )
+    event = log.record(target_id, 'validation', approved_by or 'teacher', f'live_announcement_delete:{title}')
+    return CanvasWriteResult(
+        target_type='announcement',
+        target_id=target_id,
+        course_id=course_id,
+        title=title,
+        body_hash=body_hash(title, ''),
+        write_status='WRITTEN',
+        gate_state='EXECUTED',
+        blockers=[],
+        audit_id=event.event_id,
+    )
+
+
+def update_page_live(
+    *,
+    course_id: int,
+    page_ref: str,
+    title: str,
+    new_title: str | None = None,
+    body: str | None = None,
+    published: bool | None = None,
+    approved: bool = False,
+    approved_by: str | None = 'teacher',
+    approved_at: str | None = None,
+    audit_log: audit.DeploymentAuditLog | None = None,
+    client: transport.MockPhase22CanvasClient | transport.Phase22LiveCanvasClient | None = None,
+    test_mode: bool = False,
+) -> CanvasWriteResult:
+    """Update an existing Canvas page in place through live transport (PAGE_UPDATE)."""
+    cfg = _live_connection_config()
+    log = audit_log or audit.DeploymentAuditLog()
+    target_id = compact(page_ref)
+    blockers: list[str] = []
+
+    if not approved:
+        blockers.append('teacher_approval_missing')
+    if client is None and not transport.use_live_transport(test_mode=test_mode):
+        blockers.append('live_transport_not_enabled')
+    if not target_id:
+        blockers.append('missing_page_ref')
+
+    gate_decision = _evaluate_write_gate(
+        'page',
+        target_id,
+        approved=approved,
+        approved_by=approved_by,
+        approved_at=approved_at,
+        config=cfg,
+        operation='update',
+    )
+    if gate_decision.gate_state != 'APPROVED':
+        blockers.append('write_gate_blocked')
+
+    if blockers:
+        log.record(target_id or title, 'validation', 'system', 'BLOCKED:' + ','.join(blockers))
+        return CanvasWriteResult(
+            target_type='page',
+            target_id=target_id,
+            course_id=course_id,
+            title=title,
+            body_hash=body_hash(title, body or ''),
+            write_status='BLOCKED',
+            gate_state=gate_decision.gate_state,
+            blockers=blockers,
+        )
+
+    executed = gate.attempt_live_write(gate_decision, config=cfg)
+    if executed.gate_state != 'EXECUTED':
+        return CanvasWriteResult(
+            target_type='page',
+            target_id=target_id,
+            course_id=course_id,
+            title=title,
+            body_hash=body_hash(title, body or ''),
+            write_status='BLOCKED',
+            gate_state='BLOCKED',
+            blockers=['write_gate_execution_blocked'],
+        )
+
+    api = client or transport.get_transport_client(test_mode=test_mode)
+    try:
+        updated = api.update_page(
+            course_id,
+            target_id,
+            title=new_title,
+            body=body,
+            published=published,
+        )
+    except transport.CanvasTransportError as exc:
+        return _transport_blocked(
+            target_type='page', target_id=target_id, course_id=course_id,
+            title=new_title or title, exc=exc,
+        )
+    object_id = compact(updated.get('url') or updated.get('id') or target_id)
+    event = log.record(object_id, 'validation', approved_by or 'teacher', f'live_page_update:{title}')
+    return CanvasWriteResult(
+        target_type='page',
+        target_id=object_id,
+        course_id=course_id,
+        title=new_title or title,
+        body_hash=body_hash(new_title or title, body or ''),
+        write_status='WRITTEN',
+        gate_state='EXECUTED',
+        blockers=[],
+        audit_id=event.event_id,
+    )
 
 
 def writer_has_no_assignment_writes() -> bool:

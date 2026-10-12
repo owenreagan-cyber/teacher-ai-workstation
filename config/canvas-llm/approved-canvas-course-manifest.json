@@ -41,25 +41,25 @@
       "school_year": "2026-2027",
       "course_role": "current_operational_course",
       "subject": "Language Arts",
-      "course_id": 26495,
+      "course_id": 28171,
       "canonical_prefixes": ["ELA4"],
-      "notes": "Shurley English"
+      "notes": "Shurley English 4; hosts Spelling tests, Shurley chapter tests (Assessments), and Classroom Practices (Classwork)."
     },
     {
       "school_year": "2026-2027",
       "course_role": "current_operational_course",
       "subject": "History",
-      "course_id": 26493,
+      "course_id": 28165,
       "canonical_prefixes": ["N/A"],
-      "notes": "No assignments expected."
+      "notes": "Automated assignment creation disabled; Owen creates History assignments manually."
     },
     {
       "school_year": "2026-2027",
       "course_role": "current_operational_course",
       "subject": "Science",
-      "course_id": 26496,
+      "course_id": 28166,
       "canonical_prefixes": ["N/A"],
-      "notes": "No assignments expected."
+      "notes": "Automated assignment creation disabled; Owen creates Science assignments manually."
     },
     {
       "school_year": "2026-2027",

@@ -6,6 +6,7 @@ import hashlib
 import html
 import json
 import os
+import re
 import sys
 import shutil
 import threading
@@ -226,6 +227,142 @@ def format_teacher_facing_date(machine_date: str, week_start: str | None = None,
 
 def suppress_empty_daily_content(items: list[Any]) -> list[str]:
     return [compact(item) for item in items if compact(item)]
+
+
+# Student-facing pacing translation. Raw pacing shorthand is allowed internally
+# for teacher review but must not be pasted directly onto student-facing Canvas
+# pages, announcements, or parent-facing summaries once its meaning is
+# established. Established shorthand is translated to short, full-word wording;
+# codes with no established meaning are surfaced for teacher review, never
+# guessed or published raw. Internal teacher/debug views keep the raw code.
+_STUDENT_FACING_WORDS = {
+    "chapter": "Chapter",
+    "lesson": "Lesson",
+    "mountains": "Mountains",
+    "classroom": "Classroom",
+    "practice": "Practice",
+    "assessment": "Assessment",
+    "test": "Test",
+    "review": "Review",
+    "homework": "Homework",
+}
+
+
+def _is_code_like(token: str) -> bool:
+    """True when a token looks like a shorthand code rather than plain prose."""
+    if any(ch.isdigit() for ch in token):
+        return True
+    return token.isupper() and len(token) <= 8
+
+
+def translate_student_facing_pacing(raw: str) -> tuple[str, bool]:
+    """Translate established pacing shorthand into student-facing wording.
+
+    Returns ``(text, resolved)``. ``resolved`` is False when the input contains
+    a code-like token with no established meaning; the caller must surface such
+    text for teacher review instead of publishing it raw or expanding it by
+    guess.
+    """
+    text = compact(raw)
+    if not text:
+        return "", True
+
+    segments = [segment.strip() for segment in re.split(r"[/;]", text) if segment.strip()]
+    translated_segments: list[str] = []
+    resolved = True
+
+    for segment in segments:
+        words: list[str] = []
+        for token in segment.split():
+            word, recognized = _translate_pacing_token(token)
+            words.append(word)
+            if not recognized:
+                resolved = False
+        translated_segments.append(" ".join(words))
+
+    deduped: list[str] = []
+    for segment in translated_segments:
+        if segment not in deduped:
+            deduped.append(segment)
+
+    return "; ".join(deduped), resolved
+
+
+def _translate_pacing_token(token: str) -> tuple[str, bool]:
+    """Translate one pacing token; returns ``(wording, recognized)``."""
+    m = re.fullmatch(r"CP\s*(\d+)", token, re.IGNORECASE)
+    if m:
+        return f"Classroom Practice {m.group(1)}", True
+    m = re.fullmatch(r"Ch\.\s*(\d+)\s*\.\s*(\d+)", token, re.IGNORECASE)
+    if m:
+        return f"Chapter {m.group(1)}, Lesson {m.group(2)}", True
+    m = re.fullmatch(r"Ch\.?\s*(\d+)", token, re.IGNORECASE)
+    if m:
+        return f"Chapter {m.group(1)}", True
+    m = re.fullmatch(r"(\d+)\s*\.\s*(\d+)", token)
+    if m:
+        return f"Chapter {m.group(1)}, Lesson {m.group(2)}", True
+    if re.fullmatch(r"MTS", token, re.IGNORECASE):
+        return "Mountains", True
+    if re.fullmatch(r"Ch", token, re.IGNORECASE):
+        return "Chapter", True
+    lowered = token.lower()
+    if lowered in _STUDENT_FACING_WORDS:
+        return _STUDENT_FACING_WORDS[lowered], True
+    if token.isdigit():
+        return token, True
+    if _is_code_like(token):
+        return token, False
+    return token, True
+
+
+_PAGE_TITLE_PREFIX_RE = re.compile(r"^(ELA4|HIST4|SCI4|SM5|RM4):\s*(.*)$")
+
+
+def student_facing_subject_title(subject: str, title: str) -> str:
+    """Translate subject pacing shorthand for a student-facing page title."""
+    subject = compact(subject).lower()
+    text = compact(title)
+    prefix = ""
+    body = text
+    m = _PAGE_TITLE_PREFIX_RE.match(text)
+    if m:
+        prefix = m.group(1)
+        body = m.group(2)
+    translated, resolved = translate_student_facing_pacing(body)
+    display = translated if resolved else f"{translated} [needs teacher review]"
+    if subject == "language-arts" and not prefix:
+        prefix = "ELA4"
+    if prefix:
+        return f"{prefix}: {display}"
+    return display
+
+
+def build_instructional_focus_reminder(group: str, rows: list[dict[str, Any]]) -> str:
+    """A short instructional-focus sentence when a week has no assessment.
+
+    The reminder is grounded only in the week's own pacing (lesson numbers or
+    chapter focus); it never invents topics. History uses the established
+    Mountains wording.
+    """
+    if group == "history":
+        return "This week we will continue our Mountains chapters."
+    chapters = sorted(
+        {
+            int(match.group(1))
+            for row in rows
+            for match in [re.search(r"Chapter\s+(\d+)", compact(row.get("title") or ""), re.IGNORECASE)]
+            if match
+        }
+    )
+    if chapters:
+        return f"This week we will continue working in Chapter {chapters[0]}."
+    lessons = sorted({int(row["lesson"]) for row in rows if str(row.get("lesson") or "").isdigit()})
+    if len(lessons) == 1:
+        return f"This week we will continue working through Lesson {lessons[0]}."
+    if len(lessons) >= 2:
+        return f"This week we will continue working through Lessons {lessons[0]}–{lessons[-1]}."
+    return "This week we will continue working through this week's lessons."
 
 
 def is_verified_assignment_url(url: str | None) -> bool:
@@ -750,15 +887,18 @@ def assignment_ids_for_entry(entry: PacingEntry, week: InstructionalWeek, entrie
     return [stable_id("assignment", entry.date, entry.subject, title) for title in assignment_titles_for_entry(entry, week, entries)]
 
 
-def render_page_html(week: InstructionalWeek, rows: list[dict[str, Any]]) -> str:
+def render_page_html(week: InstructionalWeek, rows: list[dict[str, Any]], group: str) -> str:
     def esc(text: Any) -> str:
         return html.escape(str(text or ""))
 
     reminder_items: list[str] = []
     for row in rows:
         reminder_items.extend(entry_display_sections(entry_from_row(row), week)["reminders"])
-    reminder_list = "".join(f"<li>{esc(item)}</li>" for item in suppress_empty_daily_content(reminder_items))
-    reminder_html = f"<ul>{reminder_list}</ul>" if reminder_list else ""
+    reminders = suppress_empty_daily_content(reminder_items)
+    if not reminders:
+        reminders = [build_instructional_focus_reminder(group, rows)]
+    reminder_list = "".join(f"<li>{esc(item)}</li>" for item in reminders)
+    reminder_html = f"<ul>{reminder_list}</ul>"
     parts = [
         f'<div id="kl_wrapper_3" class="kl_circle_left kl_wrapper" style="border-style: none;"><div id="kl_banner" class=""><p style="color: {WHITE}; background-color: {BLUE}; text-align: center; margin: 0;"><span style="font-size: 18pt;">&nbsp;Weekly Agenda</span><br><span style="font-size: 10pt;">{esc(week.display_subtitle)}</span></p><h3 style="background-color: {MAGENTA}; color: {WHITE}; border: 0 !important;">Reminders</h3><div style="width: 100%; padding-left: 15px;">{reminder_html}</div>'
     ]
@@ -865,12 +1005,12 @@ def entry_display_sections(entry: PacingEntry, week: InstructionalWeek) -> dict[
     elif entry.subject == "language-arts":
         canonical = compact(entry.title)
         if canonical:
-            in_class.append({"title": canonical if canonical.startswith("ELA4:") else f"ELA4: {canonical}"})
+            in_class.append({"title": student_facing_subject_title(entry.subject, canonical)})
         at_home.append({"title": reading_homework_for_weekday(entry.weekday) if compact(entry.at_home) else "No Homework"})
     elif entry.subject in {"history", "science"}:
         canonical = compact(entry.title)
         if canonical:
-            in_class.append({"title": canonical})
+            in_class.append({"title": student_facing_subject_title(entry.subject, canonical)})
         at_home.append({"title": "No Homework"})
     return {"in_class": in_class, "at_home": at_home, "reminders": reminders}
 
@@ -900,7 +1040,7 @@ def build_pages(week: InstructionalWeek, entries: list[PacingEntry]) -> tuple[li
             continue
         if not rows:
             continue
-        html_body = render_page_html(week, rows)
+        html_body = render_page_html(week, rows, group)
         text_lines: list[str] = []
         for weekday in WEEKDAYS:
             day_rows = [row for row in rows if row["weekday"] == weekday]
@@ -1277,6 +1417,17 @@ def validate_packet(packet: dict[str, Any], fixture: dict[str, Any] | None = Non
             findings.append(ValidationFinding("pass", "announcement.preview-safe", f"Announcement draft {announcement.get('title')} is preview-safe", announcement.get("announcement_id")))
 
     page_blob = json.dumps(packet.get("pages", []), ensure_ascii=False)
+    for page in packet.get("pages", []):
+        reminder_block = re.search(
+            r"Reminders</h3>(.*?)</div>",
+            page.get("body_html", ""),
+            re.DOTALL,
+        )
+        has_reminder = bool(reminder_block and "<li>" in reminder_block.group(1))
+        if has_reminder:
+            findings.append(ValidationFinding("pass", "page.reminders-present", f"Page {page.get('title')} has a non-empty Reminders section", page.get("page_id")))
+        else:
+            findings.append(ValidationFinding("fail", "page.reminders-present", f"Page {page.get('title')} must not render an empty Reminders section", page.get("page_id")))
     for announcement in packet.get("announcements", []):
         if compact(announcement.get("body_text")) and compact(announcement.get("body_text")) in page_blob:
             findings.append(ValidationFinding("fail", "announcement.agenda-separation", "Announcement body must not appear in agenda pages", announcement.get("announcement_id")))
@@ -1766,6 +1917,30 @@ def command_self_test(args: argparse.Namespace) -> int:
     ) == "RM4: Spelling Test 4"
     assert math_homework_for_weekday("Monday") == "#12-30 evens"
     assert reading_homework_for_weekday("Tuesday") == "Comprehension Questions"
+
+    # Student-facing pacing translation (established shorthand only).
+    assert translate_student_facing_pacing("CP6") == ("Classroom Practice 6", True)
+    assert translate_student_facing_pacing("2.3") == ("Chapter 2, Lesson 3", True)
+    assert translate_student_facing_pacing("Ch.2.3") == ("Chapter 2, Lesson 3", True)
+    assert translate_student_facing_pacing("2.3 / Ch.2.3") == ("Chapter 2, Lesson 3", True)
+    assert translate_student_facing_pacing("CP6 / 2.3") == (
+        "Classroom Practice 6; Chapter 2, Lesson 3",
+        True,
+    )
+    assert translate_student_facing_pacing("MTS Ch1") == ("Mountains Chapter 1", True)
+    unknown_text, unknown_resolved = translate_student_facing_pacing("XYZ9")
+    assert unknown_resolved is False and unknown_text == "XYZ9"
+    assert student_facing_subject_title("language-arts", "CP6") == "ELA4: Classroom Practice 6"
+    assert student_facing_subject_title("history", "MTS Ch1") == "Mountains Chapter 1"
+
+    # Reminders must never render blank for an active subject.
+    week_q1 = canonical_week("Q1W5")
+    no_assessment_rows = [
+        {"subject": "math", "weekday": "Monday", "entry_date": "2026-08-17", "lesson": "18", "tests": "", "title": "Lesson 18", "in_class": "Lesson 18", "at_home": "Evens"},
+        {"subject": "math", "weekday": "Tuesday", "entry_date": "2026-08-18", "lesson": "19", "tests": "", "title": "Lesson 19", "in_class": "Lesson 19", "at_home": "Odds"},
+    ]
+    no_assessment_html = render_page_html(week_q1, no_assessment_rows, "math")
+    assert "This week we will continue working through Lessons 18" in no_assessment_html
 
     import tempfile
 

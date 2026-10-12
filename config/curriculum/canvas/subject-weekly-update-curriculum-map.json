@@ -1,0 +1,66 @@
+{
+  "schemaVersion": 1,
+  "status": "owner-approved",
+  "approvedAt": "2026-08-29",
+  "purpose": "Verified parent-facing curriculum enrichment for subject Weekly Update announcements. Lesson numbers are translated into topic/chapter names only when a verified source supports the mapping; otherwise the known lesson numbers are kept. Unverified mappings must not be populated here.",
+  "evidenceSource": "docs/programs/canvas-llm/canonical-context-pack/subject-weekly-update-announcement-contract.md",
+  "subjects": {
+    "math": {
+      "canonicalName": "Saxon Math 5",
+      "sources": [
+        "config/curriculum/canvas-course-mappings.json (canonicalName)",
+        "config/curriculum/math/saxon-math-5/lesson-power-up-map.json (curriculum)"
+      ],
+      "verifiedTopics": [],
+      "lessonNumbersOnly": true,
+      "note": "No per-lesson topic titles are verified in the canonical maps. Use lesson numbers and the assessment names (e.g. Math Test 3, Fact Assessment 3)."
+    },
+    "reading_spelling": {
+      "canonicalNames": ["Reading Mastery 4", "Spelling 4", "The Wonderful Wizard of Oz"],
+      "sources": [
+        "config/curriculum/canvas-course-mappings.json (canonicalName)",
+        "config/curriculum/reading/reading-mastery-4/checkout-passage-map.json (Book A passages: The Cyclone, The Field of Flowers, The Wizard's Story)",
+        "Live 'Reading and Spelling - Week of August 17-21' announcement (The Wonderful Wizard of Oz)"
+      ],
+      "verifiedTopics": ["The Wonderful Wizard of Oz"],
+      "lessonNumbersOnly": true,
+      "note": "The class reads The Wonderful Wizard of Oz (Reading Mastery Book A). Per-lesson topic titles are not verified; use lesson numbers and assessment names (e.g. Reading Mastery Test 2, Spelling Test 20)."
+    },
+    "language_arts": {
+      "canonicalName": "Shurley English 4",
+      "sources": [
+        "config/curriculum/canvas-course-mappings.json (canonicalName)",
+        "Owen's HG translation: Writing, Unit 1: Personal Narrative, Week 1"
+      ],
+      "verifiedTopics": [
+        "Chapter 3",
+        "Personal Narrative (Unit 1): Introductions",
+        "Personal Narrative (Unit 1): Focus on One Event",
+        "Personal Narrative (Unit 1): Analyze the Prompt",
+        "Personal Narrative (Unit 1): Brainstorming"
+      ],
+      "lessonNumbersOnly": false,
+      "note": "Writing lessons HG2-HG5 translate to the Personal Narrative lessons above per Owen's instructions."
+    },
+    "history": {
+      "canonicalName": "History 4",
+      "sources": [
+        "config/curriculum/canvas-course-mappings.json (canonicalName)",
+        "Canvas History module 'Exploring Maps and World Mountains: World Mountains'",
+        "Live Q1W6 History agenda (Mountains Chapters 3-4, World Mountains Test)"
+      ],
+      "verifiedTopics": ["World Mountains unit", "Mountains Chapters 3-4", "World Mountains Test", "Map Project"],
+      "lessonNumbersOnly": false,
+      "note": "Unit/chapter names are verified from the Canvas module and live agendas."
+    },
+    "science": {
+      "canonicalName": "Science 4",
+      "sources": [
+        "config/curriculum/canvas-course-mappings.json (canonicalName)"
+      ],
+      "verifiedTopics": [],
+      "lessonNumbersOnly": true,
+      "note": "Science is inactive in Q1 2026-2027 and is announced only when active."
+    }
+  }
+}

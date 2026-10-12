@@ -39,7 +39,7 @@
     ],
     "layout": "two-column-flex",
     "leftColumn": "In Class",
-    "rightColumn": "Homework",
+    "rightColumn": "At Home",
     "columnWidth": "49%",
     "briefBulletsRequired": true,
     "paragraphLengthDescriptionsDiscouraged": true
@@ -83,8 +83,16 @@
   "legacySupersededRules": {
     "combinedRemindersAndResourcesSection": true,
     "studyGuideLinksInAgenda": true,
-    "lessonResourceLinksInAgenda": true,
-    "atHomeColumnLabel": true
+    "lessonResourceLinksInAgenda": true
+  },
+  "provenance": {
+    "atHomeColumnLabel": {
+      "value": "At Home",
+      "authority": "OWNER_POLICY",
+      "approvedBy": "Owen Reagan",
+      "supportedBy": "Phase 2A LIVE_CANVAS_PRECEDENT sweep (19 'At Home', 0 'Homework')",
+      "approvedAt": "2026-10-10"
+    }
   },
   "source": "docs/programs/canvas-llm/2026-2027-fpk-canvas-operating-contract.md"
 }

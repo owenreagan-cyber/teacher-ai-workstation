@@ -32,13 +32,20 @@
   },
   "hero": {
     "gradient": "linear-gradient(135deg, #24324A 0%, #8F3D46 45%, #D96C3F 75%, #E4A94F 100%)",
-    "padding": "38px 28px",
-    "borderRadius": "20px",
+    "padding": "42px 28px 36px",
+    "borderRadius": "22px",
     "textColor": "#ffffff",
     "alignment": "center",
-    "titleSize": "34px",
+    "eyebrow": {
+      "color": "#E4A94F",
+      "fontSize": "15px",
+      "letterSpacing": "2px",
+      "fontWeight": "bold"
+    },
+    "titleSize": "32px",
+    "emojiSize": "30px",
     "taglineColor": "#FFF8EC",
-    "taglineSize": "18px",
+    "taglineSize": "17px",
     "pill": {
       "background": "rgba(255,255,255,.20)",
       "padding": "7px 14px",
@@ -53,6 +60,13 @@
       "padding": "8px 16px",
       "fontWeight": "bold"
     }
+  },
+  "motto": {
+    "role": "identity moment — recurring visual identity, not repetitive decoration",
+    "container": {"background": "#24324A", "color": "#ffffff", "borderRadius": "16px", "padding": "26px 22px", "alignment": "center"},
+    "eyebrow": {"text": "CLASS 4A · LEVEL UP TOGETHER", "color": "#E4A94F", "fontSize": "13px", "letterSpacing": "2px"},
+    "line1": {"text": "Think sharp. Choose well. Work hard. Have each other's back.", "fontSize": "20px", "color": "#FFF8EC"},
+    "line2": {"fontSize": "15px", "color": "#D9CFC0"}
   },
   "sectionCards": {
     "background": "#FFF8EC",
@@ -73,10 +87,23 @@
     "gold": {"border": "#E4A94F", "heading": "#8a6a1f", "background": "#FDF6E7"}
   },
   "accents": {
-    "diagonalStrips": "thin 3px linear-gradient stripes in gold/burgundy/teal used as a subtle section divider, Canvas-safe inline background",
+    "diagonalStrips": "thin 6px 5-stop linear-gradient strip (gold -> maple -> burgundy -> teal -> sage) used as a subtle hero-to-content divider, Canvas-safe inline background",
     "sparkleStars": "small ✦/⭐ text glyphs (no images)",
     "asymmetricEdges": "section cards may carry a slightly wider left accent border for the 'level/rank' feel",
     "radiatingLines": "avoid; replaced with diagonal divider strips for Canvas safety"
+  },
+  "growthSection": {
+    "role": "behavior tracker / routines — visually clear but warm and growth-oriented, never punitive",
+    "container": {"background": "#F1F4EE", "borderLeft": "6px solid #879B78", "borderRadius": "14px", "padding": "22px"},
+    "heading": {"color": "#5F7052", "fontSize": "22px"},
+    "list": {"style": "scannable bullets", "paddingLeft": "20px"},
+    "note": "avoid red-alert styling; use sage/gold 'growth' treatment"
+  },
+  "studyNotesSection": {
+    "role": "Science & History study notes — structured and useful, distinct from behavior/logistics",
+    "container": {"background": "#EDF3F3", "borderLeft": "6px solid #4C8791", "borderRadius": "14px", "padding": "22px"},
+    "heading": {"color": "#3A6A73", "fontSize": "22px"},
+    "note": "two-column note layout at wide widths; single column at narrow"
   },
   "importantDates": {
     "container": {"background": "#FDF6E7", "border": "1px solid #F3E3BC", "borderRadius": "16px", "padding": "22px"},
@@ -145,10 +172,10 @@
     "accentColor": "#8F3D46"
   },
   "dynamicPlaceholders": [
-    "{{HERO_EMOJI}}", "{{HERO_TITLE}}", "{{HERO_TAGLINE}}", "{{YEAR_BADGE}}", "{{WEEK_BADGE}}",
-    "{{LEVEL_UP_BADGE}}", "{{WELCOME_BODY}}", "{{IMPORTANT_DATES_TILES}}",
-    "{{BIRTHDAY_SECTION}}", "{{NEWS_SECTIONS}}", "{{UTILITY_CARDS}}",
-    "{{STAFF_FAVORITES}}", "{{QUICK_LINKS}}", "{{CLOSING_NOTE}}",
+    "{{HERO_EYEBROW}}", "{{HERO_EMOJI}}", "{{HERO_TITLE}}", "{{HERO_TAGLINE}}", "{{YEAR_BADGE}}", "{{WEEK_BADGE}}",
+    "{{LEVEL_UP_BADGE}}", "{{WELCOME_BODY}}", "{{MOTTO_LINE_1}}", "{{MOTTO_LINE_2}}",
+    "{{IMPORTANT_DATES_TILES}}", "{{BIRTHDAY_SECTION}}", "{{GROWTH_SECTION}}", "{{STUDY_NOTES_SECTION}}",
+    "{{NEWS_SECTIONS}}", "{{UTILITY_CARDS}}", "{{STAFF_FAVORITES}}", "{{QUICK_LINKS}}", "{{CLOSING_NOTE}}",
     "{{FOOTER_THANK_YOU}}", "{{SIGNATURE}}"
   ],
   "privacy": {

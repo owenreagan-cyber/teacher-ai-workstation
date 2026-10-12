@@ -1,0 +1,164 @@
+{
+  "schemaVersion": 1,
+  "themeId": "homeroom-newsletter-theme-v2-fall-level-up",
+  "label": "Homeroom Newsletter Theme v2 — Fall / Level Up",
+  "status": "CANDIDATE",
+  "approval": "AWAITING_VISUAL_REVIEW",
+  "source": "design candidate derived from v1 + Owen's fall/anime direction",
+  "season": "fall (usable October–November)",
+  "motif": "Class 4A: Level Up Together",
+  "purpose": "Warm, energetic fall-classroom theme with subtle slice-of-life school-club energy. Polished, family-friendly, not cartoonish. No copyrighted characters, no manga panels, no neon gamer aesthetic.",
+  "canvasCompatibility": {
+    "inlineStylesOnly": true,
+    "noExternalCss": true,
+    "noJavaScript": true,
+    "noBackgroundImages": true,
+    "noCssAnimation": true,
+    "gradientFallback": "solid #8F3D46 when gradients unsupported",
+    "responsiveViaFlexWrap": true
+  },
+  "palette": {
+    "deepNavy": "#24324A",
+    "autumnBurgundy": "#8F3D46",
+    "mapleOrange": "#D96C3F",
+    "warmGold": "#E4A94F",
+    "creamPaper": "#FFF8EC",
+    "softSage": "#879B78",
+    "dustyTeal": "#4C8791",
+    "warmBrown": "#6B4B3E",
+    "softGray": "#F3F0EA",
+    "textInk": "#24324A",
+    "mutedText": "#5A4A3A"
+  },
+  "hero": {
+    "gradient": "linear-gradient(135deg, #24324A 0%, #8F3D46 45%, #D96C3F 75%, #E4A94F 100%)",
+    "padding": "38px 28px",
+    "borderRadius": "20px",
+    "textColor": "#ffffff",
+    "alignment": "center",
+    "titleSize": "34px",
+    "taglineColor": "#FFF8EC",
+    "taglineSize": "18px",
+    "pill": {
+      "background": "rgba(255,255,255,.20)",
+      "padding": "7px 14px",
+      "borderRadius": "999px",
+      "fontSize": "13px"
+    },
+    "levelUpBadge": {
+      "text": "LEVEL UP TOGETHER ⚡",
+      "background": "#E4A94F",
+      "textColor": "#24324A",
+      "borderRadius": "999px",
+      "padding": "8px 16px",
+      "fontWeight": "bold"
+    }
+  },
+  "sectionCards": {
+    "background": "#FFF8EC",
+    "border": "1px solid #F3F0EA",
+    "borderRadius": "16px",
+    "padding": "22px"
+  },
+  "callout": {
+    "borderLeft": "6px solid",
+    "borderRadius": "14px",
+    "padding": "22px"
+  },
+  "calloutColors": {
+    "navy": {"border": "#24324A", "heading": "#24324A", "background": "#F3F0EA"},
+    "teal": {"border": "#4C8791", "heading": "#3A6A73", "background": "#EDF3F3"},
+    "sage": {"border": "#879B78", "heading": "#5F7052", "background": "#F1F4EE"},
+    "burgundy": {"border": "#8F3D46", "heading": "#8F3D46", "background": "#FBEFEF"},
+    "gold": {"border": "#E4A94F", "heading": "#8a6a1f", "background": "#FDF6E7"}
+  },
+  "accents": {
+    "diagonalStrips": "thin 3px linear-gradient stripes in gold/burgundy/teal used as a subtle section divider, Canvas-safe inline background",
+    "sparkleStars": "small ✦/⭐ text glyphs (no images)",
+    "asymmetricEdges": "section cards may carry a slightly wider left accent border for the 'level/rank' feel",
+    "radiatingLines": "avoid; replaced with diagonal divider strips for Canvas safety"
+  },
+  "importantDates": {
+    "container": {"background": "#FDF6E7", "border": "1px solid #F3E3BC", "borderRadius": "16px", "padding": "22px"},
+    "heading": {"color": "#8a6a1f", "fontSize": "23px"},
+    "tile": {
+      "flex": "1 1 180px",
+      "background": "#ffffff",
+      "borderRadius": "12px",
+      "padding": "14px",
+      "border": "1px solid #F3E3BC",
+      "borderTop": "3px solid #D96C3F",
+      "dateLabel": {"fontSize": "13px", "color": "#8F3D46"},
+      "title": {"fontSize": "16px", "color": "#24324A"},
+      "subtitle": {"fontSize": "13px", "color": "#5A4A3A"}
+    }
+  },
+  "birthdayCards": {
+    "headerPattern": "🍂 month label (e.g. '🍂 October Birthdays')",
+    "tile": {
+      "flex": "1 1 30%",
+      "minWidth": "220px",
+      "borderRadius": "18px",
+      "padding": "24px",
+      "alignment": "center",
+      "emojiSize": "32px",
+      "nameSize": "22px",
+      "dateSize": "18px",
+      "dateColor": "#6B4B3E"
+    },
+    "rotatingTints": [
+      {"background": "#FBEFEF", "border": "#E5B9BC", "nameColor": "#8F3D46"},
+      {"background": "#EDF3F3", "border": "#BCD4D7", "nameColor": "#3A6A73"},
+      {"background": "#F1F4EE", "border": "#CBD6C0", "nameColor": "#5F7052"}
+    ]
+  },
+  "utilityCards": {
+    "flex": "1 1 250px",
+    "borderRadius": "14px",
+    "padding": "20px",
+    "borderTop": "5px solid",
+    "emojiSize": "28px",
+    "headingSize": "19px",
+    "bodySize": "14px"
+  },
+  "quickLinks": {
+    "background": "#24324A",
+    "textColor": "#ffffff",
+    "borderRadius": "16px",
+    "padding": "24px",
+    "link": {
+      "background": "#FFF8EC",
+      "textColor": "#24324A",
+      "padding": "9px 13px",
+      "borderRadius": "8px"
+    }
+  },
+  "staffFavorites": {
+    "container": {"background": "#F3F0EA", "borderRadius": "16px", "padding": "22px"},
+    "card": {"flex": "1 1 240px", "background": "#ffffff", "borderRadius": "14px", "padding": "18px", "borderTop": "5px solid"}
+  },
+  "footer": {
+    "alignment": "center",
+    "padding": "24px 12px 8px",
+    "pawEmojiSize": "28px",
+    "textSize": "16px",
+    "accentColor": "#8F3D46"
+  },
+  "dynamicPlaceholders": [
+    "{{HERO_EMOJI}}", "{{HERO_TITLE}}", "{{HERO_TAGLINE}}", "{{YEAR_BADGE}}", "{{WEEK_BADGE}}",
+    "{{LEVEL_UP_BADGE}}", "{{WELCOME_BODY}}", "{{IMPORTANT_DATES_TILES}}",
+    "{{BIRTHDAY_SECTION}}", "{{NEWS_SECTIONS}}", "{{UTILITY_CARDS}}",
+    "{{STAFF_FAVORITES}}", "{{QUICK_LINKS}}", "{{CLOSING_NOTE}}",
+    "{{FOOTER_THANK_YOU}}", "{{SIGNATURE}}"
+  ],
+  "privacy": {
+    "noStudentNamesInTemplate": true,
+    "noBirthdaysInTemplate": true,
+    "noLiveCanvasIdsInTemplate": true,
+    "noSchoolUrlsInTemplate": true
+  },
+  "provenance": {
+    "authority": "CANDIDATE",
+    "status": "awaiting Owen visual review; not canonical"
+  }
+}

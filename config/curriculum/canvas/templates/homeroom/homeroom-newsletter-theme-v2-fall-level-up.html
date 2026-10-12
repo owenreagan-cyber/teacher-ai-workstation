@@ -1,0 +1,74 @@
+<!--
+  Homeroom Newsletter Theme v2 — Fall / Level Up (CANDIDATE).
+  Status: CANDIDATE (awaiting Owen visual review; NOT canonical, NOT live).
+  Dynamic content replaced by {{PLACEHOLDER}} tokens; no student names/birthdays/
+  live IDs/school URLs/secrets. Canvas-safe: inline styles, no external CSS, no JS.
+  Note: the live page's global Canvas CSS/JS wrapper is applied by the Canvas
+  platform at deploy time, not carried inside this reusable theme template.
+-->
+<div style="max-width: 900px; margin: 0 auto; font-family: Arial, Helvetica, sans-serif; color: #24324A; line-height: 1.55;">
+
+  <!-- Hero -->
+  <div style="background: linear-gradient(135deg, #24324A 0%, #8F3D46 45%, #D96C3F 75%, #E4A94F 100%); background-color: #8F3D46; padding: 38px 28px; border-radius: 20px; color: #ffffff; text-align: center; margin-bottom: 22px;">
+    <div style="font-size: 42px; margin-bottom: 6px;">{{HERO_EMOJI}}</div>
+    <h1 style="margin: 0; font-size: 34px; line-height: 1.15; color: #ffffff;">{{HERO_TITLE}}</h1>
+    <p style="margin: 10px 0 0; font-size: 18px; color: #FFF8EC;">{{HERO_TAGLINE}}</p>
+    <div style="margin-top: 18px;">
+      <span style="display: inline-block; background: rgba(255,255,255,.20); padding: 7px 14px; margin: 4px; border-radius: 999px; font-size: 13px;">{{YEAR_BADGE}}</span>
+      <span style="display: inline-block; background: rgba(255,255,255,.20); padding: 7px 14px; margin: 4px; border-radius: 999px; font-size: 13px;">{{WEEK_BADGE}}</span>
+    </div>
+    <div style="margin-top: 14px;">
+      <span style="display: inline-block; background: #E4A94F; color: #24324A; padding: 8px 16px; border-radius: 999px; font-size: 13px; font-weight: bold;">{{LEVEL_UP_BADGE}}</span>
+    </div>
+  </div>
+
+  <!-- Diagonal accent strip -->
+  <div style="height: 8px; border-radius: 4px; margin: 0 0 22px; background: linear-gradient(135deg, #E4A94F 0%, #D96C3F 30%, #8F3D46 60%, #4C8791 100%); background-color: #D96C3F;"></div>
+
+  <!-- Welcome -->
+  <div style="background: #FFF8EC; border: 1px solid #F3F0EA; padding: 22px; border-radius: 16px; margin-bottom: 22px;">
+    {{WELCOME_BODY}}
+  </div>
+
+  <!-- Important Dates -->
+  <div style="background: #FDF6E7; border: 1px solid #F3E3BC; border-radius: 16px; padding: 22px; margin-bottom: 22px;">
+    <h2 style="margin: 0 0 16px; color: #8a6a1f; font-size: 23px;">🍁 Important Dates</h2>
+    <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+      {{IMPORTANT_DATES_TILES}}
+    </div>
+  </div>
+
+  <!-- Birthday section (omitted when no birthdays) -->
+  {{BIRTHDAY_SECTION}}
+
+  <!-- News / callout sections -->
+  {{NEWS_SECTIONS}}
+
+  <!-- Utility cards (three-column) -->
+  <div style="display: flex; flex-wrap: wrap; gap: 14px; margin-bottom: 22px;">
+    {{UTILITY_CARDS}}
+  </div>
+
+  <!-- Staff favorites -->
+  {{STAFF_FAVORITES}}
+
+  <!-- Quick links -->
+  <div style="background: #24324A; color: #ffffff; border-radius: 16px; padding: 24px; margin-bottom: 22px;">
+    <h2 style="margin: 0 0 16px; color: #ffffff; font-size: 22px;">🔗 Family Quick Links</h2>
+    <div style="display: flex; flex-wrap: wrap; gap: 9px;">
+      {{QUICK_LINKS}}
+    </div>
+  </div>
+
+  <!-- Closing note -->
+  {{CLOSING_NOTE}}
+
+  <!-- Footer -->
+  <div style="text-align: center; padding: 24px 12px 8px;">
+    <div style="font-size: 28px;">🍂</div>
+    <p style="font-size: 16px; margin: 8px 0; color: #5A4A3A;">{{FOOTER_THANK_YOU}}</p>
+    <p style="font-size: 16px; margin: 0; color: #8F3D46;"><strong>Kindly,<br>{{SIGNATURE}}</strong></p>
+  </div>
+
+</div>
+

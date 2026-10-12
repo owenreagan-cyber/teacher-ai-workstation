@@ -1,0 +1,168 @@
+{
+  "schemaVersion": 1,
+  "themeId": "homeroom-newsletter-theme-v1",
+  "label": "Homeroom Newsletter Theme v1",
+  "status": "CANONICAL",
+  "approval": "APPROVED",
+  "source": "live Homeroom newsletter (4th Grade Happenings)",
+  "season": "neutral / original",
+  "purpose": "Reusable canonical visual system for the rolling Homeroom family newsletter. Extracted from the approved live page so future seasonal themes can be built without losing the polished original.",
+  "canvasCompatibility": {
+    "inlineStylesOnly": true,
+    "noExternalCss": true,
+    "noJavaScript": true,
+    "noBackgroundImages": true,
+    "gradientFallback": "solid color fallback acceptable",
+    "responsiveViaFlexWrap": true
+  },
+  "page": {
+    "maxWidth": "900px",
+    "centered": true,
+    "fontStack": "Arial, Helvetica, sans-serif",
+    "textColor": "#1e293b",
+    "lineHeight": 1.55
+  },
+  "hero": {
+    "gradient": "linear-gradient(135deg, #4f46e5 0%, #2563eb 55%, #0891b2 100%)",
+    "padding": "38px 28px",
+    "borderRadius": "18px",
+    "textColor": "#ffffff",
+    "alignment": "center",
+    "emojiSize": "42px",
+    "titleSize": "34px",
+    "taglineColor": "#e0f2fe",
+    "taglineSize": "18px",
+    "pill": {
+      "background": "rgba(255,255,255,.18)",
+      "padding": "7px 14px",
+      "borderRadius": "999px",
+      "fontSize": "13px"
+    }
+  },
+  "cards": {
+    "contentCard": {
+      "background": "#ffffff",
+      "border": "1px solid #e2e8f0",
+      "padding": "22px",
+      "borderRadius": "14px"
+    },
+    "callout": {
+      "borderLeft": "6px solid",
+      "borderRadius": "14px",
+      "padding": "22px"
+    }
+  },
+  "calloutColors": {
+    "indigo": {"border": "#4f46e5", "heading": "#4338ca", "background": "#eef2ff"},
+    "blue": {"border": "#2563eb", "heading": "#1d4ed8", "background": "#eff6ff"},
+    "orange": {"border": "#ea580c", "heading": "#c2410c", "background": "#fff7ed"},
+    "red": {"border": "#e11d48", "heading": "#be123c", "background": "#fff1f2"},
+    "green": {"border": "#059669", "heading": "#047857", "background": "#ecfdf5"}
+  },
+  "importantDates": {
+    "container": {"background": "#fff7ed", "border": "1px solid #fed7aa", "borderRadius": "16px", "padding": "22px"},
+    "heading": {"color": "#c2410c", "fontSize": "23px"},
+    "tile": {
+      "flex": "1 1 180px",
+      "background": "#ffffff",
+      "borderRadius": "12px",
+      "padding": "14px",
+      "border": "1px solid #fed7aa",
+      "dateLabel": {"fontSize": "13px", "color": "#9a3412"},
+      "title": {"fontSize": "16px"},
+      "subtitle": {"fontSize": "13px"}
+    }
+  },
+  "birthdayCards": {
+    "headerPattern": "emoji + month label (e.g. '🎂 October Birthdays 🎉')",
+    "tile": {
+      "flex": "1 1 30%",
+      "minWidth": "220px",
+      "borderRadius": "18px",
+      "padding": "24px",
+      "alignment": "center",
+      "emojiSize": "32px",
+      "nameSize": "22px",
+      "dateSize": "18px",
+      "dateColor": "#333333"
+    },
+    "rotatingTints": [
+      {"background": "#fff0f5", "border": "#f4b6cf", "nameColor": "#c51062"},
+      {"background": "#eef7ff", "border": "#a9d2ef", "nameColor": "#0065a7"},
+      {"background": "#fff6e8", "border": "#f4cf96", "nameColor": "#b65a00"}
+    ]
+  },
+  "utilityCards": {
+    "flex": "1 1 250px",
+    "borderRadius": "14px",
+    "padding": "20px",
+    "borderTop": "5px solid",
+    "emojiSize": "28px",
+    "headingSize": "19px",
+    "bodySize": "14px"
+  },
+  "quickLinks": {
+    "background": "#0f172a",
+    "textColor": "#ffffff",
+    "borderRadius": "16px",
+    "padding": "24px",
+    "link": {
+      "background": "#ffffff",
+      "textColor": "#1e293b",
+      "padding": "9px 13px",
+      "borderRadius": "8px"
+    }
+  },
+  "staffFavorites": {
+    "container": {"background": "#f8f6ff", "borderRadius": "16px", "padding": "22px"},
+    "card": {"flex": "1 1 240px", "background": "#ffffff", "borderRadius": "14px", "padding": "18px", "borderTop": "5px solid"}
+  },
+  "footer": {
+    "alignment": "center",
+    "padding": "24px 12px 8px",
+    "pawEmojiSize": "28px",
+    "textSize": "16px",
+    "accentColor": "#4f46e5"
+  },
+  "spacing": {
+    "sectionMargin": "22px",
+    "cardPadding": "22px",
+    "innerGap": "10px"
+  },
+  "borderRadius": {
+    "large": "18px",
+    "medium": "16px",
+    "card": "14px",
+    "small": "12px",
+    "pill": "999px"
+  },
+  "dynamicPlaceholders": [
+    "{{HERO_EMOJI}}",
+    "{{HERO_TITLE}}",
+    "{{HERO_TAGLINE}}",
+    "{{YEAR_BADGE}}",
+    "{{WEEK_BADGE}}",
+    "{{WELCOME_BODY}}",
+    "{{IMPORTANT_DATES_TILES}}",
+    "{{BIRTHDAY_SECTION}}",
+    "{{NEWS_SECTIONS}}",
+    "{{UTILITY_CARDS}}",
+    "{{STAFF_FAVORITES}}",
+    "{{QUICK_LINKS}}",
+    "{{CLOSING_NOTE}}",
+    "{{FOOTER_THANK_YOU}}",
+    "{{SIGNATURE}}"
+  ],
+  "privacy": {
+    "noStudentNamesInTemplate": true,
+    "noBirthdaysInTemplate": true,
+    "noLiveCanvasIdsInTemplate": true,
+    "noSchoolUrlsInTemplate": true
+  },
+  "provenance": {
+    "authority": "OWNER_POLICY",
+    "approvedBy": "Owen Reagan",
+    "source": "live Homeroom newsletter",
+    "status": "CANONICAL / APPROVED"
+  }
+}

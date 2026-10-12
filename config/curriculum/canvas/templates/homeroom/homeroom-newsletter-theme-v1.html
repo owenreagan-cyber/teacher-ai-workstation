@@ -1,0 +1,69 @@
+<!--
+  Homeroom Newsletter Theme v1 — CANONICAL reusable template.
+  Source: approved live Homeroom newsletter ("4th Grade Happenings").
+  Dynamic content is replaced by {{PLACEHOLDER}} tokens; this template contains
+  NO student names, birthdays, live Canvas IDs, school URLs, or secrets.
+  Canvas-safe: inline styles only, no external CSS, no JavaScript.
+  Note: the live page's global Canvas CSS/JS wrapper is applied by the Canvas
+  platform at deploy time, not carried inside this reusable theme template.
+-->
+<div style="max-width: 900px; margin: 0 auto; font-family: Arial, Helvetica, sans-serif; color: #1e293b; line-height: 1.55;">
+
+  <!-- Hero -->
+  <div style="background: linear-gradient(135deg, #4f46e5 0%, #2563eb 55%, #0891b2 100%); padding: 38px 28px; border-radius: 18px; color: #ffffff; text-align: center; margin-bottom: 22px;">
+    <div style="font-size: 42px; margin-bottom: 6px;">{{HERO_EMOJI}}</div>
+    <h1 style="margin: 0; font-size: 34px; line-height: 1.15; color: #ffffff;">{{HERO_TITLE}}</h1>
+    <p style="margin: 10px 0 0; font-size: 18px; color: #e0f2fe;">{{HERO_TAGLINE}}</p>
+    <div style="margin-top: 18px;">
+      <span style="display: inline-block; background: rgba(255,255,255,.18); padding: 7px 14px; margin: 4px; border-radius: 999px; font-size: 13px;">{{YEAR_BADGE}}</span>
+      <span style="display: inline-block; background: rgba(255,255,255,.18); padding: 7px 14px; margin: 4px; border-radius: 999px; font-size: 13px;">{{WEEK_BADGE}}</span>
+    </div>
+  </div>
+
+  <!-- Welcome -->
+  <div style="background: #ffffff; border: 1px solid #e2e8f0; padding: 22px; border-radius: 14px; margin-bottom: 22px;">
+    {{WELCOME_BODY}}
+  </div>
+
+  <!-- Important Dates -->
+  <div style="background: #fff7ed; border: 1px solid #fed7aa; border-radius: 16px; padding: 22px; margin-bottom: 22px;">
+    <h2 style="margin: 0 0 16px; color: #c2410c; font-size: 23px;">📅 Important Dates</h2>
+    <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+      {{IMPORTANT_DATES_TILES}}
+    </div>
+  </div>
+
+  <!-- Birthday section (omitted when no birthdays) -->
+  {{BIRTHDAY_SECTION}}
+
+  <!-- News / callout sections -->
+  {{NEWS_SECTIONS}}
+
+  <!-- Utility cards (three-column) -->
+  <div style="display: flex; flex-wrap: wrap; gap: 14px; margin-bottom: 22px;">
+    {{UTILITY_CARDS}}
+  </div>
+
+  <!-- Staff favorites -->
+  {{STAFF_FAVORITES}}
+
+  <!-- Quick links -->
+  <div style="background: #0f172a; color: #ffffff; border-radius: 16px; padding: 24px; margin-bottom: 22px;">
+    <h2 style="margin: 0 0 16px; color: #ffffff; font-size: 22px;">🔗 Family Quick Links</h2>
+    <div style="display: flex; flex-wrap: wrap; gap: 9px;">
+      {{QUICK_LINKS}}
+    </div>
+  </div>
+
+  <!-- Closing note -->
+  {{CLOSING_NOTE}}
+
+  <!-- Footer -->
+  <div style="text-align: center; padding: 24px 12px 8px;">
+    <div style="font-size: 28px;">🐾</div>
+    <p style="font-size: 16px; margin: 8px 0;">{{FOOTER_THANK_YOU}}</p>
+    <p style="font-size: 16px; margin: 0; color: #4f46e5;"><strong>Kindly,<br>{{SIGNATURE}}</strong></p>
+  </div>
+
+</div>
+

@@ -17,6 +17,7 @@ from scripts.canvas_llm_phase22 import artifact_registry as registry  # noqa: E4
 from scripts.canvas_llm_phase22 import canvas_drift as drift  # noqa: E402
 from scripts.canvas_llm_phase22 import deployment_audit as audit  # noqa: E402
 from scripts.canvas_llm_phase22 import deployment_readiness as readiness  # noqa: E402
+from scripts.canvas_llm_phase22 import grading_optimizer as optimizer  # noqa: E402
 from scripts.canvas_llm_phase22 import phase22_workstation as p22  # noqa: E402
 from scripts.canvas_llm_phase22 import teacher_decisions as decisions  # noqa: E402
 
@@ -68,6 +69,8 @@ class CanvasOperationsDashboard:
     drift_items: list[DashboardItem] = field(default_factory=list)
     recent_activity: list[str] = field(default_factory=list)
     health_summary: dict[str, int] = field(default_factory=dict)
+    grading_optimization_ready: list[str] = field(default_factory=list)
+    grading_optimization_needs_review: list[str] = field(default_factory=list)
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -77,6 +80,8 @@ class CanvasOperationsDashboard:
             'drift_items': [item.to_dict() for item in self.drift_items],
             'recent_activity': list(self.recent_activity),
             'health_summary': dict(self.health_summary),
+            'grading_optimization_ready': list(self.grading_optimization_ready),
+            'grading_optimization_needs_review': list(self.grading_optimization_needs_review),
         }
 
 
@@ -187,6 +192,9 @@ def build_dashboard(
         f"{event.event_type}:{event.artifact_id}:{event.result}"
         for event in log.events[-5:]
     ]
+    grading_summary = optimizer.grading_optimization_dashboard_summary()
+    dashboard.grading_optimization_ready = grading_summary['ready']
+    dashboard.grading_optimization_needs_review = grading_summary['needs_review']
     dashboard.health_summary = {
         'PASS': pass_count,
         'WARN': warn_count,
@@ -224,6 +232,20 @@ def print_dashboard_report(dashboard: CanvasOperationsDashboard) -> None:
     for item in dashboard.drift_items:
         detail = f' ({item.reason})' if item.reason else ''
         print(f'• {item.label}{detail}')
+    print()
+    print('GRADING OPTIMIZATION')
+    print()
+    print('READY:')
+    for label in dashboard.grading_optimization_ready:
+        print(label)
+    if not dashboard.grading_optimization_ready:
+        print('None')
+    print()
+    print('NEEDS TEACHER REVIEW:')
+    for label in dashboard.grading_optimization_needs_review:
+        print(label)
+    if not dashboard.grading_optimization_needs_review:
+        print('None')
     print()
     print('No publishing performed.')
 
@@ -267,6 +289,7 @@ def command_self_test() -> int:
     dashboard = build_dashboard(db, wid)
     assert dashboard.health_summary['ready'] >= 1 or dashboard.ready_items
     assert any(item.artifact_kind == 'assignment' for item in dashboard.blocked_items)
+    assert dashboard.grading_optimization_ready
     assert dashboard_performs_no_publishing()
 
     temp_db.unlink(missing_ok=True)

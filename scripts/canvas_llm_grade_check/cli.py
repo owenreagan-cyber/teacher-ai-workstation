@@ -42,8 +42,25 @@ class ScanReport:
 
     outcome: report.ScanOutcome
     active_persistent: dict[str, engine.Flag] = field(default_factory=dict)
+    out_of_scope_persistent: dict[str, engine.Flag] = field(default_factory=dict)
     merged_resolved: dict[str, engine.Flag] = field(default_factory=dict)
+    merged_not_eligible: dict[str, engine.Flag] = field(default_factory=dict)
     merged_issued: set[str] = field(default_factory=set)
+
+
+def _load_eligibility_overrides(
+    cfg: config.GradeCheckConfig, course_id: int
+) -> dict[int, str]:
+    """Load local late-enrollment eligibility overrides for one course.
+
+    Reads ``.local/canvas-llm/grade-check/enrollment-overrides.json`` (gitignored).
+    Returns a mapping of ``student_id -> eligible_from`` for the given course.
+    Never raises on a missing/unreadable store; an absent override just means
+    Canvas enrollment metadata governs.
+    """
+    from scripts.canvas_llm_grade_check import enrollment_overrides as eo
+
+    return eo.eligible_from_map_for_course(cfg, course_id)
 
 
 def run_scan(
@@ -60,20 +77,36 @@ def run_scan(
     """
     state = store.load()
     prev_active = {k: engine.flag_from_dict(v) for k, v in state["active_flags"].items()}
+    prev_out_of_scope = {
+        k: engine.flag_from_dict(v) for k, v in state.get("out_of_scope_flags", {}).items()
+    }
     prev_resolved = {k: engine.flag_from_dict(v) for k, v in state["resolved_flags"].items()}
+    prev_not_eligible = {
+        k: engine.flag_from_dict(v) for k, v in state.get("not_eligible_flags", {}).items()
+    }
     issued = set(state["one_time_issued"].keys())
+
+    # A course returning to scope must re-evaluate its out-of-scope flags, so
+    # previous persistent = active ∪ out_of_scope for reconciliation.
+    previous_persistent = {**prev_out_of_scope, **prev_active}
+    active_ids = config.active_course_ids(cfg, quarter)
 
     course_summaries: list[report.CourseScanSummary] = []
     current_persistent: dict[str, engine.Flag] = {}
     current_one_time: list[engine.Flag] = []
     unresolved_all: list[engine.UnresolvedItem] = []
+    ineligible_keys: set[str] = set()
 
     for subject in config.active_subjects(cfg, quarter):
         students = grade_reader.list_students(subject.course_id)
         assignments = grade_reader.list_assignments(subject.course_id)
         groups = grade_reader.list_assignment_groups(subject.course_id)
         submissions = grade_reader.list_submissions(subject.course_id)
-        res = engine.scan_subject(subject, students, assignments, groups, submissions, cfg)
+        eligibility = _load_eligibility_overrides(cfg, subject.course_id)
+        res = engine.scan_subject(
+            subject, students, assignments, groups, submissions, cfg,
+            eligibility_overrides=eligibility,
+        )
         course_summaries.append(
             report.CourseScanSummary(subject.display_name, subject.course_id, res.students_scanned)
         )
@@ -83,8 +116,13 @@ def run_scan(
             current_persistent[f.key] = f
         current_one_time.extend(res.low_assessment_flags)
         unresolved_all.extend(res.unresolved)
+        ineligible_keys |= res.ineligible_missing_keys
+        ineligible_keys |= res.ineligible_average_keys
 
-    rec = engine.reconcile(prev_active, current_persistent, current_one_time, issued)
+    rec = engine.reconcile(
+        previous_persistent, current_persistent, current_one_time, issued,
+        active_ids, ineligible_keys,
+    )
 
     new_keys = {f.key for f in rec.new}
     missing_entries: list[report.ReportEntry] = []
@@ -116,19 +154,27 @@ def run_scan(
         low_assessment=low_assessment_entries,
         low_average=low_average_entries,
         resolved=rec.resolved,
+        out_of_scope=rec.out_of_scope,
+        not_eligible=rec.not_eligible,
         unresolved=unresolved_all,
     )
 
     active_persistent = {f.key: f for f in rec.active_persistent}
+    out_of_scope_persistent = {f.key: f for f in rec.out_of_scope}
     merged_resolved = dict(prev_resolved)
     for f in rec.resolved:
         merged_resolved[f.key] = f
+    merged_not_eligible = dict(prev_not_eligible)
+    for f in rec.not_eligible:
+        merged_not_eligible[f.key] = f
     merged_issued = issued | {f.key for f in rec.new_one_time}
 
     return ScanReport(
         outcome=outcome,
         active_persistent=active_persistent,
+        out_of_scope_persistent=out_of_scope_persistent,
         merged_resolved=merged_resolved,
+        merged_not_eligible=merged_not_eligible,
         merged_issued=merged_issued,
     )
 
@@ -298,6 +344,8 @@ def command_send(
         active_persistent=scan.active_persistent,
         resolved_flags=scan.merged_resolved,
         one_time_issued=scan.merged_issued,
+        out_of_scope_flags=scan.out_of_scope_persistent,
+        not_eligible_flags=scan.merged_not_eligible,
         last_send=last_send,
     )
 
@@ -315,11 +363,13 @@ def command_self_test() -> int:
     from scripts.canvas_llm_grade_check import gmail_transport
     from scripts.canvas_llm_grade_check import scheduler
     from scripts.canvas_llm_grade_check import health as health_mod
+    from scripts.canvas_llm_grade_check import enrollment_overrides
 
     config.command_self_test()
     reader.command_self_test()
     engine.command_self_test()
     state_mod.command_self_test()
+    enrollment_overrides.command_self_test()
     templates.command_self_test()
     report_mod.command_self_test()
     emailer.command_self_test()

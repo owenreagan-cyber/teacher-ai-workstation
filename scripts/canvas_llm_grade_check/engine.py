@@ -34,6 +34,15 @@ ASSESSMENT = "assessment"
 NON_ASSESSMENT = "non_assessment"
 UNRESOLVED = "unresolved"
 
+# Scope states (distinct from RESOLVED — a course leaving the quarter does NOT
+# resolve a flag; the underlying condition simply can no longer be evaluated).
+IN_SCOPE = "IN_SCOPE"
+OUT_OF_SCOPE_QUARTER = "OUT_OF_SCOPE_QUARTER"
+# A flag retracted because the student was never eligible for the work (late
+# enrollment) or had insufficient eligible grades. Distinct from RESOLVED, which
+# requires positive evidence the underlying condition is gone.
+NOT_ELIGIBLE = "NOT_ELIGIBLE"
+
 
 @dataclass(frozen=True)
 class Flag:
@@ -76,6 +85,11 @@ class ScanResult:
     low_assessment_flags: list[Flag] = field(default_factory=list)
     low_average_flags: list[Flag] = field(default_factory=list)
     unresolved: list[UnresolvedItem] = field(default_factory=list)
+    # Keys that were suppressed because the student was not eligible (late
+    # enrollment / insufficient graded work). Used to retract stale flags as
+    # NOT_ELIGIBLE rather than RESOLVED.
+    ineligible_missing_keys: set[str] = field(default_factory=set)
+    ineligible_average_keys: set[str] = field(default_factory=set)
 
 
 @dataclass
@@ -83,6 +97,8 @@ class ReconcileResult:
     new: list[Flag] = field(default_factory=list)
     still_active: list[Flag] = field(default_factory=list)
     resolved: list[Flag] = field(default_factory=list)
+    out_of_scope: list[Flag] = field(default_factory=list)
+    not_eligible: list[Flag] = field(default_factory=list)
     new_one_time: list[Flag] = field(default_factory=list)
 
     @property
@@ -141,6 +157,41 @@ def due_at_has_passed(due_at: str | None, now: dt.datetime | None = None) -> boo
     if reference.tzinfo is None:
         reference = reference.replace(tzinfo=dt.timezone.utc)
     return parsed <= reference
+
+
+def student_eligible_from(student: Student, overrides: dict[int, str] | None = None) -> str | None:
+    """The effective eligibility date for a student.
+
+    A local teacher override (keyed by student_id) supersedes the Canvas
+    enrollment-derived date when explicitly configured. ``None`` means the
+    student is eligible from the beginning (no late-enrollment restriction).
+    """
+    if overrides and student.user_id in overrides:
+        return overrides[student.user_id]
+    return student.eligible_from
+
+
+def student_eligible_for_assignment(
+    student: Student,
+    assignment: Assignment,
+    overrides: dict[int, str] | None = None,
+) -> bool:
+    """True when the assignment was due on/after the student's eligibility date.
+
+    A late-enrolled student is not eligible for an assignment whose due date
+    predates their enrollment. Blank work on those assignments is NOT missing.
+    """
+    eligible_from = student_eligible_from(student, overrides)
+    if not eligible_from:
+        return True
+    due = parse_due_at(assignment.due_at)
+    if due is None:
+        # No due date -> cannot prove the assignment predates eligibility.
+        return True
+    eligible = parse_due_at(eligible_from)
+    if eligible is None:
+        return True
+    return due >= eligible
 
 
 def has_real_grade(submission: Submission) -> bool:
@@ -290,11 +341,13 @@ def scan_subject(
     cfg: GradeCheckConfig,
     *,
     now: dt.datetime | None = None,
+    eligibility_overrides: dict[int, str] | None = None,
 ) -> ScanResult:
     """Compute current flags for one subject. Pure; no state mutation.
 
     MISSING_ASSIGNMENT flags are only produced for assignments that are
-    eligible for missing-work evaluation (due date passed, or grading started).
+    eligible for missing-work evaluation (due date passed) AND for which the
+    student was enrolled at the time (late-enrollment eligibility).
     """
     group_name_by_id = {g.id: g.name for g in groups}
     assignment_by_id = {a.id: a for a in assignments}
@@ -306,6 +359,12 @@ def scan_subject(
     submissions_by_assignment: dict[int, list[Submission]] = {}
     for submission in submissions:
         submissions_by_assignment.setdefault(submission.assignment_id, []).append(submission)
+
+    # Students who have at least one real graded submission. Only these students
+    # can meaningfully carry a LOW_COURSE_AVERAGE (a student with zero graded
+    # work has no average to be low; Canvas's "no grade" 0.0 sentinel is never
+    # treated as a real low average).
+    graded_student_ids = {s.user_id for s in submissions if has_real_grade(s)}
 
     result = ScanResult(
         subject_key=subject.key,
@@ -325,10 +384,25 @@ def scan_subject(
             else None
         )
 
+        # A late-enrolled student is not expected to complete pre-enrollment work.
+        eligible_for_student = student_eligible_for_assignment(
+            student, assignment, eligibility_overrides
+        )
+
+        peers = submissions_by_assignment.get(submission.assignment_id, [])
+        if not eligible_for_student:
+            # Pre-enrollment work: never flag missing or assessment. Record the
+            # key so a stale pre-existing flag is retracted as NOT_ELIGIBLE.
+            if student_is_missing(submission, peers, cfg.missing_grade_markers):
+                result.ineligible_missing_keys.add(
+                    missing_key(subject.course_id, student.user_id, assignment.id)
+                )
+            continue
+
         # Flag 1 — MISSING_ASSIGNMENT (persistent), gated by eligibility.
         # A not-yet-due assignment with no grades entered can never flag anyone,
-        # even when Canvas reports missing=true for the whole class.
-        peers = submissions_by_assignment.get(submission.assignment_id, [])
+        # even when Canvas reports missing=true for the whole class. A pre-
+        # enrollment assignment can never flag a late-enrolled student.
         if assignment_eligible_for_missing(assignment, peers, now=now) and student_is_missing(
             submission, peers, cfg.missing_grade_markers
         ):
@@ -354,7 +428,8 @@ def scan_subject(
             )
             continue  # a missing item is not also scored for assessment
 
-        # Flag 2 — LOW_ASSESSMENT_SCORE (one-time).
+        # Flag 2 — LOW_ASSESSMENT_SCORE (one-time). Only on work the student was
+        # eligible to complete (a pre-enrollment score is not a live concern).
         if submission.score is not None and submission.score <= threshold:
             classification = classify_assignment(
                 subject, group_name, assignment.name, cfg.test_title_keywords
@@ -395,22 +470,31 @@ def scan_subject(
                     )
                 )
 
-    # Flag 3 — LOW_COURSE_AVERAGE (persistent).
+    # Flag 3 — LOW_COURSE_AVERAGE (persistent). Requires at least one real graded
+    # submission; a student with no valid graded work is NOT flagged (their
+    # blanks are a missing-work concern, not a low-average concern).
     for student in students:
         average = student.average
-        if average is not None and average <= threshold:
-            result.low_average_flags.append(
-                Flag(
-                    key=low_average_key(subject.course_id, student.user_id),
-                    flag_type=LOW_COURSE_AVERAGE,
-                    course_id=subject.course_id,
-                    course_name=subject.display_name,
-                    student_id=student.user_id,
-                    student_name=student.name,
-                    first_name=student.first_name,
-                    average=average,
-                    behavior=PERSISTENT,
+        if student.user_id in graded_student_ids:
+            if average is not None and average <= threshold:
+                result.low_average_flags.append(
+                    Flag(
+                        key=low_average_key(subject.course_id, student.user_id),
+                        flag_type=LOW_COURSE_AVERAGE,
+                        course_id=subject.course_id,
+                        course_name=subject.display_name,
+                        student_id=student.user_id,
+                        student_name=student.name,
+                        first_name=student.first_name,
+                        average=average,
+                        behavior=PERSISTENT,
+                    )
                 )
+        else:
+            # No valid graded work -> insufficient eligible grades; record the key
+            # so a stale low-average flag is retracted as NOT_ELIGIBLE.
+            result.ineligible_average_keys.add(
+                low_average_key(subject.course_id, student.user_id)
             )
 
     return result
@@ -421,22 +505,52 @@ def reconcile(
     current_persistent: dict[str, Flag],
     current_one_time: list[Flag],
     issued_one_time: set[str],
+    active_course_ids: set[int] | None = None,
+    ineligible_keys: set[str] | None = None,
 ) -> ReconcileResult:
     """Reconcile a scan against prior state.
 
-    Persistent flags (missing / low-average) become NEW or STILL_ACTIVE or are
-    RESOLVED when no longer present. One-time low-assessment flags only surface
-    when their identity key has not already been issued.
+    Persistent flags (missing / low-average) become NEW or STILL_ACTIVE when the
+    condition is present; RESOLVED when the course is still in scope and the
+    condition is genuinely gone; OUT_OF_SCOPE_QUARTER when the course rotated
+    out of this quarter; or NOT_ELIGIBLE when the flag was suppressed because
+    the student was never eligible for the work (late enrollment / insufficient
+    eligible grades). A course leaving scope or a student becoming ineligible
+    does NOT resolve a flag.
+
+    One-time low-assessment flags only surface when their identity key has not
+    already been issued. ``active_course_ids`` defaults to "everything in scope"
+    (backward-compatible; production passes the real quarter-scoped set).
     """
+    active = set(active_course_ids) if active_course_ids is not None else None
+    ineligible = set(ineligible_keys) if ineligible_keys is not None else set()
     prev_keys = set(previous_active)
     now_keys = set(current_persistent)
 
     new = [current_persistent[k] for k in sorted(now_keys - prev_keys)]
     still_active = [current_persistent[k] for k in sorted(now_keys & prev_keys)]
-    resolved = [previous_active[k] for k in sorted(prev_keys - now_keys)]
+    resolved: list[Flag] = []
+    out_of_scope: list[Flag] = []
+    not_eligible: list[Flag] = []
+    for k in sorted(prev_keys - now_keys):
+        f = previous_active[k]
+        # A flag whose course is no longer in scope is suspended, not resolved.
+        if active is not None and f.course_id not in active:
+            out_of_scope.append(f)
+        elif f.key in ineligible:
+            not_eligible.append(f)
+        else:
+            resolved.append(f)
     new_one_time = [f for f in current_one_time if f.key not in issued_one_time]
 
-    return ReconcileResult(new=new, still_active=still_active, resolved=resolved, new_one_time=new_one_time)
+    return ReconcileResult(
+        new=new,
+        still_active=still_active,
+        resolved=resolved,
+        out_of_scope=out_of_scope,
+        not_eligible=not_eligible,
+        new_one_time=new_one_time,
+    )
 
 
 def flag_to_dict(flag: Flag) -> dict[str, Any]:
@@ -570,6 +684,40 @@ def command_self_test() -> int:
     # Canvas missing=true on its own is still not accepted as a marker.
     assert student_is_missing(_s(1, missing=True), None, ("MI", "MISSING")) is True  # via blank grade
     assert student_is_missing(_s(1, score=95, missing=True), None, ("MI", "MISSING")) is False
+
+    # --- Late-enrollment eligibility (assignment due before enrollment) ---
+    late = Student(user_id=9, name="Student Delta", eligible_from="2026-09-12T00:00:00Z")
+    early = Student(user_id=8, name="Student Echo")  # eligible from the beginning
+    pre_enroll = Assignment(id=1, name="HW", due_at="2026-09-01T03:59:59Z")
+    post_enroll = Assignment(id=2, name="HW2", due_at="2026-09-15T03:59:59Z")
+    assert student_eligible_for_assignment(early, pre_enroll) is True
+    assert student_eligible_for_assignment(late, pre_enroll) is False  # due before enrollment
+    assert student_eligible_for_assignment(late, post_enroll) is True   # due after enrollment
+    assert student_eligible_for_assignment(late, Assignment(id=3, name="X", due_at=None)) is True
+    # Local override supersedes Canvas-derived date.
+    assert student_eligible_for_assignment(
+        late, pre_enroll, overrides={9: "2026-08-01T00:00:00Z"}) is True
+
+    # --- Reconcile out-of-scope semantics ---
+    mk = missing_key(28165, 1, 100)  # History course 28165
+    hist_flag = Flag(key=mk, flag_type=MISSING_ASSIGNMENT, course_id=28165,
+                     course_name="History", student_id=1, student_name="S", first_name="S",
+                     assignment_id=100, assignment_title="HIST 4B: Ch. 2 Assessment")
+    # Course in scope + condition gone -> RESOLVED.
+    rec = reconcile({mk: hist_flag}, {}, [], set(), active_course_ids={28165})
+    assert rec.resolved == [hist_flag] and rec.out_of_scope == []
+    # Course out of scope -> OUT_OF_SCOPE_QUARTER, NOT resolved.
+    rec2 = reconcile({mk: hist_flag}, {}, [], set(), active_course_ids={26404})
+    assert rec2.resolved == [] and rec2.out_of_scope == [hist_flag]
+    # Course returns to scope + condition still present -> STILL ACTIVE (not new).
+    rec3 = reconcile({mk: hist_flag}, {mk: hist_flag}, [], set(), active_course_ids={28165})
+    assert rec3.still_active == [hist_flag] and rec3.new == [] and rec3.out_of_scope == []
+
+    # A flag suppressed because the student was never eligible -> NOT_ELIGIBLE,
+    # not RESOLVED.
+    rec4 = reconcile({mk: hist_flag}, {}, [], set(), active_course_ids={28165},
+                     ineligible_keys={mk})
+    assert rec4.resolved == [] and rec4.not_eligible == [hist_flag]
 
     print("PASS grade-check engine self-test")
     return 0

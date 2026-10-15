@@ -230,10 +230,14 @@ with tempfile.TemporaryDirectory() as tmp:
 
     # -----------------------------------------------------------------------
     # Scan 4 (Student drops back to 84): low-average reactivates as NEW.
+    # Student Alpha retains one real graded homework submission so the average
+    # is backed by graded work (mirrors production, where a computed average
+    # implies graded submissions exist).
     # -----------------------------------------------------------------------
     subs4 = [
         Submission(id=5, user_id=2, assignment_id=10, score=86.0, grade="86"),
         Submission(id=6, user_id=2, assignment_id=11, score=100.0, grade="100"),
+        Submission(id=7, user_id=1, assignment_id=11, score=100.0, grade="100"),
     ]
     reader4 = SyntheticReader([student_alpha(84.0), student_beta()], ASSIGNMENTS, GROUPS, subs4)
     outcome4, _ = scan_state(reader4, tmp)
@@ -614,8 +618,22 @@ print("PASS stable identities use IDs, never names")
 # Quarter/course applicability lives in config (not hard-coded in the scanner).
 # ---------------------------------------------------------------------------
 assert [s.key for s in config.active_subjects(cfg, 1)] == ["reading-spelling", "math", "language-arts", "history"]
-assert [s.key for s in config.active_subjects(cfg, 2)] == ["science"]
+assert [s.key for s in config.active_subjects(cfg, 2)] == ["reading-spelling", "math", "language-arts", "science"]
+assert [s.key for s in config.active_subjects(cfg, 3)] == ["reading-spelling", "math", "language-arts", "history"]
+assert [s.key for s in config.active_subjects(cfg, 4)] == ["reading-spelling", "math", "language-arts", "science"]
 print("PASS quarter applicability is configuration-driven")
+
+# ---------------------------------------------------------------------------
+# Q2 scope regression: core academic courses always active; only History vs
+# Science rotate. Homeroom is never grade-checked.
+# ---------------------------------------------------------------------------
+assert config.active_course_ids(cfg, 2) == {26404, 26442, 28171, 28166}, config.active_course_ids(cfg, 2)
+assert 28165 not in config.active_course_ids(cfg, 2)   # History rotates out in Q2
+assert 26429 not in config.all_subject_course_ids(cfg)  # Homeroom never grade-checked
+assert config.active_course_ids(cfg, 1) == {26404, 26442, 28171, 28165}
+assert config.active_course_ids(cfg, 3) == {26404, 26442, 28171, 28165}
+assert config.active_course_ids(cfg, 4) == {26404, 26442, 28171, 28166}
+print("PASS Q2 scope: math/reading/LA always active + History/Science rotate; Homeroom excluded")
 
 # ---------------------------------------------------------------------------
 # Transactional safeguard: run_scan is side-effect free; last_send persists
@@ -1336,6 +1354,177 @@ assert "RECIPIENT SAFETY BLOCK" in (_em.check_recipient_safety(
     ["owen.reagan@thalesacademy.org", "second@example.com"]) or "")
 os.environ.pop("CANVAS_LLM_GRADE_CHECK_SEND_APPROVED", None)
 print("PASS recipient safety regression: allowlist gates still enforced")
+
+# ---------------------------------------------------------------------------
+# Out-of-scope state semantics: a course leaving the quarter is OUT_OF_SCOPE,
+# not RESOLVED. Re-entry re-evaluates the underlying condition.
+# ---------------------------------------------------------------------------
+from scripts.canvas_llm_grade_check import enrollment_overrides as eo_mod
+
+# (A/B/C) use engine.reconcile directly with an explicit active-course set.
+_hist_key = engine.missing_key(28165, 1, 100)
+_hist = engine.Flag(key=_hist_key, flag_type=engine.MISSING_ASSIGNMENT,
+                    course_id=28165, course_name="History", student_id=1,
+                    student_name="Student Gamma", first_name="Student",
+                    assignment_id=100, assignment_title="HIST 4B: Ch. 2 Assessment",
+                    raw_status="MI")
+
+# A. ACTIVE -> course leaves scope -> OUT_OF_SCOPE_QUARTER, NOT resolved.
+_recA = engine.reconcile({_hist_key: _hist}, {}, [], set(), active_course_ids={26404, 26442, 28171, 28166})
+assert _recA.resolved == [], "course rotation must NOT resolve"
+assert [f.key for f in _recA.out_of_scope] == [_hist_key]
+assert _recA.out_of_scope[0].course_id == 28165
+print("PASS A: course leaves scope -> OUT_OF_SCOPE_QUARTER (not resolved)")
+
+# B. OUT_OF_SCOPE -> course returns -> condition still present -> ACTIVE again.
+_recB = engine.reconcile({_hist_key: _hist}, {_hist_key: _hist}, [], set(),
+                         active_course_ids={26404, 26442, 28171, 28165})
+assert [f.key for f in _recB.still_active] == [_hist_key], "returning condition must be ACTIVE"
+assert _recB.new == [] and _recB.out_of_scope == []
+print("PASS B: out-of-scope course returns + condition present -> ACTIVE again")
+
+# C. OUT_OF_SCOPE -> course returns -> condition gone -> RESOLVED.
+_recC = engine.reconcile({_hist_key: _hist}, {}, [], set(),
+                         active_course_ids={26404, 26442, 28171, 28165})
+assert [f.key for f in _recC.resolved] == [_hist_key]
+assert _recC.out_of_scope == []
+print("PASS C: out-of-scope course returns + condition gone -> RESOLVED")
+
+# --- Late-enrollment eligibility via scan_subject (D/E/F) ---
+_late_subject = config.SubjectConfig(
+    key="history", display_name="History", course_id=28165,
+    assessment_groups=(), non_assessment_groups=(), manual_only=True,
+)
+_pre_due = "2026-09-01T03:59:59Z"
+_post_due = "2026-09-15T03:59:59Z"
+
+def _late_reader(eligible_from, assignments, submissions, current_score=None, final_score=None):
+    stu = Student(user_id=1, name="Student Delta", eligible_from=eligible_from,
+                  current_score=current_score, final_score=final_score)
+    return SyntheticReader([stu], assignments, GROUPS, submissions)
+
+# D. Pre-eligibility blank assignment -> NO missing flag.
+_d_assignments = [Assignment(id=100, name="HIST 4B: Ch. 1 Assessment",
+                             assignment_group_id=None, due_at=_pre_due)]
+_d_subs = [Submission(id=1, user_id=1, assignment_id=100, score=None, grade=None)]
+with tempfile.TemporaryDirectory() as tmp:
+    _oD = cli.run_scan(
+        _late_reader("2026-09-12T00:00:00Z", _d_assignments, _d_subs),
+        config.load_config(), 1, StateStore(Path(tmp), "state.json"),
+    )
+    assert _oD.outcome.missing == [], f"pre-enrollment blank must not flag: {_oD.outcome.missing}"
+print("PASS D: pre-enrollment blank -> no missing flag")
+
+# E. Late-enrolled student with no valid graded work + final_score 0.0 sentinel
+#    -> no low-average flag (Canvas 'no grade' must not become a low average).
+_e_assignments = [Assignment(id=100, name="HIST 4B: Ch. 1 Assessment",
+                             assignment_group_id=None, due_at=_pre_due)]
+_e_subs = [Submission(id=1, user_id=1, assignment_id=100, score=None, grade=None)]
+with tempfile.TemporaryDirectory() as tmp:
+    _cfg_e = config.load_config()
+    _cfg_e.quarter_subjects = {1: ("history",)}
+    _oE = cli.run_scan(
+        _late_reader("2026-09-12T00:00:00Z", _e_assignments, _e_subs,
+                     current_score=None, final_score=0.0),
+        _cfg_e, 1, StateStore(Path(tmp), "state.json"),
+    )
+    assert _oE.outcome.low_average == [], f"no-grade sentinel must not flag: {_oE.outcome.low_average}"
+print("PASS E: late-enrollment no graded work -> no low-average flag")
+
+# F. Assignment due AFTER eligibility and actually missing -> missing flag works.
+_f_assignments = [Assignment(id=101, name="HIST 4B: Ch. 5 Assessment",
+                             assignment_group_id=None, due_at=_post_due)]
+_f_subs = [Submission(id=1, user_id=1, assignment_id=101, score=None, grade="MI")]
+with tempfile.TemporaryDirectory() as tmp:
+    _cfg_f = config.load_config()
+    _cfg_f.quarter_subjects = {1: ("history",)}
+    _oF = cli.run_scan(
+        _late_reader("2026-09-12T00:00:00Z", _f_assignments, _f_subs),
+        _cfg_f, 1, StateStore(Path(tmp), "state.json"),
+    )
+    assert len(_oF.outcome.missing) == 1, f"post-enrollment missing must flag: {_oF.outcome.missing}"
+    assert _oF.outcome.missing[0].flag.student_id == 1
+print("PASS F: assignment due after eligibility + missing -> missing flag works")
+
+# --- Local enrollment override supersedes Canvas metadata ---
+with tempfile.TemporaryDirectory() as tmp:
+    _cfg_o = config.load_config()
+    _cfg_o.state_directory = tmp
+    _cfg_o.state_file = "state.json"
+    _cfg_o.enrollment_overrides_file = "enrollment-overrides.json"
+    _cfg_o.quarter_subjects = {1: ("history",)}
+    # Override says the student was eligible since before the pre-due assignment.
+    _ov = Path(tmp) / "enrollment-overrides.json"
+    _ov.write_text(json.dumps({
+        "28165:1": {"course_id": 28165, "student_id": 1,
+                    "eligible_from": "2026-08-01", "reason": "late_enrollment"},
+    }), encoding="utf-8")
+    _oOv = cli.run_scan(
+        _late_reader("2026-09-12T00:00:00Z", _d_assignments, _d_subs),
+        _cfg_o, 1, StateStore(Path(tmp), "state.json"),
+    )
+    # With override eligible_from=2026-08-01, the 2026-09-01 assignment is now eligible
+    # and the blank becomes a real missing flag.
+    assert len(_oOv.outcome.missing) == 1, f"override must supersede Canvas date: {_oOv.outcome.missing}"
+print("PASS local enrollment override supersedes ambiguous Canvas metadata")
+
+# --- NOT_ELIGIBLE retraction: a stale missing flag on pre-enrollment work is
+#     retracted as NOT_ELIGIBLE (not RESOLVED) once the late-enrollment rule
+#     applies ---
+with tempfile.TemporaryDirectory() as tmp:
+    _cfg_ne = config.load_config()
+    _cfg_ne.state_directory = tmp
+    _cfg_ne.state_file = "state.json"
+    _cfg_ne.quarter_subjects = {1: ("history",)}
+    _store_ne = StateStore(Path(tmp), "state.json")
+    _hist_mk = engine.missing_key(28165, 1, 100)
+    state_mod.write_state(
+        _store_ne,
+        active_persistent={_hist_mk: _hist},
+        resolved_flags={},
+        one_time_issued=set(),
+    )
+    # Late-enrolled student: assignment 100 due 2026-09-01 predates enrollment 2026-09-12.
+    _late_assign = [Assignment(id=100, name="HIST 4B: Ch. 1 Assessment",
+                               assignment_group_id=None, due_at=_pre_due)]
+    _late_sub = [Submission(id=1, user_id=1, assignment_id=100, score=None, grade="MI")]
+    _scan_ne = cli.run_scan(
+        _late_reader("2026-09-12T00:00:00Z", _late_assign, _late_sub),
+        _cfg_ne, 1, _store_ne,
+    )
+    assert _scan_ne.outcome.resolved == [], "pre-enrollment retraction must not resolve"
+    assert [f.key for f in _scan_ne.outcome.not_eligible] == [_hist_mk]
+    assert _scan_ne.outcome.missing == []
+print("PASS NOT_ELIGIBLE retraction: stale pre-enrollment missing flag retracted, not resolved")
+
+# ---------------------------------------------------------------------------
+# Full-run out-of-scope integration: seed a History missing flag, scan Q2
+# (History rotated out), and confirm it suspends (not resolves) without
+# mutating the real production state.
+# ---------------------------------------------------------------------------
+with tempfile.TemporaryDirectory() as tmp:
+    _cfg2 = config.load_config()
+    _cfg2.state_directory = tmp
+    _cfg2.state_file = "state.json"
+    _store2 = StateStore(Path(tmp), "state.json")
+    # Seed: History flag active (as it was at end of Q1).
+    state_mod.write_state(
+        _store2,
+        active_persistent={_hist_key: _hist},
+        resolved_flags={},
+        one_time_issued=set(),
+    )
+    # Empty synthetic reader (no current flags) -> History out of scope in Q2.
+    _empty_reader = SyntheticReader([], [], [], [])
+    _scan2 = cli.run_scan(_empty_reader, _cfg2, 2, _store2)
+    assert _scan2.outcome.resolved == [], "rotation must not resolve"
+    assert [f.key for f in _scan2.outcome.out_of_scope] == [_hist_key]
+    # Preview shows the out-of-scope section.
+    _pv2 = report.render_preview(_scan2.outcome)
+    assert "OUT OF SCOPE (QUARTER ROTATION — NOT RESOLVED)" in _pv2
+    assert "RESOLVED missing: 0" in _pv2
+    assert "OUT OF SCOPE (quarter rotation): 1" in _pv2
+print("PASS full-run out-of-scope integration: rotation suspends, never resolves")
 
 print("PASS: Canvas Grade Check tests complete")
 PY

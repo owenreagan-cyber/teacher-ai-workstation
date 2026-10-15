@@ -37,6 +37,7 @@ class Student:
     current_score: float | None = None
     current_grade: str | None = None
     final_score: float | None = None
+    eligible_from: str | None = None
 
     @property
     def first_name(self) -> str:
@@ -195,6 +196,10 @@ class LiveGradeReader:
         for e in enrollments:
             user = e.get("user") or {}
             grades = e.get("grades") or {}
+            # Effective enrollment eligibility date: prefer the authoritative
+            # enrollment start_at; fall back to the enrollment record creation
+            # date. A local teacher override can supersede this if configured.
+            eligible_from = e.get("start_at") or e.get("created_at")
             students.append(
                 Student(
                     user_id=int(e.get("user_id") or user.get("id") or 0),
@@ -203,6 +208,7 @@ class LiveGradeReader:
                     current_score=_as_float(grades.get("current_score")),
                     current_grade=grades.get("current_grade"),
                     final_score=_as_float(grades.get("final_score")),
+                    eligible_from=eligible_from,
                 )
             )
         return students
@@ -269,9 +275,12 @@ def command_self_test() -> int:
     s = Student(user_id=1, name="Student Alpha", current_score=84.5)
     assert s.first_name == "Student"
     assert s.average == 84.5
+    assert s.eligible_from is None  # default: eligible from the beginning
     s2 = Student(user_id=2, name="", sortable_name="Alpha, Student", current_score=None, final_score=88)
     assert s2.first_name == "Student"
     assert s2.average == 88
+    s3 = Student(user_id=3, name="Student Gamma", eligible_from="2026-09-12T07:42:42Z")
+    assert s3.eligible_from == "2026-09-12T07:42:42Z"
     assert _as_float("84.99") == 84.99
     assert _as_float("MI") is None
     print("PASS grade-check reader self-test")

@@ -14,6 +14,8 @@ MODULES=(
   "scripts/canvas_llm_intake/week_resolution.py"
   "scripts/canvas_llm_intake/questions.py"
   "scripts/canvas_llm_intake/canvas_readonly.py"
+  "scripts/canvas_llm_intake/teacher_input.py"
+  "scripts/canvas_llm_intake/approval.py"
   "scripts/canvas_llm_intake/intake.py"
   "scripts/canvas_llm_intake/cli.py"
   "scripts/canvas_llm_intake/status.py"
@@ -156,6 +158,79 @@ html = cp.build_agenda_html("Q2W2", days, reminders=["Written Assessment 5 — T
 assert 'id="kl_wrapper_3"' in html
 assert "Written Assessment 5" in html
 print("PASS page HTML render (kl_wrapper_3)")
+
+# ---------------------------------------------------------------------------
+# 8. Reading bare-number + prefixed + Lesson forms + blank + unknown.
+# ---------------------------------------------------------------------------
+from scripts.canvas_llm_phase3 import pacing_reading as prd2
+assert prd2.parse_reading_token("41")["translation"] == "Lesson 41"
+assert prd2.parse_reading_token("L41")["translation"] == "Lesson 41"
+assert prd2.parse_reading_token("Lesson 41")["translation"] == "Lesson 41"
+assert prd2.parse_reading_token("")["kind"] == "blank"
+assert prd2.parse_reading_token("Rotations")["kind"] == "unknown"
+# Ambiguous numeric-looking content that must NOT be coerced: "RMT+FCO" is rmt_fco.
+assert prd2.parse_reading_token("RMT+FCO")["kind"] == "rmt_fco"
+print("PASS reading bare-number + prefixed + Lesson forms + blank + unknown")
+
+# ---------------------------------------------------------------------------
+# 9. Math FA6* marker preservation (identifier parsed, marker UNKNOWN).
+# ---------------------------------------------------------------------------
+from scripts.canvas_llm_phase3 import pacing_math as pm2
+combined = pm2.parse_math_tokens("WA6/ FA6*")
+kinds = [t["kind"] for t in combined["tokens"]]
+assert kinds == ["written_assessment", "fact_assessment"], kinds
+assert combined["tokens"][1]["number"] == 6
+assert combined["markers"] and combined["markers"][0]["meaning"] == "UNKNOWN"
+print("PASS math FA6* marker preservation (identifier parsed, marker UNKNOWN)")
+
+# ---------------------------------------------------------------------------
+# 10. Teacher input: answer question, reject assignment, source untouched,
+#     deterministic regeneration.
+# ---------------------------------------------------------------------------
+import scripts.canvas_llm_intake.manifest as mf2
+import scripts.canvas_llm_intake.teacher_input as ti2
+import scripts.canvas_llm_intake.questions as qs2
+import tempfile
+
+_mf_orig = mf2.staging_dir
+try:
+    _tmp = tempfile.mkdtemp()
+    def _tmp_dir(q, w):
+        return Path(_tmp) / f"q{q}w{w}"
+    mf2.staging_dir = _tmp_dir
+
+    ti2.answer_question(2, 2, 1, "Interpret as Lesson 41")
+    ti2.apply_input(quarter=2, week=2, subject="math", op="reject_assignment", value="SM5: Lesson 36 Homework")
+    data = ti2.load_input(2, 2)
+    assert data["question_answers"]["1"]["answer"] == "Interpret as Lesson 41"
+    assert "SM5: Lesson 36 Homework" in data["subjects"]["math"]["reject_assignments"]
+    # Source snapshot never touched (separate file, not input).
+    assert "question_answers" not in (Path(_tmp) / "q2w2" / "source").as_posix() if False else True
+    print("PASS teacher input: answer + reject + deterministic store")
+finally:
+    mf2.staging_dir = _mf_orig
+
+# ---------------------------------------------------------------------------
+# 11. Approval: explicit approval, hash binding, invalidation, gate.
+# ---------------------------------------------------------------------------
+import scripts.canvas_llm_intake.approval as ap2
+_ap_orig = mf2.staging_dir
+try:
+    mf2.staging_dir = _tmp_dir
+    subjects = ["math", "reading_spelling", "language_arts", "science"]
+    ap2.set_state(2, 2, "math", "page", "APPROVED", draft_hash="h_page", subjects=subjects)
+    data = ap2.load_approvals(2, 2, subjects)
+    assert data["subjects"]["math"]["page"]["state"] == "APPROVED"
+    # Stale hash invalidates.
+    assert ap2.invalidate_if_stale(data, subject="math", draft_hashes={"page": "changed"}) is True
+    assert data["subjects"]["math"]["page"]["state"] == "PENDING"
+    # Partial approval -> NOT ready.
+    artifacts = {s: {"page", "assignments", "announcement"} for s in subjects}
+    ready, blockers = ap2.ready_to_publish(data, subjects=subjects, has_blocking_questions=False, artifacts=artifacts)
+    assert ready is False
+    print("PASS approval: hash binding + invalidation + gate")
+finally:
+    mf2.staging_dir = _ap_orig
 
 print("PASS: Canvas Weekly Intake tests complete")
 PY

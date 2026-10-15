@@ -1,19 +1,20 @@
 """PASS/WARN/FAIL status proof for Canvas Weekly Intake.
 
-Reports source freshness, draft status, open questions, approval state, and
-publish readiness. It never approves or publishes — Owen is the approval
-authority.
+Reports source freshness, open/answered question counts, approval state,
+blocked count, current lifecycle, and publish readiness. Pending teacher
+approval is a WARN (not a technical FAIL); broken source/artifact or a failed
+safety gate is a FAIL.
 """
 from __future__ import annotations
 
 import json
-from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
 from . import constants as C
-from . import week_resolution as wr
 from . import manifest as mf
+from . import questions as qs
+from . import week_resolution as wr
 
 
 def _zero_write_proof() -> dict[str, Any]:
@@ -36,40 +37,91 @@ def _zero_write_proof() -> dict[str, Any]:
 
 def render_status() -> dict[str, Any]:
     lines = ["Canvas Weekly Intake"]
-    checks: list[tuple[bool, str]] = []
+    checks: list[tuple[str, bool, bool]] = []  # (label, ok, is_technical_fail)
+    technical_fail = False
 
-    # Source availability (pacing engine config present).
     from scripts.canvas_llm_phase3 import constants as P3
 
-    checks.append((P3.WEEKS_PATH.exists(), "instructional-weeks config present"))
-    checks.append((P3.QUARTER_ACTIVATION_PATH.exists(), "quarter-activation config present"))
+    # Technical prerequisites.
+    checks.append(("instructional-weeks config present", P3.WEEKS_PATH.exists(), True))
+    checks.append(("quarter-activation config present", P3.QUARTER_ACTIVATION_PATH.exists(), True))
 
-    # Latest intake manifest (if any).
+    # Zero-write proof (safety gate — a FAIL here is a hard technical failure).
+    zw = _zero_write_proof()
+    checks.append(("zero-write proof", zw["write_free"], True))
+    if not zw["write_free"]:
+        technical_fail = True
+
     manifests = sorted(C.INTAKE_ROOT.glob("2026-2027/q*/w*/intake-manifest.json"))
     if manifests:
         latest = json.loads(manifests[-1].read_text(encoding="utf-8"))
-        checks.append((True, f"latest intake: {latest.get('week_code')} ({latest.get('status')})"))
-        checks.append((latest.get("status") != "NEEDS_INPUT", f"open questions: {len(latest.get('questions') or [])}"))
-        checks.append((latest.get("approval_state") != "PENDING", f"approval: {latest.get('approval_state')}"))
-        publish_ready = latest.get("status") in ("TEACHER_APPROVED", "READY_TO_PUBLISH")
-        checks.append((publish_ready, "publish readiness"))
+        week_code = latest.get("week_code", "?")
+        status = latest.get("status", "?")
+        lines.append("")
+        lines.append(f"Latest packet: {week_code}")
+        lines.append(f"  lifecycle: {status}")
+        checks.append((f"source freshness ({week_code})", bool(latest.get("source_hash")), True))
+
+        # Questions: load from the latest packet's own quarter/week (not the
+        # current week — the staged packet may be for next week).
+        q = latest.get("quarter", 1)
+        w = latest.get("week", 1)
+        all_questions = qs.load_questions(q, w)
+        open_q = qs.unresolved_questions(all_questions)
+        answered_q = len(all_questions) - len(open_q)
+        lines.append(f"  questions: {len(open_q)} open, {answered_q} answered")
+        checks.append((f"open questions ({len(open_q)})", len(open_q) == 0, False))
+
+        approval_summary = latest.get("approval_summary") or {}
+        approved = 0
+        blocked = 0
+        total = 0
+        for s, gran in approval_summary.items():
+            for g, st in gran.items():
+                total += 1
+                if st == "APPROVED":
+                    approved += 1
+                elif st == "BLOCKED":
+                    blocked += 1
+        lines.append(f"  approvals: {approved}/{total} approved, {blocked} blocked")
+        checks.append((f"approvals ({approved}/{total})", approved >= total, False))
+        checks.append(("no blocked artifacts", blocked == 0, False))
+
+        ready = bool(latest.get("ready_to_publish"))
+        lines.append(f"  ready to publish: {'YES' if ready else 'NO'}")
+        checks.append(("ready to publish", ready, False))
+
+        # A packet with a broken artifact is FAIL; pending approval is WARN.
+        if status in ("SOURCE_FETCHED", "NORMALIZED", "DRAFTED", "NEEDS_INPUT"):
+            # Incomplete lifecycle is informational/WARN (not a defect).
+            checks.append((f"lifecycle complete ({status})", False, False))
+        else:
+            checks.append((f"lifecycle complete ({status})", True, False))
     else:
-        checks.append((True, "no intake staged yet (informational)"))
+        lines.append("")
+        lines.append("No intake staged yet (informational).")
 
-    zw = _zero_write_proof()
-    checks.append((zw["write_free"], f"zero-write proof: {zw['detail'] if not zw['write_free'] else 'no write verbs'}"))
+    # Render.
+    for label, ok, _technical in checks:
+        mark = "PASS" if ok else "WARN"
+        lines.append(f"  {mark}  {label}")
 
-    fails = sum(1 for ok, _ in checks if not ok)
-    for ok, label in checks:
-        lines.append(f"  {'PASS' if ok else 'WARN'}  {label}")
-    overall = "PASS" if fails == 0 else "WARN"
+    # Technical failures are the only FAIL.
+    fails = sum(1 for _, ok, technical in checks if (not ok and technical))
+    any_warn = any(not ok for _, ok, _ in checks)
+    if fails:
+        overall = "FAIL"
+    elif any_warn:
+        overall = "WARN"
+    else:
+        overall = "PASS"
     lines.append(f"\nSummary: {overall}")
     return {"text": "\n".join(lines), "ok": fails == 0, "overall": overall}
 
 
 def command_self_test() -> int:
     s = render_status()
-    assert s["overall"] in ("PASS", "WARN")
+    assert s["overall"] in ("PASS", "WARN", "FAIL")
     assert _zero_write_proof()["write_free"] is True
     print("PASS intake status self-test")
     return 0

@@ -1,21 +1,24 @@
 """bin/canvas-intake — Canvas Weekly Intake CLI (read-only, local-first).
 
 Commands:
-    run           fetch + normalize + draft + questions (persists staging packet)
-    review        print REVIEW.md for the target week
-    questions     list open questions
-    status        PASS/WARN/FAIL status proof
-    self-test     deterministic tests (synthetic only)
+    run                  fetch + normalize + draft + questions (persists staging)
+    review               print REVIEW.md (primary Owen-facing view)
+    questions            list questions (OPEN default; --status answered|all)
+    apply-teacher-input  answer a question / add reminder / reject assignment
+    approve              approve a subject page/assignments/announcement
+    status               PASS/WARN/FAIL status proof
+    self-test            deterministic tests (synthetic only)
 
 Resolution:
-    --week current | next     (America/New_York)
-    --quarter N --week N      (explicit integer week; deterministic)
+    --week current | next | N   (N is an explicit week number; requires --quarter)
+    --quarter N
 
 No Canvas writes. Publishing is a separate guarded deployment workflow.
 """
 from __future__ import annotations
 
 import argparse
+import json
 import sys
 from typing import Any
 
@@ -24,13 +27,13 @@ from . import week_resolution as wr
 
 
 def _resolve(args: argparse.Namespace) -> tuple[int, int]:
-    if args.quarter is not None and args.week is not None:
-        # `--week` may be an int here (explicit week number) — argparse stores
-        # it as str; try int, else treat as current/next choice.
-        if isinstance(args.week, int) or str(args.week).isdigit():
-            return args.quarter, int(args.week)
-    return wr.resolve(args.week if isinstance(args.week, str) else "next",
-                      quarter=args.quarter, week=None)
+    week_raw = getattr(args, "week", "next")
+    if args.quarter is not None and isinstance(week_raw, str) and week_raw.isdigit():
+        return args.quarter, int(week_raw)
+    if args.quarter is not None and week_raw is not None and str(week_raw).isdigit():
+        return args.quarter, int(week_raw)
+    mode = week_raw if week_raw in ("current", "next") else "next"
+    return wr.resolve(mode, quarter=args.quarter, week=None)
 
 
 def cmd_run(args: argparse.Namespace) -> int:
@@ -51,8 +54,6 @@ def cmd_run(args: argparse.Namespace) -> int:
         canvas=canvas,
         include_canvas_context=canvas is not None,
     )
-    import json
-
     print(json.dumps(summary, indent=2, ensure_ascii=False))
     return 0
 
@@ -69,16 +70,76 @@ def cmd_review(args: argparse.Namespace) -> int:
 
 def cmd_questions(args: argparse.Namespace) -> int:
     quarter, week = _resolve(args)
-    path = mf.staging_dir(quarter, week) / "questions" / "questions.json"
-    if not path.exists():
-        print("No open questions.")
-        return 0
-    import json
+    from . import questions as qs
 
-    data = json.loads(path.read_text(encoding="utf-8"))
-    for q in data:
-        print(f"Q{q['question_id']} [{q['subject']} · {q['date']}] {q['reason']}")
+    data = qs.load_questions(quarter, week)
+    if args.status in ("answered", "all"):
+        filtered = [q for q in data if q.get("status") != "OPEN"] if args.status == "answered" else data
+    else:
+        filtered = qs.unresolved_questions(data)
+    if not filtered:
+        print("No matching questions.")
+        return 0
+    for q in filtered:
+        status = q.get("status", "OPEN")
+        print(f"Q{q['question_id']} [{status}] ({q['subject']} · {q['date']}) {q['reason']}")
         print(f"    recommended: {q['recommended_default']}")
+        if q.get("answer"):
+            print(f"    answer: {q['answer']}")
+    return 0
+
+
+def cmd_apply_teacher_input(args: argparse.Namespace) -> int:
+    quarter, week = _resolve(args)
+    from . import teacher_input as ti
+    from . import questions as qs
+
+    if args.answer is not None:
+        ti.answer_question(quarter, week, args.question_id, args.answer)
+        print(f"Recorded answer for Q{args.question_id}.")
+    if args.subject and args.op:
+        if args.op in ("add_reminder", "add_note", "add_special_event", "add_assessment_note",
+                       "remove_assignment", "reject_assignment", "restore_assignment",
+                       "replace_announcement"):
+            ti.apply_input(quarter=quarter, week=week, subject=args.subject, op=args.op, value=args.value)
+            print(f"Applied {args.op} to {args.subject}.")
+        else:
+            print(f"BLOCKED: unknown op {args.op!r}")
+            return 2
+    # Regenerate drafts with input applied.
+    intake.build_intake(quarter=quarter, week=week, fresh=False, canvas=None, include_canvas_context=False)
+    print("Drafts regenerated deterministically.")
+    return 0
+
+
+def cmd_approve(args: argparse.Namespace) -> int:
+    quarter, week = _resolve(args)
+    from . import approval as ap
+    from . import constants as C
+
+    # Rebuild (read-only, no Canvas) to obtain the CURRENT draft hashes, so
+    # approval binds to exactly the artifact being reviewed.
+    summary = intake.build_intake(quarter=quarter, week=week, fresh=False, canvas=None, include_canvas_context=False)
+    active = summary["active_subjects"]
+    if args.subject not in active:
+        print(f"BLOCKED: subject {args.subject!r} not active for Q{quarter}W{week}")
+        return 2
+
+    targets = ["page", "assignments", "announcement"] if args.all else (
+        [args.granularity] if args.granularity else []
+    )
+    if not targets:
+        print("BLOCKED: specify --granularity or --all")
+        return 2
+
+    hashes = summary["draft_hashes"].get(args.subject, {})
+    for g in targets:
+        ap.set_state(quarter, week, args.subject, g, "APPROVED",
+                     draft_hash=hashes.get(g, ""), subjects=active)
+
+    # Recompute the gate now that approvals changed.
+    intake.build_intake(quarter=quarter, week=week, fresh=False, canvas=None, include_canvas_context=False)
+    print(f"Approved {args.subject} {', '.join(targets)}.")
     return 0
 
 
@@ -91,12 +152,6 @@ def cmd_status(_args: argparse.Namespace) -> int:
 
 
 def cmd_self_test(_args: argparse.Namespace) -> int:
-    from . import week_resolution, canvas_readonly, questions, manifest, intake
-
-    week_resolution.command_self_test()
-    canvas_readonly.command_self_test()
-    questions.command_self_test()
-    manifest.command_self_test()
     intake.command_self_test()
     return 0
 
@@ -121,10 +176,31 @@ def build_parser() -> argparse.ArgumentParser:
     sp.add_argument("--quarter", type=int, default=None)
     sp.set_defaults(func=cmd_review)
 
-    sp = sub.add_parser("questions", help="list open questions")
+    sp = sub.add_parser("questions", help="list questions")
     _week_target(sp)
     sp.add_argument("--quarter", type=int, default=None)
+    sp.add_argument("--status", choices=["open", "answered", "all"], default="open")
     sp.set_defaults(func=cmd_questions)
+
+    sp = sub.add_parser("apply-teacher-input", help="record teacher input + regenerate")
+    _week_target(sp)
+    sp.add_argument("--quarter", type=int, default=None)
+    sp.add_argument("--question-id", type=str, default=None)
+    sp.add_argument("--answer", default=None)
+    sp.add_argument("--subject", default=None)
+    sp.add_argument("--op", default=None,
+                    help="add_reminder|add_note|add_special_event|add_assessment_note|"
+                         "reject_assignment|remove_assignment|restore_assignment|replace_announcement")
+    sp.add_argument("--value", default="")
+    sp.set_defaults(func=cmd_apply_teacher_input)
+
+    sp = sub.add_parser("approve", help="approve a subject artifact")
+    _week_target(sp)
+    sp.add_argument("--quarter", type=int, default=None)
+    sp.add_argument("--subject", required=True)
+    sp.add_argument("--granularity", choices=["page", "assignments", "announcement"], default=None)
+    sp.add_argument("--all", action="store_true", help="approve page+assignments+announcement")
+    sp.set_defaults(func=cmd_approve)
 
     sub.add_parser("status").set_defaults(func=cmd_status)
     sub.add_parser("self-test").set_defaults(func=cmd_self_test)

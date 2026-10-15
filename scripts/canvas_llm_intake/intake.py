@@ -30,6 +30,8 @@ from . import constants as C
 from . import manifest as mf
 from . import questions as qs
 from . import week_resolution as wr
+from . import teacher_input as ti
+from . import approval as ap
 from .canvas_readonly import CanvasReadOnly
 
 
@@ -146,7 +148,9 @@ def build_intake(
         for a in sub_assignments:
             assignments.append(_normalize_assignment(subject, a))
 
-    # Page HTML + assignments files.
+    # Page HTML + assignments files. Capture the agenda HTML per subject so the
+    # announcement's agenda_hash binds to the exact page HTML (§26 invariant).
+    page_html: dict[str, str] = {}
     for subject in active:
         report = subject_reports[subject]
         days = _coerce_days(report)
@@ -163,10 +167,12 @@ def build_intake(
             html = cp.build_agenda_html(week_code, days, reminders=reminders)
             fname = f"{subject}-page.html"
         (drafts_dir / fname).write_text(html, encoding="utf-8")
+        page_html[subject] = html
         pages[subject] = {
             "file": f"drafts/{fname}",
             "body_chars": len(html),
             "reminders": reminders,
+            "agenda_hash": _hash(html),
         }
 
     (drafts_dir / "assignments.json").write_text(
@@ -174,7 +180,7 @@ def build_intake(
     )
 
     # ---- 4. Announcements (weekly-update drafts; no POST) -----------------
-    announcements = _draft_weekly_announcements(week_norm, subject_reports, pages)
+    announcements = _draft_weekly_announcements(week_norm, subject_reports, pages, page_html)
     (drafts_dir / "announcements.json").write_text(
         json.dumps(announcements, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
     )
@@ -213,28 +219,77 @@ def build_intake(
             }
         pages["page_lookup"] = page_lookup
 
-    # ---- 6. Questions ----------------------------------------------------
+    # ---- 6. Questions + teacher input ------------------------------------
     questions = qs.generate_questions(
         week=week_norm,
         subject_reports=subject_reports,
         assessment_events=[],
         reminder_events=[],
     )
+
+    # Apply teacher input: answer questions, reject/restore assignments, add
+    # reminders, replace announcement wording. Source + normalized source are
+    # never modified.
+    teacher_input = ti.load_input(quarter, week)
+    questions = qs.apply_question_answers(questions, teacher_input.get("question_answers", {}))
+    rejections = {
+        a for _sub, block in teacher_input.get("subjects", {}).items()
+        for a in block.get("reject_assignments", [])
+    }
+    assignments = [a for a in assignments if a["title"] not in rejections]
+    for subject in active:
+        block = teacher_input.get("subjects", {}).get(subject, {})
+        for r in block.get("add_reminder", []):
+            pages[subject]["reminders"].append(r)
+        if block.get("replace_announcement"):
+            for ann in announcements:
+                if ann["course"] == _subject_label(subject):
+                    ann["transition"] = block["replace_announcement"]
+
     qs.write_questions(quarter, week, questions)
     m["questions"] = [q["question_id"] for q in questions]
+    open_questions = qs.unresolved_questions(questions)
 
-    # ---- 7. Finalize manifest + review ------------------------------------
+    # ---- 7. Approvals + READY_TO_PUBLISH gate -----------------------------
+    approvals = ap.load_approvals(quarter, week, active)
+    # Invalidate any approval whose artifact changed (hash binding).
+    draft_hashes = _draft_hashes(active, subject_reports, assignments, announcements, pages)
+    for subject in active:
+        ap.invalidate_if_stale(approvals, subject=subject,
+                               draft_hashes=draft_hashes.get(subject, {}))
+    ap.save_approvals(quarter, week, approvals)
+
+    # Blocking question: any OPEN question that blocks publish (marker semantics
+    # or ambiguous token). For Q2W2 the FA6* marker is the blocking one.
+    has_blocking = len(open_questions) > 0
+    artifacts = {s: {"page", "announcement"} for s in active}
+    for s in active:
+        if any(a["course"] == s for a in assignments):
+            artifacts[s].add("assignments")
+    ready, blockers = ap.ready_to_publish(
+        approvals, subjects=active, has_blocking_questions=has_blocking, artifacts=artifacts,
+    )
+
+    # ---- 8. Finalize manifest + review ------------------------------------
     mf.advance_status(m, "DRAFTED")
-    if questions:
+    if open_questions:
         mf.advance_status(m, "NEEDS_INPUT")
+    elif ready:
+        mf.advance_status(m, "READY_TO_PUBLISH")
     else:
         mf.advance_status(m, "READY_FOR_REVIEW")
     m["page_lookup"] = page_lookup
     m["assignment_count"] = len(assignments)
     m["announcement_count"] = len(announcements)
+    m["approval_summary"] = _approval_summary(approvals)
+    m["ready_to_publish"] = ready
+    m["publish_blockers"] = blockers
     mf.save_manifest(quarter, week, m)
 
-    _write_review(quarter, week, m, subject_reports, assignments, announcements, questions, pages)
+    _write_review(
+        quarter, week, m, subject_reports, assignments, announcements, questions,
+        pages, approvals, ready, blockers, page_lookup,
+    )
 
     return {
         "week_code": week_code,
@@ -247,9 +302,53 @@ def build_intake(
         "pages": pages,
         "assignment_count": len(assignments),
         "announcement_count": len(announcements),
-        "open_questions": len(questions),
+        "open_questions": len(open_questions),
+        "answered_questions": len(questions) - len(open_questions),
+        "ready_to_publish": ready,
+        "publish_blockers": blockers,
+        "draft_hashes": draft_hashes,
         "canvas_writes": 0,
     }
+
+
+_SUBJECT_LABELS = {
+    "math": "Math",
+    "reading_spelling": "Reading/Spelling",
+    "language_arts": "Language Arts",
+    "science": "Science",
+    "history": "History",
+}
+
+
+def _subject_label(subject: str) -> str:
+    return _SUBJECT_LABELS.get(subject, subject)
+
+
+def _draft_hashes(
+    active: list[str],
+    subject_reports: dict[str, dict[str, Any]],
+    assignments: list[dict[str, Any]],
+    announcements: list[dict[str, Any]],
+    pages: dict[str, Any],
+) -> dict[str, dict[str, str]]:
+    """Compute a draft hash per subject granularity for approval binding."""
+    hashes: dict[str, dict[str, str]] = {}
+    for subject in active:
+        page_hash = _hash(json.dumps(pages.get(subject, {}).get("reminders", []), sort_keys=True))
+        sub_assignments = [a for a in assignments if a["course"] == subject]
+        assign_hash = _hash(json.dumps(sub_assignments, sort_keys=True, ensure_ascii=False))
+        ann = next((a for a in announcements if a["course"] == _subject_label(subject)), None)
+        ann_hash = _hash(json.dumps(ann or {}, sort_keys=True, ensure_ascii=False))
+        hashes[subject] = {"page": page_hash, "assignments": assign_hash, "announcement": ann_hash}
+    return hashes
+
+
+def _approval_summary(approvals: dict[str, Any]) -> dict[str, Any]:
+    """Compact per-subject approval state for the manifest."""
+    out: dict[str, Any] = {}
+    for s, entry in (approvals.get("subjects") or {}).items():
+        out[s] = {g: entry.get(g, {}).get("state", "PENDING") for g in ap.GRANULARITIES}
+    return out
 
 
 def _course_id(subject: str) -> int | None:
@@ -327,8 +426,13 @@ def _draft_weekly_announcements(
     week_norm: dict[str, Any],
     subject_reports: dict[str, dict[str, Any]],
     pages: dict[str, Any],
+    page_html: dict[str, str],
 ) -> list[dict[str, Any]]:
-    """Draft one weekly-update announcement per active course (no POST)."""
+    """Draft one weekly-update announcement per active course (no POST).
+
+    ``agenda_hash`` binds to the exact staged page HTML, so
+    ``weekly_update_agenda_hash == page_agenda_hash`` (§26 invariant).
+    """
     week_code = week_norm.get("week", {}).get("code", "")
     labels = {
         "math": "Math",
@@ -340,13 +444,16 @@ def _draft_weekly_announcements(
     out: list[dict[str, Any]] = []
     for subject in subject_reports:
         label = labels.get(subject, subject)
+        agenda_hash = _hash(page_html.get(subject, ""))
         out.append({
             "course": label,
             "title": f"{label} Canvas Weekly Update",
             "greeting": "Good afternoon,",
             "transition": f"The Canvas {label} page has been updated. Please see the upcoming week ahead.",
             "closing": "Have a great weekend!\n\nMr. Reagan",
-            "agenda_hash": _hash(json.dumps(pages.get(subject, {}), sort_keys=True, ensure_ascii=False)),
+            "agenda_hash": agenda_hash,
+            "page_agenda_hash": pages.get(subject, {}).get("agenda_hash", ""),
+            "hash_consistent": agenda_hash == pages.get(subject, {}).get("agenda_hash", ""),
             "preview_only": True,
         })
     return out
@@ -361,6 +468,10 @@ def _write_review(
     announcements: list[dict[str, Any]],
     questions: list[dict[str, Any]],
     pages: dict[str, Any],
+    approvals: dict[str, Any],
+    ready: bool,
+    blockers: list[str],
+    page_lookup: dict[str, Any],
 ) -> None:
     labels = {
         "math": "MATH",
@@ -375,33 +486,71 @@ def _write_review(
         f"Dates: {m['date_range'].get('start')} → {m['date_range'].get('end')}",
         f"Status: {m['status']}",
         f"Source hash: {m['source_hash'][:12]}…",
+        f"Ready to publish: {'YES' if ready else 'NO'}",
         "",
     ]
     for subject, report in subject_reports.items():
         lines.append(f"## {labels.get(subject, subject.upper())}")
         unresolved = report.get("unresolved") or []
         if unresolved:
-            lines.append(f"- Open ambiguities: {len(unresolved)}")
+            lines.append(f"- Ambiguities: {len(unresolved)}")
         else:
             lines.append("- No unresolved tokens")
         sub_assignments = [a for a in assignments if a["course"] == subject]
         if sub_assignments:
             lines.append(f"- Assignments proposed: {len(sub_assignments)}")
             for a in sub_assignments:
-                lines.append(f"  - {a['title']} ({a['assignment_group']}, due {a['due_date']})")
+                dup = a.get("duplicate_classification", "")
+                dup_txt = f" [{dup}]" if dup else ""
+                lines.append(f"  - {a['title']} ({a['assignment_group']}, due {a['due_date']}){dup_txt}")
+        else:
+            lines.append("- Assignments proposed: 0")
+        rem = pages.get(subject, {}).get("reminders", [])
+        if rem:
+            lines.append(f"- Reminders: {', '.join(rem)}")
+        # Page lookup state
+        pl = page_lookup.get(subject, {})
+        if pl:
+            lines.append(f"- Page: {pl.get('status')}" + (f" (id {pl.get('page_id')})" if pl.get('page_id') else ""))
+        # Approval states
+        appr = (approvals.get("subjects") or {}).get(subject, {})
+        states = ", ".join(f"{g}:{appr.get(g, {}).get('state', 'PENDING')}" for g in ap.GRANULARITIES)
+        lines.append(f"- Approvals: {states}")
         lines.append("")
 
     lines.append("## GLOBAL QUESTIONS")
-    if questions:
-        for q in questions:
-            lines.append(f"- Q{q['question_id']}: {q['reason']} (recommended: {q['recommended_default']})")
+    open_qs = [q for q in questions if q.get("status", "OPEN") == "OPEN"]
+    answered_qs = [q for q in questions if q.get("status") == "ANSWERED"]
+    if open_qs:
+        for q in open_qs:
+            lines.append(f"- Q{q['question_id']} [OPEN]: {q['reason']} (recommended: {q['recommended_default']})")
     else:
-        lines.append("- None")
+        lines.append("- None open.")
+    if answered_qs:
+        lines.append("")
+        lines.append("## ANSWERED QUESTIONS")
+        for q in answered_qs:
+            lines.append(f"- Q{q['question_id']}: {q.get('answer')}")
 
     lines.append("")
-    lines.append("## APPROVAL CHECKLIST")
-    for subject in subject_reports:
-        lines.append(f"- [ ] {labels.get(subject, subject.upper())}: page + assignments + announcement")
+    lines.append("## APPROVAL SUMMARY")
+    for s in subject_reports:
+        appr = (approvals.get("subjects") or {}).get(s, {})
+        parts = []
+        for g in ap.GRANULARITIES:
+            st = appr.get(g, {}).get("state", "PENDING")
+            parts.append(f"{g}:{st}")
+        lines.append(f"- {labels.get(s, s.upper())}: " + ", ".join(parts))
+
+    lines.append("")
+    lines.append("## READY_TO_PUBLISH GATE")
+    if ready:
+        lines.append("- PASS — all required artifacts approved, no blockers.")
+    else:
+        lines.append("- NOT READY")
+        for b in blockers:
+            lines.append(f"  - {b}")
+
     lines.append("")
     lines.append("> No Canvas writes occurred. Approval is required before publishing.")
 
@@ -411,10 +560,13 @@ def _write_review(
 
 def command_self_test() -> int:
     from . import week_resolution, canvas_readonly, questions, constants
+    from . import teacher_input, approval
 
     week_resolution.command_self_test()
     canvas_readonly.command_self_test()
     questions.command_self_test()
+    teacher_input.command_self_test()
+    approval.command_self_test()
     constants.course_id_for_subject  # import smoke
     # Synthetic end-to-end via fixture (exercised in tests/).
     print("PASS intake orchestrator self-test")

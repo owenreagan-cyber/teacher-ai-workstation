@@ -56,15 +56,20 @@ def parse_math_tokens(raw: str) -> dict[str, Any]:
 
     Accepts harmless deterministic variants (``L31``, ``L 31``, ``Lesson 31``).
     A trailing ``*`` is stripped for number extraction but surfaced in
-    ``unresolved`` because its semantics are not owner-defined.
+    ``markers`` and ``unresolved`` because its semantics are not owner-defined.
+
+    ``markers`` is a structural record (``{"marker": "*", "token": "FA6*",
+    "meaning": "UNKNOWN"}``) so the marker is auditable and independently
+    answerable, without changing the fact-assessment identity parsing.
     """
     source = (raw or "").strip()
     if not source:
-        return {"source": "", "tokens": [], "unresolved": [], "resolved": True}
+        return {"source": "", "tokens": [], "unresolved": [], "markers": [], "resolved": True}
 
     segments = [s.strip() for s in re.split(r"[/,]", source) if s.strip()]
     tokens: list[dict[str, Any]] = []
     unresolved: list[str] = []
+    markers: list[dict[str, Any]] = []
     for seg in segments:
         star = seg.endswith("*")
         core = seg[:-1].strip() if star else seg
@@ -81,8 +86,11 @@ def parse_math_tokens(raw: str) -> dict[str, Any]:
             tokens.append({"kind": "unknown", "translation": core, "raw": core})
             unresolved.append(core)
         if star:
+            markers.append({"marker": "*", "token": seg, "meaning": "UNKNOWN",
+                            "note": "trailing '*' marker; identifier parsed, marker semantics not owner-defined"})
             unresolved.append(f"trailing '*' marker on '{seg}' (semantics not owner-defined)")
-    return {"source": source, "tokens": tokens, "unresolved": unresolved, "resolved": len(unresolved) == 0}
+    return {"source": source, "tokens": tokens, "unresolved": unresolved,
+            "markers": markers, "resolved": len(unresolved) == 0}
 
 
 # --------------------------------------------------------------------------- #
@@ -365,11 +373,15 @@ def command_self_test() -> int:
     assert parse_math_tokens("WA6")["tokens"][0]["translation"] == "Written Assessment 6"
     assert parse_math_tokens("FA6")["tokens"][0]["translation"] == "Fact Assessment 6"
 
-    # Combined assessment token parses both, '*' surfaced as unresolved.
+    # Combined assessment token parses both, '*' surfaced as unresolved + marker.
     combined = parse_math_tokens("WA6/ FA6*")
     kinds = [t["kind"] for t in combined["tokens"]]
     assert kinds == ["written_assessment", "fact_assessment"], kinds
     assert any("*" in u for u in combined["unresolved"]), combined
+    assert combined["markers"] == [{"marker": "*", "token": "FA6*", "meaning": "UNKNOWN",
+                                    "note": "trailing '*' marker; identifier parsed, marker semantics not owner-defined"}], combined
+    # Identifier parsed independently of the unknown marker.
+    assert combined["tokens"][1]["number"] == 6
 
     # Unknown token fails closed.
     unknown = parse_math_tokens("XYZ9")

@@ -7,12 +7,23 @@ to ``questions/questions.md``.
 """
 from __future__ import annotations
 
-import itertools
+import hashlib
 import json
 from pathlib import Path
 from typing import Any
 
-_QUESTION_IDS = itertools.count(1)
+
+def stable_question_id(subject: str, date: str, source_text: str, reason: str) -> str:
+    """A stable, content-derived question ID (deterministic across regeneration).
+
+    The ID is a short sha256 of (subject, date, source_text, reason) prefixed
+    with a readable subject token, so teacher answers stay bound to the exact
+    ambiguity even when the question set changes between runs.
+    """
+    key = "\x1f".join([subject, date, source_text, reason])
+    digest = hashlib.sha256(key.encode("utf-8")).hexdigest()[:12]
+    slug = subject.replace("_", "-") or "global"
+    return f"{slug}-{digest}"
 
 
 def new_question(
@@ -23,10 +34,11 @@ def new_question(
     reason: str,
     recommended_default: str,
     risk_if_guessed: str,
-    question_id: int | None = None,
+    question_id: str | None = None,
 ) -> dict[str, Any]:
+    qid = question_id if question_id is not None else stable_question_id(subject, date, source_text, reason)
     return {
-        "question_id": question_id if question_id is not None else next(_QUESTION_IDS),
+        "question_id": qid,
         "subject": subject,
         "date": date,
         "source_text": source_text,
@@ -169,24 +181,73 @@ def write_questions(
     jp = d / "questions.json"
     jp.write_text(json.dumps(questions, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
     mp = d / "questions.md"
-    lines = ["# Open Intake Questions", ""]
+    lines = ["# Intake Questions", ""]
     if not questions:
         lines.append("None.")
     for q in questions:
-        lines.append(f"- **Q{q['question_id']}** ({q['subject']} · {q['date']}): {q['reason']}")
+        status = q.get("status", "OPEN")
+        answer = q.get("answer", "")
+        lines.append(f"- **Q{q['question_id']}** [{status}] ({q['subject']} · {q['date']}): {q['reason']}")
         lines.append(f"  - Source: `{q['source_text']}`")
         lines.append(f"  - Recommended: {q['recommended_default']}")
         lines.append(f"  - Risk if guessed: {q['risk_if_guessed']}")
+        if answer:
+            lines.append(f"  - Answer: {answer}")
     mp.write_text("\n".join(lines) + "\n", encoding="utf-8")
     return jp, mp
+
+
+def load_questions(quarter: int, week: int) -> list[dict[str, Any]]:
+    from .manifest import staging_dir
+
+    path = staging_dir(quarter, week) / "questions" / "questions.json"
+    if not path.exists():
+        return []
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
+def apply_question_answers(
+    questions: list[dict[str, Any]],
+    answers: dict[str, dict[str, Any]],
+) -> list[dict[str, Any]]:
+    """Mark questions ANSWERED from teacher-input answers (preserving history).
+
+    A question becomes ANSWERED when a matching ``question_answers[question_id]``
+    entry exists. The answer + answered_at + source are recorded on the question;
+    the original question text is preserved (never deleted).
+    """
+    for q in questions:
+        ans = answers.get(str(q.get("question_id")))
+        if ans is not None:
+            q["status"] = "ANSWERED"
+            q["answer"] = ans.get("answer")
+            q["answered_at"] = ans.get("answered_at")
+            q["answer_source"] = ans.get("source", "OWNER_INPUT")
+    return questions
+
+
+def unresolved_questions(questions: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Questions that remain OPEN (i.e. not yet answered)."""
+    return [q for q in questions if q.get("status", "OPEN") == "OPEN"]
 
 
 def command_self_test() -> int:
     q = new_question(subject="math", date="2026-10-15", source_text="WA3+L42",
                      reason="same-day assessment+lesson", recommended_default="x",
                      risk_if_guessed="y")
-    assert q["status"] == "OPEN" and q["question_id"] > 0
+    assert q["status"] == "OPEN" and isinstance(q["question_id"], str)
     assert q["reason"] == "same-day assessment+lesson"
+
+    # Stable IDs: same content -> same ID across regeneration.
+    q2 = new_question(subject="math", date="2026-10-15", source_text="WA3+L42",
+                      reason="same-day assessment+lesson", recommended_default="x",
+                      risk_if_guessed="y")
+    assert q["question_id"] == q2["question_id"]
+    # Different content -> different ID.
+    q3 = new_question(subject="math", date="2026-10-15", source_text="WA3+L43",
+                      reason="same-day assessment+lesson", recommended_default="x",
+                      risk_if_guessed="y")
+    assert q["question_id"] != q3["question_id"]
 
     week = {
         "week": {"code": "Q2W1"},
@@ -199,6 +260,12 @@ def command_self_test() -> int:
     qs = generate_questions(week=week, subject_reports={}, assessment_events=[], reminder_events=[])
     assert any(q["subject"] == "science" and "blank" in q["reason"] for q in qs), qs
     assert all(q["status"] == "OPEN" for q in qs)
+
+    # apply_question_answers marks ANSWERED by stable ID.
+    answers = {q["question_id"]: {"answer": "leave blank", "answered_at": "x", "source": "OWNER_INPUT"}
+               for q in qs}
+    qs = apply_question_answers(qs, answers)
+    assert all(q["status"] == "ANSWERED" for q in qs)
 
     print("PASS intake questions self-test")
     return 0

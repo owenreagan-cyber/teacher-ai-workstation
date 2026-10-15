@@ -61,14 +61,15 @@ Everything is local + gitignored under `.local/canvas-llm/intake/`:
 ## CLI
 
 ```bash
-bin/canvas-intake --week next            # resolve next instructional week
-bin/canvas-intake --week current         # resolve current instructional week
-bin/canvas-intake --quarter 2 --week 2   # explicit + deterministic
-bin/canvas-intake run --live-context     # add GET-only page lookup + duplicate check
-bin/canvas-intake review                 # print REVIEW.md
-bin/canvas-intake questions              # list open questions
-bin/canvas-intake status                 # PASS/WARN/FAIL proof
-bin/canvas-intake self-test              # synthetic tests
+bin/canvas-intake run --week next            # fetch + normalize + draft + questions
+bin/canvas-intake run --quarter 2 --week 2   # explicit + deterministic
+bin/canvas-intake run --live-context         # add GET-only page lookup + duplicate check
+bin/canvas-intake review                     # print REVIEW.md (primary Owen view)
+bin/canvas-intake questions                  # list open questions (--status answered|all)
+bin/canvas-intake apply-teacher-input        # answer a question / add reminder / reject assignment
+bin/canvas-intake approve --subject math --all   # approve page+assignments+announcement
+bin/canvas-intake status                     # PASS/WARN/FAIL proof
+bin/canvas-intake self-test                  # synthetic tests
 ```
 
 ## Reused components
@@ -108,11 +109,53 @@ With `--live-context`, the intake performs GET-only lookups of the pre-created
 weekly page (by canonical slug) and lists existing assignments, classifying each
 proposal as `EXISTS_EXACT` / `NEW_PROPOSAL`. It never POSTs.
 
-## Approval gate
+## Teacher input
 
-Approval is explicit and granular (week / subject / page / assignments /
-announcement). States: `PENDING`, `NEEDS_CHANGES`, `APPROVED`, `BLOCKED`.
-Absence of a response is never approval.
+Teacher input is recorded in `teacher-input.json` (gitignored) and applied on
+regeneration without overwriting `source/pacing-snapshot.json` or the
+normalized interpretation. The invariant is:
+
+```text
+SOURCE + NORMALIZED SOURCE + TEACHER INPUT = REGENERATED DRAFT
+```
+
+Supported operations: answer a question, add a reminder/note/special-event/
+assessment-note, reject or restore an assignment proposal, and replace
+announcement wording. Owen never edits generated HTML directly.
+
+## Approval
+
+Approval is explicit and granular (subject `page` / `assignments` /
+`announcement`). States: `PENDING`, `NEEDS_CHANGES`, `APPROVED`, `BLOCKED`.
+Approval binds to the current draft hash; any regeneration that changes an
+approved artifact reverts it to `PENDING`. Absence of a response is never
+approval.
+
+## READY_TO_PUBLISH gate
+
+A week reaches `READY_TO_PUBLISH` only when:
+
+- pacing snapshot valid, active subjects correct
+- page drafts generated, no blocking unresolved questions
+- assignment proposals resolved, reminders + announcements generated
+- `weekly_update_agenda_hash == page_agenda_hash` for every announcement
+- required artifacts (page/announcement always; assignments if proposed) approved
+- no `BLOCKED` approval states
+
+Artifacts that do not apply (e.g. Science with no proposed assignments) are not
+required. Partial approval is supported; a partially-approved week is
+`READY_FOR_REVIEW`, never `READY_TO_PUBLISH`.
+
+## Parser clarifications (owner-evidence-backed)
+
+- **Reading bare numbers** — a bare integer in the Reading pacing field is a
+  Reading Mastery lesson number (live sheet runs `L37 L38 L39 L40` then
+  `41 42 43 44 45` then `46…50`, continuing the numeric progression). `41` →
+  `Lesson 41`.
+- **Math `FA6*` marker** — the `*` is stripped for identifier extraction
+  (`FA6` → Fact Assessment 6) but the marker is preserved with
+  `meaning: UNKNOWN` and surfaced as an open question. The marker semantics
+  remain unresolved until Owen defines them.
 
 ## Deployment boundary
 

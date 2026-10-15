@@ -61,15 +61,28 @@ _CONFIRMED_FLUENCY = {str(n): {"wpm": 100, "maxErrors": 2} for n in range(1, 8)}
 # --------------------------------------------------------------------------- #
 
 _READING_LESSON_RE = re.compile(r"^(?:L|Lesson)\s*(\d+)\s*$", re.IGNORECASE)
+# Bare integer in the Reading pacing field is a Reading Mastery lesson number.
+# Evidence: the live sheet sequence runs ``L37 L38 L39 L40`` then ``41 42 43 44
+# 45`` then ``46 47 48 49 50`` — bare numbers continue the exact numeric lesson
+# progression. Scoped narrowly: only the Reading field calls this parser.
+_READING_BARE_NUMBER_RE = re.compile(r"^(\d+)$")
 _READING_RMT_FCO_RE = re.compile(r"^(?:RMT\+FCO|RMT\+FCO\b.*|Reading\s*Mastery\s*Test.*Checkout.*)$", re.IGNORECASE)
 
 
 def parse_reading_token(raw: str) -> dict[str, Any]:
-    """Parse a Reading pacing cell. Returns {'kind','number','translation'}."""
+    """Parse a Reading pacing cell. Returns {'kind','number','translation'}.
+
+    Recognizes ``L41``, ``Lesson 41``, and bare ``41`` as ``Lesson 41`` (bare
+    integers are canonical Reading lesson identifiers). Blank stays blank; any
+    other non-numeric token is preserved as ``unknown``.
+    """
     source = (raw or "").strip()
     if not source:
         return {"source": "", "kind": "blank", "number": None, "translation": ""}
     m = _READING_LESSON_RE.match(source)
+    if m:
+        return {"source": source, "kind": "lesson", "number": int(m.group(1)), "translation": f"Lesson {m.group(1)}"}
+    m = _READING_BARE_NUMBER_RE.match(source)
     if m:
         return {"source": source, "kind": "lesson", "number": int(m.group(1)), "translation": f"Lesson {m.group(1)}"}
     if "RMT" in source.upper() or ("Mastery" in source and "Checkout" in source):
@@ -425,9 +438,19 @@ def command_self_test() -> int:
 
     # Reading lesson translation.
     assert parse_reading_token("L37")["translation"] == "Lesson 37"
-    assert parse_reading_token("L40")["translation"] == "Lesson 40"
+    assert parse_reading_token("Lesson 40")["translation"] == "Lesson 40"
     assert parse_reading_token("L37")["source"] == "L37"
     assert parse_reading_token("RMT+FCO")["kind"] == "rmt_fco"
+
+    # Bare numeric Reading token is a canonical lesson identifier (Q2W2 evidence:
+    # live sheet runs L37..L40 then bare 41..45 then 46..50 — same numeric lesson
+    # progression, so bare integers are lessons).
+    for n in (41, 42, 43, 44, 45):
+        tok = parse_reading_token(str(n))
+        assert tok["kind"] == "lesson" and tok["number"] == n and tok["translation"] == f"Lesson {n}", tok
+    # Blank remains blank; non-numeric unknown remains unknown.
+    assert parse_reading_token("")["kind"] == "blank"
+    assert parse_reading_token("Rotations")["kind"] == "unknown"
 
     # Reading Test + Checkout resolution.
     r = resolve_reading_test_checkout(40)

@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+# Canvas Weekly Intake (read-only, local-first).
+#
+# Delegates to scripts/canvas_llm_intake/cli.py. This command performs NO Canvas
+# writes: it only reads the pacing spreadsheet, issues GET-only Canvas lookups
+# when --live-context is set, and writes local staging artifacts under .local/.
+set -euo pipefail
+
+REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+
+exec python3 -m scripts.canvas_llm_intake.cli "$@"

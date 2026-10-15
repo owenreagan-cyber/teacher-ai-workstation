@@ -49,6 +49,31 @@ Authority: `config/curriculum/canvas/quarter-subject-activation-2026-2027.json`.
   - Exact final wording remains teacher-editable.
 - Never infer activity from the quarter number alone; the quarter-activation config is authority.
 
+## Grade-check scope + state semantics (locked)
+
+Authority: `config/canvas-llm/grade-check-config.json`.
+
+- The rotating-subject rule applies **only** to History vs Science. Math (26404),
+  Reading/Spelling (26442), and Language Arts (28171) are core academic courses
+  that remain grade-check-active in **every** quarter. Homeroom (26429) is never
+  grade-checked.
+- Q1/Q3 grade-check scope = Math + Reading/Spelling + Language Arts + History.
+- Q2/Q4 grade-check scope = Math + Reading/Spelling + Language Arts + Science.
+- **Out-of-scope ≠ resolved.** A flag whose course rotates out of the quarter is
+  `OUT_OF_SCOPE_QUARTER` (suspended), never `RESOLVED`. `RESOLVED` is emitted only
+  when current evidence proves the underlying condition is gone (submitted/graded,
+  or average recovered above 85).
+- **Late-enrollment eligibility.** An assignment due before a student's effective
+  enrollment eligibility date (Canvas enrollment `start_at`, else `created_at`) is
+  not eligible for missing-assignment flagging or a low-assessment flag, and its
+  blanks never feed a low-course-average. A student with no valid graded work is
+  never flagged `LOW_COURSE_AVERAGE` (Canvas's "no grade" `0.0` sentinel is not a
+  real low average).
+- **Local eligibility override fallback.** When Canvas enrollment metadata is
+  ambiguous or wrong, a teacher may record an authoritative override in
+  `.local/canvas-llm/grade-check/enrollment-overrides.json` (gitignored, never
+  committed).
+
 ## Guarded deployment rules (locked)
 
 - existing rolling pages update in place only (never create replacement pages)

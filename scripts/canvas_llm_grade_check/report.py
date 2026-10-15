@@ -34,6 +34,8 @@ class ScanOutcome:
     low_assessment: list[ReportEntry] = field(default_factory=list)
     low_average: list[ReportEntry] = field(default_factory=list)
     resolved: list[Flag] = field(default_factory=list)
+    out_of_scope: list[Flag] = field(default_factory=list)
+    not_eligible: list[Flag] = field(default_factory=list)
     unresolved: list[UnresolvedItem] = field(default_factory=list)
 
     @property
@@ -50,7 +52,8 @@ class ScanOutcome:
 
         Unchanged STILL ACTIVE persistent flags alone are NOT a change. This is
         the scheduler's "email only on meaningful change" gate; it does not
-        alter detection, thresholds, or persistence.
+        alter detection, thresholds, or persistence. Out-of-scope suspension is
+        NOT a change (it is a quarter rotation, not new information).
         """
         if self.resolved:
             return True
@@ -197,6 +200,8 @@ def _summary_count_lines(outcome: ScanOutcome) -> list[str]:
         f"NEW assessment <=85: {len(outcome.low_assessment)}",
         f"STILL ACTIVE low averages: {_count_status(outcome.low_average, STILL_ACTIVE)}",
         f"RESOLVED low averages: {len(_resolved_of_type(outcome, engine.LOW_COURSE_AVERAGE))}",
+        f"OUT OF SCOPE (quarter rotation): {len(outcome.out_of_scope)}",
+        f"NOT ELIGIBLE (late enrollment / no grades): {len(outcome.not_eligible)}",
         f"Unresolved low-score items: {len(outcome.unresolved)}",
     ]
 
@@ -213,6 +218,42 @@ def _resolved_section_lines(outcome: ScanOutcome) -> list[str]:
     if outcome.resolved:
         for f in outcome.resolved:
             lines.append(_resolved_line(f))
+    else:
+        lines.append("None")
+    return lines
+
+
+def _out_of_scope_line(f: Flag) -> str:
+    return (
+        f"  - {f.student_name} | {f.course_name} | {f.flag_type} | "
+        f"{f.assignment_title or 'course average'} | (course out of quarter scope — NOT resolved)"
+    )
+
+
+def _out_of_scope_section_lines(outcome: ScanOutcome) -> list[str]:
+    lines: list[str] = []
+    lines.append("--- OUT OF SCOPE (QUARTER ROTATION — NOT RESOLVED) ---")
+    if outcome.out_of_scope:
+        for f in outcome.out_of_scope:
+            lines.append(_out_of_scope_line(f))
+    else:
+        lines.append("None")
+    return lines
+
+
+def _not_eligible_line(f: Flag) -> str:
+    return (
+        f"  - {f.student_name} | {f.course_name} | {f.flag_type} | "
+        f"{f.assignment_title or 'course average'} | (student not eligible — NOT resolved)"
+    )
+
+
+def _not_eligible_section_lines(outcome: ScanOutcome) -> list[str]:
+    lines: list[str] = []
+    lines.append("--- NOT ELIGIBLE (LATE ENROLLMENT / NO GRADES — NOT RESOLVED) ---")
+    if outcome.not_eligible:
+        for f in outcome.not_eligible:
+            lines.append(_not_eligible_line(f))
     else:
         lines.append("None")
     return lines
@@ -273,6 +314,12 @@ def render_preview_compact(outcome: ScanOutcome, *, writes: int = 0, emails: int
     lines.extend(_resolved_section_lines(outcome))
 
     lines.append("")
+    lines.extend(_out_of_scope_section_lines(outcome))
+
+    lines.append("")
+    lines.extend(_not_eligible_section_lines(outcome))
+
+    lines.append("")
     lines.extend(_grouped_unresolved_lines(outcome))
 
     lines.append("")
@@ -317,6 +364,12 @@ def render_preview_detailed(outcome: ScanOutcome, *, writes: int = 0, emails: in
 
     lines.append("")
     lines.extend(_resolved_section_lines(outcome))
+
+    lines.append("")
+    lines.extend(_out_of_scope_section_lines(outcome))
+
+    lines.append("")
+    lines.extend(_not_eligible_section_lines(outcome))
 
     lines.append("")
     lines.extend(_grouped_unresolved_lines(outcome))
@@ -449,6 +502,30 @@ def render_email_body(outcome: ScanOutcome) -> str:
     lines.append("------------------------")
     if outcome.resolved:
         for f in outcome.resolved:
+            lines.append(
+                f"- {f.student_name} | {f.course_name} | {f.flag_type} | "
+                f"{f.assignment_title or 'course average'}"
+            )
+    else:
+        lines.append("- None")
+
+    lines.append("")
+    lines.append("OUT OF SCOPE (QUARTER ROTATION — NOT RESOLVED)")
+    lines.append("----------------------------------------------")
+    if outcome.out_of_scope:
+        for f in outcome.out_of_scope:
+            lines.append(
+                f"- {f.student_name} | {f.course_name} | {f.flag_type} | "
+                f"{f.assignment_title or 'course average'}"
+            )
+    else:
+        lines.append("- None")
+
+    lines.append("")
+    lines.append("NOT ELIGIBLE (LATE ENROLLMENT / NO GRADES — NOT RESOLVED)")
+    lines.append("---------------------------------------------------------")
+    if outcome.not_eligible:
+        for f in outcome.not_eligible:
             lines.append(
                 f"- {f.student_name} | {f.course_name} | {f.flag_type} | "
                 f"{f.assignment_title or 'course average'}"

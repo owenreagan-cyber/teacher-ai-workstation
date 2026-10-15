@@ -25,9 +25,14 @@
   },
   "quarters": {
     "1": ["reading-spelling", "math", "language-arts", "history"],
-    "2": ["science"],
+    "2": ["reading-spelling", "math", "language-arts", "science"],
     "3": ["reading-spelling", "math", "language-arts", "history"],
-    "4": ["science"]
+    "4": ["reading-spelling", "math", "language-arts", "science"]
+  },
+  "rotation": {
+    "note": "The rotating-subject rule applies ONLY to History vs Science. Math, Reading/Spelling, and Language Arts are core academic courses that remain active in every quarter. Homeroom (26429) is never grade-checked.",
+    "history": { "activeQuarters": [1, 3] },
+    "science": { "activeQuarters": [2, 4] }
   },
   "subjects": {
     "reading-spelling": {
@@ -75,6 +80,15 @@
   },
   "state": {
     "directory": ".local/canvas-llm/grade-check",
-    "stateFile": "state.json"
+    "stateFile": "state.json",
+    "enrollmentOverridesFile": "enrollment-overrides.json"
+  },
+  "enrollment": {
+    "note": "A student who joined after an assignment's due date is NOT eligible for missing-assignment flagging, missing-work counts, or a low-course-average derived from pre-enrollment blanks. An assignment is ineligible for a student when its due date is before the student's effective enrollment eligibility date (Canvas enrollment start_at, else created_at).",
+    "localOverride": {
+      "file": ".local/canvas-llm/grade-check/enrollment-overrides.json",
+      "shape": { "student_id": 0, "course_id": 0, "eligible_from": "YYYY-MM-DD", "reason": "late_enrollment" },
+      "authority": "local teacher-owned authority; overrides ambiguous Canvas enrollment metadata when explicitly configured"
+    }
   }
 }

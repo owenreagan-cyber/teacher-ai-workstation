@@ -65,6 +65,7 @@ class GradeCheckConfig:
     missing_grade_markers: tuple[str, ...]
     state_directory: str
     state_file: str
+    enrollment_overrides_file: str
     schedule: ScheduleConfig
     raw: dict[str, Any] = field(default_factory=dict, repr=False)
 
@@ -116,6 +117,7 @@ def load_config(path: Path | None = None) -> GradeCheckConfig:
         ),
         state_directory=state.get("directory", ".local/canvas-llm/grade-check"),
         state_file=state.get("stateFile", "state.json"),
+        enrollment_overrides_file=state.get("enrollmentOverridesFile", "enrollment-overrides.json"),
         schedule=ScheduleConfig(
             weekdays_only=bool(sched_raw.get("weekdaysOnly", True)),
             hour_local=int(sched_raw.get("hourLocal", 16)),
@@ -130,6 +132,16 @@ def active_subjects(cfg: GradeCheckConfig, quarter: int) -> list[SubjectConfig]:
     """Subjects scanned in the given quarter, resolved through configuration."""
     keys = cfg.quarter_subjects.get(quarter, ())
     return [cfg.subjects[k] for k in keys if k in cfg.subjects]
+
+
+def active_course_ids(cfg: GradeCheckConfig, quarter: int) -> set[int]:
+    """Course IDs currently in scope for grade-check scanning this quarter."""
+    return {s.course_id for s in active_subjects(cfg, quarter)}
+
+
+def all_subject_course_ids(cfg: GradeCheckConfig) -> set[int]:
+    """Every grade-check subject course ID (used to distinguish out-of-scope)."""
+    return {s.course_id for s in cfg.subjects.values()}
 
 
 # ---------------------------------------------------------------------------
@@ -226,9 +238,9 @@ def command_self_test() -> int:
     assert cfg.threshold == 85
     assert cfg.recipient_email == "owen.reagan@thalesacademy.org"
     assert cfg.quarter_subjects[1] == ("reading-spelling", "math", "language-arts", "history")
-    assert cfg.quarter_subjects[2] == ("science",)
+    assert cfg.quarter_subjects[2] == ("reading-spelling", "math", "language-arts", "science")
     assert cfg.quarter_subjects[3] == ("reading-spelling", "math", "language-arts", "history")
-    assert cfg.quarter_subjects[4] == ("science",)
+    assert cfg.quarter_subjects[4] == ("reading-spelling", "math", "language-arts", "science")
     assert cfg.subjects["math"].course_id == 26404
     assert cfg.subjects["reading-spelling"].course_id == 26442
     assert cfg.subjects["language-arts"].course_id == 28171
@@ -236,6 +248,19 @@ def command_self_test() -> int:
     assert cfg.subjects["science"].course_id == 28166
     assert "Written Assessments" in cfg.subjects["math"].assessment_groups
     assert "Homework" in cfg.subjects["reading-spelling"].non_assessment_groups
+
+    # Q2 academic scope includes the three core subjects + Science (rotating).
+    assert [s.key for s in active_subjects(cfg, 2)] == [
+        "reading-spelling", "math", "language-arts", "science",
+    ]
+    assert active_course_ids(cfg, 2) == {26404, 26442, 28171, 28166}
+    assert 28165 not in active_course_ids(cfg, 2)  # History rotated out in Q2
+    assert 26429 not in all_subject_course_ids(cfg)  # Homeroom never grade-checked
+
+    # Q1/Q3 use History (rotating), Q2/Q4 use Science (rotating).
+    assert active_course_ids(cfg, 1) == {26404, 26442, 28171, 28165}
+    assert active_course_ids(cfg, 3) == {26404, 26442, 28171, 28165}
+    assert active_course_ids(cfg, 4) == {26404, 26442, 28171, 28166}
 
     # Quarter resolution against the authoritative instructional-weeks export.
     assert resolve_quarter(dt.date(2026, 9, 8)) == 1  # Q1W8
@@ -247,7 +272,7 @@ def command_self_test() -> int:
 
     active = active_subjects(cfg, 1)
     assert [s.key for s in active] == ["reading-spelling", "math", "language-arts", "history"]
-    assert [s.key for s in active_subjects(cfg, 2)] == ["science"]
+    assert [s.key for s in active_subjects(cfg, 2)] == ["reading-spelling", "math", "language-arts", "science"]
     print("PASS grade-check config self-test")
     return 0
 

@@ -112,18 +112,120 @@ class Handler(BaseHTTPRequestHandler):
         except Exception as exc:  # noqa: BLE001 — adapter errors must never crash the UI
             self._send_json(500, {"error": type(exc).__name__})
 
-    # Write verbs are explicitly NOT implemented. Any non-GET returns 405.
+    # ---- write verbs: LOCAL planning state ONLY (never Canvas) ----
     def do_POST(self) -> None:  # noqa: N802
-        self._send_text(405, "read-only: POST disabled")
-
-    def do_PUT(self) -> None:  # noqa: N802
-        self._send_text(405, "read-only: PUT disabled")
-
-    def do_PATCH(self) -> None:  # noqa: N802
-        self._send_text(405, "read-only: PATCH disabled")
+        self._handle_mutation("POST")
 
     def do_DELETE(self) -> None:  # noqa: N802
-        self._send_text(405, "read-only: DELETE disabled")
+        self._handle_mutation("DELETE")
+
+    def do_PUT(self) -> None:  # noqa: N802
+        self._send_text(405, "PUT not supported (use POST/DELETE)")
+
+    def do_PATCH(self) -> None:  # noqa: N802
+        self._send_text(405, "PATCH not supported (use POST/DELETE)")
+
+    def _read_body(self) -> dict:
+        length = int(self.headers.get("Content-Length", 0) or 0)
+        if length <= 0:
+            return {}
+        try:
+            return json.loads(self.rfile.read(length).decode("utf-8"))
+        except (json.JSONDecodeError, UnicodeDecodeError):
+            return {}
+
+    def _handle_mutation(self, method: str) -> None:
+        """Route a local-only mutation. Terminates at local intake state only.
+
+        Only the explicitly-listed planning routes are handled. Everything else
+        returns 405. No path here can reach Canvas mutation code.
+        """
+        from . import mutate
+
+        parsed = urlparse(self.path)
+        path = parsed.path
+        parts = [p for p in path.split("/") if p]  # e.g. ['api','weeks','2','3','overrides']
+
+        # Validate payload shape early.
+        body = self._read_body()
+
+        # Expected: /api/weeks/{q}/{w}/<action>...
+        if len(parts) < 4 or parts[0] != "api" or parts[1] != "weeks":
+            self._send_text(405, "read-only: no write route here")
+            return
+        try:
+            quarter, week = int(parts[2]), int(parts[3])
+        except (ValueError, TypeError):
+            self._send_json(400, {"error": "bad request"})
+            return
+
+        source_hash = body.get("source_hash") if isinstance(body, dict) else None
+
+        try:
+            if method == "POST":
+                if len(parts) == 5 and parts[4] == "overrides":
+                    # POST /api/weeks/{q}/{w}/overrides
+                    result = mutate.apply_day_edit(
+                        quarter=quarter, week=week, source_hash=source_hash,
+                        subject=body.get("subject"), day=body.get("day"),
+                        in_class=body.get("in_class"), at_home=body.get("at_home"),
+                        clear_at_home=bool(body.get("clear_at_home")),
+                        status=body.get("status"), note=body.get("note"),
+                        source_value=body.get("source_value"),
+                    )
+                    self._send_json(200, result)
+                elif len(parts) == 5 and parts[4] == "restore-source":
+                    result = mutate.restore_source(
+                        quarter=quarter, week=week, source_hash=source_hash,
+                        subject=body.get("subject"), day=body.get("day"))
+                    self._send_json(200, result)
+                elif len(parts) == 5 and parts[4] == "mark-pending":
+                    result = mutate.mark_pending(
+                        quarter=quarter, week=week, source_hash=source_hash,
+                        subject=body.get("subject"), day=body.get("day"),
+                        source_value=body.get("source_value"))
+                    self._send_json(200, result)
+                elif len(parts) == 5 and parts[4] == "mark-blank":
+                    result = mutate.mark_blank(
+                        quarter=quarter, week=week, source_hash=source_hash,
+                        subject=body.get("subject"), day=body.get("day"),
+                        source_value=body.get("source_value"))
+                    self._send_json(200, result)
+                elif len(parts) == 7 and parts[4] == "questions" and parts[6] == "answer":
+                    # POST /api/weeks/{q}/{w}/questions/{id}/answer
+                    result = mutate.answer_question(
+                        quarter=quarter, week=week, source_hash=source_hash,
+                        question_id=parts[5], answer=body.get("answer"))
+                    self._send_json(200, result)
+                elif len(parts) == 6 and parts[4] == "assignments":
+                    # POST /api/weeks/{q}/{w}/assignments (disposition)
+                    result = mutate.set_assignment_disposition(
+                        quarter=quarter, week=week, source_hash=source_hash,
+                        subject=body.get("subject"), title=body.get("title"),
+                        action=body.get("action"))
+                    self._send_json(200, result)
+                elif len(parts) == 6 and parts[4] == "announcements":
+                    result = mutate.edit_announcement(
+                        quarter=quarter, week=week, source_hash=source_hash,
+                        subject=body.get("subject"), transition=body.get("transition"))
+                    self._send_json(200, result)
+                else:
+                    self._send_text(405, "read-only: no write route here")
+            elif method == "DELETE":
+                if len(parts) == 6 and parts[4] == "overrides":
+                    # DELETE /api/weeks/{q}/{w}/overrides/{subject}:{day}  (or query params)
+                    result = mutate.restore_source(
+                        quarter=quarter, week=week, source_hash=source_hash,
+                        subject=parts[5].split(":")[0], day=parts[5].split(":")[1])
+                    self._send_json(200, result)
+                else:
+                    self._send_text(405, "read-only: no delete route here")
+        except mutate.StaleEdit as exc:
+            self._send_json(409, {"error": "STALE", "detail": str(exc)})
+        except (ValueError, KeyError) as exc:
+            self._send_json(400, {"error": type(exc).__name__, "detail": str(exc)})
+        except Exception as exc:  # noqa: BLE001 — never crash the UI
+            self._send_json(500, {"error": type(exc).__name__})
 
     def log_message(self, fmt, *args) -> None:  # noqa: N802
         # Quiet logging (no request spam on Owen's terminal).
@@ -156,11 +258,20 @@ def command_self_test() -> int:
     # Static assets exist.
     for f in ("index.html", "styles.css", "app.js"):
         assert (STATIC_DIR / f).exists(), f"missing {f}"
-    # No write-verb handler methods (only do_GET exists).
+    # Write verbs present, but route ONLY to local planning state (never Canvas).
     import inspect
     src = inspect.getsource(Handler)
     for verb in ("do_POST", "do_PUT", "do_PATCH", "do_DELETE"):
-        assert verb in src, f"{verb} must be defined to return 405"
+        assert verb in src, f"{verb} must be defined"
+    # The server source must never import Canvas write machinery. Tokens are
+    # constructed dynamically so the scanner's own source never self-matches.
+    forbidden = ["canvas_connection_" + "manager", "canvas_" + "writer",
+                 "Phase22Live" + "CanvasClient", "create_" + "assignment",
+                 "update_" + "page", "create_" + "announcement"]
+    for tok in forbidden:
+        assert tok not in src, f"Canvas write token {tok!r} leaked into server"
+    # Mutations route through the local mutate layer.
+    assert "from . import mutate" in src
     print("PASS teacher-workstation server self-test")
     return 0
 

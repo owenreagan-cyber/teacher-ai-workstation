@@ -173,9 +173,10 @@ def cmd_status(args: argparse.Namespace) -> int:
 
 def cmd_self_test(_args: argparse.Namespace) -> int:
     intake.command_self_test()
-    from . import cycle, scheduling
+    from . import cycle, scheduling, owner_overrides
     cycle.command_self_test()
     scheduling.command_self_test()
+    owner_overrides.command_self_test()
     return 0
 
 

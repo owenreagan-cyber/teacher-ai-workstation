@@ -17,6 +17,8 @@ from scripts.canvas_llm_intake import constants as IC
 from scripts.canvas_llm_intake import manifest as imf
 from scripts.canvas_llm_intake import questions as iq
 from scripts.canvas_llm_intake import week_resolution as iwr
+from scripts.canvas_llm_intake import owner_overrides as ioo
+from scripts.canvas_llm_intake import teacher_input as iti
 
 REPO = Path(__file__).resolve().parents[2]
 INTAKE_ROOT = REPO / ".local" / "canvas-llm" / "intake"
@@ -190,6 +192,14 @@ def week_detail(quarter: int, week: int) -> dict[str, Any] | None:
         page_files[subject] = {"file": f"drafts/{fname}", "exists": p.exists(),
                                "chars": len(p.read_text(encoding="utf-8")) if p.exists() else 0}
 
+    overrides = ioo.list_overrides(quarter, week)
+    # Augment day_states with any owner-override status (blank/pending/planned).
+    for ov in overrides:
+        subj = ov.get("subject")
+        day = ov.get("day")
+        if subj in day_states and day in day_states[subj]:
+            day_states[subj][day] = ov.get("status", day_states[subj][day])
+
     return {
         "quarter": quarter,
         "week": week,
@@ -202,6 +212,7 @@ def week_detail(quarter: int, week: int) -> dict[str, Any] | None:
         "source_retrieved_at": manifest.get("source_retrieved_at"),
         "source_delta": manifest.get("source_delta"),
         "owner_override_conflicts": manifest.get("owner_override_conflicts", []),
+        "owner_overrides": overrides,
         "subjects": manifest.get("subjects", {}),
         "active_subjects": active,
         "day_states": day_states,

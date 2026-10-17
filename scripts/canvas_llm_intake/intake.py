@@ -33,6 +33,7 @@ from . import week_resolution as wr
 from . import teacher_input as ti
 from . import approval as ap
 from . import reminders as rem
+from . import owner_overrides as oo
 from .canvas_readonly import CanvasReadOnly
 
 
@@ -54,6 +55,20 @@ def _hash(text: str) -> str:
     return hashlib.sha256(text.encode("utf-8")).hexdigest()
 
 
+def _content_hash(week_norm: dict[str, Any]) -> str:
+    """Stable hash of pacing CONTENT only (week code, dates, days, unit context).
+
+    Excludes the ``source`` metadata (which carries a fetch timestamp), so the
+    hash is identical across regenerations of unchanged pacing.
+    """
+    content = {
+        "week": week_norm.get("week", {}),
+        "unitContext": week_norm.get("unitContext", {}),
+        "days": week_norm.get("days", {}),
+    }
+    return _hash(json.dumps(content, sort_keys=True, ensure_ascii=False))
+
+
 def _coerce_days(report: dict[str, Any]) -> dict[str, dict[str, Any]]:
     """Coerce a subject report's days into canvas_preview's {in_class, at_home}."""
     days: dict[str, dict[str, Any]] = {}
@@ -65,6 +80,38 @@ def _coerce_days(report: dict[str, Any]) -> dict[str, dict[str, Any]]:
             "in_class": in_class if in_class else ["(no source)"],
             "at_home": [at_home] if at_home else None,
         }
+    return days
+
+
+def _apply_day_overrides(
+    quarter: int,
+    week: int,
+    subject: str,
+    days: dict[str, dict[str, Any]],
+) -> dict[str, dict[str, Any]]:
+    """Apply active owner overrides to a subject's coerced day map.
+
+    Overrides may set in_class, set/clear at_home, or mark a day blank/pending.
+    Source snapshots are never touched; only the regenerated draft is affected.
+    """
+    overrides = oo.load_overrides(quarter, week)
+    for wd in C.WEEKDAYS:
+        rec = overrides.get(f"{subject}|{wd}")
+        if not rec or not rec.get("active", True):
+            continue
+        status = rec.get("status")
+        if status == oo.STATUS_OWNER_CONFIRMED_BLANK:
+            days[wd] = {"in_class": [], "at_home": None}
+            continue
+        if status == oo.STATUS_PENDING_SOURCE:
+            days[wd] = {"in_class": ["(pending)"], "at_home": None}
+            continue
+        in_class = rec.get("in_class")
+        if in_class is not None:
+            days[wd]["in_class"] = list(in_class) if in_class else ["(no source)"]
+        at_home = rec.get("at_home")
+        if at_home is not None:
+            days[wd]["at_home"] = [at_home] if at_home else None
     return days
 
 
@@ -92,7 +139,10 @@ def build_intake(
     rows, meta = pe.fetch_pacing(fresh=fresh)
     week_norm = pe.extract_week(rows, week_code, meta)
     m["source_retrieved_at"] = meta.get("readTimestampUtc") or _now()
-    m["source_hash"] = _hash(json.dumps(week_norm, sort_keys=True, ensure_ascii=False))
+    # Content-only hash (excludes the timestamp-bearing ``source`` metadata) so
+    # the source hash is STABLE across regenerations of identical pacing. This
+    # is what makes stale-edit detection and UNCHANGED-delta detection reliable.
+    m["source_hash"] = _content_hash(week_norm)
     m["date_range"] = {
         "start": week_norm.get("week", {}).get("startDate", ""),
         "end": week_norm.get("week", {}).get("endDate", ""),
@@ -151,15 +201,18 @@ def build_intake(
 
     # Page HTML + assignments files. Capture the agenda HTML per subject so the
     # announcement's agenda_hash binds to the exact page HTML (§26 invariant).
+    # Owner overrides (day-level in_class/at_home/status) are applied here so
+    # page + announcement + reminder drafts reflect Owen's edits.
     page_html: dict[str, str] = {}
     for subject in active:
         report = subject_reports[subject]
         days = _coerce_days(report)
+        days = _apply_day_overrides(quarter, week, subject, days)
         reminders = _reminders_for(week_norm, subject)
         if subject == "reading_spelling":
             html = cp.build_combined_reading_spelling_html(
                 week_code,
-                _coerce_days(report.get("reading", {})),
+                _apply_day_overrides(quarter, week, "reading_spelling", _coerce_days(report.get("reading", {}))),
                 _coerce_days(report.get("spelling", {})),
                 reminders=reminders,
             )

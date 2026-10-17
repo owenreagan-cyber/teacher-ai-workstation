@@ -37,8 +37,9 @@ def _now() -> str:
 
 
 def _week_hash(week_norm: dict[str, Any]) -> str:
-    import hashlib
-    return hashlib.sha256(json.dumps(week_norm, sort_keys=True, ensure_ascii=False).encode("utf-8")).hexdigest()
+    """Stable content hash (excludes timestamp-bearing ``source`` metadata)."""
+    from .intake import _content_hash
+    return _content_hash(week_norm)
 
 
 def next_unprepared_week() -> tuple[int, int]:

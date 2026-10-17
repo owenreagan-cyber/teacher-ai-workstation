@@ -423,6 +423,18 @@ function renderReviewApprove(d) {
     blockerLines.push('<li class="muted">Review subject approvals below.</li>');
   }
 
+  // Live Canvas context (GET-only page lookup, if the packet carried one).
+  const liveLookup = d.page_lookup || {};
+  const liveSubjects = subjects.filter(s => liveLookup[s] && liveLookup[s].status);
+  const liveBlock = liveSubjects.length
+    ? `<table><thead><tr><th>Subject</th><th>Live page</th></tr></thead><tbody>
+        ${liveSubjects.map(s => {
+          const pl = liveLookup[s];
+          const st = pl.status === 'FOUND' ? `FOUND (page ${esc(pl.page_id || '')})` : esc(pl.status);
+          return `<tr><td>${subjectLabel(s)}</td><td>${st}</td></tr>`;
+        }).join('')}</tbody></table>`
+    : '<div class="muted">LIVE CANVAS CONTEXT UNAVAILABLE — approval is local only; no Canvas GET was performed.</div>';
+
   return `
     ${banner()}
     <h1>Review &amp; Approve</h1>
@@ -436,6 +448,11 @@ function renderReviewApprove(d) {
     </div>
 
     ${subjectCards}
+
+    <div class="section">
+      <h2>Current live Canvas vs proposed</h2>
+      ${liveBlock}
+    </div>
 
     <div class="section">
       <h2>Approval history</h2>

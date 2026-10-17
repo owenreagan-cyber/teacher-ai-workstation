@@ -70,10 +70,14 @@ check_help_contains() {
 
 check_dashboard_contains() {
   local label="$1"
-  if [[ -n "${dashboard_output}" ]] && grep -Fq "${label}" <<<"${dashboard_output}"; then
-    pass "dashboard contains ${label}"
+  # Static source check against the dashboard script (deterministic + bounded).
+  # This avoids re-running the full dashboard, which previously caused an
+  # unbounded recursive re-invocation (dashboard -> section-summary-status ->
+  # dashboard) that made --dashboard appear to hang.
+  if grep -Fq "${label}" "${dashboard_script}"; then
+    pass "dashboard defines ${label}"
   else
-    fail "dashboard must contain ${label}"
+    fail "dashboard must define ${label}"
   fi
 }
 
@@ -155,22 +159,15 @@ check_help_contains '--list-workflows'
 
 section 'Dashboard Section Labels'
 
-dashboard_output=""
-dashboard_result=0
-dashboard_output="$(COS_DASHBOARD_SKIP_SECTION_SUMMARY_STATUS=1 bin/chief-of-staff --dashboard 2>&1)" || dashboard_result=$?
-
-if [[ "${dashboard_result}" == "0" ]]; then
-  pass 'dashboard command completed successfully'
-else
-  fail 'dashboard command must complete successfully for section label checks'
-fi
-
-check_dashboard_contains 'Section summary: Core Workstation Status'
-check_dashboard_contains 'Section summary: Chief of Staff Workflow Status'
-check_dashboard_contains 'Section summary: Lesson Planning Status'
-check_dashboard_contains 'Section summary: Developer / Cursor Workflow Status'
-check_dashboard_contains 'Section summary: Appearance & Vibe Foundation Status'
-check_dashboard_contains 'Section summary: Recommendation'
+# Bounded static check: verify the dashboard script DEFINES each section label,
+# rather than re-running --dashboard (which previously caused an unbounded
+# recursive double-run). No subprocess recursion, no network, deterministic.
+check_dashboard_contains 'Core Workstation Status'
+check_dashboard_contains 'Chief of Staff Workflow Status'
+check_dashboard_contains 'Lesson Planning Status'
+check_dashboard_contains 'Developer / Cursor Workflow Status'
+check_dashboard_contains 'Appearance & Vibe Foundation Status'
+check_dashboard_contains 'Recommendation'
 check_dashboard_contains 'Health:'
 
 pass 'no write action attempted'

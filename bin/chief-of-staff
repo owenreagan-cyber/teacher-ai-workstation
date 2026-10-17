@@ -165,6 +165,7 @@ Meta commands (grouped command map):
 
 Core Dashboard and Health:
   --dashboard                          Show local read-only Chief of Staff dashboard status proof and exit.
+  --dashboard-self-test                Run the bounded dashboard hardening self-test and exit.
   --dashboard-readability-status       Show Chief of Staff dashboard readability pass status and exit.
   --command-map-status                 Show Chief of Staff command map cleanup status and exit.
   --help-examples-status               Show Chief of Staff help examples polish status and exit.
@@ -1663,8 +1664,28 @@ while [[ $# -gt 0 ]]; do
       if [[ ! -f "${dashboard_script}" ]]; then
         die "Dashboard script is missing: scripts/chief-of-staff-dashboard.sh"
       fi
-      bash "${dashboard_script}"
-      exit 0
+      # Global dashboard deadline: the dashboard may never hang forever, even
+      # if a per-check timeout mechanism fails. Default 120s; overridable via
+      # COS_DASHBOARD_DEADLINE_SECS. On deadline, the bounded runner terminates
+      # the child and returns 124.
+      deadline="${COS_DASHBOARD_DEADLINE_SECS:-120}"
+      set +e
+      "${repo_root}/scripts/cos-run-bounded.sh" "${deadline}" bash "${dashboard_script}"
+      dashboard_rc=$?
+      set -e
+      if [[ "${dashboard_rc}" == "124" ]]; then
+        echo "WARN: dashboard exceeded global deadline of ${deadline}s and was terminated." >&2
+      fi
+      exit "${dashboard_rc}"
+      ;;
+    --dashboard-self-test)
+      repo_root="$(resolve_repo_root)"
+      test_script="${repo_root}/tests/chief-of-staff-dashboard-hardening-test.sh"
+      if [[ ! -f "${test_script}" ]]; then
+        die "Dashboard hardening self-test is missing: tests/chief-of-staff-dashboard-hardening-test.sh"
+      fi
+      bash "${test_script}"
+      exit $?
       ;;
     --lesson-status)
       repo_root="$(resolve_repo_root)"

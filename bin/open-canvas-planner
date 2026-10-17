@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+# Open the installed Canvas Planner macOS app.
+set -euo pipefail
+
+APP="${HOME}/Applications/Teacher Workstation - Canvas Planner.app"
+if [ ! -d "${APP}" ]; then
+  echo "Canvas Planner app is not installed at: ${APP}" >&2
+  echo "Run: bin/install-canvas-planner-app" >&2
+  exit 1
+fi
+exec open "${APP}"

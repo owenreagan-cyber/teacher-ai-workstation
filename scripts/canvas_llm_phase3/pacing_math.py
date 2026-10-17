@@ -49,6 +49,7 @@ _LESSON_RE = re.compile(r"^(?:L|Lesson)\s*(\d+)\s*$", re.IGNORECASE)
 _INV_RE = re.compile(r"^(?:INV|Investigation)\s*(\d+)\s*$", re.IGNORECASE)
 _WA_RE = re.compile(r"^(?:WA|Written\s+Assessment)\s*(\d+)\s*$", re.IGNORECASE)
 _FA_RE = re.compile(r"^(?:FA|Fact\s+Assessment)\s*(\d+)\s*$", re.IGNORECASE)
+_REVIEW_RE = re.compile(r"^Review$", re.IGNORECASE)
 
 
 def parse_math_tokens(raw: str) -> dict[str, Any]:
@@ -82,6 +83,8 @@ def parse_math_tokens(raw: str) -> dict[str, Any]:
             tokens.append({"kind": "written_assessment", "number": int(m.group(1)), "translation": f"Written Assessment {m.group(1)}"})
         elif (m := _FA_RE.match(core)):
             tokens.append({"kind": "fact_assessment", "number": int(m.group(1)), "translation": f"Fact Assessment {m.group(1)}"})
+        elif (m := _REVIEW_RE.match(core)):
+            tokens.append({"kind": "review", "number": None, "translation": "Review"})
         else:
             tokens.append({"kind": "unknown", "translation": core, "raw": core})
             unresolved.append(core)
@@ -225,6 +228,12 @@ def math_day_plan(
         at_home = None
         at_home_status = "no_homework"
         # No assignment; not an assessment, not a lesson accuracy grade.
+    elif token_kind == "review":
+        # Explicit "Review" is an in-class review day. No assignment is created;
+        # no At Home is invented (owner may add review text via teacher input).
+        in_class = ["Review"]
+        at_home = None
+        at_home_status = "no_homework"
     elif token_kind in ("written_assessment", "fact_assessment"):
         for t in tokens:
             if t["kind"] == "written_assessment":
@@ -372,6 +381,13 @@ def command_self_test() -> int:
     assert parse_math_tokens("Investigation 3")["tokens"][0]["translation"] == "Investigation 3"
     assert parse_math_tokens("WA6")["tokens"][0]["translation"] == "Written Assessment 6"
     assert parse_math_tokens("FA6")["tokens"][0]["translation"] == "Fact Assessment 6"
+
+    # Explicit "Review" is an in-class review day (no assignment, no At Home).
+    rev = parse_math_tokens("Review")
+    assert rev["tokens"][0]["kind"] == "review" and rev["resolved"] is True, rev
+    rev_day = math_day_plan("Review", "Wednesday", "2026-10-28", False, config)
+    assert rev_day["in_class"] == ["Review"] and rev_day["at_home_status"] == "no_homework"
+    assert rev_day["assignments"] == [] and rev_day["unresolved"] == []
 
     # Combined assessment token parses both, '*' surfaced as unresolved + marker.
     combined = parse_math_tokens("WA6/ FA6*")

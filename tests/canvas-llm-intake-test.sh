@@ -112,14 +112,25 @@ def _blank_week():
     return w
 
 bw = _blank_week()
-# History inactive in Q2 -> active_subjects excludes it; blank science Friday flagged.
+# History inactive in Q2 -> active_subjects excludes it.
 from scripts.canvas_llm_phase3 import week_workflow as wf
 active = wf.active_subjects("Q2W2", bw)
 assert "science" in active and "history" not in active
 
-qs_gen = qs.generate_questions(week=bw, subject_reports={}, assessment_events=[], reminder_events=[])
-assert any(q["subject"] == "science" and "blank" in q["reason"] for q in qs_gen), qs_gen
-print("PASS questions: blank cells flagged, inactive subject excluded")
+# Partial blank (only Friday blank) -> NO per-day blank question (collapse rule).
+qs_partial = qs.generate_questions(week=bw, subject_reports={}, assessment_events=[], reminder_events=[])
+assert not any(q["subject"] == "science" and "blank" in q["reason"] for q in qs_partial), qs_partial
+
+# Full-week blank active subject -> exactly ONE subject-level question.
+full_blank = json.loads(json.dumps(bw))
+for d in full_blank["days"].values():
+    d["subjects"]["science"]["raw"] = ""
+qs_full = qs.generate_questions(week=full_blank, subject_reports={}, assessment_events=[], reminder_events=[])
+sci_q = [q for q in qs_full if q["subject"] == "science"]
+assert len(sci_q) == 1, sci_q
+assert sci_q[0]["question_id"].endswith("all-blank"), sci_q
+assert "completely blank" in sci_q[0]["reason"]
+print("PASS questions: full-week blank collapses to one subject-level question; inactive subject excluded")
 
 # ---------------------------------------------------------------------------
 # 5. Manifest lifecycle: no auto-approval; monotonic; backward rejected.

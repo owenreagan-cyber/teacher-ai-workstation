@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+# Teacher Workstation — local read-only UI launcher.
+#
+# Starts the local-only UI server on 127.0.0.1:4310. No Canvas writes, no email,
+# no browser automation. Owen opens the printed URL himself.
+set -euo pipefail
+
+REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+
+exec python3 -m scripts.teacher_workstation "$@"

@@ -56,18 +56,20 @@ def generate_questions(
     assessment_events: list[dict[str, Any]],
     reminder_events: list[dict[str, Any]],
 ) -> list[dict[str, Any]]:
-    """Generate the set of intake questions from normalized pacing + drafts.
+    """Generate the minimal set of intake questions from normalized pacing.
 
-    Sources of ambiguity:
-      - unresolved tokens from deterministic translation (subject reports)
-      - same-day assessment + lesson conflicts
-      - blank cells (only flagged, never inferred)
-      - next-week assessments requiring an advance reminder this week
+    Standing rules encoded here:
+      - Blank pacing stays blank; a full-week blank ACTIVE subject collapses to
+        ONE subject-level question (never one question per blank day).
+      - An explicit Math "Review" token is an in-class review day (never asked
+        "is it a review?"); the only owner decision is whether to add At Home
+        review text.
+      - Noisy "assessment + lesson same day" and trailing-`*` marker questions
+        are suppressed (owner-confirmed).
     """
     questions: list[dict[str, Any]] = []
 
-    # 1. Unresolved tokens from subject translation. Two shapes are possible:
-    #    dict {"weekday", "token"} (math/translation) or a bare string (reading).
+    # 1. Unresolved tokens from subject translation (dict or bare-string shape).
     for subject, report in subject_reports.items():
         for u in (report or {}).get("unresolved") or []:
             if isinstance(u, dict):
@@ -76,10 +78,12 @@ def generate_questions(
             else:
                 wd = ""
                 token = str(u)
-            # OWNER-CONFIRMED (Q2W2): a trailing `*` on a Math assessment token
-            # (e.g. FA6* / FA7*) is operationally ignored — treat as the plain
-            # assessment, do not expose the marker, and do not re-ask.
+            # OWNER-CONFIRMED: trailing `*` on a Math assessment token is
+            # operationally ignored — never re-ask.
             if "trailing '*' marker" in token:
+                continue
+            # Explicit Math "Review" is a review day; not a translation ambiguity.
+            if subject == "math" and _is_review_token(token):
                 continue
             date = _day_date(week, wd)
             questions.append(new_question(
@@ -91,24 +95,47 @@ def generate_questions(
                 risk_if_guessed="inventing lesson/assessment content not in the source",
             ))
 
-    # 2. Blank science/history cells (flag, don't infer).
+    # 2. Blank active rotating subject — collapse to ONE subject-level question.
     rotating = _rotating_subject(week)
     if rotating:
+        cells = []
         for wd in ("Monday", "Tuesday", "Wednesday", "Thursday", "Friday"):
             day = (week.get("days") or {}).get(wd, {})
-            cell = day.get("subjects", {}).get(rotating, {}).get("raw", "")
-            if cell == "":
-                date = _day_date(week, wd)
-                questions.append(new_question(
-                    subject=rotating,
-                    date=date,
-                    source_text="",
-                    reason=f"{rotating} pacing cell is blank on {wd}",
-                    recommended_default="leave blank (no content generated)",
-                    risk_if_guessed="inventing review/lab/worksheet content",
-                ))
+            raw = day.get("subjects", {}).get(rotating, {}).get("raw", "")
+            cells.append(raw)
+        if all(c == "" for c in cells):
+            code = week.get("week", {}).get("code", "")
+            questions.append(new_question(
+                subject=rotating,
+                date="",
+                source_text="",
+                reason=f"{rotating} pacing is completely blank for {code}",
+                recommended_default="leave Science out for the week (no content generated)",
+                risk_if_guessed="inventing review/lab/test-prep content",
+                question_id=f"{rotating}-{code.lower()}-all-blank",
+            ))
 
-    # 3. Next-week assessment -> advance reminder this week.
+    # 3. Math "Review" day: one At Home decision question (never "is it review?").
+    math_report = subject_reports.get("math") or {}
+    for wd, day in (math_report.get("days") or {}).items():
+        if _is_review_day(day):
+            date = _day_date(week, wd)
+            # Find the following day's assessments for the prompt context.
+            code = week.get("week", {}).get("code", "")
+            questions.append(new_question(
+                subject="math",
+                date=date,
+                source_text="Review",
+                reason=(
+                    f"{wd} is an explicit Review day. Should the Math page include "
+                    "an At Home review/study reminder that evening, or omit At Home?"
+                ),
+                recommended_default="omit At Home unless Owen explicitly adds review text",
+                risk_if_guessed="could invent homework not present in pacing",
+                question_id=f"math-{code.lower()}-{wd.lower()}-review-at-home",
+            ))
+
+    # 4. Next-week assessment -> advance reminder this week.
     for ev in reminder_events:
         if ev.get("advance_reminder_this_week"):
             questions.append(new_question(
@@ -120,29 +147,30 @@ def generate_questions(
                 risk_if_guessed="missing an assessment parents should know about",
             ))
 
-    # 4. Same-day assessment + lesson conflict (generic).
-    for subject, report in subject_reports.items():
-        for wd, day in (report.get("days") or {}).items():
-            if _day_has_assessment_and_lesson(day):
-                date = _day_date(week, wd)
-                questions.append(new_question(
-                    subject=subject,
-                    date=date,
-                    source_text=day.get("source", ""),
-                    reason=f"assessment and lesson both present on {wd}",
-                    recommended_default="show both; assessment takes priority for grading",
-                    risk_if_guessed="omitting one element",
-                ))
-
-    # De-duplicate by (subject, date, source_text, reason).
-    seen: set[tuple[str, str, str, str]] = set()
+    # De-duplicate by question_id (stable) then by content.
+    seen: set[str] = set()
+    seen_content: set[tuple[str, str, str, str]] = set()
     deduped: list[dict[str, Any]] = []
     for q in questions:
+        if q["question_id"] in seen:
+            continue
         key = (q["subject"], q["date"], q["source_text"], q["reason"])
-        if key not in seen:
-            seen.add(key)
-            deduped.append(q)
+        if key in seen_content:
+            continue
+        seen.add(q["question_id"])
+        seen_content.add(key)
+        deduped.append(q)
     return deduped
+
+
+def _is_review_token(token: str) -> bool:
+    return (token or "").strip().lower() in ("review",)
+
+
+def _is_review_day(day: dict[str, Any]) -> bool:
+    """True when a Math day plan is an explicit Review (in-class only)."""
+    src = (day.get("source") or "").strip()
+    return src.lower() == "review"
 
 
 def _day_date(week: dict[str, Any], weekday: str) -> str:
@@ -259,23 +287,49 @@ def command_self_test() -> int:
                       risk_if_guessed="y")
     assert q["question_id"] != q3["question_id"]
 
-    week = {
+    # Partial blank week (Science has content Tuesday) -> NO blank question
+    # (the collapse rule only fires on a FULL-week blank).
+    partial = {
         "week": {"code": "Q2W1"},
         "days": {
             "Monday": {"date": "2026-10-12", "subjects": {"science": {"raw": ""}}},
             "Tuesday": {"date": "2026-10-13", "subjects": {"science": {"raw": "Ch. 1"}}},
         },
     }
-    # Blank science cell produces a question; blank preservation verified.
-    qs = generate_questions(week=week, subject_reports={}, assessment_events=[], reminder_events=[])
-    assert any(q["subject"] == "science" and "blank" in q["reason"] for q in qs), qs
-    assert all(q["status"] == "OPEN" for q in qs)
+    qs = generate_questions(week=partial, subject_reports={}, assessment_events=[], reminder_events=[])
+    assert qs == [], qs  # not fully blank -> no collapse question
+
+    # Full-week blank active subject -> exactly ONE subject-level question.
+    full_blank = {
+        "week": {"code": "Q2W3"},
+        "days": {wd: {"date": f"2026-10-{26+i}", "subjects": {"science": {"raw": ""}}}
+                 for i, wd in enumerate(("Monday", "Tuesday", "Wednesday", "Thursday", "Friday"))},
+    }
+    qs2 = generate_questions(week=full_blank, subject_reports={}, assessment_events=[], reminder_events=[])
+    assert len(qs2) == 1, qs2
+    assert qs2[0]["question_id"] == "science-q2w3-all-blank", qs2
+    assert "completely blank" in qs2[0]["reason"]
+
+    # Math Review day -> one At Home question (stable id), never "is it review?".
+    math_report = {
+        "math": {"days": {"Wednesday": {"source": "Review", "in_class": ["Review"]}}}
+    }
+    week_review = {
+        "week": {"code": "Q2W3"},
+        "days": {"Wednesday": {"date": "2026-10-28", "subjects": {"math": {"raw": "Review"}}}},
+    }
+    qs3 = generate_questions(week=week_review, subject_reports=math_report,
+                             assessment_events=[], reminder_events=[])
+    review_q = [q for q in qs3 if q["subject"] == "math"]
+    assert len(review_q) == 1, qs3
+    assert review_q[0]["question_id"] == "math-q2w3-wednesday-review-at-home", review_q
+    assert "At Home" in review_q[0]["reason"]
 
     # apply_question_answers marks ANSWERED by stable ID.
-    answers = {q["question_id"]: {"answer": "leave blank", "answered_at": "x", "source": "OWNER_INPUT"}
-               for q in qs}
-    qs = apply_question_answers(qs, answers)
-    assert all(q["status"] == "ANSWERED" for q in qs)
+    answers = {q["question_id"]: {"answer": "x", "answered_at": "x", "source": "OWNER_INPUT"}
+               for q in qs2 + qs3}
+    all_q = apply_question_answers(qs2 + qs3, answers)
+    assert all(q["status"] == "ANSWERED" for q in all_q)
 
     print("PASS intake questions self-test")
     return 0

@@ -75,7 +75,6 @@ def draft_math_assessment_reminders(week: dict[str, Any]) -> list[dict[str, Any]
             "assessment_date": date,
             "written": written.get("title") if written else None,
             "fact": fact.get("title") if fact else None,
-            "fact_count": "40 subtraction facts" if power else None,
             "power_up": power.get("powerUpCode") if power else None,
             "body": body,
             "requires_teacher_approval": True,
@@ -168,9 +167,8 @@ def _math_body(date_display: str, written: dict[str, Any] | None, fact: dict[str
         lines.append("")
         lines.append(
             f"For Fact Assessment {fa}, students should practice using Power Up "
-            f"{power.get('powerUpCode')}. The Fact Assessment will include "
-            f"40 subtraction facts, so a few minutes of focused fact practice at home can be "
-            f"very helpful for building speed and confidence."
+            f"{power.get('powerUpCode')}. A few minutes of focused fact practice at home "
+            f"can be very helpful for building speed and confidence."
         )
         lines.append("")
         lines.append(

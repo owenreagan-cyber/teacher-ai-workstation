@@ -29,12 +29,15 @@ echo "PASS adapter self-test"
 python3 -m scripts.teacher_workstation.server self-test
 echo "PASS server self-test"
 
-# 4. Source scan: local-mutation routes terminate at local state (never Canvas),
-#    local-only bind, no secret emission.
+# 4. Source scan: local-mutation routes terminate at local state; the ONLY path
+#    to Canvas is the narrowly-scoped guarded deployment coordinator (never a
+#    generic proxy, never a direct phase22 write-transport import); local-only
+#    bind; no secret emission.
 python3 - <<'PY'
 from pathlib import Path
 src = Path("scripts/teacher_workstation/server.py").read_text()
 mut = Path("scripts/teacher_workstation/mutate.py").read_text()
+dep = Path("scripts/teacher_workstation/deploy.py").read_text()
 # POST/DELETE route to the local mutate layer; PUT/PATCH are 405.
 for verb in ("do_POST", "do_PUT", "do_PATCH", "do_DELETE"):
     assert verb in src, f"{verb} stub missing"
@@ -43,20 +46,30 @@ assert "read-only: no write route here" in src
 # Approval routes exist and are local-only.
 assert 'parts[4] == "approve"' in src, "approve route missing"
 assert 'parts[4] == "revoke-approval"' in src, "revoke-approval route missing"
-# No Canvas write machinery may be imported in the server or mutation layer.
-# Tokens are built dynamically so the scanner's own source never self-matches.
-for tok in ("canvas_connection_" + "manager", "canvas_" + "writer", "Phase22Live" + "CanvasClient",
-            "create_" + "assignment", "update_" + "page", "create_" + "announcement", "update_" + "announcement"):
-    assert tok not in src, f"Canvas write token {tok!r} in server"
-    assert tok not in mut, f"Canvas write token {tok!r} in mutate"
+# Guarded deployment routes exist and require production mode.
+assert 'parts[4] == "preflight"' in src, "preflight route missing"
+assert 'parts[4] == "deploy"' in src, "deploy route missing"
+assert "production" in dep and "production=true" in dep, "deploy must require production mode"
+# The UI server must NOT import phase22 write transport directly; it reaches
+# Canvas only through scripts/canvas_llm_deploy (the coordinator).
+for f in (src, mut, dep):
+    for tok in ("canvas_connection_" + "manager", "canvas_" + "writer", "Phase22Live" + "CanvasClient",
+                "create_" + "assignment", "update_" + "page", "create_" + "announcement",
+                "update_" + "announcement"):
+        assert tok not in f, f"Canvas write token {tok!r} leaked into UI server source"
+assert "scripts.canvas_llm_deploy" in dep, "deploy routes must delegate to the deployment coordinator"
+# No generic Canvas proxy routes.
+for f in (src, dep):
+    for tok in ("/canvas/request", "/canvas/object", "/canvas/update", "/canvas/"):
+        assert tok not in f, f"generic Canvas proxy token {tok!r} in UI server source"
 # Local-only bind.
 assert 'HOST = "127.0.0.1"' in src
 assert "0.0.0.0" not in src
-# No token/secret emission.
-for tok in ("CANVAS_TOKEN", "Authorization", "Bearer", "verifier=", "client_secret"):
-    assert tok not in src, f"forbidden token {tok!r} in server source"
-    assert tok not in mut, f"forbidden token {tok!r} in mutate source"
-print("PASS source safety: local-mutation-only, local-only bind, no Canvas write path, no secret emission")
+# No token/secret emission in UI server source.
+for f in (src, mut, dep):
+    for tok in ("CANVAS_TOKEN", "Authorization", "Bearer", "verifier=", "client_secret"):
+        assert tok not in f, f"forbidden token {tok!r} in UI server source"
+print("PASS source safety: guarded-deploy-only Canvas path, no proxy, local bind, no secrets")
 PY
 
 # 5. Live server smoke test (start, GET routes, verify read-only + no secrets).
@@ -221,6 +234,31 @@ d=json.load(sys.stdin)
 assert d['ready_to_publish'] is False, 'partial approval must not reach READY_TO_PUBLISH'
 print('PASS READY_TO_PUBLISH remains false after partial approval')
 "
+
+echo "--- deployment: preflight (dry-run) returns plan, no Canvas GET ---"
+curl -s -X POST "http://127.0.0.1:${PORT}/api/weeks/2/3/preflight" \
+  -H "Content-Type: application/json" -d '{"production": false}' \
+  | python3 -c "
+import sys,json
+d=json.load(sys.stdin)
+assert d['plan']['week_code']=='Q2W3', d
+assert 'LIVE CANVAS CONTEXT UNAVAILABLE' in d['warnings'][0], d['warnings']
+print('PASS dry-run preflight returns plan (no Canvas)')
+"
+
+echo "--- deployment: deploy without production mode is rejected ---"
+code="$(curl -s -o /dev/null -w "%{http_code}" -X POST "http://127.0.0.1:${PORT}/api/weeks/2/3/deploy" \
+  -H "Content-Type: application/json" \
+  -d '{"preflight_id":"x","expected_source_hash":"","expected_approval_snapshot_hash":"","owner_confirmation":"DEPLOY Q2W3","production":false}')"
+test "$code" = "400" || { echo "FAIL deploy without production returned $code (expected 400)"; exit 1; }
+echo "PASS deploy without production rejected"
+
+echo "--- deployment: no generic Canvas proxy route ---"
+for ep in "canvas/request" "canvas/object" "canvas/update"; do
+  code="$(curl -s -o /dev/null -w "%{http_code}" -X POST "http://127.0.0.1:${PORT}/api/weeks/2/3/$ep" -d '{}')"
+  test "$code" = "405" || { echo "FAIL /api/weeks/2/3/$ep returned $code (expected 405)"; exit 1; }
+done
+echo "PASS no generic Canvas proxy route"
 
 echo "--- no secrets in any API response ---"
 for ep in home status weeks completed; do

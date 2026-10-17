@@ -221,6 +221,24 @@ class Handler(BaseHTTPRequestHandler):
                         quarter=quarter, week=week, source_hash=source_hash,
                         subject=body.get("subject"), artifact_type=body.get("artifact_type"))
                     self._send_json(200, result)
+                elif len(parts) == 5 and parts[4] == "preflight":
+                    # POST /api/weeks/{q}/{w}/preflight — GET-only deployment preflight
+                    from . import deploy
+                    result = deploy.run_preflight(quarter=quarter, week=week,
+                                                  production=bool(body.get("production")))
+                    self._send_json(200, result)
+                elif len(parts) == 5 and parts[4] == "deploy":
+                    # POST /api/weeks/{q}/{w}/deploy — guarded production deploy
+                    from . import deploy
+                    result = deploy.run_deploy(
+                        quarter=quarter, week=week,
+                        preflight_id=body.get("preflight_id"),
+                        expected_source_hash=body.get("expected_source_hash") or "",
+                        expected_approval_snapshot_hash=body.get("expected_approval_snapshot_hash") or "",
+                        owner_confirmation=body.get("owner_confirmation") or "",
+                        production=bool(body.get("production")),
+                    )
+                    self._send_json(200, result)
                 else:
                     self._send_text(405, "read-only: no write route here")
             elif method == "DELETE":
@@ -237,7 +255,11 @@ class Handler(BaseHTTPRequestHandler):
         except (ValueError, KeyError) as exc:
             self._send_json(400, {"error": type(exc).__name__, "detail": str(exc)})
         except Exception as exc:  # noqa: BLE001 — never crash the UI
-            self._send_json(500, {"error": type(exc).__name__})
+            from scripts.canvas_llm_deploy.coordinator import DeploymentBlocked
+            if isinstance(exc, DeploymentBlocked):
+                self._send_json(409, {"error": "DEPLOYMENT_BLOCKED", "detail": str(exc)})
+            else:
+                self._send_json(500, {"error": type(exc).__name__})
 
     def log_message(self, fmt, *args) -> None:  # noqa: N802
         # Quiet logging (no request spam on Owen's terminal).

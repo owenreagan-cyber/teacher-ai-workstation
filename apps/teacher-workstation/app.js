@@ -20,6 +20,7 @@ const NAV = [
   { id: 'announcements', label: 'Announcements' },
   { id: 'questions', label: 'Questions' },
   { id: 'review', label: 'Review & Approve' },
+  { id: 'deploy', label: 'Deploy' },
   { id: 'completed', label: 'Completed Weeks' },
   { id: 'system', label: 'System Status' },
 ];
@@ -476,6 +477,131 @@ function renderApprovalHistory(events) {
     </tr>`).join('')}</tbody></table>`;
 }
 
+async function viewDeploy() {
+  const d = await currentWeek();
+  if (!d) return '<h1>Deploy</h1><div class="empty">No prepared week.</div>';
+  STATE.detail = d;
+  return renderDeploy(d, null);
+}
+
+function renderDeploy(d, preflight) {
+  const ready = d.ready_to_publish;
+  const pf = preflight;
+  const counts = (pf && pf.plan && pf.plan.counts) || null;
+  const plan = (pf && pf.plan) || null;
+
+  const gateLine = ready
+    ? '<div class="pill pass">READY TO PUBLISH</div>'
+    : `<div class="pill warn">NOT READY</div><ul class="needs-list" style="margin-top:8px;">${(d.publish_blockers || []).map(b => `<li class="muted">· ${esc(b)}</li>`).join('')}</ul>`;
+
+  const preflightState = pf
+    ? (pf.ready ? '<div class="pill pass">PREFLIGHT PASSED</div>'
+        : '<div class="pill fail">PREFLIGHT BLOCKED</div>')
+    : '<div class="pill neutral">PREFLIGHT NOT RUN</div>';
+
+  const blockersHtml = pf && pf.blockers && pf.blockers.length
+    ? `<ul class="needs-list">${pf.blockers.map(b => `<li class="muted">· ${esc(b)}</li>`).join('')}</ul>`
+    : '';
+
+  const planHtml = plan ? `
+    <table><thead><tr><th>Action</th><th>Target</th><th>Course</th></tr></thead><tbody>
+      ${(plan.pages || []).map(p => `<tr><td>UPDATE</td><td>${esc(subjectLabel(p.subject))} page</td><td>${esc(p.course_id)}</td></tr>`).join('')}
+      ${(plan.assignments || []).map(a => `<tr><td>CREATE</td><td>${esc(a.title)}</td><td>${esc(a.course_id)}</td></tr>`).join('')}
+      ${(plan.weekly_announcements || []).map(a => `<tr><td>CREATE</td><td>${esc(a.title)} (scheduled)</td><td>${esc(a.course_id)}</td></tr>`).join('')}
+      ${(plan.assessment_reminders || []).map(a => `<tr><td>CREATE</td><td>${esc(a.title)}</td><td>${esc(a.course_id)}</td></tr>`).join('')}
+    </tbody></table>
+    <div class="kv"><span class="k">Pages update</span><span class="v">${counts.pages_update}</span></div>
+    <div class="kv"><span class="k">Assignments create</span><span class="v">${counts.assignments_create}</span></div>
+    <div class="kv"><span class="k">Announcements create</span><span class="v">${counts.announcements_create}</span></div>
+    <div class="kv"><span class="k">Deletions</span><span class="v">${counts.deletes}</span></div>`
+    : '<div class="empty">Run preflight to generate the exact write plan.</div>';
+
+  // Deploy control: disabled unless a ready preflight exists + production + confirmation.
+  const canDeploy = pf && pf.ready;
+  return `
+    ${banner()}
+    <h1>Deploy to Canvas</h1>
+    <p class="page-sub">${esc(d.week_code)} · ${statePill(d.status)}</p>
+
+    <div class="section">
+      <h2>Week status</h2>
+      <div class="kv"><span class="k">Lifecycle</span><span class="v">${statePill(d.status)}</span></div>
+      <div class="kv"><span class="k">Source hash</span><span class="v mono" style="font-size:11px;">${esc((d.source_hash || '').slice(0, 12))}</span></div>
+      <div class="kv"><span class="k">Publish readiness</span><span class="v">${gateLine}</span></div>
+    </div>
+
+    <div class="section">
+      <h2>Live preflight</h2>
+      <div class="kv"><span class="k">State</span><span class="v">${preflightState}</span></div>
+      ${blockersHtml}
+      <div class="btn-row" style="margin-top:8px;">
+        <button class="btn" id="btn-preflight" data-q="${d.quarter}" data-w="${d.week}">Run Preflight (dry-run)</button>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>Write plan</h2>
+      ${planHtml}
+    </div>
+
+    <div class="section">
+      <h2>Deploy</h2>
+      <div class="banner readonly">Production deployment is a guarded, explicit-consent action. It writes to live Canvas.</div>
+      <label class="field-label"><input type="checkbox" id="deploy-production"> Production mode (real Canvas writes)</label>
+      <label class="field-label">Confirmation (type <code>DEPLOY ${esc(d.week_code)}</code>)</label>
+      <input type="text" id="deploy-confirm" placeholder="DEPLOY ${esc(d.week_code)}" style="width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:8px;">
+      <div class="btn-row" style="margin-top:8px;">
+        <button class="btn" id="btn-deploy" data-q="${d.quarter}" data-w="${d.week}"
+          ${canDeploy ? '' : 'disabled'} style="${canDeploy ? '' : 'opacity:.4;cursor:not-allowed;'}">Confirm Deployment</button>
+      </div>
+      <div id="deploy-status" class="muted" style="margin-top:8px;"></div>
+    </div>
+  `;
+}
+
+async function runPreflight(q, w) {
+  try {
+    const pf = await api(`/api/weeks/${q}/${w}/preflight`, { method: 'POST', body: { production: false } });
+    STATE.prefight = pf;
+    const d = STATE.detail;
+    const main = $('main');
+    main.innerHTML = renderDeploy(d, pf);
+    bindInteractions();
+  } catch (e) {
+    alert(`Preflight failed: ${e.message}`);
+  }
+}
+
+async function runDeploy(q, w, production, confirmation) {
+  const pf = STATE.prefight;
+  if (!pf) { alert('Run preflight first.'); return; }
+  if (!production) { alert('Production mode must be enabled to deploy.'); return; }
+  const d = STATE.detail;
+  if ((confirmation || '').trim().toUpperCase() !== `DEPLOY ${d.week_code}`.toUpperCase()) {
+    alert(`Confirmation must be exactly "DEPLOY ${d.week_code}".`);
+    return;
+  }
+  if (!confirm('This will WRITE to live Canvas. Confirm? There is no automatic rollback.')) return;
+  try {
+    const rep = await api(`/api/weeks/${q}/${w}/deploy`, {
+      method: 'POST',
+      body: {
+        preflight_id: pf.preflight_id,
+        expected_source_hash: pf.source_hash,
+        expected_approval_snapshot_hash: pf.approval_snapshot_hash,
+        owner_confirmation: confirmation,
+        production: true,
+      },
+    });
+    const status = $('deploy-status');
+    if (status) status.innerHTML = rep.deployment_state === 'PUBLISHED_VERIFIED'
+      ? '<span class="pill pass">PUBLISHED &amp; VERIFIED</span>'
+      : '<span class="pill fail">PARTIAL DEPLOYMENT — ATTENTION REQUIRED</span>';
+  } catch (e) {
+    alert(`Deployment blocked: ${e.message}`);
+  }
+}
+
 async function viewCompleted() {
   const c = await api('/api/completed');
   const latest = c.latest;
@@ -638,6 +764,7 @@ async function render() {
       case 'announcements': html = await viewAnnouncements(); break;
       case 'questions': html = await viewQuestions(); break;
       case 'review': html = await viewReview(); break;
+      case 'deploy': html = await viewDeploy(); break;
       case 'completed': html = await viewCompleted(); break;
       case 'system': html = await viewSystem(); break;
       default: html = await viewHome();
@@ -706,6 +833,18 @@ function bindInteractions() {
       revokeArtifact(btn.dataset.revoke, btn.dataset.artifact);
     });
   });
+  const btnPreflight = $('btn-preflight');
+  if (btnPreflight) {
+    btnPreflight.addEventListener('click', () => runPreflight(btnPreflight.dataset.q, btnPreflight.dataset.w));
+  }
+  const btnDeploy = $('btn-deploy');
+  if (btnDeploy) {
+    btnDeploy.addEventListener('click', () => {
+      const production = $('deploy-production') ? $('deploy-production').checked : false;
+      const confirmation = $('deploy-confirm') ? $('deploy-confirm').value : '';
+      runDeploy(btnDeploy.dataset.q, btnDeploy.dataset.w, production, confirmation);
+    });
+  }
 }
 
 async function approveArtifact(subject, artifactType, expectedHash) {

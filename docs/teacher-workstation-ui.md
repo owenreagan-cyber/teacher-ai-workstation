@@ -63,7 +63,14 @@ POST   /api/weeks/{q}/{w}/assignments        REJECT / RESTORE an assignment prop
 POST   /api/weeks/{q}/{w}/announcements      edit weekly-update transition wording
 POST   /api/weeks/{q}/{w}/approve            approve one artifact (hash-bound)
 POST   /api/weeks/{q}/{w}/revoke-approval    revoke one artifact approval
+POST   /api/weeks/{q}/{w}/preflight          guarded deployment preflight (dry-run or GET-only)
+POST   /api/weeks/{q}/{w}/deploy             guarded production deploy (production-gated)
 ```
+
+The deployment routes are the **only** routes that can reach Canvas mutation
+code. They delegate to `scripts/canvas_llm_deploy/` (the guarded coordinator),
+require explicit production mode + confirmation, and never expose a generic
+Canvas proxy. See `docs/canvas-deployment-workflow.md`.
 
 `PUT`/`PATCH` are not implemented (405). No local route reaches Canvas
 mutation code — the server source statically forbids importing the Canvas
@@ -160,17 +167,14 @@ A week reaches `READY_TO_PUBLISH` only when **all** of the following hold:
 "All required artifacts are approved. Nothing has been written to Canvas."
 There is no DEPLOY / PUBLISH NOW / SEND TO CANVAS button.
 
-## Approval / deployment remain separate
+## Approval / deployment
 
-Approval is local only. There is no deploy button, no scheduling/publishing
-control, and no route that can reach Canvas mutation code. Deployment is a
-separate guarded workflow (Phase 4).
+Approval is local only. Deployment is a **separate guarded workflow** (Phase 4)
+behind the Deploy screen and the narrowly-scoped `/preflight` and `/deploy`
+routes. `READY_TO_PUBLISH` does not deploy. See
+`docs/canvas-deployment-workflow.md`.
 
 ## Future phases (documented only — not implemented)
 
-- **Phase 4** — guarded deployment (separate workflow): preflight, exact write
-  plan, explicit deploy confirmation, page updates, assignment create/update,
-  announcement create/schedule, post-write verification, `PUBLISHED_VERIFIED`,
-  rollback/corrective plans. Not pulled forward into Phase 3.
 - **Phase 5** — Homeroom/newsletter module.
 - **Phase 6** — broader Teacher Workstation modules.

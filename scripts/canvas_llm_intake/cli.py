@@ -238,6 +238,12 @@ def build_parser() -> argparse.ArgumentParser:
     sp.add_argument("--week", type=int, default=None)
     sp.set_defaults(func=cmd_status)
 
+    # Guarded Canvas deployment (preflight / deploy / verify). These delegate to
+    # scripts/canvas_llm_deploy/ (the only component that reaches Canvas mutation
+    # code); this file itself never contains write verbs.
+    from scripts.canvas_llm_deploy import cli as dcli
+    dcli.build_parser(sub)
+
     sub.add_parser("self-test").set_defaults(func=cmd_self_test)
     return p
 

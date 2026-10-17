@@ -55,6 +55,23 @@ class CanvasReadOnly:
         data = self._get(f"/api/v1/courses/{course_id}/assignments?per_page=100")
         return data if isinstance(data, list) else []
 
+    def get_course(self, course_id: int) -> dict[str, Any] | None:
+        """GET the course object (id, name, workflow_state)."""
+        return self._get(f"/api/v1/courses/{course_id}")
+
+    def list_assignment_groups(self, course_id: int) -> list[dict[str, Any]]:
+        data = self._get(f"/api/v1/courses/{course_id}/assignment_groups")
+        return data if isinstance(data, list) else []
+
+    def list_announcements(self, course_id: int) -> list[dict[str, Any]]:
+        data = self._get(f"/api/v1/courses/{course_id}/discussion_topics?only_announcements=true&per_page=100")
+        return data if isinstance(data, list) else []
+
+    def list_active_announcements(self) -> list[dict[str, Any]]:
+        """Account-wide active-only announcement feed (the canonical student-visibility signal)."""
+        data = self._get("/api/v1/announcements?active_only=true&per_page=100")
+        return data if isinstance(data, list) else []
+
 
 def command_self_test() -> int:
     # No network: verify the module has no write verbs. Tokens are constructed

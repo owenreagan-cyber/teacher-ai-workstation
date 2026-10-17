@@ -127,12 +127,26 @@ def run_preflight(quarter: int, week: int, client: DeployClient | None = None) -
         if found is None:
             blockers.append(f"{p['subject']}: weekly page missing (cannot create normal weekly page)")
             continue
+        pid = found.get("page_id") or found.get("id")
         live["pages"][p["subject"]] = {
-            "page_id": found.get("page_id") or found.get("id"),
+            "page_id": pid,
             "url": found.get("url"),
             "title": found.get("title"),
         }
-        p["live_page_id"] = found.get("page_id") or found.get("id")
+        p["live_page_id"] = pid
+
+        # Slug identity classification: a slug change (or a legacy slug that
+        # redirects to the same page_id) is INFO/WARN, NOT a blocker. Only a
+        # genuine identity conflict (different page_id) is fatal — and that is
+        # already guarded above via the resolved page_id being captured for
+        # readback. Record the classification for observability.
+        from . import page_identity as pidentity
+        classification = pidentity.classify_resolved_page(slug, found)
+        p["slug_classification"] = classification
+        if pidentity.slug_change_is_warning(classification):
+            warnings.append(f"{p['subject']}: canonical slug changed (page_id {pid} stable) — {classification}")
+        elif pidentity.slug_change_is_fatal(classification):
+            blockers.append(f"{p['subject']}: page identity conflict — {classification}")
 
     # ---- Assignment group routing (fail closed on missing group) --------
     groups_cache: dict[int, list[str]] = {}

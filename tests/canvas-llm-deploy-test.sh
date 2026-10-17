@@ -17,6 +17,7 @@ MODULES=(
   "scripts/canvas_llm_deploy/preflight.py"
   "scripts/canvas_llm_deploy/coordinator.py"
   "scripts/canvas_llm_deploy/cli.py"
+  "scripts/canvas_llm_deploy/page_identity.py"
   "scripts/canvas_llm_intake/canvas_readonly.py"
 )
 PYTHONPYCACHEPREFIX="${TMPDIR:-/tmp}/teacher-ai-workstation-pycache" python3 -m py_compile "${MODULES[@]}"
@@ -29,6 +30,7 @@ python3 -m scripts.canvas_llm_deploy.ledger self-test
 python3 -m scripts.canvas_llm_deploy.preflight self-test
 python3 -m scripts.canvas_llm_deploy.coordinator self-test
 python3 -m scripts.canvas_llm_deploy.cli self-test
+python3 -m scripts.canvas_llm_deploy.page_identity self-test
 echo "PASS deploy module self-tests"
 
 python3 - <<'PY'

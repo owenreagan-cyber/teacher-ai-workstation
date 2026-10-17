@@ -133,9 +133,10 @@ def cmd_approve(args: argparse.Namespace) -> int:
         return 2
 
     hashes = summary["draft_hashes"].get(args.subject, {})
+    src_hash = summary.get("source_hash")
     for g in targets:
         ap.set_state(quarter, week, args.subject, g, "APPROVED",
-                     draft_hash=hashes.get(g, ""), subjects=active)
+                     draft_hash=hashes.get(g, ""), source_hash=src_hash, subjects=active)
 
     # Recompute the gate now that approvals changed.
     intake.build_intake(quarter=quarter, week=week, fresh=False, canvas=None, include_canvas_context=False)

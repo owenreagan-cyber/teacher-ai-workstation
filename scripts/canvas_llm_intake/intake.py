@@ -314,11 +314,12 @@ def build_intake(
 
     # ---- 7. Approvals + READY_TO_PUBLISH gate -----------------------------
     approvals = ap.load_approvals(quarter, week, active)
-    # Invalidate any approval whose artifact changed (hash binding).
-    draft_hashes = _draft_hashes(active, subject_reports, assignments, announcements, pages)
+    # Invalidate any approval whose artifact OR source changed (hash binding).
+    draft_hashes = _draft_hashes(active, subject_reports, assignments, announcements, pages, assessment_reminders)
     for subject in active:
         ap.invalidate_if_stale(approvals, subject=subject,
-                               draft_hashes=draft_hashes.get(subject, {}))
+                               draft_hashes=draft_hashes.get(subject, {}),
+                               source_hash=m.get("source_hash"))
     ap.save_approvals(quarter, week, approvals)
 
     # Blocking question: any OPEN question that blocks publish (marker semantics
@@ -399,16 +400,30 @@ def _draft_hashes(
     assignments: list[dict[str, Any]],
     announcements: list[dict[str, Any]],
     pages: dict[str, Any],
+    assessment_reminders: list[dict[str, Any]] | None = None,
 ) -> dict[str, dict[str, str]]:
     """Compute a draft hash per subject granularity for approval binding."""
+    reminders = assessment_reminders or []
     hashes: dict[str, dict[str, str]] = {}
     for subject in active:
-        page_hash = _hash(json.dumps(pages.get(subject, {}).get("reminders", []), sort_keys=True))
+        # Page hash binds to the FULL rendered page HTML (reminders are a proxy;
+        # the page_html dict already holds agenda_hash). Prefer the full body hash
+        # when available so an edit to In Class/At Home actually invalidates page approval.
+        page_hash = pages.get(subject, {}).get("agenda_hash") or _hash(
+            json.dumps(pages.get(subject, {}).get("reminders", []), sort_keys=True))
         sub_assignments = [a for a in assignments if a["course"] == subject]
         assign_hash = _hash(json.dumps(sub_assignments, sort_keys=True, ensure_ascii=False))
         ann = next((a for a in announcements if a["course"] == _subject_label(subject)), None)
         ann_hash = _hash(json.dumps(ann or {}, sort_keys=True, ensure_ascii=False))
-        hashes[subject] = {"page": page_hash, "assignments": assign_hash, "announcement": ann_hash}
+        # Assessment reminder hash: bind to all reminders drafted for this subject.
+        sub_rems = [r for r in reminders if r.get("course") == _subject_label(subject)]
+        rem_hash = _hash(json.dumps(sub_rems, sort_keys=True, ensure_ascii=False)) if sub_rems else ""
+        hashes[subject] = {
+            "page": page_hash,
+            "assignments": assign_hash,
+            "announcement": ann_hash,
+            "assessment_reminder": rem_hash,
+        }
     return hashes
 
 

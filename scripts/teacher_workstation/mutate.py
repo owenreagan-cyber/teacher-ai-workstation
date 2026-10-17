@@ -18,6 +18,7 @@ from scripts.canvas_llm_intake import intake
 from scripts.canvas_llm_intake import manifest as imf
 from scripts.canvas_llm_intake import owner_overrides as ioo
 from scripts.canvas_llm_intake import teacher_input as iti
+from scripts.canvas_llm_intake import approval as iap
 
 # Owner-override statuses that come from the UI (allowed via PATCH).
 _UI_STATUSES = {"PLANNED", "PENDING_SOURCE", "OWNER_CONFIRMED_BLANK"}
@@ -149,6 +150,97 @@ def edit_announcement(
                     op="replace_announcement", value=transition)
     summary = _regenerate(quarter, week)
     return {"subject": subject, "summary": summary}
+
+
+def approve_artifact(
+    *,
+    quarter: int,
+    week: int,
+    subject: str,
+    artifact_type: str,
+    expected_artifact_hash: str,
+    source_hash: str | None = None,
+) -> dict[str, Any]:
+    """Approve an artifact, binding to the EXACT current draft + source hashes.
+
+    Rejects unknown subject/artifact-type, hash mismatch, stale source, and
+    artifacts that are blocked (pending source / unresolved question).
+    """
+    _assert_current(quarter, week, source_hash)
+
+    if artifact_type not in iap.GRANULARITIES:
+        raise ValueError(f"unknown artifact type {artifact_type!r}")
+
+    # Regenerate to obtain the CURRENT hashes + active subjects + gate context.
+    summary = intake.build_intake(quarter=quarter, week=week, fresh=False,
+                                  canvas=None, include_canvas_context=False)
+    active = summary["active_subjects"]
+    if subject not in active:
+        raise ValueError(f"subject {subject!r} not active for this week")
+
+    draft_hashes = summary["draft_hashes"].get(subject, {})
+    current_hash = draft_hashes.get(artifact_type, "")
+    if current_hash != expected_artifact_hash:
+        raise StaleEdit("artifact changed; refresh and review")
+
+    # Block approval if unresolved questions or pending-source materially affect the subject.
+    blockers = _subject_blockers(quarter, week, subject, summary)
+    if blockers:
+        raise ValueError("; ".join(blockers))
+
+    rec = iap.approve_artifact(
+        quarter, week, subject, artifact_type,
+        draft_hash=current_hash, source_hash=summary["source_hash"], subjects=active,
+    )
+    # Recompute the gate.
+    intake.build_intake(quarter=quarter, week=week, fresh=False, canvas=None, include_canvas_context=False)
+    return {"subject": subject, "artifact_type": artifact_type, "state": "APPROVED",
+            "draft_hash": current_hash, "source_hash": summary["source_hash"]}
+
+
+def revoke_artifact(
+    *,
+    quarter: int,
+    week: int,
+    subject: str,
+    artifact_type: str,
+    source_hash: str | None = None,
+) -> dict[str, Any]:
+    """Revoke an approval (local only), preserving history."""
+    _assert_current(quarter, week, source_hash)
+    if artifact_type not in iap.GRANULARITIES:
+        raise ValueError(f"unknown artifact type {artifact_type!r}")
+    summary = intake.build_intake(quarter=quarter, week=week, fresh=False,
+                                  canvas=None, include_canvas_context=False)
+    active = summary["active_subjects"]
+    iap.revoke_approval(quarter, week, subject, artifact_type, subjects=active)
+    intake.build_intake(quarter=quarter, week=week, fresh=False, canvas=None, include_canvas_context=False)
+    return {"subject": subject, "artifact_type": artifact_type, "state": "PENDING"}
+
+
+def _subject_blockers(quarter: int, week: int, subject: str, summary: dict[str, Any]) -> list[str]:
+    """Compute approval blockers for a subject (pending source + open questions).
+
+    An open question blocks the SUBJECT it belongs to. A pending-source day
+    blocks the subject's page/announcement/reminder (content can't be generated
+    for unresolved days).
+    """
+    from scripts.teacher_workstation import adapter
+
+    blockers: list[str] = []
+    detail = adapter.week_detail(quarter, week)
+    if not detail:
+        return blockers
+    # Open questions belonging to this subject.
+    for q in detail.get("open_questions", []):
+        if isinstance(q, dict) and q.get("subject") == subject:
+            blockers.append(f"unresolved question: {q.get('reason', '')[:80]}")
+            break
+    # Pending-source days for this subject block page/announcement/reminder.
+    for wd, st in (detail.get("day_states", {}).get(subject, {}) or {}).items():
+        if st in ("PENDING_SOURCE", "NEEDS_INPUT"):
+            blockers.append(f"{wd} source pending")
+    return blockers
 
 
 def _affected(subject: str) -> list[str]:

@@ -34,22 +34,28 @@ echo "PASS server self-test"
 python3 - <<'PY'
 from pathlib import Path
 src = Path("scripts/teacher_workstation/server.py").read_text()
+mut = Path("scripts/teacher_workstation/mutate.py").read_text()
 # POST/DELETE route to the local mutate layer; PUT/PATCH are 405.
 for verb in ("do_POST", "do_PUT", "do_PATCH", "do_DELETE"):
     assert verb in src, f"{verb} stub missing"
 assert "from . import mutate" in src
 assert "read-only: no write route here" in src
-# No Canvas write machinery may be imported in the server. Tokens are built
-# dynamically so the scanner's own source never self-matches.
+# Approval routes exist and are local-only.
+assert 'parts[4] == "approve"' in src, "approve route missing"
+assert 'parts[4] == "revoke-approval"' in src, "revoke-approval route missing"
+# No Canvas write machinery may be imported in the server or mutation layer.
+# Tokens are built dynamically so the scanner's own source never self-matches.
 for tok in ("canvas_connection_" + "manager", "canvas_" + "writer", "Phase22Live" + "CanvasClient",
             "create_" + "assignment", "update_" + "page", "create_" + "announcement", "update_" + "announcement"):
     assert tok not in src, f"Canvas write token {tok!r} in server"
+    assert tok not in mut, f"Canvas write token {tok!r} in mutate"
 # Local-only bind.
 assert 'HOST = "127.0.0.1"' in src
 assert "0.0.0.0" not in src
 # No token/secret emission.
 for tok in ("CANVAS_TOKEN", "Authorization", "Bearer", "verifier=", "client_secret"):
     assert tok not in src, f"forbidden token {tok!r} in server source"
+    assert tok not in mut, f"forbidden token {tok!r} in mutate source"
 print("PASS source safety: local-mutation-only, local-only bind, no Canvas write path, no secret emission")
 PY
 
@@ -161,6 +167,61 @@ else
   echo "SKIP question test (no open questions)"
 fi
 
+echo "--- approval: block on pending source (Science Q2W3) ---"
+SCI_PAGE_HASH="$(curl -s "http://127.0.0.1:${PORT}/api/week/2/3" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d['draft_hashes']['science']['page'])")"
+code="$(curl -s -o /dev/null -w "%{http_code}" -X POST "http://127.0.0.1:${PORT}/api/weeks/2/3/approve" \
+  -H "Content-Type: application/json" \
+  -d "{\"source_hash\":\"$SH\",\"subject\":\"science\",\"artifact_type\":\"page\",\"expected_artifact_hash\":\"$SCI_PAGE_HASH\"}")"
+test "$code" = "400" || { echo "FAIL Science approval returned $code (expected 400 blocked-by-pending-source)"; exit 1; }
+echo "PASS Science approval blocked by pending source"
+
+echo "--- approval: wrong artifact hash rejected (409 STALE) ---"
+code="$(curl -s -o /dev/null -w "%{http_code}" -X POST "http://127.0.0.1:${PORT}/api/weeks/2/3/approve" \
+  -H "Content-Type: application/json" \
+  -d "{\"source_hash\":\"$SH\",\"subject\":\"math\",\"artifact_type\":\"page\",\"expected_artifact_hash\":\"WRONG\"}")"
+test "$code" = "409" || { echo "FAIL wrong hash returned $code (expected 409)"; exit 1; }
+echo "PASS wrong artifact hash rejected with 409"
+
+echo "--- approval: Math page blocked by unresolved question ---"
+MATH_PAGE_HASH="$(curl -s "http://127.0.0.1:${PORT}/api/week/2/3" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d['draft_hashes']['math']['page'])")"
+code="$(curl -s -o /dev/null -w "%{http_code}" -X POST "http://127.0.0.1:${PORT}/api/weeks/2/3/approve" \
+  -H "Content-Type: application/json" \
+  -d "{\"source_hash\":\"$SH\",\"subject\":\"math\",\"artifact_type\":\"page\",\"expected_artifact_hash\":\"$MATH_PAGE_HASH\"}")"
+test "$code" = "400" || { echo "FAIL Math approval with open question returned $code (expected 400)"; exit 1; }
+echo "PASS Math approval blocked by unresolved question"
+
+echo "--- resolve Math question (owner decision), then approve page ---"
+MATH_QID="$(curl -s "http://127.0.0.1:${PORT}/api/week/2/3" | python3 -c "import sys,json; d=json.load(sys.stdin); print(next(q['question_id'] for q in d['open_questions'] if q['subject']=='math'))")"
+curl -s -X POST "http://127.0.0.1:${PORT}/api/weeks/2/3/questions/${MATH_QID}/answer" \
+  -H "Content-Type: application/json" \
+  -d "{\"source_hash\":\"$SH\",\"answer\":\"Yes — At Home: Study for tomorrow's test.\"}" \
+  | python3 -c "import sys,json; d=json.load(sys.stdin); assert d['answered']=='$MATH_QID'; print('PASS Math question answered')"
+# Re-fetch hash AFTER regeneration.
+MATH_PAGE_HASH="$(curl -s "http://127.0.0.1:${PORT}/api/week/2/3" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d['draft_hashes']['math']['page'])")"
+curl -s -X POST "http://127.0.0.1:${PORT}/api/weeks/2/3/approve" \
+  -H "Content-Type: application/json" \
+  -d "{\"source_hash\":\"$SH\",\"subject\":\"math\",\"artifact_type\":\"page\",\"expected_artifact_hash\":\"$MATH_PAGE_HASH\"}" \
+  | python3 -c "import sys,json; d=json.load(sys.stdin); assert d['state']=='APPROVED'; print('PASS Math page approved')"
+curl -s "http://127.0.0.1:${PORT}/api/week/2/3" | python3 -c "
+import sys,json
+d=json.load(sys.stdin)
+rec=d['approval_records']['math']['page']
+assert rec['state']=='APPROVED' and rec['approved_by']=='OWNER_UI', rec
+print('PASS approval recorded with OWNER_UI provenance + hash binding')
+"
+curl -s -X POST "http://127.0.0.1:${PORT}/api/weeks/2/3/revoke-approval" \
+  -H "Content-Type: application/json" \
+  -d "{\"source_hash\":\"$SH\",\"subject\":\"math\",\"artifact_type\":\"page\"}" \
+  | python3 -c "import sys,json; d=json.load(sys.stdin); assert d['state']=='PENDING'; print('PASS Math page approval revoked')"
+
+echo "--- approval: READY_TO_PUBLISH remains false after partial approval ---"
+curl -s "http://127.0.0.1:${PORT}/api/week/2/3" | python3 -c "
+import sys,json
+d=json.load(sys.stdin)
+assert d['ready_to_publish'] is False, 'partial approval must not reach READY_TO_PUBLISH'
+print('PASS READY_TO_PUBLISH remains false after partial approval')
+"
+
 echo "--- no secrets in any API response ---"
 for ep in home status weeks completed; do
   curl -s "http://127.0.0.1:${PORT}/api/$ep" | grep -qiE "CANVAS_TOKEN|Authorization|Bearer|verifier=|client_secret" && { echo "FAIL secret leaked on /api/$ep"; exit 1; }
@@ -170,11 +231,16 @@ echo "PASS no secrets leaked in API responses"
 kill $SERVER_PID 2>/dev/null || true
 trap - EXIT
 
-# Restore Q2W3 to a clean state (remove any test-created overrides/answers and regenerate).
+# Restore Q2W3 to a clean state (remove test-created overrides/answers/approvals and regenerate, no network).
 rm -f .local/canvas-llm/intake/2026-2027/q2/w3/owner-overrides.json
 rm -f .local/canvas-llm/intake/2026-2027/q2/w3/teacher-input.json
-python3 -m scripts.canvas_llm_intake.cli prepare-next --fresh >/dev/null 2>&1 || true
-echo "cleanup: Q2W3 packet regenerated to clean state"
+rm -f .local/canvas-llm/intake/2026-2027/q2/w3/approvals/approval-manifest.json
+python3 - <<'PY'
+from scripts.canvas_llm_intake import intake
+intake.build_intake(quarter=2, week=3, fresh=False, canvas=None, include_canvas_context=False)
+print("cleanup: Q2W3 packet regenerated to clean state (no network)")
+PY
+
 
 echo "PASS: Teacher Workstation UI tests complete"
 echo "PASS Teacher Workstation UI tests complete"

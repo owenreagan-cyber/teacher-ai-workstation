@@ -79,7 +79,15 @@ FAIL: 0
 Health: <passing>/<total> checks passing
 ```
 
-**Exit code:** The dashboard exits `0` when it completes successfully, even if the Summary shows FAIL rows. Only critical failures (such as an unresolvable repo root) exit non-zero. Treat non-zero FAIL counts in the Summary as actionable status, not as implied by the process exit code.
+**Exit code:** The dashboard uses deterministic aggregate semantics consistent with the other status scripts (`phase-1-status.sh`, `teacher-workstation-ui-status.sh`, `canvas-deployment-status.sh`):
+
+```text
+0 = overall PASS   (no WARN, no FAIL)
+1 = WARN           (at least one WARN, no FAIL)
+2 = FAIL           (at least one FAIL)
+```
+
+A timed-out dashboard (global deadline) returns `124`. Treat FAIL rows as actionable status that blocks a clean `0` exit.
 
 Warnings are not always blockers. Missing future/planned items, missing `llm`, or stale memory may be warnings that Owen can review manually.
 
@@ -172,6 +180,34 @@ These commands are also read-only status proof surfaces unless explicitly named 
 - `bin/chief-of-staff --wallpaper-photo-rotation-handoff-safety-status` (Appearance & Vibe foundation parked; live curator not started)
 
 Status command output is not implementation activation. For parked vs active tracks, see `docs/phase-1-chief-of-staff-status-audit.md` — Repo-Wide Parked Tracks and Active Status Map.
+
+## Reliability, Timeouts, and the Global Deadline
+
+The dashboard is **bounded by construction** and can never hang indefinitely:
+
+- **Recursion guard** — `scripts/dashboard-section-summary-status.sh` checks the
+  dashboard script's source for section labels instead of re-invoking
+  `bin/chief-of-staff --dashboard`. A prior recursive re-invocation made the
+  dashboard appear to hang by running the entire dashboard a second time.
+- **Per-check containment** — `capture_command` in the dashboard runs each child
+  through `scripts/cos-run-bounded.sh` with a bounded timeout (default 60s,
+  overridable via `COS_DASHBOARD_CAPTURE_TIMEOUT_SECS`). A timed-out child is
+  terminated (TERM then KILL) with no orphan process left behind.
+- **Global dashboard deadline** — `bin/chief-of-staff --dashboard` wraps the
+  whole run in `cos-run-bounded.sh` with a hard ceiling (default 120s,
+  overridable via `COS_DASHBOARD_DEADLINE_SECS`). If the deadline is reached the
+  run is terminated and returns `124`.
+
+Timeout semantics: local status checks that time out are treated as FAIL (they
+are required local state); the global deadline is a WARN-level containment net.
+One failing or timed-out subsystem does not prevent later sections from
+rendering.
+
+Run the hardening self-test with:
+
+```bash
+bin/chief-of-staff --dashboard-self-test
+```
 
 ## Future Ideas Not Implemented
 

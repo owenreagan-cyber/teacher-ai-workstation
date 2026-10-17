@@ -60,9 +60,13 @@ capture_command() {
   local __result_var="$2"
   local output=""
   local result=0
+  local timeout_secs="${COS_DASHBOARD_CAPTURE_TIMEOUT_SECS:-60}"
   shift 2
 
-  output="$("$@" 2>&1)" || result=$?
+  # Bounded subprocess capture via the standalone runner (which handles timeout
+  # + clean child cleanup + exit 124 on timeout). `|| result=$?` keeps this
+  # `set -e`-safe: a nonzero child exit is captured, not fatal.
+  output="$("${BASH_SOURCE%/*}/cos-run-bounded.sh" "${timeout_secs}" "$@" 2>&1)" || result=$?
   printf -v "${__output_var}" '%s' "${output}"
   printf -v "${__result_var}" '%s' "${result}"
 }
@@ -3440,7 +3444,14 @@ printf 'Health: %s/%s checks passing\n' "${PASS_COUNT}" "$((PASS_COUNT + WARN_CO
 
 end_section_summary "Final Health Summary"
 
-if (( CRITICAL_FAILURE > 0 )); then
+# Deterministic exit-code semantics (documented in docs/chief-of-staff-dashboard.md):
+#   0 = overall PASS   (no WARN, no FAIL)
+#   1 = WARN           (at least one WARN, no FAIL)
+#   2 = FAIL           (at least one FAIL)
+#   Critical failure (unresolvable repo root) is treated as FAIL (exit 2).
+if (( FAIL_COUNT > 0 )); then
+  exit 2
+elif (( WARN_COUNT > 0 )); then
   exit 1
 fi
 

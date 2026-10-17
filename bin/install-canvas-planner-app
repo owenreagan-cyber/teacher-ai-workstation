@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+# Install (or rebuild + replace) the Canvas Planner macOS app to ~/Applications.
+set -euo pipefail
+
+REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+exec bash "${REPO_ROOT}/scripts/canvas_planner_app/build_app.sh" --install "$@"

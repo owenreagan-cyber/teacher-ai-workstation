@@ -18,6 +18,7 @@ MODULES=(
   "scripts/canvas_llm_intake/approval.py"
   "scripts/canvas_llm_intake/reminders.py"
   "scripts/canvas_llm_intake/scheduling.py"
+  "scripts/canvas_llm_intake/owner_overrides.py"
   "scripts/canvas_llm_intake/intake.py"
   "scripts/canvas_llm_intake/cycle.py"
   "scripts/canvas_llm_intake/cli.py"
@@ -218,11 +219,44 @@ try:
     data = ti2.load_input(2, 2)
     assert data["question_answers"]["1"]["answer"] == "Interpret as Lesson 41"
     assert "SM5: Lesson 36 Homework" in data["subjects"]["math"]["reject_assignments"]
-    # Source snapshot never touched (separate file, not input).
-    assert "question_answers" not in (Path(_tmp) / "q2w2" / "source").as_posix() if False else True
     print("PASS teacher input: answer + reject + deterministic store")
 finally:
     mf2.staging_dir = _mf_orig
+
+# ---------------------------------------------------------------------------
+# 10b. Owner overrides: create / edit / restore / mark blank+ pending, with
+#      audit history and fail-closed status validation.
+# ---------------------------------------------------------------------------
+import scripts.canvas_llm_intake.owner_overrides as oo2
+_oo_orig = mf2.staging_dir
+try:
+    _oo_tmp = tempfile.mkdtemp()
+    mf2.staging_dir = lambda q, w: Path(_oo_tmp) / f"q{q}w{w}"
+    oo2.upsert_override(2, 3, subject="math", day="Wednesday", source_value="Review",
+                        in_class=["Review"], at_home="Study for tomorrow's test.", status="PLANNED")
+    rec = oo2.day_override(2, 3, "math", "Wednesday")
+    assert rec["at_home"] == "Study for tomorrow's test." and rec["source"] == "OWNER_INPUT"
+    assert len(rec["history"]) == 1
+    # edit (not duplicate)
+    oo2.upsert_override(2, 3, subject="math", day="Wednesday", at_home="Study harder.")
+    assert oo2.day_override(2, 3, "math", "Wednesday")["at_home"] == "Study harder."
+    # mark blank / pending
+    oo2.mark_blank(2, 3, "science", "Monday")
+    oo2.mark_pending(2, 3, "language_arts", "Wednesday")
+    assert oo2.day_override(2, 3, "science", "Monday")["status"] == "OWNER_CONFIRMED_BLANK"
+    assert oo2.day_override(2, 3, "language_arts", "Wednesday")["status"] == "PENDING_SOURCE"
+    # restore source deactivates
+    assert oo2.restore_source(2, 3, "math", "Wednesday") is True
+    assert oo2.day_override(2, 3, "math", "Wednesday") is None
+    # invalid status fails closed
+    try:
+        oo2.upsert_override(2, 3, subject="math", day="Monday", status="BOGUS")
+        raise AssertionError("expected ValueError")
+    except ValueError:
+        pass
+    print("PASS owner overrides: create/edit/restore/blank/pending + history + fail-closed")
+finally:
+    mf2.staging_dir = _oo_orig
 
 # ---------------------------------------------------------------------------
 # 11. Approval: explicit approval, hash binding, invalidation, gate.

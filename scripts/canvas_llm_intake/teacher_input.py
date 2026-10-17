@@ -56,7 +56,7 @@ def save_input(quarter: int, week: int, data: dict[str, Any]) -> Path:
     return path
 
 
-def answer_question(quarter: int, week: int, question_id: int, answer: str) -> dict[str, Any]:
+def answer_question(quarter: int, week: int, question_id: str, answer: str) -> dict[str, Any]:
     """Record a teacher answer to an open question (append to history)."""
     data = load_input(quarter, week)
     data["question_answers"][str(question_id)] = {

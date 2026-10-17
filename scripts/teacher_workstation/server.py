@@ -209,6 +209,18 @@ class Handler(BaseHTTPRequestHandler):
                         quarter=quarter, week=week, source_hash=source_hash,
                         subject=body.get("subject"), transition=body.get("transition"))
                     self._send_json(200, result)
+                elif len(parts) == 5 and parts[4] == "approve":
+                    # POST /api/weeks/{q}/{w}/approve
+                    result = mutate.approve_artifact(
+                        quarter=quarter, week=week, source_hash=source_hash,
+                        subject=body.get("subject"), artifact_type=body.get("artifact_type"),
+                        expected_artifact_hash=body.get("expected_artifact_hash"))
+                    self._send_json(200, result)
+                elif len(parts) == 5 and parts[4] == "revoke-approval":
+                    result = mutate.revoke_artifact(
+                        quarter=quarter, week=week, source_hash=source_hash,
+                        subject=body.get("subject"), artifact_type=body.get("artifact_type"))
+                    self._send_json(200, result)
                 else:
                     self._send_text(405, "read-only: no write route here")
             elif method == "DELETE":

@@ -19,7 +19,7 @@ const NAV = [
   { id: 'assignments', label: 'Assignments' },
   { id: 'announcements', label: 'Announcements' },
   { id: 'questions', label: 'Questions' },
-  { id: 'review', label: 'Review & Publish' },
+  { id: 'review', label: 'Review & Approve' },
   { id: 'completed', label: 'Completed Weeks' },
   { id: 'system', label: 'System Status' },
 ];
@@ -48,8 +48,10 @@ function statePill(state) {
     'PUBLISHED_VERIFIED': 'pass', 'READY_TO_PUBLISH': 'pass', 'READY_FOR_REVIEW': 'warn',
     'NEEDS_INPUT': 'warn', 'DRAFTED': 'pending', 'NORMALIZED': 'pending', 'SOURCE_FETCHED': 'pending',
     'APPROVED': 'pass', 'PENDING': 'pending', 'NEEDS_CHANGES': 'warn', 'BLOCKED': 'fail',
+    'STALE': 'fail', 'NOT_REQUIRED': 'neutral',
   };
-  return `<span class="pill ${map[state] || 'neutral'}">${esc(state)}</span>`;
+  const label = { 'PENDING': 'PENDING', 'STALE': 'APPROVAL STALE', 'NOT_REQUIRED': 'NOT REQUIRED', 'BLOCKED': 'BLOCKED' };
+  return `<span class="pill ${map[state] || 'neutral'}">${esc(label[state] || state)}</span>`;
 }
 
 function dayStatePill(state) {
@@ -103,9 +105,11 @@ async function viewHome() {
   const completed = h.latest_completed;
   const next = h.next_prepared;
   let needs = [];
+  let approval = null;
   if (next) {
     const detail = await api(`/api/week/${next.quarter}/${next.week}`);
     needs = detail.open_questions || [];
+    approval = approvalProgress(detail);
     // Also surface pending days for actionable "what needs Owen".
     const pending = [];
     for (const subj of SUBJECTS) {
@@ -114,17 +118,48 @@ async function viewHome() {
         if (st === 'PENDING_SOURCE' || st === 'NEEDS_INPUT') pending.push({ subject: subj.label, day: wd });
       }
     }
-    return renderHome(h, s, completed, next, needs, pending);
+    // Approval tasks needing Owen.
+    const approvalNeeds = approval ? approval.pendingApprovals.map(a => ({ subject: a.subject, artifact: a.artifact })) : [];
+    return renderHome(h, s, completed, next, needs, pending, approval, approvalNeeds);
   }
-  return renderHome(h, s, completed, next, needs, []);
+  return renderHome(h, s, completed, next, needs, [], approval, []);
 }
 
-function renderHome(h, s, completed, next, needs, pending) {
-  const needsHtml = (needs.length || pending.length)
-    ? `<ul class="needs-list">`
-      + pending.map(p => `<li><a href="#subject/${next.quarter}/${next.week}/${SUBJECTS.find(x=>x.label===p.subject).key}"><span class="q-subject">${esc(p.subject)}</span> — ${esc(p.day)} plan pending</a></li>`).join('')
-      + needs.map(q => `<li><a href="#questions"><span class="q-subject">${esc(subjectLabel(q.subject))}</span> — ${esc(q.reason)}</a></li>`).join('')
-      + `</ul>`
+function approvalProgress(d) {
+  const records = d.approval_records || {};
+  const subjects = d.active_subjects || [];
+  let approved = 0, required = 0;
+  const pendingApprovals = [];
+  for (const s of subjects) {
+    const hasAssignments = (d.assignments || []).some(a => a.course === s);
+    const hasReminder = (d.assessment_reminders || []).some(r => r.course === subjectLabel(s));
+    const requiredArtifacts = ['page', 'announcement'];
+    if (hasAssignments) requiredArtifacts.push('assignments');
+    if (hasReminder) requiredArtifacts.push('assessment_reminder');
+    for (const g of requiredArtifacts) {
+      required++;
+      const rec = (records[s] || {})[g] || {};
+      const st = rec.state || 'PENDING';
+      if (st === 'APPROVED') approved++;
+      else if (st === 'NOT_REQUIRED') { /* satisfied; still count as required, not pending */ }
+      else pendingApprovals.push({ subject: s, artifact: g });
+    }
+  }
+  return { approved, required, ready: d.ready_to_publish, pendingApprovals };
+}
+
+function renderHome(h, s, completed, next, needs, pending, approval, approvalNeeds) {
+  const approvalLine = approval && next
+    ? `<div class="kv"><span class="k">Approval</span><span class="v">${approval.approved} of ${approval.required} required artifacts approved</span></div>
+       <div class="kv"><span class="k">Publish readiness</span><span class="v">${approval.ready ? statePill('READY_TO_PUBLISH') : '<span class="pill warn">NOT READY</span>'}</span></div>`
+    : '';
+  const needsList = [
+    ...pending.map(p => `<li><a href="#subject/${next.quarter}/${next.week}/${SUBJECTS.find(x=>x.label===p.subject).key}"><span class="q-subject">${esc(p.subject)}</span> — ${esc(p.day)} plan pending</a></li>`),
+    ...approvalNeeds.map(a => `<li><a href="#review"><span class="q-subject">${esc(subjectLabel(a.subject))}</span> — ${esc(a.artifact.replace('_', ' '))} needs approval</a></li>`),
+    ...needs.map(q => `<li><a href="#questions"><span class="q-subject">${esc(subjectLabel(q.subject))}</span> — ${esc(q.reason)}</a></li>`),
+  ];
+  const needsHtml = needsList.length
+    ? `<ul class="needs-list">${needsList.join('')}</ul>`
     : '<div class="empty">Nothing pending.</div>';
 
   return `
@@ -147,7 +182,8 @@ function renderHome(h, s, completed, next, needs, pending) {
       <h2>Next prepared</h2>
       ${next ? `<div class="kv"><span class="k">Week</span><span class="v">${esc(next.week_code)}</span></div>
         <div class="kv"><span class="k">Status</span><span class="v">${statePill(next.status)}</span></div>
-        <div class="kv"><span class="k">Dates</span><span class="v">${esc(fmtRange(next.date_range))}</span></div>` : '<div class="empty">No next week prepared.</div>'}
+        <div class="kv"><span class="k">Dates</span><span class="v">${esc(fmtRange(next.date_range))}</span></div>
+        ${approvalLine}` : '<div class="empty">No next week prepared.</div>'}
     </div>
     <div class="section"><h2>What needs Owen?</h2>${needsHtml}</div>
     <div class="section"><h2>System status</h2><pre class="mono" style="white-space:pre-wrap;font-size:12.5px;">${esc(s.text)}</pre></div>
@@ -225,7 +261,9 @@ async function viewSubject(quarter, week, subject) {
     <div class="section"><h2>Assessment reminders (${rems.length})</h2>
       ${rems.length ? rems.map(r => `<div class="card"><div class="card-title">${esc(r.title)}</div><div class="card-meta">${esc(r.assessment_date || '')}${r.power_up ? ` · Power Up ${esc(r.power_up)}` : ''}</div></div>`).join('') : '<div class="empty">None.</div>'}
     </div>
-    <div class="section"><h2>Approvals</h2>${renderApprovals(approves)}</div>
+    <div class="section"><h2>Approvals</h2>${renderApprovals(approves)}
+      <p class="muted" style="margin-top:8px;">Approve or revoke in <a href="#review">Review &amp; Approve</a>.</p>
+    </div>
     <div class="section" id="editor-slot"></div>
   `;
 }
@@ -307,33 +345,118 @@ function renderQuestions(qs, d) {
 
 async function viewReview() {
   const d = await currentWeek();
-  if (!d) return '<h1>Review &amp; Publish</h1><div class="empty">No prepared week.</div>';
+  if (!d) return '<h1>Review &amp; Approve</h1><div class="empty">No prepared week.</div>';
+  STATE.detail = d;
+  return renderReviewApprove(d);
+}
+
+function artifactBlocked(d, subject) {
+  // A subject is blocked for approval if it has pending-source days or open questions.
+  const states = (d.day_states || {})[subject] || {};
+  const pendingDays = WEEKDAYS.filter(w => (states[w] === 'PENDING_SOURCE' || states[w] === 'NEEDS_INPUT'));
+  const openQ = (d.open_questions || []).filter(q => q.subject === subject);
+  const blockers = [];
+  if (pendingDays.length) blockers.push(`${pendingDays.join(', ')} source pending`);
+  if (openQ.length) blockers.push(`${openQ.length} open question${openQ.length > 1 ? 's' : ''}`);
+  return blockers;
+}
+
+function renderReviewApprove(d) {
   const ready = d.ready_to_publish;
-  const touched = d.active_subjects || [];
-  const untouched = SUBJECTS.map(s => s.label).filter(l => !touched.map(subjectLabel).includes(l));
+  const subjects = d.active_subjects || [];
+  const approvals = d.approval_records || {};
+  const hashes = d.draft_hashes || {};
+
+  const artifactsFor = (s) => {
+    const list = ['page', 'assignments', 'announcement', 'assessment_reminder'];
+    // Only show artifacts that actually exist/apply.
+    const hasAssignments = (d.assignments || []).some(a => a.course === s);
+    const hasReminder = (d.assessment_reminders || []).some(r => r.course === subjectLabel(s));
+    return list.filter(g => {
+      if (g === 'assignments') return hasAssignments;
+      if (g === 'assessment_reminder') return hasReminder;
+      return true; // page + announcement always
+    });
+  };
+
+  const subjectCards = subjects.map(s => {
+    const blockers = artifactBlocked(d, s);
+    const sHashes = hashes[s] || {};
+    const sAppr = approvals[s] || {};
+    const artRows = artifactsFor(s).map(g => {
+      const rec = sAppr[g] || {};
+      const state = rec.state || 'PENDING';
+      const blocked = blockers.length > 0 && state !== 'APPROVED' && state !== 'NOT_REQUIRED';
+      const hash = sHashes[g] || '';
+      const shortHash = hash ? hash.slice(0, 10) : '—';
+      const stale = state === 'APPROVED' && rec.draft_hash && rec.draft_hash !== hash;
+      const effectiveState = stale ? 'STALE' : (blocked ? 'BLOCKED' : state);
+      const label = effectiveState === 'PENDING' ? 'PENDING APPROVAL' : effectiveState;
+      const approveBtn = (state === 'APPROVED' || stale)
+        ? `<button class="btn neutral small" data-revoke="${s}" data-artifact="${g}">Revoke</button>`
+        : (blocked
+          ? `<span class="muted" style="font-size:12px;">blocked</span>`
+          : `<button class="btn small" data-approve="${s}" data-artifact="${g}" data-hash="${esc(hash)}">Approve</button>`);
+      return `<tr>
+        <td>${g.replace('_', ' ')}</td>
+        <td>${statePill(effectiveState === 'PENDING APPROVAL' ? 'PENDING' : effectiveState)}</td>
+        <td class="mono" style="font-size:11px;">${esc(shortHash)}</td>
+        <td>${approveBtn}</td>
+      </tr>`;
+    }).join('');
+
+    const blockerTxt = blockers.length ? `<div class="muted" style="margin-top:6px;">⚠ ${esc(blockers.join('; '))}</div>` : '';
+    return `<div class="section">
+      <h2>${subjectLabel(s)}</h2>
+      ${blockerTxt}
+      <table><thead><tr><th>Artifact</th><th>Approval</th><th>Hash</th><th></th></tr></thead><tbody>${artRows}</tbody></table>
+    </div>`;
+  }).join('');
+
+  // What prevents publishing panel.
+  const blockerLines = [];
+  if (d.publish_blockers && d.publish_blockers.length) {
+    blockerLines.push(...d.publish_blockers.map(b => `<li class="muted">· ${esc(b)}</li>`));
+  } else if (ready) {
+    blockerLines.push('<li class="muted">Nothing — ready to publish.</li>');
+  } else {
+    blockerLines.push('<li class="muted">Review subject approvals below.</li>');
+  }
+
   return `
     ${banner()}
-    <h1>Review &amp; Publish</h1>
-    <p class="page-sub">${esc(d.week_code)} — read-only preview.</p>
+    <h1>Review &amp; Approve</h1>
+    <p class="page-sub">${esc(d.week_code)} · ${statePill(d.status)}</p>
+
     <div class="section">
-      <h2>Ready to publish</h2>
-      <div class="kv"><span class="k">State</span><span class="v">${ready ? statePill('READY_TO_PUBLISH') : '<span class="pill warn">NOT READY</span>'}</span></div>
-      ${(d.publish_blockers || []).length ? `<div style="margin-top:8px;">${d.publish_blockers.map(b => `<div class="muted">· ${esc(b)}</div>`).join('')}</div>` : ''}
+      <h2>What still prevents READY_TO_PUBLISH?</h2>
+      ${ready
+        ? '<div class="pill pass">READY TO PUBLISH</div><p class="muted" style="margin-top:8px;">All required artifacts are approved. Nothing has been written to Canvas.</p>'
+        : `<div class="pill warn">NOT READY</div><ul class="needs-list" style="margin-top:8px;">${blockerLines.join('')}</ul>`}
     </div>
+
+    ${subjectCards}
+
     <div class="section">
-      <h2>What would happen (if approved)</h2>
-      <div class="kv"><span class="k">WILL UPDATE pages</span><span class="v">${(d.page_files ? Object.values(d.page_files).filter(p => p.exists).length : 0)}</span></div>
-      <div class="kv"><span class="k">WILL CREATE assignments</span><span class="v">${(d.assignments || []).length}</span></div>
-      <div class="kv"><span class="k">WILL POST announcements</span><span class="v">${(d.weekly_announcements || []).length}</span></div>
-      <div class="kv"><span class="k">Assessment reminders</span><span class="v">${(d.assessment_reminders || []).length}</span></div>
+      <h2>Approval history</h2>
+      ${renderApprovalHistory(d.approval_history || [])}
     </div>
-    <div class="section">
-      <h2>Courses</h2>
-      <div class="kv"><span class="k">Touched</span><span class="v">${touched.map(subjectLabel).join(', ') || '—'}</span></div>
-      <div class="kv"><span class="k">Untouched</span><span class="v">${untouched.join(', ') || '—'}</span></div>
-    </div>
-    <div class="banner readonly">Deployment is a separate, guarded workflow. No deploy button here.</div>
+
+    <div class="banner readonly">Approval is a <strong>local</strong> workflow. Nothing here writes to Canvas. Deployment is a separate Phase 4.</div>
   `;
+}
+
+function renderApprovalHistory(events) {
+  if (!events || !events.length) return '<div class="empty">No approval events yet.</div>';
+  const label = { set_approved: 'Approved', revoke: 'Revoked', invalidated: 'Invalidated', set_pending: 'Reset to pending', set_blocked: 'Blocked', set_not_required: 'Not required' };
+  return `<table><thead><tr><th>Time</th><th>Subject</th><th>Artifact</th><th>Action</th><th>Reason</th></tr></thead><tbody>
+    ${events.slice(0, 40).map(e => `<tr>
+      <td class="mono" style="font-size:11px;">${esc((e.at || '').slice(0, 19).replace('T', ' '))}</td>
+      <td>${subjectLabel(e.subject)}</td>
+      <td>${esc((e.granularity || '').replace('_', ' '))}</td>
+      <td>${esc(label[e.action] || e.action)}</td>
+      <td class="muted">${esc(e.reason || '')}</td>
+    </tr>`).join('')}</tbody></table>`;
 }
 
 async function viewCompleted() {
@@ -556,6 +679,49 @@ function bindInteractions() {
       rejectAssignment(btn.dataset.subject, btn.dataset.reject);
     });
   });
+  document.querySelectorAll('button[data-approve]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      approveArtifact(btn.dataset.approve, btn.dataset.artifact, btn.dataset.hash);
+    });
+  });
+  document.querySelectorAll('button[data-revoke]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      revokeArtifact(btn.dataset.revoke, btn.dataset.artifact);
+    });
+  });
+}
+
+async function approveArtifact(subject, artifactType, expectedHash) {
+  const d = STATE.detail;
+  if (!d) return;
+  const label = `${subjectLabel(subject)} ${artifactType.replace('_', ' ')}`;
+  if (!confirm(`You are approving this exact staged artifact: ${label}.\n\nIf it changes later, this approval will automatically become stale.\n\nConfirm approval?`)) return;
+  try {
+    await api(`/api/weeks/${d.quarter}/${d.week}/approve`, {
+      method: 'POST',
+      body: { source_hash: d.source_hash, subject, artifact_type: artifactType, expected_artifact_hash: expectedHash },
+    });
+    STATE.detail = await api(`/api/week/${d.quarter}/${d.week}`);
+    render();
+  } catch (e) {
+    alert(`Could not approve: ${e.message}`);
+  }
+}
+
+async function revokeArtifact(subject, artifactType) {
+  const d = STATE.detail;
+  if (!d) return;
+  if (!confirm(`Revoke approval for ${subjectLabel(subject)} ${artifactType.replace('_', ' ')}?`)) return;
+  try {
+    await api(`/api/weeks/${d.quarter}/${d.week}/revoke-approval`, {
+      method: 'POST',
+      body: { source_hash: d.source_hash, subject, artifact_type: artifactType },
+    });
+    STATE.detail = await api(`/api/week/${d.quarter}/${d.week}`);
+    render();
+  } catch (e) {
+    alert(`Could not revoke: ${e.message}`);
+  }
 }
 
 function bindEditorButtons(subject, day) {

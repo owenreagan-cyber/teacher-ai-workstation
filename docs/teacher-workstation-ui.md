@@ -61,11 +61,26 @@ POST   /api/weeks/{q}/{w}/mark-blank         mark a day intentionally blank
 POST   /api/weeks/{q}/{w}/questions/{id}/answer   answer a question
 POST   /api/weeks/{q}/{w}/assignments        REJECT / RESTORE an assignment proposal
 POST   /api/weeks/{q}/{w}/announcements      edit weekly-update transition wording
+POST   /api/weeks/{q}/{w}/approve            approve one artifact (hash-bound)
+POST   /api/weeks/{q}/{w}/revoke-approval    revoke one artifact approval
 ```
 
 `PUT`/`PATCH` are not implemented (405). No local route reaches Canvas
 mutation code — the server source statically forbids importing the Canvas
 write transport.
+
+### Approval payload (POST /approve)
+
+```json
+{ "source_hash": "<packet source hash>",
+  "subject": "math",
+  "artifact_type": "page | assignments | announcement | assessment_reminder",
+  "expected_artifact_hash": "<current draft hash>" }
+```
+
+Rejects (never coerces): unknown subject/artifact type, hash mismatch
+(`409 STALE`), stale source (`409 STALE`), artifact blocked by pending source
+or unresolved question, or an already-stale artifact.
 
 ## Interactive planning (Phase 2)
 
@@ -100,14 +115,62 @@ write transport.
 - Payload validation + unknown-field rejection; no shell/command execution
   from browser input; no path traversal.
 
+## Approval controls (Phase 3)
+
+Approval is an **explicit, hash-bound, local-only** workflow. It reuses the
+single canonical approval engine (`scripts/canvas_llm_intake/approval.py`) —
+the UI does **not** create a second approval system.
+
+- **Granularity** — per subject per artifact: `page`, `assignments`,
+  `announcement`, `assessment_reminder`. Assignments are approved as a
+  **subject-level bundle** bound to a deterministic bundle hash (adding,
+  removing, or changing any member changes the bundle hash).
+- **Hash binding** — each approval records the exact artifact `draft_hash` and
+  the packet `source_hash`. If either changes, the approval becomes
+  `PENDING`/`STALE` automatically (never silently re-bound).
+- **Targeted invalidation** — editing one artifact invalidates only that
+  artifact's approval (and, for the announcement, anything that embeds its
+  content). Unrelated subjects and artifacts stay `APPROVED`.
+- **Provenance** — UI approvals record `approved_by = OWNER_UI`; CLI approvals
+  record `OWNER`. Both read/write the same `approval-manifest.json` (no
+  parallel ledgers).
+- **History** — every state change appends an audit event
+  (`approved` / `revoke` / `invalidated`) with timestamp, source, and reason.
+- **`NOT_REQUIRED`** — owner-confirmed-blank artifacts are marked
+  `NOT_REQUIRED` and do not require fake content or approval.
+- **Pending-source gate** — a subject with pending-source days (or an
+  unresolved question) is blocked (`BLOCKED BY PENDING SOURCE`); its artifacts
+  cannot be approved until resolved.
+- **Confirmation UX** — approval requires an explicit confirm step; there is no
+  blind "Approve All".
+
+### READY_TO_PUBLISH gate
+
+A week reaches `READY_TO_PUBLISH` only when **all** of the following hold:
+
+- no unresolved blocking questions
+- no required `PENDING_SOURCE`
+- no stale source conflict
+- all required artifacts generated
+- all required artifact hashes current
+- all required artifacts `APPROVED` (or `NOT_REQUIRED`)
+- no approval points at an old hash
+
+`READY_TO_PUBLISH` **does not deploy**. It shows
+"All required artifacts are approved. Nothing has been written to Canvas."
+There is no DEPLOY / PUBLISH NOW / SEND TO CANVAS button.
+
 ## Approval / deployment remain separate
 
-Phase 2 is planning/input only. No approval buttons, no deploy button, no
-scheduling/publishing controls.
+Approval is local only. There is no deploy button, no scheduling/publishing
+control, and no route that can reach Canvas mutation code. Deployment is a
+separate guarded workflow (Phase 4).
 
 ## Future phases (documented only — not implemented)
 
-- **Phase 3** — approvals in the UI.
-- **Phase 4** — guarded deployment (separate workflow).
+- **Phase 4** — guarded deployment (separate workflow): preflight, exact write
+  plan, explicit deploy confirmation, page updates, assignment create/update,
+  announcement create/schedule, post-write verification, `PUBLISHED_VERIFIED`,
+  rollback/corrective plans. Not pulled forward into Phase 3.
 - **Phase 5** — Homeroom/newsletter module.
 - **Phase 6** — broader Teacher Workstation modules.

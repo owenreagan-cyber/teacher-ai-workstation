@@ -283,6 +283,96 @@ finally:
     mf2.staging_dir = _ap_orig
 
 # ---------------------------------------------------------------------------
+# 11b. Approval Phase 3: OWNER_UI provenance, source-hash binding, revoke,
+#      history, NOT_REQUIRED, targeted invalidation, gate recalculation.
+# ---------------------------------------------------------------------------
+import scripts.canvas_llm_intake.approval as ap3
+_ap3_orig = mf2.staging_dir
+try:
+    _ap3_tmp = tempfile.mkdtemp()
+    mf2.staging_dir = lambda q, w: Path(_ap3_tmp) / f"q{q}w{w}"
+    subjects = ["math", "reading_spelling", "language_arts", "science"]
+
+    # approve_artifact records OWNER_UI + draft hash + source hash + history.
+    ap3.approve_artifact(2, 3, "math", "page", draft_hash="h_page", source_hash="s1", subjects=subjects)
+    data = ap3.load_approvals(2, 3, subjects)
+    rec = data["subjects"]["math"]["page"]
+    assert rec["state"] == "APPROVED" and rec["approved_by"] == "OWNER_UI"
+    assert rec["draft_hash"] == "h_page" and rec["source_hash"] == "s1"
+    assert len(rec["history"]) == 1 and rec["history"][0]["action"] == "set_approved"
+
+    # Targeted invalidation: unrelated subject approval preserved when math changes.
+    ap3.approve_artifact(2, 3, "reading_spelling", "announcement", draft_hash="h_r", source_hash="s1", subjects=subjects)
+    data = ap3.load_approvals(2, 3, subjects)
+    assert ap3.invalidate_if_stale(data, subject="math", draft_hashes={"page": "changed"}) is True
+    assert data["subjects"]["math"]["page"]["state"] == "PENDING"
+    assert data["subjects"]["reading_spelling"]["announcement"]["state"] == "APPROVED"
+    assert data["subjects"]["math"]["page"]["history"][-1]["action"] == "invalidated"
+
+    # Source-hash change invalidates (even when draft hash unchanged).
+    ap3.approve_artifact(2, 3, "math", "page", draft_hash="h_page", source_hash="s1", subjects=subjects)
+    data = ap3.load_approvals(2, 3, subjects)
+    assert ap3.invalidate_if_stale(data, subject="math", draft_hashes={"page": "h_page"}, source_hash="s2") is True
+    assert data["subjects"]["math"]["page"]["state"] == "PENDING"
+
+    # Revoke: removes active approval, preserves history.
+    ap3.approve_artifact(2, 3, "math", "announcement", draft_hash="h_a", source_hash="s1", subjects=subjects)
+    ap3.revoke_approval(2, 3, "math", "announcement", subjects=subjects)
+    data = ap3.load_approvals(2, 3, subjects)
+    assert data["subjects"]["math"]["announcement"]["state"] == "PENDING"
+    assert data["subjects"]["math"]["announcement"]["history"][-1]["action"] == "revoke"
+
+    # NOT_REQUIRED satisfies the gate (owner-confirmed blank).
+    ap3.mark_not_required(2, 3, "science", "page", subjects=subjects)
+    ap3.mark_not_required(2, 3, "science", "announcement", subjects=subjects)
+    data = ap3.load_approvals(2, 3, subjects)
+    assert data["subjects"]["science"]["page"]["state"] == "NOT_REQUIRED"
+    artifacts = {s: {"page", "announcement"} for s in subjects}
+    ready, blockers = ap3.ready_to_publish(data, subjects=subjects,
+                                           has_blocking_questions=False, artifacts=artifacts)
+    assert "science:page" not in blockers and "science:announcement" not in blockers
+
+    # Approval history is non-empty and newest-first.
+    hist = ap3.approval_history(2, 3, subjects)
+    assert len(hist) > 0
+    assert hist[0]["at"] >= hist[-1]["at"]
+
+    print("PASS approval Phase 3: OWNER_UI provenance, source binding, revoke, history, NOT_REQUIRED, targeted invalidation")
+finally:
+    mf2.staging_dir = _ap3_orig
+
+# ---------------------------------------------------------------------------
+# 11c. Draft-hash coupling: assignment bundle hash + announcement/page coupling.
+# ---------------------------------------------------------------------------
+import scripts.canvas_llm_intake.intake as inth
+_active = ["math", "science"]
+_assn_a = [{"course": "math", "title": "SM5: Lesson 41 Homework", "due_date": "2026-10-19"}]
+_assn_b = _assn_a + [{"course": "math", "title": "SM5: Lesson 42 Homework", "due_date": "2026-10-20"}]
+_ann = [{"course": "Math", "title": "Math Canvas Weekly Update", "agenda_hash": "pagehash-1"}]
+_pages = {"math": {"agenda_hash": "pagehash-1"}}
+_rem = []
+
+# Assignment bundle hash: adding an assignment changes the bundle hash.
+h1 = inth._draft_hashes(_active, {}, _assn_a, _ann, _pages, _rem)["math"]["assignments"]
+h2 = inth._draft_hashes(_active, {}, _assn_b, _ann, _pages, _rem)["math"]["assignments"]
+assert h1 != h2, "assignment bundle hash must change when a member is added"
+# Unrelated subject unaffected: science page hash independent of math assignments.
+s1 = inth._draft_hashes(_active, {}, _assn_a, _ann, _pages, _rem)["science"]["page"]
+s2 = inth._draft_hashes(_active, {}, _assn_b, _ann, _pages, _rem)["science"]["page"]
+assert s1 == s2, "unrelated subject hash must not change"
+# Page/announcement coupling: page body change changes both page + announcement hash.
+pages_v2 = {"math": {"agenda_hash": "pagehash-2"}}
+ann_v2 = [{"course": "Math", "title": "Math Canvas Weekly Update", "agenda_hash": "pagehash-2"}]
+m_page1 = inth._draft_hashes(_active, {}, _assn_a, _ann, _pages, _rem)["math"]["page"]
+m_page2 = inth._draft_hashes(_active, {}, _assn_a, ann_v2, pages_v2, _rem)["math"]["page"]
+m_ann1 = inth._draft_hashes(_active, {}, _assn_a, _ann, _pages, _rem)["math"]["announcement"]
+m_ann2 = inth._draft_hashes(_active, {}, _assn_a, ann_v2, pages_v2, _rem)["math"]["announcement"]
+assert m_page1 != m_page2, "page hash must change when page body changes"
+assert m_ann1 != m_ann2, "announcement hash must change when embedded page body changes"
+print("PASS draft-hash coupling: assignment bundle + page/announcement coupling")
+
+
+# ---------------------------------------------------------------------------
 # 12. Scheduling semantics (active-feed based — the verified Q2W2 finding).
 # ---------------------------------------------------------------------------
 import scripts.canvas_llm_intake.scheduling as sched2

@@ -19,6 +19,7 @@ from scripts.canvas_llm_intake import questions as iq
 from scripts.canvas_llm_intake import week_resolution as iwr
 from scripts.canvas_llm_intake import owner_overrides as ioo
 from scripts.canvas_llm_intake import teacher_input as iti
+from scripts.canvas_llm_intake import approval as iap
 
 REPO = Path(__file__).resolve().parents[2]
 INTAKE_ROOT = REPO / ".local" / "canvas-llm" / "intake"
@@ -200,6 +201,13 @@ def week_detail(quarter: int, week: int) -> dict[str, Any] | None:
         if subj in day_states and day in day_states[subj]:
             day_states[subj][day] = ov.get("status", day_states[subj][day])
 
+    # Full approval records (state + hashes + history) per subject/granularity.
+    approval_records = _approval_records(quarter, week, active)
+    approval_events = iap.approval_history(quarter, week, active)
+
+    # Draft hashes for approval binding (expose to the UI for confirm + approve).
+    draft_hashes = _compute_draft_hashes(quarter, week, active)
+
     return {
         "quarter": quarter,
         "week": week,
@@ -223,6 +231,9 @@ def week_detail(quarter: int, week: int) -> dict[str, Any] | None:
         "weekly_announcements": announcements,
         "assessment_reminders": assessment_reminders,
         "approval_summary": manifest.get("approval_summary", {}),
+        "approval_records": approval_records,
+        "approval_history": approval_events,
+        "draft_hashes": draft_hashes,
         "page_lookup": manifest.get("page_lookup", {}),
         "page_files": page_files,
         "teacher_input": teacher_input or {},
@@ -252,6 +263,47 @@ def _week_norm_view(week_norm: dict[str, Any] | None) -> dict[str, Any] | None:
         "unit_context": week_norm.get("unitContext", {}),
         "subjects": view,
     }
+
+
+def _approval_records(quarter: int, week: int, active: list[str]) -> dict[str, dict[str, Any]]:
+    """Full per-subject approval records (state + hashes + history)."""
+    data = iap.load_approvals(quarter, week, active)
+    return data.get("subjects", {})
+
+
+def _compute_draft_hashes(quarter: int, week: int, active: list[str]) -> dict[str, dict[str, str]]:
+    """Compute the CURRENT draft hashes for approval binding.
+
+    Reuses the intake engine's hash function via a lightweight reconstruction
+    (the engine writes draft files; hashing them is deterministic and mirrors
+    ``intake._draft_hashes`` without re-fetching pacing).
+    """
+    import hashlib
+    d = _staging_dir(quarter, week)
+    hashes: dict[str, dict[str, str]] = {}
+    for subject in active:
+        fname = "reading-page.html" if subject == "reading_spelling" else f"{subject}-page.html"
+        p = d / "drafts" / fname
+        page_body = p.read_text(encoding="utf-8") if p.exists() else ""
+        page_hash = hashlib.sha256(page_body.encode("utf-8")).hexdigest()
+
+        assignments = _read_json(d / "drafts" / "assignments.json") or []
+        sub_assignments = [a for a in assignments if a.get("course") == subject]
+        assign_hash = hashlib.sha256(
+            json.dumps(sub_assignments, sort_keys=True, ensure_ascii=False).encode("utf-8")).hexdigest()
+
+        announcements = _read_json(d / "drafts" / "announcements.json") or []
+        label = SUBJECT_LABELS.get(subject, subject)
+        ann = next((a for a in announcements if a.get("course") == label), None)
+        ann_hash = hashlib.sha256(json.dumps(ann or {}, sort_keys=True, ensure_ascii=False).encode("utf-8")).hexdigest()
+
+        reminders = _read_json(d / "drafts" / "assessment-reminders.json") or []
+        sub_rems = [r for r in reminders if r.get("course") == label]
+        rem_hash = hashlib.sha256(json.dumps(sub_rems, sort_keys=True, ensure_ascii=False).encode("utf-8")).hexdigest() if sub_rems else ""
+
+        hashes[subject] = {"page": page_hash, "assignments": assign_hash,
+                           "announcement": ann_hash, "assessment_reminder": rem_hash}
+    return hashes
 
 
 def home() -> dict[str, Any]:

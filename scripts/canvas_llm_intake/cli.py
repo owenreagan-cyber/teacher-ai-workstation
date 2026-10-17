@@ -143,16 +143,39 @@ def cmd_approve(args: argparse.Namespace) -> int:
     return 0
 
 
-def cmd_status(_args: argparse.Namespace) -> int:
+def cmd_prepare_next(args: argparse.Namespace) -> int:
+    from .canvas_readonly import CanvasReadOnly
+    from . import cycle
+
+    canvas = None
+    if args.live_context:
+        try:
+            canvas = CanvasReadOnly.from_env()
+        except Exception:  # noqa: BLE001
+            print("WARN: Canvas credentials unavailable; skipping live context")
+            canvas = None
+    quarter, week = cycle.next_unprepared_week()
+    summary = cycle.prepare_week(
+        quarter=quarter, week=week, fresh=args.fresh,
+        canvas=canvas, include_canvas_context=canvas is not None,
+    )
+    print(json.dumps(summary, indent=2, ensure_ascii=False))
+    return 0
+
+
+def cmd_status(args: argparse.Namespace) -> int:
     from .status import render_status
 
-    status = render_status()
+    status = render_status(quarter=getattr(args, "quarter", None), week=getattr(args, "week", None))
     print(status["text"])
     return 0 if status["ok"] else 1
 
 
 def cmd_self_test(_args: argparse.Namespace) -> int:
     intake.command_self_test()
+    from . import cycle, scheduling
+    cycle.command_self_test()
+    scheduling.command_self_test()
     return 0
 
 
@@ -198,11 +221,21 @@ def build_parser() -> argparse.ArgumentParser:
     _week_target(sp)
     sp.add_argument("--quarter", type=int, default=None)
     sp.add_argument("--subject", required=True)
-    sp.add_argument("--granularity", choices=["page", "assignments", "announcement"], default=None)
+    sp.add_argument("--granularity", choices=["page", "assignments", "announcement", "assessment_reminder"], default=None)
     sp.add_argument("--all", action="store_true", help="approve page+assignments+announcement")
     sp.set_defaults(func=cmd_approve)
 
-    sub.add_parser("status").set_defaults(func=cmd_status)
+    sp = sub.add_parser("prepare-next", help="prepare the next instructional week (never deploys)")
+    sp.add_argument("--fresh", action="store_true", default=True)
+    sp.add_argument("--live-context", action="store_true", default=False,
+                    help="GET-only page lookup + duplicate check")
+    sp.set_defaults(func=cmd_prepare_next)
+
+    sp = sub.add_parser("status", help="intake status (PASS/WARN/FAIL)")
+    sp.add_argument("--quarter", type=int, default=None)
+    sp.add_argument("--week", type=int, default=None)
+    sp.set_defaults(func=cmd_status)
+
     sub.add_parser("self-test").set_defaults(func=cmd_self_test)
     return p
 

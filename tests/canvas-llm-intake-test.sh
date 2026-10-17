@@ -16,7 +16,10 @@ MODULES=(
   "scripts/canvas_llm_intake/canvas_readonly.py"
   "scripts/canvas_llm_intake/teacher_input.py"
   "scripts/canvas_llm_intake/approval.py"
+  "scripts/canvas_llm_intake/reminders.py"
+  "scripts/canvas_llm_intake/scheduling.py"
   "scripts/canvas_llm_intake/intake.py"
+  "scripts/canvas_llm_intake/cycle.py"
   "scripts/canvas_llm_intake/cli.py"
   "scripts/canvas_llm_intake/status.py"
 )
@@ -228,9 +231,80 @@ try:
     artifacts = {s: {"page", "assignments", "announcement"} for s in subjects}
     ready, blockers = ap2.ready_to_publish(data, subjects=subjects, has_blocking_questions=False, artifacts=artifacts)
     assert ready is False
-    print("PASS approval: hash binding + invalidation + gate")
+    # assessment_reminder granularity exists.
+    assert "assessment_reminder" in ap2.GRANULARITIES
+    print("PASS approval: hash binding + invalidation + gate + assessment_reminder granularity")
 finally:
     mf2.staging_dir = _ap_orig
+
+# ---------------------------------------------------------------------------
+# 12. Scheduling semantics (active-feed based — the verified Q2W2 finding).
+# ---------------------------------------------------------------------------
+import scripts.canvas_llm_intake.scheduling as sched2
+from datetime import datetime, timezone
+_now = datetime(2026, 10, 16, 12, 0, tzinfo=timezone.utc)
+_future = "2026-10-16T20:00:00Z"
+_past = "2026-10-15T20:00:00Z"
+# A. published=true + future delayed + NOT active -> HELD (not a failure).
+assert sched2.classify_announcement(delayed_post_at=_future, posted_at="2026-10-16T01:09:48Z",
+                                    published=True, in_active_feed=False, now=_now) == sched2.HELD_SCHEDULED
+# posted_at == created_at is NOT early publication.
+assert sched2.classify_announcement(delayed_post_at=_future, posted_at="2026-10-16T01:09:48Z",
+                                    published=True, in_active_feed=False, now=_now) == sched2.HELD_SCHEDULED
+# B. future delayed + active -> PREMATURE (FAIL).
+assert sched2.classify_announcement(delayed_post_at=_future, posted_at=None,
+                                    published=True, in_active_feed=True, now=_now) == sched2.PREMATURE_LIVE
+# C. past delayed + active -> POSTED (PASS).
+assert sched2.classify_announcement(delayed_post_at=_past, posted_at=_past,
+                                    published=True, in_active_feed=True, now=_now) == sched2.POSTED
+# D. published=false + not active + no schedule -> DRAFT_UNPUBLISHED (not a failure).
+assert sched2.classify_announcement(delayed_post_at=None, posted_at=None,
+                                    published=False, in_active_feed=False, now=_now) == sched2.DRAFT_UNPUBLISHED
+print("PASS scheduling semantics: active-feed hold/early/posted/draft classification")
+
+# ---------------------------------------------------------------------------
+# 13. Assessment reminder generation + Fact Assessment -> Power Up.
+# ---------------------------------------------------------------------------
+import scripts.canvas_llm_intake.reminders as rem2
+r = rem2.resolve_fact_test(6)
+assert r["powerUpCode"] == "B", r
+assert rem2.resolve_fact_test(999) is None, "missing map entry must fail closed"
+week_spelling = {
+    "week": {"code": "Q2W2"},
+    "days": {"Friday": {"date": "2026-10-23", "subjects": {"spelling": {"raw": "Test 40"}}}},
+}
+s_rem = rem2.draft_spelling_reminders(week_spelling)
+assert len(s_rem) == 1 and s_rem[0]["test_number"] == 40
+assert "Lists 1\u201340" in s_rem[0]["body"]
+# No spelling test -> no reminder.
+assert rem2.draft_spelling_reminders({"week": {"code": "Q2W3"}, "days": {}}) == []
+print("PASS assessment reminders: Fact Assessment Power Up + Spelling reminder + fail-closed")
+
+# ---------------------------------------------------------------------------
+# 14. Cycle delta detection (NEW / UNCHANGED / CHANGED).
+# ---------------------------------------------------------------------------
+import scripts.canvas_llm_intake.cycle as cyc
+import scripts.canvas_llm_intake.manifest as mfcyc
+_cyc_orig = mfcyc.staging_dir
+try:
+    _cyc_tmp = tempfile.mkdtemp()
+    mfcyc.staging_dir = lambda q, w: Path(_cyc_tmp) / f"q{q}w{w}"
+    week3 = {
+        "week": {"code": "Q2W3"},
+        "days": {"Monday": {"date": "2026-10-26", "subjects": {"math": {"raw": "L41"}}}},
+    }
+    assert cyc.detect_delta(2, 3, week3)["delta"] == "NEW"
+    m3 = mfcyc.new_manifest(quarter=2, week=3, week_code="Q2W3", date_range={"start": "x", "end": "y"})
+    m3["source_hash"] = "beef"
+    mfcyc.save_manifest(2, 3, m3)
+    assert cyc.detect_delta(2, 3, week3)["delta"] == "CHANGED"
+    fresh_hash = cyc.detect_delta(2, 3, week3)["fresh_hash"]
+    m3["source_hash"] = fresh_hash
+    mfcyc.save_manifest(2, 3, m3)
+    assert cyc.detect_delta(2, 3, week3)["delta"] == "UNCHANGED"
+    print("PASS cycle: NEW/UNCHANGED/CHANGED delta detection")
+finally:
+    mfcyc.staging_dir = _cyc_orig
 
 print("PASS: Canvas Weekly Intake tests complete")
 PY

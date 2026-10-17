@@ -32,6 +32,7 @@ from . import questions as qs
 from . import week_resolution as wr
 from . import teacher_input as ti
 from . import approval as ap
+from . import reminders as rem
 from .canvas_readonly import CanvasReadOnly
 
 
@@ -185,6 +186,14 @@ def build_intake(
         json.dumps(announcements, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
     )
 
+    # ---- 4b. Assessment reminders (drafts only; no POST) ------------------
+    assessment_reminders: list[dict[str, Any]] = []
+    assessment_reminders += rem.draft_math_assessment_reminders(week_norm)
+    assessment_reminders += rem.draft_spelling_reminders(week_norm)
+    (drafts_dir / "assessment-reminders.json").write_text(
+        json.dumps(assessment_reminders, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
+    )
+
     # ---- 5. Canvas GET-only context (page lookup + duplicate prevention) --
     page_lookup: dict[str, Any] = {}
     dup_check: dict[str, Any] = {}
@@ -266,6 +275,11 @@ def build_intake(
     for s in active:
         if any(a["course"] == s for a in assignments):
             artifacts[s].add("assignments")
+    # Assessment reminders require approval when drafted for a subject.
+    reminder_courses = {r["course"] for r in assessment_reminders}
+    for s in active:
+        if _subject_label(s) in reminder_courses:
+            artifacts[s].add("assessment_reminder")
     ready, blockers = ap.ready_to_publish(
         approvals, subjects=active, has_blocking_questions=has_blocking, artifacts=artifacts,
     )
@@ -281,6 +295,7 @@ def build_intake(
     m["page_lookup"] = page_lookup
     m["assignment_count"] = len(assignments)
     m["announcement_count"] = len(announcements)
+    m["assessment_reminder_count"] = len(assessment_reminders)
     m["approval_summary"] = _approval_summary(approvals)
     m["ready_to_publish"] = ready
     m["publish_blockers"] = blockers
@@ -288,7 +303,7 @@ def build_intake(
 
     _write_review(
         quarter, week, m, subject_reports, assignments, announcements, questions,
-        pages, approvals, ready, blockers, page_lookup,
+        pages, approvals, ready, blockers, page_lookup, assessment_reminders,
     )
 
     return {
@@ -302,6 +317,7 @@ def build_intake(
         "pages": pages,
         "assignment_count": len(assignments),
         "announcement_count": len(announcements),
+        "assessment_reminder_count": len(assessment_reminders),
         "open_questions": len(open_questions),
         "answered_questions": len(questions) - len(open_questions),
         "ready_to_publish": ready,
@@ -472,6 +488,7 @@ def _write_review(
     ready: bool,
     blockers: list[str],
     page_lookup: dict[str, Any],
+    assessment_reminders: list[dict[str, Any]] | None = None,
 ) -> None:
     labels = {
         "math": "MATH",
@@ -542,6 +559,14 @@ def _write_review(
             parts.append(f"{g}:{st}")
         lines.append(f"- {labels.get(s, s.upper())}: " + ", ".join(parts))
 
+    if assessment_reminders:
+        lines.append("")
+        lines.append("## ASSESSMENT REMINDERS")
+        for r in assessment_reminders:
+            lines.append(f"- {r['title']} ({r['course']}, due {r.get('assessment_date', '')})")
+            if r.get("power_up"):
+                lines.append(f"  - Power Up {r['power_up']}")
+
     lines.append("")
     lines.append("## READY_TO_PUBLISH GATE")
     if ready:
@@ -560,13 +585,15 @@ def _write_review(
 
 def command_self_test() -> int:
     from . import week_resolution, canvas_readonly, questions, constants
-    from . import teacher_input, approval
+    from . import teacher_input, approval, reminders, scheduling
 
     week_resolution.command_self_test()
     canvas_readonly.command_self_test()
     questions.command_self_test()
     teacher_input.command_self_test()
     approval.command_self_test()
+    reminders.command_self_test()
+    scheduling.command_self_test()
     constants.course_id_for_subject  # import smoke
     # Synthetic end-to-end via fixture (exercised in tests/).
     print("PASS intake orchestrator self-test")

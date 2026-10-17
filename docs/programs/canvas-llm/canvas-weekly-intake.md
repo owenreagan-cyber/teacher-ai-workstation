@@ -61,6 +61,7 @@ Everything is local + gitignored under `.local/canvas-llm/intake/`:
 ## CLI
 
 ```bash
+bin/canvas-intake prepare-next               # recurring: prepare the next unprepared week
 bin/canvas-intake run --week next            # fetch + normalize + draft + questions
 bin/canvas-intake run --quarter 2 --week 2   # explicit + deterministic
 bin/canvas-intake run --live-context         # add GET-only page lookup + duplicate check
@@ -68,9 +69,49 @@ bin/canvas-intake review                     # print REVIEW.md (primary Owen vie
 bin/canvas-intake questions                  # list open questions (--status answered|all)
 bin/canvas-intake apply-teacher-input        # answer a question / add reminder / reject assignment
 bin/canvas-intake approve --subject math --all   # approve page+assignments+announcement
-bin/canvas-intake status                     # PASS/WARN/FAIL proof
+bin/canvas-intake status                     # PASS/WARN/FAIL proof (completed vs next-prepared)
 bin/canvas-intake self-test                  # synthetic tests
 ```
+
+`prepare-next` resolves the next instructional week that is NOT already
+`PUBLISHED_VERIFIED`, fetches authoritative pacing, detects source delta
+(`NEW` / `UNCHANGED` / `CHANGED`), preserves owner overrides, and stops at
+`READY_TO_PUBLISH`. It never deploys.
+
+## Recurring cycle
+
+```text
+AUTHORITATIVE PACING -> DETECT NEXT WEEK -> SNAPSHOT -> NORMALIZE -> DRAFT
+-> COMPARE TO PRIOR/EXISTING STATE -> SURFACE DELTAS / QUESTIONS
+-> TEACHER INPUT -> APPROVAL -> READY_TO_PUBLISH -> STOP
+```
+
+- **Delta detection** — fresh source hash vs existing packet: `NEW` (no packet),
+  `UNCHANGED` (preserve approvals/drafts), `CHANGED` (per-cell diff; regenerate
+  only affected artifacts; invalidate only affected approvals).
+- **Owner-override precedence** — `newest explicit Owen instruction > live pacing
+  > locked decisions > canonical files > history > model inference`. A refreshed
+  pacing that conflicts with local teacher input surfaces
+  `SOURCE_CHANGED_AFTER_OWNER_OVERRIDE` and requires Owen review.
+- **Assessment reminders** are drafted locally (never posted): Math
+  Written+Fact Assessment (Fact Test → Power Up via
+  `fact-test-practice-map.json`), Spelling test (authoritative list range). A
+  reminder must be explicitly approved before it is included in `READY_TO_PUBLISH`.
+
+## Announcement scheduling semantics (verified)
+
+Canvas honors `delayed_post_at`. Do NOT interpret `published=true` or
+`posted_at == created_at` as early publication. The reliable "visible to
+students" signal is **active-feed membership**:
+
+```text
+future delayed_post_at AND not in active_only feed  -> HELD (correct)
+future delayed_post_at AND in active_only feed      -> PREMATURE (FAIL)
+delayed time passed AND in active_only feed         -> POSTED (expected)
+published=false AND not active AND not scheduled     -> DRAFT_UNPUBLISHED
+```
+
+Encoded in `scripts/canvas_llm_intake/scheduling.py`.
 
 ## Reused components
 

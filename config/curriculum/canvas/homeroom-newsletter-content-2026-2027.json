@@ -53,7 +53,7 @@
     "importantDates": {
       "title": "Important Dates",
       "dates": [
-        { "date": "October 20", "event": "Make-Up Picture Day" },
+        { "date": "Tuesday, October 20", "event": "Picture Retakes" },
         { "date": "October 30", "event": "Book Character Day OR Spirit Shirt with uniform bottoms" },
         { "date": "November 6", "event": "Progress Reports" },
         { "date": "November 6", "event": "Movie Night", "time": "6:00–8:00 PM" },
@@ -65,6 +65,10 @@
         { "date": "December 22", "event": "Report Cards" },
         { "date": "December 21–January 8", "event": "Track Out" }
       ]
+    },
+    "pictureRetakes": {
+      "title": "Picture Retakes — Tuesday, October 20",
+      "body": "Picture Retakes will be held on Tuesday, October 20. Students who need a retake should be prepared for pictures that day."
     },
     "bookCharacterDay": {
       "title": "Book Character Day",

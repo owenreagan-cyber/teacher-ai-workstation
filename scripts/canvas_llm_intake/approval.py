@@ -16,7 +16,7 @@ from typing import Any
 from . import constants as C
 from . import manifest as mf
 
-GRANULARITIES = ("page", "assignments", "announcement")
+GRANULARITIES = ("page", "assignments", "announcement", "assessment_reminder")
 STATES = ("PENDING", "NEEDS_CHANGES", "APPROVED", "BLOCKED")
 
 

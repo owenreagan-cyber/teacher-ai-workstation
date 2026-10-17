@@ -76,6 +76,11 @@ def generate_questions(
             else:
                 wd = ""
                 token = str(u)
+            # OWNER-CONFIRMED (Q2W2): a trailing `*` on a Math assessment token
+            # (e.g. FA6* / FA7*) is operationally ignored — treat as the plain
+            # assessment, do not expose the marker, and do not re-ask.
+            if "trailing '*' marker" in token:
+                continue
             date = _day_date(week, wd)
             questions.append(new_question(
                 subject=subject,
@@ -168,7 +173,12 @@ def _looks_like_assessment(line: str) -> bool:
 
 def _looks_like_lesson(line: str) -> bool:
     low = (line or "").lower()
-    return "lesson" in low or "chapter" in low
+    if "lesson" in low:
+        return True
+    if "chapter" in low:
+        # "Chapter N Test/Checkup/Review/Quiz" is an assessment, not a lesson.
+        return not any(k in low for k in ("test", "checkup", "review", "quiz"))
+    return False
 
 
 def write_questions(

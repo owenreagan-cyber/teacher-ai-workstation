@@ -2,7 +2,9 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from pptx import Presentation
+from scripts.python_deps import require
+require("pptx")
+from pptx import Presentation  # noqa: E402
 from pptx.util import Inches, Pt
 
 from .models import CheckStatus, PLACEHOLDER_PATTERNS, PreflightReport

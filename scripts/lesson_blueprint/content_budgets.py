@@ -1,9 +1,10 @@
 from __future__ import annotations
 
-import json
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
+
+from scripts.python_deps import require
 
 
 @dataclass
@@ -29,12 +30,7 @@ def _repo_root() -> Path:
 def load_content_budgets(path: Path | None = None) -> dict[str, ContentBudget]:
     catalog_path = path or (_repo_root() / "configs" / "lesson-blueprint" / "content-budgets.yaml")
     text = catalog_path.read_text(encoding="utf-8")
-    try:
-        import yaml
-
-        raw = yaml.safe_load(text)
-    except ImportError:  # pragma: no cover
-        raw = {}
+    raw = require("yaml").safe_load(text)
     if not isinstance(raw, dict):
         raise ValueError(f"Content budgets must be a mapping: {catalog_path}")
     budgets: dict[str, ContentBudget] = {}

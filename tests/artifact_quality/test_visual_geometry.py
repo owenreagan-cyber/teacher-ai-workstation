@@ -24,8 +24,11 @@ from scripts.artifact_quality.visual_geometry import (  # noqa: E402
     compute_visible_ink,
     generate_contact_sheet,
 )
-import fitz  # noqa: E402
-from PIL import Image  # noqa: E402
+from scripts.python_deps import require  # noqa: E402
+
+pymupdf = require("pymupdf")
+require("PIL")
+from PIL import Image  # noqa: E402  # noqa: E402
 
 FIXTURES = REPO_ROOT / "fixtures" / "artifact-quality"
 RUNNER = REPO_ROOT / "scripts" / "artifact_quality" / "run_preflight.py"
@@ -52,7 +55,7 @@ class VisualGeometryTests(unittest.TestCase):
 
     def test_worksheet_not_zero_visual_use(self) -> None:
         profile = load_profile("worksheet-letter")
-        doc = fitz.open(FIXTURES / "passing" / "worksheet-letter.pdf")
+        doc = pymupdf.open(FIXTURES / "passing" / "worksheet-letter.pdf")
         page = doc[0]
         text_cov = compute_text_coverage(page, profile)
         draw_cov = compute_drawing_coverage(page, profile)
@@ -66,7 +69,7 @@ class VisualGeometryTests(unittest.TestCase):
 
     def test_diagram_page_visible_ink(self) -> None:
         profile = load_profile("worksheet-letter")
-        doc = fitz.open(FIXTURES / "passing" / "diagram-minimal-text.pdf")
+        doc = pymupdf.open(FIXTURES / "passing" / "diagram-minimal-text.pdf")
         metrics, _, _, _ = analyze_page_visual(doc[0], 1, profile)
         doc.close()
         self.assertLess(metrics.text_coverage_percent, 15.0)

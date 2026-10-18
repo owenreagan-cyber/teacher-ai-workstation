@@ -4,7 +4,9 @@ import re
 from pathlib import Path
 from typing import Iterable
 
-import fitz
+from scripts.python_deps import require
+
+pymupdf = require("pymupdf")
 
 from .inspect_page_usage import PageBounds, analyze_blank_page, apply_usage_findings
 from .models import (
@@ -38,7 +40,7 @@ def _matches_a4(width: float, height: float, tolerance: float) -> bool:
     return any(abs(w - A4_WIDTH_PT) <= tolerance and abs(h - A4_HEIGHT_PT) <= tolerance for w, h in pairs)
 
 
-def _collect_page_bounds(page: fitz.Page, page_number: int) -> PageBounds:
+def _collect_page_bounds(page: pymupdf.Page, page_number: int) -> PageBounds:
     blocks = page.get_text("blocks")
     text = page.get_text("text")
     text_chars = len(re.sub(r"\s+", "", text))
@@ -74,7 +76,7 @@ def _detect_placeholders(text: str) -> list[str]:
     return hits
 
 
-def _font_inventory(doc: fitz.Document) -> dict[str, bool]:
+def _font_inventory(doc: pymupdf.Document) -> dict[str, bool]:
     fonts: dict[str, bool] = {}
     for page in doc:
         for entry in page.get_fonts():
@@ -84,15 +86,15 @@ def _font_inventory(doc: fitz.Document) -> dict[str, bool]:
 
 
 def analyze_pdf_visual_geometry(
-    doc: fitz.Document,
+    doc: pymupdf.Document,
     profile: ArtifactProfile,
     report: PreflightReport,
     *,
     analysis_dpi: int | None = None,
-) -> tuple[list[PageVisualMetrics], list[list[list[bool]] | None], list[fitz.Rect | None]]:
+) -> tuple[list[PageVisualMetrics], list[list[list[bool]] | None], list[pymupdf.Rect | None]]:
     page_metrics: list[PageVisualMetrics] = []
     ink_masks: list[list[list[bool]] | None] = []
-    clips: list[fitz.Rect | None] = []
+    clips: list[pymupdf.Rect | None] = []
     all_findings: list[tuple[CheckStatus, str, str | None]] = []
     blank_pages: list[int] = []
 
@@ -144,7 +146,7 @@ def validate_pdf(
     report: PreflightReport,
     *,
     analysis_dpi: int | None = None,
-) -> tuple[fitz.Document | None, list[PageVisualMetrics], list[list[list[bool]] | None], list[fitz.Rect | None]]:
+) -> tuple[pymupdf.Document | None, list[PageVisualMetrics], list[list[list[bool]] | None], list[pymupdf.Rect | None]]:
     if not path.exists():
         report.add(CheckStatus.FAIL, "Input file does not exist")
         return None, [], [], []
@@ -153,7 +155,7 @@ def validate_pdf(
         return None, [], [], []
 
     try:
-        doc = fitz.open(path)
+        doc = pymupdf.open(path)
     except Exception as exc:  # noqa: BLE001
         report.add(CheckStatus.FAIL, "File is not a readable PDF", details=str(exc))
         return None, [], [], []
@@ -263,7 +265,7 @@ def finalize_quality_score(
     )
 
 
-def _pages_with_numbers(doc: fitz.Document) -> list[int]:
+def _pages_with_numbers(doc: pymupdf.Document) -> list[int]:
     numbered: list[int] = []
     for index, page in enumerate(doc, start=1):
         text = page.get_text("text")
@@ -272,7 +274,7 @@ def _pages_with_numbers(doc: fitz.Document) -> list[int]:
     return numbered
 
 
-def _fonts_embedded(doc: fitz.Document) -> bool:
+def _fonts_embedded(doc: pymupdf.Document) -> bool:
     for page in doc:
         for entry in page.get_fonts():
             if len(entry) > 2 and str(entry[2]).lower() == "type1":

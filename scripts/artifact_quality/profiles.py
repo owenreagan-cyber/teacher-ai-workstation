@@ -1,14 +1,10 @@
 from __future__ import annotations
 
-import json
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Optional
 
-try:
-    import yaml
-except ImportError:  # pragma: no cover
-    yaml = None  # type: ignore
+from scripts.python_deps import require
 
 from .models import LETTER_HEIGHT_PT, LETTER_WIDTH_PT
 
@@ -165,10 +161,7 @@ def list_profiles() -> list[str]:
 
 def _load_structured_file(path: Path) -> dict[str, Any]:
     text = path.read_text(encoding="utf-8")
-    if yaml is not None:
-        data = yaml.safe_load(text)
-    else:
-        data = json.loads(text)
+    data = require("yaml").safe_load(text)
     if not isinstance(data, dict):
         raise ValueError(f"Profile must be a mapping: {path}")
     return data

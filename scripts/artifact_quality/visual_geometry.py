@@ -9,8 +9,11 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Iterable
 
-import fitz
-from PIL import Image, ImageDraw, ImageFont
+from scripts.python_deps import require
+
+pymupdf = require("pymupdf")
+require("PIL")
+from PIL import Image, ImageDraw, ImageFont  # noqa: E402
 
 from .inspect_page_usage import printable_rect, safe_rect
 from .models import POINTS_PER_INCH, CheckStatus
@@ -97,7 +100,7 @@ def _union_area(rects: Iterable[tuple[float, float, float, float]]) -> float:
     return (covered / (grid * grid)) * span_w * span_h
 
 
-def compute_text_coverage(page: fitz.Page, profile: ArtifactProfile) -> float:
+def compute_text_coverage(page: pymupdf.Page, profile: ArtifactProfile) -> float:
     left, top, right, bottom = printable_rect(profile)
     printable_area = max((right - left) * (bottom - top), 1.0)
     blocks = page.get_text("blocks")
@@ -147,7 +150,7 @@ def _drawing_element_area(item: dict[str, Any]) -> float:
     return total
 
 
-def compute_drawing_coverage(page: fitz.Page, profile: ArtifactProfile) -> float:
+def compute_drawing_coverage(page: pymupdf.Page, profile: ArtifactProfile) -> float:
     left, top, right, bottom = printable_rect(profile)
     printable_area = max((right - left) * (bottom - top), 1.0)
     try:
@@ -164,11 +167,11 @@ def compute_drawing_coverage(page: fitz.Page, profile: ArtifactProfile) -> float
     return min((total_area / printable_area) * 100.0, 100.0)
 
 
-def _render_printable_clip(page: fitz.Page, profile: ArtifactProfile, dpi: int) -> tuple[Image.Image, fitz.Rect]:
+def _render_printable_clip(page: pymupdf.Page, profile: ArtifactProfile, dpi: int) -> tuple[Image.Image, pymupdf.Rect]:
     left, top, right, bottom = printable_rect(profile)
-    clip = fitz.Rect(left, top, right, bottom)
+    clip = pymupdf.Rect(left, top, right, bottom)
     scale = dpi / 72.0
-    matrix = fitz.Matrix(scale, scale)
+    matrix = pymupdf.Matrix(scale, scale)
     pix = page.get_pixmap(matrix=matrix, clip=clip, alpha=False)
     image = Image.frombytes("RGB", (pix.width, pix.height), pix.samples)
     pix = None
@@ -210,7 +213,7 @@ def compute_visible_ink(image: Image.Image, spec: VisualGeometrySpec) -> tuple[f
     return (ink_count / total) * 100.0, mask
 
 
-def _detect_horizontal_lines(page: fitz.Page, profile: ArtifactProfile, min_width_ratio: float = 0.4) -> list[tuple[float, float, float, float]]:
+def _detect_horizontal_lines(page: pymupdf.Page, profile: ArtifactProfile, min_width_ratio: float = 0.4) -> list[tuple[float, float, float, float]]:
     left, top, right, bottom = printable_rect(profile)
     printable_width = right - left
     min_width = printable_width * min_width_ratio
@@ -233,7 +236,7 @@ def _detect_horizontal_lines(page: fitz.Page, profile: ArtifactProfile, min_widt
     return lines
 
 
-def _detect_answer_boxes(page: fitz.Page, profile: ArtifactProfile) -> list[tuple[float, float, float, float]]:
+def _detect_answer_boxes(page: pymupdf.Page, profile: ArtifactProfile) -> list[tuple[float, float, float, float]]:
     left, top, right, bottom = printable_rect(profile)
     boxes: list[tuple[float, float, float, float]] = []
     try:
@@ -256,10 +259,10 @@ def _detect_answer_boxes(page: fitz.Page, profile: ArtifactProfile) -> list[tupl
 
 
 def estimate_writing_space(
-    page: fitz.Page,
+    page: pymupdf.Page,
     profile: ArtifactProfile,
     ink_mask: list[list[bool]] | None,
-    clip: fitz.Rect,
+    clip: pymupdf.Rect,
     dpi: int,
 ) -> float:
     left, top, right, bottom = printable_rect(profile)
@@ -296,7 +299,7 @@ def estimate_writing_space(
 
 def compute_bottom_whitespace(
     ink_mask: list[list[bool]],
-    clip: fitz.Rect,
+    clip: pymupdf.Rect,
     dpi: int,
     spec: VisualGeometrySpec,
     writing_space_percent: float,
@@ -370,10 +373,10 @@ def classify_page_balance(
 
 
 def analyze_safe_margins(
-    page: fitz.Page,
+    page: pymupdf.Page,
     profile: ArtifactProfile,
     ink_mask: list[list[bool]] | None,
-    clip: fitz.Rect,
+    clip: pymupdf.Rect,
     dpi: int,
 ) -> tuple[str, list[tuple[CheckStatus, str, str | None]]]:
     findings: list[tuple[CheckStatus, str, str | None]] = []
@@ -437,13 +440,13 @@ def analyze_safe_margins(
 
 
 def analyze_page_visual(
-    page: fitz.Page,
+    page: pymupdf.Page,
     page_number: int,
     profile: ArtifactProfile,
     *,
     dpi: int | None = None,
     render_path: str | None = None,
-) -> tuple[PageVisualMetrics, list[tuple[CheckStatus, str, str | None]], list[list[bool]] | None, fitz.Rect | None]:
+) -> tuple[PageVisualMetrics, list[tuple[CheckStatus, str, str | None]], list[list[bool]] | None, pymupdf.Rect | None]:
     spec = profile.visual_geometry
     analysis_dpi = dpi or spec.analysis_dpi
     rect = page.rect
@@ -567,7 +570,7 @@ def annotate_page_render(
     metrics: PageVisualMetrics,
     profile: ArtifactProfile,
     ink_mask: list[list[bool]] | None,
-    clip: fitz.Rect | None,
+    clip: pymupdf.Rect | None,
     output_path: Path,
     dpi: int,
 ) -> str:
@@ -680,8 +683,8 @@ def visual_compare_pages(
     compare_dir = output_dir / "visual-compare"
     compare_dir.mkdir(parents=True, exist_ok=True)
 
-    s_doc = fitz.open(student_path)
-    t_doc = fitz.open(teacher_path)
+    s_doc = pymupdf.open(student_path)
+    t_doc = pymupdf.open(teacher_path)
     try:
         limit = min(s_doc.page_count, t_doc.page_count)
         drift_pages: list[int] = []

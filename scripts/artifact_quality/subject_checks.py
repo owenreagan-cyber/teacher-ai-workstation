@@ -2,7 +2,9 @@ from __future__ import annotations
 
 from pathlib import Path
 
-import fitz
+from scripts.python_deps import require
+
+pymupdf = require("pymupdf")
 
 from .models import CheckStatus, PreflightReport
 from .profiles import ArtifactProfile
@@ -22,7 +24,7 @@ def apply_subject_checks(
     profile: ArtifactProfile,
     report: PreflightReport,
     *,
-    doc: fitz.Document | None = None,
+    doc: pymupdf.Document | None = None,
     source_path: Path | None = None,
 ) -> None:
     if not subject:

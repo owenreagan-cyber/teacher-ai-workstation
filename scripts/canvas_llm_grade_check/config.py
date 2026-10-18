@@ -10,7 +10,6 @@ from __future__ import annotations
 import datetime as dt
 import json
 import os
-import re
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
@@ -20,12 +19,6 @@ CONFIG_PATH = REPO_ROOT / "config" / "canvas-llm" / "grade-check-config.json"
 INSTRUCTIONAL_WEEKS_PATH = (
     REPO_ROOT / "config" / "curriculum" / "canvas" / "instructional-weeks-2026-2027.json"
 )
-
-_MONTHS = {
-    "january": 1, "february": 2, "march": 3, "april": 4, "may": 5, "june": 6,
-    "july": 7, "august": 8, "september": 9, "october": 10, "november": 11,
-    "december": 12,
-}
 
 
 class ConfigError(RuntimeError):
@@ -149,26 +142,10 @@ def all_subject_course_ids(cfg: GradeCheckConfig) -> set[int]:
 # Quarter resolution (uses the authoritative instructional-weeks export)
 # ---------------------------------------------------------------------------
 
-_WEEK_TITLE_RE = re.compile(
-    r"\-\s*(?P<sm>[A-Za-z]+)\s+(?P<sd>\d{1,2})\s*[-–]\s*"
-    r"(?:(?P<em>[A-Za-z]+)\s+)?(?P<ed>\d{1,2}),\s*(?P<yr>\d{4})"
-)
-
-
 def _parse_week_dates(page_title: str) -> tuple[dt.date, dt.date] | None:
-    match = _WEEK_TITLE_RE.search(page_title)
-    if not match:
-        return None
-    year = int(match.group("yr"))
-    start_month = _MONTHS.get(match.group("sm").lower())
-    if start_month is None:
-        return None
-    end_month = start_month
-    if match.group("em"):
-        end_month = _MONTHS.get(match.group("em").lower()) or start_month
-    start = dt.date(year, start_month, int(match.group("sd")))
-    end = dt.date(year, end_month, int(match.group("ed")))
-    return start, end
+    from scripts.instructional_weeks import parse_week_range
+
+    return parse_week_range(page_title)
 
 
 def quarter_date_ranges(

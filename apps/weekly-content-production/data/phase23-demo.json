@@ -487,7 +487,7 @@
       "provenance": [
         {
           "details": "SM5: Test 18",
-          "sourceRef": "/Users/owen/Projects/teacher-ai-workstation/fixtures/canvas-llm/phase-23/synthetic-weekly-content.json",
+          "sourceRef": "fixtures/canvas-llm/phase-23/synthetic-weekly-content.json",
           "sourceType": "fixture"
         },
         {
@@ -512,7 +512,7 @@
       "provenance": [
         {
           "details": "RM4: Reading Test 13",
-          "sourceRef": "/Users/owen/Projects/teacher-ai-workstation/fixtures/canvas-llm/phase-23/synthetic-weekly-content.json",
+          "sourceRef": "fixtures/canvas-llm/phase-23/synthetic-weekly-content.json",
           "sourceType": "fixture"
         },
         {
@@ -536,7 +536,7 @@
       "provenance": [
         {
           "details": "RM4: Spelling Test 6",
-          "sourceRef": "/Users/owen/Projects/teacher-ai-workstation/fixtures/canvas-llm/phase-23/synthetic-weekly-content.json",
+          "sourceRef": "fixtures/canvas-llm/phase-23/synthetic-weekly-content.json",
           "sourceType": "fixture"
         },
         {
@@ -579,7 +579,7 @@
       "provenance": [
         {
           "details": "HIST4: Assessment 1",
-          "sourceRef": "/Users/owen/Projects/teacher-ai-workstation/fixtures/canvas-llm/phase-23/synthetic-weekly-content.json",
+          "sourceRef": "fixtures/canvas-llm/phase-23/synthetic-weekly-content.json",
           "sourceType": "fixture"
         },
         {
@@ -603,7 +603,7 @@
       "provenance": [
         {
           "details": "ELA4: Assessment 1",
-          "sourceRef": "/Users/owen/Projects/teacher-ai-workstation/fixtures/canvas-llm/phase-23/synthetic-weekly-content.json",
+          "sourceRef": "fixtures/canvas-llm/phase-23/synthetic-weekly-content.json",
           "sourceType": "fixture"
         },
         {
@@ -633,7 +633,7 @@
       "provenance": [
         {
           "details": "SM5: Lesson 18",
-          "sourceRef": "/Users/owen/Projects/teacher-ai-workstation/fixtures/canvas-llm/phase-23/synthetic-weekly-content.json",
+          "sourceRef": "fixtures/canvas-llm/phase-23/synthetic-weekly-content.json",
           "sourceType": "fixture"
         },
         {
@@ -678,7 +678,7 @@
       "provenance": [
         {
           "details": "SM5: Lesson 19",
-          "sourceRef": "/Users/owen/Projects/teacher-ai-workstation/fixtures/canvas-llm/phase-23/synthetic-weekly-content.json",
+          "sourceRef": "fixtures/canvas-llm/phase-23/synthetic-weekly-content.json",
           "sourceType": "fixture"
         },
         {
@@ -723,7 +723,7 @@
       "provenance": [
         {
           "details": "SM5: Lesson 20",
-          "sourceRef": "/Users/owen/Projects/teacher-ai-workstation/fixtures/canvas-llm/phase-23/synthetic-weekly-content.json",
+          "sourceRef": "fixtures/canvas-llm/phase-23/synthetic-weekly-content.json",
           "sourceType": "fixture"
         },
         {
@@ -768,7 +768,7 @@
       "provenance": [
         {
           "details": "RM4: Lesson 51",
-          "sourceRef": "/Users/owen/Projects/teacher-ai-workstation/fixtures/canvas-llm/phase-23/synthetic-weekly-content.json",
+          "sourceRef": "fixtures/canvas-llm/phase-23/synthetic-weekly-content.json",
           "sourceType": "fixture"
         },
         {
@@ -813,7 +813,7 @@
       "provenance": [
         {
           "details": "RM4: Lesson 52",
-          "sourceRef": "/Users/owen/Projects/teacher-ai-workstation/fixtures/canvas-llm/phase-23/synthetic-weekly-content.json",
+          "sourceRef": "fixtures/canvas-llm/phase-23/synthetic-weekly-content.json",
           "sourceType": "fixture"
         },
         {
@@ -858,7 +858,7 @@
       "provenance": [
         {
           "details": "RM4: Lesson 50",
-          "sourceRef": "/Users/owen/Projects/teacher-ai-workstation/fixtures/canvas-llm/phase-23/synthetic-weekly-content.json",
+          "sourceRef": "fixtures/canvas-llm/phase-23/synthetic-weekly-content.json",
           "sourceType": "fixture"
         },
         {
@@ -903,7 +903,7 @@
       "provenance": [
         {
           "details": "SM5: Test 18",
-          "sourceRef": "/Users/owen/Projects/teacher-ai-workstation/fixtures/canvas-llm/phase-23/synthetic-weekly-content.json",
+          "sourceRef": "fixtures/canvas-llm/phase-23/synthetic-weekly-content.json",
           "sourceType": "fixture"
         },
         {
@@ -948,7 +948,7 @@
       "provenance": [
         {
           "details": "SM5: Test 18",
-          "sourceRef": "/Users/owen/Projects/teacher-ai-workstation/fixtures/canvas-llm/phase-23/synthetic-weekly-content.json",
+          "sourceRef": "fixtures/canvas-llm/phase-23/synthetic-weekly-content.json",
           "sourceType": "fixture"
         },
         {
@@ -993,7 +993,7 @@
       "provenance": [
         {
           "details": "RM4: Reading Test 13",
-          "sourceRef": "/Users/owen/Projects/teacher-ai-workstation/fixtures/canvas-llm/phase-23/synthetic-weekly-content.json",
+          "sourceRef": "fixtures/canvas-llm/phase-23/synthetic-weekly-content.json",
           "sourceType": "fixture"
         },
         {
@@ -1038,7 +1038,7 @@
       "provenance": [
         {
           "details": "RM4: Reading Test 13",
-          "sourceRef": "/Users/owen/Projects/teacher-ai-workstation/fixtures/canvas-llm/phase-23/synthetic-weekly-content.json",
+          "sourceRef": "fixtures/canvas-llm/phase-23/synthetic-weekly-content.json",
           "sourceType": "fixture"
         },
         {
@@ -1083,7 +1083,7 @@
       "provenance": [
         {
           "details": "RM4: Spelling Test 6",
-          "sourceRef": "/Users/owen/Projects/teacher-ai-workstation/fixtures/canvas-llm/phase-23/synthetic-weekly-content.json",
+          "sourceRef": "fixtures/canvas-llm/phase-23/synthetic-weekly-content.json",
           "sourceType": "fixture"
         },
         {
@@ -1128,7 +1128,7 @@
       "provenance": [
         {
           "details": "RM4: Reading Test 14",
-          "sourceRef": "/Users/owen/Projects/teacher-ai-workstation/fixtures/canvas-llm/phase-23/synthetic-weekly-content.json",
+          "sourceRef": "fixtures/canvas-llm/phase-23/synthetic-weekly-content.json",
           "sourceType": "fixture"
         },
         {
@@ -1173,7 +1173,7 @@
       "provenance": [
         {
           "details": "HIST4: Assessment 1",
-          "sourceRef": "/Users/owen/Projects/teacher-ai-workstation/fixtures/canvas-llm/phase-23/synthetic-weekly-content.json",
+          "sourceRef": "fixtures/canvas-llm/phase-23/synthetic-weekly-content.json",
           "sourceType": "fixture"
         },
         {
@@ -1218,7 +1218,7 @@
       "provenance": [
         {
           "details": "ELA4: Assessment 1",
-          "sourceRef": "/Users/owen/Projects/teacher-ai-workstation/fixtures/canvas-llm/phase-23/synthetic-weekly-content.json",
+          "sourceRef": "fixtures/canvas-llm/phase-23/synthetic-weekly-content.json",
           "sourceType": "fixture"
         },
         {
@@ -1823,7 +1823,7 @@
     "cadence": "monthly",
     "canvas_writes_allowed": false,
     "content_hash": "03f445915e8d68ee",
-    "course_id": 26427,
+    "course_id": 26429,
     "date_range": {
       "end": "2026-08-31",
       "start": "2026-08-01"
@@ -1955,7 +1955,7 @@
       "provenance": [
         {
           "details": "weekly input rows",
-          "sourceRef": "/Users/owen/Projects/teacher-ai-workstation/fixtures/canvas-llm/phase-23/synthetic-weekly-content.json",
+          "sourceRef": "fixtures/canvas-llm/phase-23/synthetic-weekly-content.json",
           "sourceType": "fixture"
         },
         {
@@ -1984,7 +1984,7 @@
       "provenance": [
         {
           "details": "weekly input rows",
-          "sourceRef": "/Users/owen/Projects/teacher-ai-workstation/fixtures/canvas-llm/phase-23/synthetic-weekly-content.json",
+          "sourceRef": "fixtures/canvas-llm/phase-23/synthetic-weekly-content.json",
           "sourceType": "fixture"
         },
         {
@@ -2007,7 +2007,7 @@
       "provenance": [
         {
           "details": "weekly input rows",
-          "sourceRef": "/Users/owen/Projects/teacher-ai-workstation/fixtures/canvas-llm/phase-23/synthetic-weekly-content.json",
+          "sourceRef": "fixtures/canvas-llm/phase-23/synthetic-weekly-content.json",
           "sourceType": "fixture"
         },
         {
@@ -2030,7 +2030,7 @@
       "provenance": [
         {
           "details": "weekly input rows",
-          "sourceRef": "/Users/owen/Projects/teacher-ai-workstation/fixtures/canvas-llm/phase-23/synthetic-weekly-content.json",
+          "sourceRef": "fixtures/canvas-llm/phase-23/synthetic-weekly-content.json",
           "sourceType": "fixture"
         },
         {
@@ -2047,7 +2047,7 @@
   "provenance": [
     {
       "details": "synthetic weekly content source",
-      "source_ref": "/Users/owen/Projects/teacher-ai-workstation/fixtures/canvas-llm/phase-23/synthetic-weekly-content.json",
+      "source_ref": "fixtures/canvas-llm/phase-23/synthetic-weekly-content.json",
       "source_type": "fixture"
     },
     {

@@ -16,7 +16,6 @@ from __future__ import annotations
 
 import datetime as dt
 import json
-import re
 import sys
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -26,6 +25,7 @@ if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
 from scripts.canvas_llm_grade_check import emailer  # noqa: E402
+from scripts.instructional_weeks import parse_week_range  # noqa: E402
 from scripts.canvas_llm_grade_check import gmail_transport  # noqa: E402
 from scripts.canvas_llm_grade_check import scheduler  # noqa: E402
 
@@ -60,15 +60,6 @@ EXPECTED_FILES = (
 
 INSTRUCTIONAL_WEEKS_REL = "config/curriculum/canvas/instructional-weeks-2026-2027.json"
 
-_MONTHS = {
-    "january": 1, "february": 2, "march": 3, "april": 4, "may": 5, "june": 6,
-    "july": 7, "august": 8, "september": 9, "october": 10, "november": 11,
-    "december": 12,
-}
-_WEEK_TITLE_RE = re.compile(
-    r"\-\s*(?P<sm>[A-Za-z]+)\s+(?P<sd>\d{1,2})\s*[-–]\s*"
-    r"(?:(?P<em>[A-Za-z]+)\s+)?(?P<ed>\d{1,2}),\s*(?P<yr>\d{4})"
-)
 
 # Synthetic/test identities that must never appear in production state.
 # Real Canvas student ids in this district are 5-digit; the deterministic test
@@ -133,20 +124,10 @@ def school_days(now: dt.datetime | None = None) -> tuple[set[dt.date], str]:
 
     days: set[dt.date] = set()
     for week in raw.get("weeks", []):
-        title = week.get("pageTitle") or ""
-        match = _WEEK_TITLE_RE.search(title)
-        if not match:
+        bounds = parse_week_range(week.get("pageTitle") or "")
+        if bounds is None:
             continue
-        year = int(match.group("yr"))
-        sm = _MONTHS.get((match.group("sm") or "").lower())
-        em = _MONTHS.get((match.group("em") or match.group("sm") or "").lower())
-        if sm is None or em is None:
-            continue
-        try:
-            start = dt.date(year, sm, int(match.group("sd")))
-            end = dt.date(year, em, int(match.group("ed")))
-        except ValueError:
-            continue
+        start, end = bounds
         cur = start
         while cur <= end:
             if cur.weekday() < 5:

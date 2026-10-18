@@ -1,9 +1,12 @@
 const $ = (id) => document.getElementById(id);
 
+// The server puts this start's write token in the page; writes must send it.
+const REQUEST_TOKEN = document.getElementById('phase26-token')?.content || '';
+
 async function request(path, options = {}) {
   const response = await fetch(path, {
-    headers: { 'Content-Type': 'application/json', ...(options.headers || {}) },
     ...options,
+    headers: { 'Content-Type': 'application/json', 'X-Phase26-Token': REQUEST_TOKEN, ...(options.headers || {}) },
   });
   let data;
   try {

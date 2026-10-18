@@ -31,11 +31,15 @@ def load_weeks() -> list[dict[str, Any]]:
     return json.loads(P3.WEEKS_PATH.read_text(encoding="utf-8")).get("weeks", [])
 
 
-def _week_start(week: dict[str, Any]) -> dt.date | None:
-    from scripts.canvas_llm_phase3.pacing_extractor import week_bounds_from_title
+def _week_bounds(week: dict[str, Any]) -> tuple[dt.date, dt.date] | None:
+    from scripts.instructional_weeks import week_range
 
-    bounds = week_bounds_from_title(week.get("pageTitle", ""))
-    return bounds[0].date() if bounds else None
+    return week_range(week)
+
+
+def _week_start(week: dict[str, Any]) -> dt.date | None:
+    bounds = _week_bounds(week)
+    return bounds[0] if bounds else None
 
 
 def week_code_for(quarter: int, week: int) -> str:
@@ -55,10 +59,10 @@ def current_week(today: dt.date | None = None) -> tuple[int, int]:
     today = today or _now_local().date()
     best: dict[str, Any] | None = None
     for w in load_weeks():
-        start = _week_start(w)
-        if start is None:
+        bounds = _week_bounds(w)
+        if bounds is None:
             continue
-        end = start + dt.timedelta(days=4)
+        start, end = bounds
         if start <= today <= end:
             best = w
             break

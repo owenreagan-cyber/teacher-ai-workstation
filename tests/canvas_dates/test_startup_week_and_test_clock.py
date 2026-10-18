@@ -33,11 +33,11 @@ class StartupWeekTest(unittest.TestCase):
     def tearDownClass(cls) -> None:
         cls.tmp.cleanup()
 
-    def test_some_weeks_have_no_parsed_dates(self) -> None:
-        # Cross-month ranges (e.g. "August 31–September 4") do not parse, so
-        # those weeks carry startsOn/endsOn None. The selector must cope.
+    def test_every_week_has_parsed_dates(self) -> None:
+        # REL-2: cross-month ranges (e.g. "August 31–September 4") now parse.
+        # test_no_dated_weeks_falls_back_to_chooser still covers None dates.
         undated = [w["code"] for w in p22.load_instructional_weeks() if not w["startsOn"]]
-        self.assertIn("Q1W7", undated)
+        self.assertEqual(undated, [])
 
     def test_break_after_an_undated_week_does_not_compare_none(self) -> None:
         # 2026-10-18 is a Sunday between Q2W1 and Q2W2. Before the fix this

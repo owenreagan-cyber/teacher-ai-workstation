@@ -31,6 +31,12 @@ ALLOWED_APPROVAL_STATES = {"draft", "reviewed", "approved"}
 
 sys.path.insert(0, str(REPO_ROOT))
 from scripts.canvas_llm_phase22 import phase22_workstation as phase22  # noqa: E402
+from scripts import local_http_guard  # noqa: E402
+
+# Write guard (scripts/local_http_guard.py): loopback Host on every request;
+# same-origin, this start's token, JSON, and <= 1 MB on writes.
+TOKEN_HEADER = "X-Phase23-Token"
+TOKEN_PLACEHOLDER = "__PHASE23_REQUEST_TOKEN__"
 
 UTC = timezone.utc
 WHITE = "#ffffff"
@@ -1075,7 +1081,7 @@ def build_pages(week: InstructionalWeek, entries: list[PacingEntry]) -> tuple[li
                 linked_assignment_ids=linked_assignment_ids,
                 resource_ids=resource_ids,
                 provenance=[
-                    {"sourceType": "fixture", "sourceRef": str(FIXTURE_PATH), "details": "weekly input rows"},
+                    {"sourceType": "fixture", "sourceRef": phase22.safe_repo_relative(FIXTURE_PATH), "details": "weekly input rows"},
                     {"sourceType": "canonical-week", "sourceRef": week.code, "details": "selected instructional week"},
                 ],
             )
@@ -1133,7 +1139,7 @@ def build_assignments(week: InstructionalWeek, entries: list[PacingEntry]) -> li
                 display_date=display_date,
                 warnings=[],
                 provenance=[
-                    {"sourceType": "fixture", "sourceRef": str(FIXTURE_PATH), "details": entry.title},
+                    {"sourceType": "fixture", "sourceRef": phase22.safe_repo_relative(FIXTURE_PATH), "details": entry.title},
                     {"sourceType": "phase22-rule", "sourceRef": entry.subject, "details": meta.get("selectionReason") or "graded assignment selection"},
                     {"sourceType": "due-time", "sourceRef": entry.date, "details": f"{due_fields['dueTime']} {due_fields['timezone']}"},
                 ],
@@ -1195,7 +1201,7 @@ def build_assessment_reminders(week: InstructionalWeek, entries: list[PacingEntr
                 display_date=display_date,
                 warnings=[],
                 provenance=[
-                    {"sourceType": "fixture", "sourceRef": str(FIXTURE_PATH), "details": entry.title},
+                    {"sourceType": "fixture", "sourceRef": phase22.safe_repo_relative(FIXTURE_PATH), "details": entry.title},
                     {"sourceType": "phase22-rule", "sourceRef": "assessment-reminder", "details": "linked to packet assignments"},
                 ],
             )
@@ -1440,8 +1446,8 @@ def validate_packet(packet: dict[str, Any], fixture: dict[str, Any] | None = Non
     if not newsletter:
         findings.append(ValidationFinding("fail", "newsletter.missing", "Monthly Homeroom newsletter must be serialized", "newsletter"))
     else:
-        if newsletter.get("course_id") != 26427:
-            findings.append(ValidationFinding("fail", "newsletter.course", "Homeroom newsletter must route to course 26427", newsletter.get("local_object_id")))
+        if newsletter.get("course_id") != 26429:
+            findings.append(ValidationFinding("fail", "newsletter.course", "Homeroom newsletter must route to course 26429", newsletter.get("local_object_id")))
         elif newsletter.get("title") != f"Homeroom Newsletter — {newsletter.get('month_label')}":
             findings.append(ValidationFinding("fail", "newsletter.title", "Newsletter title must use approved monthly pattern", newsletter.get("local_object_id")))
         elif newsletter.get("cadence") != "monthly" or newsletter.get("artifact_kind") != "newsletter":
@@ -1516,10 +1522,10 @@ def validate_packet(packet: dict[str, Any], fixture: dict[str, Any] | None = Non
     fail_count = sum(1 for item in findings if item.severity == "fail")
     if fixture is not None:
         if fixture.get("artifactClassification") != "synthetic-weekly-content":
-            findings.append(ValidationFinding("fail", "fixture.classification", "Fixture classification must remain synthetic-weekly-content", str(FIXTURE_PATH)))
+            findings.append(ValidationFinding("fail", "fixture.classification", "Fixture classification must remain synthetic-weekly-content", phase22.safe_repo_relative(FIXTURE_PATH)))
             fail_count += 1
         if fixture.get("containsStudentData") is not False:
-            findings.append(ValidationFinding("fail", "fixture.student-data", "Fixture must not contain student data", str(FIXTURE_PATH)))
+            findings.append(ValidationFinding("fail", "fixture.student-data", "Fixture must not contain student data", phase22.safe_repo_relative(FIXTURE_PATH)))
             fail_count += 1
     return {
         "passCount": pass_count,
@@ -1633,7 +1639,7 @@ def build_packet(week_code: str | None = None, fixture_path: Path = FIXTURE_PATH
         validation={},
         risks=[],
         provenance=[
-            ProvenanceRecord("fixture", str(fixture_path), "synthetic weekly content source"),
+            ProvenanceRecord("fixture", phase22.safe_repo_relative(fixture_path), "synthetic weekly content source"),
             ProvenanceRecord("canonical-calendar", "config/curriculum/canvas/instructional-weeks-2026-2027.json", "instructional week authority"),
             ProvenanceRecord("phase22-rules", "scripts/canvas_llm_phase22/phase22_workstation.py", "curriculum resolution and preview-only safety rules"),
         ],
@@ -1798,7 +1804,38 @@ class PacketHandler(SimpleHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(body)
 
+    def _guarded(self, method: str) -> bool:
+        return local_http_guard.guard(self, method, token_header=TOKEN_HEADER)
+
+    def _send_index(self) -> None:
+        body = local_http_guard.inject_token((APP_DIR / "index.html").read_bytes(), TOKEN_PLACEHOLDER, self.server.request_token)
+        self.send_response(200)
+        self.send_header("Content-Type", "text/html; charset=utf-8")
+        self.send_header("Content-Length", str(len(body)))
+        self.send_header("Cache-Control", "no-store")
+        self.end_headers()
+        self.wfile.write(body)
+
+    def do_HEAD(self):  # noqa: N802
+        if not self._guarded("HEAD"):
+            return
+        super().do_HEAD()
+
+    def do_PUT(self):  # noqa: N802
+        if self._guarded("PUT"):
+            self._send_json({"error": "method not allowed"}, 405)
+
+    def do_PATCH(self):  # noqa: N802
+        if self._guarded("PATCH"):
+            self._send_json({"error": "method not allowed"}, 405)
+
+    def do_DELETE(self):  # noqa: N802
+        if self._guarded("DELETE"):
+            self._send_json({"error": "method not allowed"}, 405)
+
     def do_GET(self):  # noqa: N802
+        if not self._guarded("GET"):
+            return
         parsed = urllib.parse.urlparse(self.path)
         if parsed.path == "/api/bootstrap":
             packet, local_state = current_packet()
@@ -1837,12 +1874,14 @@ class PacketHandler(SimpleHTTPRequestHandler):
                 }
             )
             return
-        if parsed.path == "/":
-            self.path = "/index.html"
-            return super().do_GET()
+        if parsed.path in ("/", "/index.html"):
+            self._send_index()
+            return
         return super().do_GET()
 
     def do_POST(self):  # noqa: N802
+        if not self._guarded("POST"):
+            return
         parsed = urllib.parse.urlparse(self.path)
         if parsed.path == "/api/local-state":
             try:
@@ -2101,6 +2140,7 @@ def command_serve(args: argparse.Namespace) -> int:
         write_json(APP_DATA_PATH, packet)
     os.chdir(APP_DIR)
     server = ThreadingHTTPServer((args.host, args.port), PacketHandler)
+    server.request_token = local_http_guard.new_token()
     print(f"Phase 23 workstation serving at http://{args.host}:{args.port} summary={packet_summary(packet)}")
     server.serve_forever()
 

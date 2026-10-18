@@ -17,7 +17,7 @@ if str(REPO_ROOT) not in sys.path:
 from scripts.canvas_llm_phase22 import canvas_connector as connector  # noqa: E402
 from scripts.canvas_llm_phase22 import phase22_workstation as p22  # noqa: E402
 
-HOMEROOM_COURSE_ID = 26427
+HOMEROOM_COURSE_ID = 26429
 MATH_COURSE_ID = 26404
 READING_COURSE_ID = 26442
 Q1W2_WEEK_CODE = 'Q1W2'

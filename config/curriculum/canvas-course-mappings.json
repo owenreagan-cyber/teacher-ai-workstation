@@ -105,7 +105,7 @@
       {
         "subjectId": "homeroom",
         "displayName": "Homeroom",
-        "courseId": 26427,
+        "courseId": 26429,
         "canonicalPrefix": "NEWSLETTER",
         "canonicalName": "Homeroom",
         "assignmentPolicy": "disabled",

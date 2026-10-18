@@ -255,7 +255,7 @@ def print_live_deployment_preview() -> None:
     print(PAGE_TITLE)
     print()
     print('Course:')
-    print('26427 Homeroom')
+    print('26429 Homeroom')
     print()
     print('Front Page:')
     print('YES')

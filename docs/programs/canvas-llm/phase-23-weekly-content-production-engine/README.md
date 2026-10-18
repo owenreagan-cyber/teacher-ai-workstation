@@ -21,3 +21,5 @@ Primary entry points:
 - `python3 scripts/canvas_llm_phase23/phase23_content_engine.py validate <packet.json>`
 - `bash tests/canvas-llm-phase-23-weekly-content-production-engine-test.sh`
 
+Write guard: the server uses `scripts/local_http_guard.py` (shared with the Teacher Workstation). Every request needs a loopback `Host`; writes must be same-origin, carry the per-start token the page receives, use `Content-Type: application/json`, and stay at or under 1 MB.
+

@@ -11,3 +11,5 @@ Drafts are local and editable: agenda pages, Math assessment families, Reading/S
 Safety: no Canvas writes, no email sends, no fake links, no tracked `.local` artifacts. Unresolved: Canvas due time only. Reading Test 14 has no Checkout.
 
 Commands: `python3 scripts/canvas_llm_phase22/phase22_workstation.py init-db`, `python3 scripts/canvas_llm_phase22/phase22_workstation.py serve --host 127.0.0.1 --port 8765`, `bash tests/canvas-llm-phase-22-predictive-weekly-planning-workstation-test.sh`.
+
+Write guard: the server uses `scripts/local_http_guard.py` (shared with the Teacher Workstation). Every request needs a loopback `Host`; writes must be same-origin, carry the per-start token the page receives, use `Content-Type: application/json`, and stay at or under 1 MB.

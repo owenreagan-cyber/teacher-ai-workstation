@@ -31,6 +31,12 @@ ALLOWED_APPROVAL_STATES = {"draft", "reviewed", "approved"}
 
 sys.path.insert(0, str(REPO_ROOT))
 from scripts.canvas_llm_phase22 import phase22_workstation as phase22  # noqa: E402
+from scripts import local_http_guard  # noqa: E402
+
+# Write guard (scripts/local_http_guard.py): loopback Host on every request;
+# same-origin, this start's token, JSON, and <= 1 MB on writes.
+TOKEN_HEADER = "X-Phase23-Token"
+TOKEN_PLACEHOLDER = "__PHASE23_REQUEST_TOKEN__"
 
 UTC = timezone.utc
 WHITE = "#ffffff"
@@ -1798,7 +1804,38 @@ class PacketHandler(SimpleHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(body)
 
+    def _guarded(self, method: str) -> bool:
+        return local_http_guard.guard(self, method, token_header=TOKEN_HEADER)
+
+    def _send_index(self) -> None:
+        body = local_http_guard.inject_token((APP_DIR / "index.html").read_bytes(), TOKEN_PLACEHOLDER, self.server.request_token)
+        self.send_response(200)
+        self.send_header("Content-Type", "text/html; charset=utf-8")
+        self.send_header("Content-Length", str(len(body)))
+        self.send_header("Cache-Control", "no-store")
+        self.end_headers()
+        self.wfile.write(body)
+
+    def do_HEAD(self):  # noqa: N802
+        if not self._guarded("HEAD"):
+            return
+        super().do_HEAD()
+
+    def do_PUT(self):  # noqa: N802
+        if self._guarded("PUT"):
+            self._send_json({"error": "method not allowed"}, 405)
+
+    def do_PATCH(self):  # noqa: N802
+        if self._guarded("PATCH"):
+            self._send_json({"error": "method not allowed"}, 405)
+
+    def do_DELETE(self):  # noqa: N802
+        if self._guarded("DELETE"):
+            self._send_json({"error": "method not allowed"}, 405)
+
     def do_GET(self):  # noqa: N802
+        if not self._guarded("GET"):
+            return
         parsed = urllib.parse.urlparse(self.path)
         if parsed.path == "/api/bootstrap":
             packet, local_state = current_packet()
@@ -1837,12 +1874,14 @@ class PacketHandler(SimpleHTTPRequestHandler):
                 }
             )
             return
-        if parsed.path == "/":
-            self.path = "/index.html"
-            return super().do_GET()
+        if parsed.path in ("/", "/index.html"):
+            self._send_index()
+            return
         return super().do_GET()
 
     def do_POST(self):  # noqa: N802
+        if not self._guarded("POST"):
+            return
         parsed = urllib.parse.urlparse(self.path)
         if parsed.path == "/api/local-state":
             try:
@@ -2101,6 +2140,7 @@ def command_serve(args: argparse.Namespace) -> int:
         write_json(APP_DATA_PATH, packet)
     os.chdir(APP_DIR)
     server = ThreadingHTTPServer((args.host, args.port), PacketHandler)
+    server.request_token = local_http_guard.new_token()
     print(f"Phase 23 workstation serving at http://{args.host}:{args.port} summary={packet_summary(packet)}")
     server.serve_forever()
 

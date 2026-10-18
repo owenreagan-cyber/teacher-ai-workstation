@@ -10,6 +10,9 @@ from zoneinfo import ZoneInfo
 REPO_ROOT=Path(__file__).resolve().parents[2]; APP_DIR=REPO_ROOT/'apps/predictive-weekly-planning'
 if str(REPO_ROOT) not in sys.path: sys.path.insert(0,str(REPO_ROOT))
 from scripts.instructional_weeks import parse_week_range  # noqa: E402
+from scripts import local_http_guard  # noqa: E402
+# Write guard (scripts/local_http_guard.py): loopback Host on every request; same-origin, this start's token, JSON, <=1 MB on writes.
+TOKEN_HEADER='X-Phase22-Token'; TOKEN_PLACEHOLDER='__PHASE22_REQUEST_TOKEN__'
 LOCAL_ROOT=REPO_ROOT/'.local/canvas-llm/phase-22-predictive-weekly-planning'; DEFAULT_DB_PATH=LOCAL_ROOT/'workstation.sqlite3'
 RAW_IMPORT_PATH=REPO_ROOT/'.local/pacing-imports/2025-2026-reagan-pacing-guide.csv'; SYNTHETIC_FIXTURE_PATH=REPO_ROOT/'fixtures/canvas-llm/phase-22/synthetic-pacing-guide.csv'; COMMITTED_DEMO_PATH=APP_DIR/'data/phase22-demo.json'
 UTC=timezone.utc; EASTERN=ZoneInfo('America/New_York'); WEEKDAYS=['Monday','Tuesday','Wednesday','Thursday','Friday']
@@ -1410,13 +1413,31 @@ class Handler(SimpleHTTPRequestHandler):
     def sendj(self,p,status=200):
         b=json.dumps(p,indent=2,ensure_ascii=False).encode(); self.send_response(status); self.send_header('Content-Type','application/json'); self.send_header('Content-Length',str(len(b))); self.end_headers(); self.wfile.write(b)
     def body(self): return json.loads(self.rfile.read(int(self.headers.get('Content-Length','0') or 0)).decode() or '{}')
+    def guarded(self,m): return local_http_guard.guard(self,m,token_header=TOKEN_HEADER)
+    def send_index(self):
+        b=local_http_guard.inject_token((APP_DIR/'index.html').read_bytes(),TOKEN_PLACEHOLDER,self.server.request_token)
+        self.send_response(200); self.send_header('Content-Type','text/html; charset=utf-8'); self.send_header('Content-Length',str(len(b))); self.send_header('Cache-Control','no-store'); self.end_headers(); self.wfile.write(b)
     def do_GET(self):
+        if not self.guarded('GET'): return
         u=urllib.parse.urlparse(self.path)
         if u.path.startswith('/api/'): return self.api('GET',u)
-        if u.path=='/': self.path='/index.html'
+        if u.path in ('/','/index.html'): return self.send_index()
         return SimpleHTTPRequestHandler.do_GET(self)
-    def do_POST(self): return self.api('POST',urllib.parse.urlparse(self.path))
-    def do_PATCH(self): return self.api('PATCH',urllib.parse.urlparse(self.path))
+    def do_HEAD(self):
+        if not self.guarded('HEAD'): return
+        return SimpleHTTPRequestHandler.do_HEAD(self)
+    def do_POST(self):
+        if not self.guarded('POST'): return
+        return self.api('POST',urllib.parse.urlparse(self.path))
+    def do_PATCH(self):
+        if not self.guarded('PATCH'): return
+        return self.api('PATCH',urllib.parse.urlparse(self.path))
+    def do_PUT(self):
+        if not self.guarded('PUT'): return
+        return self.sendj({'error':'method not allowed'},405)
+    def do_DELETE(self):
+        if not self.guarded('DELETE'): return
+        return self.sendj({'error':'method not allowed'},405)
     def api(self,m,u):
         try:
             db=self.db(); path=u.path
@@ -1513,7 +1534,7 @@ def command_serve(a):
     db.migrate()
     Handler.db_path=db.path
     os.chdir(APP_DIR)
-    srv=ThreadingHTTPServer((a.host,a.port),Handler)
+    srv=ThreadingHTTPServer((a.host,a.port),Handler); srv.request_token=local_http_guard.new_token()
     print(f'Phase 22 workstation serving at http://{a.host}:{a.port} db={db.path}')
     srv.serve_forever()
 def command_self_test(a):
@@ -1592,11 +1613,16 @@ def command_runtime_proof(a):
         else: raise RuntimeError('server failed to start')
         health=json.loads(urllib.request.urlopen(f'http://127.0.0.1:{port}/api/health').read()); assert health['canvasWritesAllowed'] is False and health['emailSendsAllowed'] is False
         boot=json.loads(urllib.request.urlopen(f'http://127.0.0.1:{port}/api/bootstrap').read())
-        req=urllib.request.Request(f'http://127.0.0.1:{port}/api/daily-entries/{d["id"]}',data=json.dumps({'version':d['version'],'fields':{'title':'Runtime Proof 1'}}).encode(),headers={'Content-Type':'application/json'},method='PATCH')
+        page=urllib.request.urlopen(f'http://127.0.0.1:{port}/').read().decode(); token=re.search(r'name="phase22-token" content="([^"]+)"',page).group(1); assert token!=TOKEN_PLACEHOLDER
+        hdrs={'Content-Type':'application/json','Origin':f'http://127.0.0.1:{port}',TOKEN_HEADER:token}
+        for bad in ({**hdrs,'Origin':'http://evil.example'},{k:v for k,v in hdrs.items() if k!=TOKEN_HEADER},{**hdrs,'Content-Type':'text/plain'}):
+            try: urllib.request.urlopen(urllib.request.Request(f'http://127.0.0.1:{port}/api/daily-entries/{d["id"]}',data=json.dumps({'version':d['version'],'fields':{'title':'guard'}}).encode(),headers=bad,method='PATCH')); raise AssertionError('guard bypassed')
+            except urllib.error.HTTPError as e: assert e.code in (403,415)
+        req=urllib.request.Request(f'http://127.0.0.1:{port}/api/daily-entries/{d["id"]}',data=json.dumps({'version':d['version'],'fields':{'title':'Runtime Proof 1'}}).encode(),headers=hdrs,method='PATCH')
         up1=json.loads(urllib.request.urlopen(req).read()); v1=up1['version']
-        req2=urllib.request.Request(f'http://127.0.0.1:{port}/api/daily-entries/{d["id"]}',data=json.dumps({'version':v1,'fields':{'title':'Runtime Proof 2'}}).encode(),headers={'Content-Type':'application/json'},method='PATCH')
+        req2=urllib.request.Request(f'http://127.0.0.1:{port}/api/daily-entries/{d["id"]}',data=json.dumps({'version':v1,'fields':{'title':'Runtime Proof 2'}}).encode(),headers=hdrs,method='PATCH')
         up2=json.loads(urllib.request.urlopen(req2).read()); assert up2['title']=='Runtime Proof 2'
-        stale=urllib.request.Request(f'http://127.0.0.1:{port}/api/daily-entries/{d["id"]}',data=json.dumps({'version':d['version'],'fields':{'title':'stale'}}).encode(),headers={'Content-Type':'application/json'},method='PATCH')
+        stale=urllib.request.Request(f'http://127.0.0.1:{port}/api/daily-entries/{d["id"]}',data=json.dumps({'version':d['version'],'fields':{'title':'stale'}}).encode(),headers=hdrs,method='PATCH')
         try: urllib.request.urlopen(stale); raise AssertionError('stale allowed')
         except urllib.error.HTTPError as e: assert e.code==409
     finally:

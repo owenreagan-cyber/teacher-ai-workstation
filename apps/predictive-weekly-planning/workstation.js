@@ -41,10 +41,13 @@ function persistSelectedWeekCode(code) {
   }
 }
 
+// The server puts this start's write token in the page; writes must send it.
+const REQUEST_TOKEN = document.getElementById('phase22-token')?.content || '';
+
 async function api(path, options = {}, timeoutMs = 15000) {
   const controller = new AbortController();
   const timeout = timeoutMs ? setTimeout(() => controller.abort('timeout'), timeoutMs) : null;
-  const headers = { 'Content-Type': 'application/json', ...(options.headers || {}) };
+  const headers = { 'Content-Type': 'application/json', 'X-Phase22-Token': REQUEST_TOKEN, ...(options.headers || {}) };
   try {
     const response = await fetch(path, { ...options, headers, signal: controller.signal });
     const data = await response.json();

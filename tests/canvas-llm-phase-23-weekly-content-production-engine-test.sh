@@ -133,11 +133,27 @@ local_state = json.loads(urllib.request.urlopen(base + "/api/local-state?weekCod
 assert local_state["status"] == "saved"
 assert local_state["approvalState"] == "draft"
 assert local_state["version"] == 0
+# Writes act like the served page: same origin, JSON, and this start's token.
+import re
+import urllib.error
+token = re.search(r'name="phase23-token" content="([^"]+)"', index_html).group(1)
+assert token != "__PHASE23_REQUEST_TOKEN__"
+write_headers = {"Content-Type": "application/json", "Origin": base, "X-Phase23-Token": token}
+for bad in (
+    {**write_headers, "Origin": "http://evil.example"},
+    {k: v for k, v in write_headers.items() if k != "X-Phase23-Token"},
+    {**write_headers, "Content-Type": "text/plain"},
+):
+    try:
+        urllib.request.urlopen(urllib.request.Request(base + "/api/export", data=b"{}", method="POST", headers=bad))
+        raise AssertionError("write guard bypassed")
+    except urllib.error.HTTPError as error:
+        assert error.code in (403, 415), error.code
 save = urllib.request.Request(
     base + "/api/local-state",
     data=json.dumps({"weekCode": "Q1W5", "approvalState": "reviewed", "version": 0}).encode(),
     method="POST",
-    headers={"Content-Type": "application/json"},
+    headers=write_headers,
 )
 saved_state = json.loads(urllib.request.urlopen(save).read())
 assert saved_state["status"] == "saved"
@@ -145,7 +161,7 @@ assert saved_state["approvalState"] == "reviewed"
 assert saved_state["version"] == 1
 packet_after_save = json.loads(urllib.request.urlopen(base + "/api/packet").read())
 assert packet_after_save["approvalState"] == "reviewed"
-export = urllib.request.Request(base + "/api/export", data=b"{}", method="POST")
+export = urllib.request.Request(base + "/api/export", data=b"{}", method="POST", headers=write_headers)
 result = json.loads(urllib.request.urlopen(export).read())
 assert result["ok"] is True
 saved = json.loads(urllib.request.urlopen(base + "/api/packet").read())

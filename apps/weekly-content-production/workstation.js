@@ -8,12 +8,16 @@ const requireElement = (id) => {
 };
 const esc = (value) => String(value ?? '').replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]));
 
+// The server puts this start's write token in the page; writes must send it.
+const REQUEST_TOKEN = document.getElementById('phase23-token')?.content || '';
+const JSON_HEADERS = { 'Content-Type': 'application/json', 'X-Phase23-Token': REQUEST_TOKEN };
+
 async function api(path, options = {}) {
   let response;
   try {
     response = await fetch(path, {
-      headers: { 'Content-Type': 'application/json', ...(options.headers || {}) },
       ...options,
+      headers: { ...JSON_HEADERS, ...(options.headers || {}) },
     });
   } catch (error) {
     throw new Error(`Failed to load ${path}: ${error.message}`);
@@ -101,6 +105,7 @@ requireElement('local-approval-save').addEventListener('click', async () => {
     setLocalStatus('Saving...', 'saving');
     const response = await fetch('/api/local-state', {
       method: 'POST',
+      headers: JSON_HEADERS,
       body: JSON.stringify({
         weekCode: packet.weekCode,
         approvalState: select.value,

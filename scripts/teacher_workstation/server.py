@@ -22,16 +22,18 @@ for this port, and every mutating request must also be same-origin
 (``Origin``, or ``Referer`` when there is no Origin), carry this server
 start's random request token in ``X-Teacher-Workstation-Token`` (the page
 receives it in a ``<meta>`` tag), use ``Content-Type: application/json``, and
-keep its body at or under 1 MB (413 above that).
+keep its body at or under 1 MB (413 above that). These checks live in
+``scripts/local_http_guard.py``, shared with the older local servers.
 """
 from __future__ import annotations
 
-import hmac
 import json
-import secrets
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import urlparse, parse_qs
+
+from scripts import local_http_guard
+from scripts.local_http_guard import GuardRejected, MAX_BODY_BYTES, MUTATING_METHODS  # noqa: F401
 
 from . import adapter
 
@@ -43,21 +45,10 @@ PORT = 4310
 
 TOKEN_HEADER = "X-Teacher-Workstation-Token"
 TOKEN_PLACEHOLDER = "__TEACHER_WORKSTATION_REQUEST_TOKEN__"
-MAX_BODY_BYTES = 1024 * 1024
-MUTATING_METHODS = ("POST", "PUT", "PATCH", "DELETE")
 
 
 def _json_bytes(obj) -> bytes:
     return json.dumps(obj, ensure_ascii=False, indent=2).encode("utf-8")
-
-
-class GuardRejected(Exception):
-    """A request failed a route-protection check before any route logic ran."""
-
-    def __init__(self, status: int, error: str) -> None:
-        super().__init__(error)
-        self.status = status
-        self.error = error
 
 
 class Handler(BaseHTTPRequestHandler):
@@ -88,8 +79,7 @@ class Handler(BaseHTTPRequestHandler):
             self._send_text(404, "not found")
             return
         if inject_token:
-            body = body.replace(TOKEN_PLACEHOLDER.encode("ascii"),
-                                self.server.request_token.encode("ascii"))
+            body = local_http_guard.inject_token(body, TOKEN_PLACEHOLDER, self.server.request_token)
         self.send_response(200)
         self.send_header("Content-Type", ctype)
         self.send_header("Content-Length", str(len(body)))
@@ -99,60 +89,9 @@ class Handler(BaseHTTPRequestHandler):
         self.wfile.write(body)
 
     # --- route protection (runs before any route logic) --------------------
-    def _allowed_hosts(self) -> tuple[str, ...]:
-        port = self.server.server_address[1]
-        return (f"127.0.0.1:{port}", f"localhost:{port}")
-
-    def _check_host(self) -> str:
-        host = (self.headers.get("Host") or "").strip().lower()
-        if host not in self._allowed_hosts():
-            raise GuardRejected(403, "HOST_REJECTED")
-        return host
-
-    def _check_mutation(self, host: str) -> None:
-        own_origin = f"http://{host}"
-        origin = self.headers.get("Origin")
-        if origin is not None:
-            if origin.strip().lower() != own_origin:
-                raise GuardRejected(403, "ORIGIN_REJECTED")
-        else:
-            referer = (self.headers.get("Referer") or "").strip().lower()
-            if not (referer == own_origin or referer.startswith(own_origin + "/")):
-                raise GuardRejected(403, "ORIGIN_REJECTED")
-
-        token = self.headers.get(TOKEN_HEADER) or ""
-        if not hmac.compare_digest(token.encode("utf-8"),
-                                   self.server.request_token.encode("ascii")):
-            raise GuardRejected(403, "TOKEN_REJECTED")
-
-        ctype = (self.headers.get("Content-Type") or "").split(";", 1)[0].strip().lower()
-        if ctype != "application/json":
-            raise GuardRejected(415, "CONTENT_TYPE_REJECTED")
-
-        if self.headers.get("Transfer-Encoding"):
-            raise GuardRejected(411, "LENGTH_REQUIRED")
-        raw_length = self.headers.get("Content-Length") or "0"
-        try:
-            length = int(raw_length)
-        except ValueError:
-            raise GuardRejected(400, "BAD_CONTENT_LENGTH") from None
-        if length < 0:
-            raise GuardRejected(400, "BAD_CONTENT_LENGTH")
-        if length > MAX_BODY_BYTES:
-            raise GuardRejected(413, "BODY_TOO_LARGE")
-
     def _guard(self, method: str) -> bool:
-        """Run the route-protection checks. Returns False if rejected."""
-        try:
-            host = self._check_host()
-            if method in MUTATING_METHODS:
-                self._check_mutation(host)
-        except GuardRejected as exc:
-            # The unread body (if any) must not be parsed as a next request.
-            self.close_connection = True
-            self._send_json(exc.status, {"error": exc.error})
-            return False
-        return True
+        """Run the shared route-protection checks. Returns False if rejected."""
+        return local_http_guard.guard(self, method, token_header=TOKEN_HEADER)
 
     # --- HTTP verbs --------------------------------------------------------
     def do_GET(self) -> None:  # noqa: N802
@@ -376,7 +315,7 @@ class Handler(BaseHTTPRequestHandler):
 def build_server(port: int = PORT):
     """Bind to 127.0.0.1 only. Each server start gets a fresh request token."""
     server = ThreadingHTTPServer((HOST, port), Handler)
-    server.request_token = secrets.token_urlsafe(32)
+    server.request_token = local_http_guard.new_token()
     return server
 
 

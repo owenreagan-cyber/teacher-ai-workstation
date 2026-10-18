@@ -19,6 +19,10 @@ reimplementing it:
 
 Launch is dry-run by default (no credentials, no network, no Canvas writes).
 A real launch path shells out to ``bin/canvas-launch`` and is opt-in only.
+
+Retired (REL-2): no launcher, doc, or test uses this server, and the Teacher
+Workstation (``bin/teacher-workstation``) supersedes it, so ``serve`` refuses
+to start. The code and ``self-test`` stay for reference.
 """
 from __future__ import annotations
 
@@ -582,7 +586,15 @@ class WorkspaceHandler(SimpleHTTPRequestHandler):
         self.send_error(404, "unknown endpoint")
 
 
+RETIRED_MESSAGE = "Phase 23 teacher workspace is retired; use bin/teacher-workstation instead."
+
+
 def command_serve(args: argparse.Namespace) -> int:
+    print(RETIRED_MESSAGE, file=sys.stderr)
+    return 1
+
+
+def _retired_command_serve(args: argparse.Namespace) -> int:
     APP_DIR.mkdir(parents=True, exist_ok=True)
     os.chdir(APP_DIR)
     server = ThreadingHTTPServer((args.host, args.port), WorkspaceHandler)

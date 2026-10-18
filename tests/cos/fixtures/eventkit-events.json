@@ -1,0 +1,5 @@
+{"status": "ok", "events": [
+  {"title": "Staff meeting", "start": "2026-10-01T15:30:00-04:00", "end": "2026-10-01T16:15:00-04:00", "all_day": false, "calendar": "Work"},
+  {"title": "Spirit Week", "start": "2026-10-01T00:00:00-04:00", "end": "2026-10-02T00:00:00-04:00", "all_day": true, "calendar": "School"},
+  {"title": "Planning block", "start": "2026-10-01T08:00:00-04:00", "end": "2026-10-01T08:45:00-04:00", "all_day": false, "calendar": "Work"}
+]}

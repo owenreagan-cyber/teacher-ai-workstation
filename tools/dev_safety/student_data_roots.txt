@@ -1,0 +1,19 @@
+# D1 student-data roots: folders no Claude Code session in this repo may read or write.
+#
+# One path per line. `~` (your home folder) and globs (*, ?, [..]) are allowed. A folder
+# covers everything inside it. Lines starting with # are comments.
+#
+# Both D1 layers load this file: the hook (from its installed copy next to dev_guard.py) and
+# the sandbox (through render_settings.py). If this file is missing or unreadable, D1 denies
+# everything under ~/Documents and ~/Desktop until it is fixed.
+#
+# To add a root: add a line below, then follow "Add a student-data root" in
+# tools/dev_safety/README.md (re-render, copy the profile, re-install).
+
+~/.teacher-ai-workstation
+
+# Examples (remove the leading # and change the path):
+# ~/Documents/Gradebooks
+# ~/Documents/Class Rosters
+# ~/Library/CloudStorage/GoogleDrive-*/My Drive/Student Work
+# /Volumes/SchoolShare/Students

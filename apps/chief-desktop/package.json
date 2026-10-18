@@ -1,0 +1,31 @@
+{
+  "name": "chief-desktop",
+  "productName": "Chief",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Chief of Staff compact desktop shell (client of the local cos CLI)",
+  "author": "Owen Reagan",
+  "license": "UNLICENSED",
+  "main": "out/main/main.js",
+  "scripts": {
+    "dev": "node scripts/dev.mjs",
+    "build": "vite build && npm run build:main",
+    "build:main": "tsc -p tsconfig.main.json && tsc -p tsconfig.preload.json",
+    "typecheck": "tsc -p tsconfig.json && tsc -p tsconfig.main.json --noEmit && tsc -p tsconfig.preload.json --noEmit",
+    "test": "npm run build:main && node --test --test-concurrency=1 test/*.test.mjs && node scripts/static-checks.mjs",
+    "package": "npm run build && electron-builder --mac dir --arm64"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "4.3.3",
+    "@types/node": "26.6.3",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "electron": "44.5.1",
+    "electron-builder": "26.15.3",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "tailwindcss": "4.3.3",
+    "typescript": "7.0.2",
+    "vite": "8.3.2"
+  }
+}

@@ -1,0 +1,19 @@
+// Odd input. Questions are passed as the desktop shell passes them: ask --json -- "<question>".
+{"id": "rb-empty-001", "prompt": "", "expect": {"exit_code": 2, "error_kind": "usage", "no_answer": true, "model_calls": 0}}
+{"id": "rb-blank-001", "prompt": "   \n\t  ", "expect": {"exit_code": 2, "error_kind": "usage", "no_answer": true, "model_calls": 0}}
+{"id": "rb-long-001", "prompt": {"repeat": "please tell me about today's weather and my calendar ", "chars": 4000}, "expect": {"exit_code": 0, "fast_path": false, "tools_allowed": ["weather.today", "calendar.today", "time.now", "reminders.due"]}}
+{"id": "rb-long-002", "prompt": {"prefix": "Summarize this: ", "repeat": "Test filler sentence. ", "chars": 20000}, "expect": {"exit_code": 0}}
+{"id": "rb-emoji-001", "prompt": "what time is it ⏰", "expect": {"exit_code": 0, "fast_path": true, "answer_contains": ["2:30 PM"]}}
+{"id": "rb-emoji-002", "prompt": "🌧️ will it rain today? 🌧️", "expect": {"exit_code": 0, "fast_path": true, "tools_used": ["weather.today"]}}
+{"id": "rb-md-001", "prompt": "**what time is it**", "expect": {"exit_code": 0, "fast_path": true, "answer_contains": ["2:30 PM"]}}
+{"id": "rb-md-002", "prompt": "# Calendar\n- what's on it today?\n```\nprint('hi')\n```", "expect": {"exit_code": 0, "tools_allowed": ["calendar.today", "time.now"]}}
+{"id": "rb-dash-001", "prompt": "--version", "expect": {"exit_code": 0, "fast_path": false, "answer_not_contains": ["cos 0.1.0"]}}
+{"id": "rb-dash-002", "prompt": "--help me plan my day", "expect": {"exit_code": 0, "answer_not_contains": ["usage: cos"]}}
+{"id": "rb-lang-001", "prompt": "¿Qué hora es?", "expect": {"exit_code": 0}}
+{"id": "rb-lang-002", "prompt": "what time is it 今", "expect": {"exit_code": 0}}
+{"id": "rb-ctrl-001", "prompt": "\u001b[31mwhat time is it\u001b[0m", "expect": {"exit_code": 0}}
+{"id": "rb-punct-001", "prompt": "???", "expect": {"exit_code": 0}}
+{"id": "rb-num-001", "prompt": "42", "expect": {"exit_code": 0}}
+{"id": "rb-rapid-001", "turns": [{"prompt": "what time is it", "expect": {"exit_code": 0, "fast_path": true, "answer_contains": ["2:30 PM"]}}, {"prompt": "what time is it", "expect": {"exit_code": 0, "fast_path": true, "answer_contains": ["2:30 PM"]}}, {"prompt": "what time is it", "expect": {"exit_code": 0, "fast_path": true, "answer_contains": ["2:30 PM"]}}, {"prompt": "what time is it", "expect": {"exit_code": 0, "fast_path": true, "answer_contains": ["2:30 PM"]}}, {"prompt": "what time is it", "expect": {"exit_code": 0, "fast_path": true, "answer_contains": ["2:30 PM"]}}]}
+{"id": "rb-config-001", "state_mutation": {"config_raw": "{not json"}, "prompt": "what time is it", "expect": {"exit_code": 2, "error_kind": "usage", "no_answer": true}}
+{"id": "rb-config-002", "state_mutation": {"config_raw": "{\"ollama_url\": \"https://api.example.com\"}"}, "prompt": "what's on my calendar today", "expect": {"exit_code": 2, "error_kind": "usage", "no_answer": true, "model_calls": 0}}

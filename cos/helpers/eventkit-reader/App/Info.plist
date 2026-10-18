@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>CFBundleIdentifier</key>
+    <string>local.chief-of-staff.eventkit-reader</string>
+    <key>CFBundleName</key>
+    <string>Chief of Staff EventKit Reader</string>
+    <key>CFBundleDisplayName</key>
+    <string>Chief of Staff EventKit Reader</string>
+    <key>CFBundleExecutable</key>
+    <string>eventkit-reader</string>
+    <key>CFBundlePackageType</key>
+    <string>APPL</string>
+    <key>CFBundleVersion</key>
+    <string>0.2.0</string>
+    <key>CFBundleShortVersionString</key>
+    <string>0.2.0</string>
+    <key>LSMinimumSystemVersion</key>
+    <string>14.0</string>
+    <key>LSUIElement</key>
+    <true/>
+    <key>NSCalendarsFullAccessUsageDescription</key>
+    <string>Chief of Staff reads today's calendar events for your daily brief. It never creates, changes, or deletes events.</string>
+    <key>NSCalendarsUsageDescription</key>
+    <string>Chief of Staff reads today's calendar events for your daily brief. It never creates, changes, or deletes events.</string>
+    <key>NSRemindersFullAccessUsageDescription</key>
+    <string>Chief of Staff reads reminders that are due for your daily brief. It never creates, changes, or deletes reminders.</string>
+    <key>NSRemindersUsageDescription</key>
+    <string>Chief of Staff reads reminders that are due for your daily brief. It never creates, changes, or deletes reminders.</string>
+</dict>
+</plist>

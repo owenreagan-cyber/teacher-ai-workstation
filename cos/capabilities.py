@@ -13,6 +13,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 from pathlib import Path
 
+from cos.config import weather_places
+
 NOT_BUILT = {
     "local_files": "I can't search files on your Mac yet. That's coming in a later build.",
     "mail": "Mail isn't connected yet, so I can't see your inbox.",
@@ -29,9 +31,11 @@ class Capability:
 
 
 def _weather_where(config) -> str:
-    if getattr(config, "latitude", None) is None or getattr(config, "longitude", None) is None:
-        return "the weather (once a location is set in config.json)"
-    return "the weather and forecast for your configured location"
+    places = weather_places(config)
+    if not places:
+        return "the weather (once \"places\" are set in config.json)"
+    named = [f"{p.name} ({k})" for k, p in places.items()]
+    return "the weather and forecast for " + (named[0] if len(named) == 1 else ", ".join(named[:-1]) + " and " + named[-1])
 
 
 def _registry(config) -> tuple[Capability, ...]:

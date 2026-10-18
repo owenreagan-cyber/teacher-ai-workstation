@@ -9,6 +9,12 @@ harness; see cos/fixture.py). It is honored only when COS_STATE_DIR is also
 set and does not resolve to the real state directory; otherwise every command
 refuses to start. The check runs before the state directory is created.
 
+Weather places ("places"): {"<key>": {"name", "latitude", "longitude"}}. A
+written places.home is used as written. Otherwise legacy top-level latitude and
+longitude become places.home named "Home" (Chief never invents a city name).
+When "places" is not written at all, the defaults fill in what is missing:
+home Sims, NC and work Clayton, NC. Unknown keys are refused, inside a place too.
+
 model and fallback_model must be local: a name ending in ":cloud" or containing
 "-cloud" (an Ollama cloud model) is refused (CloudModelError). ModelClient also
 asks /api/show before every call and refuses a model that reports a remote host.
@@ -37,10 +43,21 @@ DEFAULTS = {
     "model_keep_alive": "2h",
     "latitude": None,
     "longitude": None,
+    "places": None,
     "search_daily_limit": 30,
     "search_monthly_limit": 600,
 }
 
+
+DEFAULT_PLACES = {
+    "home": {"name": "Sims, NC", "latitude": 35.76, "longitude": -78.06},
+    "work": {"name": "Clayton, NC", "latitude": 35.65, "longitude": -78.46},
+}
+LEGACY_HOME_NAME = "Home"
+PLACE_KEY_RE = re.compile(r"[a-z][a-z0-9_]{0,19}")
+PLACE_FIELDS = ("name", "latitude", "longitude")
+MAX_PLACES = 10
+MAX_PLACE_NAME = 60
 
 # Ollama keep_alive: "0" (unload right after the request) or a duration such as "30m", "2h", "1h30m".
 KEEP_ALIVE_RE = re.compile(r"0|(?:\d+(?:\.\d+)?(?:ms|s|m|h))+")
@@ -94,6 +111,19 @@ def open_private(path: Path, mode: str = "a"):
     return os.fdopen(fd, mode, encoding="utf-8")
 
 
+@dataclass(frozen=True)
+class Place:
+    key: str
+    name: str
+    latitude: float
+    longitude: float
+
+    @property
+    def short_name(self) -> str:
+        """ "Sims" for "Sims, NC"."""
+        return self.name.split(",", 1)[0].strip() or self.name
+
+
 @dataclass
 class Config:
     model: str
@@ -110,10 +140,60 @@ class Config:
     model_keep_alive: str = "2h"
     search_daily_limit: int = 30
     search_monthly_limit: int = 600
+    places: dict[str, Place] = field(default_factory=dict)
 
     @property
     def audit_path(self) -> Path:
         return self.state_dir / "audit.jsonl"
+
+
+def weather_places(cfg: Config) -> dict[str, Place]:
+    """The places weather can report on, home first. A Config built without places (tests,
+    older callers) falls back to its latitude/longitude as home."""
+    if cfg.places:
+        return cfg.places
+    if cfg.latitude is not None and cfg.longitude is not None:
+        return {"home": Place("home", LEGACY_HOME_NAME, cfg.latitude, cfg.longitude)}
+    return {}
+
+
+def _place(key, value) -> Place:
+    if not isinstance(key, str) or not PLACE_KEY_RE.fullmatch(key):
+        raise ConfigError(f"places: key {key!r} must be lowercase letters, digits, or _ (at most 20)")
+    if not isinstance(value, dict):
+        raise ConfigError(f"places.{key} must be an object with name, latitude, longitude")
+    unknown = set(value) - set(PLACE_FIELDS)
+    if unknown:
+        raise ConfigError(f"unknown config keys in places.{key}: {sorted(unknown)}")
+    missing = [f for f in PLACE_FIELDS if f not in value]
+    if missing:
+        raise ConfigError(f"places.{key} is missing {missing}")
+    name = value["name"]
+    if not isinstance(name, str) or not name.strip() or len(name) > MAX_PLACE_NAME:
+        raise ConfigError(f"places.{key}.name must be text of 1-{MAX_PLACE_NAME} characters")
+    lat = _coord(value["latitude"], -90, 90, f"places.{key}.latitude")
+    lon = _coord(value["longitude"], -180, 180, f"places.{key}.longitude")
+    if lat is None or lon is None:
+        raise ConfigError(f"places.{key} needs a latitude and a longitude")
+    return Place(key, name.strip(), lat, lon)
+
+
+def resolve_places(user_places, latitude: float | None, longitude: float | None) -> dict[str, Place]:
+    """Named places, home first (see the module docstring for the rules)."""
+    if user_places is not None and not isinstance(user_places, dict):
+        raise ConfigError("places must be an object of named places")
+    if user_places is not None and len(user_places) > MAX_PLACES:
+        raise ConfigError(f"places: at most {MAX_PLACES} places")
+    places = {k: _place(k, v) for k, v in (user_places or {}).items()}
+    if "home" not in places:
+        if latitude is not None and longitude is not None:
+            places["home"] = Place("home", LEGACY_HOME_NAME, latitude, longitude)
+        elif user_places is None:
+            places["home"] = _place("home", DEFAULT_PLACES["home"])
+    if user_places is None:
+        for key, value in DEFAULT_PLACES.items():
+            places.setdefault(key, _place(key, value))
+    return dict(sorted(places.items(), key=lambda kv: (kv[0] != "home", kv[0] != "work", kv[0])))
 
 
 def _coord(value, lo, hi, name):
@@ -197,13 +277,15 @@ def load_config(root: Path | None = None) -> Config:
         v = data[name]
         if not isinstance(v, int) or isinstance(v, bool) or v < 0:
             raise ConfigError(f"{name} must be a whole number of searches (0 turns search off)")
+    latitude = _coord(data["latitude"], -90, 90, "latitude")
+    longitude = _coord(data["longitude"], -180, 180, "longitude")
     return Config(
         model=str(data["model"]),
         fallback_model=str(data["fallback_model"]) if data["fallback_model"] else None,
         ollama_url=str(data["ollama_url"]),
         model_timeout_s=float(data["model_timeout_s"]),
-        latitude=_coord(data["latitude"], -90, 90, "latitude"),
-        longitude=_coord(data["longitude"], -180, 180, "longitude"),
+        latitude=latitude,
+        longitude=longitude,
         state_dir=root,
         fixture_dir=fixtures,
         model_think=data["model_think"],
@@ -211,4 +293,5 @@ def load_config(root: Path | None = None) -> Config:
         model_keep_alive=keep_alive,
         search_daily_limit=data["search_daily_limit"],
         search_monthly_limit=data["search_monthly_limit"],
+        places=resolve_places(data["places"], latitude, longitude),
     )

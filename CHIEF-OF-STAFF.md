@@ -181,6 +181,46 @@ bin/cos ask "look up photosynthesis for kids"
 To replace the key, run `security delete-generic-password -s chief-search-brave` and repeat
 step 2. Until a key is stored, a search answers "web search not set up" and points here.
 
+### Weather places
+
+Weather answers are written by code from the forecast, with no model, and always start with the
+place: `Sims, NC — 61°F, overcast. High 61° · Low 47° · Rain 10%.` Chief knows the places in
+`config.json` in the state folder (`~/Library/Application Support/ChiefOfStaff/`) under
+`"places"`. It never uses the Mac's location and never invents a city name. There is no settings
+screen; this file is the setting.
+
+Owen's config today has the Sims coordinates and no name (`"latitude": 35.76, "longitude":
+-78.06`), so Chief calls that place "Home". To name it and add work, add these exact lines to
+`config.json`, inside the outer braces (put a comma at the end of the line before them):
+
+```json
+  "places": {
+    "home": {"name": "Sims, NC", "latitude": 35.76, "longitude": -78.06},
+    "work": {"name": "Clayton, NC", "latitude": 35.65, "longitude": -78.46}
+  }
+```
+
+If the file holds only the two coordinate lines today, the whole file becomes:
+
+```json
+{
+  "latitude": 35.76,
+  "longitude": -78.06,
+  "places": {
+    "home": {"name": "Sims, NC", "latitude": 35.76, "longitude": -78.06},
+    "work": {"name": "Clayton, NC", "latitude": 35.65, "longitude": -78.46}
+  }
+}
+```
+
+Once `places.home` exists, the old `latitude` and `longitude` lines are ignored (you can delete
+them). A new install with no `places` uses these same two places. Unknown keys are refused, so a
+typo stops Chief with a plain error rather than being ignored.
+
+Ask for: "weather", "weather at work", "tomorrow", "this weekend", "5 day forecast", "hourly",
+"tonight", "what city is that", "use my location". A place Chief doesn't know gets "I only know
+Sims (home) and Clayton (work) so far."
+
 ### Home card
 
 The compact window opens with a card instead of an empty chat: a greeting, the date, the next

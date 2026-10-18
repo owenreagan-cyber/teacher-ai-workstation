@@ -108,7 +108,7 @@ class WeatherToolTests(StateDirTest):
         fresh = weather.today(make_ctx(cfg, http=http, clock=FIXED_NOW + timedelta(minutes=31)), {})
         self.assertFalse(fresh["cached"])
         self.assertEqual(len(http.calls), 2)
-        cache_file = self.state / "cache" / "weather.json"
+        cache_file = self.state / "cache" / "weather-home.json"  # one cache file per place
         self.assertEqual(stat.S_IMODE(os.stat(cache_file).st_mode), 0o600)
 
     def test_tool_routes_through_egress_allowlist_by_default(self):

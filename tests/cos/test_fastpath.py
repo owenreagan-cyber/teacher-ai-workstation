@@ -7,7 +7,7 @@ import json
 from datetime import datetime, timedelta
 from unittest import mock
 
-from support import (FIXED_NOW, FakeHttp, FakeRunner, StateDirTest, answer, fixture, make_ctx)
+from support import (FIXED_NOW, FakeRunner, StateDirTest, answer, fixture, make_ctx)
 
 from cos import cli
 from cos.agent import Stopped
@@ -24,8 +24,6 @@ MATCHES = {
              "what day is today", "today's date"],
     "days_until": ["how many days until friday", "How many days until Friday?", "days until monday",
                    "how many days till next tuesday", "how many days until 2026-12-18"],
-    "weather": ["what's the weather", "weather", "Weather?", "is it going to rain", "will it rain today?",
-                "what's the weather like", "how's the weather today"],
     "mac": ["how's my mac", "How's my Mac?", "mac status", "how is my mac doing"],
 }
 NON_MATCHES = [
@@ -47,6 +45,12 @@ NON_MATCHES = [
 ]
 
 
+# P1a.5: weather is written by code on the router's weather path (cos/weather_answer.py), with a
+# named place; the fast path no longer has a weather template.
+WEATHER_ROUTED = ["what's the weather", "weather", "Weather?", "is it going to rain", "will it rain today?",
+                  "what's the weather like", "how's the weather today"]
+
+
 class Recorder:
     def __init__(self):
         self.events = []
@@ -66,6 +70,13 @@ class MatchingTests(StateDirTest):
                     hit = match(q)
                     self.assertIsNotNone(hit, q)
                     self.assertEqual(hit[0].name, intent)
+
+    def test_weather_is_routed_not_matched(self):
+        from cos.intent import classify_rules
+        for q in WEATHER_ROUTED:
+            with self.subTest(q=q):
+                self.assertIsNone(match(q))
+                self.assertEqual(classify_rules(q).label, "weather")
 
     def test_keyword_only_questions_fall_through(self):
         for q in NON_MATCHES:
@@ -111,14 +122,6 @@ class FastPathAnswerTests(StateDirTest):
             "7 days until Thursday, October 8"))
         self.assertEqual(fp.answer("how many days until 2026-10-12").answer,
                          "11 days until Monday, October 12 (7 weekdays, holidays not counted).")
-
-    def test_weather_answer_and_unconfigured(self):
-        http = FakeHttp([fixture("open-meteo.json").encode()])
-        fp = self.fastpath(cfg=self.config(latitude=35.78, longitude=-78.64), http=http)
-        self.assertEqual(fp.answer("is it going to rain?").answer,
-                         "Now 61°F and partly cloudy (feels like 60°F). "
-                         "Today: high 75°F, low 55°F, 10% chance of rain.")
-        self.assertTrue(self.fastpath().answer("weather").answer.startswith("Weather is unavailable:"))
 
     def test_mac_answer(self):
         run = FakeRunner({"batt": fixture("pmset-batt.txt"),

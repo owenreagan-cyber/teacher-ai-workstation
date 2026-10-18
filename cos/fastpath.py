@@ -84,14 +84,6 @@ def _fmt_days_until(r: dict) -> str:
             f"({_plural(du['school_days'], 'weekday')}, holidays not counted).")
 
 
-def _fmt_weather(r: dict) -> str:
-    if "error" in r:
-        return f"Weather is unavailable: {r['error']}."
-    return (f"Now {r.get('now_f')}°F and {r.get('conditions')} (feels like {r.get('feels_like_f')}°F). "
-            f"Today: high {r.get('high_f')}°F, low {r.get('low_f')}°F, "
-            f"{r.get('rain_chance_pct')}% chance of rain.")
-
-
 def _fmt_mac(r: dict) -> str:
     return f"Mac: {one_line(r)}."
 
@@ -192,12 +184,6 @@ INTENTS = (
            _p(r"(?:how many )?days (?:until|till|til|to|before) (?:next )?"
               rf"(?P<target>{'|'.join(WEEKDAYS)}|\d{{4}}-\d{{2}}-\d{{2}})"),
            _days_until_args, _fmt_days_until),
-    Intent("weather", "weather.today",
-           _p(r"whats the weather(?: like)?(?: today| now| outside)?|"
-              r"what is the weather(?: like)?(?: today| now| outside)?|weather(?: today| now)?|"
-              r"hows the weather(?: today)?|how is the weather(?: today)?|"
-              r"is it going to rain(?: today)?|will it rain(?: today)?"),
-           _no_args, _fmt_weather),
     Intent("mac", "mac.status",
            _p(r"hows my mac(?: doing)?|how is my mac(?: doing)?|mac status|my mac status|"
               r"whats my mac status|what is my mac status"),
@@ -252,7 +238,7 @@ def _raw_results(query: str, results: list[dict]) -> str:
 
 
 # Fast-path intent -> the router label it answers (cos/intent.py LABELS).
-INTENT_LABELS = {"time": "time", "date": "time", "days_until": "time", "weather": "weather", "mac": "mac_status",
+INTENT_LABELS = {"time": "time", "date": "time", "days_until": "time", "mac": "mac_status",
                  "next_action": "general", "unload": "mac_status", "models": "mac_status"}
 
 

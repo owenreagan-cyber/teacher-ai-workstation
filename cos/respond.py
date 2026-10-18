@@ -5,6 +5,7 @@
   2. The router (cos/intent.py) labels everything else, with patterns first and the local model
      as the fallback.
   3. The label picks the path:
+       weather        written by code from weather.today for a named place (cos/weather_answer.py)
        brief          the full deterministic brief (no model)
        capabilities   a fixed answer from cos/capabilities.py (no model)
        local_files    the not-built-yet answer (no model, never web search)
@@ -18,10 +19,13 @@ from __future__ import annotations
 
 import time
 
+from cos import weather_answer
 from cos.agent import AgentResult, Stopped
 from cos.audit import text_digest
 from cos.brief import BRIEF_TOOLS, format_brief, gather
 from cos.capabilities import answer_for, capabilities_answer
+from cos.config import weather_places
+from cos.executor import run_tool
 from cos.intent import Route, classify
 from cos.model import ModelError
 
@@ -61,7 +65,9 @@ class Responder:
             return result
         route = classify(question, previous, model_label=self._model_label)
         self.rt.audit("route", label=route.label, source=route.source, rule=route.rule)
-        if route.label == "brief":
+        if route.label == "weather":
+            result = self._weather(question, previous, mode)
+        elif route.label == "brief":
             result = self._brief(question, mode)
         elif route.label in FIXED_LABELS:
             result = self._fixed(question, route, mode)
@@ -94,6 +100,45 @@ class Responder:
             text = answer_for(route.label)
         close("answer", tools_used=[], chars=len(text))
         return AgentResult(text, [], None, fast_path=True)
+
+    def _weather(self, question: str, previous: dict | None, mode: str) -> AgentResult:
+        """Weather for a named place, written by code. A place Chief doesn't know gets the fixed
+        answer and no tool call; a follow-up keeps the place of the previous weather question."""
+        started, timing = time.monotonic(), {"tool_ms": 0}
+        close = self._closer("weather", started, timing)
+        self.rt.audit("request", mode=mode, path="router", intent="weather", prompt=text_digest(question),
+                      tools_offered=["weather.today"])
+        if self.rt.kill_switch.is_set():
+            close("request_stopped", reason="kill_switch")
+            raise Stopped("kill switch is set")
+        places = weather_places(self.rt.config)
+        prev_q = (previous or {}).get("question") if (previous or {}).get("intent") == "weather" else None
+        req = weather_answer.parse(question, places, prev_q) if places else None
+        if places and req is None:
+            text = weather_answer.unknown_place_answer(places)
+            close("answer", tools_used=[], chars=len(text))
+            return AgentResult(text, [], None, fast_path=True)
+        args = {"place": req.place.key} if req else {}
+        decision = self.rt.gate.decide("weather.today", args, subject="router")
+        tool = self.rt.registry.get("weather.today")
+        if not decision.allowed or tool is None:
+            if decision.rule == "kill_switch":
+                close("request_stopped", reason="kill_switch")
+                raise Stopped("kill switch is set")
+            close("answer", tools_used=[], denied=decision.rule)
+            return AgentResult(f"I can't check the weather right now ({decision.reason}).", [], None, fast_path=True)
+        tool_started = time.monotonic()
+        result = run_tool(tool, args, decision, audit=self.rt.audit)
+        timing["tool_ms"] = int((time.monotonic() - tool_started) * 1000)
+        if self.rt.kill_switch.is_set():
+            close("request_stopped", reason="kill_switch")
+            raise Stopped("kill switch was set during the weather call")
+        if req is None:
+            text = f"Weather is unavailable: {result.get('error', 'no weather places are set')}."
+        else:
+            text, _shown = weather_answer.render(req, result, places)
+        close("answer", tools_used=[tool.name], chars=len(text))
+        return AgentResult(text, [tool.name], None, fast_path=True)
 
     def _brief(self, question: str, mode: str) -> AgentResult:
         started, timing = time.monotonic(), {"tool_ms": 0}

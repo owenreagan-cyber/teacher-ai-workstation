@@ -94,10 +94,14 @@ def _read_json(fixture_dir: Path, name: str) -> dict:
 
 def _weather(ctx, fixture_dir):
     def func(args):
-        data = _read_json(fixture_dir, "weather.json")
+        place, error = weather.resolve_place(ctx.config, args)
+        if error:
+            return {"error": error}
+        data = _read_json(fixture_dir, "weather.json")  # the same synthetic forecast for every place
         if "error" in data:
             return data
-        return {**weather.parse(data), "cached": False, "as_of": fmt_time(ctx.clock())}
+        return {**weather.parse(data), **weather.place_fields(place), "cached": False,
+                "as_of": fmt_time(ctx.clock())}
     return func
 
 

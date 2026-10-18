@@ -19,9 +19,9 @@ import run as harness_run  # noqa: E402
 
 SUBSET = ["fp-time-001", "fp-near-001", "tc-cal-001", "cd-email-001", "inj-cal-001", "ks-session-002",
           "se-bad-001", "rb-dash-001", "ho-email-001", "lo-show-001", "ws-basic-001",
-          "pe-fake-greet-001", "rt-files-001"]
+          "pe-fake-greet-001", "rt-files-001", "wx-now-001"]
 EXPECTED_SUITES = {"fast_path", "tool_choice", "cant_do_yet", "injection", "kill_switch", "sessions",
-                   "robustness", "honesty", "local_only", "web_search", "personality", "routing"}
+                   "robustness", "honesty", "local_only", "web_search", "personality", "routing", "weather"}
 
 
 def harness(out_root: Path, *extra: str) -> subprocess.CompletedProcess:

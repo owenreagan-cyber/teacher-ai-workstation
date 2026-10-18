@@ -15,6 +15,7 @@ import re
 import time
 from dataclasses import dataclass, field
 
+from cos import intent as intent_mod
 from cos.audit import text_digest
 from cos.executor import result_text, run_tool
 from cos.guards import CLEANUP_NOTE, mentions_unload, scrub_cleanup, scrub_unload
@@ -74,6 +75,7 @@ class AgentResult:
     model: str | None
     notices: list[str] = field(default_factory=list)
     fast_path: bool = False
+    intent: str | None = None  # the router's label for the question (cos/intent.py)
 
     def text(self) -> str:
         body = self.answer
@@ -85,7 +87,8 @@ class AgentResult:
 
     def as_json(self) -> dict:
         return {"ok": True, "answer": self.answer, "tools_used": self.tools_used,
-                "model": self.model, "notices": self.notices, "fast_path": self.fast_path}
+                "model": self.model, "notices": self.notices, "fast_path": self.fast_path,
+                "intent": self.intent}
 
 
 def _keyword_hits(question: str, tool: Tool) -> int:
@@ -147,12 +150,13 @@ class Agent:
                 self.audit("answer_guard", guard="unload")
         return answer
 
-    def _model_turn(self, messages, schemas, timing):
+    def _model_turn(self, messages, schemas, timing, fmt=None):
         if not self.gate.check_model_call("before_request").allowed:
             raise Stopped("kill switch is set")
         started = time.monotonic()
         try:
-            msg, model_used = self.model.chat(messages, schemas or None)
+            msg, model_used = (self.model.chat(messages, schemas or None, fmt) if fmt is not None
+                               else self.model.chat(messages, schemas or None))
         finally:
             timing["model_ms"] += int((time.monotonic() - started) * 1000)
         if not self.gate.check_model_call("after_response").allowed:
@@ -160,6 +164,17 @@ class Agent:
             self.audit("model_response_discarded", model=model_used, reason="kill_switch")
             raise Stopped("kill switch was set during the model call")
         return msg, model_used
+
+    def classify(self, message: str, previous: str | None) -> str | None:
+        """The router's model fallback: one label from intent.LABELS, or None. The model sees
+        Owen's message (and his previous message) only, and answers through a JSON schema; no
+        tools are offered. Raises Stopped (kill switch) or ModelError."""
+        timing = {"model_ms": 0}
+        msg, model_used = self._model_turn(intent_mod.model_messages(message, previous), None, timing,
+                                           fmt=intent_mod.CLASSIFY_SCHEMA)
+        label = intent_mod.parse_label(clean_content(msg.get("content")))
+        self.audit("route_model", model=model_used, label=label, model_ms=timing["model_ms"])
+        return label
 
     def answer_from_search(self, question: str, result: dict, timing: dict) -> tuple[str, str]:
         """(answer, model) for a web search Owen typed: one model turn, no tools offered, the

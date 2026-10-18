@@ -164,8 +164,23 @@ def _summary(wire: str, data: dict) -> str:
     return f"{wire} returned data."
 
 
+# The router's model fallback (cos/intent.py): a request with a JSON "format" asks for one label.
+# The fake labels public-fact questions web_lookup and everything else general.
+WEB_FACT_RE = re.compile(r"\b(?:play|plays|game|games|score|won|win|news|price|president|capital|population|"
+                         r"tallest|biggest|who is|who was|when was|how old is|what year)\b", re.IGNORECASE)
+
+
+def classify(payload: dict) -> dict:
+    messages = payload.get("messages") or []
+    text = _last_user(messages).rsplit("Message to sort: ", 1)[-1]
+    label = "web_lookup" if WEB_FACT_RE.search(text) else "general"
+    return {"role": "assistant", "content": json.dumps({"label": label})}
+
+
 def reply(payload: dict) -> dict:
     """The assistant message for one /api/chat request."""
+    if payload.get("format") is not None:
+        return classify(payload)
     messages = payload.get("messages") or []
     offered = _offered(payload.get("tools"))
     last = messages[-1] if messages else {}

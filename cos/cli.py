@@ -34,6 +34,7 @@ from cos.memory import load_identity, load_memory, load_personality
 from cos.model import CloudModelRefused, ModelClient, ModelError, ModelRefused
 from cos.policy import KillSwitch, PolicyGate
 from cos.registry import Registry
+from cos.respond import Responder
 from cos.sessions import (SessionIdError, SessionReadError, TurnError, append_turn, check_session_id,
                           history_messages, read_session, read_turns)
 from cos.tools import ToolContext, build_registry
@@ -94,6 +95,10 @@ def make_agent(rt: Runtime) -> Agent:
                  loaded_models=lambda: loaded_models(rt))
 
 
+def make_responder(rt: Runtime) -> Responder:
+    return Responder(rt, make_fastpath, make_agent)
+
+
 def _emit_error(as_json: bool, message: str, kind: str) -> None:
     """kind is one of: usage, stopped, model_unavailable, internal."""
     if as_json:
@@ -113,10 +118,11 @@ def cmd_ask(rt: Runtime, args) -> int:
         return EXIT_USAGE
     session_id = args.session
     try:
-        history = history_messages(read_turns(rt.config.state_dir, session_id)) if session_id else None
+        turns = read_turns(rt.config.state_dir, session_id) if session_id else []
+        history = history_messages(turns) if session_id else None
         started = time.monotonic()
-        result = (make_fastpath(rt).answer(question, mode="ask")
-                  or make_agent(rt).run(question, history=history, mode="ask"))
+        result = make_responder(rt).answer(question, previous=turns[-1] if turns else None,
+                                           history=history, mode="ask")
         total_ms = int((time.monotonic() - started) * 1000)
     except Stopped:
         _emit_error(args.json, f"stopped by kill switch ({rt.kill_switch.reason()}); run cos resume",
@@ -142,7 +148,7 @@ def cmd_ask(rt: Runtime, args) -> int:
             append_turn(rt.config.state_dir, session_id, {
                 "ts": stamp, "question": question, "answer": result.answer,
                 "tools_used": result.tools_used, "fast_path": result.fast_path, "model": result.model,
-                "notices": result.notices, "total_ms": total_ms})
+                "notices": result.notices, "total_ms": total_ms, "intent": result.intent})
         except TurnError as e:
             print(f"cos: turn not recorded in session ({e})", file=sys.stderr)
     if args.json:
@@ -154,8 +160,8 @@ def cmd_ask(rt: Runtime, args) -> int:
 
 
 def cmd_chat(rt: Runtime, args) -> int:
-    agent = make_agent(rt)
-    fastpath = make_fastpath(rt)
+    responder = make_responder(rt)
+    previous: dict | None = None
     hist_dir = ensure_private_subdir("history", rt.config.state_dir)
     hist_path = hist_dir / f"chat-{datetime.now():%Y%m%d-%H%M%S}.jsonl"
     history: list[dict] = []
@@ -172,8 +178,8 @@ def cmd_chat(rt: Runtime, args) -> int:
             if not line:
                 continue
             try:
-                result = (fastpath.answer(line, mode="chat")
-                          or agent.run(line, history=history[-CHAT_CONTEXT_MESSAGES:], mode="chat"))
+                result = responder.answer(line, previous=previous, history=history[-CHAT_CONTEXT_MESSAGES:],
+                                          mode="chat")
             except Stopped:
                 print("Stopped by kill switch; run cos resume.")
                 return EXIT_STOPPED
@@ -184,6 +190,7 @@ def cmd_chat(rt: Runtime, args) -> int:
                 print(f"Refused: {e}")
                 return EXIT_INTERNAL
             print(f"chief> {result.text()}\n")
+            previous = {"question": line, "intent": result.intent}
             stamp = datetime.now().astimezone().isoformat(timespec="seconds")
             for role, content in (("user", line), ("assistant", result.answer)):
                 history.append({"role": role, "content": content})

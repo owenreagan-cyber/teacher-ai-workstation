@@ -50,6 +50,21 @@ class CleanupGuardTests(StateDirTest):
                   "model from disk.")
         self.assertEqual(scrub_cleanup(answer, "how do I unload a model?"), (answer, False))
 
+    def test_refusals_are_kept(self):
+        # cd-mac-003: the guard must not delete Chief's own refusal
+        answer = "I can't empty the Trash for you; I don't have write tools."
+        self.assertEqual(scrub_cleanup(answer, "how do I free up space"), (answer, False))
+        out, removed = scrub_cleanup("If you can't find space, run rm -rf ~/Library/Caches.", "free up space")
+        self.assertEqual((out, removed), (CLEANUP_EMPTY, True))  # "you can't" is not a refusal
+
+    def test_asked_to_empty_the_trash(self):
+        answer = "I can't do that. In Finder, right-click the Trash and choose Empty Trash."
+        self.assertEqual(scrub_cleanup(answer, "empty the trash on my mac"), (answer, False))
+
+    def test_a_code_block_left_empty_is_removed(self):
+        out, _ = scrub_cleanup("Here you go:\n\n```bash\nollama rm big-model\n```\n\nThat frees space.", "free up space")
+        self.assertEqual(out, "Here you go:\n\nThat frees space.")
+
     def test_owen_asked_to_delete(self):
         answer = "Run `ollama rm old-model` to delete it."
         self.assertEqual(scrub_cleanup(answer, "how do I delete the old model?"), (answer, False))
@@ -121,6 +136,12 @@ class SocialTests(FixtureFastPath):
                 self.assertEqual((res.answer, res.tools_used, res.model, res.fast_path), (want, [], None, True))
                 self.assertNotIn("owen", res.answer.lower())
         self.assertFalse([e for e in self.audit.events if e[0] == "tool_result"])
+
+    def test_greetings_use_the_time_of_day_and_no_model(self):
+        for q in ("hi", "Good morning, Chief!", "hello there"):
+            with self.subTest(q=q):
+                res = self.fp.answer(q)  # the fixture clock is 2:30 PM
+                self.assertEqual((res.answer, res.model, res.intent), ("Good afternoon, Owen. What do you need?", None, "social"))
 
     def test_not_social(self):
         for q in ("thanks, what's the weather tomorrow", "ok what time is it", "cool facts about owls"):

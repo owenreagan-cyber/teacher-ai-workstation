@@ -9,7 +9,9 @@ in the question instead, because their answer must come from code: "unload"
 "which models are loaded".
 
 Social replies ("thanks", "thank you", "ok", "got it", "cool") get a fixed short
-reply with no tool and no model, and never use Owen's name.
+reply with no tool and no model, and never use Owen's name. A bare greeting
+("hi", "good morning chief") gets the home card's time-of-day greeting, which is
+the one place Owen's name is used.
 
 On a match the tool runs through the same policy gate and executor as agent
 tool calls. The gate decision is audited with subject=fast_path, the kill
@@ -24,7 +26,9 @@ typed (trimmed, at most 200 characters; longer is refused, never cut), with
 query_source "typed". The model never writes or edits it. The local model then
 writes a 2-4 sentence answer from the results (Agent.answer_from_search), and
 cos appends numbered sources. If the model is unavailable the answer is the raw
-results list instead, still marked fast path (no model).
+results list instead, still marked fast path (no model). A typed search whose
+words are about Owen's files, mail, or calendar ("search my calendar") is not a
+web search: it goes to the router, and those never reach web search.
 """
 from __future__ import annotations
 
@@ -36,7 +40,9 @@ from typing import Callable
 
 from cos.agent import AgentResult, Stopped
 from cos.audit import text_digest
+from cos.brief import greeting
 from cos.executor import run_tool
+from cos.intent import GREETING as GREETING_RE, SOCIAL as SOCIAL_RE, classify_rules, normalize
 from cos.model import ModelError
 from cos.policy import PolicyGate
 from cos.registry import Registry
@@ -45,12 +51,6 @@ from cos.tools.web_search import MAX_QUERY_CHARS, QUERY_SOURCE
 
 WEEKDAYS = ("monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday")
 _NOW = r"(?: (?:now|right now|today))?"
-
-
-def normalize(question: str) -> str:
-    q = question.lower().replace("’", "'").replace("‘", "'").replace("'", "")
-    q = re.sub(r"[^a-z0-9-]+", " ", q)
-    return " ".join(q.split())
 
 
 def _plural(n: int, word: str) -> str:
@@ -213,8 +213,6 @@ INTENTS = (
            _no_args, _fmt_models, anywhere=True),
 )
 
-SOCIAL_RE = re.compile(r"(?:(?:ok|okay|cool|great|perfect) )?(?:thanks|thank you|thx)(?: (?:so much|a lot))?(?: chief)?|"
-                       r"(?:ok|okay|got it|cool)(?: (?:thanks|thank you|chief))?")
 
 
 SEARCH_TOOL = "web.search"
@@ -231,6 +229,16 @@ def match_search(question: str) -> str | None:
     return q or None
 
 
+# Questions about Owen's files, mail, and calendar never reach web search, even typed as
+# "search …" ("search my calendar", "search my files for the field trip form").
+LOCAL_ONLY = frozenset({"local_files", "mail", "calendar"})
+
+
+def local_only(query: str) -> bool:
+    route = classify_rules(query)
+    return route is not None and route.label in LOCAL_ONLY
+
+
 def _sources(results: list[dict]) -> str:
     return "Sources:\n" + "\n".join(f"{i}. {r['title']} — {r['url']}" for i, r in enumerate(results, 1))
 
@@ -241,6 +249,16 @@ def _raw_results(query: str, results: list[dict]) -> str:
         lines.append(f"{i}. {r['title']}" + (f" — {r['snippet']}" if r["snippet"] else ""))
         lines.append(f"   {r['url']}")
     return "\n".join(lines)
+
+
+# Fast-path intent -> the router label it answers (cos/intent.py LABELS).
+INTENT_LABELS = {"time": "time", "date": "time", "days_until": "time", "weather": "weather", "mac": "mac_status",
+                 "next_action": "general", "unload": "mac_status", "models": "mac_status"}
+
+
+def _labeled(result: AgentResult, label: str) -> AgentResult:
+    result.intent = label
+    return result
 
 
 def match(question: str) -> tuple[Intent, re.Match] | None:
@@ -263,15 +281,19 @@ class FastPath:
         self.summarize = summarize
 
     def answer(self, question: str, mode: str = "ask") -> AgentResult | None:
-        """Return a fast-path answer, None if the question does not match, or raise Stopped."""
+        """Return a fast-path answer, None if the question does not match, or raise Stopped.
+        The result carries the router label (cos/intent.py) of what it answered."""
         query = match_search(question)
-        if query is not None:
-            return self._search(question, query, mode)
-        if SOCIAL_RE.fullmatch(normalize(question)):
-            return self._social(question, mode)
+        if query is not None and not local_only(query):
+            return _labeled(self._search(question, query, mode), "web_lookup")
+        if SOCIAL_RE.fullmatch(normalize(question)) or GREETING_RE.fullmatch(normalize(question)):
+            return _labeled(self._social(question, mode), "social")
         hit = match(question)
         if hit is None:
             return None
+        return _labeled(self._intent(question, hit, mode), INTENT_LABELS[hit[0].name])
+
+    def _intent(self, question: str, hit: tuple[Intent, re.Match], mode: str) -> AgentResult:
         intent, m = hit
         started = time.monotonic()
         timing = {"tool_ms": 0}
@@ -316,7 +338,8 @@ class FastPath:
         if self.gate.kill_switch.is_set():
             close("request_stopped", reason="kill_switch")
             raise Stopped("kill switch is set")
-        text = _fmt_social(question)
+        text = (f"{greeting(self.clock())}. What do you need?" if GREETING_RE.fullmatch(normalize(question))
+                else _fmt_social(question))
         close("answer", tools_used=[], chars=len(text))
         return AgentResult(text, [], None, fast_path=True)
 

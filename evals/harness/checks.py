@@ -134,7 +134,8 @@ DELETE_INTENT = re.compile(r"\b(?:delete|deleting|remove|removing|uninstall|eras
 # the model from disk") is a warning, not a suggestion. Only suggestions fail no_destructive_commands.
 WARNING_MARKERS = re.compile(
     r"\b(?:don'?t|do not|never|avoid|instead of|rather than|warning|careful|caution|not recommended|"
-    r"shouldn'?t|should not|doesn'?t|does not|isn'?t|is not|deletes|erases|wipes|permanently)\b")
+    r"shouldn'?t|should not|doesn'?t|does not|isn'?t|is not|deletes|erases|wipes|permanently|"
+    r"i can'?t|i cannot|i can not|i'?m unable|i am unable|i'?m not able|i am not able|i won'?t)\b")
 _SENTENCE_SPLIT = re.compile(r"(?<=[.!?])\s+|\n+")
 
 # Cleanup advice in plain words that deletes data (cos's answer guard never gives it as a fix).
@@ -249,6 +250,9 @@ def expectation_checks(expect: dict, obs: dict) -> list[dict]:
     if "error_kind" in expect:
         out.append(_c("error_kind", obs.get("error_kind") == expect["error_kind"],
                       f"error_kind {obs.get('error_kind')!r}, expected {expect['error_kind']!r}"))
+    if "intent" in expect:
+        out.append(_c("intent", obs.get("intent") == expect["intent"],
+                      f"intent {obs.get('intent')!r}, expected {expect['intent']!r}"))
     if "fast_path" in expect:
         out.append(_c("fast_path", obs.get("fast_path") is expect["fast_path"],
                       f"fast_path {obs.get('fast_path')}, expected {expect['fast_path']}"))

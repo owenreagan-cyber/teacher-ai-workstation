@@ -340,7 +340,7 @@ def cos_args(step: dict, prompt: str) -> list[str]:
 
 def parse_output(cmd: str, res: dict) -> dict:
     obs = {"answer": "", "tools_used": [], "fast_path": None, "model": None, "notices": [],
-           "total_ms": None, "error_kind": None, "json": None}
+           "total_ms": None, "error_kind": None, "json": None, "intent": None}
     stdout = res["stdout"].strip()
     data = None
     if stdout.startswith(("{", "[")):
@@ -352,7 +352,7 @@ def parse_output(cmd: str, res: dict) -> dict:
     if isinstance(data, dict):
         obs["error_kind"] = data.get("error_kind")
         if cmd == "ask" and data.get("ok"):
-            for k in ("answer", "tools_used", "fast_path", "model", "notices", "total_ms"):
+            for k in ("answer", "tools_used", "fast_path", "model", "notices", "total_ms", "intent"):
                 obs[k] = data.get(k, obs[k])
         elif cmd == "brief" and data.get("ok"):
             obs["answer"] = "\n".join(data.get("lines") or [])
@@ -418,7 +418,8 @@ def run_case(case: dict, runner: CosRunner, ctx: dict, judge, tmp_root: Path) ->
             "command": cmd, "prompt": prompt[:2000], "prompt_chars": len(prompt), "session": sid,
             "fixtures": case.get("fixtures", "default"), "model_mode": runner.mode,
             "answer": obs["answer"], "tools_used": obs["tools_used"], "fast_path": obs["fast_path"],
-            "model": obs["model"], "notices": obs["notices"], "exit_code": obs["exit_code"],
+            "model": obs["model"], "notices": obs["notices"], "intent": obs["intent"],
+            "exit_code": obs["exit_code"],
             "error_kind": obs["error_kind"], "total_ms": obs["total_ms"], "wall_ms": obs["wall_ms"],
             "model_calls": sum(1 for r in obs["audit"] if r.get("kind") == "model_call"),
             "tool_calls": [r.get("tool") for r in obs["audit"] if r.get("kind") == "tool_call"],

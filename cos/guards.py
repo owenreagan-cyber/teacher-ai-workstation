@@ -62,10 +62,13 @@ PLAIN = tuple(re.compile(p, re.IGNORECASE) for p in (
 ))
 # "Clear <something>": allowed only when Owen asked to clear or empty something.
 CLEAR = (re.compile(r"\bclear(?:ing)?\b[^.\n]{0,60}?" + _THINGS, re.IGNORECASE),)
-# A sentence that only warns against a destructive step is kept.
+# A sentence that only warns against a destructive step, or says Chief can't do it, is kept.
 WARNING = re.compile(r"\b(?:don'?t|do not|never|avoid|instead of|rather than|warning|careful|caution|"
                      r"not recommended|shouldn'?t|should not|doesn'?t|does not|isn'?t|is not|deletes|erases|"
-                     r"wipes|permanently)\b", re.IGNORECASE)
+                     r"wipes|permanently|i can'?t|i cannot|i can not|i'?m unable|i am unable|i'?m not able|"
+                     r"i am not able|i won'?t)\b", re.IGNORECASE)
+EMPTY_REQUEST = re.compile(r"\bempty(?:ing)?\b", re.IGNORECASE)
+EMPTY_FENCE = re.compile(r"^[ \t]*```[\w-]*[ \t]*\n(?:[ \t]*\n)*[ \t]*```[ \t]*$", re.MULTILINE)
 SENTENCE_END = re.compile(r"(?<=[.!?])\s+(?=\S)")
 LIST_MARKER = re.compile(r"^(\s*)(?:(\d+)([.)])|[-*•])\s+")
 EMPTY_LINE = re.compile(r"^\s*(?:(?:\d+[.)])|[-*•])?\s*(?:\*\*[^*]*\*\*\s*:?)?\s*$")
@@ -101,7 +104,8 @@ def scrub_cleanup(answer: str, question: str) -> tuple[str, bool]:
     """(answer, removed) with destructive or delete-as-a-fix suggestions dropped."""
     if DELETE_REQUEST.search(question or ""):
         return answer, False
-    patterns = COMMANDS + PLAIN + (() if CLEAR_REQUEST.search(question or "") else CLEAR)
+    plain = PLAIN[2:] if EMPTY_REQUEST.search(question or "") else PLAIN  # asked to empty the Trash
+    patterns = COMMANDS + plain + (() if CLEAR_REQUEST.search(question or "") else CLEAR)
     kept_lines, removed = [], False
     dropped_indent: int | None = None
     for line in answer.split("\n"):
@@ -127,6 +131,7 @@ def scrub_cleanup(answer: str, question: str) -> tuple[str, bool]:
     if not removed:
         return answer, False
     text = "\n".join(_renumber(kept_lines))
+    text = EMPTY_FENCE.sub("", text)  # a code block whose command was dropped
     text = re.sub(r"\n{3,}", "\n\n", text).strip()
     if not re.search(r"[A-Za-z]{3}", text):
         return CLEANUP_EMPTY, True

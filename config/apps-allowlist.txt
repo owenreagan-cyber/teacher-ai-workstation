@@ -1,0 +1,16 @@
+# Folders allowed under apps/ (D-022). Read by the app-runtime approval gate
+# (scripts/app-runtime-approval-gate-status.sh) and the timer runtime gate
+# (scripts/classroom-timer-stopwatch-runtime-status.sh).
+#
+# Format: <folder> <one-line reason>. Every entry needs a reason. Any folder
+# under apps/ that is not listed here fails both gates, so a new app needs a
+# deliberate entry. Adding a folder here does not approve Canvas writes,
+# grades, or sending as Owen: those stay under D-018 / D-022 controls.
+classroom-timer-stopwatch Owen-approved Level 3 local timer prototype (timer runtime approval packet).
+teacher-workstation Teacher Workstation UI: local planning, approvals, and the guarded Canvas deploy route (PRs #374-#384).
+predictive-weekly-planning Phase 22 predictive weekly planning workstation front end (local SQLite, served on 127.0.0.1).
+weekly-content-production Phase 23 weekly content production engine front end (synthetic demo packet).
+phase23-teacher-workspace Phase 23 teacher workspace front end (local planning decisions).
+unified-weekly-production Phase 26 unified weekly production workstation front end.
+chief-desktop Chief of Staff desktop window (Electron + React, D-006), a client of the cos core.
+raycast-chief-of-staff Chief of Staff Raycast launcher (D-006: launcher only), calls the local cos CLI.

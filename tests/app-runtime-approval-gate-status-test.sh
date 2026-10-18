@@ -32,6 +32,22 @@ bin/chief-of-staff --app-runtime-approval-gate-status >"${cli_tmp}" 2>&1 || { ec
 grep -q '^FAIL: 0$' "${cli_tmp}" || { echo "FAIL: CLI reported failures"; cat "${cli_tmp}"; rm -f "${cli_tmp}"; exit 1; }
 rm -f "${cli_tmp}"
 
+# Every allowlist entry carries a reason, and an unlisted folder under apps/
+# still fails both app gates.
+while read -r app_name app_reason; do
+  [[ -z "${app_name}" || "${app_name}" == \#* ]] && continue
+  [[ -n "${app_reason}" ]] || { echo "FAIL: allowlist entry without reason: ${app_name}"; exit 1; }
+  [[ -d "apps/${app_name}" ]] || { echo "FAIL: allowlisted app folder missing: apps/${app_name}"; exit 1; }
+done < config/apps-allowlist.txt
+probe_dir="apps/zz-unlisted-gate-probe-$$"
+mkdir "${probe_dir}"
+probe_out="$(bash "${status_script}" 2>&1 || true)"
+timer_out="$(bash scripts/classroom-timer-stopwatch-runtime-status.sh 2>&1 || true)"
+rmdir "${probe_dir}"
+grep -q "^FAIL: unexpected app directory: ${probe_dir}/" <<<"${probe_out}" || { echo "FAIL: app gate accepted an unlisted folder"; exit 1; }
+grep -q "^FAIL: unexpected app runtime directory: ${probe_dir}/" <<<"${timer_out}" || { echo "FAIL: timer gate accepted an unlisted folder"; exit 1; }
+echo "PASS allowlist entries have reasons; unlisted apps/ folders still fail both gates"
+
 bin/chief-of-staff --help 2>&1 | grep -Fq -- '--app-runtime-approval-gate-status' || { echo "FAIL: --help missing command"; exit 1; }
 grep -Fq -- '"--app-runtime-approval-gate-status"' assistant/chief-of-staff/v1/command-surface-manifest.json || { echo "FAIL: manifest missing command"; exit 1; }
 

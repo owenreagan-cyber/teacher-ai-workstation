@@ -50,6 +50,75 @@ def classify_assignment(proposed_title: str, existing_names: list[str]) -> str:
     return "NEW"
 
 
+# Weekly-announcement identity is WEEK-aware (unlike assignments). A generic
+# recurring title such as "Math Canvas Weekly Update" is used every week, so
+# title equality alone must NEVER be treated as a duplicate across weeks.
+WEEKLY_ANNOUNCE_STATES = ("EXACT_MATCH", "PRIOR_WEEK_SAME_TITLE", "BODY_CHANGED_SAME_WEEK", "AMBIGUOUS", "NEW")
+
+
+def classify_weekly_announcement(proposed: dict[str, Any], live: list[dict[str, Any]]) -> str:
+    """Classify a proposed weekly update against live same-title announcements.
+
+    Identity is (course + title + week + body/agenda), where the scheduled
+    ``delayed_post_at`` deterministically identifies the target week (prior
+    Friday 4 PM ET of each week). A same generic title on a DIFFERENT week is
+    ``PRIOR_WEEK_SAME_TITLE`` — not a duplicate — and must not suppress the
+    current week's post.
+
+    Returns one of WEEKLY_ANNOUNCE_STATES.
+    """
+    title = _norm_name(proposed.get("title", ""))
+    proposed_week = proposed.get("week_code") or ""
+    proposed_delayed = proposed.get("delayed_post_at")
+    proposed_agenda = proposed.get("agenda_hash") or proposed.get("page_agenda_hash") or ""
+
+    for a in live:
+        if _norm_name(a.get("title") or "") != title:
+            continue
+        live_delayed = a.get("delayed_post_at")
+        live_agenda = a.get("agenda_hash") or a.get("page_agenda_hash") or _embedded_agenda_hash(a.get("message") or "")
+        live_week = a.get("week_code") or ""
+
+        # Same week identity (deterministic schedule or explicit week_code).
+        same_week = False
+        if proposed_week and live_week and proposed_week == live_week:
+            same_week = True
+        elif proposed_delayed and live_delayed and proposed_delayed == live_delayed:
+            same_week = True
+
+        if same_week:
+            if proposed_agenda and live_agenda and proposed_agenda == live_agenda:
+                return "EXACT_MATCH"
+            # Same week but body differs -> needs update/review.
+            return "BODY_CHANGED_SAME_WEEK"
+        # Same title, different week (or no trustworthy week identity to prove
+        # otherwise) -> prior-week generic title, NOT a current duplicate.
+        return "PRIOR_WEEK_SAME_TITLE"
+
+    return "NEW"
+
+
+def _embedded_agenda_hash(message: str) -> str:
+    """Hash the embedded weekly-agenda HTML in an announcement message.
+
+    The weekly-update message embeds the full page body, which begins with
+    ``<div id="kl_wrapper_3" ...>``. We hash from that opening ``<div`` onward
+    (ignoring the greeting/transition and the Canvas global wrapper) so it can be
+    compared to the proposed page agenda hash (which hashes the same fragment).
+    """
+    import re as _re
+    if not message:
+        return ""
+    m = _re.search(r'id="kl_wrapper_3"', message)
+    if not m:
+        return ""
+    # Walk back to the opening "<div" of the kl_wrapper_3 element.
+    start = message.rfind("<div", 0, m.start())
+    if start < 0:
+        start = m.start()
+    return _sha(message[start:])
+
+
 def _now() -> str:
     return datetime.now(timezone.utc).isoformat()
 
@@ -184,18 +253,25 @@ def run_preflight(quarter: int, week: int, client: DeployClient | None = None) -
         if cls == "AMBIGUOUS":
             blockers.append(f"assignment {a.get('title')!r}: ambiguous near-duplicate exists")
 
-    # ---- Announcement duplicate identity (idempotent skip) ---------------
-    ann_cache: dict[int, list[str]] = {}
+    # ---- Announcement duplicate identity (week-aware idempotency) ---------
+    ann_cache: dict[int, list[dict[str, Any]]] = {}
     for a in plan.get("weekly_announcements", []) + plan.get("assessment_reminders", []):
         cid = a["course_id"]
         if client is None:
             continue
         if cid not in ann_cache:
             try:
-                ann_cache[cid] = [x.get("title") or "" for x in client.list_announcements(int(cid))]
+                ann_cache[cid] = [x for x in client.list_announcements(int(cid))]
             except Exception:  # noqa: BLE001 - listing is advisory
                 ann_cache[cid] = []
-        cls = classify_assignment(a.get("title", ""), ann_cache[cid])
+        if a.get("artifact_type") == "weekly_update":
+            # Weekly updates are week-aware: recurring generic titles are NOT
+            # cross-week duplicates.
+            cls = classify_weekly_announcement(a, ann_cache[cid])
+        else:
+            # Assessment reminders carry week-specific titles (dates/numbers).
+            cls = classify_assignment(a.get("title", ""),
+                                      [x.get("title") or "" for x in ann_cache[cid]])
         a["duplicate_classification"] = cls
         live["announcements"].setdefault(a.get("title"), cls)
         if cls == "AMBIGUOUS":

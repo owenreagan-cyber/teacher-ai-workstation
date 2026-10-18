@@ -243,6 +243,9 @@ def build_plan(quarter: int, week: int) -> dict[str, Any]:
             "agenda_hash": ann.get("agenda_hash", ""),
             "page_agenda_hash": ann.get("page_agenda_hash", ""),
             "hash_consistent": ann.get("hash_consistent", False),
+            "week_code": week_code,
+            "date_range": date_range,
+            "artifact_type": "weekly_update",
             "action": "CREATE",
         })
 
@@ -264,6 +267,9 @@ def build_plan(quarter: int, week: int) -> dict[str, Any]:
                 "message": r.get("body", ""),
                 "scheduled": False,
                 "delayed_post_at": None,
+                "week_code": week_code,
+                "date_range": date_range,
+                "artifact_type": "assessment_reminder",
                 "action": "CREATE",
             })
 

@@ -1081,7 +1081,7 @@ def build_pages(week: InstructionalWeek, entries: list[PacingEntry]) -> tuple[li
                 linked_assignment_ids=linked_assignment_ids,
                 resource_ids=resource_ids,
                 provenance=[
-                    {"sourceType": "fixture", "sourceRef": str(FIXTURE_PATH), "details": "weekly input rows"},
+                    {"sourceType": "fixture", "sourceRef": phase22.safe_repo_relative(FIXTURE_PATH), "details": "weekly input rows"},
                     {"sourceType": "canonical-week", "sourceRef": week.code, "details": "selected instructional week"},
                 ],
             )
@@ -1139,7 +1139,7 @@ def build_assignments(week: InstructionalWeek, entries: list[PacingEntry]) -> li
                 display_date=display_date,
                 warnings=[],
                 provenance=[
-                    {"sourceType": "fixture", "sourceRef": str(FIXTURE_PATH), "details": entry.title},
+                    {"sourceType": "fixture", "sourceRef": phase22.safe_repo_relative(FIXTURE_PATH), "details": entry.title},
                     {"sourceType": "phase22-rule", "sourceRef": entry.subject, "details": meta.get("selectionReason") or "graded assignment selection"},
                     {"sourceType": "due-time", "sourceRef": entry.date, "details": f"{due_fields['dueTime']} {due_fields['timezone']}"},
                 ],
@@ -1201,7 +1201,7 @@ def build_assessment_reminders(week: InstructionalWeek, entries: list[PacingEntr
                 display_date=display_date,
                 warnings=[],
                 provenance=[
-                    {"sourceType": "fixture", "sourceRef": str(FIXTURE_PATH), "details": entry.title},
+                    {"sourceType": "fixture", "sourceRef": phase22.safe_repo_relative(FIXTURE_PATH), "details": entry.title},
                     {"sourceType": "phase22-rule", "sourceRef": "assessment-reminder", "details": "linked to packet assignments"},
                 ],
             )
@@ -1522,10 +1522,10 @@ def validate_packet(packet: dict[str, Any], fixture: dict[str, Any] | None = Non
     fail_count = sum(1 for item in findings if item.severity == "fail")
     if fixture is not None:
         if fixture.get("artifactClassification") != "synthetic-weekly-content":
-            findings.append(ValidationFinding("fail", "fixture.classification", "Fixture classification must remain synthetic-weekly-content", str(FIXTURE_PATH)))
+            findings.append(ValidationFinding("fail", "fixture.classification", "Fixture classification must remain synthetic-weekly-content", phase22.safe_repo_relative(FIXTURE_PATH)))
             fail_count += 1
         if fixture.get("containsStudentData") is not False:
-            findings.append(ValidationFinding("fail", "fixture.student-data", "Fixture must not contain student data", str(FIXTURE_PATH)))
+            findings.append(ValidationFinding("fail", "fixture.student-data", "Fixture must not contain student data", phase22.safe_repo_relative(FIXTURE_PATH)))
             fail_count += 1
     return {
         "passCount": pass_count,
@@ -1639,7 +1639,7 @@ def build_packet(week_code: str | None = None, fixture_path: Path = FIXTURE_PATH
         validation={},
         risks=[],
         provenance=[
-            ProvenanceRecord("fixture", str(fixture_path), "synthetic weekly content source"),
+            ProvenanceRecord("fixture", phase22.safe_repo_relative(fixture_path), "synthetic weekly content source"),
             ProvenanceRecord("canonical-calendar", "config/curriculum/canvas/instructional-weeks-2026-2027.json", "instructional week authority"),
             ProvenanceRecord("phase22-rules", "scripts/canvas_llm_phase22/phase22_workstation.py", "curriculum resolution and preview-only safety rules"),
         ],

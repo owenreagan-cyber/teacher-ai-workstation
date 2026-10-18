@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Missing or Changed Resource Signal",
+  "type": "object",
+  "required": ["schema_version", "signal_id", "subject_ref", "signal_type", "previous_state", "current_state", "evidence", "confidence", "review_state", "interpretation", "source_mode"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "signal_id": {"type": "string", "pattern": "^recovery-signal:[a-z0-9][a-z0-9._:-]*$"},
+    "subject_ref": {"type": "string", "pattern": "^[a-z][a-z0-9-]*:[a-z0-9][a-z0-9._:-]*$"},
+    "signal_type": {"enum": ["availability_changed", "relationship_changed", "authority_conflict", "representation_missing", "source_unavailable", "candidate_changed"]},
+    "previous_state": {"type": "string"},
+    "current_state": {"type": "string"},
+    "evidence": {"type": "array", "uniqueItems": true, "items": {"type": "string"}},
+    "confidence": {"enum": ["high", "medium", "low", "unknown"]},
+    "review_state": {"const": "unreviewed"},
+    "interpretation": {"const": "review_opportunity_not_failure"},
+    "source_mode": {"const": "synthetic_only"}
+  },
+  "additionalProperties": false
+}

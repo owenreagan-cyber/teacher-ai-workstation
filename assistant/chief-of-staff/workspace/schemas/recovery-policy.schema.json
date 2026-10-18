@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Recovery Intelligence Policy",
+  "type": "object",
+  "required": ["schema_version", "phase", "candidate_types", "signal_types", "confidence_levels", "risk_levels", "risk_factors", "allowed_evidence_types", "authority_rules", "confidence_rules", "automatic_candidate_discovery", "automatic_winner_selection", "automatic_authority_promotion", "recovery_execution_enabled", "shared_evidence_required", "recovery_explanation_required", "expected_artifact_existence_implied", "action_state", "audit_event_types"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "phase": {"const": "H"},
+    "candidate_types": {"type": "array", "minItems": 7, "maxItems": 7, "uniqueItems": true, "items": {"enum": ["same_resource_candidate", "alternate_representation_candidate", "backup_candidate", "mirror_candidate", "archive_candidate", "previous_version_candidate", "unknown_candidate"]}},
+    "signal_types": {"type": "array", "minItems": 6, "maxItems": 6, "uniqueItems": true, "items": {"enum": ["availability_changed", "relationship_changed", "authority_conflict", "representation_missing", "source_unavailable", "candidate_changed"]}},
+    "confidence_levels": {"type": "array", "minItems": 4, "maxItems": 4, "uniqueItems": true, "items": {"enum": ["high", "medium", "low", "unknown"]}},
+    "risk_levels": {"type": "array", "minItems": 4, "maxItems": 4, "uniqueItems": true, "items": {"enum": ["low", "medium", "high", "unknown"]}},
+    "risk_factors": {"type": "array", "minItems": 6, "maxItems": 6, "uniqueItems": true, "items": {"enum": ["authority_ambiguity", "candidate_age", "sensitivity", "missing_provenance", "conflicting_relationships", "scope_uncertainty"]}},
+    "allowed_evidence_types": {"type": "array", "minItems": 8, "maxItems": 8, "uniqueItems": true, "items": {"enum": ["resource_registry_metadata", "knowledge_vault_reference", "project_observation", "application_observation", "relationship", "authority_assertion", "filename_similarity", "structural_evidence"]}},
+    "authority_rules": {
+      "type": "object",
+      "required": ["backup_remains_backup", "mirror_remains_mirror", "timestamp_cannot_promote_canonical", "candidate_cannot_create_authority"],
+      "properties": {
+        "backup_remains_backup": {"const": true},
+        "mirror_remains_mirror": {"const": true},
+        "timestamp_cannot_promote_canonical": {"const": true},
+        "candidate_cannot_create_authority": {"const": true}
+      },
+      "additionalProperties": false
+    },
+    "confidence_rules": {
+      "type": "object",
+      "required": ["declared_relationship_or_authority", "project_deployment_or_version_relationship", "filename_or_weak_structure_only", "insufficient_evidence"],
+      "properties": {
+        "declared_relationship_or_authority": {"const": "high"},
+        "project_deployment_or_version_relationship": {"const": "medium"},
+        "filename_or_weak_structure_only": {"const": "low"},
+        "insufficient_evidence": {"const": "unknown"}
+      },
+      "additionalProperties": false
+    },
+    "automatic_candidate_discovery": {"const": false},
+    "automatic_winner_selection": {"const": false},
+    "automatic_authority_promotion": {"const": false},
+    "recovery_execution_enabled": {"const": false},
+    "shared_evidence_required": {"const": true},
+    "recovery_explanation_required": {"const": true},
+    "expected_artifact_existence_implied": {"const": false},
+    "action_state": {"const": "not_an_action"},
+    "audit_event_types": {"type": "array", "minItems": 4, "maxItems": 4, "uniqueItems": true, "items": {"enum": ["recovery_candidate_created", "recovery_candidate_validated", "recovery_conflict_detected", "recovery_reviewed"]}}
+  },
+  "additionalProperties": false
+}

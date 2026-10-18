@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "phase": "K",
+  "policy_id": "deterministic-human-interface",
+  "interface_type": "cli",
+  "commands": [
+    "status",
+    "explain",
+    "related",
+    "evidence",
+    "uncertain",
+    "recovery"
+  ],
+  "explanation_sections": [
+    "identity",
+    "known",
+    "sources",
+    "evidence",
+    "relationships",
+    "confidence",
+    "authority",
+    "review_state",
+    "unknowns",
+    "actions"
+  ],
+  "review_states": [
+    "unreviewed",
+    "reviewed",
+    "approved",
+    "rejected",
+    "deferred"
+  ],
+  "review_reasons": [
+    "conflict",
+    "unknown_authority",
+    "missing_evidence",
+    "missing_representation",
+    "recovery_candidate",
+    "unreviewed_relationship"
+  ],
+  "restricted_permission": "workspace.restricted.read",
+  "web_interface_enabled": false,
+  "persistent_service_enabled": false,
+  "natural_language_enabled": false,
+  "ai_enabled": false,
+  "source_write_enabled": false,
+  "action_capabilities": []
+}

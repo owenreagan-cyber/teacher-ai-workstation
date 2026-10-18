@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Deterministic Query Response",
+  "type": "object",
+  "required": ["schema_version", "query_id", "query_type", "target_ref", "scope", "results", "uncertainties", "authority_effect", "action_authority"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "query_id": {"type": "string"},
+    "query_type": {"enum": ["entity_lookup", "relationship_lookup", "evidence_lookup", "recovery_candidate_lookup", "project_lookup", "application_lookup", "resource_lookup"]},
+    "target_ref": {"type": "string"},
+    "scope": {"enum": ["active", "classroom_ready", "teacher_only", "student_safe", "restricted", "superseded", "all", "unreviewed", "conflicts"]},
+    "results": {"type": "array", "items": {"type": "object"}},
+    "uncertainties": {"type": "array", "uniqueItems": true, "items": {"type": "string"}},
+    "authority_effect": {"const": "none"},
+    "action_authority": {"const": "none"}
+  },
+  "additionalProperties": false
+}

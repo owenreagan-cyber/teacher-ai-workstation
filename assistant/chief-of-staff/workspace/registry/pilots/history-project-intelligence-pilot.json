@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "phase": "E",
+  "pilot_id": "history-project-intelligence-pilot",
+  "project_id": "project:history",
+  "source_id": "history-project-local",
+  "parent_source_id": "projects-local",
+  "approved_root_ref": "projects/history",
+  "approved_subtree": ".",
+  "representation_id": "representation:history:local-git",
+  "purpose": "software project metadata observation",
+  "approval": {
+    "approved_by": "teacher",
+    "basis": "explicit_phase_e_mission",
+    "approval_id": "approval:phase-e-history-project-intelligence-pilot"
+  },
+  "limits": {
+    "max_git_commands": 5,
+    "git_command_timeout_seconds": 10,
+    "max_status_records": 500
+  },
+  "git_operations": [
+    "detect_repository",
+    "verify_repository_root",
+    "read_current_branch",
+    "read_head",
+    "summarize_dirty_state"
+  ],
+  "prohibitions": {
+    "source_content_read": false,
+    "read_readme": false,
+    "read_package_manifests": false,
+    "read_dependencies": false,
+    "read_commit_messages": false,
+    "read_commit_history": false,
+    "enumerate_other_branches": false,
+    "git_mutation": false,
+    "filesystem_enumeration": false,
+    "recommendations": false,
+    "project_state_decision": false
+  },
+  "output_root_ref": ".local/chief-of-staff/workspace/",
+  "authority_claim": "none"
+}

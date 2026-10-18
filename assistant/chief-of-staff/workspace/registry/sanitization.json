@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "default_export_effect": "deny",
+  "phase_c_export_enabled": false,
+  "projection_required": true,
+  "path_policy": {
+    "absolute_paths": "forbidden",
+    "relative_paths": "explicit_rule_only",
+    "private_filenames": "forbidden",
+    "fallback": "opaque_token"
+  },
+  "local_only_fields": [
+    "absolute_path",
+    "filename",
+    "local_locator",
+    "filesystem_handle",
+    "raw_observation",
+    "actor_private_id"
+  ],
+  "forbidden_export_fields": [
+    "content",
+    "document_text",
+    "extracted_text",
+    "ocr_text",
+    "embedding",
+    "credentials",
+    "student_data"
+  ],
+  "allowed_projection_fields": [
+    "record_type",
+    "source",
+    "relative_path",
+    "item_ref",
+    "item_type",
+    "availability",
+    "metadata",
+    "classification",
+    "relationships",
+    "recommendation"
+  ],
+  "required_gates": [
+    "policy_validation",
+    "deterministic_classification",
+    "redaction",
+    "audit_event"
+  ]
+}

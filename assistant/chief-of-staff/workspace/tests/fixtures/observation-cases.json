@@ -1,0 +1,132 @@
+{
+  "fixture_notice": "All names, paths, identifiers, and timestamps in this file are fictional.",
+  "inventory_run": {
+    "valid": {
+      "schema_version": 1,
+      "run_id": "run:fictional-001",
+      "started_at": "2030-01-02T03:04:05Z",
+      "completed_at": "2030-01-02T03:05:05Z",
+      "purpose": "Fictional bounded metadata pilot",
+      "approval": {"approval_id": "approval:fictional-001", "approved_by": "teacher", "approved_at": "2030-01-02T03:03:05Z", "basis": "explicit_run_approval"},
+      "approved_source_id": "projects-fictional",
+      "approved_subtree": "Fictional/Math",
+      "permissions": ["metadata_enumeration", "basic_stat_metadata", "record_unavailable_items", "record_cloud_placeholders"],
+      "limits": {"max_depth": 2, "max_items": 25, "max_duration_seconds": 30, "follow_symlinks": false, "cross_filesystem": false},
+      "hash_policy": "forbidden",
+      "content_read_policy": "metadata_only_no_content",
+      "prohibited_operations": ["content_read", "hashing", "writes", "symlink_following", "cloud_download", "unapproved_recursion", "source_escape"],
+      "status": "completed",
+      "errors": []
+    },
+    "missing_approval": {
+      "schema_version": 1,
+      "run_id": "run:fictional-002",
+      "started_at": "2030-01-02T03:04:05Z",
+      "completed_at": null,
+      "purpose": "Fictional unapproved run",
+      "approved_source_id": "projects-fictional",
+      "approved_subtree": "Fictional",
+      "permissions": ["metadata_enumeration"],
+      "limits": {"max_depth": 1, "max_items": 10, "max_duration_seconds": 10, "follow_symlinks": false, "cross_filesystem": false},
+      "hash_policy": "forbidden",
+      "content_read_policy": "metadata_only_no_content",
+      "prohibited_operations": ["content_read", "hashing", "writes", "symlink_following", "cloud_download", "unapproved_recursion", "source_escape"],
+      "status": "planned",
+      "errors": []
+    },
+    "invalid_limits": {"copy_of": "valid", "limits": {"max_depth": -1, "max_items": 0, "max_duration_seconds": 0, "follow_symlinks": false, "cross_filesystem": false}},
+    "forbidden_content_read": {"copy_of": "valid", "content_read_policy": "full_content"}
+  },
+  "observation": {
+    "valid_file": {
+      "schema_version": 1,
+      "observation_id": "observation:run:fictional-001:projects-fictional:item-001",
+      "run_id": "run:fictional-001",
+      "source_id": "projects-fictional",
+      "relative_path": "Fictional/lesson.txt",
+      "item_type": "file",
+      "metadata": {"size_bytes": 120, "modified_at": "2030-01-01T00:00:00Z", "extension": "txt", "bundle_identifier": null, "placeholder_state": "not_applicable", "is_symlink": false},
+      "availability": "available",
+      "trust": {"evidence_role": "observation", "confidence": "high", "authority_claim": "none", "basis": "approved_metadata_observation"},
+      "freshness": {"observed_at": "2030-01-02T03:04:05Z", "source_modified_at": "2030-01-01T00:00:00Z", "stale_status": "unknown"},
+      "classification": {"data_sensitivity": "teacher_internal", "classification_basis": "deterministic_rule", "review_state": "unreviewed"},
+      "review_state": "unreviewed"
+    },
+    "unavailable_item": {
+      "schema_version": 1,
+      "observation_id": "observation:run:fictional-001:projects-fictional:item-002",
+      "run_id": "run:fictional-001",
+      "source_id": "projects-fictional",
+      "relative_path": "Fictional/missing-item",
+      "item_type": "unavailable_item",
+      "metadata": {"size_bytes": null, "modified_at": null, "extension": null, "bundle_identifier": null, "placeholder_state": "unknown", "is_symlink": false},
+      "availability": "unavailable",
+      "trust": {"evidence_role": "observation", "confidence": "low", "authority_claim": "none", "basis": "approved_metadata_observation"},
+      "freshness": {"observed_at": "2030-01-02T03:04:05Z", "source_modified_at": null, "stale_status": "unknown"},
+      "classification": {"data_sensitivity": "unknown", "classification_basis": "unknown", "review_state": "unreviewed"},
+      "review_state": "unreviewed"
+    },
+    "cloud_placeholder": {
+      "schema_version": 1,
+      "observation_id": "observation:run:fictional-001:cloud-fictional:item-003",
+      "run_id": "run:fictional-001",
+      "source_id": "cloud-fictional",
+      "relative_path": "Fictional/placeholder.pdf",
+      "item_type": "cloud_placeholder",
+      "metadata": {"size_bytes": null, "modified_at": null, "extension": "pdf", "bundle_identifier": null, "placeholder_state": "not_downloaded", "is_symlink": false},
+      "availability": "placeholder",
+      "trust": {"evidence_role": "observation", "confidence": "medium", "authority_claim": "none", "basis": "approved_metadata_observation"},
+      "freshness": {"observed_at": "2030-01-02T03:04:05Z", "source_modified_at": null, "stale_status": "unknown"},
+      "classification": {"data_sensitivity": "unknown", "classification_basis": "unknown", "review_state": "unreviewed"},
+      "review_state": "unreviewed"
+    },
+    "missing_freshness": {"copy_of": "valid_file", "remove": "freshness"},
+    "invalid_authority_claim": {"copy_of": "valid_file", "trust_authority_claim": "canonical"}
+  },
+  "audit_event": {
+    "valid": {
+      "schema_version": 1,
+      "event_id": "audit:fictional-001",
+      "event_type": "observation_completed",
+      "timestamp": "2030-01-02T03:05:05Z",
+      "actor": "system:fictional-validator",
+      "target_ref": "run:fictional-001",
+      "evidence": {"refs": ["run:fictional-001"], "summary": "Fictional run completed within synthetic limits."},
+      "result": "recorded"
+    },
+    "missing_actor": {"copy_of": "valid", "remove": "actor"},
+    "invalid_target": {"copy_of": "valid", "target_ref": "/fictional/absolute/path"}
+  },
+  "recommendation": {
+    "valid": {
+      "schema_version": 1,
+      "record_type": "recommendation",
+      "recommendation_id": "recommendation:fictional-001",
+      "finding": "A fictional item may need teacher review.",
+      "evidence": [{"observation_ref": "observation:run:fictional-001:projects-fictional:item-001", "summary": "Synthetic metadata differs from a fictional expectation."}],
+      "confidence": "medium",
+      "alternatives": ["Keep the fictional item unchanged."],
+      "next_step": "Ask the teacher to review the fictional evidence.",
+      "review_state": "pending_review",
+      "action_state": "not_an_action"
+    },
+    "missing_evidence": {"copy_of": "valid", "evidence": []},
+    "marked_action": {"copy_of": "valid", "action_state": "execute_now"}
+  },
+  "sanitization": {
+    "local_record": {
+      "record_type": "observation",
+      "source_id": "projects-fictional",
+      "relative_path": "Fictional/history",
+      "item_ref": "item:fictional-001",
+      "item_type": "directory",
+      "availability": "available",
+      "absolute_path": "/Users/example/Fictional/history",
+      "filename": "private-fictional-name.txt",
+      "metadata": {"size_bytes": 0, "extension": null, "content": "fictional secret"},
+      "classification": {"data_sensitivity": "teacher_internal"},
+      "student_data": "fictional forbidden value"
+    },
+    "student_private_record": {"record_type": "observation", "source_id": "projects-fictional", "classification": {"data_sensitivity": "student_private"}}
+  }
+}

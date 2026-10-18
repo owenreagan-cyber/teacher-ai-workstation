@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AI Compatibility Trust Policy",
+  "type": "object",
+  "required": ["schema_version", "phase", "policy_id", "projection_mode", "ai_connection_enabled", "raw_observation_export_enabled", "read_only", "metadata_only", "non_authoritative", "non_executable", "allowed_operations", "forbidden_operations", "allowed_categories", "forbidden_fields", "blocked_sensitivities", "identity_fields", "explanation_fields", "required_gates", "action_capabilities"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "phase": {"const": "I"},
+    "policy_id": {"const": "sanitized-ai-compatibility-view"},
+    "projection_mode": {"const": "generated_allowlist_projection"},
+    "ai_connection_enabled": {"const": false},
+    "raw_observation_export_enabled": {"const": false},
+    "read_only": {"const": true},
+    "metadata_only": {"const": true},
+    "non_authoritative": {"const": true},
+    "non_executable": {"const": true},
+    "allowed_operations": {"type": "array", "minItems": 4, "maxItems": 4, "uniqueItems": true, "items": {"enum": ["summarize", "explain_relationships", "answer_metadata_questions", "suggest_reviews"]}},
+    "forbidden_operations": {"type": "array", "minItems": 7, "maxItems": 7, "uniqueItems": true, "items": {"enum": ["modify_records", "execute_actions", "change_authority", "approve_recovery", "delete", "restore", "move_files"]}},
+    "allowed_categories": {"type": "array", "minItems": 8, "maxItems": 8, "uniqueItems": true, "items": {"enum": ["resource_types", "project_concepts", "application_concepts", "classifications", "relationships", "confidence", "evidence_summaries", "recommendations"]}},
+    "forbidden_fields": {"type": "array", "minItems": 26, "uniqueItems": true, "items": {"type": "string"}},
+    "blocked_sensitivities": {"type": "array", "minItems": 3, "maxItems": 3, "uniqueItems": true, "items": {"enum": ["student_private", "restricted", "unknown"]}},
+    "identity_fields": {"type": "array", "minItems": 6, "maxItems": 6, "uniqueItems": true, "items": {"enum": ["entity_id", "label", "type", "authority", "confidence", "review_state"]}},
+    "explanation_fields": {"type": "array", "minItems": 6, "maxItems": 6, "uniqueItems": true, "items": {"enum": ["source_systems", "evidence", "confidence", "review_state", "uncertainty", "action_authority"]}},
+    "required_gates": {"type": "array", "minItems": 4, "maxItems": 4, "uniqueItems": true, "items": {"enum": ["policy_validation", "classification", "sanitization", "projection_validation"]}},
+    "action_capabilities": {"type": "array", "maxItems": 0, "items": {"type": "string"}}
+  },
+  "additionalProperties": false
+}

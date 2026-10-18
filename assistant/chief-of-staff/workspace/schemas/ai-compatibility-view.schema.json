@@ -1,0 +1,96 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Sanitized AI Compatibility View",
+  "type": "object",
+  "required": ["schema_version", "view_id", "projection_kind", "generated_from_refs", "entities", "relationships", "evidence_summaries", "recommendations", "trust", "action_capabilities"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "view_id": {"type": "string", "pattern": "^ai-view:[a-z0-9][a-z0-9._:-]*$"},
+    "projection_kind": {"const": "sanitized_metadata_projection"},
+    "generated_from_refs": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string"}},
+    "entities": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["entity_id", "label", "type", "authority", "confidence", "review_state", "classification", "metadata"],
+        "properties": {
+          "entity_id": {"type": "string", "pattern": "^[a-z][a-z0-9-]*:[a-z0-9][a-z0-9._:-]*$"},
+          "label": {"type": "string"},
+          "type": {"enum": ["workspace", "storage_source", "workspace_item", "logical_resource", "representation", "project", "application", "workflow", "registry_entry", "recommendation"]},
+          "authority": {"enum": ["canonical", "deployment", "mirror", "backup", "archive", "unknown"]},
+          "confidence": {"enum": ["high", "medium", "low", "unknown"]},
+          "review_state": {"enum": ["unreviewed", "reviewed", "rejected"]},
+          "classification": {"enum": ["public", "teacher_internal", "student_safe"]},
+          "metadata": {"type": "object"}
+        },
+        "additionalProperties": false
+      }
+    },
+    "relationships": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["relationship_type", "source_ref", "target_ref", "confidence", "review_state", "authority_effect"],
+        "properties": {
+          "relationship_type": {"enum": ["belongs_to_project", "representation_of", "used_by_application", "deployed_to", "mirrored_to", "backed_up_by", "version_of", "supersedes", "referenced_by_registry", "expected_artifact_of"]},
+          "source_ref": {"type": "string"},
+          "target_ref": {"type": "string"},
+          "confidence": {"enum": ["high", "medium", "low", "unknown"]},
+          "review_state": {"enum": ["unreviewed", "reviewed", "rejected"]},
+          "authority_effect": {"const": "none"}
+        },
+        "additionalProperties": false
+      }
+    },
+    "evidence_summaries": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["evidence_package_id", "evidence_type", "subject_ref", "claim", "source_systems", "evidence", "confidence", "review_state", "uncertainty", "authority_effect"],
+        "properties": {
+          "evidence_package_id": {"type": "string"},
+          "evidence_type": {"enum": ["relationship", "project", "application", "recovery", "classification", "authority", "availability"]},
+          "subject_ref": {"type": "string"},
+          "claim": {"type": "string"},
+          "source_systems": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string"}},
+          "evidence": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string"}},
+          "confidence": {"enum": ["high", "medium", "low", "unknown"]},
+          "review_state": {"enum": ["unreviewed", "reviewed", "rejected"]},
+          "uncertainty": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string"}},
+          "authority_effect": {"const": "none"}
+        },
+        "additionalProperties": false
+      }
+    },
+    "recommendations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["finding", "confidence", "next_step", "review_state", "action_state", "authority_effect"],
+        "properties": {
+          "finding": {"type": "string"},
+          "confidence": {"enum": ["high", "medium", "low", "unknown"]},
+          "next_step": {"const": "review_candidate"},
+          "review_state": {"enum": ["unreviewed", "reviewed", "rejected"]},
+          "action_state": {"const": "not_an_action"},
+          "authority_effect": {"const": "none"}
+        },
+        "additionalProperties": false
+      }
+    },
+    "trust": {
+      "type": "object",
+      "required": ["read_only", "metadata_only", "authoritative", "executable", "raw_observations_included"],
+      "properties": {
+        "read_only": {"const": true},
+        "metadata_only": {"const": true},
+        "authoritative": {"const": false},
+        "executable": {"const": false},
+        "raw_observations_included": {"const": false}
+      },
+      "additionalProperties": false
+    },
+    "action_capabilities": {"type": "array", "maxItems": 0, "items": {"type": "string"}}
+  },
+  "additionalProperties": false
+}

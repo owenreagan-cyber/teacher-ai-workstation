@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Human Review Queue Item",
+  "type": "object",
+  "required": ["schema_version", "item_id", "subject_ref", "reason_type", "summary", "source_refs", "confidence", "review_state", "recommended_next_step", "recommendation_state", "authority_effect", "action_authority"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "item_id": {"type": "string", "pattern": "^review-item:[a-z0-9][a-z0-9._:-]*$"},
+    "subject_ref": {"type": "string"},
+    "reason_type": {"enum": ["conflict", "unknown_authority", "missing_evidence", "missing_representation", "recovery_candidate", "unreviewed_relationship"]},
+    "summary": {"type": "string"},
+    "source_refs": {"type": "array", "uniqueItems": true, "items": {"type": "string"}},
+    "confidence": {"enum": ["high", "medium", "low", "unknown"]},
+    "review_state": {"enum": ["unreviewed", "reviewed", "approved", "rejected", "deferred"]},
+    "recommended_next_step": {"type": "string"},
+    "recommendation_state": {"const": "not_an_action"},
+    "authority_effect": {"const": "none"},
+    "action_authority": {"const": "none"}
+  },
+  "additionalProperties": false
+}

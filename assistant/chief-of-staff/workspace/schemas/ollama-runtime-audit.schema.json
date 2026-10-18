@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Phase L.5E In-Memory Ollama Runtime Audit",
+  "type": "object",
+  "required": ["schema_version", "request_id", "context_id", "model", "runtime", "task", "started_at", "ended_at", "duration_ms", "validation_result", "failure_code", "action_authority", "persisted", "hidden_reasoning_persisted", "raw_response_persisted"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "request_id": {"type": "string"},
+    "context_id": {"type": "string"},
+    "model": {"const": "qwen3.5:35b"},
+    "runtime": {"const": "ollama"},
+    "task": {"const": "explain"},
+    "started_at": {"type": "string"},
+    "ended_at": {"type": "string"},
+    "duration_ms": {"type": "integer"},
+    "validation_result": {"enum": ["not_run", "pass", "rejected"]},
+    "failure_code": {"enum": ["none", "runtime_unavailable", "model_missing", "request_timeout", "connection_failure", "malformed_response", "schema_validation_failed", "grounding_validation_failed", "authority_violation", "capability_violation"]},
+    "action_authority": {"const": "none"},
+    "persisted": {"const": false},
+    "hidden_reasoning_persisted": {"const": false},
+    "raw_response_persisted": {"const": false}
+  },
+  "additionalProperties": false
+}

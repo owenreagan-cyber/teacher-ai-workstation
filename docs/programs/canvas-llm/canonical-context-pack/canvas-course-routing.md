@@ -27,7 +27,7 @@ config/curriculum/canvas/quarter-subject-activation-2026-2027.json
 | Language Arts | `language-arts` | `28171` | `ELA4:` | enabled | Independent course and agenda; hosts Spelling tests, Shurley chapter tests, and Classroom Practices |
 | History | `history` | `28165` | `HIST4:` | quarter-activated | Active Q1 and Q3 only |
 | Science | `science` | `28166` | `SCI4:` | quarter-activated | Active Q2 and Q4 only |
-| Homeroom | `homeroom` | `26427` | none | newsletter only | Monthly Homeroom newsletter target |
+| Homeroom | `homeroom` | `26429` | none | newsletter only | Monthly Homeroom newsletter target |
 
 ## Routing identity
 
@@ -189,12 +189,21 @@ Create as an assignment? Yes / No
 
 Do not turn weekly intake into an interview. Group ambiguous items together when possible. History and Science never need this question because automated assignment creation is disabled there.
 
+### Language Arts / Shurley alternation
+
+Language Arts alternates between Shurley English instruction and Writing instruction. Intake rules:
+
+- Shurley lessons create a Classroom Practice assignment only when a Classroom Practice is explicitly listed on that day (for example `3.2 / CP 13`). Title: `ELA4A: Classroom Practice {n}`. Assignment group: `Classwork`.
+- Writing activities are instructional by default and do NOT create Canvas assignments (for example `Introduction Writing`, `Writing Map`).
+- A plain Shurley lesson without an explicitly listed Classroom Practice does not create an assignment.
+- Only ambiguous entries get the single `Create as an assignment? Yes / No` question.
+
 ## Homeroom policy
 
 Homeroom routes to:
 
 ```text
-courseId: 26427
+courseId: 26429
 newsletterTarget: true
 ```
 
@@ -225,6 +234,6 @@ The validator must confirm:
 - History resolves to `28165` with prefix `HIST4:`;
 - Science resolves to `28166` with prefix `SCI4:`;
 - quarter activation matches `quarter-subject-activation-2026-2027.json`;
-- Homeroom resolves to `26427`;
+- Homeroom resolves to `26429`;
 - archived years are read-only;
 - sandbox routing remains isolated from production.

@@ -396,6 +396,7 @@ class MockPhase22CanvasClient:
         title: str | None = None,
         body: str | None = None,
         published: bool | None = None,
+        front_page: bool | None = None,
     ) -> dict[str, Any]:
         _validate_course(course_id)
         stored = self.get_page(course_id, page_ref)
@@ -405,6 +406,8 @@ class MockPhase22CanvasClient:
             stored['body'] = body
         if published is not None:
             stored['published'] = published
+        if front_page is not None:
+            stored['front_page'] = front_page
         return stored
 
     def request(self, method: str, path: str, data: dict[str, Any] | None = None) -> Any:
@@ -625,6 +628,7 @@ class Phase22LiveCanvasClient:
         title: str | None = None,
         body: str | None = None,
         published: bool | None = None,
+        front_page: bool | None = None,
     ) -> dict[str, Any]:
         _validate_course(course_id)
         data: dict[str, Any] = {}
@@ -634,6 +638,8 @@ class Phase22LiveCanvasClient:
             data['wiki_page[body]'] = body
         if published is not None:
             data['wiki_page[published]'] = 'true' if published else 'false'
+        if front_page is not None:
+            data['wiki_page[front_page]'] = 'true' if front_page else 'false'
         return self.request('PUT', f'/api/v1/courses/{course_id}/pages/{page_ref}', data=data)
 
 

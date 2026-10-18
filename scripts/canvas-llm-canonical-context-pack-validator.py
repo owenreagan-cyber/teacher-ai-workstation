@@ -39,6 +39,7 @@ EXPECTED_MARKDOWN_FILES = {
     "resource-resolution-contract.md",
     "school-calendar-2026-27.md",
     "spelling-rules-and-maps.md",
+    "subject-weekly-update-announcement-contract.md",
     "teacher-decision-contract.md",
     "canvas-deployment-readiness-contract.md",
     "canvas-connector-contract.md",
@@ -468,6 +469,62 @@ def validate_no_secret_material() -> None:
         pass_check("no obvious token or authorization secret material found")
 
 
+def validate_newsletter_birthday_tiles() -> None:
+    newsletter = PACK_DIR / "newsletter-homeroom-contract.md"
+    example = PACK_DIR / "examples" / "homeroom-birthday-tiles-example.html"
+
+    require_contains(
+        newsletter,
+        "one birthday student = one birthday tile",
+        "birthday-tile standard is the canonical newsletter rule",
+    )
+    require_contains(
+        newsletter,
+        "first name only unless Owen explicitly says otherwise",
+        "birthday tiles use first name only",
+    )
+    require_contains(
+        newsletter,
+        "omit the entire birthday section",
+        "birthday section is omitted when no birthdays are supplied",
+    )
+    require_contains(
+        newsletter,
+        "never invent birthdays",
+        "birthday tiles never invent birthdays",
+    )
+    require_contains(
+        newsletter,
+        "display:flex; flex-wrap:wrap",
+        "birthday tiles require a responsive flex layout",
+    )
+    require_contains(
+        newsletter,
+        "soft rotating color palette",
+        "birthday tiles use a rotating soft color palette",
+    )
+    require_contains(
+        newsletter,
+        "homeroom_newsletter.py",
+        "reusable birthday-tile builder is referenced",
+    )
+
+    require_nonempty(example)
+    example_text = read_text(example)
+    if "September 4" in example_text and "September 16" in example_text and "September 17" in example_text:
+        pass_check("birthday-tile example carries Ava/Timothy/Charlotte dates")
+    else:
+        fail_check("birthday-tile example is missing the September birthday dates")
+    if "flex-wrap: wrap" in example_text:
+        pass_check("birthday-tile example uses a responsive flex layout")
+    else:
+        fail_check("birthday-tile example is missing flex-wrap")
+    if "Happy Birthday to" not in example_text:
+        pass_check("birthday-tile example omits the legacy sentence card")
+    else:
+        fail_check("birthday-tile example still contains the legacy sentence")
+
+
 def main() -> int:
     print("Canvas LLM Canonical Context Pack Validator")
     print(f"Context pack: {PACK_DIR.relative_to(REPO_ROOT)}")
@@ -481,6 +538,7 @@ def main() -> int:
     validate_resource_safety()
     validate_approval_safety()
     validate_no_secret_material()
+    validate_newsletter_birthday_tiles()
 
     print()
     print(f"PASS: {PASS_COUNT}")

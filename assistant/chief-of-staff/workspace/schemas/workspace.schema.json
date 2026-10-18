@@ -1,0 +1,56 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Static Workspace Policy Registry",
+  "type": "object",
+  "required": ["schema_version", "registry_type", "phase", "workspace_id", "host_id", "default_effect", "recursive_scan_policy", "areas", "registry_relationships"],
+  "properties": {
+    "schema_version": {"const": "1.0.0"},
+    "registry_type": {"const": "workspace_policy"},
+    "phase": {"const": "phase_b_static_policy"},
+    "workspace_id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$"},
+    "host_id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$"},
+    "default_effect": {"const": "deny"},
+    "recursive_scan_policy": {
+      "type": "object",
+      "required": ["implicit_recursion_allowed", "never_recursive_scan_roots"],
+      "properties": {
+        "implicit_recursion_allowed": {"const": false},
+        "never_recursive_scan_roots": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string"}}
+      },
+      "additionalProperties": false
+    },
+    "areas": {
+      "type": "array",
+      "minItems": 9,
+      "items": {
+        "type": "object",
+        "required": ["id", "locator_ref", "purpose", "risk_level", "default_access", "indexing_policy", "mutation_policy", "sensitivity_ceiling"],
+        "properties": {
+          "id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$"},
+          "locator_ref": {"type": "string", "pattern": "^host-path:[a-z0-9-]+$"},
+          "purpose": {"type": "string"},
+          "risk_level": {"enum": ["low", "medium", "high", "critical", "unknown"]},
+          "default_access": {"const": "deny"},
+          "indexing_policy": {"enum": ["approved_children_only", "explicit_subtree_only", "opt_in_metadata_only", "bundle_metadata_only", "denied", "approved_provider_subtree_only", "approved_archive_roots_only", "denied_until_registered"]},
+          "mutation_policy": {"enum": ["never_automatic", "recommendations_only", "approval_required", "forbidden"]},
+          "sensitivity_ceiling": {"enum": ["public", "teacher_internal", "student_safe", "student_private", "restricted", "unknown"]}
+        },
+        "additionalProperties": false
+      }
+    },
+    "registry_relationships": {
+      "type": "array",
+      "minItems": 6,
+      "items": {
+        "type": "object",
+        "required": ["registry_id", "role"],
+        "properties": {
+          "registry_id": {"type": "string"},
+          "role": {"enum": ["federated_reference_only", "owned_project_policy", "owned_application_policy", "owned_storage_policy", "reviewed_context_only"]}
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

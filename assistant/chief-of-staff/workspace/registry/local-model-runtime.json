@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "phase": "L.5E",
+  "policy_id": "ollama-loopback-explain-runtime",
+  "runtime": "ollama",
+  "transport": "http",
+  "host_policy": "loopback_only",
+  "endpoint": "http://127.0.0.1:11434",
+  "approved_hosts": [
+    "127.0.0.1",
+    "localhost"
+  ],
+  "port": 11434,
+  "approved_models": [
+    "qwen3.5:35b"
+  ],
+  "approved_tasks": [
+    "explain"
+  ],
+  "timeout_seconds": 120,
+  "maximum_attempts": 1,
+  "maximum_response_bytes": 1000000,
+  "streaming_enabled": false,
+  "thinking_output_enabled": false,
+  "tools_enabled": false,
+  "vision_enabled": false,
+  "cloud_fallback_enabled": false,
+  "model_fallback_enabled": false,
+  "automatic_retry_enabled": false,
+  "automatic_pull_enabled": false,
+  "automatic_startup_enabled": false,
+  "runtime_audit_persistence_enabled": false,
+  "raw_response_persistence_enabled": false,
+  "hidden_reasoning_persistence_enabled": false,
+  "action_execution_enabled": false
+}

@@ -1,0 +1,67 @@
+{
+  "schema_version": 1,
+  "phase": "H",
+  "candidate_types": [
+    "same_resource_candidate",
+    "alternate_representation_candidate",
+    "backup_candidate",
+    "mirror_candidate",
+    "archive_candidate",
+    "previous_version_candidate",
+    "unknown_candidate"
+  ],
+  "signal_types": [
+    "availability_changed",
+    "relationship_changed",
+    "authority_conflict",
+    "representation_missing",
+    "source_unavailable",
+    "candidate_changed"
+  ],
+  "confidence_levels": ["high", "medium", "low", "unknown"],
+  "risk_levels": ["low", "medium", "high", "unknown"],
+  "risk_factors": [
+    "authority_ambiguity",
+    "candidate_age",
+    "sensitivity",
+    "missing_provenance",
+    "conflicting_relationships",
+    "scope_uncertainty"
+  ],
+  "allowed_evidence_types": [
+    "resource_registry_metadata",
+    "knowledge_vault_reference",
+    "project_observation",
+    "application_observation",
+    "relationship",
+    "authority_assertion",
+    "filename_similarity",
+    "structural_evidence"
+  ],
+  "authority_rules": {
+    "backup_remains_backup": true,
+    "mirror_remains_mirror": true,
+    "timestamp_cannot_promote_canonical": true,
+    "candidate_cannot_create_authority": true
+  },
+  "confidence_rules": {
+    "declared_relationship_or_authority": "high",
+    "project_deployment_or_version_relationship": "medium",
+    "filename_or_weak_structure_only": "low",
+    "insufficient_evidence": "unknown"
+  },
+  "automatic_candidate_discovery": false,
+  "automatic_winner_selection": false,
+  "automatic_authority_promotion": false,
+  "recovery_execution_enabled": false,
+  "shared_evidence_required": true,
+  "recovery_explanation_required": true,
+  "expected_artifact_existence_implied": false,
+  "action_state": "not_an_action",
+  "audit_event_types": [
+    "recovery_candidate_created",
+    "recovery_candidate_validated",
+    "recovery_conflict_detected",
+    "recovery_reviewed"
+  ]
+}

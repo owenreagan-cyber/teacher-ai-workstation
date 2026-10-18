@@ -505,7 +505,7 @@ assert repeat_ids=={item['announcement_id'] for item in announcements}
 newsletter=packet['newsletter']; update=packet['newsletterUpdateAnnouncement']
 assert newsletter and update
 assert newsletter['title']=='Homeroom Newsletter — August 2026' and newsletter['month_code']=='2026-08'
-assert newsletter['course_id']==26427 and newsletter['cadence']=='monthly'
+assert newsletter['course_id']==26429 and newsletter['cadence']=='monthly'
 assert [s['name'] for s in newsletter['sections']]==list(p22.NEWSLETTER_SECTION_ORDER)
 assert newsletter['preview_only'] and not newsletter['canvas_writes_allowed'] and not newsletter['email_sends_allowed']
 assert update['body_text']=='The newsletter has been updated for August 2026.'

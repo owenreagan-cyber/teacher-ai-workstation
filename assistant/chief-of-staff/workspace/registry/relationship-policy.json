@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "phase": "G",
+  "automatic_discovery_enabled": false,
+  "automatic_authority_enabled": false,
+  "automatic_resolution_enabled": false,
+  "action_relationships_enabled": false,
+  "supported_node_types": [
+    "Workspace",
+    "StorageSource",
+    "WorkspaceItem",
+    "LogicalResource",
+    "Representation",
+    "Project",
+    "ApplicationConcept",
+    "ApplicationInstance",
+    "Workflow",
+    "RegistryEntry",
+    "Observation",
+    "Recommendation"
+  ],
+  "supported_relationship_types": [
+    "belongs_to_project",
+    "representation_of",
+    "used_by_application",
+    "deployed_to",
+    "mirrored_to",
+    "backed_up_by",
+    "version_of",
+    "supersedes",
+    "referenced_by_registry",
+    "expected_artifact_of"
+  ],
+  "supported_assertion_types": [
+    "observed",
+    "inferred",
+    "owner_asserted",
+    "registry_asserted"
+  ],
+  "assertion_rules": {
+    "observed": "evidence_required_no_authority",
+    "inferred": "evidence_required_not_truth",
+    "owner_asserted": "explicit_owner_evidence_required",
+    "registry_asserted": "source_registry_evidence_required"
+  },
+  "effects": {
+    "authority": "none",
+    "ownership": "none",
+    "permissions": "none",
+    "actions": "none"
+  },
+  "conflict_policy": "record_unresolved_never_choose",
+  "drift_policy": "record_change_never_delete_previous"
+}

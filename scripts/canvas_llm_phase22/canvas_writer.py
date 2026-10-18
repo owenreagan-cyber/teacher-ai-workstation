@@ -1046,6 +1046,7 @@ def update_page_live(
     new_title: str | None = None,
     body: str | None = None,
     published: bool | None = None,
+    front_page: bool | None = None,
     approved: bool = False,
     approved_by: str | None = 'teacher',
     approved_at: str | None = None,
@@ -1112,6 +1113,7 @@ def update_page_live(
             title=new_title,
             body=body,
             published=published,
+            front_page=front_page,
         )
     except transport.CanvasTransportError as exc:
         return _transport_blocked(
@@ -1164,7 +1166,7 @@ def command_self_test() -> int:
     assert cfg_live.write_mode == 'controlled'
 
     blocked = create_page_live(
-        course_id=26427,
+        course_id=transport.HOMEROOM_COURSE_ID,
         title='Blocked Page',
         body='body',
         approved=False,
@@ -1172,7 +1174,7 @@ def command_self_test() -> int:
     assert blocked.write_status == 'BLOCKED'
 
     approved_page = create_page_live(
-        course_id=26427,
+        course_id=transport.HOMEROOM_COURSE_ID,
         title='Live Test Page',
         body='<p>Live test</p>',
         approved=True,
@@ -1181,7 +1183,7 @@ def command_self_test() -> int:
     assert approved_page.write_status == 'WRITTEN'
     assert approved_page.gate_state == 'EXECUTED'
     assert verify_page_live(
-        course_id=26427,
+        course_id=transport.HOMEROOM_COURSE_ID,
         page_ref=approved_page.target_id,
         title='Live Test Page',
         front_page=False,

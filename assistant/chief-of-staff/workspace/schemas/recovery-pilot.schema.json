@@ -1,0 +1,64 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Recovery Intelligence Candidate Architecture Pilot",
+  "type": "object",
+  "required": ["schema_version", "phase", "pilot_id", "purpose", "input_policy", "evidence_inputs", "scenario_mode", "synthetic_scenarios", "limits", "live_signal_detection_enabled", "live_candidate_generation_enabled", "host_local_output_enabled", "prohibitions"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "phase": {"const": "H"},
+    "pilot_id": {"const": "recovery-intelligence-candidate-architecture"},
+    "purpose": {"const": "validate recovery candidate reasoning without detecting or restoring resources"},
+    "input_policy": {"const": "explicit_existing_artifacts_only"},
+    "evidence_inputs": {
+      "type": "array",
+      "minItems": 4,
+      "maxItems": 4,
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "required": ["phase", "run_id", "artifact_ref"],
+        "properties": {
+          "phase": {"enum": ["D", "E", "F", "G"]},
+          "run_id": {"type": "string", "pattern": "^run:[a-z0-9][a-z0-9:-]*$"},
+          "artifact_ref": {"type": "string", "pattern": "^(observations|relationships)/[a-z0-9:.-]+\\.json$"}
+        },
+        "additionalProperties": false
+      }
+    },
+    "scenario_mode": {"const": "synthetic_only"},
+    "synthetic_scenarios": {"type": "array", "minItems": 4, "maxItems": 4, "uniqueItems": true, "items": {"enum": ["missing_representation_with_relationship", "explicit_backup_candidate", "conflicting_candidates", "insufficient_evidence"]}},
+    "limits": {
+      "type": "object",
+      "required": ["max_input_artifacts", "max_synthetic_scenarios", "max_candidates_per_scenario"],
+      "properties": {
+        "max_input_artifacts": {"const": 4},
+        "max_synthetic_scenarios": {"const": 4},
+        "max_candidates_per_scenario": {"const": 2}
+      },
+      "additionalProperties": false
+    },
+    "live_signal_detection_enabled": {"const": false},
+    "live_candidate_generation_enabled": {"const": false},
+    "host_local_output_enabled": {"const": false},
+    "prohibitions": {
+      "type": "object",
+      "required": ["filesystem_scan", "content_read", "hashing", "cloud_scan", "backup_scan", "copy", "move", "replace", "restore", "delete", "authority_promotion", "action_execution"],
+      "properties": {
+        "filesystem_scan": {"const": false},
+        "content_read": {"const": false},
+        "hashing": {"const": false},
+        "cloud_scan": {"const": false},
+        "backup_scan": {"const": false},
+        "copy": {"const": false},
+        "move": {"const": false},
+        "replace": {"const": false},
+        "restore": {"const": false},
+        "delete": {"const": false},
+        "authority_promotion": {"const": false},
+        "action_execution": {"const": false}
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

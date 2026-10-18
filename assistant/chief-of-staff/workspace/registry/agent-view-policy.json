@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "policy_id": "agent-view-policy",
+  "phase_c_cloud_access_enabled": false,
+  "default_effect": "deny",
+  "sanitized_projection_required": true,
+  "classification_required": true,
+  "audit_required": true,
+  "allowed_categories": [
+    "sanitized_metadata",
+    "classifications",
+    "reviewed_relationships",
+    "recommendations"
+  ],
+  "forbidden_categories": [
+    "absolute_paths",
+    "private_filenames",
+    "student_data",
+    "raw_file_contents",
+    "document_text",
+    "extracted_text",
+    "ocr",
+    "embeddings",
+    "credentials",
+    "unrestricted_observations",
+    "filesystem_access"
+  ],
+  "blocked_sensitivities": ["student_private", "restricted", "unknown"],
+  "action_capability": "none"
+}

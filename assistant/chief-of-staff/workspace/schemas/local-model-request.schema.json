@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Phase L.5D Local Model Request Contract",
+  "type": "object",
+  "required": ["schema_version", "request_id", "context_package_id", "runtime", "model", "task", "capabilities", "actions", "connector_state", "execution_state", "action_authority"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "request_id": {"type": "string", "pattern": "^local-model-request:[a-z0-9][a-z0-9._:-]*$"},
+    "context_package_id": {"type": "string", "pattern": "^ai-context-package:[a-z0-9][a-z0-9._:-]*$"},
+    "runtime": {"const": "ollama"},
+    "model": {"const": "qwen3.5:35b"},
+    "task": {"const": "explain"},
+    "capabilities": {"type": "array", "minItems": 1, "maxItems": 1, "uniqueItems": true, "items": {"const": "explain"}},
+    "actions": {"type": "array", "maxItems": 0, "items": {"type": "string"}},
+    "connector_state": {"const": "not_connected"},
+    "execution_state": {"const": "not_executed"},
+    "action_authority": {"const": "none"}
+  },
+  "additionalProperties": false
+}

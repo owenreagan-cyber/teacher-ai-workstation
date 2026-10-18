@@ -1,0 +1,26 @@
+{
+  "schema_version": "1.0.0",
+  "registry_type": "classification_policy",
+  "phase": "phase_b_static_policy",
+  "dimensions": {
+    "workspace_role": ["active_project", "production_resource", "deployment_copy", "backup", "archive", "temporary", "download", "installer", "cache", "unknown"],
+    "data_sensitivity": ["public", "teacher_internal", "student_safe", "student_private", "restricted", "unknown"],
+    "authority_role": ["canonical", "deployment", "mirror", "backup", "archive", "unknown"],
+    "lifecycle": ["active", "production", "experimental", "dormant_candidate", "archived", "superseded", "unknown"]
+  },
+  "authority_scopes": ["source_code", "curriculum_binary", "registry_metadata", "classroom_deployment", "backup_recovery", "application_bundle"],
+  "basis_contract": {
+    "required_fields": ["kind", "rule_id", "rule_version", "evidence"],
+    "allowed_kinds": ["owner_assertion", "approved_registry", "source_evidence", "deployment_evidence", "git_metadata", "structural_metadata", "filename_path_hint", "rule", "unknown"],
+    "evidence_required": true
+  },
+  "evidence_precedence": ["owner_assertion", "approved_registry", "source_evidence", "deployment_evidence", "git_metadata", "structural_metadata", "filename_path_hint", "unknown"],
+  "policies": {
+    "audience_is_not_data_sensitivity": true,
+    "filename_or_age_can_finalize_destructive_classification": false,
+    "unknown_preferred_over_unsupported_claim": true,
+    "newer_implies_canonical": false,
+    "backup_can_become_canonical_by_timestamp": false,
+    "observed_or_inferred_relationship_implies_authority": false
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Deterministic Human Interface Policy",
+  "type": "object",
+  "required": ["schema_version", "phase", "policy_id", "interface_type", "commands", "explanation_sections", "review_states", "review_reasons", "restricted_permission", "web_interface_enabled", "persistent_service_enabled", "natural_language_enabled", "ai_enabled", "source_write_enabled", "action_capabilities"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "phase": {"const": "K"},
+    "policy_id": {"const": "deterministic-human-interface"},
+    "interface_type": {"const": "cli"},
+    "commands": {"type": "array", "minItems": 6, "maxItems": 6, "uniqueItems": true, "items": {"enum": ["status", "explain", "related", "evidence", "uncertain", "recovery"]}},
+    "explanation_sections": {"type": "array", "minItems": 10, "maxItems": 10, "uniqueItems": true, "items": {"enum": ["identity", "known", "sources", "evidence", "relationships", "confidence", "authority", "review_state", "unknowns", "actions"]}},
+    "review_states": {"type": "array", "minItems": 5, "maxItems": 5, "uniqueItems": true, "items": {"enum": ["unreviewed", "reviewed", "approved", "rejected", "deferred"]}},
+    "review_reasons": {"type": "array", "minItems": 6, "maxItems": 6, "uniqueItems": true, "items": {"enum": ["conflict", "unknown_authority", "missing_evidence", "missing_representation", "recovery_candidate", "unreviewed_relationship"]}},
+    "restricted_permission": {"const": "workspace.restricted.read"},
+    "web_interface_enabled": {"const": false},
+    "persistent_service_enabled": {"const": false},
+    "natural_language_enabled": {"const": false},
+    "ai_enabled": {"const": false},
+    "source_write_enabled": {"const": false},
+    "action_capabilities": {"type": "array", "maxItems": 0, "items": {"type": "string"}}
+  },
+  "additionalProperties": false
+}

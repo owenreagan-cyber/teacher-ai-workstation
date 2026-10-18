@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Phase L.5F Safe Grounding Validation Result",
+  "type": "object",
+  "required": ["schema_version", "accepted", "failure_category", "violations", "raw_response_retained", "hidden_reasoning_retained", "persisted"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "accepted": {"type": "boolean"},
+    "failure_category": {"enum": ["none", "schema_validation_failed", "grounding_validation_failed", "authority_violation", "capability_violation"]},
+    "violations": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "required": ["code", "response_pointer", "expected_source_type"],
+        "properties": {
+          "code": {"enum": ["KNOWN_CLAIM_MISSING", "KNOWN_CLAIM_UNSUPPORTED", "EVIDENCE_CLAIM_MISSING", "EVIDENCE_CLAIM_UNSUPPORTED", "EVIDENCE_COUNT_MISMATCH", "UNCERTAINTY_MISSING", "UNCERTAINTY_UNSUPPORTED", "UNCERTAINTY_COUNT_MISMATCH", "AUTHORITY_CHANGED", "REVIEW_STATE_CHANGED", "CONFIDENCE_CHANGED", "RELATIONSHIP_UNSUPPORTED", "ACTION_CONTENT_PRESENT", "RECOMMENDATION_CONTENT_PRESENT", "ACCESS_CLAIM_PRESENT", "PERMISSION_CLAIM_PRESENT", "UNKNOWN_RESPONSE_FIELD", "MISSING_REQUIRED_FIELD", "INVALID_ENUM_VALUE", "DUPLICATE_REFERENCE", "IDENTITY_MISMATCH", "INVALID_STRUCTURE"]},
+          "response_pointer": {"type": "string", "pattern": "^/"},
+          "expected_source_type": {"enum": ["entity_summary", "evidence_summary", "uncertainty", "identity", "enum", "empty_collection", "closed_schema", "relationship_excluded", "response_contract"]}
+        },
+        "additionalProperties": false
+      }
+    },
+    "raw_response_retained": {"const": false},
+    "hidden_reasoning_retained": {"const": false},
+    "persisted": {"const": false}
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Phase L.5E Controlled Ollama Execution Result",
+  "type": "object",
+  "required": ["schema_version", "status", "failure_code", "message", "request_id", "context_id", "runtime", "model", "task", "endpoint", "started_at", "ended_at", "duration_ms", "attempt_count", "retry_used", "fallback_used", "validation_result", "grounding_diagnostics", "validated_response", "response_size_bytes", "runtime_metrics", "hidden_reasoning_exposed", "hidden_reasoning_persisted", "raw_response_persisted", "action_authority"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "status": {"enum": ["accepted", "failed"]},
+    "failure_code": {"enum": ["none", "runtime_unavailable", "model_missing", "request_timeout", "connection_failure", "malformed_response", "schema_validation_failed", "grounding_validation_failed", "authority_violation", "capability_violation"]},
+    "message": {"type": "string"},
+    "request_id": {"type": "string"},
+    "context_id": {"type": "string"},
+    "runtime": {"const": "ollama"},
+    "model": {"const": "qwen3.5:35b"},
+    "task": {"const": "explain"},
+    "endpoint": {"enum": ["http://127.0.0.1:11434", "http://localhost:11434"]},
+    "started_at": {"type": "string"},
+    "ended_at": {"type": "string"},
+    "duration_ms": {"type": "integer"},
+    "attempt_count": {"enum": [0, 1]},
+    "retry_used": {"const": false},
+    "fallback_used": {"const": false},
+    "validation_result": {"enum": ["not_run", "pass", "rejected"]},
+    "grounding_diagnostics": {"type": "object"},
+    "validated_response": {"type": "object"},
+    "response_size_bytes": {"type": "integer"},
+    "runtime_metrics": {
+      "type": "object",
+      "required": ["total_duration_ns", "load_duration_ns", "prompt_eval_count", "eval_count", "model_load_state"],
+      "properties": {
+        "total_duration_ns": {"type": "integer"},
+        "load_duration_ns": {"type": "integer"},
+        "prompt_eval_count": {"type": "integer"},
+        "eval_count": {"type": "integer"},
+        "model_load_state": {"enum": ["reported", "not_reported"]}
+      },
+      "additionalProperties": false
+    },
+    "hidden_reasoning_exposed": {"const": false},
+    "hidden_reasoning_persisted": {"const": false},
+    "raw_response_persisted": {"const": false},
+    "action_authority": {"const": "none"}
+  },
+  "additionalProperties": false
+}

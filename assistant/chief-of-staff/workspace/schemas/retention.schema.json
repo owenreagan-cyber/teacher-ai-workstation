@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Observation Retention Policy",
+  "type": "object",
+  "required": ["schema_version", "phase_c_enforcement_enabled", "authority_effect", "policies", "invariants"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "phase_c_enforcement_enabled": {"const": false},
+    "authority_effect": {"const": "none"},
+    "policies": {
+      "type": "array",
+      "minItems": 5,
+      "maxItems": 5,
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "required": ["record_type", "active_days", "preserve_reviewed_decisions", "expiration_result"],
+        "properties": {
+          "record_type": {"enum": ["inventory_run", "observation_snapshot", "recommendation", "audit_event", "cache"]},
+          "active_days": {"type": "integer"},
+          "preserve_reviewed_decisions": {"type": "boolean"},
+          "expiration_result": {"enum": ["review_required", "archive_review_required", "regenerate_not_authority"]}
+        },
+        "additionalProperties": false
+      }
+    },
+    "invariants": {"type": "array", "minItems": 5, "uniqueItems": true, "items": {"type": "string"}}
+  },
+  "additionalProperties": false
+}

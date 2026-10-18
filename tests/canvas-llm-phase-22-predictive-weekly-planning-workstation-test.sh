@@ -184,6 +184,18 @@ other=rows(
 specs=p.selected_graded_assignment_specs(other, week_meta)
 assert not any(s['subject'] in {'spelling','language-arts','history','science'} and s['payload']['metadata']['gradeRole'] in {'homework','classwork'} for s in specs)
 
+# Language Arts: only explicit Classroom Practice entries become assignments.
+la_rows=rows(
+    {'subject':'language-arts','weekday':'Monday','lesson':'3','tests':'','entry_date':'2026-08-24','title':'Chapter 3, Lesson 1'},
+    {'subject':'language-arts','weekday':'Tuesday','lesson':'','tests':'','entry_date':'2026-08-25','title':'Introduction Writing'},
+    {'subject':'language-arts','weekday':'Wednesday','lesson':'3','tests':'','entry_date':'2026-08-26','title':'3.2 / CP 13'},
+    {'subject':'language-arts','weekday':'Thursday','lesson':'','tests':'','entry_date':'2026-08-27','title':'Writing Map'},
+    {'subject':'language-arts','weekday':'Friday','lesson':'3','tests':'','entry_date':'2026-08-28','title':'3.3 / CP 14'},
+)
+la_specs=[s for s in p.selected_graded_assignment_specs(la_rows, {'quarter':1,'code':'Q1W6'}) if s['subject']=='language-arts']
+assert sorted(s['title'] for s in la_specs)==['ELA4A: Classroom Practice 13','ELA4A: Classroom Practice 14']
+assert all(s['payload']['metadata']['gradeRole']=='classwork' for s in la_specs)
+
 window_rows=rows(
     {'subject':'math','weekday':'Tuesday','lesson':'','tests':'4','entry_date':'2026-08-18'},
     {'subject':'reading','weekday':'Wednesday','lesson':'','tests':'7','entry_date':'2026-08-19'},
@@ -279,7 +291,7 @@ assert p.month_code_for_date(q1w5['startsOn'])=='2026-08'
 _,nl5,up5=p.resolve_newsletter_for_week_start(q1w5['startsOn']); _,nl6,_=p.resolve_newsletter_for_week_start(q1w6['startsOn']); _,nl8,_=p.resolve_newsletter_for_week_start(q1w8['startsOn'])
 assert nl5['local_object_id']==nl6['local_object_id'] and nl5['local_object_id']!=nl8['local_object_id']
 assert nl5['title']=='Homeroom Newsletter — August 2026' and nl8['title']=='Homeroom Newsletter — September 2026'
-assert nl5['month_code']=='2026-08' and nl5['date_range']=={'start':'2026-08-01','end':'2026-08-31'} and nl5['course_id']==26427
+assert nl5['month_code']=='2026-08' and nl5['date_range']=={'start':'2026-08-01','end':'2026-08-31'} and nl5['course_id']==26429
 assert [s['name'] for s in nl5['sections']]==list(p.NEWSLETTER_SECTION_ORDER)
 assert nl5['preview_only'] and not nl5['canvas_writes_allowed'] and not nl5['email_sends_allowed']
 assert nl5['teacher_approval_required'] and not nl5['approved']

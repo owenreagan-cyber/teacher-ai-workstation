@@ -21,6 +21,7 @@ existing page.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import os
 import sys
@@ -38,6 +39,10 @@ from scripts.canvas_llm_phase22 import canvas_credentials as credentials  # noqa
 
 MANIFESTS: dict[str, Path] = {
     "Q1W5": REPO_ROOT / ".local" / "canvas-llm" / "q1w5-audit" / "q1w5-corrective-manifest.json",
+    "Q1W6": REPO_ROOT / ".local" / "canvas-llm" / "q1w6-audit" / "q1w6-manifest.json",
+    "Q1W7": REPO_ROOT / ".local" / "canvas-llm" / "q1w7-audit" / "q1w7-manifest.json",
+    "Q1W8": REPO_ROOT / ".local" / "canvas-llm" / "q1w8-audit" / "q1w8-manifest.json",
+    "Q1W9": REPO_ROOT / ".local" / "canvas-llm" / "q1w9-audit" / "q1w9-manifest.json",
 }
 
 BACKUP_DIR = REPO_ROOT / ".local" / "canvas-llm" / "backups"
@@ -396,6 +401,16 @@ def command_preflight(week_code: str) -> int:
     inventory = _fetch_live_inventory()
     rows, blockers = run_preflight(week_code, inventory)
     print_preflight_report(week_code, rows, blockers)
+    print()
+    print("HOMEROOM NEWSLETTER PRE-WRITE DRIFT GUARD:")
+    drift = homeroom_drift_report(week_code, inventory)
+    if drift:
+        for line in drift:
+            print(f"  {line}")
+        print("RESULT: DRIFT DETECTED (would block launch)")
+    else:
+        print("  live newsletter matches the pre-write snapshot (body, title, front_page).")
+        print("RESULT: PASS (no drift)")
     return 0
 
 
@@ -414,6 +429,76 @@ def _new_title(row: dict[str, Any]) -> str | None:
     if resulting and resulting != existing:
         return resulting
     return None
+
+
+def _front_page_intent(value: Any) -> bool | None:
+    """Map a manifest ``front_page`` marker to the update_page_live bool|None.
+
+    - ``True`` or ``"SET_AND_VERIFY"`` -> ``True`` (write ``wiki_page[front_page]=true``)
+    - ``False`` / ``None`` / ``"VERIFY_NOOP"`` / ``"NONE"`` -> ``None`` (no front-page write; verify only)
+    """
+    if value is True or str(value or "").strip().upper() == "SET_AND_VERIFY":
+        return True
+    return None
+
+
+def homeroom_snapshot(manifest: dict[str, Any]) -> tuple[dict[str, Any] | None, str | None, int | None]:
+    """Locate the Homeroom newsletter page action and its pre-write snapshot.
+
+    Returns ``(prewrite_snapshot, page_ref, course_id)`` or ``(None, None, None)``
+    when the manifest carries no Homeroom newsletter update with a snapshot.
+    """
+    for action in _actions(manifest):
+        if (
+            action.get("course") == "Homeroom"
+            and action.get("object_type") == "page"
+            and action.get("action") == "UPDATE"
+            and action.get("prewrite_snapshot")
+        ):
+            return (
+                action["prewrite_snapshot"],
+                (action.get("existing") or "").strip(),
+                action.get("course_id"),
+            )
+    return None, None, None
+
+
+def homeroom_newsletter_drift(
+    snapshot: dict[str, Any] | None,
+    live_page: dict[str, Any] | None,
+) -> list[str]:
+    """Compare a fresh live newsletter page against the pre-write snapshot.
+
+    Empty list == no drift (safe to write). Each returned string is a DRIFT
+    blocker describing a change detected since the manifest snapshot was built.
+    """
+    if not snapshot:
+        return []
+    if not live_page:
+        return ["DRIFT: Homeroom newsletter page not found live at the expected URL"]
+    blockers: list[str] = []
+    expected_hash = snapshot.get("body_sha256")
+    if expected_hash:
+        live_hash = hashlib.sha256(_norm(live_page.get("body")).encode("utf-8")).hexdigest()
+        if live_hash != expected_hash:
+            blockers.append("DRIFT: Homeroom newsletter body changed since the Q1W7 manifest was built")
+    expected_title = snapshot.get("title")
+    if expected_title and _title_of(live_page, "page") != expected_title:
+        blockers.append("DRIFT: Homeroom newsletter title changed since the Q1W7 manifest was built")
+    if "front_page" in snapshot and bool(live_page.get("front_page")) != bool(snapshot["front_page"]):
+        blockers.append("DRIFT: Homeroom newsletter front-page state changed since the Q1W7 manifest was built")
+    return blockers
+
+
+def homeroom_drift_report(week_code: str, inventory: dict[str, Any]) -> list[str]:
+    """Locate the live newsletter in an inventory and compare it to the snapshot."""
+    manifest = load_manifest(week_code)
+    snapshot, page_ref, course_id = homeroom_snapshot(manifest)
+    if snapshot is None or not page_ref or course_id is None:
+        return []
+    matches = _match_existing(_objects(inventory, course_id, "page"), "page", page_ref)
+    live_page = matches[0] if matches else None
+    return homeroom_newsletter_drift(snapshot, live_page)
 
 
 def _apply_approved(
@@ -543,7 +628,8 @@ def _apply_approved(
             new_title = _new_title(row)
             body = row.get("body")
             published = row.get("published")
-            if new_title is None and body is None and published is None:
+            front_page = _front_page_intent(row.get("front_page"))
+            if new_title is None and body is None and published is None and front_page is None:
                 print(f"SKIPPED (no payload fields): {row.get('course')} page "
                       f"'{row.get('existing') or row.get('resulting_title')}'")
                 continue
@@ -554,6 +640,7 @@ def _apply_approved(
                 new_title=new_title,
                 body=body,
                 published=published,
+                front_page=front_page,
                 approved=True,
                 test_mode=test_mode,
                 client=client,
@@ -639,6 +726,19 @@ def command_launch(week_code: str, *, test_mode: bool = False) -> int:
             print(f"  {blocker}")
         print("WRITES PERFORMED: 0")
         return 1
+
+    # Homeroom pre-write drift guard: the fresh inventory fetched above is the
+    # state immediately before the write. If the rolling newsletter changed
+    # since the manifest was built (e.g. a newer teacher/manual edit), stop
+    # rather than overwrite it.
+    homeroom_drift = homeroom_drift_report(week_code, fresh)
+    if homeroom_drift:
+        print("STOPPED: Homeroom newsletter drift detected before write; no writes performed.")
+        for blocker in homeroom_drift:
+            print(f"  {blocker}")
+        print("WRITES PERFORMED: 0")
+        return 1
+    print("Homeroom newsletter drift check: PASS (live matches pre-write snapshot).")
 
     writes = _apply_approved(rows, test_mode=test_mode, client=live_client)
     print(f"WRITES PERFORMED: {writes}")
@@ -834,6 +934,36 @@ def command_self_test() -> int:
         res_inv,
     )
     assert created["status"] == "ALREADY_APPLIED", created
+
+    # Homeroom pre-write drift guard is hermetic (no network, no writes).
+    snapshot = {
+        "body_sha256": hashlib.sha256(_norm("hello world").encode("utf-8")).hexdigest(),
+        "title": "Q1W2 - July 27-31, 2026",
+        "front_page": True,
+    }
+    live_ok = {"body": "hello world", "title": "Q1W2 - July 27-31, 2026", "front_page": True}
+    assert homeroom_newsletter_drift(snapshot, live_ok) == []
+    assert homeroom_newsletter_drift(None, None) == []
+    assert homeroom_newsletter_drift(snapshot, None)
+    assert homeroom_newsletter_drift(
+        snapshot, {"body": "hello world EDITED", "title": "Q1W2 - July 27-31, 2026", "front_page": True}
+    )
+    assert homeroom_newsletter_drift(
+        snapshot, {"body": "hello world", "title": "DIFFERENT TITLE", "front_page": True}
+    )
+    assert homeroom_newsletter_drift(
+        snapshot, {"body": "hello world", "title": "Q1W2 - July 27-31, 2026", "front_page": False}
+    )
+    assert homeroom_snapshot({"actions": []}) == (None, None, None)
+    snap_manifest = {
+        "actions": [{
+            "course": "Homeroom", "object_type": "page", "action": "UPDATE",
+            "existing": "q1w2-july-27-31-2026", "course_id": 26429,
+            "prewrite_snapshot": snapshot,
+        }]
+    }
+    got_snap, got_ref, got_cid = homeroom_snapshot(snap_manifest)
+    assert got_snap == snapshot and got_ref == "q1w2-july-27-31-2026" and got_cid == 26429
 
     print("PASS canvas launcher self-test")
     return 0

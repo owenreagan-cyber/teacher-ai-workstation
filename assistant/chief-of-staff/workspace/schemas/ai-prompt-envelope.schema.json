@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Future AI Prompt Boundary Envelope",
+  "type": "object",
+  "required": ["schema_version", "prompt_id", "trust_level", "system_context", "evidence_context", "user_request", "required_output", "capabilities_granted", "runtime_state", "action_authority"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "prompt_id": {"type": "string", "pattern": "^ai-prompt:[a-z0-9][a-z0-9._:-]*$"},
+    "trust_level": {"enum": [1, 2]},
+    "system_context": {
+      "type": "object",
+      "required": ["role", "restrictions", "authority_boundaries"],
+      "properties": {
+        "role": {"const": "non_authoritative_reasoning_assistant"},
+        "restrictions": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string"}},
+        "authority_boundaries": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string"}}
+      },
+      "additionalProperties": false
+    },
+    "evidence_context": {
+      "type": "object",
+      "required": ["projection_id", "facts", "provenance", "confidence", "uncertainty"],
+      "properties": {
+        "projection_id": {"type": "string"},
+        "facts": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string"}},
+        "provenance": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string"}},
+        "confidence": {"enum": ["high", "medium", "low", "unknown"]},
+        "uncertainty": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string"}}
+      },
+      "additionalProperties": false
+    },
+    "user_request": {"type": "string"},
+    "required_output": {
+      "type": "object",
+      "required": ["distinguish_claim_types", "cite_evidence", "expose_uncertainty", "avoid_unsupported_assumptions"],
+      "properties": {
+        "distinguish_claim_types": {"const": true},
+        "cite_evidence": {"const": true},
+        "expose_uncertainty": {"const": true},
+        "avoid_unsupported_assumptions": {"const": true}
+      },
+      "additionalProperties": false
+    },
+    "capabilities_granted": {"type": "array", "uniqueItems": true, "items": {"enum": ["summarize", "explain", "compare", "prioritize", "draft", "plan", "identify_patterns"]}},
+    "runtime_state": {"const": "not_connected"},
+    "action_authority": {"const": "none"}
+  },
+  "additionalProperties": false
+}

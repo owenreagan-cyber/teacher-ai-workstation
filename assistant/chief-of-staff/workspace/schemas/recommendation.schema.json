@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Recommendation",
+  "type": "object",
+  "required": ["schema_version", "record_type", "recommendation_id", "finding", "evidence", "confidence", "alternatives", "next_step", "review_state", "action_state"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "record_type": {"const": "recommendation"},
+    "recommendation_id": {"type": "string", "pattern": "^recommendation:[a-z0-9][a-z0-9._-]*$"},
+    "finding": {"type": "string"},
+    "evidence": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "required": ["observation_ref", "summary"],
+        "properties": {
+          "observation_ref": {"type": "string", "pattern": "^observation:"},
+          "summary": {"type": "string"}
+        },
+        "additionalProperties": false
+      }
+    },
+    "confidence": {"enum": ["low", "medium", "high", "unknown"]},
+    "alternatives": {"type": "array", "items": {"type": "string"}},
+    "next_step": {"type": "string"},
+    "review_state": {"enum": ["draft", "pending_review", "reviewed", "rejected"]},
+    "action_state": {"const": "not_an_action"}
+  },
+  "additionalProperties": false
+}

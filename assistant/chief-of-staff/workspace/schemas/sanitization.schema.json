@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Sanitization Policy",
+  "type": "object",
+  "required": ["schema_version", "default_export_effect", "phase_c_export_enabled", "projection_required", "path_policy", "local_only_fields", "forbidden_export_fields", "allowed_projection_fields", "required_gates"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "default_export_effect": {"const": "deny"},
+    "phase_c_export_enabled": {"const": false},
+    "projection_required": {"const": true},
+    "path_policy": {
+      "type": "object",
+      "required": ["absolute_paths", "relative_paths", "private_filenames", "fallback"],
+      "properties": {
+        "absolute_paths": {"const": "forbidden"},
+        "relative_paths": {"const": "explicit_rule_only"},
+        "private_filenames": {"const": "forbidden"},
+        "fallback": {"const": "opaque_token"}
+      },
+      "additionalProperties": false
+    },
+    "local_only_fields": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string"}},
+    "forbidden_export_fields": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string"}},
+    "allowed_projection_fields": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string"}},
+    "required_gates": {"type": "array", "minItems": 4, "maxItems": 4, "uniqueItems": true, "items": {"enum": ["policy_validation", "deterministic_classification", "redaction", "audit_event"]}}
+  },
+  "additionalProperties": false
+}

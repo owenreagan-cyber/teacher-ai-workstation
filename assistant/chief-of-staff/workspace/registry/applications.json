@@ -1,0 +1,50 @@
+{
+  "schema_version": "1.0.0",
+  "registry_type": "application_policy",
+  "phase": "phase_b_static_policy",
+  "runtime_discovery_enabled": false,
+  "launch_enabled": false,
+  "concepts": [
+    {
+      "concept_id": "teacher-chief-of-staff",
+      "display_name": "Teacher Chief of Staff",
+      "purpose": "teacher_workstation_orchestration",
+      "status": "static_declared",
+      "related_project_ids": ["teacher-ai-workstation"],
+      "related_resource_systems": ["teacher-resource-registry-v1"],
+      "required_capabilities": ["workspace.report.preview"],
+      "data_classification": "teacher_internal"
+    },
+    {
+      "concept_id": "grade-4-writing-launcher",
+      "display_name": "Grade 4 Writing Launcher",
+      "purpose": "writing_classroom_launcher",
+      "status": "static_declared",
+      "related_project_ids": ["grade-4-writing"],
+      "related_resource_systems": ["writing"],
+      "required_capabilities": [],
+      "data_classification": "teacher_internal"
+    },
+    {
+      "concept_id": "history-resources-launcher",
+      "display_name": "History Resources Launcher",
+      "purpose": "history_classroom_launcher",
+      "status": "static_declared",
+      "related_project_ids": ["history"],
+      "related_resource_systems": ["history"],
+      "required_capabilities": [],
+      "data_classification": "teacher_internal"
+    },
+    {
+      "concept_id": "math-resources-launcher",
+      "display_name": "Math Resources Launcher",
+      "purpose": "math_classroom_launcher",
+      "status": "static_declared",
+      "related_project_ids": ["math-resources-launcher"],
+      "related_resource_systems": ["math"],
+      "required_capabilities": [],
+      "data_classification": "teacher_internal"
+    }
+  ],
+  "installed_instances": []
+}

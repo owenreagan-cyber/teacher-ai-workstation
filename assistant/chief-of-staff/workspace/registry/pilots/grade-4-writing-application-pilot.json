@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "phase": "F",
+  "pilot_id": "grade-4-writing-application-pilot",
+  "application_concept_id": "application-concept:grade-4-writing-launcher",
+  "application_instance_id": "application-instance:grade-4-writing-local",
+  "source_id": "grade-4-writing-application-local",
+  "parent_source_id": "applications-local",
+  "approved_bundle_ref": "applications/grade-4-writing.app",
+  "approved_relative_path": "Grade 4 Writing.app",
+  "representation_id": "representation:grade-4-writing:installed-bundle",
+  "purpose": "application metadata observation pilot",
+  "approval": {
+    "approved_by": "teacher",
+    "basis": "explicit_phase_f_mission",
+    "approval_id": "approval:phase-f-grade-4-writing-application-pilot"
+  },
+  "metadata_keys": [
+    "kMDItemDisplayName",
+    "kMDItemCFBundleIdentifier",
+    "kMDItemVersion",
+    "kMDItemContentType"
+  ],
+  "limits": {
+    "max_metadata_queries": 4,
+    "query_timeout_seconds": 5
+  },
+  "prohibitions": {
+    "application_discovery": false,
+    "bundle_enumeration": false,
+    "bundle_content_read": false,
+    "application_launch": false,
+    "application_execution": false,
+    "application_modification": false,
+    "container_read": false,
+    "preferences_read": false,
+    "cache_read": false,
+    "database_read": false,
+    "signing_analysis": false,
+    "dependency_analysis": false,
+    "usage_history": false,
+    "screenshots": false,
+    "recommendations": false
+  },
+  "output_root_ref": ".local/chief-of-staff/workspace/",
+  "authority_claim": "none"
+}

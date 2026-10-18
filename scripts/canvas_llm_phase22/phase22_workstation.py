@@ -524,7 +524,7 @@ def build_week_announcement_drafts(rows,week_meta=None):
     return drafts
 NEWSLETTER_SECTION_ORDER=('Important Dates','Homeroom News','School News','School Information and Event Links')
 HOMEROOM_NEWSLETTER_SUBJECT='homeroom'
-HOMEROOM_NEWSLETTER_COURSE_ID=26427
+HOMEROOM_NEWSLETTER_COURSE_ID=26429
 FORBIDDEN_NEWSLETTER_PATTERNS=(
     ('study guide','Study Guide language is forbidden in newsletter drafts'),
     ('workbook','Workbook language is forbidden in newsletter drafts'),
@@ -898,6 +898,15 @@ def reading_homework_assignment_title(weekday,lesson_number):
     return f"RM4: {weekday} Comprehension Questions{GRADED_TITLE_SEP}Lesson {lesson_number}"
 def reading_classwork_assignment_title(weekday,lesson_number):
     return f"RM4: {weekday} Workbook Classwork{GRADED_TITLE_SEP}Lesson {lesson_number}"
+def language_arts_classroom_practice_title(number):
+    return f"ELA4A: Classroom Practice {number}"
+def language_arts_classroom_practices(row):
+    blob=' '.join(compact(x) for x in (row.get('title'),row.get('in_class'),row.get('notes')))
+    found=[]
+    for m in re.finditer(r'\b(?:Classroom\s+Practice|CP)\s*#?\s*(\d+)\b',blob,re.I):
+        n=int(m.group(1))
+        if n not in found: found.append(n)
+    return found
 def math_homework_assignment_description(weekday):
     if weekday=='Monday': return 'Classwork: #1-10\nHomework: #12-30 evens'
     if weekday=='Wednesday': return 'Classwork: #1-10\nHomework: #11-29 odds'
@@ -957,6 +966,11 @@ def selected_graded_assignment_specs(rows,week_meta=None):
     reading_cw_day=ctx['readingClassworkDay']; reading_cw=reading_lesson_row(rows,reading_cw_day)
     if reading_cw:
         lesson=int(reading_cw['lesson']); append_spec('assignment','reading',reading_classwork_assignment_title(reading_cw_day,lesson),'Classwork: Workbook',reading_cw,grade_role='classwork',selection_reason=f'owner-confirmed-{reading_cw_day.lower()}-workbook-classwork',selection_source=ctx['readingClassworkSelectionSource'],default_selection=ctx['readingClassworkDefaultSelection'],teacher_override_applied=ctx['readingClassworkSelectionSource']=='teacher-override')
+    for r in rows:
+        if compact(r.get('subject')).lower()!='language-arts': continue
+        if not subject_active_for_quarter(r.get('subject'),week_meta): continue
+        for cp in language_arts_classroom_practices(r):
+            append_spec('assignment','language-arts',language_arts_classroom_practice_title(cp),f'Classroom Practice {cp}',r,grade_role='classwork',selection_reason='owner-confirmed-classroom-practice',selection_source='pacing',default_selection=True)
     for r in rows:
         if not subject_active_for_quarter(r.get('subject'),week_meta): continue
         s=compact(r.get('subject')).lower(); test=int(r['tests']) if str(r.get('tests','')).isdigit() else None

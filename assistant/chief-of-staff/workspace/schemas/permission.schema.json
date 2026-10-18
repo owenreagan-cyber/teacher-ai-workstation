@@ -1,0 +1,63 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Static Workspace Permission Policy Registry",
+  "type": "object",
+  "required": ["schema_version", "registry_type", "phase", "default_effect", "phase_b_execution_enabled", "levels", "capabilities", "permanent_rules"],
+  "properties": {
+    "schema_version": {"const": "1.0.0"},
+    "registry_type": {"const": "workspace_permission_policy"},
+    "phase": {"const": "phase_b_static_policy"},
+    "default_effect": {"const": "deny"},
+    "phase_b_execution_enabled": {"const": false},
+    "levels": {
+      "type": "array",
+      "minItems": 5,
+      "maxItems": 5,
+      "items": {
+        "type": "object",
+        "required": ["level", "name", "allowed_capabilities", "execution_allowed", "scoped_grants_required", "approval_required", "stop_points_required", "unrestricted_filesystem_access"],
+        "properties": {
+          "level": {"enum": [0, 1, 2, 3, 4]},
+          "name": {"enum": ["awareness", "recommendations", "safe_outputs", "controlled_management", "agent_operations"]},
+          "allowed_capabilities": {"type": "array", "uniqueItems": true, "items": {"type": "string"}},
+          "execution_allowed": {"const": false},
+          "scoped_grants_required": {"const": true},
+          "approval_required": {"type": "boolean"},
+          "stop_points_required": {"type": "boolean"},
+          "unrestricted_filesystem_access": {"const": false}
+        },
+        "additionalProperties": false
+      }
+    },
+    "capabilities": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["id", "minimum_level", "mutating", "phase_b_effect", "approval"],
+        "properties": {
+          "id": {"type": "string", "pattern": "^[a-z][a-z0-9_.-]*$"},
+          "minimum_level": {"enum": [0, 1, 2, 3, 4]},
+          "mutating": {"type": "boolean"},
+          "phase_b_effect": {"enum": ["declared_only", "blocked"]},
+          "approval": {"enum": ["none", "scoped_source", "teacher", "two_step_teacher"]}
+        },
+        "additionalProperties": false
+      }
+    },
+    "permanent_rules": {
+      "type": "object",
+      "required": ["content_read_requires_separate_capability", "hashing_requires_separate_capability", "unknown_classification_blocks_mutation", "delete_requires_two_step_verification", "canonical_replacement_requires_recovery_plan", "level_four_never_grants_unrestricted_filesystem_access"],
+      "properties": {
+        "content_read_requires_separate_capability": {"const": true},
+        "hashing_requires_separate_capability": {"const": true},
+        "unknown_classification_blocks_mutation": {"const": true},
+        "delete_requires_two_step_verification": {"const": true},
+        "canonical_replacement_requires_recovery_plan": {"const": true},
+        "level_four_never_grants_unrestricted_filesystem_access": {"const": true}
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

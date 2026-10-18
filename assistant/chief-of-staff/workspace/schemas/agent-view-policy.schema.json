@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Cloud Agent View Policy",
+  "type": "object",
+  "required": ["schema_version", "policy_id", "phase_c_cloud_access_enabled", "default_effect", "sanitized_projection_required", "classification_required", "audit_required", "allowed_categories", "forbidden_categories", "blocked_sensitivities", "action_capability"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "policy_id": {"const": "agent-view-policy"},
+    "phase_c_cloud_access_enabled": {"const": false},
+    "default_effect": {"const": "deny"},
+    "sanitized_projection_required": {"const": true},
+    "classification_required": {"const": true},
+    "audit_required": {"const": true},
+    "allowed_categories": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"enum": ["sanitized_metadata", "classifications", "reviewed_relationships", "recommendations"]}},
+    "forbidden_categories": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string"}},
+    "blocked_sensitivities": {"type": "array", "minItems": 3, "uniqueItems": true, "items": {"enum": ["student_private", "restricted", "unknown"]}},
+    "action_capability": {"const": "none"}
+  },
+  "additionalProperties": false
+}

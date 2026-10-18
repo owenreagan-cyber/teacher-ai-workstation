@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "phase": "C",
+  "runtime_root": ".local/chief-of-staff/workspace/",
+  "instantiate_in_phase_c": false,
+  "git_policy": "ignored",
+  "sync_policy": "host_local_only",
+  "cloud_export_policy": "forbidden",
+  "authority_role": "evidence_only",
+  "folders": [
+    {"name": "inventory-runs", "purpose": "controlled_run_envelopes", "authority_role": "evidence_only"},
+    {"name": "observations", "purpose": "metadata_only_observation_snapshots", "authority_role": "evidence_only"},
+    {"name": "relationships", "purpose": "evidence_backed_relationship_candidates", "authority_role": "non_authoritative"},
+    {"name": "recommendations", "purpose": "reviewable_non_action_proposals", "authority_role": "non_authoritative"},
+    {"name": "audit", "purpose": "approvals_validations_and_review_events", "authority_role": "audit_evidence"},
+    {"name": "cache", "purpose": "regenerable_temporary_data", "authority_role": "non_authoritative"}
+  ],
+  "prohibited_uses": [
+    "source_authority",
+    "registry_overwrite",
+    "cloud_sync",
+    "cloud_agent_raw_input",
+    "student_database",
+    "action_authorization"
+  ]
+}

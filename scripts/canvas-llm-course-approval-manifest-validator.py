@@ -18,7 +18,7 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 MANIFEST_PATH = REPO_ROOT / "config/canvas-llm/approved-canvas-course-manifest.json"
 
 EXPECTED_COURSE_IDS = {
-    26404, 26442, 28171, 28165, 28166, 26427,
+    26404, 26442, 28171, 28165, 28166, 26429,
     24399,
     21957, 21919, 21944, 21934, 21970, 22254,
     19428, 19419, 19426, 19422, 19423, 19424,
@@ -200,7 +200,7 @@ def main() -> int:
         for course in courses
         if "homeroom_newsletter_course" in str(course.get("course_role"))
     }
-    if homeroom_ids == {26427, 22254, 19424}:
+    if homeroom_ids == {26429, 22254, 19424}:
         passed("Manifest includes current and historical Homeroom newsletter courses")
     else:
         failed(f"Homeroom course IDs mismatch: {sorted(homeroom_ids)}")

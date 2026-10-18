@@ -1,0 +1,86 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ApplicationObservation",
+  "type": "object",
+  "required": ["schema_version", "observation_id", "run_id", "application_instance_id", "application_concept_id", "source_id", "path_ref", "metadata", "relationships", "trust", "freshness", "review_state", "authority_claim"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "observation_id": {"type": "string", "pattern": "^observation:run:grade-4-writing-application-pilot-[a-z0-9-]+:grade-4-writing-application$"},
+    "run_id": {"type": "string", "pattern": "^run:grade-4-writing-application-pilot-[a-z0-9-]+$"},
+    "application_instance_id": {"const": "application-instance:grade-4-writing-local"},
+    "application_concept_id": {"const": "application-concept:grade-4-writing-launcher"},
+    "source_id": {"const": "grade-4-writing-application-local"},
+    "path_ref": {
+      "type": "object",
+      "required": ["source_id", "relative_path", "representation_id"],
+      "properties": {
+        "source_id": {"const": "grade-4-writing-application-local"},
+        "relative_path": {"const": "Grade 4 Writing.app"},
+        "representation_id": {"const": "representation:grade-4-writing:installed-bundle"}
+      },
+      "additionalProperties": false
+    },
+    "metadata": {
+      "type": "object",
+      "required": ["exists", "is_directory", "is_symlink", "display_name", "bundle_identifier", "version", "application_type", "content_type", "availability", "metadata_source", "bundle_contents_read", "signing_inspected"],
+      "properties": {
+        "exists": {"const": true},
+        "is_directory": {"const": true},
+        "is_symlink": {"const": false},
+        "display_name": {"type": ["string", "null"]},
+        "bundle_identifier": {"type": ["string", "null"]},
+        "version": {"type": ["string", "null"]},
+        "application_type": {"const": "macos_application_bundle"},
+        "content_type": {"type": ["string", "null"]},
+        "availability": {"const": "available"},
+        "metadata_source": {"const": "spotlight_metadata_allowlist"},
+        "bundle_contents_read": {"const": false},
+        "signing_inspected": {"const": false}
+      },
+      "additionalProperties": false
+    },
+    "relationships": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 2,
+      "items": {
+        "type": "object",
+        "required": ["type", "source_ref", "target_ref", "basis", "confidence", "review_state", "authority_claim", "automatic_linking"],
+        "properties": {
+          "type": {"enum": ["used_by_project", "related_to_resource_registry"]},
+          "source_ref": {"const": "application-concept:grade-4-writing-launcher"},
+          "target_ref": {"enum": ["project:grade-4-writing", "registry-system:writing"]},
+          "basis": {"const": "declared_application_mapping"},
+          "confidence": {"const": "high"},
+          "review_state": {"const": "unreviewed"},
+          "authority_claim": {"const": "none"},
+          "automatic_linking": {"const": false}
+        },
+        "additionalProperties": false
+      }
+    },
+    "trust": {
+      "type": "object",
+      "required": ["evidence_role", "confidence", "authority_claim", "basis"],
+      "properties": {
+        "evidence_role": {"const": "observation"},
+        "confidence": {"enum": ["low", "medium", "high", "unknown"]},
+        "authority_claim": {"const": "none"},
+        "basis": {"const": "approved_application_metadata_observation"}
+      },
+      "additionalProperties": false
+    },
+    "freshness": {
+      "type": "object",
+      "required": ["observed_at", "stale_status"],
+      "properties": {
+        "observed_at": {"type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$"},
+        "stale_status": {"enum": ["current", "stale", "unknown"]}
+      },
+      "additionalProperties": false
+    },
+    "review_state": {"const": "unreviewed"},
+    "authority_claim": {"const": "none"}
+  },
+  "additionalProperties": false
+}

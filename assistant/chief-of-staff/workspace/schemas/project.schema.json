@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Static Project Policy Registry",
+  "type": "object",
+  "required": ["schema_version", "registry_type", "phase", "git_inspection_enabled", "filesystem_discovery_enabled", "projects"],
+  "properties": {
+    "schema_version": {"const": "1.0.0"},
+    "registry_type": {"const": "project_policy"},
+    "phase": {"const": "phase_b_static_policy"},
+    "git_inspection_enabled": {"const": false},
+    "filesystem_discovery_enabled": {"const": false},
+    "projects": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["id", "display_name", "type", "status", "status_basis", "authority_assertions", "related_application_concepts", "related_resource_systems", "review_state"],
+        "properties": {
+          "id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$"},
+          "display_name": {"type": "string"},
+          "type": {"enum": ["software", "curriculum", "software_and_curriculum", "operations", "unknown"]},
+          "status": {"enum": ["active", "production", "experimental", "archived", "dormant_candidate", "abandoned", "unknown"]},
+          "status_basis": {
+            "type": "object",
+            "required": ["kind", "rule_id", "evidence", "owner_confirmed"],
+            "properties": {
+              "kind": {"enum": ["owner_assertion", "approved_architecture_context", "unknown"]},
+              "rule_id": {"type": "string"},
+              "evidence": {"type": "array", "minItems": 1, "items": {"type": "string"}},
+              "owner_confirmed": {"type": "boolean"}
+            },
+            "additionalProperties": false
+          },
+          "authority_assertions": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["subject_ref", "authority_role", "authority_scope", "basis"],
+              "properties": {
+                "subject_ref": {"type": "string"},
+                "authority_role": {"enum": ["canonical", "deployment", "mirror", "backup", "archive", "unknown"]},
+                "authority_scope": {"enum": ["source_code", "curriculum_binary", "registry_metadata", "classroom_deployment", "backup_recovery", "application_bundle"]},
+                "basis": {"enum": ["approved_policy", "owner_assertion", "approved_registry", "unknown"]}
+              },
+              "additionalProperties": false
+            }
+          },
+          "related_application_concepts": {"type": "array", "uniqueItems": true, "items": {"type": "string"}},
+          "related_resource_systems": {"type": "array", "uniqueItems": true, "items": {"type": "string"}},
+          "review_state": {"enum": ["approved", "unreviewed", "needs_review"]}
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

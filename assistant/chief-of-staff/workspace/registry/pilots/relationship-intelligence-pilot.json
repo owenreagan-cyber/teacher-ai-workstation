@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "phase": "G",
+  "pilot_id": "relationship-intelligence-pilot",
+  "purpose": "connect existing evidence-backed entities",
+  "input_policy": "explicit_local_artifacts_only",
+  "evidence_inputs": [
+    {
+      "phase": "D",
+      "run_id": "run:history-project-metadata-pilot-20260913t004754454694z",
+      "artifact_ref": "observations/run:history-project-metadata-pilot-20260913t004754454694z.json"
+    },
+    {
+      "phase": "E",
+      "run_id": "run:history-project-intelligence-pilot-20260913t010602083477z",
+      "artifact_ref": "observations/run:history-project-intelligence-pilot-20260913t010602083477z-project.json"
+    },
+    {
+      "phase": "F",
+      "run_id": "run:grade-4-writing-application-pilot-20260913t012118468832z",
+      "artifact_ref": "observations/run:grade-4-writing-application-pilot-20260913t012118468832z-application.json"
+    }
+  ],
+  "limits": {
+    "max_input_artifacts": 3,
+    "max_nodes": 12,
+    "max_relationships": 10,
+    "max_runtime_seconds": 10
+  },
+  "prohibitions": {
+    "new_observation": false,
+    "source_scanning": false,
+    "automatic_discovery": false,
+    "authority_assignment": false,
+    "ownership_change": false,
+    "permission_change": false,
+    "action_execution": false,
+    "automatic_conflict_resolution": false,
+    "automatic_previous_deletion": false,
+    "recommendations": false
+  },
+  "output_root_ref": ".local/chief-of-staff/workspace/",
+  "review_state": "unreviewed"
+}

@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Future AI Interaction Audit",
+  "type": "object",
+  "required": ["schema_version", "request_id", "model", "context_projection_id", "trust_level", "capabilities_granted", "input_classification", "output_validation", "human_review", "execution_state", "persisted", "action_authority"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "request_id": {"type": "string"},
+    "model": {"type": "string"},
+    "context_projection_id": {"type": "string"},
+    "trust_level": {"enum": [0, 1, 2, 3, 4]},
+    "capabilities_granted": {"type": "array", "uniqueItems": true, "items": {"type": "string"}},
+    "input_classification": {"enum": ["public", "teacher_internal", "student_safe", "student_private", "restricted", "unknown"]},
+    "output_validation": {"enum": ["not_run", "pass", "rejected"]},
+    "human_review": {"enum": ["not_requested", "required", "approved", "rejected", "deferred"]},
+    "execution_state": {"const": "not_executed"},
+    "persisted": {"const": false},
+    "action_authority": {"const": "none"}
+  },
+  "additionalProperties": false
+}

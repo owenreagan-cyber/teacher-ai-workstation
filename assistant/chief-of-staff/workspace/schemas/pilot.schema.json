@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Controlled Metadata Observation Pilot",
+  "type": "object",
+  "required": ["schema_version", "phase", "pilot_id", "source_id", "parent_source_id", "approved_root_ref", "approved_subtree", "purpose", "approval", "limits", "permissions", "prohibitions", "output_root_ref", "authority_claim"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "phase": {"const": "D"},
+    "pilot_id": {"const": "history-project-metadata-pilot"},
+    "source_id": {"const": "history-project-local"},
+    "parent_source_id": {"const": "projects-local"},
+    "approved_root_ref": {"const": "projects/history"},
+    "approved_subtree": {"const": "."},
+    "purpose": {"const": "metadata-only project observation pilot"},
+    "approval": {
+      "type": "object",
+      "required": ["approved_by", "basis", "approval_id"],
+      "properties": {
+        "approved_by": {"const": "teacher"},
+        "basis": {"const": "explicit_phase_d_mission"},
+        "approval_id": {"const": "approval:phase-d-history-project-metadata-pilot"}
+      },
+      "additionalProperties": false
+    },
+    "limits": {
+      "type": "object",
+      "required": ["max_depth", "max_items", "max_duration_seconds"],
+      "properties": {
+        "max_depth": {"const": 2},
+        "max_items": {"const": 500},
+        "max_duration_seconds": {"const": 60}
+      },
+      "additionalProperties": false
+    },
+    "permissions": {"type": "array", "minItems": 3, "maxItems": 3, "uniqueItems": true, "items": {"enum": ["metadata_enumeration", "basic_stat_metadata", "record_unavailable_items"]}},
+    "prohibitions": {
+      "type": "object",
+      "required": ["content_read", "hashing", "writes", "follow_symlinks", "cross_filesystem", "hidden_entries", "git_metadata", "recommendations"],
+      "properties": {
+        "content_read": {"const": false},
+        "hashing": {"const": false},
+        "writes": {"const": false},
+        "follow_symlinks": {"const": false},
+        "cross_filesystem": {"const": false},
+        "hidden_entries": {"const": false},
+        "git_metadata": {"const": false},
+        "recommendations": {"const": false}
+      },
+      "additionalProperties": false
+    },
+    "output_root_ref": {"const": ".local/chief-of-staff/workspace/"},
+    "authority_claim": {"const": "none"}
+  },
+  "additionalProperties": false
+}

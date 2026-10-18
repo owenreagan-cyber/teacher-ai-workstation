@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Recovery Candidate",
+  "type": "object",
+  "required": ["schema_version", "candidate_id", "subject_ref", "candidate_ref", "candidate_type", "evidence_package", "confidence", "recovery_risk", "risk_basis", "risk_context", "authority_context", "explanation", "recommended_next_step", "review_state", "action_state", "authority_effect"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "candidate_id": {"type": "string", "pattern": "^recovery-candidate:[a-z0-9][a-z0-9._:-]*$"},
+    "subject_ref": {"type": "string", "pattern": "^[a-z][a-z0-9-]*:[a-z0-9][a-z0-9._:-]*$"},
+    "candidate_ref": {"type": "string", "pattern": "^[a-z][a-z0-9-]*:[a-z0-9][a-z0-9._:-]*$"},
+    "candidate_type": {"enum": ["same_resource_candidate", "alternate_representation_candidate", "backup_candidate", "mirror_candidate", "archive_candidate", "previous_version_candidate", "unknown_candidate"]},
+    "evidence_package": {
+      "type": "object",
+      "required": ["package_id", "evidence_refs"],
+      "properties": {
+        "package_id": {"type": "string", "pattern": "^recovery-evidence:[a-z0-9][a-z0-9._:-]*$"},
+        "evidence_refs": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string"}}
+      },
+      "additionalProperties": false
+    },
+    "confidence": {"enum": ["high", "medium", "low", "unknown"]},
+    "recovery_risk": {"enum": ["low", "medium", "high", "unknown"]},
+    "risk_basis": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string"}},
+    "risk_context": {
+      "type": "object",
+      "required": ["authority_ambiguity", "candidate_age", "sensitivity", "provenance_complete", "conflicting_relationships", "scope_uncertainty"],
+      "properties": {
+        "authority_ambiguity": {"type": "boolean"},
+        "candidate_age": {"enum": ["current", "old", "unknown"]},
+        "sensitivity": {"enum": ["public", "teacher_internal", "student_safe", "student_private", "restricted", "unknown"]},
+        "provenance_complete": {"type": "boolean"},
+        "conflicting_relationships": {"type": "boolean"},
+        "scope_uncertainty": {"type": "boolean"}
+      },
+      "additionalProperties": false
+    },
+    "authority_context": {
+      "type": "object",
+      "required": ["role", "scope", "basis", "canonical_promotion"],
+      "properties": {
+        "role": {"enum": ["canonical", "deployment", "mirror", "backup", "archive", "unknown"]},
+        "scope": {"enum": ["source_code", "curriculum_binary", "registry_metadata", "classroom_deployment", "backup_recovery", "application_bundle", "unknown"]},
+        "basis": {"type": "string"},
+        "canonical_promotion": {"const": false}
+      },
+      "additionalProperties": false
+    },
+    "explanation": {"type": "object"},
+    "recommended_next_step": {"const": "review_candidate"},
+    "review_state": {"const": "unreviewed"},
+    "action_state": {"const": "not_an_action"},
+    "authority_effect": {"const": "none"}
+  },
+  "additionalProperties": false
+}

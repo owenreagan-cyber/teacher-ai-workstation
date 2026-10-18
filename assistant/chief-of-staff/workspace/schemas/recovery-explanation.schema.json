@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Recovery Candidate Explanation",
+  "type": "object",
+  "required": ["candidate", "why_found", "supporting_evidence", "unknowns", "recommended_next_step", "action_state"],
+  "properties": {
+    "candidate": {"type": "string", "pattern": "^representation:[a-z0-9][a-z0-9._:-]*$"},
+    "why_found": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string"}},
+    "supporting_evidence": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string"}},
+    "unknowns": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string"}},
+    "recommended_next_step": {"const": "review_candidate"},
+    "action_state": {"const": "not_an_action"}
+  },
+  "additionalProperties": false
+}

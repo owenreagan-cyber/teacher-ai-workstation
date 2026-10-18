@@ -1,0 +1,91 @@
+{
+  "classification": {
+    "valid": {
+      "value": "backup",
+      "classification_basis": {
+        "kind": "rule",
+        "rule_id": "fixture.storage_role",
+        "rule_version": "1.0.0",
+        "evidence": ["fixture:backup-source"]
+      },
+      "confidence": "high",
+      "review_state": "unreviewed"
+    },
+    "missing_basis": {
+      "value": "backup",
+      "confidence": "low",
+      "review_state": "unreviewed"
+    },
+    "empty_evidence": {
+      "value": "unknown",
+      "classification_basis": {
+        "kind": "unknown",
+        "rule_id": "fixture.insufficient-evidence",
+        "rule_version": "1.0.0",
+        "evidence": []
+      },
+      "confidence": "low",
+      "review_state": "unreviewed"
+    }
+  },
+  "authority": {
+    "valid_sources": [
+      {
+        "id": "fixture-backup",
+        "kind": "backup",
+        "authority_assertions": [
+          {"subject_ref": "fixture-resource", "authority_role": "backup", "authority_scope": "backup_recovery", "basis": "approved_policy"}
+        ]
+      },
+      {
+        "id": "fixture-unknown",
+        "kind": "external_storage",
+        "authority_assertions": [
+          {"subject_ref": "fixture-unknown-resource", "authority_role": "unknown", "authority_scope": "backup_recovery", "basis": "unknown"}
+        ]
+      }
+    ],
+    "canonical_conflict": [
+      {
+        "id": "fixture-source-a",
+        "kind": "local",
+        "authority_assertions": [
+          {"subject_ref": "fixture-resource", "authority_role": "canonical", "authority_scope": "source_code", "basis": "approved_policy"}
+        ]
+      },
+      {
+        "id": "fixture-source-b",
+        "kind": "local",
+        "authority_assertions": [
+          {"subject_ref": "fixture-resource", "authority_role": "canonical", "authority_scope": "source_code", "basis": "approved_policy"}
+        ]
+      }
+    ],
+    "backup_claims_canonical": [
+      {
+        "id": "fixture-backup",
+        "kind": "backup",
+        "authority_assertions": [
+          {"subject_ref": "fixture-resource", "authority_role": "canonical", "authority_scope": "backup_recovery", "basis": "approved_policy"}
+        ]
+      }
+    ],
+    "deployment_claims_source": [
+      {
+        "id": "fixture-deployment",
+        "kind": "local",
+        "authority_assertions": [
+          {"subject_ref": "fixture-resource", "authority_role": "deployment", "authority_scope": "source_code", "basis": "approved_policy"}
+        ]
+      }
+    ]
+  },
+  "projects": {
+    "owner_confirmed_abandoned": [
+      {"id": "fixture-project", "status": "abandoned", "status_basis": {"kind": "owner_assertion", "owner_confirmed": true, "evidence": ["owner:confirmed"]}}
+    ],
+    "timestamp_only_abandoned": [
+      {"id": "fixture-project", "status": "abandoned", "status_basis": {"kind": "approved_architecture_context", "owner_confirmed": false, "evidence": ["timestamp:old"]}}
+    ]
+  }
+}

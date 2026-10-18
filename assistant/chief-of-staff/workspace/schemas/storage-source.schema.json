@@ -1,0 +1,88 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Static Storage Source Policy Registry",
+  "type": "object",
+  "required": ["schema_version", "registry_type", "phase", "runtime_connections_enabled", "sources"],
+  "properties": {
+    "schema_version": {"const": "1.0.0"},
+    "registry_type": {"const": "storage_source_policy"},
+    "phase": {"const": "phase_b_static_policy"},
+    "runtime_connections_enabled": {"const": false},
+    "sources": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["id", "provider", "kind", "locator_ref", "authority_assertions", "connection_state", "access_policy", "scan_policy", "sensitivity_ceiling", "writable_policy", "deletion_policy", "trust", "freshness"],
+        "properties": {
+          "id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$"},
+          "provider": {"enum": ["filesystem", "google_drive", "cloudstorage", "idrive", "nas", "external_volume"]},
+          "kind": {"enum": ["local", "cloud_storage", "backup", "network_storage", "archive", "external_storage", "application_storage"]},
+          "locator_ref": {"type": "string", "pattern": "^(workspace-area|provider-placeholder):[a-z0-9-]+$"},
+          "authority_assertions": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["subject_ref", "authority_role", "authority_scope", "basis"],
+              "properties": {
+                "subject_ref": {"type": "string"},
+                "authority_role": {"enum": ["canonical", "deployment", "mirror", "backup", "archive", "unknown"]},
+                "authority_scope": {"enum": ["source_code", "curriculum_binary", "registry_metadata", "classroom_deployment", "backup_recovery", "application_bundle"]},
+                "basis": {"enum": ["approved_policy", "approved_architecture", "owner_assertion", "approved_registry", "unknown"]}
+              },
+              "additionalProperties": false
+            }
+          },
+          "connection_state": {"const": "unknown"},
+          "access_policy": {
+            "type": "object",
+            "required": ["metadata_enumeration", "content_read", "hashing", "write"],
+            "properties": {
+              "metadata_enumeration": {"enum": ["denied", "approved_subtree_only", "explicit_subtree_only", "opt_in_metadata_only", "bundle_metadata_only", "approved_provider_subtree_only", "approved_archive_roots_only"]},
+              "content_read": {"const": "forbidden"},
+              "hashing": {"const": "separate_approval"},
+              "write": {"const": "forbidden"}
+            },
+            "additionalProperties": false
+          },
+          "scan_policy": {
+            "type": "object",
+            "required": ["mode", "implicit_recursion", "follow_symlinks", "cloud_placeholder_download", "external_volume_identity_required"],
+            "properties": {
+              "mode": {"enum": ["approved_children_only", "explicit_subtree_only", "opt_in_metadata_only", "bundle_metadata_only", "approved_provider_subtree_only", "approved_archive_roots_only", "denied_until_registered"]},
+              "implicit_recursion": {"const": false},
+              "follow_symlinks": {"const": false},
+              "cloud_placeholder_download": {"const": false},
+              "external_volume_identity_required": {"type": "boolean"}
+            },
+            "additionalProperties": false
+          },
+          "sensitivity_ceiling": {"enum": ["public", "teacher_internal", "student_safe", "student_private", "restricted", "unknown"]},
+          "writable_policy": {"enum": ["forbidden", "recommendations_only", "approval_required"]},
+          "deletion_policy": {"const": "forbidden"},
+          "trust": {
+            "type": "object",
+            "required": ["basis", "confidence", "review_state"],
+            "properties": {
+              "basis": {"const": "static_policy_declaration"},
+              "confidence": {"enum": ["low", "medium", "high"]},
+              "review_state": {"enum": ["approved", "unreviewed"]}
+            },
+            "additionalProperties": false
+          },
+          "freshness": {
+            "type": "object",
+            "required": ["observed_at", "stale_status"],
+            "properties": {
+              "observed_at": {"type": ["string", "null"]},
+              "stale_status": {"const": "not_observed"}
+            },
+            "additionalProperties": false
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,61 @@
+{
+  "schema_version": "1.0.0",
+  "registry_type": "project_policy",
+  "phase": "phase_b_static_policy",
+  "git_inspection_enabled": false,
+  "filesystem_discovery_enabled": false,
+  "projects": [
+    {
+      "id": "teacher-ai-workstation",
+      "display_name": "Teacher AI Workstation",
+      "type": "software",
+      "status": "active",
+      "status_basis": {"kind": "owner_assertion", "rule_id": "project.owner_declared_active", "evidence": ["phase_b_approved_context"], "owner_confirmed": true},
+      "authority_assertions": [
+        {"subject_ref": "project:teacher-ai-workstation", "authority_role": "canonical", "authority_scope": "source_code", "basis": "approved_policy"}
+      ],
+      "related_application_concepts": ["teacher-chief-of-staff"],
+      "related_resource_systems": [],
+      "review_state": "approved"
+    },
+    {
+      "id": "grade-4-writing",
+      "display_name": "Grade 4 Writing",
+      "type": "software_and_curriculum",
+      "status": "unknown",
+      "status_basis": {"kind": "approved_architecture_context", "rule_id": "project.declared_without_observation", "evidence": ["phase_b_mission_context"], "owner_confirmed": false},
+      "authority_assertions": [
+        {"subject_ref": "project:grade-4-writing", "authority_role": "canonical", "authority_scope": "source_code", "basis": "approved_policy"}
+      ],
+      "related_application_concepts": ["grade-4-writing-launcher"],
+      "related_resource_systems": ["writing"],
+      "review_state": "unreviewed"
+    },
+    {
+      "id": "history",
+      "display_name": "History",
+      "type": "software_and_curriculum",
+      "status": "unknown",
+      "status_basis": {"kind": "approved_architecture_context", "rule_id": "project.declared_without_observation", "evidence": ["phase_b_mission_context"], "owner_confirmed": false},
+      "authority_assertions": [
+        {"subject_ref": "project:history", "authority_role": "canonical", "authority_scope": "source_code", "basis": "approved_policy"}
+      ],
+      "related_application_concepts": ["history-resources-launcher"],
+      "related_resource_systems": ["history"],
+      "review_state": "unreviewed"
+    },
+    {
+      "id": "math-resources-launcher",
+      "display_name": "Math Resources Launcher",
+      "type": "software_and_curriculum",
+      "status": "unknown",
+      "status_basis": {"kind": "approved_architecture_context", "rule_id": "project.declared_without_observation", "evidence": ["phase_b_mission_context"], "owner_confirmed": false},
+      "authority_assertions": [
+        {"subject_ref": "project:math-resources-launcher", "authority_role": "canonical", "authority_scope": "source_code", "basis": "approved_policy"}
+      ],
+      "related_application_concepts": ["math-resources-launcher"],
+      "related_resource_systems": ["math"],
+      "review_state": "unreviewed"
+    }
+  ]
+}

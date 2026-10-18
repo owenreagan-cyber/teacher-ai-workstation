@@ -38,6 +38,33 @@ course announcement reflection uses real prior-week pacing.
 - The mandatory teacher question ("anything to add to the newsletter?") must be
   asked before the newsletter can move to final Canvas review.
 
+### Weekly-build auto-include (canonical)
+
+Homeroom/newsletter is included automatically in every weekly build unless Owen
+explicitly says to skip it. Each weekly build:
+
+1. starts from the last correct HTML newsletter page in Canvas (course `26429`)
+   — never a PDF, Google Doc, old local copy, or memory;
+2. preserves the existing HTML structure, layout, styling, sections, links, and
+   writing style;
+3. applies Owen-supplied newsletter updates;
+4. removes only genuinely expired dates and preserves all future dates;
+5. updates upcoming birthdays when provided;
+6. when Owen gives no specific update, applies only a light generic
+   current-week/track message;
+7. never adds Math, Reading, Spelling, Language Arts, History, or Science pacing
+   summaries (Homeroom is not a subject-summary page);
+8. makes the updated newsletter the Homeroom front page;
+9. verifies the front-page state live after writing;
+10. creates one Homeroom family announcement for the week — a short family-facing
+    intro followed by the full current newsletter HTML (never a rewritten
+    newsletter);
+11. before creating, fresh-GETs current Homeroom announcements and checks for an
+    exact/current-week duplicate, reconciling `ALREADY_APPLIED` with zero writes
+    when one exists;
+12. verifies the announcement live: correct title, intro present, full newsletter
+    HTML present, and no subject pacing summaries.
+
 ## Explicit launch
 
 `launch_gate.py`: approval of pacing, artifact generation, and the final review

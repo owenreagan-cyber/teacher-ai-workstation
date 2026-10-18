@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Relationship Drift",
+  "type": "object",
+  "required": ["schema_version", "drift_id", "relationship_type", "source_ref", "previous_relationship_id", "current_relationship_id", "previous_target_ref", "current_target_ref", "result", "review_state", "automatic_deletion", "authority_claim"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "drift_id": {"type": "string", "pattern": "^relationship-drift:[a-z0-9][a-z0-9._:-]*$"},
+    "relationship_type": {"enum": ["belongs_to_project", "representation_of", "used_by_application", "deployed_to", "mirrored_to", "backed_up_by", "version_of", "supersedes", "referenced_by_registry", "expected_artifact_of"]},
+    "source_ref": {"type": "string"},
+    "previous_relationship_id": {"type": "string", "pattern": "^relationship:[a-z0-9][a-z0-9._:-]*$"},
+    "current_relationship_id": {"type": "string", "pattern": "^relationship:[a-z0-9][a-z0-9._:-]*$"},
+    "previous_target_ref": {"type": "string"},
+    "current_target_ref": {"type": "string"},
+    "result": {"const": "relationship_changed"},
+    "review_state": {"const": "unreviewed"},
+    "automatic_deletion": {"const": false},
+    "authority_claim": {"const": "none"}
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Relationship Policy",
+  "type": "object",
+  "required": ["schema_version", "phase", "automatic_discovery_enabled", "automatic_authority_enabled", "automatic_resolution_enabled", "action_relationships_enabled", "supported_node_types", "supported_relationship_types", "supported_assertion_types", "assertion_rules", "effects", "conflict_policy", "drift_policy"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "phase": {"const": "G"},
+    "automatic_discovery_enabled": {"const": false},
+    "automatic_authority_enabled": {"const": false},
+    "automatic_resolution_enabled": {"const": false},
+    "action_relationships_enabled": {"const": false},
+    "supported_node_types": {"type": "array", "minItems": 12, "maxItems": 12, "uniqueItems": true, "items": {"enum": ["Workspace", "StorageSource", "WorkspaceItem", "LogicalResource", "Representation", "Project", "ApplicationConcept", "ApplicationInstance", "Workflow", "RegistryEntry", "Observation", "Recommendation"]}},
+    "supported_relationship_types": {"type": "array", "minItems": 10, "maxItems": 10, "uniqueItems": true, "items": {"enum": ["belongs_to_project", "representation_of", "used_by_application", "deployed_to", "mirrored_to", "backed_up_by", "version_of", "supersedes", "referenced_by_registry", "expected_artifact_of"]}},
+    "supported_assertion_types": {"type": "array", "minItems": 4, "maxItems": 4, "uniqueItems": true, "items": {"enum": ["observed", "inferred", "owner_asserted", "registry_asserted"]}},
+    "assertion_rules": {
+      "type": "object",
+      "required": ["observed", "inferred", "owner_asserted", "registry_asserted"],
+      "properties": {
+        "observed": {"const": "evidence_required_no_authority"},
+        "inferred": {"const": "evidence_required_not_truth"},
+        "owner_asserted": {"const": "explicit_owner_evidence_required"},
+        "registry_asserted": {"const": "source_registry_evidence_required"}
+      },
+      "additionalProperties": false
+    },
+    "effects": {
+      "type": "object",
+      "required": ["authority", "ownership", "permissions", "actions"],
+      "properties": {
+        "authority": {"const": "none"},
+        "ownership": {"const": "none"},
+        "permissions": {"const": "none"},
+        "actions": {"const": "none"}
+      },
+      "additionalProperties": false
+    },
+    "conflict_policy": {"const": "record_unresolved_never_choose"},
+    "drift_policy": {"const": "record_change_never_delete_previous"}
+  },
+  "additionalProperties": false
+}

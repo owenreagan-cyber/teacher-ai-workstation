@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Relationship Conflict",
+  "type": "object",
+  "required": ["schema_version", "conflict_id", "relationship_type", "source_ref", "competing_relationship_ids", "evidence_package_ids", "resolution_state", "review_state", "automatic_resolution", "authority_claim"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "conflict_id": {"type": "string", "pattern": "^relationship-conflict:[a-z0-9][a-z0-9._:-]*$"},
+    "relationship_type": {"enum": ["belongs_to_project", "representation_of", "used_by_application", "deployed_to", "mirrored_to", "backed_up_by", "version_of", "supersedes", "referenced_by_registry", "expected_artifact_of"]},
+    "source_ref": {"type": "string"},
+    "competing_relationship_ids": {"type": "array", "minItems": 2, "uniqueItems": true, "items": {"type": "string", "pattern": "^relationship:[a-z0-9][a-z0-9._:-]*$"}},
+    "evidence_package_ids": {"type": "array", "minItems": 2, "uniqueItems": true, "items": {"type": "string", "pattern": "^evidence-package:[a-z0-9][a-z0-9._:-]*$"}},
+    "resolution_state": {"const": "unresolved"},
+    "review_state": {"const": "unreviewed"},
+    "automatic_resolution": {"const": false},
+    "authority_claim": {"const": "none"}
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Relationship Intelligence Graph",
+  "type": "object",
+  "required": ["schema_version", "graph_id", "run_id", "started_at", "completed_at", "input_artifacts", "nodes", "relationships", "evidence_packages", "conflicts", "drift_events", "review_state", "authority_effect", "ownership_effect", "permission_effect", "action_effect"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "graph_id": {"type": "string", "pattern": "^relationship-graph:[a-z0-9][a-z0-9._:-]*$"},
+    "run_id": {"type": "string", "pattern": "^run:relationship-intelligence-pilot-[a-z0-9-]+$"},
+    "started_at": {"type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$"},
+    "completed_at": {"type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$"},
+    "input_artifacts": {"type": "array", "minItems": 3, "maxItems": 3, "uniqueItems": true, "items": {"type": "string", "pattern": "^observations/[a-z0-9:.-]+\\.json$"}},
+    "nodes": {"type": "array", "minItems": 1, "maxItems": 12, "uniqueItems": true, "items": {"type": "object"}},
+    "relationships": {"type": "array", "minItems": 1, "maxItems": 10, "uniqueItems": true, "items": {"type": "object"}},
+    "evidence_packages": {"type": "array", "minItems": 1, "maxItems": 10, "uniqueItems": true, "items": {"type": "object"}},
+    "conflicts": {"type": "array", "maxItems": 10, "uniqueItems": true, "items": {"type": "object"}},
+    "drift_events": {"type": "array", "maxItems": 10, "uniqueItems": true, "items": {"type": "object"}},
+    "review_state": {"const": "unreviewed"},
+    "authority_effect": {"const": "none"},
+    "ownership_effect": {"const": "none"},
+    "permission_effect": {"const": "none"},
+    "action_effect": {"const": "none"}
+  },
+  "additionalProperties": false
+}

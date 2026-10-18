@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Recovery Candidate Conflict",
+  "type": "object",
+  "required": ["schema_version", "conflict_id", "subject_ref", "competing_candidate_ids", "evidence_package_ids", "resolution_state", "review_state", "automatic_winner", "action_state", "authority_effect"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "conflict_id": {"type": "string", "pattern": "^recovery-conflict:[a-z0-9][a-z0-9._:-]*$"},
+    "subject_ref": {"type": "string"},
+    "competing_candidate_ids": {"type": "array", "minItems": 2, "uniqueItems": true, "items": {"type": "string", "pattern": "^recovery-candidate:[a-z0-9][a-z0-9._:-]*$"}},
+    "evidence_package_ids": {"type": "array", "minItems": 2, "uniqueItems": true, "items": {"type": "string", "pattern": "^recovery-evidence:[a-z0-9][a-z0-9._:-]*$"}},
+    "resolution_state": {"const": "unresolved"},
+    "review_state": {"const": "unreviewed"},
+    "automatic_winner": {"const": false},
+    "action_state": {"const": "not_an_action"},
+    "authority_effect": {"const": "none"}
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Phase L.5G Safe In-Memory Execution Audit",
+  "type": "object",
+  "required": ["audit_schema_version", "request_id", "context_id", "runtime", "model", "task", "response_schema_version", "attempt_count", "validation_result", "failure_category", "violation_codes", "duration_seconds", "action_authority", "raw_response_persisted", "hidden_reasoning_persisted", "persisted"],
+  "properties": {
+    "audit_schema_version": {"const": 1},
+    "request_id": {"type": "string"},
+    "context_id": {"type": "string"},
+    "runtime": {"const": "ollama"},
+    "model": {"const": "qwen3.5:35b"},
+    "task": {"const": "explain"},
+    "response_schema_version": {"const": 2},
+    "attempt_count": {"enum": [0, 1]},
+    "validation_result": {"enum": ["not_run", "pass", "rejected"]},
+    "failure_category": {"type": ["string", "null"]},
+    "violation_codes": {"type": "array", "uniqueItems": true, "items": {"type": "string"}},
+    "duration_seconds": {"type": "number"},
+    "action_authority": {"const": "none"},
+    "raw_response_persisted": {"const": false},
+    "hidden_reasoning_persisted": {"const": false},
+    "persisted": {"const": false}
+  },
+  "additionalProperties": false
+}

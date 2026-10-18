@@ -134,6 +134,15 @@ ELA4A: Ch. 2 Test
 
 The parallel class uses `ELA4B:`. `ELA4:` remains the program-level canonical prefix.
 
+Shurley Classroom Practice assignments use the class-section prefix and route to the `Classwork` group:
+
+```text
+ELA4A: Classroom Practice 13
+ELA4A: Classroom Practice 14
+```
+
+Language Arts alternates between Shurley English instruction and Writing instruction. A Classroom Practice assignment is created only when the Classroom Practice is explicitly listed for that day; Writing activities (`Introduction Writing`, `Writing Map`) and plain Shurley lessons without an explicit Classroom Practice do not create assignments.
+
 ## History and Science assignment patterns
 
 History and Science assignments are generated only during their active quarters per:
@@ -230,7 +239,9 @@ Raw pacing shorthand is allowed internally for teacher review, but must not be p
 | `2.3` | `Chapter 2, Lesson 3` |
 | `Ch.2.3` | `Chapter 2, Lesson 3` |
 | `2.3 / Ch.2.3` | `Chapter 2, Lesson 3` |
-| `CP6 / 2.3` | `Classroom Practice 6; Chapter 2, Lesson 3` |
+| `CP6 / 2.3` | `Classroom Practice 6 / Chapter 2, Lesson 3` |
+| `3.1` | `Chapter 3, Lesson 1` |
+| `3.2 / CP 13` | `Chapter 3, Lesson 2 / Classroom Practice 13` |
 | `MTS Ch1` | `Mountains Chapter 1` |
 
 For Shurley English:

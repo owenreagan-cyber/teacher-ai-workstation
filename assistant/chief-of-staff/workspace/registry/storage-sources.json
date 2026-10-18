@@ -1,0 +1,188 @@
+{
+  "schema_version": "1.0.0",
+  "registry_type": "storage_source_policy",
+  "phase": "phase_b_static_policy",
+  "runtime_connections_enabled": false,
+  "sources": [
+    {
+      "id": "projects-local",
+      "provider": "filesystem",
+      "kind": "local",
+      "locator_ref": "workspace-area:projects",
+      "authority_assertions": [
+        {"subject_ref": "software-projects", "authority_role": "canonical", "authority_scope": "source_code", "basis": "approved_policy"}
+      ],
+      "connection_state": "unknown",
+      "access_policy": {"metadata_enumeration": "approved_subtree_only", "content_read": "forbidden", "hashing": "separate_approval", "write": "forbidden"},
+      "scan_policy": {"mode": "approved_children_only", "implicit_recursion": false, "follow_symlinks": false, "cloud_placeholder_download": false, "external_volume_identity_required": false},
+      "sensitivity_ceiling": "restricted",
+      "writable_policy": "approval_required",
+      "deletion_policy": "forbidden",
+      "trust": {"basis": "static_policy_declaration", "confidence": "medium", "review_state": "approved"},
+      "freshness": {"observed_at": null, "stale_status": "not_observed"}
+    },
+    {
+      "id": "documents-local",
+      "provider": "filesystem",
+      "kind": "local",
+      "locator_ref": "workspace-area:documents",
+      "authority_assertions": [],
+      "connection_state": "unknown",
+      "access_policy": {"metadata_enumeration": "explicit_subtree_only", "content_read": "forbidden", "hashing": "separate_approval", "write": "forbidden"},
+      "scan_policy": {"mode": "explicit_subtree_only", "implicit_recursion": false, "follow_symlinks": false, "cloud_placeholder_download": false, "external_volume_identity_required": false},
+      "sensitivity_ceiling": "restricted",
+      "writable_policy": "approval_required",
+      "deletion_policy": "forbidden",
+      "trust": {"basis": "static_policy_declaration", "confidence": "medium", "review_state": "approved"},
+      "freshness": {"observed_at": null, "stale_status": "not_observed"}
+    },
+    {
+      "id": "desktop-local",
+      "provider": "filesystem",
+      "kind": "local",
+      "locator_ref": "workspace-area:desktop",
+      "authority_assertions": [],
+      "connection_state": "unknown",
+      "access_policy": {"metadata_enumeration": "explicit_subtree_only", "content_read": "forbidden", "hashing": "separate_approval", "write": "forbidden"},
+      "scan_policy": {"mode": "explicit_subtree_only", "implicit_recursion": false, "follow_symlinks": false, "cloud_placeholder_download": false, "external_volume_identity_required": false},
+      "sensitivity_ceiling": "restricted",
+      "writable_policy": "recommendations_only",
+      "deletion_policy": "forbidden",
+      "trust": {"basis": "static_policy_declaration", "confidence": "medium", "review_state": "approved"},
+      "freshness": {"observed_at": null, "stale_status": "not_observed"}
+    },
+    {
+      "id": "downloads-local",
+      "provider": "filesystem",
+      "kind": "local",
+      "locator_ref": "workspace-area:downloads",
+      "authority_assertions": [],
+      "connection_state": "unknown",
+      "access_policy": {"metadata_enumeration": "opt_in_metadata_only", "content_read": "forbidden", "hashing": "separate_approval", "write": "forbidden"},
+      "scan_policy": {"mode": "opt_in_metadata_only", "implicit_recursion": false, "follow_symlinks": false, "cloud_placeholder_download": false, "external_volume_identity_required": false},
+      "sensitivity_ceiling": "restricted",
+      "writable_policy": "recommendations_only",
+      "deletion_policy": "forbidden",
+      "trust": {"basis": "static_policy_declaration", "confidence": "medium", "review_state": "approved"},
+      "freshness": {"observed_at": null, "stale_status": "not_observed"}
+    },
+    {
+      "id": "applications-local",
+      "provider": "filesystem",
+      "kind": "application_storage",
+      "locator_ref": "workspace-area:applications",
+      "authority_assertions": [
+        {"subject_ref": "installed-application-instances", "authority_role": "deployment", "authority_scope": "application_bundle", "basis": "approved_policy"}
+      ],
+      "connection_state": "unknown",
+      "access_policy": {"metadata_enumeration": "bundle_metadata_only", "content_read": "forbidden", "hashing": "separate_approval", "write": "forbidden"},
+      "scan_policy": {"mode": "bundle_metadata_only", "implicit_recursion": false, "follow_symlinks": false, "cloud_placeholder_download": false, "external_volume_identity_required": false},
+      "sensitivity_ceiling": "teacher_internal",
+      "writable_policy": "forbidden",
+      "deletion_policy": "forbidden",
+      "trust": {"basis": "static_policy_declaration", "confidence": "medium", "review_state": "approved"},
+      "freshness": {"observed_at": null, "stale_status": "not_observed"}
+    },
+    {
+      "id": "google-drive-school",
+      "provider": "google_drive",
+      "kind": "cloud_storage",
+      "locator_ref": "provider-placeholder:google-drive-school",
+      "authority_assertions": [
+        {"subject_ref": "curriculum-library", "authority_role": "canonical", "authority_scope": "curriculum_binary", "basis": "approved_architecture"}
+      ],
+      "connection_state": "unknown",
+      "access_policy": {"metadata_enumeration": "approved_provider_subtree_only", "content_read": "forbidden", "hashing": "separate_approval", "write": "forbidden"},
+      "scan_policy": {"mode": "approved_provider_subtree_only", "implicit_recursion": false, "follow_symlinks": false, "cloud_placeholder_download": false, "external_volume_identity_required": false},
+      "sensitivity_ceiling": "restricted",
+      "writable_policy": "approval_required",
+      "deletion_policy": "forbidden",
+      "trust": {"basis": "static_policy_declaration", "confidence": "medium", "review_state": "approved"},
+      "freshness": {"observed_at": null, "stale_status": "not_observed"}
+    },
+    {
+      "id": "cloudstorage-local-placeholder",
+      "provider": "cloudstorage",
+      "kind": "cloud_storage",
+      "locator_ref": "workspace-area:cloud-storage",
+      "authority_assertions": [],
+      "connection_state": "unknown",
+      "access_policy": {"metadata_enumeration": "approved_provider_subtree_only", "content_read": "forbidden", "hashing": "separate_approval", "write": "forbidden"},
+      "scan_policy": {"mode": "approved_provider_subtree_only", "implicit_recursion": false, "follow_symlinks": false, "cloud_placeholder_download": false, "external_volume_identity_required": false},
+      "sensitivity_ceiling": "restricted",
+      "writable_policy": "approval_required",
+      "deletion_policy": "forbidden",
+      "trust": {"basis": "static_policy_declaration", "confidence": "low", "review_state": "unreviewed"},
+      "freshness": {"observed_at": null, "stale_status": "not_observed"}
+    },
+    {
+      "id": "idrive-backup",
+      "provider": "idrive",
+      "kind": "backup",
+      "locator_ref": "provider-placeholder:idrive",
+      "authority_assertions": [
+        {"subject_ref": "workspace-files", "authority_role": "backup", "authority_scope": "backup_recovery", "basis": "approved_policy"}
+      ],
+      "connection_state": "unknown",
+      "access_policy": {"metadata_enumeration": "explicit_subtree_only", "content_read": "forbidden", "hashing": "separate_approval", "write": "forbidden"},
+      "scan_policy": {"mode": "denied_until_registered", "implicit_recursion": false, "follow_symlinks": false, "cloud_placeholder_download": false, "external_volume_identity_required": true},
+      "sensitivity_ceiling": "restricted",
+      "writable_policy": "approval_required",
+      "deletion_policy": "forbidden",
+      "trust": {"basis": "static_policy_declaration", "confidence": "medium", "review_state": "approved"},
+      "freshness": {"observed_at": null, "stale_status": "not_observed"}
+    },
+    {
+      "id": "nas-backup-mirror",
+      "provider": "nas",
+      "kind": "network_storage",
+      "locator_ref": "provider-placeholder:nas",
+      "authority_assertions": [
+        {"subject_ref": "curriculum-library", "authority_role": "mirror", "authority_scope": "curriculum_binary", "basis": "approved_architecture"},
+        {"subject_ref": "curriculum-library", "authority_role": "backup", "authority_scope": "backup_recovery", "basis": "approved_architecture"}
+      ],
+      "connection_state": "unknown",
+      "access_policy": {"metadata_enumeration": "explicit_subtree_only", "content_read": "forbidden", "hashing": "separate_approval", "write": "forbidden"},
+      "scan_policy": {"mode": "denied_until_registered", "implicit_recursion": false, "follow_symlinks": false, "cloud_placeholder_download": false, "external_volume_identity_required": true},
+      "sensitivity_ceiling": "restricted",
+      "writable_policy": "approval_required",
+      "deletion_policy": "forbidden",
+      "trust": {"basis": "static_policy_declaration", "confidence": "medium", "review_state": "approved"},
+      "freshness": {"observed_at": null, "stale_status": "not_observed"}
+    },
+    {
+      "id": "archives-local",
+      "provider": "filesystem",
+      "kind": "archive",
+      "locator_ref": "workspace-area:archives",
+      "authority_assertions": [
+        {"subject_ref": "workspace-archives", "authority_role": "archive", "authority_scope": "backup_recovery", "basis": "approved_policy"}
+      ],
+      "connection_state": "unknown",
+      "access_policy": {"metadata_enumeration": "approved_archive_roots_only", "content_read": "forbidden", "hashing": "separate_approval", "write": "forbidden"},
+      "scan_policy": {"mode": "approved_archive_roots_only", "implicit_recursion": false, "follow_symlinks": false, "cloud_placeholder_download": false, "external_volume_identity_required": false},
+      "sensitivity_ceiling": "restricted",
+      "writable_policy": "approval_required",
+      "deletion_policy": "forbidden",
+      "trust": {"basis": "static_policy_declaration", "confidence": "medium", "review_state": "approved"},
+      "freshness": {"observed_at": null, "stale_status": "not_observed"}
+    },
+    {
+      "id": "external-storage-placeholder",
+      "provider": "external_volume",
+      "kind": "external_storage",
+      "locator_ref": "workspace-area:external-storage",
+      "authority_assertions": [
+        {"subject_ref": "unknown-external-content", "authority_role": "unknown", "authority_scope": "backup_recovery", "basis": "unknown"}
+      ],
+      "connection_state": "unknown",
+      "access_policy": {"metadata_enumeration": "denied", "content_read": "forbidden", "hashing": "separate_approval", "write": "forbidden"},
+      "scan_policy": {"mode": "denied_until_registered", "implicit_recursion": false, "follow_symlinks": false, "cloud_placeholder_download": false, "external_volume_identity_required": true},
+      "sensitivity_ceiling": "unknown",
+      "writable_policy": "approval_required",
+      "deletion_policy": "forbidden",
+      "trust": {"basis": "static_policy_declaration", "confidence": "low", "review_state": "unreviewed"},
+      "freshness": {"observed_at": null, "stale_status": "not_observed"}
+    }
+  ]
+}

@@ -1,0 +1,110 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ProjectObservation",
+  "type": "object",
+  "required": ["schema_version", "observation_id", "run_id", "project_id", "source_id", "path_ref", "project_type", "exists", "is_directory", "git", "state_evidence", "relationships", "trust", "freshness", "review_state", "authority_claim"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "observation_id": {"type": "string", "pattern": "^observation:run:history-project-intelligence-pilot-[a-z0-9-]+:history-project$"},
+    "run_id": {"type": "string", "pattern": "^run:history-project-intelligence-pilot-[a-z0-9-]+$"},
+    "project_id": {"const": "project:history"},
+    "source_id": {"const": "history-project-local"},
+    "path_ref": {
+      "type": "object",
+      "required": ["source_id", "relative_path", "representation_id"],
+      "properties": {
+        "source_id": {"const": "history-project-local"},
+        "relative_path": {"const": "."},
+        "representation_id": {"const": "representation:history:local-git"}
+      },
+      "additionalProperties": false
+    },
+    "project_type": {"const": "software_project"},
+    "exists": {"const": true},
+    "is_directory": {"const": true},
+    "git": {
+      "type": "object",
+      "required": ["repository_detected", "repository_root_matches_approved", "current_branch", "head_ref", "dirty_summary", "metadata_method", "history_inspected", "other_branches_inspected"],
+      "properties": {
+        "repository_detected": {"type": "boolean"},
+        "repository_root_matches_approved": {"type": "boolean"},
+        "current_branch": {"type": ["string", "null"]},
+        "head_ref": {"type": ["string", "null"], "pattern": "^[0-9a-f]{40}$"},
+        "dirty_summary": {
+          "type": "object",
+          "required": ["is_dirty", "staged_changes", "tracked_worktree_changes", "untracked_items", "conflicted_items", "status_records_observed", "truncated"],
+          "properties": {
+            "is_dirty": {"type": "boolean"},
+            "staged_changes": {"type": "integer"},
+            "tracked_worktree_changes": {"type": "integer"},
+            "untracked_items": {"type": "integer"},
+            "conflicted_items": {"type": "integer"},
+            "status_records_observed": {"type": "integer"},
+            "truncated": {"type": "boolean"}
+          },
+          "additionalProperties": false
+        },
+        "metadata_method": {"const": "read_only_git_allowlist"},
+        "history_inspected": {"const": false},
+        "other_branches_inspected": {"const": false}
+      },
+      "additionalProperties": false
+    },
+    "state_evidence": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["rule_id", "evidence", "state_candidate", "confidence", "review_state", "owner_confirmation"],
+        "properties": {
+          "rule_id": {"enum": ["project.git_metadata", "project.owner_assertion"]},
+          "evidence": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"enum": ["repository_detected", "branch_present", "head_present", "dirty_state_observed", "owner_confirmed"]}},
+          "state_candidate": {"enum": ["active", "production", "experimental", "archived", "dormant_candidate", "unknown"]},
+          "confidence": {"enum": ["low", "medium", "high", "unknown"]},
+          "review_state": {"enum": ["unreviewed", "reviewed", "rejected"]},
+          "owner_confirmation": {"type": "boolean"}
+        },
+        "additionalProperties": false
+      }
+    },
+    "relationships": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["type", "basis", "confidence", "review_state", "authority_claim", "automatic_linking"],
+        "properties": {
+          "type": {"const": "related_to_resource_registry"},
+          "basis": {"type": "object", "required": ["rule", "source_ref", "target_ref"], "properties": {"rule": {"const": "approved_project_mapping"}, "source_ref": {"const": "project:history"}, "target_ref": {"const": "registry-system:history"}}, "additionalProperties": false},
+          "confidence": {"const": "high"},
+          "review_state": {"const": "unreviewed"},
+          "authority_claim": {"const": "none"},
+          "automatic_linking": {"const": false}
+        },
+        "additionalProperties": false
+      }
+    },
+    "trust": {
+      "type": "object",
+      "required": ["evidence_role", "confidence", "authority_claim", "basis"],
+      "properties": {
+        "evidence_role": {"const": "observation"},
+        "confidence": {"enum": ["low", "medium", "high", "unknown"]},
+        "authority_claim": {"const": "none"},
+        "basis": {"const": "approved_project_metadata_observation"}
+      },
+      "additionalProperties": false
+    },
+    "freshness": {
+      "type": "object",
+      "required": ["observed_at", "stale_status"],
+      "properties": {
+        "observed_at": {"type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$"},
+        "stale_status": {"enum": ["current", "stale", "unknown"]}
+      },
+      "additionalProperties": false
+    },
+    "review_state": {"const": "unreviewed"},
+    "authority_claim": {"const": "none"}
+  },
+  "additionalProperties": false
+}

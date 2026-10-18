@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Relationship Intelligence Pilot",
+  "type": "object",
+  "required": ["schema_version", "phase", "pilot_id", "purpose", "input_policy", "evidence_inputs", "limits", "prohibitions", "output_root_ref", "review_state"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "phase": {"const": "G"},
+    "pilot_id": {"const": "relationship-intelligence-pilot"},
+    "purpose": {"const": "connect existing evidence-backed entities"},
+    "input_policy": {"const": "explicit_local_artifacts_only"},
+    "evidence_inputs": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 3,
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "required": ["phase", "run_id", "artifact_ref"],
+        "properties": {
+          "phase": {"enum": ["D", "E", "F"]},
+          "run_id": {"type": "string", "pattern": "^run:[a-z0-9][a-z0-9:-]*$"},
+          "artifact_ref": {"type": "string", "pattern": "^observations/[a-z0-9:.-]+\\.json$"}
+        },
+        "additionalProperties": false
+      }
+    },
+    "limits": {
+      "type": "object",
+      "required": ["max_input_artifacts", "max_nodes", "max_relationships", "max_runtime_seconds"],
+      "properties": {
+        "max_input_artifacts": {"const": 3},
+        "max_nodes": {"const": 12},
+        "max_relationships": {"const": 10},
+        "max_runtime_seconds": {"const": 10}
+      },
+      "additionalProperties": false
+    },
+    "prohibitions": {
+      "type": "object",
+      "required": ["new_observation", "source_scanning", "automatic_discovery", "authority_assignment", "ownership_change", "permission_change", "action_execution", "automatic_conflict_resolution", "automatic_previous_deletion", "recommendations"],
+      "properties": {
+        "new_observation": {"const": false},
+        "source_scanning": {"const": false},
+        "automatic_discovery": {"const": false},
+        "authority_assignment": {"const": false},
+        "ownership_change": {"const": false},
+        "permission_change": {"const": false},
+        "action_execution": {"const": false},
+        "automatic_conflict_resolution": {"const": false},
+        "automatic_previous_deletion": {"const": false},
+        "recommendations": {"const": false}
+      },
+      "additionalProperties": false
+    },
+    "output_root_ref": {"const": ".local/chief-of-staff/workspace/"},
+    "review_state": {"const": "unreviewed"}
+  },
+  "additionalProperties": false
+}

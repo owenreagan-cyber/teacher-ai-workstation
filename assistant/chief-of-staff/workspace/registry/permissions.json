@@ -1,0 +1,39 @@
+{
+  "schema_version": "1.0.0",
+  "registry_type": "workspace_permission_policy",
+  "phase": "phase_b_static_policy",
+  "default_effect": "deny",
+  "phase_b_execution_enabled": false,
+  "levels": [
+    {"level": 0, "name": "awareness", "allowed_capabilities": ["workspace.metadata.enumerate", "workspace.classify", "workspace.report.preview"], "execution_allowed": false, "scoped_grants_required": true, "approval_required": true, "stop_points_required": false, "unrestricted_filesystem_access": false},
+    {"level": 1, "name": "recommendations", "allowed_capabilities": ["recommendation.archive.preview", "recommendation.duplicate.preview", "recommendation.recovery.preview"], "execution_allowed": false, "scoped_grants_required": true, "approval_required": true, "stop_points_required": false, "unrestricted_filesystem_access": false},
+    {"level": 2, "name": "safe_outputs", "allowed_capabilities": ["workspace.report.write", "workspace.index.write", "quarantine.container.create"], "execution_allowed": false, "scoped_grants_required": true, "approval_required": true, "stop_points_required": true, "unrestricted_filesystem_access": false},
+    {"level": 3, "name": "controlled_management", "allowed_capabilities": ["file.move", "file.copy", "file.archive", "file.restore"], "execution_allowed": false, "scoped_grants_required": true, "approval_required": true, "stop_points_required": true, "unrestricted_filesystem_access": false},
+    {"level": 4, "name": "agent_operations", "allowed_capabilities": ["agent.workflow.execute"], "execution_allowed": false, "scoped_grants_required": true, "approval_required": true, "stop_points_required": true, "unrestricted_filesystem_access": false}
+  ],
+  "capabilities": [
+    {"id": "workspace.metadata.enumerate", "minimum_level": 0, "mutating": false, "phase_b_effect": "declared_only", "approval": "scoped_source"},
+    {"id": "workspace.classify", "minimum_level": 0, "mutating": false, "phase_b_effect": "declared_only", "approval": "scoped_source"},
+    {"id": "workspace.report.preview", "minimum_level": 0, "mutating": false, "phase_b_effect": "declared_only", "approval": "none"},
+    {"id": "recommendation.archive.preview", "minimum_level": 1, "mutating": false, "phase_b_effect": "declared_only", "approval": "none"},
+    {"id": "recommendation.duplicate.preview", "minimum_level": 1, "mutating": false, "phase_b_effect": "declared_only", "approval": "none"},
+    {"id": "recommendation.recovery.preview", "minimum_level": 1, "mutating": false, "phase_b_effect": "declared_only", "approval": "none"},
+    {"id": "workspace.report.write", "minimum_level": 2, "mutating": true, "phase_b_effect": "blocked", "approval": "teacher"},
+    {"id": "workspace.index.write", "minimum_level": 2, "mutating": true, "phase_b_effect": "blocked", "approval": "teacher"},
+    {"id": "quarantine.container.create", "minimum_level": 2, "mutating": true, "phase_b_effect": "blocked", "approval": "teacher"},
+    {"id": "file.move", "minimum_level": 3, "mutating": true, "phase_b_effect": "blocked", "approval": "teacher"},
+    {"id": "file.copy", "minimum_level": 3, "mutating": true, "phase_b_effect": "blocked", "approval": "teacher"},
+    {"id": "file.archive", "minimum_level": 3, "mutating": true, "phase_b_effect": "blocked", "approval": "teacher"},
+    {"id": "file.restore", "minimum_level": 3, "mutating": true, "phase_b_effect": "blocked", "approval": "teacher"},
+    {"id": "file.delete", "minimum_level": 3, "mutating": true, "phase_b_effect": "blocked", "approval": "two_step_teacher"},
+    {"id": "agent.workflow.execute", "minimum_level": 4, "mutating": true, "phase_b_effect": "blocked", "approval": "teacher"}
+  ],
+  "permanent_rules": {
+    "content_read_requires_separate_capability": true,
+    "hashing_requires_separate_capability": true,
+    "unknown_classification_blocks_mutation": true,
+    "delete_requires_two_step_verification": true,
+    "canonical_replacement_requires_recovery_plan": true,
+    "level_four_never_grants_unrestricted_filesystem_access": true
+  }
+}

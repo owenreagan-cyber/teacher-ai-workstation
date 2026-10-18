@@ -1,0 +1,63 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Phase L.5D Local Model Context Boundary",
+  "type": "object",
+  "required": ["schema_version", "phase", "policy_id", "mode", "contract_created_at", "source_layers", "model_contract", "tasks", "capabilities", "actions", "restrictions", "sanitization", "persistence", "network_enabled", "model_invocation_enabled", "agent_enabled", "tool_calling_enabled", "action_execution_enabled", "host_local_ai_data_enabled"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "phase": {"const": "L.5D"},
+    "policy_id": {"const": "local-model-context-boundary"},
+    "mode": {"const": "contract_only"},
+    "contract_created_at": {"type": "string"},
+    "source_layers": {"type": "array", "minItems": 3, "maxItems": 3, "uniqueItems": true, "items": {"enum": ["query_layer", "explanation_layer", "evidence_layer"]}},
+    "model_contract": {
+      "type": "object",
+      "required": ["runtime", "model", "family", "quantization", "runtime_validation", "connector_enabled", "execution_enabled"],
+      "properties": {
+        "runtime": {"const": "ollama"},
+        "model": {"const": "qwen3.5:35b"},
+        "family": {"const": "Qwen 3.5 35B MoE"},
+        "quantization": {"const": "Q4_K_M"},
+        "runtime_validation": {"const": "owner_confirmed"},
+        "connector_enabled": {"const": false},
+        "execution_enabled": {"const": false}
+      },
+      "additionalProperties": false
+    },
+    "tasks": {"type": "array", "minItems": 1, "maxItems": 1, "uniqueItems": true, "items": {"const": "explain"}},
+    "capabilities": {"type": "array", "minItems": 1, "maxItems": 1, "uniqueItems": true, "items": {"const": "explain"}},
+    "actions": {"type": "array", "maxItems": 0, "items": {"type": "string"}},
+    "restrictions": {"type": "array", "minItems": 9, "maxItems": 9, "uniqueItems": true, "items": {"type": "string"}},
+    "sanitization": {
+      "type": "object",
+      "required": ["inherits", "projection_mode", "raw_observations_allowed", "student_data_allowed", "private_documents_allowed", "filesystem_handles_allowed"],
+      "properties": {
+        "inherits": {"const": "registry/ai-trust-policy.json"},
+        "projection_mode": {"const": "generated_allowlist_projection"},
+        "raw_observations_allowed": {"const": false},
+        "student_data_allowed": {"const": false},
+        "private_documents_allowed": {"const": false},
+        "filesystem_handles_allowed": {"const": false}
+      },
+      "additionalProperties": false
+    },
+    "persistence": {
+      "type": "object",
+      "required": ["context_packages", "model_requests", "model_responses", "audit_records"],
+      "properties": {
+        "context_packages": {"const": false},
+        "model_requests": {"const": false},
+        "model_responses": {"const": false},
+        "audit_records": {"const": false}
+      },
+      "additionalProperties": false
+    },
+    "network_enabled": {"const": false},
+    "model_invocation_enabled": {"const": false},
+    "agent_enabled": {"const": false},
+    "tool_calling_enabled": {"const": false},
+    "action_execution_enabled": {"const": false},
+    "host_local_ai_data_enabled": {"const": false}
+  },
+  "additionalProperties": false
+}

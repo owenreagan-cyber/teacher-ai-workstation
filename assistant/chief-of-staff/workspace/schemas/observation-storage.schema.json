@@ -1,0 +1,34 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Observation Storage Policy",
+  "type": "object",
+  "required": ["schema_version", "phase", "runtime_root", "instantiate_in_phase_c", "git_policy", "sync_policy", "cloud_export_policy", "authority_role", "folders", "prohibited_uses"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "phase": {"const": "C"},
+    "runtime_root": {"const": ".local/chief-of-staff/workspace/"},
+    "instantiate_in_phase_c": {"const": false},
+    "git_policy": {"const": "ignored"},
+    "sync_policy": {"const": "host_local_only"},
+    "cloud_export_policy": {"const": "forbidden"},
+    "authority_role": {"const": "evidence_only"},
+    "folders": {
+      "type": "array",
+      "minItems": 6,
+      "maxItems": 6,
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "required": ["name", "purpose", "authority_role"],
+        "properties": {
+          "name": {"enum": ["inventory-runs", "observations", "relationships", "recommendations", "audit", "cache"]},
+          "purpose": {"enum": ["controlled_run_envelopes", "metadata_only_observation_snapshots", "evidence_backed_relationship_candidates", "reviewable_non_action_proposals", "approvals_validations_and_review_events", "regenerable_temporary_data"]},
+          "authority_role": {"enum": ["evidence_only", "audit_evidence", "non_authoritative"]}
+        },
+        "additionalProperties": false
+      }
+    },
+    "prohibited_uses": {"type": "array", "minItems": 6, "uniqueItems": true, "items": {"enum": ["source_authority", "registry_overwrite", "cloud_sync", "cloud_agent_raw_input", "student_database", "action_authorization"]}}
+  },
+  "additionalProperties": false
+}

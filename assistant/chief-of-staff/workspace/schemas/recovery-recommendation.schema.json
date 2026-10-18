@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Recovery Review Recommendation",
+  "type": "object",
+  "required": ["schema_version", "recommendation_id", "subject_ref", "candidate_ref", "finding", "confidence", "next_step", "review_state", "action_state", "authority_effect"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "recommendation_id": {"type": "string", "pattern": "^recovery-recommendation:[a-z0-9][a-z0-9._:-]*$"},
+    "subject_ref": {"type": "string"},
+    "candidate_ref": {"type": "string"},
+    "finding": {"type": "string"},
+    "confidence": {"enum": ["high", "medium", "low", "unknown"]},
+    "next_step": {"const": "review_candidate"},
+    "review_state": {"const": "unreviewed"},
+    "action_state": {"const": "not_an_action"},
+    "authority_effect": {"const": "none"}
+  },
+  "additionalProperties": false
+}

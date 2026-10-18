@@ -1,0 +1,131 @@
+{
+  "schema_version": 1,
+  "phase": "L",
+  "policy_id": "ai-readiness-architecture",
+  "ai_role": "non_authoritative_reasoning_above_explanation",
+  "runtime": {
+    "ai_enabled": false,
+    "model_connection_enabled": false,
+    "network_enabled": false,
+    "agent_framework_enabled": false,
+    "tool_calling_enabled": false,
+    "action_execution_enabled": false,
+    "raw_observation_export_enabled": false,
+    "audit_logging_enabled": false
+  },
+  "capabilities": {
+    "reasoning": [
+      "summarize",
+      "explain",
+      "compare",
+      "prioritize",
+      "draft",
+      "plan",
+      "identify_patterns"
+    ],
+    "restricted": [
+      "modify",
+      "delete",
+      "restore",
+      "move",
+      "replace",
+      "approve_authority",
+      "change_permissions"
+    ]
+  },
+  "trust_levels": [
+    {
+      "level": 0,
+      "name": "No AI",
+      "state": "current",
+      "allowed_capabilities": [],
+      "requirements": ["deterministic_chief_of_staff_only"]
+    },
+    {
+      "level": 1,
+      "name": "Explanation Assistance",
+      "state": "planned",
+      "allowed_capabilities": ["summarize", "explain", "compare"],
+      "requirements": ["approved_context_projection", "evidence_grounding", "uncertainty_visibility", "output_validation", "audit"]
+    },
+    {
+      "level": 2,
+      "name": "Planning Assistance",
+      "state": "planned",
+      "allowed_capabilities": ["summarize", "explain", "compare", "prioritize", "draft", "plan", "identify_patterns"],
+      "requirements": ["approved_context_projection", "evidence_grounding", "uncertainty_visibility", "output_validation", "human_review", "audit"]
+    },
+    {
+      "level": 3,
+      "name": "Scoped Agent Assistance",
+      "state": "future_only",
+      "allowed_capabilities": [],
+      "requirements": ["capability_grant", "target_scope", "duration", "human_approval", "rollback_plan", "audit"]
+    },
+    {
+      "level": 4,
+      "name": "Autonomous Operations",
+      "state": "prohibited",
+      "allowed_capabilities": [],
+      "requirements": ["separate_architecture_and_explicit_approval"]
+    }
+  ],
+  "routing": {
+    "deterministic_first": true,
+    "steps": ["user_request", "chief_of_staff", "deterministic_answer_check", "context_projection", "approved_model", "output_validation", "human_review"],
+    "ai_escalation_requirements": ["deterministic_answer_unavailable", "trust_level_above_zero", "approved_context_projection", "approved_model_route", "output_validation"],
+    "approved_models": [],
+    "provider_selection": "unselected"
+  },
+  "model_policy": {
+    "local": {
+      "state": "architecture_only",
+      "potential_uses": ["sensitive_metadata_reasoning", "private_workspace_assistance", "offline_tasks"],
+      "requirements": ["local_permission", "resource_limits", "context_projection", "output_validation", "audit"]
+    },
+    "cloud": {
+      "state": "architecture_only",
+      "potential_uses": ["sanitized_reasoning", "general_planning", "non_sensitive_analysis"],
+      "requirements": ["human_cloud_export_approval", "sanitized_ai_view", "no_raw_paths", "no_private_records", "no_student_data", "output_validation", "audit"]
+    }
+  },
+  "context_projection": {
+    "required_fields": ["identity", "sources", "evidence", "confidence", "uncertainty", "authority_state", "review_state"],
+    "excluded_fields": ["credentials", "secrets", "unrestricted_paths", "private_documents", "student_data", "raw_observations", "action_capabilities"],
+    "sanitization_required": true,
+    "raw_observations_allowed": false,
+    "action_capabilities_allowed": false
+  },
+  "prompt_boundary": {
+    "sections": ["system_context", "evidence_context", "user_request", "required_output"],
+    "system_requirements": ["role", "restrictions", "authority_boundaries"],
+    "evidence_requirements": ["facts", "provenance", "confidence", "uncertainty"],
+    "output_requirements": ["distinguish_claim_types", "cite_evidence", "expose_uncertainty", "avoid_unsupported_assumptions"],
+    "raw_observations_allowed": false,
+    "action_instructions_allowed": false
+  },
+  "output_validation": {
+    "claim_types": ["known", "evidence", "inference", "unknown", "recommendation"],
+    "rejection_rules": ["unsupported_claim", "authority_change", "hidden_action", "confidence_inflation", "missing_uncertainty", "uncited_known_claim"],
+    "fail_closed": true,
+    "authority_effect_allowed": false,
+    "actions_allowed": false
+  },
+  "hallucination_handling": {
+    "required_distinctions": ["known", "evidence", "inference", "unknown", "recommendation"],
+    "inference_may_become_fact": false,
+    "unsupported_claim_disposition": "reject",
+    "missing_evidence_disposition": "mark_unknown"
+  },
+  "human_approval": {
+    "always_human": ["authority_changes", "canonical_replacement", "restore", "delete", "move_canonical_resources", "permission_changes", "cloud_export_approval"],
+    "potentially_ai_assisted": ["summaries", "explanations", "prioritization", "drafts", "planning"],
+    "approval_runtime_enabled": false
+  },
+  "future_agent": {
+    "flow": ["agent", "capability_grant", "scope", "approval", "execution", "audit"],
+    "grant_fields": ["allowed_action", "target_scope", "duration", "approval", "rollback_plan"],
+    "runtime_enabled": false,
+    "autonomous_operations_allowed": false
+  }
+}

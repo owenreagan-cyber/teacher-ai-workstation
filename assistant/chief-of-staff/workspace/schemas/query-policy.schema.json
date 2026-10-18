@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Deterministic Query Policy",
+  "type": "object",
+  "required": ["schema_version", "phase", "policy_id", "query_types", "scopes", "registry_inputs", "evidence_inputs", "restricted_permission", "default_scope", "deterministic_ordering", "unknown_preserved", "uncertainty_visible", "live_recovery_candidates_enabled", "ai_enabled", "action_capabilities"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "phase": {"const": "J"},
+    "policy_id": {"const": "deterministic-query-explanation-layer"},
+    "query_types": {"type": "array", "minItems": 7, "maxItems": 7, "uniqueItems": true, "items": {"enum": ["entity_lookup", "relationship_lookup", "evidence_lookup", "recovery_candidate_lookup", "project_lookup", "application_lookup", "resource_lookup"]}},
+    "scopes": {"type": "array", "minItems": 9, "maxItems": 9, "uniqueItems": true, "items": {"enum": ["active", "classroom_ready", "teacher_only", "student_safe", "restricted", "superseded", "all", "unreviewed", "conflicts"]}},
+    "registry_inputs": {"type": "array", "minItems": 2, "maxItems": 2, "uniqueItems": true, "items": {"enum": ["registry/projects.json", "registry/applications.json"]}},
+    "evidence_inputs": {
+      "type": "array",
+      "minItems": 4,
+      "maxItems": 4,
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "required": ["phase", "run_id", "artifact_ref"],
+        "properties": {
+          "phase": {"enum": ["D", "E", "F", "G"]},
+          "run_id": {"type": "string", "pattern": "^run:[a-z0-9][a-z0-9:-]*$"},
+          "artifact_ref": {"type": "string", "pattern": "^(observations|relationships)/[a-z0-9:.-]+\\.json$"}
+        },
+        "additionalProperties": false
+      }
+    },
+    "restricted_permission": {"const": "workspace.restricted.read"},
+    "default_scope": {"const": "all"},
+    "deterministic_ordering": {"const": true},
+    "unknown_preserved": {"const": true},
+    "uncertainty_visible": {"const": true},
+    "live_recovery_candidates_enabled": {"const": false},
+    "ai_enabled": {"const": false},
+    "action_capabilities": {"type": "array", "maxItems": 0, "items": {"type": "string"}}
+  },
+  "additionalProperties": false
+}

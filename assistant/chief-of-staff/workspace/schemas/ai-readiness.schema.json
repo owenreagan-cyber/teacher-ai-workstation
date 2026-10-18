@@ -1,0 +1,145 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AI Readiness Architecture Policy",
+  "type": "object",
+  "required": ["schema_version", "phase", "policy_id", "ai_role", "runtime", "capabilities", "trust_levels", "routing", "model_policy", "context_projection", "prompt_boundary", "output_validation", "hallucination_handling", "human_approval", "future_agent"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "phase": {"const": "L"},
+    "policy_id": {"const": "ai-readiness-architecture"},
+    "ai_role": {"const": "non_authoritative_reasoning_above_explanation"},
+    "runtime": {
+      "type": "object",
+      "required": ["ai_enabled", "model_connection_enabled", "network_enabled", "agent_framework_enabled", "tool_calling_enabled", "action_execution_enabled", "raw_observation_export_enabled", "audit_logging_enabled"],
+      "properties": {
+        "ai_enabled": {"const": false},
+        "model_connection_enabled": {"const": false},
+        "network_enabled": {"const": false},
+        "agent_framework_enabled": {"const": false},
+        "tool_calling_enabled": {"const": false},
+        "action_execution_enabled": {"const": false},
+        "raw_observation_export_enabled": {"const": false},
+        "audit_logging_enabled": {"const": false}
+      },
+      "additionalProperties": false
+    },
+    "capabilities": {
+      "type": "object",
+      "required": ["reasoning", "restricted"],
+      "properties": {
+        "reasoning": {"type": "array", "minItems": 7, "maxItems": 7, "uniqueItems": true, "items": {"enum": ["summarize", "explain", "compare", "prioritize", "draft", "plan", "identify_patterns"]}},
+        "restricted": {"type": "array", "minItems": 7, "maxItems": 7, "uniqueItems": true, "items": {"enum": ["modify", "delete", "restore", "move", "replace", "approve_authority", "change_permissions"]}}
+      },
+      "additionalProperties": false
+    },
+    "trust_levels": {
+      "type": "array",
+      "minItems": 5,
+      "maxItems": 5,
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "required": ["level", "name", "state", "allowed_capabilities", "requirements"],
+        "properties": {
+          "level": {"enum": [0, 1, 2, 3, 4]},
+          "name": {"enum": ["No AI", "Explanation Assistance", "Planning Assistance", "Scoped Agent Assistance", "Autonomous Operations"]},
+          "state": {"enum": ["current", "planned", "future_only", "prohibited"]},
+          "allowed_capabilities": {"type": "array", "uniqueItems": true, "items": {"enum": ["summarize", "explain", "compare", "prioritize", "draft", "plan", "identify_patterns"]}},
+          "requirements": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string"}}
+        },
+        "additionalProperties": false
+      }
+    },
+    "routing": {
+      "type": "object",
+      "required": ["deterministic_first", "steps", "ai_escalation_requirements", "approved_models", "provider_selection"],
+      "properties": {
+        "deterministic_first": {"const": true},
+        "steps": {"type": "array", "minItems": 7, "maxItems": 7, "uniqueItems": true, "items": {"enum": ["user_request", "chief_of_staff", "deterministic_answer_check", "context_projection", "approved_model", "output_validation", "human_review"]}},
+        "ai_escalation_requirements": {"type": "array", "minItems": 5, "maxItems": 5, "uniqueItems": true, "items": {"enum": ["deterministic_answer_unavailable", "trust_level_above_zero", "approved_context_projection", "approved_model_route", "output_validation"]}},
+        "approved_models": {"type": "array", "maxItems": 0, "items": {"type": "string"}},
+        "provider_selection": {"const": "unselected"}
+      },
+      "additionalProperties": false
+    },
+    "model_policy": {
+      "type": "object",
+      "required": ["local", "cloud"],
+      "properties": {
+        "local": {"type": "object", "required": ["state", "potential_uses", "requirements"], "properties": {"state": {"const": "architecture_only"}, "potential_uses": {"type": "array", "minItems": 3, "uniqueItems": true, "items": {"type": "string"}}, "requirements": {"type": "array", "minItems": 5, "uniqueItems": true, "items": {"type": "string"}}}, "additionalProperties": false},
+        "cloud": {"type": "object", "required": ["state", "potential_uses", "requirements"], "properties": {"state": {"const": "architecture_only"}, "potential_uses": {"type": "array", "minItems": 3, "uniqueItems": true, "items": {"type": "string"}}, "requirements": {"type": "array", "minItems": 7, "uniqueItems": true, "items": {"type": "string"}}}, "additionalProperties": false}
+      },
+      "additionalProperties": false
+    },
+    "context_projection": {
+      "type": "object",
+      "required": ["required_fields", "excluded_fields", "sanitization_required", "raw_observations_allowed", "action_capabilities_allowed"],
+      "properties": {
+        "required_fields": {"type": "array", "minItems": 7, "maxItems": 7, "uniqueItems": true, "items": {"enum": ["identity", "sources", "evidence", "confidence", "uncertainty", "authority_state", "review_state"]}},
+        "excluded_fields": {"type": "array", "minItems": 7, "maxItems": 7, "uniqueItems": true, "items": {"enum": ["credentials", "secrets", "unrestricted_paths", "private_documents", "student_data", "raw_observations", "action_capabilities"]}},
+        "sanitization_required": {"const": true},
+        "raw_observations_allowed": {"const": false},
+        "action_capabilities_allowed": {"const": false}
+      },
+      "additionalProperties": false
+    },
+    "prompt_boundary": {
+      "type": "object",
+      "required": ["sections", "system_requirements", "evidence_requirements", "output_requirements", "raw_observations_allowed", "action_instructions_allowed"],
+      "properties": {
+        "sections": {"type": "array", "minItems": 4, "maxItems": 4, "uniqueItems": true, "items": {"enum": ["system_context", "evidence_context", "user_request", "required_output"]}},
+        "system_requirements": {"type": "array", "minItems": 3, "maxItems": 3, "uniqueItems": true, "items": {"enum": ["role", "restrictions", "authority_boundaries"]}},
+        "evidence_requirements": {"type": "array", "minItems": 4, "maxItems": 4, "uniqueItems": true, "items": {"enum": ["facts", "provenance", "confidence", "uncertainty"]}},
+        "output_requirements": {"type": "array", "minItems": 4, "maxItems": 4, "uniqueItems": true, "items": {"enum": ["distinguish_claim_types", "cite_evidence", "expose_uncertainty", "avoid_unsupported_assumptions"]}},
+        "raw_observations_allowed": {"const": false},
+        "action_instructions_allowed": {"const": false}
+      },
+      "additionalProperties": false
+    },
+    "output_validation": {
+      "type": "object",
+      "required": ["claim_types", "rejection_rules", "fail_closed", "authority_effect_allowed", "actions_allowed"],
+      "properties": {
+        "claim_types": {"type": "array", "minItems": 5, "maxItems": 5, "uniqueItems": true, "items": {"enum": ["known", "evidence", "inference", "unknown", "recommendation"]}},
+        "rejection_rules": {"type": "array", "minItems": 6, "maxItems": 6, "uniqueItems": true, "items": {"enum": ["unsupported_claim", "authority_change", "hidden_action", "confidence_inflation", "missing_uncertainty", "uncited_known_claim"]}},
+        "fail_closed": {"const": true},
+        "authority_effect_allowed": {"const": false},
+        "actions_allowed": {"const": false}
+      },
+      "additionalProperties": false
+    },
+    "hallucination_handling": {
+      "type": "object",
+      "required": ["required_distinctions", "inference_may_become_fact", "unsupported_claim_disposition", "missing_evidence_disposition"],
+      "properties": {
+        "required_distinctions": {"type": "array", "minItems": 5, "maxItems": 5, "uniqueItems": true, "items": {"enum": ["known", "evidence", "inference", "unknown", "recommendation"]}},
+        "inference_may_become_fact": {"const": false},
+        "unsupported_claim_disposition": {"const": "reject"},
+        "missing_evidence_disposition": {"const": "mark_unknown"}
+      },
+      "additionalProperties": false
+    },
+    "human_approval": {
+      "type": "object",
+      "required": ["always_human", "potentially_ai_assisted", "approval_runtime_enabled"],
+      "properties": {
+        "always_human": {"type": "array", "minItems": 7, "maxItems": 7, "uniqueItems": true, "items": {"enum": ["authority_changes", "canonical_replacement", "restore", "delete", "move_canonical_resources", "permission_changes", "cloud_export_approval"]}},
+        "potentially_ai_assisted": {"type": "array", "minItems": 5, "maxItems": 5, "uniqueItems": true, "items": {"enum": ["summaries", "explanations", "prioritization", "drafts", "planning"]}},
+        "approval_runtime_enabled": {"const": false}
+      },
+      "additionalProperties": false
+    },
+    "future_agent": {
+      "type": "object",
+      "required": ["flow", "grant_fields", "runtime_enabled", "autonomous_operations_allowed"],
+      "properties": {
+        "flow": {"type": "array", "minItems": 6, "maxItems": 6, "uniqueItems": true, "items": {"enum": ["agent", "capability_grant", "scope", "approval", "execution", "audit"]}},
+        "grant_fields": {"type": "array", "minItems": 5, "maxItems": 5, "uniqueItems": true, "items": {"enum": ["allowed_action", "target_scope", "duration", "approval", "rollback_plan"]}},
+        "runtime_enabled": {"const": false},
+        "autonomous_operations_allowed": {"const": false}
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

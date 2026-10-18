@@ -1,0 +1,34 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Static Application Policy Registry",
+  "type": "object",
+  "required": ["schema_version", "registry_type", "phase", "runtime_discovery_enabled", "launch_enabled", "concepts", "installed_instances"],
+  "properties": {
+    "schema_version": {"const": "1.0.0"},
+    "registry_type": {"const": "application_policy"},
+    "phase": {"const": "phase_b_static_policy"},
+    "runtime_discovery_enabled": {"const": false},
+    "launch_enabled": {"const": false},
+    "concepts": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["concept_id", "display_name", "purpose", "status", "related_project_ids", "related_resource_systems", "required_capabilities", "data_classification"],
+        "properties": {
+          "concept_id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$"},
+          "display_name": {"type": "string"},
+          "purpose": {"type": "string"},
+          "status": {"const": "static_declared"},
+          "related_project_ids": {"type": "array", "uniqueItems": true, "items": {"type": "string"}},
+          "related_resource_systems": {"type": "array", "uniqueItems": true, "items": {"type": "string"}},
+          "required_capabilities": {"type": "array", "uniqueItems": true, "items": {"type": "string"}},
+          "data_classification": {"enum": ["public", "teacher_internal", "student_safe", "student_private", "restricted", "unknown"]}
+        },
+        "additionalProperties": false
+      }
+    },
+    "installed_instances": {"type": "array", "maxItems": 0, "items": {"type": "object"}}
+  },
+  "additionalProperties": false
+}

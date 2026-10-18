@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Shared Evidence Package",
+  "type": "object",
+  "required": ["schema_version", "evidence_package_id", "evidence_type", "subject_ref", "claim", "observations", "relationships", "authority_context", "confidence", "alternatives", "review_state", "authority_effect", "permission_effect"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "evidence_package_id": {"type": "string", "pattern": "^evidence-package:[a-z0-9][a-z0-9._:-]*$"},
+    "evidence_type": {"enum": ["relationship", "project", "application", "recovery", "classification", "authority", "availability"]},
+    "subject_ref": {"type": "string", "pattern": "^[a-z][a-z0-9-]*:[a-z0-9][a-z0-9._:-]*$"},
+    "claim": {"type": "string"},
+    "observations": {"type": "array", "uniqueItems": true, "items": {"type": "string"}},
+    "relationships": {"type": "array", "uniqueItems": true, "items": {"type": "string", "pattern": "^relationship:[a-z0-9][a-z0-9._:-]*$"}},
+    "authority_context": {
+      "type": "object",
+      "required": ["role", "scope", "basis"],
+      "properties": {
+        "role": {"enum": ["canonical", "deployment", "mirror", "backup", "archive", "unknown"]},
+        "scope": {"enum": ["source_code", "curriculum_binary", "registry_metadata", "classroom_deployment", "backup_recovery", "application_bundle", "unknown"]},
+        "basis": {"type": "string"}
+      },
+      "additionalProperties": false
+    },
+    "confidence": {"enum": ["high", "medium", "low", "unknown"]},
+    "alternatives": {"type": "array", "uniqueItems": true, "items": {"type": "string"}},
+    "review_state": {"enum": ["unreviewed", "reviewed", "rejected"]},
+    "authority_effect": {"const": "none"},
+    "permission_effect": {"const": "none"}
+  },
+  "additionalProperties": false
+}

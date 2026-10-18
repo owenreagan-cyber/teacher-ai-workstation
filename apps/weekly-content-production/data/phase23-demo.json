@@ -1210,7 +1210,7 @@
       "body_text": "Local Language Arts assessment draft.",
       "display_date": "Friday",
       "grade_display": "Percentage",
-      "group": "Tests/Assessments",
+      "group": "Assessments",
       "linked_page_id": "p23-9eeefd2e992e979caf",
       "linked_resource_ids": [],
       "machine_date": "2026-08-21",
@@ -1811,7 +1811,7 @@
     }
   ],
   "deploymentState": "preview-only",
-  "generatedAt": "2026-08-19T00:55:40Z",
+  "generatedAt": "2026-08-23T14:13:35Z",
   "newsletter": {
     "approval_revision": 0,
     "approval_state": "Draft",
@@ -1823,7 +1823,7 @@
     "cadence": "monthly",
     "canvas_writes_allowed": false,
     "content_hash": "03f445915e8d68ee",
-    "course_id": 26427,
+    "course_id": 26429,
     "date_range": {
       "end": "2026-08-31",
       "start": "2026-08-01"

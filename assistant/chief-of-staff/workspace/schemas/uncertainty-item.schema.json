@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Uncertainty Explorer Item",
+  "type": "object",
+  "required": ["item_ref", "uncertainty_type", "detail", "confidence", "review_state", "interpretation", "action_authority"],
+  "properties": {
+    "item_ref": {"type": "string"},
+    "uncertainty_type": {"enum": ["unknown_authority", "conflict", "missing_representation", "unreviewed_candidate", "missing_evidence", "unknown_entity"]},
+    "detail": {"type": "string"},
+    "confidence": {"enum": ["high", "medium", "low", "unknown"]},
+    "review_state": {"enum": ["unreviewed", "reviewed", "approved", "rejected", "deferred"]},
+    "interpretation": {"const": "review_opportunity_not_failure"},
+    "action_authority": {"const": "none"}
+  },
+  "additionalProperties": false
+}

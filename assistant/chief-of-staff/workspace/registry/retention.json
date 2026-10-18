@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "phase_c_enforcement_enabled": false,
+  "authority_effect": "none",
+  "policies": [
+    {"record_type": "inventory_run", "active_days": 90, "preserve_reviewed_decisions": false, "expiration_result": "review_required"},
+    {"record_type": "observation_snapshot", "active_days": 30, "preserve_reviewed_decisions": false, "expiration_result": "review_required"},
+    {"record_type": "recommendation", "active_days": 365, "preserve_reviewed_decisions": true, "expiration_result": "review_required"},
+    {"record_type": "audit_event", "active_days": 365, "preserve_reviewed_decisions": true, "expiration_result": "archive_review_required"},
+    {"record_type": "cache", "active_days": 7, "preserve_reviewed_decisions": false, "expiration_result": "regenerate_not_authority"}
+  ],
+  "invariants": [
+    "retention_age_never_establishes_authority",
+    "expiration_never_authorizes_deletion",
+    "reviewed_recommendations_preserve_decision_history",
+    "approval_and_security_audit_events_require_preservation_review",
+    "cache_is_regenerable_and_never_authority"
+  ]
+}

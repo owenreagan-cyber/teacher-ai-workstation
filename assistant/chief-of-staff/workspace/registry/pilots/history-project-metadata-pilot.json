@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "phase": "D",
+  "pilot_id": "history-project-metadata-pilot",
+  "source_id": "history-project-local",
+  "parent_source_id": "projects-local",
+  "approved_root_ref": "projects/history",
+  "approved_subtree": ".",
+  "purpose": "metadata-only project observation pilot",
+  "approval": {
+    "approved_by": "teacher",
+    "basis": "explicit_phase_d_mission",
+    "approval_id": "approval:phase-d-history-project-metadata-pilot"
+  },
+  "limits": {
+    "max_depth": 2,
+    "max_items": 500,
+    "max_duration_seconds": 60
+  },
+  "permissions": [
+    "metadata_enumeration",
+    "basic_stat_metadata",
+    "record_unavailable_items"
+  ],
+  "prohibitions": {
+    "content_read": false,
+    "hashing": false,
+    "writes": false,
+    "follow_symlinks": false,
+    "cross_filesystem": false,
+    "hidden_entries": false,
+    "git_metadata": false,
+    "recommendations": false
+  },
+  "output_root_ref": ".local/chief-of-staff/workspace/",
+  "authority_claim": "none"
+}

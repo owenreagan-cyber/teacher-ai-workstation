@@ -18,6 +18,7 @@ This phase creates **Assignment Drafts**, not Canvas Assignments.
 - Do not hardcode daily assignments directly in generators
 - Missing rules for History and Science return `needs_teacher_rule=true`
 - Language Arts and Shurley assignment creation is enabled with committed routing (Spelling Tests -> Assessments, Classroom Practices -> Classwork, Shurley Chapter Tests -> Assessments in course `28171`)
+- Language Arts alternates between Shurley English instruction and Writing instruction. Shurley lessons create a `Classroom Practice` assignment only when the Classroom Practice is explicitly listed for that day; Writing activities are instructional by default and do not create assignments; plain Shurley lessons without an explicit Classroom Practice do not create assignments. Only ambiguous entries receive the `Create as an assignment? Yes / No` question.
 - History and Science automated assignment creation is disabled (including tests); Owen creates them manually
 - Do not guess missing curriculum rules
 
@@ -64,6 +65,14 @@ All reading graded items: 100 points, Percentage, teacher choice for final grade
 - Spelling Test {N} when test scheduled
 - Category: assessment
 - 100 points, Percentage grading
+
+## Language Arts / Shurley Rules
+
+- Language Arts alternates between Shurley English instruction and Writing instruction.
+- Shurley lesson with an explicitly listed Classroom Practice -> `ELA4A: Classroom Practice {N}` assignment, `Classwork` group.
+- Writing activities (`Introduction Writing`, `Writing Map`) are instructional by default and do not create assignments.
+- Plain Shurley lessons without an explicit Classroom Practice do not create assignments.
+- Only ambiguous entries receive the `Create as an assignment? Yes / No` question.
 
 ## Assessment Rules
 

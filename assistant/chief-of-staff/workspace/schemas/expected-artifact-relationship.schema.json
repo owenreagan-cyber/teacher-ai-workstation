@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Expected Artifact Relationship",
+  "type": "object",
+  "required": ["schema_version", "relationship_id", "relationship_type", "source_ref", "expected_artifact_ref", "expected_artifact_type", "source", "confidence", "review_state", "existence_claim", "authority_effect", "action_effect"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "relationship_id": {"type": "string", "pattern": "^expected-artifact:[a-z0-9][a-z0-9._:-]*$"},
+    "relationship_type": {"const": "expected_artifact_of"},
+    "source_ref": {"type": "string", "pattern": "^[a-z][a-z0-9-]*:[a-z0-9][a-z0-9._:-]*$"},
+    "expected_artifact_ref": {"type": "string", "pattern": "^logical-resource:[a-z0-9][a-z0-9._:-]*$"},
+    "expected_artifact_type": {"enum": ["presentation_pdf", "html_presentation", "teacher_notes", "assessment", "worksheet", "other"]},
+    "source": {"type": "string"},
+    "confidence": {"enum": ["high", "medium", "low", "unknown"]},
+    "review_state": {"enum": ["unreviewed", "reviewed", "rejected"]},
+    "existence_claim": {"const": "none"},
+    "authority_effect": {"const": "none"},
+    "action_effect": {"const": "none"}
+  },
+  "additionalProperties": false
+}

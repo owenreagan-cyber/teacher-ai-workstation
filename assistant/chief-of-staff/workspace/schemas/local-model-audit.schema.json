@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Phase L.5D Local Model Interaction Audit Contract",
+  "type": "object",
+  "required": ["schema_version", "request_id", "context_id", "model", "task", "validation_result", "created_at", "execution_state", "persisted", "action_authority"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "request_id": {"type": "string"},
+    "context_id": {"type": "string"},
+    "model": {"const": "qwen3.5:35b"},
+    "task": {"const": "explain"},
+    "validation_result": {"enum": ["pass", "rejected"]},
+    "created_at": {"type": "string"},
+    "execution_state": {"const": "not_executed"},
+    "persisted": {"const": false},
+    "action_authority": {"const": "none"}
+  },
+  "additionalProperties": false
+}

@@ -22,7 +22,7 @@ assert p23.translate_student_facing_pacing("CP6") == ("Classroom Practice 6", Tr
 assert p23.translate_student_facing_pacing("2.3") == ("Chapter 2, Lesson 3", True)
 assert p23.translate_student_facing_pacing("Ch.2.3") == ("Chapter 2, Lesson 3", True)
 assert p23.translate_student_facing_pacing("CP6 / 2.3") == (
-    "Classroom Practice 6; Chapter 2, Lesson 3",
+    "Classroom Practice 6 / Chapter 2, Lesson 3",
     True,
 )
 assert p23.student_facing_subject_title("language-arts", "CP6") == "ELA4: Classroom Practice 6"

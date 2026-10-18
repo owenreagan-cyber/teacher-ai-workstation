@@ -1,0 +1,76 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AI Context Projection",
+  "type": "object",
+  "required": ["schema_version", "projection_id", "destination", "source_view_id", "identity", "sources", "evidence", "relationships", "confidence", "uncertainties", "authority_states", "review_states", "input_classification", "raw_observations_included", "action_capabilities"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "projection_id": {"type": "string", "pattern": "^ai-context:[a-z0-9][a-z0-9._:-]*$"},
+    "destination": {"enum": ["local", "cloud"]},
+    "source_view_id": {"type": "string"},
+    "identity": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["entity_id", "label", "type", "classification", "confidence", "review_state", "authority"],
+        "properties": {
+          "entity_id": {"type": "string"},
+          "label": {"type": "string"},
+          "type": {"type": "string"},
+          "classification": {"enum": ["public", "teacher_internal", "student_safe"]},
+          "confidence": {"enum": ["high", "medium", "low", "unknown"]},
+          "review_state": {"enum": ["unreviewed", "reviewed", "approved", "rejected", "deferred"]},
+          "authority": {"enum": ["canonical", "deployment", "mirror", "backup", "archive", "unknown"]}
+        },
+        "additionalProperties": false
+      }
+    },
+    "sources": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string"}},
+    "evidence": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["evidence_package_id", "evidence_type", "subject_ref", "claim", "source_systems", "evidence", "confidence", "review_state", "uncertainty", "authority_effect"],
+        "properties": {
+          "evidence_package_id": {"type": "string"},
+          "evidence_type": {"type": "string"},
+          "subject_ref": {"type": "string"},
+          "claim": {"type": "string"},
+          "source_systems": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string"}},
+          "evidence": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string"}},
+          "confidence": {"enum": ["high", "medium", "low", "unknown"]},
+          "review_state": {"enum": ["unreviewed", "reviewed", "approved", "rejected", "deferred"]},
+          "uncertainty": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string"}},
+          "authority_effect": {"const": "none"}
+        },
+        "additionalProperties": false
+      }
+    },
+    "relationships": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["relationship_type", "source_ref", "target_ref", "confidence", "review_state", "authority_effect"],
+        "properties": {
+          "relationship_type": {"type": "string"},
+          "source_ref": {"type": "string"},
+          "target_ref": {"type": "string"},
+          "confidence": {"enum": ["high", "medium", "low", "unknown"]},
+          "review_state": {"enum": ["unreviewed", "reviewed", "approved", "rejected", "deferred"]},
+          "authority_effect": {"const": "none"}
+        },
+        "additionalProperties": false
+      }
+    },
+    "confidence": {"enum": ["high", "medium", "low", "unknown"]},
+    "uncertainties": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string"}},
+    "authority_states": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"enum": ["canonical", "deployment", "mirror", "backup", "archive", "unknown"]}},
+    "review_states": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"enum": ["unreviewed", "reviewed", "approved", "rejected", "deferred"]}},
+    "input_classification": {"enum": ["public", "teacher_internal", "student_safe"]},
+    "raw_observations_included": {"const": false},
+    "action_capabilities": {"type": "array", "maxItems": 0, "items": {"type": "string"}}
+  },
+  "additionalProperties": false
+}

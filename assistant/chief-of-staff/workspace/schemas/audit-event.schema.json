@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AuditEvent",
+  "type": "object",
+  "required": ["schema_version", "event_id", "event_type", "timestamp", "actor", "target_ref", "evidence", "result"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "event_id": {"type": "string", "pattern": "^audit:[a-z0-9][a-z0-9._-]*$"},
+    "event_type": {"enum": ["observation_started", "observation_completed", "validation_passed", "validation_failed", "recommendation_created", "approval_requested", "approval_granted", "approval_denied", "relationship_created", "relationship_validated", "relationship_conflict_detected", "relationship_reviewed", "recovery_candidate_created", "recovery_candidate_validated", "recovery_conflict_detected", "recovery_reviewed"]},
+    "timestamp": {"type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$"},
+    "actor": {"type": "string", "pattern": "^(teacher|system):[a-z0-9][a-z0-9._-]*$"},
+    "target_ref": {"type": "string", "pattern": "^(run|observation|recommendation|approval|relationship|relationship-conflict|recovery-candidate|recovery-conflict):[a-z0-9][a-z0-9._:-]*$"},
+    "evidence": {
+      "type": "object",
+      "required": ["refs", "summary"],
+      "properties": {
+        "refs": {"type": "array", "uniqueItems": true, "items": {"type": "string"}},
+        "summary": {"type": "string"}
+      },
+      "additionalProperties": false
+    },
+    "result": {"enum": ["recorded", "passed", "failed", "granted", "denied"]}
+  },
+  "additionalProperties": false
+}

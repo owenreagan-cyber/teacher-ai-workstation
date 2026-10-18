@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Future Agent Capability Grant",
+  "type": "object",
+  "required": ["schema_version", "grant_id", "agent_id", "allowed_action", "target_scope", "duration", "approval", "rollback_plan", "audit_required", "grant_state", "execution_enabled", "autonomous", "action_authority"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "grant_id": {"type": "string", "pattern": "^agent-grant:[a-z0-9][a-z0-9._:-]*$"},
+    "agent_id": {"type": "string"},
+    "allowed_action": {"enum": ["modify", "delete", "restore", "move", "replace", "approve_authority", "change_permissions"]},
+    "target_scope": {"type": "string"},
+    "duration": {
+      "type": "object",
+      "required": ["starts_at", "expires_at"],
+      "properties": {
+        "starts_at": {"type": "string"},
+        "expires_at": {"type": "string"}
+      },
+      "additionalProperties": false
+    },
+    "approval": {
+      "type": "object",
+      "required": ["required", "state", "approved_by"],
+      "properties": {
+        "required": {"const": true},
+        "state": {"enum": ["not_requested", "pending", "approved", "rejected", "expired"]},
+        "approved_by": {"type": ["string", "null"]}
+      },
+      "additionalProperties": false
+    },
+    "rollback_plan": {"type": "string"},
+    "audit_required": {"const": true},
+    "grant_state": {"const": "architecture_only"},
+    "execution_enabled": {"const": false},
+    "autonomous": {"const": false},
+    "action_authority": {"const": "none"}
+  },
+  "additionalProperties": false
+}

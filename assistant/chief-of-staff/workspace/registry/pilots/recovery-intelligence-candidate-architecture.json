@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "phase": "H",
+  "pilot_id": "recovery-intelligence-candidate-architecture",
+  "purpose": "validate recovery candidate reasoning without detecting or restoring resources",
+  "input_policy": "explicit_existing_artifacts_only",
+  "evidence_inputs": [
+    {
+      "phase": "D",
+      "run_id": "run:history-project-metadata-pilot-20260913t004754454694z",
+      "artifact_ref": "observations/run:history-project-metadata-pilot-20260913t004754454694z.json"
+    },
+    {
+      "phase": "E",
+      "run_id": "run:history-project-intelligence-pilot-20260913t010602083477z",
+      "artifact_ref": "observations/run:history-project-intelligence-pilot-20260913t010602083477z-project.json"
+    },
+    {
+      "phase": "F",
+      "run_id": "run:grade-4-writing-application-pilot-20260913t012118468832z",
+      "artifact_ref": "observations/run:grade-4-writing-application-pilot-20260913t012118468832z-application.json"
+    },
+    {
+      "phase": "G",
+      "run_id": "run:relationship-intelligence-pilot-20260913t020208966961z",
+      "artifact_ref": "relationships/run:relationship-intelligence-pilot-20260913t020208966961z.json"
+    }
+  ],
+  "scenario_mode": "synthetic_only",
+  "synthetic_scenarios": [
+    "missing_representation_with_relationship",
+    "explicit_backup_candidate",
+    "conflicting_candidates",
+    "insufficient_evidence"
+  ],
+  "limits": {
+    "max_input_artifacts": 4,
+    "max_synthetic_scenarios": 4,
+    "max_candidates_per_scenario": 2
+  },
+  "live_signal_detection_enabled": false,
+  "live_candidate_generation_enabled": false,
+  "host_local_output_enabled": false,
+  "prohibitions": {
+    "filesystem_scan": false,
+    "content_read": false,
+    "hashing": false,
+    "cloud_scan": false,
+    "backup_scan": false,
+    "copy": false,
+    "move": false,
+    "replace": false,
+    "restore": false,
+    "delete": false,
+    "authority_promotion": false,
+    "action_execution": false
+  }
+}

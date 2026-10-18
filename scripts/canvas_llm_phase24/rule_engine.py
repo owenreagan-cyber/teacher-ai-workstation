@@ -804,8 +804,8 @@ def validate_week_prediction(payload: dict[str, Any]) -> dict[str, Any]:
         findings.append({"severity": "pass", "code": "announcement.schedule-intent", "message": "Announcement schedule intent is 1-2 days before assessment date America/New_York", "target": "announcementDrafts"})
     newsletter = payload.get("newsletterDraft") or {}
     update = payload.get("newsletterUpdateAnnouncement") or {}
-    if newsletter.get("course_id") == 26427 and newsletter.get("cadence") == "monthly":
-        findings.append({"severity": "pass", "code": "newsletter.monthly", "message": "Homeroom newsletter metadata is monthly on course 26427", "target": "newsletterDraft"})
+    if newsletter.get("course_id") == 26429 and newsletter.get("cadence") == "monthly":
+        findings.append({"severity": "pass", "code": "newsletter.monthly", "message": "Homeroom newsletter metadata is monthly on course 26429", "target": "newsletterDraft"})
     else:
         findings.append({"severity": "fail", "code": "newsletter.monthly", "message": "Homeroom newsletter metadata is missing or incorrect", "target": "newsletterDraft"})
     if update.get("body_text") == phase22.newsletter_update_body(update.get("month_label") or ""):

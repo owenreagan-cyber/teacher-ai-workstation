@@ -19,6 +19,12 @@ paths = [
     "config/curriculum/canvas/agenda-page-rules.json",
     "config/curriculum/canvas/quarter-subject-activation-2026-2027.json",
     "config/curriculum/canvas/weekly-agenda-standard-2026-2027.json",
+    "config/curriculum/canvas/pacing-translation-rules-2026-2027.json",
+    "config/curriculum/canvas/math-work-patterns-2026-2027.json",
+    "config/curriculum/canvas/assessment-announcement-policy-2026-2027.json",
+    "config/curriculum/canvas/reading-spelling-work-patterns-2026-2027.json",
+    "config/curriculum/canvas/assignment-routing-contract-2026-2027.json",
+    "config/curriculum/canvas/mastery-tracker-policy-2026-2027.json",
 ]
 
 for relative in paths:

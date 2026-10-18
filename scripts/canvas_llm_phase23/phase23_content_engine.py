@@ -267,6 +267,9 @@ def translate_student_facing_pacing(raw: str) -> tuple[str, bool]:
     if not text:
         return "", True
 
+    # Collapse "CP 13" -> "CP13" so the token-level CP rule recognizes it.
+    text = re.sub(r"\bCP\s+(?=\d)", "CP", text, flags=re.IGNORECASE)
+
     segments = [segment.strip() for segment in re.split(r"[/;]", text) if segment.strip()]
     translated_segments: list[str] = []
     resolved = True
@@ -285,7 +288,7 @@ def translate_student_facing_pacing(raw: str) -> tuple[str, bool]:
         if segment not in deduped:
             deduped.append(segment)
 
-    return "; ".join(deduped), resolved
+    return " / ".join(deduped), resolved
 
 
 def _translate_pacing_token(token: str) -> tuple[str, bool]:
@@ -1113,6 +1116,8 @@ def build_assignments(week: InstructionalWeek, entries: list[PacingEntry]) -> li
             group_name = "Tests/Assessments"
         elif entry.subject == "spelling":
             group_name = "Assessments"
+        elif entry.subject == "language-arts":
+            group_name = "Classwork" if meta.get("gradeRole") == "classwork" else "Assessments"
         selection_metadata = dict(meta)
         assignments.append(
             AssignmentDraft(
@@ -1440,8 +1445,8 @@ def validate_packet(packet: dict[str, Any], fixture: dict[str, Any] | None = Non
     if not newsletter:
         findings.append(ValidationFinding("fail", "newsletter.missing", "Monthly Homeroom newsletter must be serialized", "newsletter"))
     else:
-        if newsletter.get("course_id") != 26427:
-            findings.append(ValidationFinding("fail", "newsletter.course", "Homeroom newsletter must route to course 26427", newsletter.get("local_object_id")))
+        if newsletter.get("course_id") != 26429:
+            findings.append(ValidationFinding("fail", "newsletter.course", "Homeroom newsletter must route to course 26429", newsletter.get("local_object_id")))
         elif newsletter.get("title") != f"Homeroom Newsletter — {newsletter.get('month_label')}":
             findings.append(ValidationFinding("fail", "newsletter.title", "Newsletter title must use approved monthly pattern", newsletter.get("local_object_id")))
         elif newsletter.get("cadence") != "monthly" or newsletter.get("artifact_kind") != "newsletter":
@@ -1924,7 +1929,7 @@ def command_self_test(args: argparse.Namespace) -> int:
     assert translate_student_facing_pacing("Ch.2.3") == ("Chapter 2, Lesson 3", True)
     assert translate_student_facing_pacing("2.3 / Ch.2.3") == ("Chapter 2, Lesson 3", True)
     assert translate_student_facing_pacing("CP6 / 2.3") == (
-        "Classroom Practice 6; Chapter 2, Lesson 3",
+        "Classroom Practice 6 / Chapter 2, Lesson 3",
         True,
     )
     assert translate_student_facing_pacing("MTS Ch1") == ("Mountains Chapter 1", True)

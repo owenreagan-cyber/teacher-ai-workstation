@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "phase": "J",
+  "policy_id": "deterministic-query-explanation-layer",
+  "query_types": [
+    "entity_lookup",
+    "relationship_lookup",
+    "evidence_lookup",
+    "recovery_candidate_lookup",
+    "project_lookup",
+    "application_lookup",
+    "resource_lookup"
+  ],
+  "scopes": [
+    "active",
+    "classroom_ready",
+    "teacher_only",
+    "student_safe",
+    "restricted",
+    "superseded",
+    "all",
+    "unreviewed",
+    "conflicts"
+  ],
+  "registry_inputs": [
+    "registry/projects.json",
+    "registry/applications.json"
+  ],
+  "evidence_inputs": [
+    {
+      "phase": "D",
+      "run_id": "run:history-project-metadata-pilot-20260913t004754454694z",
+      "artifact_ref": "observations/run:history-project-metadata-pilot-20260913t004754454694z.json"
+    },
+    {
+      "phase": "E",
+      "run_id": "run:history-project-intelligence-pilot-20260913t010602083477z",
+      "artifact_ref": "observations/run:history-project-intelligence-pilot-20260913t010602083477z-project.json"
+    },
+    {
+      "phase": "F",
+      "run_id": "run:grade-4-writing-application-pilot-20260913t012118468832z",
+      "artifact_ref": "observations/run:grade-4-writing-application-pilot-20260913t012118468832z-application.json"
+    },
+    {
+      "phase": "G",
+      "run_id": "run:relationship-intelligence-pilot-20260913t020208966961z",
+      "artifact_ref": "relationships/run:relationship-intelligence-pilot-20260913t020208966961z.json"
+    }
+  ],
+  "restricted_permission": "workspace.restricted.read",
+  "default_scope": "all",
+  "deterministic_ordering": true,
+  "unknown_preserved": true,
+  "uncertainty_visible": true,
+  "live_recovery_candidates_enabled": false,
+  "ai_enabled": false,
+  "action_capabilities": []
+}

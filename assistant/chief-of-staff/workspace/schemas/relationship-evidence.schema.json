@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Relationship Preparation Evidence",
+  "type": "object",
+  "required": ["schema_version", "evidence_id", "run_id", "source_id", "possible_relationship", "basis", "confidence", "review_state", "authority_claim", "automatic_linking"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "evidence_id": {"type": "string", "pattern": "^relationship-evidence:[a-z0-9][a-z0-9._-]*$"},
+    "run_id": {"type": "string", "pattern": "^run:[a-z0-9][a-z0-9._-]*$"},
+    "source_id": {"const": "history-project-local"},
+    "possible_relationship": {"const": "project-to-registry"},
+    "basis": {
+      "type": "object",
+      "required": ["rule", "source_ref", "target_ref"],
+      "properties": {
+        "rule": {"const": "approved_source_mapping"},
+        "source_ref": {"const": "project:history"},
+        "target_ref": {"const": "registry-system:history"}
+      },
+      "additionalProperties": false
+    },
+    "confidence": {"const": "high"},
+    "review_state": {"const": "unreviewed"},
+    "authority_claim": {"const": "none"},
+    "automatic_linking": {"const": false}
+  },
+  "additionalProperties": false
+}

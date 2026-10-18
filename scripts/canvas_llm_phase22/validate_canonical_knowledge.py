@@ -176,8 +176,8 @@ checks.extend(
             "Inactive Science policy is untouched",
         ),
         (
-            current["homeroom"]["courseId"] == 26427,
-            "2026-2027 Homeroom resolves to course 26427",
+            current["homeroom"]["courseId"] == 26429,
+            "2026-2027 Homeroom resolves to course 26429",
         ),
         (
             current["homeroom"]["newsletterCadence"] == "monthly",
@@ -378,8 +378,8 @@ checks.extend(
             "Subject agenda links are forbidden",
         ),
         (
-            agenda["rules"]["homeworkLabel"] == "Homework",
-            "Subject agenda uses Homework label",
+            agenda["rules"]["homeworkLabel"] == "At Home",
+            "Subject agenda uses At Home label",
         ),
         (
             weekly_agenda["sections"]["remindersOnly"] is True,
@@ -390,8 +390,8 @@ checks.extend(
             "Weekly agenda standard forbids resource sections",
         ),
         (
-            weekly_agenda["dailyLayout"]["rightColumn"] == "Homework",
-            "Weekly agenda right column is Homework",
+            weekly_agenda["dailyLayout"]["rightColumn"] == "At Home",
+            "Weekly agenda right column is At Home",
         ),
         (
             weekly_agenda["contentRules"]["studyGuidesAllowed"] is False,
@@ -444,7 +444,7 @@ translation_checks = [
     ),
     (
         p23.translate_student_facing_pacing("CP6 / 2.3")
-        == ("Classroom Practice 6; Chapter 2, Lesson 3", True),
+        == ("Classroom Practice 6 / Chapter 2, Lesson 3", True),
         "Shurley combined shorthand translates to full-word wording",
     ),
     (
@@ -459,6 +459,55 @@ translation_checks = [
         p23.student_facing_subject_title("language-arts", "CP6")
         == "ELA4: Classroom Practice 6",
         "Language Arts shorthand translates before student-facing rendering",
+    ),
+    (
+        p23.translate_student_facing_pacing("3.1") == ("Chapter 3, Lesson 1", True),
+        "Shurley 3.1 translates to Chapter 3, Lesson 1",
+    ),
+    (
+        p23.translate_student_facing_pacing("3.2 / CP 13")
+        == ("Chapter 3, Lesson 2 / Classroom Practice 13", True),
+        "Shurley 3.2 / CP 13 translates with slash separator",
+    ),
+    (
+        p23.translate_student_facing_pacing("3.3 / CP 14")
+        == ("Chapter 3, Lesson 3 / Classroom Practice 14", True),
+        "Shurley 3.3 / CP 14 translates with slash separator",
+    ),
+]
+
+# Language Arts alternates Shurley and Writing; only explicit Classroom
+# Practice entries become Canvas assignments (Classwork group).
+classroom_practice_checks = [
+    (
+        p.language_arts_classroom_practices({"title": "3.2 / CP 13", "in_class": "", "notes": ""}) == [13],
+        "Language Arts '3.2 / CP 13' lists Classroom Practice 13",
+    ),
+    (
+        p.language_arts_classroom_practices(
+            {"title": "Chapter 3, Lesson 2 / Classroom Practice 14", "in_class": "", "notes": ""}
+        ) == [14],
+        "Language Arts full-word Classroom Practice 14 is detected",
+    ),
+    (
+        p.language_arts_classroom_practices({"title": "Chapter 3, Lesson 1", "in_class": "", "notes": ""}) == [],
+        "Plain Shurley lesson without CP produces no assignment",
+    ),
+    (
+        p.language_arts_classroom_practices({"title": "Introduction Writing", "in_class": "", "notes": ""}) == [],
+        "Writing activity (Introduction Writing) produces no assignment",
+    ),
+    (
+        p.language_arts_classroom_practices({"title": "Writing Map", "in_class": "", "notes": ""}) == [],
+        "Writing activity (Writing Map) produces no assignment",
+    ),
+    (
+        p.language_arts_classroom_practice_title(13) == "ELA4A: Classroom Practice 13",
+        "Classroom Practice title uses ELA4A: class-section prefix",
+    ),
+    (
+        p.language_arts_classroom_practice_title(14) == "ELA4A: Classroom Practice 14",
+        "Classroom Practice 14 title uses ELA4A: class-section prefix",
     ),
 ]
 
@@ -475,8 +524,35 @@ reminder_checks = [
     ),
 ]
 
+# Weekly-update announcement must embed the full verified agenda (OWNER_POLICY).
+weekly_update_checks = [
+    (
+        load_json("config/curriculum/canvas/weekly-update-announcement-contract-2026-2027.json")[
+            "mustNot"
+        ][0]
+        == "summarize only part of the agenda",
+        "Weekly-update contract forbids partial-agenda summaries",
+    ),
+    (
+        load_json("config/curriculum/canvas/weekly-update-announcement-contract-2026-2027.json")[
+            "verificationContract"
+        ]["weeklyUpdateAgendaHashEqualsPageAgendaHash"]
+        == "PASS",
+        "Weekly-update contract requires agenda-hash == page-hash",
+    ),
+    (
+        load_json("config/curriculum/canvas/weekly-update-announcement-contract-2026-2027.json")[
+            "q2w1AuditResult"
+        ]["classification"]
+        == "content-format-regression",
+        "Q2W1 weekly-update omission was classified as a content-format regression",
+    ),
+]
+
 checks.extend(translation_checks)
 checks.extend(reminder_checks)
+checks.extend(classroom_practice_checks)
+checks.extend(weekly_update_checks)
 
 failures = 0
 

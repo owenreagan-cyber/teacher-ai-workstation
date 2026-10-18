@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "History Project Metadata Intelligence Pilot",
+  "type": "object",
+  "required": ["schema_version", "phase", "pilot_id", "project_id", "source_id", "parent_source_id", "approved_root_ref", "approved_subtree", "representation_id", "purpose", "approval", "limits", "git_operations", "prohibitions", "output_root_ref", "authority_claim"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "phase": {"const": "E"},
+    "pilot_id": {"const": "history-project-intelligence-pilot"},
+    "project_id": {"const": "project:history"},
+    "source_id": {"const": "history-project-local"},
+    "parent_source_id": {"const": "projects-local"},
+    "approved_root_ref": {"const": "projects/history"},
+    "approved_subtree": {"const": "."},
+    "representation_id": {"const": "representation:history:local-git"},
+    "purpose": {"const": "software project metadata observation"},
+    "approval": {
+      "type": "object",
+      "required": ["approved_by", "basis", "approval_id"],
+      "properties": {
+        "approved_by": {"const": "teacher"},
+        "basis": {"const": "explicit_phase_e_mission"},
+        "approval_id": {"const": "approval:phase-e-history-project-intelligence-pilot"}
+      },
+      "additionalProperties": false
+    },
+    "limits": {
+      "type": "object",
+      "required": ["max_git_commands", "git_command_timeout_seconds", "max_status_records"],
+      "properties": {
+        "max_git_commands": {"const": 5},
+        "git_command_timeout_seconds": {"const": 10},
+        "max_status_records": {"const": 500}
+      },
+      "additionalProperties": false
+    },
+    "git_operations": {"type": "array", "minItems": 5, "maxItems": 5, "uniqueItems": true, "items": {"enum": ["detect_repository", "verify_repository_root", "read_current_branch", "read_head", "summarize_dirty_state"]}},
+    "prohibitions": {
+      "type": "object",
+      "required": ["source_content_read", "read_readme", "read_package_manifests", "read_dependencies", "read_commit_messages", "read_commit_history", "enumerate_other_branches", "git_mutation", "filesystem_enumeration", "recommendations", "project_state_decision"],
+      "properties": {
+        "source_content_read": {"const": false},
+        "read_readme": {"const": false},
+        "read_package_manifests": {"const": false},
+        "read_dependencies": {"const": false},
+        "read_commit_messages": {"const": false},
+        "read_commit_history": {"const": false},
+        "enumerate_other_branches": {"const": false},
+        "git_mutation": {"const": false},
+        "filesystem_enumeration": {"const": false},
+        "recommendations": {"const": false},
+        "project_state_decision": {"const": false}
+      },
+      "additionalProperties": false
+    },
+    "output_root_ref": {"const": ".local/chief-of-staff/workspace/"},
+    "authority_claim": {"const": "none"}
+  },
+  "additionalProperties": false
+}

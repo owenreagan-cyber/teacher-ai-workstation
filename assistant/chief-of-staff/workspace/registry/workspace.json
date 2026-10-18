@@ -1,0 +1,112 @@
+{
+  "schema_version": "1.0.0",
+  "registry_type": "workspace_policy",
+  "phase": "phase_b_static_policy",
+  "workspace_id": "owen-primary-workspace",
+  "host_id": "local-host-reference",
+  "default_effect": "deny",
+  "recursive_scan_policy": {
+    "implicit_recursion_allowed": false,
+    "never_recursive_scan_roots": ["/Users/owen"]
+  },
+  "areas": [
+    {
+      "id": "projects",
+      "locator_ref": "host-path:projects",
+      "purpose": "active_development",
+      "risk_level": "high",
+      "default_access": "deny",
+      "indexing_policy": "approved_children_only",
+      "mutation_policy": "never_automatic",
+      "sensitivity_ceiling": "restricted"
+    },
+    {
+      "id": "documents",
+      "locator_ref": "host-path:documents",
+      "purpose": "teacher_and_personal_working_documents",
+      "risk_level": "high",
+      "default_access": "deny",
+      "indexing_policy": "explicit_subtree_only",
+      "mutation_policy": "approval_required",
+      "sensitivity_ceiling": "restricted"
+    },
+    {
+      "id": "desktop",
+      "locator_ref": "host-path:desktop",
+      "purpose": "short_lived_active_workspace",
+      "risk_level": "high",
+      "default_access": "deny",
+      "indexing_policy": "explicit_subtree_only",
+      "mutation_policy": "recommendations_only",
+      "sensitivity_ceiling": "restricted"
+    },
+    {
+      "id": "downloads",
+      "locator_ref": "host-path:downloads",
+      "purpose": "temporary_intake",
+      "risk_level": "high",
+      "default_access": "deny",
+      "indexing_policy": "opt_in_metadata_only",
+      "mutation_policy": "recommendations_only",
+      "sensitivity_ceiling": "restricted"
+    },
+    {
+      "id": "applications",
+      "locator_ref": "host-path:applications",
+      "purpose": "installed_tools",
+      "risk_level": "high",
+      "default_access": "deny",
+      "indexing_policy": "bundle_metadata_only",
+      "mutation_policy": "forbidden",
+      "sensitivity_ceiling": "teacher_internal"
+    },
+    {
+      "id": "library",
+      "locator_ref": "host-path:library",
+      "purpose": "system_application_and_private_state",
+      "risk_level": "critical",
+      "default_access": "deny",
+      "indexing_policy": "denied",
+      "mutation_policy": "forbidden",
+      "sensitivity_ceiling": "restricted"
+    },
+    {
+      "id": "cloud-storage",
+      "locator_ref": "host-path:cloud-storage",
+      "purpose": "provider_managed_synchronized_storage",
+      "risk_level": "critical",
+      "default_access": "deny",
+      "indexing_policy": "approved_provider_subtree_only",
+      "mutation_policy": "approval_required",
+      "sensitivity_ceiling": "restricted"
+    },
+    {
+      "id": "archives",
+      "locator_ref": "host-path:archives",
+      "purpose": "historical_material",
+      "risk_level": "high",
+      "default_access": "deny",
+      "indexing_policy": "approved_archive_roots_only",
+      "mutation_policy": "approval_required",
+      "sensitivity_ceiling": "restricted"
+    },
+    {
+      "id": "external-storage",
+      "locator_ref": "host-path:external-storage",
+      "purpose": "removable_backup_and_network_storage",
+      "risk_level": "critical",
+      "default_access": "deny",
+      "indexing_policy": "denied_until_registered",
+      "mutation_policy": "approval_required",
+      "sensitivity_ceiling": "restricted"
+    }
+  ],
+  "registry_relationships": [
+    {"registry_id": "teacher-resource-registry-v1", "role": "federated_reference_only"},
+    {"registry_id": "teacher-knowledge-vault", "role": "federated_reference_only"},
+    {"registry_id": "workspace-projects", "role": "owned_project_policy"},
+    {"registry_id": "workspace-applications", "role": "owned_application_policy"},
+    {"registry_id": "workspace-storage", "role": "owned_storage_policy"},
+    {"registry_id": "chief-of-staff-memory-workflows", "role": "reviewed_context_only"}
+  ]
+}

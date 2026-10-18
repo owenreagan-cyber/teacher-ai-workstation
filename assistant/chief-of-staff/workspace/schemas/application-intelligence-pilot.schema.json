@@ -1,0 +1,64 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Grade 4 Writing Application Metadata Pilot",
+  "type": "object",
+  "required": ["schema_version", "phase", "pilot_id", "application_concept_id", "application_instance_id", "source_id", "parent_source_id", "approved_bundle_ref", "approved_relative_path", "representation_id", "purpose", "approval", "metadata_keys", "limits", "prohibitions", "output_root_ref", "authority_claim"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "phase": {"const": "F"},
+    "pilot_id": {"const": "grade-4-writing-application-pilot"},
+    "application_concept_id": {"const": "application-concept:grade-4-writing-launcher"},
+    "application_instance_id": {"const": "application-instance:grade-4-writing-local"},
+    "source_id": {"const": "grade-4-writing-application-local"},
+    "parent_source_id": {"const": "applications-local"},
+    "approved_bundle_ref": {"const": "applications/grade-4-writing.app"},
+    "approved_relative_path": {"const": "Grade 4 Writing.app"},
+    "representation_id": {"const": "representation:grade-4-writing:installed-bundle"},
+    "purpose": {"const": "application metadata observation pilot"},
+    "approval": {
+      "type": "object",
+      "required": ["approved_by", "basis", "approval_id"],
+      "properties": {
+        "approved_by": {"const": "teacher"},
+        "basis": {"const": "explicit_phase_f_mission"},
+        "approval_id": {"const": "approval:phase-f-grade-4-writing-application-pilot"}
+      },
+      "additionalProperties": false
+    },
+    "metadata_keys": {"type": "array", "minItems": 4, "maxItems": 4, "uniqueItems": true, "items": {"enum": ["kMDItemDisplayName", "kMDItemCFBundleIdentifier", "kMDItemVersion", "kMDItemContentType"]}},
+    "limits": {
+      "type": "object",
+      "required": ["max_metadata_queries", "query_timeout_seconds"],
+      "properties": {
+        "max_metadata_queries": {"const": 4},
+        "query_timeout_seconds": {"const": 5}
+      },
+      "additionalProperties": false
+    },
+    "prohibitions": {
+      "type": "object",
+      "required": ["application_discovery", "bundle_enumeration", "bundle_content_read", "application_launch", "application_execution", "application_modification", "container_read", "preferences_read", "cache_read", "database_read", "signing_analysis", "dependency_analysis", "usage_history", "screenshots", "recommendations"],
+      "properties": {
+        "application_discovery": {"const": false},
+        "bundle_enumeration": {"const": false},
+        "bundle_content_read": {"const": false},
+        "application_launch": {"const": false},
+        "application_execution": {"const": false},
+        "application_modification": {"const": false},
+        "container_read": {"const": false},
+        "preferences_read": {"const": false},
+        "cache_read": {"const": false},
+        "database_read": {"const": false},
+        "signing_analysis": {"const": false},
+        "dependency_analysis": {"const": false},
+        "usage_history": {"const": false},
+        "screenshots": {"const": false},
+        "recommendations": {"const": false}
+      },
+      "additionalProperties": false
+    },
+    "output_root_ref": {"const": ".local/chief-of-staff/workspace/"},
+    "authority_claim": {"const": "none"}
+  },
+  "additionalProperties": false
+}

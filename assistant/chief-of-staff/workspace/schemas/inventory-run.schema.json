@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "InventoryRun",
+  "type": "object",
+  "required": ["schema_version", "run_id", "started_at", "completed_at", "purpose", "approval", "approved_source_id", "approved_subtree", "permissions", "limits", "hash_policy", "content_read_policy", "prohibited_operations", "status", "errors"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "run_id": {"type": "string", "pattern": "^run:[a-z0-9][a-z0-9._-]*$"},
+    "started_at": {"type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$"},
+    "completed_at": {"type": ["string", "null"]},
+    "purpose": {"type": "string"},
+    "approval": {
+      "type": "object",
+      "required": ["approval_id", "approved_by", "approved_at", "basis"],
+      "properties": {
+        "approval_id": {"type": "string", "pattern": "^approval:[a-z0-9][a-z0-9._-]*$"},
+        "approved_by": {"const": "teacher"},
+        "approved_at": {"type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$"},
+        "basis": {"enum": ["explicit_mission", "explicit_run_approval"]}
+      },
+      "additionalProperties": false
+    },
+    "approved_source_id": {"type": "string", "pattern": "^[a-z][a-z0-9-]*$"},
+    "approved_subtree": {"type": "string", "pattern": "^(?!/)(?!.*(^|/)\\.\\.(/|$))[A-Za-z0-9._ -]+(/[A-Za-z0-9._ -]+)*$"},
+    "permissions": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"enum": ["metadata_enumeration", "basic_stat_metadata", "record_unavailable_items", "record_cloud_placeholders", "read_git_metadata", "read_application_metadata"]}},
+    "limits": {
+      "type": "object",
+      "required": ["max_depth", "max_items", "max_duration_seconds", "follow_symlinks", "cross_filesystem"],
+      "properties": {
+        "max_depth": {"type": "integer"},
+        "max_items": {"type": "integer"},
+        "max_duration_seconds": {"type": "integer"},
+        "follow_symlinks": {"const": false},
+        "cross_filesystem": {"const": false}
+      },
+      "additionalProperties": false
+    },
+    "hash_policy": {"const": "forbidden"},
+    "content_read_policy": {"const": "metadata_only_no_content"},
+    "prohibited_operations": {"type": "array", "minItems": 7, "uniqueItems": true, "items": {"enum": ["content_read", "hashing", "writes", "symlink_following", "cloud_download", "unapproved_recursion", "source_escape"]}},
+    "status": {"enum": ["planned", "running", "completed", "failed", "cancelled"]},
+    "errors": {"type": "array", "items": {"type": "object", "required": ["code", "message"], "properties": {"code": {"type": "string"}, "message": {"type": "string"}}, "additionalProperties": false}}
+  },
+  "additionalProperties": false
+}

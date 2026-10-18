@@ -1,0 +1,114 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Phase L.5D AI Context Package",
+  "type": "object",
+  "required": ["schema_version", "context_id", "created_at", "purpose", "entities", "relationships", "evidence_summary", "confidence", "uncertainties", "authority_context", "review_state", "capabilities", "actions", "restrictions", "raw_observations_included", "action_authority"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "context_id": {"type": "string", "pattern": "^ai-context-package:[a-z0-9][a-z0-9._:-]*$"},
+    "created_at": {"type": "string"},
+    "purpose": {"const": "explain_entity"},
+    "entities": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["entity_id", "label", "type", "summary", "classification"],
+        "properties": {
+          "entity_id": {"type": "string"},
+          "label": {"type": "string"},
+          "type": {"type": "string"},
+          "summary": {"type": "string"},
+          "classification": {"enum": ["public", "teacher_internal", "student_safe"]}
+        },
+        "additionalProperties": false
+      }
+    },
+    "relationships": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["relationship_id", "relationship_type", "direction", "related_entity_id", "evidence_id", "confidence", "review_state", "authority_effect"],
+        "properties": {
+          "relationship_id": {"type": "string"},
+          "relationship_type": {"type": "string"},
+          "direction": {"enum": ["incoming", "outgoing"]},
+          "related_entity_id": {"type": "string"},
+          "evidence_id": {"type": "string"},
+          "confidence": {"enum": ["high", "medium", "low", "unknown"]},
+          "review_state": {"enum": ["unreviewed", "reviewed", "approved", "rejected", "deferred"]},
+          "authority_effect": {"const": "none"}
+        },
+        "additionalProperties": false
+      }
+    },
+    "evidence_summary": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["evidence_id", "evidence_type", "claim", "sources", "confidence", "review_state", "authority_effect", "action_authority"],
+        "properties": {
+          "evidence_id": {"type": "string"},
+          "evidence_type": {"type": "string"},
+          "claim": {"type": "string"},
+          "sources": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string"}},
+          "confidence": {"enum": ["high", "medium", "low", "unknown"]},
+          "review_state": {"enum": ["unreviewed", "reviewed", "approved", "rejected", "deferred"]},
+          "authority_effect": {"const": "none"},
+          "action_authority": {"const": "none"}
+        },
+        "additionalProperties": false
+      }
+    },
+    "confidence": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["subject_ref", "value", "basis"],
+        "properties": {
+          "subject_ref": {"type": "string"},
+          "value": {"enum": ["high", "medium", "low", "unknown"]},
+          "basis": {"enum": ["deterministic_explanation", "evidence_package"]}
+        },
+        "additionalProperties": false
+      }
+    },
+    "uncertainties": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string"}},
+    "authority_context": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["subject_ref", "role", "scope", "basis"],
+        "properties": {
+          "subject_ref": {"type": "string"},
+          "role": {"enum": ["canonical", "deployment", "mirror", "backup", "archive", "unknown"]},
+          "scope": {"enum": ["source_code", "curriculum_binary", "registry_metadata", "classroom_deployment", "backup_recovery", "application_bundle", "unknown"]},
+          "basis": {"type": "string"}
+        },
+        "additionalProperties": false
+      }
+    },
+    "review_state": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["subject_ref", "state"],
+        "properties": {
+          "subject_ref": {"type": "string"},
+          "state": {"enum": ["unreviewed", "reviewed", "approved", "rejected", "deferred"]}
+        },
+        "additionalProperties": false
+      }
+    },
+    "capabilities": {"type": "array", "minItems": 1, "maxItems": 1, "uniqueItems": true, "items": {"const": "explain"}},
+    "actions": {"type": "array", "maxItems": 0, "items": {"type": "string"}},
+    "restrictions": {"type": "array", "minItems": 9, "maxItems": 9, "uniqueItems": true, "items": {"type": "string"}},
+    "raw_observations_included": {"const": false},
+    "action_authority": {"const": "none"}
+  },
+  "additionalProperties": false
+}

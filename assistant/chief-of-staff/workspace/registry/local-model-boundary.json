@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "phase": "L.5D",
+  "policy_id": "local-model-context-boundary",
+  "mode": "contract_only",
+  "contract_created_at": "2026-09-13T00:00:00Z",
+  "source_layers": [
+    "query_layer",
+    "explanation_layer",
+    "evidence_layer"
+  ],
+  "model_contract": {
+    "runtime": "ollama",
+    "model": "qwen3.5:35b",
+    "family": "Qwen 3.5 35B MoE",
+    "quantization": "Q4_K_M",
+    "runtime_validation": "owner_confirmed",
+    "connector_enabled": false,
+    "execution_enabled": false
+  },
+  "tasks": [
+    "explain"
+  ],
+  "capabilities": [
+    "explain"
+  ],
+  "actions": [],
+  "restrictions": [
+    "no_application_access",
+    "no_authority_inference",
+    "no_cloud_connection",
+    "no_filesystem_access",
+    "no_launch_access",
+    "no_modification_rights",
+    "no_permission_inference",
+    "no_restore_or_deletion_rights",
+    "no_tools"
+  ],
+  "sanitization": {
+    "inherits": "registry/ai-trust-policy.json",
+    "projection_mode": "generated_allowlist_projection",
+    "raw_observations_allowed": false,
+    "student_data_allowed": false,
+    "private_documents_allowed": false,
+    "filesystem_handles_allowed": false
+  },
+  "persistence": {
+    "context_packages": false,
+    "model_requests": false,
+    "model_responses": false,
+    "audit_records": false
+  },
+  "network_enabled": false,
+  "model_invocation_enabled": false,
+  "agent_enabled": false,
+  "tool_calling_enabled": false,
+  "action_execution_enabled": false,
+  "host_local_ai_data_enabled": false
+}

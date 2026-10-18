@@ -20,6 +20,8 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
 
+from scripts.instructional_weeks import parse_week_range
+
 from . import constants as C
 
 REPO_ROOT = C.REPO_ROOT
@@ -73,17 +75,14 @@ def fetch_pacing(fresh: bool = True, raw_csv_path: Path | None = None) -> tuple[
 def week_bounds_from_title(title: str) -> tuple[datetime, datetime] | None:
     """Parse a page title like 'Q2W1 - October 12–16, 2026' into (start, end).
 
-    Weeks are always Monday-Friday, so end = start + 4 days. Handles same-month
-    and cross-month ranges (e.g. 'November 30–December 4, 2026')."""
-    m = re.search(r"\s([A-Za-z]+ \d{1,2})\s*[–-]", title)
-    y = re.search(r",\s*(\d{4})\s*$", title)
-    if not m or not y:
+    Uses the shared parser (scripts/instructional_weeks.py), which handles
+    same-month, cross-month ('November 30–December 4, 2026') and cross-year
+    ranges."""
+    bounds = parse_week_range(title)
+    if bounds is None:
         return None
-    try:
-        start = datetime.strptime(f"{m.group(1)} {y.group(1)}", "%B %d %Y")
-    except ValueError:
-        return None
-    return start, start + timedelta(days=4)
+    start, end = bounds
+    return datetime(start.year, start.month, start.day), datetime(end.year, end.month, end.day)
 
 
 def week_bounds(week_code: str) -> tuple[datetime, datetime] | None:

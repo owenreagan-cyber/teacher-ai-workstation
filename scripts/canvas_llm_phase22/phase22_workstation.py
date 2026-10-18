@@ -8,6 +8,8 @@ from pathlib import Path
 from typing import Any
 from zoneinfo import ZoneInfo
 REPO_ROOT=Path(__file__).resolve().parents[2]; APP_DIR=REPO_ROOT/'apps/predictive-weekly-planning'
+if str(REPO_ROOT) not in sys.path: sys.path.insert(0,str(REPO_ROOT))
+from scripts.instructional_weeks import parse_week_range  # noqa: E402
 LOCAL_ROOT=REPO_ROOT/'.local/canvas-llm/phase-22-predictive-weekly-planning'; DEFAULT_DB_PATH=LOCAL_ROOT/'workstation.sqlite3'
 RAW_IMPORT_PATH=REPO_ROOT/'.local/pacing-imports/2025-2026-reagan-pacing-guide.csv'; SYNTHETIC_FIXTURE_PATH=REPO_ROOT/'fixtures/canvas-llm/phase-22/synthetic-pacing-guide.csv'; COMMITTED_DEMO_PATH=APP_DIR/'data/phase22-demo.json'
 UTC=timezone.utc; EASTERN=ZoneInfo('America/New_York'); WEEKDAYS=['Monday','Tuesday','Wednesday','Thursday','Friday']
@@ -24,19 +26,15 @@ NUMERIC_SCORE_RE=re.compile(r'\b(?:\d{1,3}\s*/\s*\d{1,3}|\d{1,3}\s*out of\s*\d{1
 INSTRUCTIONAL_RE=re.compile(r'\b(lesson|test|activity|lab|review|study guide|checkout|writing|project|benchmark|no school|field trip|unit|chapter|quiz|exam|continue|read|vocab|grammar|spelling|experiment|assessment|science|history)\b',re.I)
 BLUE,MAGENTA,DGRAY,WHITE='#0065a7','#c51062','#333333','#ffffff'
 DAY_BLOCK_IDS=['kl_activities2','kl_custom_block_4','kl_custom_block_3','kl_custom_block_2','kl_custom_block_1']
-DATE_RANGE_RE=re.compile(r'([A-Za-z]+)\s+(\d{1,2})[–\-](\d{1,2}),?\s*(\d{4})')
-MONTHS={'January':1,'February':2,'March':3,'April':4,'May':5,'June':6,'July':7,'August':8,'September':9,'October':10,'November':11,'December':12}
 CHECKOUT_FLUENCY_CONFIRMED={str(n):{'wpm':100,'maxErrors':2} for n in range(1,8)}
 CHECKOUT_FLUENCY_CONFIRMED.update({str(n):{'wpm':115,'maxErrors':2} for n in range(8,11)})
 CHECKOUT_FLUENCY_CONFIRMED.update({str(n):{'wpm':130,'maxErrors':2} for n in range(11,14)})
 READING_TEST_RE=re.compile(r'\bReading\s+Test\s+(\d+)\b',re.I); CHECKOUT_RE=re.compile(r'\bCheckout\s+(\d+)\b',re.I)
 _instructional_weeks_cache=None
 def parse_instructional_date_range(text):
-    clean=compact(str(text or '').replace('&nbsp;',' ')); m=DATE_RANGE_RE.search(clean)
-    if not m: return None,None
-    month,d1,d2,year=m.group(1),m.group(2),m.group(3),int(m.group(4))
-    if month not in MONTHS: return None,None
-    return date(year,MONTHS[month],int(d1)).isoformat(),date(year,MONTHS[month],int(d2)).isoformat()
+    # Shared with every other reader of the weeks config (scripts/instructional_weeks.py).
+    bounds=parse_week_range(text)
+    return (bounds[0].isoformat(),bounds[1].isoformat()) if bounds else (None,None)
 def load_instructional_weeks():
     global _instructional_weeks_cache
     if _instructional_weeks_cache: return _instructional_weeks_cache

@@ -1,0 +1,5 @@
+{"status": "ok", "events": [
+  {"title": "Test Event A", "start": "2026-10-01T09:00:00-04:00", "end": "2026-10-01T09:45:00-04:00", "all_day": false, "calendar": "Test Calendar 1"},
+  {"title": "Test Event B", "start": "2026-10-01T15:30:00-04:00", "end": "2026-10-01T16:15:00-04:00", "all_day": false, "calendar": "Test Calendar 1"},
+  {"title": "Test All-Day Event C", "start": "2026-10-01T00:00:00-04:00", "end": "2026-10-02T00:00:00-04:00", "all_day": true, "calendar": "Test Calendar 2"}
+]}

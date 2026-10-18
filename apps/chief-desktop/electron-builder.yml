@@ -1,0 +1,35 @@
+# Packaging: npm run package -> release/mac-arm64/Chief.app
+# Signing identity comes from the CSC_NAME environment variable (set by Owen). No notarization,
+# no auto-update, no login item.
+appId: local.chief-of-staff.desktop
+productName: Chief
+directories:
+  output: release
+  buildResources: build
+files:
+  - package.json
+  - out/main/**
+  - out/preload/**
+  - out/shared/**
+  - dist/renderer/**
+asar: true
+electronFuses:
+  runAsNode: false
+  enableCookieEncryption: true
+  enableNodeOptionsEnvironmentVariable: false
+  enableNodeCliInspectArguments: false
+  enableEmbeddedAsarIntegrityValidation: true
+  onlyLoadAppFromAsar: true
+mac:
+  target:
+    - target: dir
+      arch: arm64
+  category: public.app-category.productivity
+  hardenedRuntime: true
+  gatekeeperAssess: false
+  entitlements: build/entitlements.mac.plist
+  entitlementsInherit: build/entitlements.mac.plist
+  notarize: false
+  extendInfo:
+    LSUIElement: false
+publish: null

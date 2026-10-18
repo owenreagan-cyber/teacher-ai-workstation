@@ -1,0 +1,9 @@
+{"type": "search", "query": {"original": "synthetic fixture query"},
+ "web": {"type": "search", "results": [
+  {"title": "Test Result A: <strong>Synthetic</strong> Radar Page", "url": "https://example.com/test-result-a", "description": "Test snippet A. A <strong>synthetic</strong> page about weather radar &amp; forecasts for a test town."},
+  {"title": "Test Result B", "url": "https://example.org/test-result-b", "description": "Test snippet B. Synthetic hourly forecast data for testing only."},
+  {"title": "Test Result C", "url": "https://example.net/test-result-c", "description": "Test snippet C. Synthetic storm tracker description."},
+  {"title": "Test Result D", "url": "https://example.com/test-result-d", "description": "Test snippet D."},
+  {"title": "Test Result E", "url": "https://example.org/test-result-e", "description": "Test snippet E."},
+  {"title": "Test Result F (sixth, never shown)", "url": "https://example.net/test-result-f", "description": "Test snippet F."}
+ ]}}

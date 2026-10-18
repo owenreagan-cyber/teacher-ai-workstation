@@ -1,0 +1,7 @@
+The system has 68719476736 (4194304 pages with a page size of 16384).
+
+Stats:
+Pages free: 3830
+Pageouts: 410615
+
+System-wide memory free percentage: 60%

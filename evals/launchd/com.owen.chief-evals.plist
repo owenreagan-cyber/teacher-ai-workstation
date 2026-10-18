@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  Chief certification harness, overnight run at 2:00 AM (E1 Part 1).
+  Prepared only: not loaded. Install, uninstall, and check commands are in evals/README.md.
+  Paths assume the repo checkout at /Users/owen/Projects/taw-cos-m1; edit all four if it moves.
+  The run uses synthetic fixtures and a temporary COS_STATE_DIR per case; it never touches the
+  real Chief of Staff state, calendar, or reminders. It calls only local Ollama.
+-->
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>com.owen.chief-evals</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>/opt/homebrew/bin/python3.12</string>
+    <string>/Users/owen/Projects/taw-cos-m1/evals/harness/run.py</string>
+    <string>--model</string>
+    <string>real</string>
+    <string>--repeat-fast-path</string>
+    <string>360</string>
+    <string>--long-session</string>
+    <string>500</string>
+    <string>--quiet</string>
+  </array>
+  <key>WorkingDirectory</key>
+  <string>/Users/owen/Projects/taw-cos-m1</string>
+  <key>StartCalendarInterval</key>
+  <dict>
+    <key>Hour</key>
+    <integer>2</integer>
+    <key>Minute</key>
+    <integer>0</integer>
+  </dict>
+  <key>EnvironmentVariables</key>
+  <dict>
+    <key>PATH</key>
+    <string>/usr/bin:/bin:/usr/sbin:/sbin:/opt/homebrew/bin</string>
+  </dict>
+  <key>StandardOutPath</key>
+  <string>/Users/owen/Projects/taw-cos-m1/evals/results/launchd.log</string>
+  <key>StandardErrorPath</key>
+  <string>/Users/owen/Projects/taw-cos-m1/evals/results/launchd.log</string>
+  <key>RunAtLoad</key>
+  <false/>
+  <key>LowPriorityIO</key>
+  <true/>
+  <key>ProcessType</key>
+  <string>Background</string>
+</dict>
+</plist>

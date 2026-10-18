@@ -343,25 +343,25 @@ def system_status() -> dict[str, Any]:
 
 
 def self_test() -> int:
-    # Pure adapter smoke: no network, no Canvas.
+    # Pure adapter smoke: no network, no Canvas. Assert only STRUCTURAL
+    # invariants that hold regardless of Q2W3 planning state (which changes as
+    # owner input advances). Do not hard-code lifecycle/pending state here.
     weeks = list_weeks()
     assert isinstance(weeks, list)
     detail = week_detail(2, 3)
     assert detail is not None and detail["week_code"] == "Q2W3"
-    assert detail["status"] == "NEEDS_INPUT"
-    # The Science all-blank question is a stable structural fact (Science is
-    # fully blank in Q2W3). Do not hard-code the total open-question count —
-    # other questions are legitimately resolved by owner input over time.
-    open_ids = {q.get("question_id") for q in detail["open_questions"]}
-    assert "science-q2w3-all-blank" in open_ids
-    # Math is fully planned (no PENDING_SOURCE days); its Wednesday Review
-    # carries an owner override in the current packet.
-    assert all(detail["day_states"]["math"][wd] != "PENDING_SOURCE" for wd in WEEKDAYS)
-    # Science fully blank -> PENDING_SOURCE across the week.
-    for wd in WEEKDAYS:
-        assert detail["day_states"]["science"][wd] == "PENDING_SOURCE"
-    # LA partial: Wednesday blank.
-    assert detail["day_states"]["language_arts"]["Wednesday"] == "PENDING_SOURCE"
+    assert detail["status"] in IC.LIFECYCLE_STATES
+    # All academic subjects are present in the day-state map.
+    for subject in ("math", "reading_spelling", "language_arts", "science", "history"):
+        assert subject in detail["day_states"], subject
+        assert set(detail["day_states"][subject].keys()) == set(WEEKDAYS)
+    # Key payloads are present (list-shaped or dict-shaped as appropriate).
+    assert isinstance(detail["open_questions"], list)
+    assert isinstance(detail["assignments"], list)
+    assert isinstance(detail["weekly_announcements"], list)
+    assert isinstance(detail["assessment_reminders"], list)
+    assert isinstance(detail["approval_records"], dict)
+    assert isinstance(detail["draft_hashes"], dict)
     # Completed week present.
     assert latest_completed() is not None and latest_completed()["week_code"] == "Q2W2"
     print("PASS teacher-workstation adapter self-test")

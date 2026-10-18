@@ -53,7 +53,7 @@ executed = gate.attempt_live_write(decision, config=cfg)
 assert executed.gate_state == 'EXECUTED'
 
 page = writer.create_page_live(
-    course_id=26427,
+    course_id=26429,
     title='Transport Page',
     body='<p>Transport test</p>',
     approved=True,
@@ -62,9 +62,9 @@ page = writer.create_page_live(
 )
 assert page.write_status == 'WRITTEN'
 assert page.gate_state == 'EXECUTED'
-assert writer.verify_page_live(course_id=26427, page_ref=page.target_id, title='Transport Page', test_mode=True, client=client) == 'PASS'
+assert writer.verify_page_live(course_id=26429, page_ref=page.target_id, title='Transport Page', test_mode=True, client=client) == 'PASS'
 
-blocked_page = writer.create_page_live(course_id=26427, title='Blocked', body='x', approved=False, test_mode=True, client=client)
+blocked_page = writer.create_page_live(course_id=26429, title='Blocked', body='x', approved=False, test_mode=True, client=client)
 assert blocked_page.write_status == 'BLOCKED'
 
 print('PASS live transport enabled')

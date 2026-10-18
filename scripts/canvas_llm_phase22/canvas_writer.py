@@ -1164,7 +1164,7 @@ def command_self_test() -> int:
     assert cfg_live.write_mode == 'controlled'
 
     blocked = create_page_live(
-        course_id=26427,
+        course_id=26429,
         title='Blocked Page',
         body='body',
         approved=False,
@@ -1172,7 +1172,7 @@ def command_self_test() -> int:
     assert blocked.write_status == 'BLOCKED'
 
     approved_page = create_page_live(
-        course_id=26427,
+        course_id=26429,
         title='Live Test Page',
         body='<p>Live test</p>',
         approved=True,
@@ -1181,7 +1181,7 @@ def command_self_test() -> int:
     assert approved_page.write_status == 'WRITTEN'
     assert approved_page.gate_state == 'EXECUTED'
     assert verify_page_live(
-        course_id=26427,
+        course_id=26429,
         page_ref=approved_page.target_id,
         title='Live Test Page',
         front_page=False,

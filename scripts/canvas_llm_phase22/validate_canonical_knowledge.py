@@ -176,8 +176,8 @@ checks.extend(
             "Inactive Science policy is untouched",
         ),
         (
-            current["homeroom"]["courseId"] == 26427,
-            "2026-2027 Homeroom resolves to course 26427",
+            current["homeroom"]["courseId"] == 26429,
+            "2026-2027 Homeroom resolves to course 26429",
         ),
         (
             current["homeroom"]["newsletterCadence"] == "monthly",

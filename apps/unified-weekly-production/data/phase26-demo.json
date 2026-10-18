@@ -3116,7 +3116,7 @@
       "cadence": "monthly",
       "canvas_writes_allowed": false,
       "content_hash": "03f445915e8d68ee",
-      "course_id": 26427,
+      "course_id": 26429,
       "date_range": {
         "end": "2026-08-31",
         "start": "2026-08-01"
@@ -13001,7 +13001,7 @@
       "cadence": "monthly",
       "canvas_writes_allowed": false,
       "content_hash": "03f445915e8d68ee",
-      "course_id": 26427,
+      "course_id": 26429,
       "date_range": {
         "end": "2026-08-31",
         "start": "2026-08-01"
@@ -14240,7 +14240,7 @@
         },
         {
           "code": "newsletter.monthly",
-          "message": "Homeroom newsletter metadata is monthly on course 26427",
+          "message": "Homeroom newsletter metadata is monthly on course 26429",
           "severity": "pass",
           "target": "newsletterDraft"
         },
@@ -19236,7 +19236,7 @@
       "cadence": "monthly",
       "canvas_writes_allowed": false,
       "content_hash": "03f445915e8d68ee",
-      "course_id": 26427,
+      "course_id": 26429,
       "date_range": {
         "end": "2026-08-31",
         "start": "2026-08-01"
@@ -20475,7 +20475,7 @@
         },
         {
           "code": "newsletter.monthly",
-          "message": "Homeroom newsletter metadata is monthly on course 26427",
+          "message": "Homeroom newsletter metadata is monthly on course 26429",
           "severity": "pass",
           "target": "newsletterDraft"
         },

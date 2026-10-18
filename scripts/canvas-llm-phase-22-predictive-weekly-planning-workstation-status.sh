@@ -143,7 +143,7 @@ assert p.reading_assessment_family(14, '2026-07-21')['checkout'] is None
 assert p.reading_checkout_number(14) is None
 assert 'Checkout 14' not in p.reading_announcement_body(p.reading_assessment_family(14, '2026-07-21'))
 q1w5=p.instructional_week_by_code('Q1W5'); _,nl,up=p.resolve_newsletter_for_week_start(q1w5['startsOn'])
-assert nl['title']=='Homeroom Newsletter — August 2026' and nl['course_id']==26427
+assert nl['title']=='Homeroom Newsletter — August 2026' and nl['course_id']==26429
 assert up['body_text']=='The newsletter has been updated for August 2026.' and up['depends_on']==nl['local_object_id']
 monday='2026-08-17'
 assert p.daily_brief_title(monday)=='Daily Teacher Brief — Monday, August 17, 2026'

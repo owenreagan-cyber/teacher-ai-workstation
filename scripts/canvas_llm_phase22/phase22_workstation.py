@@ -522,7 +522,7 @@ def build_week_announcement_drafts(rows,week_meta=None):
     return drafts
 NEWSLETTER_SECTION_ORDER=('Important Dates','Homeroom News','School News','School Information and Event Links')
 HOMEROOM_NEWSLETTER_SUBJECT='homeroom'
-HOMEROOM_NEWSLETTER_COURSE_ID=26427
+HOMEROOM_NEWSLETTER_COURSE_ID=26429
 FORBIDDEN_NEWSLETTER_PATTERNS=(
     ('study guide','Study Guide language is forbidden in newsletter drafts'),
     ('workbook','Workbook language is forbidden in newsletter drafts'),

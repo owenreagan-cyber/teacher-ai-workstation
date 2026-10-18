@@ -1440,8 +1440,8 @@ def validate_packet(packet: dict[str, Any], fixture: dict[str, Any] | None = Non
     if not newsletter:
         findings.append(ValidationFinding("fail", "newsletter.missing", "Monthly Homeroom newsletter must be serialized", "newsletter"))
     else:
-        if newsletter.get("course_id") != 26427:
-            findings.append(ValidationFinding("fail", "newsletter.course", "Homeroom newsletter must route to course 26427", newsletter.get("local_object_id")))
+        if newsletter.get("course_id") != 26429:
+            findings.append(ValidationFinding("fail", "newsletter.course", "Homeroom newsletter must route to course 26429", newsletter.get("local_object_id")))
         elif newsletter.get("title") != f"Homeroom Newsletter — {newsletter.get('month_label')}":
             findings.append(ValidationFinding("fail", "newsletter.title", "Newsletter title must use approved monthly pattern", newsletter.get("local_object_id")))
         elif newsletter.get("cadence") != "monthly" or newsletter.get("artifact_kind") != "newsletter":

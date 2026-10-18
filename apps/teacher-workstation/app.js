@@ -27,11 +27,21 @@ const NAV = [
 
 const STATE = { detail: null, dirty: false };
 
+// Per-server-start request token, injected into index.html by the server.
+// Mutating requests must send it (with JSON content type, same origin).
+const REQUEST_TOKEN = document.querySelector('meta[name="teacher-workstation-token"]')?.content || '';
+
 async function api(path, opts) {
   const o = opts || {};
+  const method = o.method || 'GET';
+  const headers = {};
+  if (method !== 'GET') {
+    headers['Content-Type'] = 'application/json';
+    headers['X-Teacher-Workstation-Token'] = REQUEST_TOKEN;
+  }
   const r = await fetch(path, {
-    method: o.method || 'GET',
-    headers: o.body ? { 'Content-Type': 'application/json' } : {},
+    method,
+    headers,
     body: o.body ? JSON.stringify(o.body) : undefined,
   });
   const data = await r.json().catch(() => ({}));

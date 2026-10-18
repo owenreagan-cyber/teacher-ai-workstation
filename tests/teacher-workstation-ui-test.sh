@@ -114,6 +114,13 @@ for _ in $(seq 1 30); do
   sleep 0.3
 done
 
+# Route protection (D-022): writes must be same-origin, carry the per-start
+# request token from the page, and be JSON.
+TOKEN="$(curl -s "http://127.0.0.1:${PORT}/" | sed -n 's/.*name="teacher-workstation-token" content="\([^"]*\)".*/\1/p')"
+test -n "$TOKEN" || { echo "FAIL request token missing from page"; exit 1; }
+GUARD=(-H "Origin: http://127.0.0.1:${PORT}" -H "X-Teacher-Workstation-Token: ${TOKEN}" -H "Content-Type: application/json")
+echo "PASS page carries the request token"
+
 echo "--- home ---"
 HOME_JSON="$(curl -s "http://127.0.0.1:${PORT}/api/home")"
 echo "$HOME_JSON" | python3 -c "import sys,json; d=json.load(sys.stdin); assert 'today' in d and 'weeks' in d; print('PASS /api/home shape')"
@@ -148,15 +155,27 @@ print('PASS /api/completed: Q2W2')
 echo "--- index.html served ---"
 curl -s -o /dev/null -w "%{http_code}" "http://127.0.0.1:${PORT}/" | grep -q 200 && echo "PASS / serves 200"
 
+echo "--- route protection: missing token / foreign origin / wrong content type refused ---"
+code="$(curl -s -o /dev/null -w "%{http_code}" -X POST "http://127.0.0.1:${PORT}/api/weeks/2/3/approve" \
+  -H "Origin: http://127.0.0.1:${PORT}" -H "Content-Type: application/json" -d '{}')"
+test "$code" = "403" || { echo "FAIL write without token returned $code (expected 403)"; exit 1; }
+code="$(curl -s -o /dev/null -w "%{http_code}" -X POST "http://127.0.0.1:${PORT}/api/weeks/2/3/approve" \
+  -H "Origin: http://evil.example" -H "X-Teacher-Workstation-Token: ${TOKEN}" -H "Content-Type: application/json" -d '{}')"
+test "$code" = "403" || { echo "FAIL foreign-origin write returned $code (expected 403)"; exit 1; }
+code="$(curl -s -o /dev/null -w "%{http_code}" -X POST "http://127.0.0.1:${PORT}/api/weeks/2/3/approve" \
+  -H "Origin: http://127.0.0.1:${PORT}" -H "X-Teacher-Workstation-Token: ${TOKEN}" -d 'a=1')"
+test "$code" = "415" || { echo "FAIL form-encoded write returned $code (expected 415)"; exit 1; }
+echo "PASS writes without token, from a foreign origin, or not JSON are refused"
+
 echo "--- PUT/PATCH remain 405 (not implemented) ---"
 for verb in PUT PATCH; do
-  code="$(curl -s -o /dev/null -w "%{http_code}" -X "$verb" "http://127.0.0.1:${PORT}/api/weeks")"
+  code="$(curl -s -o /dev/null -w "%{http_code}" -X "$verb" "${GUARD[@]}" "http://127.0.0.1:${PORT}/api/weeks")"
   test "$code" = "405" || { echo "FAIL $verb returned $code (expected 405)"; exit 1; }
 done
 echo "PASS PUT/PATCH return 405"
 
 echo "--- POST/DELETE to non-planning routes return 405 (no arbitrary write) ---"
-code="$(curl -s -o /dev/null -w "%{http_code}" -X POST "http://127.0.0.1:${PORT}/api/weeks")"
+code="$(curl -s -o /dev/null -w "%{http_code}" -X POST "${GUARD[@]}" "http://127.0.0.1:${PORT}/api/weeks")"
 test "$code" = "405" || { echo "FAIL bare POST /api/weeks returned $code"; exit 1; }
 echo "PASS bare POST /api/weeks returns 405 (only planning routes allowed)"
 
@@ -166,7 +185,7 @@ SH="$(curl -s "http://127.0.0.1:${PORT}/api/week/2/3" | python3 -c "import sys,j
 
 # Apply an override using a clearly test-only value (never a value that could
 # be confused with real owner input like "Study for tomorrow's test.").
-curl -s -X POST "http://127.0.0.1:${PORT}/api/weeks/2/3/overrides" \
+curl -s -X POST "${GUARD[@]}" "http://127.0.0.1:${PORT}/api/weeks/2/3/overrides" \
   -H "Content-Type: application/json" \
   -d "{\"source_hash\":\"$SH\",\"subject\":\"math\",\"day\":\"Wednesday\",\"in_class\":[\"Review\"],\"at_home\":\"TEST OVERRIDE — DO NOT USE\",\"status\":\"PLANNED\",\"source_value\":\"Review\"}" \
   | python3 -c "import sys,json; d=json.load(sys.stdin); assert d['override']['at_home'].startswith('TEST OVERRIDE'); print('PASS override created')"
@@ -181,13 +200,13 @@ print('PASS override visible in week detail')
 "
 
 # Restore source (cleanup — return packet to original state).
-curl -s -X POST "http://127.0.0.1:${PORT}/api/weeks/2/3/restore-source" \
+curl -s -X POST "${GUARD[@]}" "http://127.0.0.1:${PORT}/api/weeks/2/3/restore-source" \
   -H "Content-Type: application/json" \
   -d "{\"source_hash\":\"$SH\",\"subject\":\"math\",\"day\":\"Wednesday\"}" \
   | python3 -c "import sys,json; d=json.load(sys.stdin); assert d['removed'] is True; print('PASS override restored (cleanup)')"
 
 echo "--- stale edit rejected ---"
-curl -s -X POST "http://127.0.0.1:${PORT}/api/weeks/2/3/overrides" \
+curl -s -X POST "${GUARD[@]}" "http://127.0.0.1:${PORT}/api/weeks/2/3/overrides" \
   -H "Content-Type: application/json" \
   -d '{"source_hash":"WRONG-HASH","subject":"math","day":"Wednesday","at_home":"x"}' \
   -o /dev/null -w "%{http_code}" | grep -q 409 && echo "PASS stale edit returns 409" || { echo "FAIL stale edit not rejected"; exit 1; }
@@ -195,7 +214,7 @@ curl -s -X POST "http://127.0.0.1:${PORT}/api/weeks/2/3/overrides" \
 echo "--- answer a question (then verify it is answered) ---"
 QID="$(curl -s "http://127.0.0.1:${PORT}/api/week/2/3" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d['open_questions'][0]['question_id'] if d['open_questions'] else '')")"
 if [ -n "$QID" ]; then
-  curl -s -X POST "http://127.0.0.1:${PORT}/api/weeks/2/3/questions/${QID}/answer" \
+  curl -s -X POST "${GUARD[@]}" "http://127.0.0.1:${PORT}/api/weeks/2/3/questions/${QID}/answer" \
     -H "Content-Type: application/json" \
     -d "{\"source_hash\":\"$SH\",\"answer\":\"Test answer\"}" \
     | python3 -c "import sys,json; d=json.load(sys.stdin); assert d['answered']=='$QID'; print('PASS question answered')"
@@ -216,14 +235,14 @@ else
 fi
 
 echo "--- approval: unknown artifact type rejected (400) ---"
-code="$(curl -s -o /dev/null -w "%{http_code}" -X POST "http://127.0.0.1:${PORT}/api/weeks/2/3/approve" \
+code="$(curl -s -o /dev/null -w "%{http_code}" -X POST "${GUARD[@]}" "http://127.0.0.1:${PORT}/api/weeks/2/3/approve" \
   -H "Content-Type: application/json" \
   -d "{\"source_hash\":\"$SH\",\"subject\":\"math\",\"artifact_type\":\"bogus\",\"expected_artifact_hash\":\"x\"}")"
 test "$code" = "400" || { echo "FAIL unknown artifact type returned $code (expected 400)"; exit 1; }
 echo "PASS unknown artifact type rejected"
 
 echo "--- approval: wrong artifact hash rejected (409 STALE) ---"
-code="$(curl -s -o /dev/null -w "%{http_code}" -X POST "http://127.0.0.1:${PORT}/api/weeks/2/3/approve" \
+code="$(curl -s -o /dev/null -w "%{http_code}" -X POST "${GUARD[@]}" "http://127.0.0.1:${PORT}/api/weeks/2/3/approve" \
   -H "Content-Type: application/json" \
   -d "{\"source_hash\":\"$SH\",\"subject\":\"math\",\"artifact_type\":\"page\",\"expected_artifact_hash\":\"WRONG\"}")"
 test "$code" = "409" || { echo "FAIL wrong hash returned $code (expected 409)"; exit 1; }
@@ -231,7 +250,7 @@ echo "PASS wrong artifact hash rejected with 409"
 
 echo "--- approval: approve Math page (happy path), verify provenance, revoke ---"
 MATH_PAGE_HASH="$(curl -s "http://127.0.0.1:${PORT}/api/week/2/3" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d['draft_hashes']['math']['page'])")"
-curl -s -X POST "http://127.0.0.1:${PORT}/api/weeks/2/3/approve" \
+curl -s -X POST "${GUARD[@]}" "http://127.0.0.1:${PORT}/api/weeks/2/3/approve" \
   -H "Content-Type: application/json" \
   -d "{\"source_hash\":\"$SH\",\"subject\":\"math\",\"artifact_type\":\"page\",\"expected_artifact_hash\":\"$MATH_PAGE_HASH\"}" \
   | python3 -c "import sys,json; d=json.load(sys.stdin); assert d['state']=='APPROVED'; print('PASS Math page approved')"
@@ -242,7 +261,7 @@ rec=d['approval_records']['math']['page']
 assert rec['state']=='APPROVED' and rec['approved_by']=='OWNER_UI', rec
 print('PASS approval recorded with OWNER_UI provenance + hash binding')
 "
-curl -s -X POST "http://127.0.0.1:${PORT}/api/weeks/2/3/revoke-approval" \
+curl -s -X POST "${GUARD[@]}" "http://127.0.0.1:${PORT}/api/weeks/2/3/revoke-approval" \
   -H "Content-Type: application/json" \
   -d "{\"source_hash\":\"$SH\",\"subject\":\"math\",\"artifact_type\":\"page\"}" \
   | python3 -c "import sys,json; d=json.load(sys.stdin); assert d['state']=='PENDING'; print('PASS Math page approval revoked')"
@@ -256,7 +275,7 @@ print('PASS READY_TO_PUBLISH remains false after partial approval')
 "
 
 echo "--- deployment: preflight (dry-run) returns plan, no Canvas GET ---"
-curl -s -X POST "http://127.0.0.1:${PORT}/api/weeks/2/3/preflight" \
+curl -s -X POST "${GUARD[@]}" "http://127.0.0.1:${PORT}/api/weeks/2/3/preflight" \
   -H "Content-Type: application/json" -d '{"production": false}' \
   | python3 -c "
 import sys,json
@@ -267,7 +286,7 @@ print('PASS dry-run preflight returns plan (no Canvas)')
 "
 
 echo "--- deployment: deploy without production mode is rejected ---"
-code="$(curl -s -o /dev/null -w "%{http_code}" -X POST "http://127.0.0.1:${PORT}/api/weeks/2/3/deploy" \
+code="$(curl -s -o /dev/null -w "%{http_code}" -X POST "${GUARD[@]}" "http://127.0.0.1:${PORT}/api/weeks/2/3/deploy" \
   -H "Content-Type: application/json" \
   -d '{"preflight_id":"x","expected_source_hash":"","expected_approval_snapshot_hash":"","owner_confirmation":"DEPLOY Q2W3","production":false}')"
 test "$code" = "400" || { echo "FAIL deploy without production returned $code (expected 400)"; exit 1; }
@@ -275,7 +294,7 @@ echo "PASS deploy without production rejected"
 
 echo "--- deployment: no generic Canvas proxy route ---"
 for ep in "canvas/request" "canvas/object" "canvas/update"; do
-  code="$(curl -s -o /dev/null -w "%{http_code}" -X POST "http://127.0.0.1:${PORT}/api/weeks/2/3/$ep" -d '{}')"
+  code="$(curl -s -o /dev/null -w "%{http_code}" -X POST "${GUARD[@]}" "http://127.0.0.1:${PORT}/api/weeks/2/3/$ep" -d '{}')"
   test "$code" = "405" || { echo "FAIL /api/weeks/2/3/$ep returned $code (expected 405)"; exit 1; }
 done
 echo "PASS no generic Canvas proxy route"

@@ -1,8 +1,15 @@
 #!/usr/bin/env bash
-# Teacher Workstation — local read-only UI launcher.
+# Teacher Workstation — local UI launcher.
 #
-# Starts the local-only UI server on 127.0.0.1:4310. No Canvas writes, no email,
-# no browser automation. Owen opens the printed URL himself.
+# Starts the local-only UI server on 127.0.0.1:4310. No email, no browser
+# automation; Owen opens the printed URL himself.
+#
+# Read-only use: browsing pages and GET /api/* only reads local planning state.
+# Guarded write workflow: planning edits and approvals write local .local state;
+# the deploy route is the one path to Canvas writes, behind an approved packet,
+# a fresh preflight, and Owen's typed confirmation. Every write request must be
+# same-origin, carry the per-start request token from the page, be JSON, and
+# stay under 1 MB (see scripts/teacher_workstation/server.py).
 set -euo pipefail
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"

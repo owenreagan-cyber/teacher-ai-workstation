@@ -33,7 +33,7 @@ after-merge run uses the same shim.
 | Date-dependent: today (2026-10-18) is past the planned weeks; `select_startup_week` compares `None > str`, or no manifest exists for the computed week (Q1W5), or Q2W3 detection differs | `canvas-llm-approval-queue`, `-artifact-health`, `-assignment-draft-generator`, `-canvas-dashboard`, `-canvas-operations`, `-deployment-readiness`, `-pacing-parser`, `-teacher-decisions`, `-weekly-agenda-publisher`, `-canvas-launch`, `-canvas-launch-approval`, `-canvas-launch-transport`, `-intake`, `-phase-22-*`, `-phase-23-*`, `teacher-workstation-ui-test` |
 | Local state/scheduler not readable in sandbox (`STATE=FAIL`, `SCHEDULER=FAIL`) | `canvas-llm-grade-check-test` |
 | Port 4310 / launcher behavior in sandbox | `canvas-planner-launcher-test` |
-| Python module `fitz` (PyMuPDF) not installed for python3.12; downstream JSON parse of failed subprocess output | `artifact-quality-*`, `unittest:artifact_quality`, `unittest:curriculum_production`, `unittest:lesson_blueprint`, `lesson-blueprint-status-test`, `lesson-package-status-test`, `curriculum-production-status-test` |
+| Python modules not installed for python3.12: `fitz` (PyMuPDF) for artifact quality; `yaml` (PyYAML) for curriculum production, so YAML catalogs fall back to `json.loads` and raise `JSONDecodeError` | `artifact-quality-*`, `unittest:artifact_quality`, `unittest:curriculum_production`, `unittest:lesson_blueprint`, `lesson-blueprint-status-test`, `lesson-package-status-test`, `curriculum-production-status-test` |
 
 ## Full results
 

@@ -9,11 +9,11 @@
   "main": "out/main/main.js",
   "scripts": {
     "dev": "node scripts/dev.mjs",
-    "build": "vite build && npm run build:main",
+    "build": "vite build && npm run build:main && node scripts/check-package.mjs",
     "build:main": "tsc -p tsconfig.main.json && tsc -p tsconfig.preload.json",
     "typecheck": "tsc -p tsconfig.json && tsc -p tsconfig.main.json --noEmit && tsc -p tsconfig.preload.json --noEmit",
     "test": "npm run build:main && node --test --test-concurrency=1 test/*.test.mjs && node scripts/static-checks.mjs",
-    "package": "npm run build && electron-builder --mac dir --arm64"
+    "package": "npm run build && electron-builder --mac dir --arm64 && node scripts/check-package.mjs --asar"
   },
   "devDependencies": {
     "@tailwindcss/vite": "4.3.3",

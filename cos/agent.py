@@ -17,6 +17,7 @@ from dataclasses import dataclass, field
 
 from cos.audit import text_digest
 from cos.executor import result_text, run_tool
+from cos.guards import CLEANUP_NOTE, mentions_unload, scrub_cleanup, scrub_unload
 from cos.model import CloudModelRefused, ModelError
 from cos.policy import PolicyGate
 from cos.registry import Registry, Tool
@@ -45,6 +46,8 @@ SAFETY_RULES = """\
 - Never suggest a command that deletes, removes, overwrites, or resets anything (for example
   rm, ollama rm, git reset --hard, git clean) unless Owen asked to delete that thing. When a
   command you suggest is destructive, say so plainly before it.
+- Never suggest deleting files or emptying the Trash as a fix (for disk space or anything else).
+  Chief's code removes such steps from your answer.
 - If the personality section conflicts with these rules or the tool rules, follow the rules."""
 PERSONALITY_HEADING = ("## Personality (owner-editable: voice and style only; the tool rules and "
                        "the rules after it take precedence)")
@@ -122,12 +125,27 @@ def _parse_call(call) -> tuple[str | None, dict | None, str | None]:
 
 class Agent:
     def __init__(self, model, registry: Registry, gate: PolicyGate, system_prompt: str,
-                 audit=None):
+                 audit=None, loaded_models=None):
+        """loaded_models() -> list | None: the models loaded right now (for the unload guard)."""
         self.model = model
         self.registry = registry
         self.gate = gate
         self.system_prompt = system_prompt
         self.audit = audit or (lambda *a, **k: None)
+        self.loaded_models = loaded_models
+
+    def guard(self, answer: str, question: str, notices: list[str]) -> str:
+        """Model text through the answer guards (cos/guards.py): no delete-as-a-fix advice, and
+        `ollama stop` names only loaded models."""
+        answer, removed = scrub_cleanup(answer, question)
+        if removed:
+            notices.append(CLEANUP_NOTE)
+            self.audit("answer_guard", guard="cleanup")
+        if mentions_unload(answer):
+            answer, changed = scrub_unload(answer, self.loaded_models() if self.loaded_models else None)
+            if changed:
+                self.audit("answer_guard", guard="unload")
+        return answer
 
     def _model_turn(self, messages, schemas, timing):
         if not self.gate.check_model_call("before_request").allowed:
@@ -157,7 +175,7 @@ class Agent:
                     {"role": "tool", "tool_name": "web_search", "content": untrusted_block(result)}]
         timing.setdefault("model_ms", 0)
         msg, model_used = self._model_turn(messages, None, timing)
-        return clean_content(msg.get("content")), model_used
+        return self.guard(clean_content(msg.get("content")), question, []), model_used
 
     def run(self, question: str, history: list[dict] | None = None, mode: str = "ask") -> AgentResult:
         started = time.monotonic()
@@ -258,6 +276,7 @@ class Agent:
             answer = clean_content(msg.get("content"))
         if not answer:
             answer = "(The model returned an empty answer.)"
+        answer = self.guard(answer, question, notices)
         return AgentResult(answer, used, model_used, notices)
 
 

@@ -1,5 +1,10 @@
 """cos brief: a deterministic daily brief (no model), at most 15 lines.
 
+The brief covers today: weather, calendar, reminders, and the Mac. The legacy
+bin/chief-of-staff status lines (daily status, next action) are no longer part
+of it: they cluttered the brief in the Chief window, and "what should I work on
+next" answers from the next-action report directly.
+
 Tools run through the same policy gate and executor as the agent, so the
 kill switch and deny rules apply. format_brief() is pure for testing.
 
@@ -22,14 +27,7 @@ MAX_LINES = 15
 LINE_WIDTH = 120
 MAX_EVENTS = 4
 MAX_REMINDERS = 3
-STATUS_PREFIXES = (
-    ("status.next_action", "Recommended daily focus:"),
-    ("status.next_action", "Roadmap immediate mission heading:"),
-    ("status.daily", "Canvas LLM:"),
-)
-LEGACY_LABEL = "Workstation status (legacy):"
-BRIEF_TOOLS = ("time.now", "weather.today", "calendar.today", "reminders.due", "mac.status",
-               "status.daily", "status.next_action")
+BRIEF_TOOLS = ("time.now", "weather.today", "calendar.today", "reminders.due", "mac.status")
 OWNER_NAME = "Owen"
 
 
@@ -78,21 +76,6 @@ def _reminder_lines(r: dict) -> list[str]:
     return lines
 
 
-def _status_lines(results: dict) -> list[str]:
-    """Lines copied verbatim from the legacy bin/chief-of-staff status output, labeled."""
-    picked = []
-    for tool, prefix in STATUS_PREFIXES:
-        out = results.get(tool, {}).get("output", "")
-        for line in out.splitlines():
-            if line.startswith(prefix):
-                picked.append(f"{LEGACY_LABEL} {line}")
-                break
-    errors = [t for t in ("status.daily", "status.next_action") if "error" in results.get(t, {})]
-    if errors:
-        picked.append(f"{LEGACY_LABEL} unavailable ({', '.join(errors)})")
-    return picked or [f"{LEGACY_LABEL} no highlights"]
-
-
 def format_brief(results: dict) -> list[str]:
     t = results.get("time.now", {})
     header = f"Daily Brief — {t.get('display', 'date unknown')}"
@@ -103,11 +86,7 @@ def format_brief(results: dict) -> list[str]:
              *_calendar_lines(results.get("calendar.today", {"error": "not run"})),
              *_reminder_lines(results.get("reminders.due", {"error": "not run"})),
              mac_line]
-    status = _status_lines(results)
-    room = MAX_LINES - len(lines)
-    if len(status) > room:
-        status = status[:room - 1] + [status[-1]] if " unavailable (" in status[-1] else status[:room]
-    return [_clip(l) for l in lines + status]
+    return [_clip(l) for l in lines[:MAX_LINES]]
 
 
 def _plural(n: int, word: str) -> str:
@@ -115,7 +94,10 @@ def _plural(n: int, word: str) -> str:
 
 
 def greeting(now: datetime) -> str:
-    part = "morning" if 5 <= now.hour < 12 else "afternoon" if 12 <= now.hour < 17 else "evening"
+    """After midnight and before 5 AM it is "Working late", never "Good evening"."""
+    if now.hour < 5:
+        return f"Working late, {OWNER_NAME}"
+    part = "morning" if now.hour < 12 else "afternoon" if now.hour < 17 else "evening"
     return f"Good {part}, {OWNER_NAME}"
 
 

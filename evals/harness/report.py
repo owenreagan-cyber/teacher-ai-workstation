@@ -80,6 +80,25 @@ def certs_from(records: list[dict], meta: dict) -> list[dict]:
             for cid, v in found.items()]
 
 
+UNCOMMITTED = "UNCOMMITTED CODE — not a certification run"
+
+
+def _clean_tree(meta: dict) -> bool:
+    """The run's clean-tree flag. Runs from before D-009's fix stored it as "certification";
+    a run with neither key never counts."""
+    return (meta["clean_tree"] if "clean_tree" in meta else meta.get("certification")) is True
+
+
+def certification_reasons(meta: dict, certs: list[dict]) -> list[str]:
+    """Why this run is not a certification run ([] when it is): a dirty tree, or any CERT that
+    did not pass (D-009)."""
+    reasons = [] if _clean_tree(meta) else [UNCOMMITTED]
+    failed = [c["id"] for c in certs if c["status"] != "PASS"]
+    if failed:
+        reasons.append("CERT failed: " + ", ".join(failed))
+    return reasons
+
+
 def summarize(records: list[dict], meta: dict, resources: list[dict], baseline: dict | None) -> dict:
     cases: dict[str, dict] = {}
     for r in records:
@@ -126,13 +145,16 @@ def summarize(records: list[dict], meta: dict, resources: list[dict], baseline: 
                    "ollama_models_max_size_bytes": models}
 
     certs = certs_from(records, meta)
+    reasons = certification_reasons(meta, certs)
     total_cases = len(cases)
     summary = {
         "run": {k: meta.get(k) for k in ("run_id", "git_sha", "dirty_paths", "model_mode", "model_name",
                                           "started", "ended", "seconds", "suites", "case_count", "argv",
                                           "tz", "real_state_dir_exists", "real_state_dir_changes")},
-        # True only for a run of committed code (clean tree); runs without the flag count as false
-        "certification": meta.get("certification") is True,
+        # D-009: True only when every CERT passed AND the run was of committed code (clean tree)
+        "certification": not reasons,
+        "certification_reasons": reasons,
+        "clean_tree": _clean_tree(meta),
         "certs": certs,
         "overall": {"cases": total_cases, "passed": sum(c["passed"] for c in cases.values()),
                     "turns": len(records),
@@ -384,11 +406,13 @@ def render_html(summary: dict, records: list[dict], resources: list[dict], soak_
     parts = [f"<!doctype html><html lang='en'><head><meta charset='utf-8'>"
              f"<meta name='viewport' content='width=device-width,initial-scale=1'>"
              f"<title>Chief Certification Report</title><style>{CSS}</style></head><body><main>",
-             "" if summary["certification"] else
-             ("<div class='banner'>UNCOMMITTED CODE — not a certification run"
+             "" if summary.get("clean_tree", summary["certification"]) else
+             (f"<div class='banner'>{UNCOMMITTED}"
               + (f"<span>{e(len(run['dirty_paths']))} uncommitted path(s): "
                  + e(", ".join(run["dirty_paths"][:8])) + ("…" if len(run["dirty_paths"]) > 8 else "")
                  + "</span>" if run.get("dirty_paths") else "") + "</div>"),
+             "".join(f"<div class='banner'>NOT A CERTIFICATION RUN<span>{e(r)}</span></div>"
+                     for r in summary.get("certification_reasons", []) if r != UNCOMMITTED),
              f"<h1>Chief certification report</h1><p class='meta'>Run <code>{e(run['run_id'])}</code> · "
              f"git <code>{e(run['git_sha'])}</code> · model {e(run['model_mode'])} ({e(run['model_name'])}) · "
              f"{e(run['started'])} → {e(run['ended'])} ({e(run['seconds'])} s) · synthetic fixtures only</p>"]

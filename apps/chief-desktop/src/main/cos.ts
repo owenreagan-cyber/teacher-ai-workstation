@@ -57,6 +57,29 @@ export function toTurn(value: unknown): Turn | null {
   return rest && isStr(o.question) ? { ...rest, question: o.question } : null;
 }
 
+const AUDIT_STATES = ["ok", "empty", "fail"] as const;
+
+/** `cos status --json`, rebuilt field by field with exactly the known fields, or null (invalid). */
+export function toStatus(o: Record<string, unknown>): Extract<StatusResult, { ok: true }> | null {
+  const { kill_switch, kill_switch_reason, model, fallback_model, ollama_reachable, loaded_models, audit, version } = o;
+  if (typeof kill_switch !== "boolean" || typeof ollama_reachable !== "boolean") return null;
+  if (!(kill_switch_reason === null || isStr(kill_switch_reason)) || !isStr(model)) return null;
+  if (!(fallback_model === null || isStr(fallback_model)) || !isStrList(loaded_models) || !isStr(version)) return null;
+  const auditState = AUDIT_STATES.find((s) => s === audit);
+  if (auditState === undefined) return null;
+  return {
+    ok: true,
+    kill_switch,
+    kill_switch_reason,
+    model,
+    fallback_model,
+    ollama_reachable,
+    loaded_models: [...loaded_models],
+    audit: auditState,
+    version,
+  };
+}
+
 function fail(error_kind: ErrorKind, error: string): Failure {
   return { ok: false, error, error_kind };
 }
@@ -149,7 +172,7 @@ export class CosRunner {
 
   async status(): Promise<StatusResult> {
     const v = await this.json("status");
-    return CosRunner.envelope<StatusResult>(v, (o) => (typeof o.kill_switch === "boolean" ? (o as StatusResult) : null));
+    return CosRunner.envelope<StatusResult>(v, toStatus);
   }
 
   async warm(): Promise<WarmResult> {

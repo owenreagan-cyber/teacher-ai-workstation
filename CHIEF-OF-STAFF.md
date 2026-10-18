@@ -10,10 +10,10 @@ research report. Those remain as history; this file is the entry point.
 **Audit outcome (2026-09-30).** Three plans were audited blind (Claude Code, with a Cursor audit
 as confirmation). This plan ("A") ranked first in both; the competing GPT and early Gemini drafts
 were rejected as written. This revision ("A+") applies the audit's fixes:
-Gmail starts read-only; no name-stripping escalation for student-derived data; a hard monthly
-cloud budget; a smaller, fully local Milestone 1; plus the sealed Canvas approval packet with
-post-write readback, local Mail/Calendar triage, and a decision log where new decisions supersede
-old ones. Caveat: author and both auditors may share a model family.
+Gmail starts read-only; a hard monthly cloud budget; a smaller, fully local Milestone 1; plus the
+sealed Canvas approval packet with post-write readback, local Mail/Calendar triage, and a decision
+log where new decisions supersede old ones. Caveat: author and both auditors may share a model
+family.
 
 ---
 
@@ -303,11 +303,6 @@ A session's class is the most restrictive class of anything it has touched.
 - id: lovable      kind: agent  location: cloud  classes: [P2]        writes: true  interface: handoff+github
 ```
 
-### Sanitize-then-escalate: not allowed for student-derived data
-Redacted text can still identify people, so nothing derived from student data is ever sent to a
-cloud model, even with names removed. This pattern may be considered later for P1 personal data
-only, by explicit owner decision.
-
 ---
 
 ## 7. Control plan — policy, approvals, audit
@@ -417,7 +412,7 @@ keep one compact chat surface (Raycast first) rather than maintaining two.
 | **2 Personal assistant** | Local Mail triage (Apple Mail read-only) with quarantine reader; Reminders writes with approval; named routines; correctable daily brief; drafts later, enforced in code | Brief read every school day for two weeks; zero unapproved writes. |
 | **3 Knowledge** | Approved-folder index (content-hash cache, incremental), selected Drive folders, session search, owner decisions log | "Find the decision about X" returns the source passage. |
 | **4 Specialists + delegation** | Cloud agent adapters (Claude Code → Codex → Cursor CLI → Gemini CLI → Lovable); Canvas specialist C0–C3; Lesson specialist | One delegated coding mission returns a tested diff; one Canvas week built and deployed through the write gate with approval. |
-| **5 Advanced Siri** | Monitors that skip the model when nothing changed; impact analysis; learned routing rules (approved); sanitize-then-escalate; voice; App Intents; Finder action | Proactive notices are useful and ≤3/day. |
+| **5 Advanced Siri** | Monitors that skip the model when nothing changed; impact analysis; learned routing rules (approved); voice; App Intents; Finder action | Proactive notices are useful and ≤3/day. |
 | **6 Autonomy** | Resume parked M-track (driver hardening, controlled execution, permission conformance, repair loop); graduated autonomy; isolated session for any computer-use agent | Each auto-promoted action has a clean approved track record. |
 
 ### Canvas specialist track (Stage 4, may start early on its own branch)

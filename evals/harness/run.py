@@ -63,9 +63,10 @@ GIT_STATUS_EXCLUDE = (":(exclude).claude",)
 
 
 def git_state() -> dict:
-    """{"git_sha", "certification", "dirty_paths"}. certification is True only when the whole
-    tree is clean (no staged, unstaged, or untracked non-ignored files, apart from
-    GIT_STATUS_EXCLUDE) and git answered; a dirty tree marks git_sha with -dirty."""
+    """{"git_sha", "clean_tree", "dirty_paths"}. clean_tree is True only when the whole tree is
+    clean (no staged, unstaged, or untracked non-ignored files, apart from GIT_STATUS_EXCLUDE)
+    and git answered; a dirty tree marks git_sha with -dirty. A clean tree is necessary for a
+    certification run, not sufficient: every CERT must also pass (report.summarize, D-009)."""
     env = {**os.environ, "GIT_OPTIONAL_LOCKS": "0"}
     try:
         head = subprocess.run(["git", "-C", str(REPO_ROOT), "rev-parse", "HEAD"], capture_output=True,
@@ -74,12 +75,12 @@ def git_state() -> dict:
                                  "--", ".", *GIT_STATUS_EXCLUDE],
                                 capture_output=True, text=True, timeout=10, check=False, env=env)
     except (OSError, subprocess.SubprocessError):
-        return {"git_sha": "unknown", "certification": False, "dirty_paths": None}
+        return {"git_sha": "unknown", "clean_tree": False, "dirty_paths": None}
     sha = head.stdout.strip()
     if head.returncode or status.returncode or not sha:
-        return {"git_sha": sha or "unknown", "certification": False, "dirty_paths": None}
+        return {"git_sha": sha or "unknown", "clean_tree": False, "dirty_paths": None}
     dirty = [line[3:] for line in status.stdout.splitlines() if line.strip()]
-    return {"git_sha": sha + ("-dirty" if dirty else ""), "certification": not dirty,
+    return {"git_sha": sha + ("-dirty" if dirty else ""), "clean_tree": not dirty,
             "dirty_paths": dirty[:50]}
 
 
@@ -703,8 +704,9 @@ def main(argv=None) -> int:
         log(f"{cert['id']} {cert['status']:<4} ({cert['checked']} checked) {cert['title']}")
     for suite, s in summary["suites"].items():
         log(f"  {suite:<14} {s['passed']}/{s['cases']} cases pass")
+    # D-009: true only when every CERT passed and the tree was a clean commit
     print("certification: true" if summary["certification"]
-          else "certification: false (UNCOMMITTED CODE — not a certification run)")
+          else f"certification: false ({'; '.join(summary['certification_reasons'])})")
     print(f"Report: {html_path}")
     print(f"Summary: {summary_path}")
     return 0

@@ -130,6 +130,12 @@ check("the model still warms on every launch", /createTray\(\);\s*registerHotkey
 // 6e. Search answers carry "Search by Brave" in the window.
 check("search answers show Brave attribution", /searchAttribution\(turn\)/.test(read("src/renderer/App.tsx")));
 
+// 6f. Packaging: every build checks that the startup modules are packaged (and inside app.asar
+// after `npm run package`), so a missing file fails the build instead of the installed app.
+const pkgJson = JSON.parse(read("package.json"));
+check("build runs the packaging check", /&& node scripts\/check-package\.mjs$/.test(pkgJson.scripts.build));
+check("package checks app.asar", /electron-builder [^&]*&& node scripts\/check-package\.mjs --asar$/.test(pkgJson.scripts.package));
+
 // 7. Dev script: no package-internal paths (TypeScript 7 stopped exporting typescript/bin/tsc,
 // which broke `npm run dev` with ERR_PACKAGE_PATH_NOT_EXPORTED). Compile through build:main.
 const devMjs = read("scripts/dev.mjs");

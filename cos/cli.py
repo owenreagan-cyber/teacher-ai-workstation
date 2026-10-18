@@ -28,6 +28,7 @@ from cos.audit import AuditLog, verify
 from cos.brief import format_brief, gather, home_card
 from cos.config import (CloudModelError, Config, ConfigError, ensure_private_subdir, load_config,
                         open_private)
+from cos.executor import run_tool
 from cos.fastpath import FastPath
 from cos.memory import load_identity, load_memory, load_personality
 from cos.model import CloudModelRefused, ModelClient, ModelError, ModelRefused
@@ -76,10 +77,21 @@ def make_fastpath(rt: Runtime) -> FastPath:
     return FastPath(rt.registry, rt.gate, rt.ctx.clock, audit=rt.audit, summarize=summarize)
 
 
+def loaded_models(rt: Runtime) -> list[str] | None:
+    """Models loaded right now (ollama ps, via mac.status through the gate), or None if unknown."""
+    decision = rt.gate.decide("mac.status", {}, subject="guard")
+    tool = rt.registry.get("mac.status")
+    if not decision.allowed or tool is None:
+        return None
+    loaded = run_tool(tool, {}, decision, audit=rt.audit).get("ollama_loaded")
+    return [str(m) for m in loaded] if isinstance(loaded, list) else None
+
+
 def make_agent(rt: Runtime) -> Agent:
     memory, _ = load_memory(rt.config.repo_root)
     prompt = build_system_prompt(load_identity(), memory, load_personality())
-    return Agent(rt.model, rt.registry, rt.gate, prompt, audit=rt.audit)
+    return Agent(rt.model, rt.registry, rt.gate, prompt, audit=rt.audit,
+                 loaded_models=lambda: loaded_models(rt))
 
 
 def _emit_error(as_json: bool, message: str, kind: str) -> None:

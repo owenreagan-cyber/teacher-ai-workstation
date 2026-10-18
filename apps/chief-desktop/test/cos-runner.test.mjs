@@ -161,3 +161,32 @@ test("a valid ask passes only known fields", async () => {
   assert.equal(res.ok, true);
   assert.deepEqual(Object.keys(res).sort(), ["answer", "fast_path", "model", "notices", "ok", "session_id", "tools_used", "total_ms", "ts"]);
 });
+
+// Status is rebuilt field by field: a wrong type in any field rejects it, and only known fields pass.
+const STATUS = { ok: true, kill_switch: false, kill_switch_reason: null, model: "qwen3.6:35b", fallback_model: "gpt-oss:20b",
+  ollama_reachable: true, loaded_models: ["qwen3.6:35b"], audit: "ok", version: "0.1.0" };
+const statusCos = (name, payload) => fakeCos(name, `console.log(JSON.stringify(${JSON.stringify(payload)}));`);
+
+test("a valid status passes only known fields", async () => {
+  const res = await new CosRunner(statusCos("status-valid", { ...STATUS, fixture: true, injected: "<b>x</b>" })).status();
+  const { fixture: _f, ...expected } = { ...STATUS, fixture: true };
+  assert.deepEqual(res, expected);
+});
+
+test("a status with any malformed field is rejected, never cast", async () => {
+  const bad = {
+    "string kill_switch": { kill_switch: "false" },
+    "numeric reason": { kill_switch_reason: 3 },
+    "missing model": { model: undefined },
+    "numeric fallback": { fallback_model: 5 },
+    "string reachable": { ollama_reachable: "yes" },
+    "loaded not a list": { loaded_models: "qwen" },
+    "loaded item not a string": { loaded_models: ["qwen", 1] },
+    "unknown audit state": { audit: "fine" },
+    "missing version": { version: undefined },
+  };
+  for (const [name, change] of Object.entries(bad)) {
+    const res = await new CosRunner(statusCos(`status-${name.replace(/\W+/g, "-")}`, { ...STATUS, ...change })).status();
+    assert.deepEqual([res.ok, res.error_kind], [false, "internal"], name);
+  }
+});

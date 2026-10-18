@@ -25,10 +25,15 @@ FULL = {"calendar.today": EVENTS, "reminders.due": REMINDERS, "weather.today": W
 
 
 class GreetingTests(StateDirTest):
+    def test_never_good_evening_after_midnight(self):
+        for hour in range(0, 5):
+            for minute in (0, 30, 59):
+                self.assertEqual(greeting(AT(hour, minute)), "Working late, Owen", (hour, minute))
+
     def test_time_of_day_greeting_names_owen(self):
         for hour, want in ((5, "Good morning"), (11, "Good morning"), (12, "Good afternoon"),
                            (16, "Good afternoon"), (17, "Good evening"), (23, "Good evening"),
-                           (0, "Good evening"), (4, "Good evening")):
+                           (0, "Working late"), (4, "Working late")):
             self.assertEqual(greeting(AT(hour)), f"{want}, Owen", hour)
 
 

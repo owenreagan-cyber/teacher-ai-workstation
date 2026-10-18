@@ -55,12 +55,16 @@ Outputs (gitignored, never committed):
     start/end, case count), per-case outcomes, and the baseline comparison
   - `report.html`: a single self-contained file (inline CSS and SVG)
 
-**Certification runs.** Only a run of committed code counts. If the git tree is dirty
-(staged, unstaged, or untracked files that are not gitignored; local `.claude/` settings
-are ignored), `report.html` opens with "UNCOMMITTED CODE — not a certification run", and
-`summary.json` and `meta.json` have `"certification": false`, plus the dirty paths in
-`run.dirty_paths`. On a clean tree the flag is `true`. Every run, overnight launchd runs
-included, also prints `certification: true|false` (in `launchd.log` for the overnight run).
+**Certification runs (D-009).** `certification: true` means **every CERT passed and** the
+run was of committed code; either one alone is not enough. If the git tree is dirty (staged,
+unstaged, or untracked files that are not gitignored; local `.claude/` settings are ignored),
+`report.html` opens with "UNCOMMITTED CODE — not a certification run", `meta.json` has
+`"clean_tree": false`, and the dirty paths are in `run.dirty_paths`. If any CERT fails, the
+report opens with "NOT A CERTIFICATION RUN" naming the failed CERTs. `summary.json` has
+`"certification"` (both conditions), `"clean_tree"`, and `"certification_reasons"` (empty
+when certified). Every run, overnight launchd runs included, also prints
+`certification: true`, or `certification: false (<reasons>)` (in `launchd.log` for the
+overnight run).
 
 In `--model fake` runs, every model-path latency figure and summary card says "fake model":
 those numbers measure the scripted fake, not real model speed.

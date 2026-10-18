@@ -63,9 +63,12 @@ capture_command() {
   local timeout_secs="${COS_DASHBOARD_CAPTURE_TIMEOUT_SECS:-60}"
   shift 2
 
-  # Bounded subprocess capture via the standalone runner (which handles timeout
-  # + clean child cleanup + exit 124 on timeout). `|| result=$?` keeps this
-  # `set -e`-safe: a nonzero child exit is captured, not fatal.
+  # Bounded subprocess capture via the standalone runner, which runs the child
+  # in its own process group and on timeout terminates the whole group
+  # (TERM, grace, KILL) and exits 124. Every potentially blocking check in this
+  # dashboard goes through here. `|| result=$?` keeps this `set -e`-safe: a
+  # nonzero child exit is captured, not fatal. On timeout the captured output
+  # carries the runner's "TIMED OUT" line as evidence.
   output="$("${BASH_SOURCE%/*}/cos-run-bounded.sh" "${timeout_secs}" "$@" 2>&1)" || result=$?
   printf -v "${__output_var}" '%s' "${output}"
   printf -v "${__result_var}" '%s' "${result}"
@@ -98,6 +101,8 @@ print_compact_summary() {
 
   if [[ "${result}" == "0" ]]; then
     pass "${label} command completed"
+  elif [[ "${result}" == "124" ]]; then
+    fail "${label} command timed out (exit 124)"
   else
     fail "${label} command exited nonzero"
   fi
@@ -168,7 +173,7 @@ fi
 section "Return to Chief of Staff / Teacher Workstation Core"
 if [[ -f scripts/return-to-chief-of-staff-core-status.sh ]]; then
   return_to_core_result=0
-  return_to_core_output="$(bash scripts/return-to-chief-of-staff-core-status.sh 2>&1)" || return_to_core_result=$?
+  capture_command return_to_core_output return_to_core_result bash scripts/return-to-chief-of-staff-core-status.sh
   return_to_core_pass="$(summary_count "${return_to_core_output}" "PASS")"
   return_to_core_warn="$(summary_count "${return_to_core_output}" "WARN")"
   return_to_core_fail="$(summary_count "${return_to_core_output}" "FAIL")"
@@ -191,7 +196,7 @@ fi
 section "Chief of Staff Dashboard Readability Pass"
 if [[ -f scripts/chief-of-staff-dashboard-readability-status.sh ]]; then
   dashboard_readability_result=0
-  dashboard_readability_output="$(bash scripts/chief-of-staff-dashboard-readability-status.sh 2>&1)" || dashboard_readability_result=$?
+  capture_command dashboard_readability_output dashboard_readability_result bash scripts/chief-of-staff-dashboard-readability-status.sh
   dashboard_readability_pass="$(summary_count "${dashboard_readability_output}" "PASS")"
   dashboard_readability_warn="$(summary_count "${dashboard_readability_output}" "WARN")"
   dashboard_readability_fail="$(summary_count "${dashboard_readability_output}" "FAIL")"
@@ -214,7 +219,7 @@ fi
 section "Chief of Staff Command Map Cleanup"
 if [[ -f scripts/chief-of-staff-command-map-status.sh ]]; then
   command_map_result=0
-  command_map_output="$(bash scripts/chief-of-staff-command-map-status.sh 2>&1)" || command_map_result=$?
+  capture_command command_map_output command_map_result bash scripts/chief-of-staff-command-map-status.sh
   command_map_pass="$(summary_count "${command_map_output}" "PASS")"
   command_map_warn="$(summary_count "${command_map_output}" "WARN")"
   command_map_fail="$(summary_count "${command_map_output}" "FAIL")"
@@ -237,7 +242,7 @@ fi
 section "Chief of Staff Help Examples Polish"
 if [[ -f scripts/chief-of-staff-help-examples-status.sh ]]; then
   help_examples_result=0
-  help_examples_output="$(bash scripts/chief-of-staff-help-examples-status.sh 2>&1)" || help_examples_result=$?
+  capture_command help_examples_output help_examples_result bash scripts/chief-of-staff-help-examples-status.sh
   help_examples_pass="$(summary_count "${help_examples_output}" "PASS")"
   help_examples_warn="$(summary_count "${help_examples_output}" "WARN")"
   help_examples_fail="$(summary_count "${help_examples_output}" "FAIL")"
@@ -260,7 +265,7 @@ fi
 section "Chief of Staff Workflow Quick-Start Guide"
 if [[ -f scripts/chief-of-staff-workflow-quick-start-status.sh ]]; then
   workflow_quick_start_result=0
-  workflow_quick_start_output="$(bash scripts/chief-of-staff-workflow-quick-start-status.sh 2>&1)" || workflow_quick_start_result=$?
+  capture_command workflow_quick_start_output workflow_quick_start_result bash scripts/chief-of-staff-workflow-quick-start-status.sh
   workflow_quick_start_pass="$(summary_count "${workflow_quick_start_output}" "PASS")"
   workflow_quick_start_warn="$(summary_count "${workflow_quick_start_output}" "WARN")"
   workflow_quick_start_fail="$(summary_count "${workflow_quick_start_output}" "FAIL")"
@@ -286,7 +291,7 @@ if [[ -f scripts/dashboard-section-summary-status.sh ]]; then
     warn "skipping dashboard section summary status during dashboard self-check"
   else
   dashboard_section_summary_result=0
-  dashboard_section_summary_output="$(COS_DASHBOARD_SKIP_SECTION_SUMMARY_STATUS=1 bash scripts/dashboard-section-summary-status.sh 2>&1)" || dashboard_section_summary_result=$?
+  capture_command dashboard_section_summary_output dashboard_section_summary_result env COS_DASHBOARD_SKIP_SECTION_SUMMARY_STATUS=1 bash scripts/dashboard-section-summary-status.sh
   dashboard_section_summary_pass="$(summary_count "${dashboard_section_summary_output}" "PASS")"
   dashboard_section_summary_warn="$(summary_count "${dashboard_section_summary_output}" "WARN")"
   dashboard_section_summary_fail="$(summary_count "${dashboard_section_summary_output}" "FAIL")"
@@ -335,7 +340,7 @@ section "Command Launcher"
 if [[ -f scripts/command-launcher-status.sh ]]; then
   printf 'Use --command-launcher-status for grouped Everyday / Lesson / Developer / Future-Safety commands.\n'
   command_launcher_result=0
-  command_launcher_output="$(bash scripts/command-launcher-status.sh 2>&1)" || command_launcher_result=$?
+  capture_command command_launcher_output command_launcher_result bash scripts/command-launcher-status.sh
   command_launcher_pass="$(summary_count "${command_launcher_output}" "PASS")"
   command_launcher_warn="$(summary_count "${command_launcher_output}" "WARN")"
   command_launcher_fail="$(summary_count "${command_launcher_output}" "FAIL")"
@@ -469,7 +474,7 @@ fi
 section "Lesson Drafts"
 if [[ -f scripts/lesson-draft-status.sh ]]; then
   draft_result=0
-  draft_output="$(bash scripts/lesson-draft-status.sh 2>&1)" || draft_result=$?
+  capture_command draft_output draft_result bash scripts/lesson-draft-status.sh
   draft_pass="$(summary_count "${draft_output}" "PASS")"
   draft_warn="$(summary_count "${draft_output}" "WARN")"
   draft_fail="$(summary_count "${draft_output}" "FAIL")"
@@ -494,7 +499,7 @@ fi
 section "Lesson Packs"
 if [[ -f scripts/lesson-pack-status.sh ]]; then
   pack_result=0
-  pack_output="$(bash scripts/lesson-pack-status.sh 2>&1)" || pack_result=$?
+  capture_command pack_output pack_result bash scripts/lesson-pack-status.sh
   pack_pass="$(summary_count "${pack_output}" "PASS")"
   pack_warn="$(summary_count "${pack_output}" "WARN")"
   pack_fail="$(summary_count "${pack_output}" "FAIL")"
@@ -517,7 +522,7 @@ fi
 section "Lesson Queue"
 if [[ -f scripts/lesson-queue-status.sh ]]; then
   queue_result=0
-  queue_output="$(bash scripts/lesson-queue-status.sh 2>&1)" || queue_result=$?
+  capture_command queue_output queue_result bash scripts/lesson-queue-status.sh
   queue_pass="$(summary_count "${queue_output}" "PASS")"
   queue_warn="$(summary_count "${queue_output}" "WARN")"
   queue_fail="$(summary_count "${queue_output}" "FAIL")"
@@ -540,7 +545,7 @@ fi
 section "Lesson Workflow"
 if [[ -f scripts/lesson-workflow-status.sh ]]; then
   workflow_result=0
-  workflow_output="$(bash scripts/lesson-workflow-status.sh 2>&1)" || workflow_result=$?
+  capture_command workflow_output workflow_result bash scripts/lesson-workflow-status.sh
   workflow_pass="$(summary_count "${workflow_output}" "PASS")"
   workflow_warn="$(summary_count "${workflow_output}" "WARN")"
   workflow_fail="$(summary_count "${workflow_output}" "FAIL")"
@@ -563,7 +568,7 @@ fi
 section "Lesson Review Checklist"
 if [[ -f scripts/lesson-review-checklist-status.sh ]]; then
   review_result=0
-  review_output="$(bash scripts/lesson-review-checklist-status.sh 2>&1)" || review_result=$?
+  capture_command review_output review_result bash scripts/lesson-review-checklist-status.sh
   review_pass="$(summary_count "${review_output}" "PASS")"
   review_warn="$(summary_count "${review_output}" "WARN")"
   review_fail="$(summary_count "${review_output}" "FAIL")"
@@ -594,7 +599,7 @@ fi
 section "Review Notes Template"
 if [[ -f scripts/review-notes-template-status.sh ]]; then
   notes_result=0
-  notes_output="$(bash scripts/review-notes-template-status.sh 2>&1)" || notes_result=$?
+  capture_command notes_output notes_result bash scripts/review-notes-template-status.sh
   notes_pass="$(summary_count "${notes_output}" "PASS")"
   notes_warn="$(summary_count "${notes_output}" "WARN")"
   notes_fail="$(summary_count "${notes_output}" "FAIL")"
@@ -617,7 +622,7 @@ fi
 section "Teacher Planning Command Organization"
 if [[ -f scripts/teacher-planning-command-organization-status.sh ]]; then
   teacher_planning_command_result=0
-  teacher_planning_command_output="$(bash scripts/teacher-planning-command-organization-status.sh 2>&1)" || teacher_planning_command_result=$?
+  capture_command teacher_planning_command_output teacher_planning_command_result bash scripts/teacher-planning-command-organization-status.sh
   teacher_planning_command_pass="$(summary_count "${teacher_planning_command_output}" "PASS")"
   teacher_planning_command_warn="$(summary_count "${teacher_planning_command_output}" "WARN")"
   teacher_planning_command_fail="$(summary_count "${teacher_planning_command_output}" "FAIL")"
@@ -640,7 +645,7 @@ fi
 section "Teacher Planning Command Detail Polish"
 if [[ -f scripts/teacher-planning-command-detail-status.sh ]]; then
   teacher_planning_command_detail_result=0
-  teacher_planning_command_detail_output="$(bash scripts/teacher-planning-command-detail-status.sh 2>&1)" || teacher_planning_command_detail_result=$?
+  capture_command teacher_planning_command_detail_output teacher_planning_command_detail_result bash scripts/teacher-planning-command-detail-status.sh
   teacher_planning_command_detail_pass="$(summary_count "${teacher_planning_command_detail_output}" "PASS")"
   teacher_planning_command_detail_warn="$(summary_count "${teacher_planning_command_detail_output}" "WARN")"
   teacher_planning_command_detail_fail="$(summary_count "${teacher_planning_command_detail_output}" "FAIL")"
@@ -663,7 +668,7 @@ fi
 section "Lesson Review Command Detail Polish"
 if [[ -f scripts/lesson-review-command-detail-status.sh ]]; then
   lesson_review_command_detail_result=0
-  lesson_review_command_detail_output="$(bash scripts/lesson-review-command-detail-status.sh 2>&1)" || lesson_review_command_detail_result=$?
+  capture_command lesson_review_command_detail_output lesson_review_command_detail_result bash scripts/lesson-review-command-detail-status.sh
   lesson_review_command_detail_pass="$(summary_count "${lesson_review_command_detail_output}" "PASS")"
   lesson_review_command_detail_warn="$(summary_count "${lesson_review_command_detail_output}" "WARN")"
   lesson_review_command_detail_fail="$(summary_count "${lesson_review_command_detail_output}" "FAIL")"
@@ -686,7 +691,7 @@ fi
 section "Review Notes Command Detail Polish"
 if [[ -f scripts/review-notes-command-detail-status.sh ]]; then
   review_notes_command_detail_result=0
-  review_notes_command_detail_output="$(bash scripts/review-notes-command-detail-status.sh 2>&1)" || review_notes_command_detail_result=$?
+  capture_command review_notes_command_detail_output review_notes_command_detail_result bash scripts/review-notes-command-detail-status.sh
   review_notes_command_detail_pass="$(summary_count "${review_notes_command_detail_output}" "PASS")"
   review_notes_command_detail_warn="$(summary_count "${review_notes_command_detail_output}" "WARN")"
   review_notes_command_detail_fail="$(summary_count "${review_notes_command_detail_output}" "FAIL")"
@@ -709,7 +714,7 @@ fi
 section "Lesson Review Workflow Polish"
 if [[ -f scripts/lesson-review-workflow-polish-status.sh ]]; then
   lesson_review_workflow_result=0
-  lesson_review_workflow_output="$(bash scripts/lesson-review-workflow-polish-status.sh 2>&1)" || lesson_review_workflow_result=$?
+  capture_command lesson_review_workflow_output lesson_review_workflow_result bash scripts/lesson-review-workflow-polish-status.sh
   lesson_review_workflow_pass="$(summary_count "${lesson_review_workflow_output}" "PASS")"
   lesson_review_workflow_warn="$(summary_count "${lesson_review_workflow_output}" "WARN")"
   lesson_review_workflow_fail="$(summary_count "${lesson_review_workflow_output}" "FAIL")"
@@ -732,7 +737,7 @@ fi
 section "Review Notes Workflow Polish"
 if [[ -f scripts/review-notes-workflow-polish-status.sh ]]; then
   review_notes_workflow_result=0
-  review_notes_workflow_output="$(bash scripts/review-notes-workflow-polish-status.sh 2>&1)" || review_notes_workflow_result=$?
+  capture_command review_notes_workflow_output review_notes_workflow_result bash scripts/review-notes-workflow-polish-status.sh
   review_notes_workflow_pass="$(summary_count "${review_notes_workflow_output}" "PASS")"
   review_notes_workflow_warn="$(summary_count "${review_notes_workflow_output}" "WARN")"
   review_notes_workflow_fail="$(summary_count "${review_notes_workflow_output}" "FAIL")"
@@ -755,7 +760,7 @@ fi
 section "Core Teacher Workstation Planning Cleanup"
 if [[ -f scripts/core-teacher-workstation-planning-cleanup-status.sh ]]; then
   core_teacher_workstation_planning_cleanup_result=0
-  core_teacher_workstation_planning_cleanup_output="$(bash scripts/core-teacher-workstation-planning-cleanup-status.sh 2>&1)" || core_teacher_workstation_planning_cleanup_result=$?
+  capture_command core_teacher_workstation_planning_cleanup_output core_teacher_workstation_planning_cleanup_result bash scripts/core-teacher-workstation-planning-cleanup-status.sh
   core_teacher_workstation_planning_cleanup_pass="$(summary_count "${core_teacher_workstation_planning_cleanup_output}" "PASS")"
   core_teacher_workstation_planning_cleanup_warn="$(summary_count "${core_teacher_workstation_planning_cleanup_output}" "WARN")"
   core_teacher_workstation_planning_cleanup_fail="$(summary_count "${core_teacher_workstation_planning_cleanup_output}" "FAIL")"
@@ -778,7 +783,7 @@ fi
 section "Teacher Workflow Quick-Reference Polish"
 if [[ -f scripts/teacher-workflow-quick-reference-status.sh ]]; then
   teacher_workflow_quick_reference_result=0
-  teacher_workflow_quick_reference_output="$(bash scripts/teacher-workflow-quick-reference-status.sh 2>&1)" || teacher_workflow_quick_reference_result=$?
+  capture_command teacher_workflow_quick_reference_output teacher_workflow_quick_reference_result bash scripts/teacher-workflow-quick-reference-status.sh
   teacher_workflow_quick_reference_pass="$(summary_count "${teacher_workflow_quick_reference_output}" "PASS")"
   teacher_workflow_quick_reference_warn="$(summary_count "${teacher_workflow_quick_reference_output}" "WARN")"
   teacher_workflow_quick_reference_fail="$(summary_count "${teacher_workflow_quick_reference_output}" "FAIL")"
@@ -801,7 +806,7 @@ fi
 section "Teacher Workflow Status Summary"
 if [[ -f scripts/teacher-workflow-status-summary.sh ]]; then
   teacher_workflow_status_summary_result=0
-  teacher_workflow_status_summary_output="$(bash scripts/teacher-workflow-status-summary.sh 2>&1)" || teacher_workflow_status_summary_result=$?
+  capture_command teacher_workflow_status_summary_output teacher_workflow_status_summary_result bash scripts/teacher-workflow-status-summary.sh
   teacher_workflow_status_summary_pass="$(summary_count "${teacher_workflow_status_summary_output}" "PASS")"
   teacher_workflow_status_summary_warn="$(summary_count "${teacher_workflow_status_summary_output}" "WARN")"
   teacher_workflow_status_summary_fail="$(summary_count "${teacher_workflow_status_summary_output}" "FAIL")"
@@ -824,7 +829,7 @@ fi
 section "Teacher Workflow Command Detail Summary"
 if [[ -f scripts/teacher-workflow-command-detail-summary-status.sh ]]; then
   teacher_workflow_command_detail_summary_result=0
-  teacher_workflow_command_detail_summary_output="$(bash scripts/teacher-workflow-command-detail-summary-status.sh 2>&1)" || teacher_workflow_command_detail_summary_result=$?
+  capture_command teacher_workflow_command_detail_summary_output teacher_workflow_command_detail_summary_result bash scripts/teacher-workflow-command-detail-summary-status.sh
   teacher_workflow_command_detail_summary_pass="$(summary_count "${teacher_workflow_command_detail_summary_output}" "PASS")"
   teacher_workflow_command_detail_summary_warn="$(summary_count "${teacher_workflow_command_detail_summary_output}" "WARN")"
   teacher_workflow_command_detail_summary_fail="$(summary_count "${teacher_workflow_command_detail_summary_output}" "FAIL")"
@@ -847,7 +852,7 @@ fi
 section "Teacher Workflow Safe-Output Examples"
 if [[ -f scripts/teacher-workflow-safe-output-examples-status.sh ]]; then
   teacher_workflow_safe_output_examples_result=0
-  teacher_workflow_safe_output_examples_output="$(bash scripts/teacher-workflow-safe-output-examples-status.sh 2>&1)" || teacher_workflow_safe_output_examples_result=$?
+  capture_command teacher_workflow_safe_output_examples_output teacher_workflow_safe_output_examples_result bash scripts/teacher-workflow-safe-output-examples-status.sh
   teacher_workflow_safe_output_examples_pass="$(summary_count "${teacher_workflow_safe_output_examples_output}" "PASS")"
   teacher_workflow_safe_output_examples_warn="$(summary_count "${teacher_workflow_safe_output_examples_output}" "WARN")"
   teacher_workflow_safe_output_examples_fail="$(summary_count "${teacher_workflow_safe_output_examples_output}" "FAIL")"
@@ -870,7 +875,7 @@ fi
 section "Teacher Workflow Safe-Output Checker"
 if [[ -f scripts/teacher-workflow-safe-output-checker-status.sh ]]; then
   teacher_workflow_safe_output_checker_result=0
-  teacher_workflow_safe_output_checker_output="$(bash scripts/teacher-workflow-safe-output-checker-status.sh 2>&1)" || teacher_workflow_safe_output_checker_result=$?
+  capture_command teacher_workflow_safe_output_checker_output teacher_workflow_safe_output_checker_result bash scripts/teacher-workflow-safe-output-checker-status.sh
   teacher_workflow_safe_output_checker_pass="$(summary_count "${teacher_workflow_safe_output_checker_output}" "PASS")"
   teacher_workflow_safe_output_checker_warn="$(summary_count "${teacher_workflow_safe_output_checker_output}" "WARN")"
   teacher_workflow_safe_output_checker_fail="$(summary_count "${teacher_workflow_safe_output_checker_output}" "FAIL")"
@@ -893,7 +898,7 @@ fi
 section "Teacher Workflow Output Examples Completion Marker"
 if [[ -f scripts/teacher-workflow-output-examples-completion-status.sh ]]; then
   teacher_workflow_output_examples_completion_result=0
-  teacher_workflow_output_examples_completion_output="$(bash scripts/teacher-workflow-output-examples-completion-status.sh 2>&1)" || teacher_workflow_output_examples_completion_result=$?
+  capture_command teacher_workflow_output_examples_completion_output teacher_workflow_output_examples_completion_result bash scripts/teacher-workflow-output-examples-completion-status.sh
   teacher_workflow_output_examples_completion_pass="$(summary_count "${teacher_workflow_output_examples_completion_output}" "PASS")"
   teacher_workflow_output_examples_completion_warn="$(summary_count "${teacher_workflow_output_examples_completion_output}" "WARN")"
   teacher_workflow_output_examples_completion_fail="$(summary_count "${teacher_workflow_output_examples_completion_output}" "FAIL")"
@@ -916,7 +921,7 @@ fi
 section "Lesson-Planning Template Readiness Polish"
 if [[ -f scripts/lesson-planning-template-readiness-status.sh ]]; then
   lesson_planning_template_readiness_result=0
-  lesson_planning_template_readiness_output="$(bash scripts/lesson-planning-template-readiness-status.sh 2>&1)" || lesson_planning_template_readiness_result=$?
+  capture_command lesson_planning_template_readiness_output lesson_planning_template_readiness_result bash scripts/lesson-planning-template-readiness-status.sh
   lesson_planning_template_readiness_pass="$(summary_count "${lesson_planning_template_readiness_output}" "PASS")"
   lesson_planning_template_readiness_warn="$(summary_count "${lesson_planning_template_readiness_output}" "WARN")"
   lesson_planning_template_readiness_fail="$(summary_count "${lesson_planning_template_readiness_output}" "FAIL")"
@@ -939,7 +944,7 @@ fi
 section "Teacher Workstation Foundation v0"
 if [[ -f scripts/teacher-workstation-foundation-status.sh ]]; then
   teacher_workstation_foundation_result=0
-  teacher_workstation_foundation_output="$(bash scripts/teacher-workstation-foundation-status.sh 2>&1)" || teacher_workstation_foundation_result=$?
+  capture_command teacher_workstation_foundation_output teacher_workstation_foundation_result bash scripts/teacher-workstation-foundation-status.sh
   teacher_workstation_foundation_pass="$(summary_count "${teacher_workstation_foundation_output}" "PASS")"
   teacher_workstation_foundation_warn="$(summary_count "${teacher_workstation_foundation_output}" "WARN")"
   teacher_workstation_foundation_fail="$(summary_count "${teacher_workstation_foundation_output}" "FAIL")"
@@ -962,7 +967,7 @@ fi
 section "Chief of Staff v1 Agent Core (Program B1)"
 if [[ -f scripts/chief-of-staff-v1-foundation-status.sh ]]; then
   cos_v1_result=0
-  cos_v1_output="$(bash scripts/chief-of-staff-v1-foundation-status.sh 2>&1)" || cos_v1_result=$?
+  capture_command cos_v1_output cos_v1_result bash scripts/chief-of-staff-v1-foundation-status.sh
   cos_v1_pass="$(summary_count "${cos_v1_output}" "PASS")"
   cos_v1_warn="$(summary_count "${cos_v1_output}" "WARN")"
   cos_v1_fail="$(summary_count "${cos_v1_output}" "FAIL")"
@@ -983,7 +988,7 @@ fi
 section "Chief of Staff v1 Agent Core (Program B Daily Operations)"
 if [[ -f tests/chief-of-staff-daily-operations-test.sh ]]; then
   cos_daily_result=0
-  cos_daily_output="$(bash tests/chief-of-staff-daily-operations-test.sh 2>&1)" || cos_daily_result=$?
+  capture_command cos_daily_output cos_daily_result bash tests/chief-of-staff-daily-operations-test.sh
   if [[ "${cos_daily_result}" != "0" ]]; then
     printf '%s\n' "${cos_daily_output}"
     fail "Chief of Staff daily operations tests failed"
@@ -997,7 +1002,7 @@ fi
 section "Teacher Workstation Health Monitor (Program H)"
 if [[ -f scripts/teacher-workstation-health-status.sh ]]; then
   health_result=0
-  health_output="$(bash scripts/teacher-workstation-health-status.sh 2>&1)" || health_result=$?
+  capture_command health_output health_result bash scripts/teacher-workstation-health-status.sh
   health_pass="$(summary_count "${health_output}" "PASS")"
   health_warn="$(summary_count "${health_output}" "WARN")"
   health_fail="$(summary_count "${health_output}" "FAIL")"
@@ -1018,7 +1023,7 @@ fi
 section "Teacher Workstation System Updater (Program I)"
 if [[ -f scripts/teacher-workstation-system-updater-status.sh ]]; then
   updater_result=0
-  updater_output="$(bash scripts/teacher-workstation-system-updater-status.sh 2>&1)" || updater_result=$?
+  capture_command updater_output updater_result bash scripts/teacher-workstation-system-updater-status.sh
   updater_pass="$(summary_count "${updater_output}" "PASS")"
   updater_warn="$(summary_count "${updater_output}" "WARN")"
   updater_fail="$(summary_count "${updater_output}" "FAIL")"
@@ -1039,7 +1044,7 @@ fi
 section "Workstation Operations Lane Status (Aggregate H+I)"
 if [[ -f scripts/workstation-ops-lane-status.sh ]]; then
   workstation_ops_lane_result=0
-  workstation_ops_lane_output="$(bash scripts/workstation-ops-lane-status.sh 2>&1)" || workstation_ops_lane_result=$?
+  capture_command workstation_ops_lane_output workstation_ops_lane_result bash scripts/workstation-ops-lane-status.sh
   workstation_ops_lane_pass="$(summary_count "${workstation_ops_lane_output}" "PASS")"
   workstation_ops_lane_warn="$(summary_count "${workstation_ops_lane_output}" "WARN")"
   workstation_ops_lane_fail="$(summary_count "${workstation_ops_lane_output}" "FAIL")"
@@ -1060,7 +1065,7 @@ fi
 section "AI Tool Routing Matrix (Operational Surface)"
 if [[ -f scripts/ai-tool-routing-status.sh ]]; then
   routing_result=0
-  routing_output="$(bash scripts/ai-tool-routing-status.sh 2>&1)" || routing_result=$?
+  capture_command routing_output routing_result bash scripts/ai-tool-routing-status.sh
   routing_pass="$(summary_count "${routing_output}" "PASS")"
   routing_warn="$(summary_count "${routing_output}" "WARN")"
   routing_fail="$(summary_count "${routing_output}" "FAIL")"
@@ -1081,7 +1086,7 @@ fi
 section "Local LLM / Ollama Workstation (Program D1)"
 if [[ -f scripts/local-llm-workstation-status.sh ]]; then
   local_llm_result=0
-  local_llm_output="$(bash scripts/local-llm-workstation-status.sh 2>&1)" || local_llm_result=$?
+  capture_command local_llm_output local_llm_result bash scripts/local-llm-workstation-status.sh
   local_llm_pass="$(summary_count "${local_llm_output}" "PASS")"
   local_llm_warn="$(summary_count "${local_llm_output}" "WARN")"
   local_llm_fail="$(summary_count "${local_llm_output}" "FAIL")"
@@ -1102,7 +1107,7 @@ fi
 section "Mac Workstation Experience (Program E1)"
 if [[ -f scripts/mac-workstation-experience-status.sh ]]; then
   mac_ws_result=0
-  mac_ws_output="$(bash scripts/mac-workstation-experience-status.sh 2>&1)" || mac_ws_result=$?
+  capture_command mac_ws_output mac_ws_result bash scripts/mac-workstation-experience-status.sh
   mac_ws_pass="$(summary_count "${mac_ws_output}" "PASS")"
   mac_ws_warn="$(summary_count "${mac_ws_output}" "WARN")"
   mac_ws_fail="$(summary_count "${mac_ws_output}" "FAIL")"
@@ -1123,7 +1128,7 @@ fi
 section "Widget and Shortcut Builder (Program F1)"
 if [[ -f scripts/widget-shortcut-builder-status.sh ]]; then
   widget_shortcut_result=0
-  widget_shortcut_output="$(bash scripts/widget-shortcut-builder-status.sh 2>&1)" || widget_shortcut_result=$?
+  capture_command widget_shortcut_output widget_shortcut_result bash scripts/widget-shortcut-builder-status.sh
   widget_shortcut_pass="$(summary_count "${widget_shortcut_output}" "PASS")"
   widget_shortcut_warn="$(summary_count "${widget_shortcut_output}" "WARN")"
   widget_shortcut_fail="$(summary_count "${widget_shortcut_output}" "FAIL")"
@@ -1144,7 +1149,7 @@ fi
 section "Vibe / Wallpaper / Widgets Planning Gate"
 if [[ -f scripts/vibe-wallpaper-widgets-planning-status.sh ]]; then
   vibe_wallpaper_widgets_result=0
-  vibe_wallpaper_widgets_output="$(bash scripts/vibe-wallpaper-widgets-planning-status.sh 2>&1)" || vibe_wallpaper_widgets_result=$?
+  capture_command vibe_wallpaper_widgets_output vibe_wallpaper_widgets_result bash scripts/vibe-wallpaper-widgets-planning-status.sh
   vibe_wallpaper_widgets_pass="$(summary_count "${vibe_wallpaper_widgets_output}" "PASS")"
   vibe_wallpaper_widgets_warn="$(summary_count "${vibe_wallpaper_widgets_output}" "WARN")"
   vibe_wallpaper_widgets_fail="$(summary_count "${vibe_wallpaper_widgets_output}" "FAIL")"
@@ -1165,7 +1170,7 @@ fi
 section "Classroom App Lab (Prototype Rescue Foundation)"
 if [[ -f scripts/classroom-app-lab-status.sh ]]; then
   classroom_app_lab_result=0
-  classroom_app_lab_output="$(bash scripts/classroom-app-lab-status.sh 2>&1)" || classroom_app_lab_result=$?
+  capture_command classroom_app_lab_output classroom_app_lab_result bash scripts/classroom-app-lab-status.sh
   classroom_app_lab_pass="$(summary_count "${classroom_app_lab_output}" "PASS")"
   classroom_app_lab_warn="$(summary_count "${classroom_app_lab_output}" "WARN")"
   classroom_app_lab_fail="$(summary_count "${classroom_app_lab_output}" "FAIL")"
@@ -1186,7 +1191,7 @@ fi
 section "Classroom Utility Per-App Mission Templates (Planning)"
 if [[ -f scripts/classroom-utility-templates-status.sh ]]; then
   classroom_utility_templates_result=0
-  classroom_utility_templates_output="$(bash scripts/classroom-utility-templates-status.sh 2>&1)" || classroom_utility_templates_result=$?
+  capture_command classroom_utility_templates_output classroom_utility_templates_result bash scripts/classroom-utility-templates-status.sh
   classroom_utility_templates_pass="$(summary_count "${classroom_utility_templates_output}" "PASS")"
   classroom_utility_templates_warn="$(summary_count "${classroom_utility_templates_output}" "WARN")"
   classroom_utility_templates_fail="$(summary_count "${classroom_utility_templates_output}" "FAIL")"
@@ -1207,7 +1212,7 @@ fi
 section "Gemini Discovery & Classification Intake (External Planning)"
 if [[ -f scripts/gemini-discovery-classification-intake-status.sh ]]; then
   gemini_intake_result=0
-  gemini_intake_output="$(bash scripts/gemini-discovery-classification-intake-status.sh 2>&1)" || gemini_intake_result=$?
+  capture_command gemini_intake_output gemini_intake_result bash scripts/gemini-discovery-classification-intake-status.sh
   gemini_intake_pass="$(summary_count "${gemini_intake_output}" "PASS")"
   gemini_intake_warn="$(summary_count "${gemini_intake_output}" "WARN")"
   gemini_intake_fail="$(summary_count "${gemini_intake_output}" "FAIL")"
@@ -1228,7 +1233,7 @@ fi
 section "Markdown Frontmatter Planning (Curriculum Metadata)"
 if [[ -f scripts/markdown-frontmatter-planning-status.sh ]]; then
   frontmatter_planning_result=0
-  frontmatter_planning_output="$(bash scripts/markdown-frontmatter-planning-status.sh 2>&1)" || frontmatter_planning_result=$?
+  capture_command frontmatter_planning_output frontmatter_planning_result bash scripts/markdown-frontmatter-planning-status.sh
   frontmatter_planning_pass="$(summary_count "${frontmatter_planning_output}" "PASS")"
   frontmatter_planning_warn="$(summary_count "${frontmatter_planning_output}" "WARN")"
   frontmatter_planning_fail="$(summary_count "${frontmatter_planning_output}" "FAIL")"
@@ -1249,7 +1254,7 @@ fi
 section "Lovable Classroom App Builder (Program G1)"
 if [[ -f scripts/lovable-classroom-app-builder-status.sh ]]; then
   lovable_result=0
-  lovable_output="$(bash scripts/lovable-classroom-app-builder-status.sh 2>&1)" || lovable_result=$?
+  capture_command lovable_output lovable_result bash scripts/lovable-classroom-app-builder-status.sh
   lovable_pass="$(summary_count "${lovable_output}" "PASS")"
   lovable_warn="$(summary_count "${lovable_output}" "WARN")"
   lovable_fail="$(summary_count "${lovable_output}" "FAIL")"
@@ -1270,7 +1275,7 @@ fi
 section "3D Builder Workshop Agent (Program J1)"
 if [[ -f scripts/3d-builder-workshop-agent-status.sh ]]; then
   builder_result=0
-  builder_output="$(bash scripts/3d-builder-workshop-agent-status.sh 2>&1)" || builder_result=$?
+  capture_command builder_output builder_result bash scripts/3d-builder-workshop-agent-status.sh
   builder_pass="$(summary_count "${builder_output}" "PASS")"
   builder_warn="$(summary_count "${builder_output}" "WARN")"
   builder_fail="$(summary_count "${builder_output}" "FAIL")"
@@ -1290,7 +1295,7 @@ fi
 section "Lesson Planning v1 Foundation"
 if [[ -f scripts/lesson-planning-foundation-status.sh ]]; then
   lesson_planning_foundation_result=0
-  lesson_planning_foundation_output="$(bash scripts/lesson-planning-foundation-status.sh 2>&1)" || lesson_planning_foundation_result=$?
+  capture_command lesson_planning_foundation_output lesson_planning_foundation_result bash scripts/lesson-planning-foundation-status.sh
   lesson_planning_foundation_pass="$(summary_count "${lesson_planning_foundation_output}" "PASS")"
   lesson_planning_foundation_warn="$(summary_count "${lesson_planning_foundation_output}" "WARN")"
   lesson_planning_foundation_fail="$(summary_count "${lesson_planning_foundation_output}" "FAIL")"
@@ -1313,7 +1318,7 @@ fi
 section "Curriculum Library v1 Foundation"
 if [[ -f scripts/curriculum-library-foundation-status.sh ]]; then
   curriculum_library_foundation_result=0
-  curriculum_library_foundation_output="$(bash scripts/curriculum-library-foundation-status.sh 2>&1)" || curriculum_library_foundation_result=$?
+  capture_command curriculum_library_foundation_output curriculum_library_foundation_result bash scripts/curriculum-library-foundation-status.sh
   curriculum_library_foundation_pass="$(summary_count "${curriculum_library_foundation_output}" "PASS")"
   curriculum_library_foundation_warn="$(summary_count "${curriculum_library_foundation_output}" "WARN")"
   curriculum_library_foundation_fail="$(summary_count "${curriculum_library_foundation_output}" "FAIL")"
@@ -1336,7 +1341,7 @@ fi
 section "Renderer Foundation v1"
 if [[ -f scripts/renderer-foundation-status.sh ]]; then
   renderer_foundation_result=0
-  renderer_foundation_output="$(bash scripts/renderer-foundation-status.sh 2>&1)" || renderer_foundation_result=$?
+  capture_command renderer_foundation_output renderer_foundation_result bash scripts/renderer-foundation-status.sh
   renderer_foundation_pass="$(summary_count "${renderer_foundation_output}" "PASS")"
   renderer_foundation_warn="$(summary_count "${renderer_foundation_output}" "WARN")"
   renderer_foundation_fail="$(summary_count "${renderer_foundation_output}" "FAIL")"
@@ -1359,7 +1364,7 @@ fi
 section "Presentation Engine Renderer Foundation (Planning)"
 if [[ -f scripts/presentation-engine-renderer-foundation-status.sh ]]; then
   presentation_engine_renderer_foundation_result=0
-  presentation_engine_renderer_foundation_output="$(bash scripts/presentation-engine-renderer-foundation-status.sh 2>&1)" || presentation_engine_renderer_foundation_result=$?
+  capture_command presentation_engine_renderer_foundation_output presentation_engine_renderer_foundation_result bash scripts/presentation-engine-renderer-foundation-status.sh
   presentation_engine_renderer_foundation_pass="$(summary_count "${presentation_engine_renderer_foundation_output}" "PASS")"
   presentation_engine_renderer_foundation_warn="$(summary_count "${presentation_engine_renderer_foundation_output}" "WARN")"
   presentation_engine_renderer_foundation_fail="$(summary_count "${presentation_engine_renderer_foundation_output}" "FAIL")"
@@ -1380,7 +1385,7 @@ fi
 section "Teacher Knowledge Vault M0 Architecture Freeze"
 if [[ -f scripts/teacher-knowledge-vault-m0-architecture-freeze-status.sh ]]; then
   teacher_knowledge_vault_m0_result=0
-  teacher_knowledge_vault_m0_output="$(bash scripts/teacher-knowledge-vault-m0-architecture-freeze-status.sh 2>&1)" || teacher_knowledge_vault_m0_result=$?
+  capture_command teacher_knowledge_vault_m0_output teacher_knowledge_vault_m0_result bash scripts/teacher-knowledge-vault-m0-architecture-freeze-status.sh
   teacher_knowledge_vault_m0_pass="$(summary_count "${teacher_knowledge_vault_m0_output}" "PASS")"
   teacher_knowledge_vault_m0_warn="$(summary_count "${teacher_knowledge_vault_m0_output}" "WARN")"
   teacher_knowledge_vault_m0_fail="$(summary_count "${teacher_knowledge_vault_m0_output}" "FAIL")"
@@ -1401,7 +1406,7 @@ fi
 section "Teacher Knowledge Vault M1 Fake Catalog Foundation"
 if [[ -f scripts/teacher-knowledge-vault-m1-fake-catalog-status.sh ]]; then
   teacher_knowledge_vault_m1_result=0
-  teacher_knowledge_vault_m1_output="$(bash scripts/teacher-knowledge-vault-m1-fake-catalog-status.sh 2>&1)" || teacher_knowledge_vault_m1_result=$?
+  capture_command teacher_knowledge_vault_m1_output teacher_knowledge_vault_m1_result bash scripts/teacher-knowledge-vault-m1-fake-catalog-status.sh
   teacher_knowledge_vault_m1_pass="$(summary_count "${teacher_knowledge_vault_m1_output}" "PASS")"
   teacher_knowledge_vault_m1_warn="$(summary_count "${teacher_knowledge_vault_m1_output}" "WARN")"
   teacher_knowledge_vault_m1_fail="$(summary_count "${teacher_knowledge_vault_m1_output}" "FAIL")"
@@ -1422,7 +1427,7 @@ fi
 section "Teacher Knowledge Vault M2 Local Discovery Approval Packet"
 if [[ -f scripts/teacher-knowledge-vault-m2-local-discovery-approval-status.sh ]]; then
   teacher_knowledge_vault_m2_result=0
-  teacher_knowledge_vault_m2_output="$(bash scripts/teacher-knowledge-vault-m2-local-discovery-approval-status.sh 2>&1)" || teacher_knowledge_vault_m2_result=$?
+  capture_command teacher_knowledge_vault_m2_output teacher_knowledge_vault_m2_result bash scripts/teacher-knowledge-vault-m2-local-discovery-approval-status.sh
   teacher_knowledge_vault_m2_pass="$(summary_count "${teacher_knowledge_vault_m2_output}" "PASS")"
   teacher_knowledge_vault_m2_warn="$(summary_count "${teacher_knowledge_vault_m2_output}" "WARN")"
   teacher_knowledge_vault_m2_fail="$(summary_count "${teacher_knowledge_vault_m2_output}" "FAIL")"
@@ -1443,7 +1448,7 @@ fi
 section "Teacher Knowledge Vault M3 Fake Duplicate Search Foundation"
 if [[ -f scripts/teacher-knowledge-vault-m3-fake-duplicate-search-status.sh ]]; then
   teacher_knowledge_vault_m3_result=0
-  teacher_knowledge_vault_m3_output="$(bash scripts/teacher-knowledge-vault-m3-fake-duplicate-search-status.sh 2>&1)" || teacher_knowledge_vault_m3_result=$?
+  capture_command teacher_knowledge_vault_m3_output teacher_knowledge_vault_m3_result bash scripts/teacher-knowledge-vault-m3-fake-duplicate-search-status.sh
   teacher_knowledge_vault_m3_pass="$(summary_count "${teacher_knowledge_vault_m3_output}" "PASS")"
   teacher_knowledge_vault_m3_warn="$(summary_count "${teacher_knowledge_vault_m3_output}" "WARN")"
   teacher_knowledge_vault_m3_fail="$(summary_count "${teacher_knowledge_vault_m3_output}" "FAIL")"
@@ -1464,7 +1469,7 @@ fi
 section "Teacher Knowledge Vault M4 Smart Rename Foundation"
 if [[ -f scripts/teacher-knowledge-vault-m4-smart-rename-status.sh ]]; then
   teacher_knowledge_vault_m4_result=0
-  teacher_knowledge_vault_m4_output="$(bash scripts/teacher-knowledge-vault-m4-smart-rename-status.sh 2>&1)" || teacher_knowledge_vault_m4_result=$?
+  capture_command teacher_knowledge_vault_m4_output teacher_knowledge_vault_m4_result bash scripts/teacher-knowledge-vault-m4-smart-rename-status.sh
   teacher_knowledge_vault_m4_pass="$(summary_count "${teacher_knowledge_vault_m4_output}" "PASS")"
   teacher_knowledge_vault_m4_warn="$(summary_count "${teacher_knowledge_vault_m4_output}" "WARN")"
   teacher_knowledge_vault_m4_fail="$(summary_count "${teacher_knowledge_vault_m4_output}" "FAIL")"
@@ -1484,7 +1489,7 @@ fi
 
 if [[ -f scripts/teacher-knowledge-vault-m5-organization-rollback-status.sh ]]; then
   teacher_knowledge_vault_m5_result=0
-  teacher_knowledge_vault_m5_output="$(bash scripts/teacher-knowledge-vault-m5-organization-rollback-status.sh 2>&1)" || teacher_knowledge_vault_m5_result=$?
+  capture_command teacher_knowledge_vault_m5_output teacher_knowledge_vault_m5_result bash scripts/teacher-knowledge-vault-m5-organization-rollback-status.sh
   teacher_knowledge_vault_m5_pass="$(summary_count "${teacher_knowledge_vault_m5_output}" "PASS")"
   teacher_knowledge_vault_m5_warn="$(summary_count "${teacher_knowledge_vault_m5_output}" "WARN")"
   teacher_knowledge_vault_m5_fail="$(summary_count "${teacher_knowledge_vault_m5_output}" "FAIL")"
@@ -1504,7 +1509,7 @@ fi
 
 if [[ -f scripts/teacher-knowledge-vault-m6-extraction-ocr-approval-status.sh ]]; then
   teacher_knowledge_vault_m6_result=0
-  teacher_knowledge_vault_m6_output="$(bash scripts/teacher-knowledge-vault-m6-extraction-ocr-approval-status.sh 2>&1)" || teacher_knowledge_vault_m6_result=$?
+  capture_command teacher_knowledge_vault_m6_output teacher_knowledge_vault_m6_result bash scripts/teacher-knowledge-vault-m6-extraction-ocr-approval-status.sh
   teacher_knowledge_vault_m6_pass="$(summary_count "${teacher_knowledge_vault_m6_output}" "PASS")"
   teacher_knowledge_vault_m6_warn="$(summary_count "${teacher_knowledge_vault_m6_output}" "WARN")"
   teacher_knowledge_vault_m6_fail="$(summary_count "${teacher_knowledge_vault_m6_output}" "FAIL")"
@@ -1524,7 +1529,7 @@ fi
 
 if [[ -f scripts/teacher-knowledge-vault-m7-connector-approval-status.sh ]]; then
   teacher_knowledge_vault_m7_result=0
-  teacher_knowledge_vault_m7_output="$(bash scripts/teacher-knowledge-vault-m7-connector-approval-status.sh 2>&1)" || teacher_knowledge_vault_m7_result=$?
+  capture_command teacher_knowledge_vault_m7_output teacher_knowledge_vault_m7_result bash scripts/teacher-knowledge-vault-m7-connector-approval-status.sh
   teacher_knowledge_vault_m7_pass="$(summary_count "${teacher_knowledge_vault_m7_output}" "PASS")"
   teacher_knowledge_vault_m7_warn="$(summary_count "${teacher_knowledge_vault_m7_output}" "WARN")"
   teacher_knowledge_vault_m7_fail="$(summary_count "${teacher_knowledge_vault_m7_output}" "FAIL")"
@@ -1544,7 +1549,7 @@ fi
 
 if [[ -f scripts/teacher-knowledge-vault-m7b-manual-source-inventory-status.sh ]]; then
   teacher_knowledge_vault_m7b_result=0
-  teacher_knowledge_vault_m7b_output="$(bash scripts/teacher-knowledge-vault-m7b-manual-source-inventory-status.sh 2>&1)" || teacher_knowledge_vault_m7b_result=$?
+  capture_command teacher_knowledge_vault_m7b_output teacher_knowledge_vault_m7b_result bash scripts/teacher-knowledge-vault-m7b-manual-source-inventory-status.sh
   teacher_knowledge_vault_m7b_pass="$(summary_count "${teacher_knowledge_vault_m7b_output}" "PASS")"
   teacher_knowledge_vault_m7b_warn="$(summary_count "${teacher_knowledge_vault_m7b_output}" "WARN")"
   teacher_knowledge_vault_m7b_fail="$(summary_count "${teacher_knowledge_vault_m7b_output}" "FAIL")"
@@ -1564,7 +1569,7 @@ fi
 
 if [[ -f scripts/teacher-knowledge-vault-m7c-manual-inventory-import-preview-status.sh ]]; then
   teacher_knowledge_vault_m7c_result=0
-  teacher_knowledge_vault_m7c_output="$(bash scripts/teacher-knowledge-vault-m7c-manual-inventory-import-preview-status.sh 2>&1)" || teacher_knowledge_vault_m7c_result=$?
+  capture_command teacher_knowledge_vault_m7c_output teacher_knowledge_vault_m7c_result bash scripts/teacher-knowledge-vault-m7c-manual-inventory-import-preview-status.sh
   teacher_knowledge_vault_m7c_pass="$(summary_count "${teacher_knowledge_vault_m7c_output}" "PASS")"
   teacher_knowledge_vault_m7c_warn="$(summary_count "${teacher_knowledge_vault_m7c_output}" "WARN")"
   teacher_knowledge_vault_m7c_fail="$(summary_count "${teacher_knowledge_vault_m7c_output}" "FAIL")"
@@ -1584,7 +1589,7 @@ fi
 
 if [[ -f scripts/teacher-knowledge-vault-m7d-runtime-import-approval-gate-status.sh ]]; then
   teacher_knowledge_vault_m7d_result=0
-  teacher_knowledge_vault_m7d_output="$(bash scripts/teacher-knowledge-vault-m7d-runtime-import-approval-gate-status.sh 2>&1)" || teacher_knowledge_vault_m7d_result=$?
+  capture_command teacher_knowledge_vault_m7d_output teacher_knowledge_vault_m7d_result bash scripts/teacher-knowledge-vault-m7d-runtime-import-approval-gate-status.sh
   teacher_knowledge_vault_m7d_pass="$(summary_count "${teacher_knowledge_vault_m7d_output}" "PASS")"
   teacher_knowledge_vault_m7d_warn="$(summary_count "${teacher_knowledge_vault_m7d_output}" "WARN")"
   teacher_knowledge_vault_m7d_fail="$(summary_count "${teacher_knowledge_vault_m7d_output}" "FAIL")"
@@ -1604,7 +1609,7 @@ fi
 
 if [[ -f scripts/teacher-knowledge-vault-m7e-local-test-catalog-status.sh ]]; then
   teacher_knowledge_vault_m7e_result=0
-  teacher_knowledge_vault_m7e_output="$(bash scripts/teacher-knowledge-vault-m7e-local-test-catalog-status.sh 2>&1)" || teacher_knowledge_vault_m7e_result=$?
+  capture_command teacher_knowledge_vault_m7e_output teacher_knowledge_vault_m7e_result bash scripts/teacher-knowledge-vault-m7e-local-test-catalog-status.sh
   teacher_knowledge_vault_m7e_pass="$(summary_count "${teacher_knowledge_vault_m7e_output}" "PASS")"
   teacher_knowledge_vault_m7e_warn="$(summary_count "${teacher_knowledge_vault_m7e_output}" "WARN")"
   teacher_knowledge_vault_m7e_fail="$(summary_count "${teacher_knowledge_vault_m7e_output}" "FAIL")"
@@ -1625,7 +1630,7 @@ fi
 section "Teacher Knowledge Vault M7f Persistent Local Working Catalog Approval Gate"
 if [[ -f scripts/teacher-knowledge-vault-m7f-persistent-working-catalog-approval-gate-status.sh ]]; then
   teacher_knowledge_vault_m7f_result=0
-  teacher_knowledge_vault_m7f_output="$(bash scripts/teacher-knowledge-vault-m7f-persistent-working-catalog-approval-gate-status.sh 2>&1)" || teacher_knowledge_vault_m7f_result=$?
+  capture_command teacher_knowledge_vault_m7f_output teacher_knowledge_vault_m7f_result bash scripts/teacher-knowledge-vault-m7f-persistent-working-catalog-approval-gate-status.sh
   teacher_knowledge_vault_m7f_pass="$(summary_count "${teacher_knowledge_vault_m7f_output}" "PASS")"
   teacher_knowledge_vault_m7f_warn="$(summary_count "${teacher_knowledge_vault_m7f_output}" "WARN")"
   teacher_knowledge_vault_m7f_fail="$(summary_count "${teacher_knowledge_vault_m7f_output}" "FAIL")"
@@ -1646,7 +1651,7 @@ fi
 section "Teacher Knowledge Vault M7g Persistent Local Working Catalog Prototype"
 if [[ -f scripts/teacher-knowledge-vault-m7g-persistent-working-catalog-status.sh ]]; then
   teacher_knowledge_vault_m7g_result=0
-  teacher_knowledge_vault_m7g_output="$(bash scripts/teacher-knowledge-vault-m7g-persistent-working-catalog-status.sh 2>&1)" || teacher_knowledge_vault_m7g_result=$?
+  capture_command teacher_knowledge_vault_m7g_output teacher_knowledge_vault_m7g_result bash scripts/teacher-knowledge-vault-m7g-persistent-working-catalog-status.sh
   teacher_knowledge_vault_m7g_pass="$(summary_count "${teacher_knowledge_vault_m7g_output}" "PASS")"
   teacher_knowledge_vault_m7g_warn="$(summary_count "${teacher_knowledge_vault_m7g_output}" "WARN")"
   teacher_knowledge_vault_m7g_fail="$(summary_count "${teacher_knowledge_vault_m7g_output}" "FAIL")"
@@ -1667,7 +1672,7 @@ fi
 section "Teacher Knowledge Vault M2b Repo-Owned Staging Metadata Prototype"
 if [[ -f scripts/teacher-knowledge-vault-m2b-repo-staging-metadata-status.sh ]]; then
   teacher_knowledge_vault_m2b_result=0
-  teacher_knowledge_vault_m2b_output="$(bash scripts/teacher-knowledge-vault-m2b-repo-staging-metadata-status.sh 2>&1)" || teacher_knowledge_vault_m2b_result=$?
+  capture_command teacher_knowledge_vault_m2b_output teacher_knowledge_vault_m2b_result bash scripts/teacher-knowledge-vault-m2b-repo-staging-metadata-status.sh
   teacher_knowledge_vault_m2b_pass="$(summary_count "${teacher_knowledge_vault_m2b_output}" "PASS")"
   teacher_knowledge_vault_m2b_warn="$(summary_count "${teacher_knowledge_vault_m2b_output}" "WARN")"
   teacher_knowledge_vault_m2b_fail="$(summary_count "${teacher_knowledge_vault_m2b_output}" "FAIL")"
@@ -1688,7 +1693,7 @@ fi
 section "Teacher Knowledge Vault M2c Selected Local Folder Approval Gate"
 if [[ -f scripts/teacher-knowledge-vault-m2c-selected-local-folder-approval-gate-status.sh ]]; then
   teacher_knowledge_vault_m2c_result=0
-  teacher_knowledge_vault_m2c_output="$(bash scripts/teacher-knowledge-vault-m2c-selected-local-folder-approval-gate-status.sh 2>&1)" || teacher_knowledge_vault_m2c_result=$?
+  capture_command teacher_knowledge_vault_m2c_output teacher_knowledge_vault_m2c_result bash scripts/teacher-knowledge-vault-m2c-selected-local-folder-approval-gate-status.sh
   teacher_knowledge_vault_m2c_pass="$(summary_count "${teacher_knowledge_vault_m2c_output}" "PASS")"
   teacher_knowledge_vault_m2c_warn="$(summary_count "${teacher_knowledge_vault_m2c_output}" "WARN")"
   teacher_knowledge_vault_m2c_fail="$(summary_count "${teacher_knowledge_vault_m2c_output}" "FAIL")"
@@ -1709,7 +1714,7 @@ fi
 section "Teacher Knowledge Vault M2d First Selected Folder Metadata Scan"
 if [[ -f scripts/teacher-knowledge-vault-m2d-selected-folder-status.sh ]]; then
   teacher_knowledge_vault_m2d_result=0
-  teacher_knowledge_vault_m2d_output="$(bash scripts/teacher-knowledge-vault-m2d-selected-folder-status.sh 2>&1)" || teacher_knowledge_vault_m2d_result=$?
+  capture_command teacher_knowledge_vault_m2d_output teacher_knowledge_vault_m2d_result bash scripts/teacher-knowledge-vault-m2d-selected-folder-status.sh
   teacher_knowledge_vault_m2d_pass="$(summary_count "${teacher_knowledge_vault_m2d_output}" "PASS")"
   teacher_knowledge_vault_m2d_warn="$(summary_count "${teacher_knowledge_vault_m2d_output}" "WARN")"
   teacher_knowledge_vault_m2d_fail="$(summary_count "${teacher_knowledge_vault_m2d_output}" "FAIL")"
@@ -1730,7 +1735,7 @@ fi
 section "Local Retrieval Foundation v0"
 if [[ -f scripts/local-retrieval-foundation-status.sh ]]; then
   local_retrieval_foundation_result=0
-  local_retrieval_foundation_output="$(bash scripts/local-retrieval-foundation-status.sh 2>&1)" || local_retrieval_foundation_result=$?
+  capture_command local_retrieval_foundation_output local_retrieval_foundation_result bash scripts/local-retrieval-foundation-status.sh
   local_retrieval_foundation_pass="$(summary_count "${local_retrieval_foundation_output}" "PASS")"
   local_retrieval_foundation_warn="$(summary_count "${local_retrieval_foundation_output}" "WARN")"
   local_retrieval_foundation_fail="$(summary_count "${local_retrieval_foundation_output}" "FAIL")"
@@ -1753,7 +1758,7 @@ fi
 section "Integration Planning Foundation v0"
 if [[ -f scripts/integration-planning-foundation-status.sh ]]; then
   integration_planning_foundation_result=0
-  integration_planning_foundation_output="$(bash scripts/integration-planning-foundation-status.sh 2>&1)" || integration_planning_foundation_result=$?
+  capture_command integration_planning_foundation_output integration_planning_foundation_result bash scripts/integration-planning-foundation-status.sh
   integration_planning_foundation_pass="$(summary_count "${integration_planning_foundation_output}" "PASS")"
   integration_planning_foundation_warn="$(summary_count "${integration_planning_foundation_output}" "WARN")"
   integration_planning_foundation_fail="$(summary_count "${integration_planning_foundation_output}" "FAIL")"
@@ -1776,7 +1781,7 @@ fi
 section "Curriculum Builder Local-First Foundation Plan"
 if [[ -f scripts/curriculum-builder-foundation-status.sh ]]; then
   curriculum_builder_foundation_result=0
-  curriculum_builder_foundation_output="$(bash scripts/curriculum-builder-foundation-status.sh 2>&1)" || curriculum_builder_foundation_result=$?
+  capture_command curriculum_builder_foundation_output curriculum_builder_foundation_result bash scripts/curriculum-builder-foundation-status.sh
   curriculum_builder_foundation_pass="$(summary_count "${curriculum_builder_foundation_output}" "PASS")"
   curriculum_builder_foundation_warn="$(summary_count "${curriculum_builder_foundation_output}" "WARN")"
   curriculum_builder_foundation_fail="$(summary_count "${curriculum_builder_foundation_output}" "FAIL")"
@@ -1799,7 +1804,7 @@ fi
 section "Curriculum Builder Metadata Contract Schemas (Programs A4–A7)"
 if [[ -f scripts/curriculum-builder-contract-schemas-status.sh ]]; then
   curriculum_contracts_result=0
-  curriculum_contracts_output="$(bash scripts/curriculum-builder-contract-schemas-status.sh 2>&1)" || curriculum_contracts_result=$?
+  capture_command curriculum_contracts_output curriculum_contracts_result bash scripts/curriculum-builder-contract-schemas-status.sh
   curriculum_contracts_pass="$(summary_count "${curriculum_contracts_output}" "PASS")"
   curriculum_contracts_warn="$(summary_count "${curriculum_contracts_output}" "WARN")"
   curriculum_contracts_fail="$(summary_count "${curriculum_contracts_output}" "FAIL")"
@@ -1820,7 +1825,7 @@ fi
 section "Curriculum Builder Registry v0.2 Manual Entry Dry-Run (CB-IMPL-1)"
 if [[ -f scripts/curriculum-builder-registry-v0-2-status.sh ]]; then
   curriculum_registry_dry_run_result=0
-  curriculum_registry_dry_run_output="$(bash scripts/curriculum-builder-registry-v0-2-status.sh 2>&1)" || curriculum_registry_dry_run_result=$?
+  capture_command curriculum_registry_dry_run_output curriculum_registry_dry_run_result bash scripts/curriculum-builder-registry-v0-2-status.sh
   curriculum_registry_dry_run_pass="$(summary_count "${curriculum_registry_dry_run_output}" "PASS")"
   curriculum_registry_dry_run_warn="$(summary_count "${curriculum_registry_dry_run_output}" "WARN")"
   curriculum_registry_dry_run_fail="$(summary_count "${curriculum_registry_dry_run_output}" "FAIL")"
@@ -1841,7 +1846,7 @@ fi
 section "Curriculum Builder Registry v0.2 Local Fake Records (CB-IMPL-2)"
 if [[ -f scripts/curriculum-builder-registry-v0-2-local-records-status.sh ]]; then
   curriculum_registry_records_result=0
-  curriculum_registry_records_output="$(bash scripts/curriculum-builder-registry-v0-2-local-records-status.sh 2>&1)" || curriculum_registry_records_result=$?
+  capture_command curriculum_registry_records_output curriculum_registry_records_result bash scripts/curriculum-builder-registry-v0-2-local-records-status.sh
   curriculum_registry_records_pass="$(summary_count "${curriculum_registry_records_output}" "PASS")"
   curriculum_registry_records_warn="$(summary_count "${curriculum_registry_records_output}" "WARN")"
   curriculum_registry_records_fail="$(summary_count "${curriculum_registry_records_output}" "FAIL")"
@@ -1862,7 +1867,7 @@ fi
 section "Curriculum Builder Registry v0.2 Renderer Foundation (CB-IMPL-3)"
 if [[ -f scripts/curriculum-builder-registry-v0-2-renderer-status.sh ]]; then
   curriculum_registry_renderer_result=0
-  curriculum_registry_renderer_output="$(bash scripts/curriculum-builder-registry-v0-2-renderer-status.sh 2>&1)" || curriculum_registry_renderer_result=$?
+  capture_command curriculum_registry_renderer_output curriculum_registry_renderer_result bash scripts/curriculum-builder-registry-v0-2-renderer-status.sh
   curriculum_registry_renderer_pass="$(summary_count "${curriculum_registry_renderer_output}" "PASS")"
   curriculum_registry_renderer_warn="$(summary_count "${curriculum_registry_renderer_output}" "WARN")"
   curriculum_registry_renderer_fail="$(summary_count "${curriculum_registry_renderer_output}" "FAIL")"
@@ -1883,7 +1888,7 @@ fi
 section "Curriculum Builder Registry v0.2 Retrieval Hooks (CB-IMPL-4)"
 if [[ -f scripts/curriculum-builder-registry-v0-2-retrieval-status.sh ]]; then
   curriculum_registry_retrieval_result=0
-  curriculum_registry_retrieval_output="$(bash scripts/curriculum-builder-registry-v0-2-retrieval-status.sh 2>&1)" || curriculum_registry_retrieval_result=$?
+  capture_command curriculum_registry_retrieval_output curriculum_registry_retrieval_result bash scripts/curriculum-builder-registry-v0-2-retrieval-status.sh
   curriculum_registry_retrieval_pass="$(summary_count "${curriculum_registry_retrieval_output}" "PASS")"
   curriculum_registry_retrieval_warn="$(summary_count "${curriculum_registry_retrieval_output}" "WARN")"
   curriculum_registry_retrieval_fail="$(summary_count "${curriculum_registry_retrieval_output}" "FAIL")"
@@ -1904,7 +1909,7 @@ fi
 section "Curriculum Builder Production Registry Workflow Planning"
 if [[ -f scripts/curriculum-builder-production-registry-planning-status.sh ]]; then
   curriculum_production_registry_planning_result=0
-  curriculum_production_registry_planning_output="$(bash scripts/curriculum-builder-production-registry-planning-status.sh 2>&1)" || curriculum_production_registry_planning_result=$?
+  capture_command curriculum_production_registry_planning_output curriculum_production_registry_planning_result bash scripts/curriculum-builder-production-registry-planning-status.sh
   curriculum_production_registry_planning_pass="$(summary_count "${curriculum_production_registry_planning_output}" "PASS")"
   curriculum_production_registry_planning_warn="$(summary_count "${curriculum_production_registry_planning_output}" "WARN")"
   curriculum_production_registry_planning_fail="$(summary_count "${curriculum_production_registry_planning_output}" "FAIL")"
@@ -1925,7 +1930,7 @@ fi
 section "Production Registry Governance Foundation (CB-PROD-GOV)"
 if [[ -f scripts/curriculum-builder-production-registry-governance-status.sh ]]; then
   curriculum_prod_gov_result=0
-  curriculum_prod_gov_output="$(bash scripts/curriculum-builder-production-registry-governance-status.sh 2>&1)" || curriculum_prod_gov_result=$?
+  capture_command curriculum_prod_gov_output curriculum_prod_gov_result bash scripts/curriculum-builder-production-registry-governance-status.sh
   curriculum_prod_gov_pass="$(summary_count "${curriculum_prod_gov_output}" "PASS")"
   curriculum_prod_gov_warn="$(summary_count "${curriculum_prod_gov_output}" "WARN")"
   curriculum_prod_gov_fail="$(summary_count "${curriculum_prod_gov_output}" "FAIL")"
@@ -1946,7 +1951,7 @@ fi
 section "Owen Production Registry Approval Checklist Tracker"
 if [[ -f scripts/curriculum-builder-production-registry-owen-checklist-status.sh ]]; then
   curriculum_owen_checklist_result=0
-  curriculum_owen_checklist_output="$(bash scripts/curriculum-builder-production-registry-owen-checklist-status.sh 2>&1)" || curriculum_owen_checklist_result=$?
+  capture_command curriculum_owen_checklist_output curriculum_owen_checklist_result bash scripts/curriculum-builder-production-registry-owen-checklist-status.sh
   curriculum_owen_checklist_pass="$(summary_count "${curriculum_owen_checklist_output}" "PASS")"
   curriculum_owen_checklist_warn="$(summary_count "${curriculum_owen_checklist_output}" "WARN")"
   curriculum_owen_checklist_fail="$(summary_count "${curriculum_owen_checklist_output}" "FAIL")"
@@ -1967,7 +1972,7 @@ fi
 section "Production Registry Phase 2 Preflight"
 if [[ -f scripts/curriculum-builder-production-registry-phase-2-preflight-status.sh ]]; then
   curriculum_phase2_preflight_result=0
-  curriculum_phase2_preflight_output="$(bash scripts/curriculum-builder-production-registry-phase-2-preflight-status.sh 2>&1)" || curriculum_phase2_preflight_result=$?
+  capture_command curriculum_phase2_preflight_output curriculum_phase2_preflight_result bash scripts/curriculum-builder-production-registry-phase-2-preflight-status.sh
   curriculum_phase2_preflight_pass="$(summary_count "${curriculum_phase2_preflight_output}" "PASS")"
   curriculum_phase2_preflight_warn="$(summary_count "${curriculum_phase2_preflight_output}" "WARN")"
   curriculum_phase2_preflight_fail="$(summary_count "${curriculum_phase2_preflight_output}" "FAIL")"
@@ -1988,7 +1993,7 @@ fi
 section "Production Registry Metadata Boundary Refinement"
 if [[ -f scripts/curriculum-builder-production-registry-metadata-boundary-status.sh ]]; then
   curriculum_metadata_boundary_result=0
-  curriculum_metadata_boundary_output="$(bash scripts/curriculum-builder-production-registry-metadata-boundary-status.sh 2>&1)" || curriculum_metadata_boundary_result=$?
+  capture_command curriculum_metadata_boundary_output curriculum_metadata_boundary_result bash scripts/curriculum-builder-production-registry-metadata-boundary-status.sh
   curriculum_metadata_boundary_pass="$(summary_count "${curriculum_metadata_boundary_output}" "PASS")"
   curriculum_metadata_boundary_warn="$(summary_count "${curriculum_metadata_boundary_output}" "WARN")"
   curriculum_metadata_boundary_fail="$(summary_count "${curriculum_metadata_boundary_output}" "FAIL")"
@@ -2009,7 +2014,7 @@ fi
 section "Production Registry Empty-File Shell"
 if [[ -f scripts/curriculum-builder-production-registry-empty-file-status.sh ]]; then
   curriculum_empty_file_result=0
-  curriculum_empty_file_output="$(bash scripts/curriculum-builder-production-registry-empty-file-status.sh 2>&1)" || curriculum_empty_file_result=$?
+  capture_command curriculum_empty_file_output curriculum_empty_file_result bash scripts/curriculum-builder-production-registry-empty-file-status.sh
   curriculum_empty_file_pass="$(summary_count "${curriculum_empty_file_output}" "PASS")"
   curriculum_empty_file_warn="$(summary_count "${curriculum_empty_file_output}" "WARN")"
   curriculum_empty_file_fail="$(summary_count "${curriculum_empty_file_output}" "FAIL")"
@@ -2030,7 +2035,7 @@ fi
 section "Production Registry Metadata Pilot Execution Planning"
 if [[ -f scripts/curriculum-builder-production-registry-metadata-pilot-plan-status.sh ]]; then
   curriculum_metadata_pilot_plan_result=0
-  curriculum_metadata_pilot_plan_output="$(bash scripts/curriculum-builder-production-registry-metadata-pilot-plan-status.sh 2>&1)" || curriculum_metadata_pilot_plan_result=$?
+  capture_command curriculum_metadata_pilot_plan_output curriculum_metadata_pilot_plan_result bash scripts/curriculum-builder-production-registry-metadata-pilot-plan-status.sh
   curriculum_metadata_pilot_plan_pass="$(summary_count "${curriculum_metadata_pilot_plan_output}" "PASS")"
   curriculum_metadata_pilot_plan_warn="$(summary_count "${curriculum_metadata_pilot_plan_output}" "WARN")"
   curriculum_metadata_pilot_plan_fail="$(summary_count "${curriculum_metadata_pilot_plan_output}" "FAIL")"
@@ -2051,7 +2056,7 @@ fi
 section "Production Registry First Governed Record"
 if [[ -f scripts/curriculum-builder-production-registry-first-record-status.sh ]]; then
   curriculum_first_record_result=0
-  curriculum_first_record_output="$(bash scripts/curriculum-builder-production-registry-first-record-status.sh 2>&1)" || curriculum_first_record_result=$?
+  capture_command curriculum_first_record_output curriculum_first_record_result bash scripts/curriculum-builder-production-registry-first-record-status.sh
   curriculum_first_record_pass="$(summary_count "${curriculum_first_record_output}" "PASS")"
   curriculum_first_record_warn="$(summary_count "${curriculum_first_record_output}" "WARN")"
   curriculum_first_record_fail="$(summary_count "${curriculum_first_record_output}" "FAIL")"
@@ -2072,7 +2077,7 @@ fi
 section "Production Registry Next-Gate Decision Prep"
 if [[ -f scripts/curriculum-builder-production-registry-next-gate-status.sh ]]; then
   curriculum_next_gate_result=0
-  curriculum_next_gate_output="$(bash scripts/curriculum-builder-production-registry-next-gate-status.sh 2>&1)" || curriculum_next_gate_result=$?
+  capture_command curriculum_next_gate_output curriculum_next_gate_result bash scripts/curriculum-builder-production-registry-next-gate-status.sh
   curriculum_next_gate_pass="$(summary_count "${curriculum_next_gate_output}" "PASS")"
   curriculum_next_gate_warn="$(summary_count "${curriculum_next_gate_output}" "WARN")"
   curriculum_next_gate_fail="$(summary_count "${curriculum_next_gate_output}" "FAIL")"
@@ -2093,7 +2098,7 @@ fi
 section "Whole-System Master Roadmap Build-State"
 if [[ -f scripts/whole-system-master-roadmap-status.sh ]]; then
   whole_system_master_roadmap_result=0
-  whole_system_master_roadmap_output="$(bash scripts/whole-system-master-roadmap-status.sh 2>&1)" || whole_system_master_roadmap_result=$?
+  capture_command whole_system_master_roadmap_output whole_system_master_roadmap_result bash scripts/whole-system-master-roadmap-status.sh
   whole_system_master_roadmap_pass="$(summary_count "${whole_system_master_roadmap_output}" "PASS")"
   whole_system_master_roadmap_warn="$(summary_count "${whole_system_master_roadmap_output}" "WARN")"
   whole_system_master_roadmap_fail="$(summary_count "${whole_system_master_roadmap_output}" "FAIL")"
@@ -2114,7 +2119,7 @@ fi
 section "Whole-System Coherence Maintenance"
 if [[ -f scripts/whole-system-coherence-status.sh ]]; then
   whole_system_coherence_result=0
-  whole_system_coherence_output="$(bash scripts/whole-system-coherence-status.sh 2>&1)" || whole_system_coherence_result=$?
+  capture_command whole_system_coherence_output whole_system_coherence_result bash scripts/whole-system-coherence-status.sh
   whole_system_coherence_pass="$(summary_count "${whole_system_coherence_output}" "PASS")"
   whole_system_coherence_warn="$(summary_count "${whole_system_coherence_output}" "WARN")"
   whole_system_coherence_fail="$(summary_count "${whole_system_coherence_output}" "FAIL")"
@@ -2135,7 +2140,7 @@ fi
 section "Agent Builder Compatibility Governance"
 if [[ -f scripts/agent-builder-compatibility-governance-status.sh ]]; then
   agent_builder_governance_result=0
-  agent_builder_governance_output="$(bash scripts/agent-builder-compatibility-governance-status.sh 2>&1)" || agent_builder_governance_result=$?
+  capture_command agent_builder_governance_output agent_builder_governance_result bash scripts/agent-builder-compatibility-governance-status.sh
   agent_builder_governance_pass="$(summary_count "${agent_builder_governance_output}" "PASS")"
   agent_builder_governance_warn="$(summary_count "${agent_builder_governance_output}" "WARN")"
   agent_builder_governance_fail="$(summary_count "${agent_builder_governance_output}" "FAIL")"
@@ -2156,7 +2161,7 @@ fi
 section "AGENTS.md Governance"
 if [[ -f scripts/agents-governance-status.sh ]]; then
   agents_governance_result=0
-  agents_governance_output="$(bash scripts/agents-governance-status.sh 2>&1)" || agents_governance_result=$?
+  capture_command agents_governance_output agents_governance_result bash scripts/agents-governance-status.sh
   agents_governance_pass="$(summary_count "${agents_governance_output}" "PASS")"
   agents_governance_warn="$(summary_count "${agents_governance_output}" "WARN")"
   agents_governance_fail="$(summary_count "${agents_governance_output}" "FAIL")"
@@ -2177,7 +2182,7 @@ fi
 section "Owen Architecture Decision Packets"
 if [[ -f scripts/owen-architecture-decision-packets-status.sh ]]; then
   decision_packets_result=0
-  decision_packets_output="$(bash scripts/owen-architecture-decision-packets-status.sh 2>&1)" || decision_packets_result=$?
+  capture_command decision_packets_output decision_packets_result bash scripts/owen-architecture-decision-packets-status.sh
   decision_packets_pass="$(summary_count "${decision_packets_output}" "PASS")"
   decision_packets_warn="$(summary_count "${decision_packets_output}" "WARN")"
   decision_packets_fail="$(summary_count "${decision_packets_output}" "FAIL")"
@@ -2198,7 +2203,7 @@ fi
 section "App Ecosystem Inventory"
 if [[ -f scripts/app-ecosystem-inventory-status.sh ]]; then
   app_ecosystem_result=0
-  app_ecosystem_output="$(bash scripts/app-ecosystem-inventory-status.sh 2>&1)" || app_ecosystem_result=$?
+  capture_command app_ecosystem_output app_ecosystem_result bash scripts/app-ecosystem-inventory-status.sh
   app_ecosystem_pass="$(summary_count "${app_ecosystem_output}" "PASS")"
   app_ecosystem_warn="$(summary_count "${app_ecosystem_output}" "WARN")"
   app_ecosystem_fail="$(summary_count "${app_ecosystem_output}" "FAIL")"
@@ -2219,7 +2224,7 @@ fi
 section "Classroom Timer & Stopwatch Planning"
 if [[ -f scripts/classroom-timer-stopwatch-planning-status.sh ]]; then
   timer_planning_result=0
-  timer_planning_output="$(bash scripts/classroom-timer-stopwatch-planning-status.sh 2>&1)" || timer_planning_result=$?
+  capture_command timer_planning_output timer_planning_result bash scripts/classroom-timer-stopwatch-planning-status.sh
   timer_planning_pass="$(summary_count "${timer_planning_output}" "PASS")"
   timer_planning_warn="$(summary_count "${timer_planning_output}" "WARN")"
   timer_planning_fail="$(summary_count "${timer_planning_output}" "FAIL")"
@@ -2240,7 +2245,7 @@ fi
 section "Classroom Timer & Stopwatch Runtime Prototype"
 if [[ -f scripts/classroom-timer-stopwatch-runtime-status.sh ]]; then
   timer_runtime_result=0
-  timer_runtime_output="$(bash scripts/classroom-timer-stopwatch-runtime-status.sh 2>&1)" || timer_runtime_result=$?
+  capture_command timer_runtime_output timer_runtime_result bash scripts/classroom-timer-stopwatch-runtime-status.sh
   timer_runtime_pass="$(summary_count "${timer_runtime_output}" "PASS")"
   timer_runtime_warn="$(summary_count "${timer_runtime_output}" "WARN")"
   timer_runtime_fail="$(summary_count "${timer_runtime_output}" "FAIL")"
@@ -2261,7 +2266,7 @@ fi
 section "App Ecosystem Planning Lanes Program"
 if [[ -f scripts/app-ecosystem-planning-lanes-status.sh ]]; then
   planning_lanes_result=0
-  planning_lanes_output="$(bash scripts/app-ecosystem-planning-lanes-status.sh 2>&1)" || planning_lanes_result=$?
+  capture_command planning_lanes_output planning_lanes_result bash scripts/app-ecosystem-planning-lanes-status.sh
   planning_lanes_pass="$(summary_count "${planning_lanes_output}" "PASS")"
   planning_lanes_warn="$(summary_count "${planning_lanes_output}" "WARN")"
   planning_lanes_fail="$(summary_count "${planning_lanes_output}" "FAIL")"
@@ -2282,7 +2287,7 @@ fi
 section "App Runtime Approval Gate"
 if [[ -f scripts/app-runtime-approval-gate-status.sh ]]; then
   approval_gate_result=0
-  approval_gate_output="$(bash scripts/app-runtime-approval-gate-status.sh 2>&1)" || approval_gate_result=$?
+  capture_command approval_gate_output approval_gate_result bash scripts/app-runtime-approval-gate-status.sh
   approval_gate_pass="$(summary_count "${approval_gate_output}" "PASS")"
   approval_gate_warn="$(summary_count "${approval_gate_output}" "WARN")"
   approval_gate_fail="$(summary_count "${approval_gate_output}" "FAIL")"
@@ -2303,7 +2308,7 @@ fi
 section "Curriculum Source Readiness Foundation"
 if [[ -f scripts/curriculum-source-readiness-status.sh ]]; then
   curriculum_source_readiness_result=0
-  curriculum_source_readiness_output="$(bash scripts/curriculum-source-readiness-status.sh 2>&1)" || curriculum_source_readiness_result=$?
+  capture_command curriculum_source_readiness_output curriculum_source_readiness_result bash scripts/curriculum-source-readiness-status.sh
   curriculum_source_readiness_pass="$(summary_count "${curriculum_source_readiness_output}" "PASS")"
   curriculum_source_readiness_warn="$(summary_count "${curriculum_source_readiness_output}" "WARN")"
   curriculum_source_readiness_fail="$(summary_count "${curriculum_source_readiness_output}" "FAIL")"
@@ -2324,7 +2329,7 @@ fi
 section "Curriculum Builder Registry Lane Status (Aggregate)"
 if [[ -f scripts/curriculum-builder-registry-lane-status.sh ]]; then
   curriculum_registry_lane_result=0
-  curriculum_registry_lane_output="$(bash scripts/curriculum-builder-registry-lane-status.sh 2>&1)" || curriculum_registry_lane_result=$?
+  capture_command curriculum_registry_lane_output curriculum_registry_lane_result bash scripts/curriculum-builder-registry-lane-status.sh
   curriculum_registry_lane_pass="$(summary_count "${curriculum_registry_lane_output}" "PASS")"
   curriculum_registry_lane_warn="$(summary_count "${curriculum_registry_lane_output}" "WARN")"
   curriculum_registry_lane_fail="$(summary_count "${curriculum_registry_lane_output}" "FAIL")"
@@ -2345,7 +2350,7 @@ fi
 section "Curriculum Registry v0 Manual Metadata Foundation"
 if [[ -f scripts/curriculum-registry-v0-status.sh ]]; then
   curriculum_registry_v0_result=0
-  curriculum_registry_v0_output="$(bash scripts/curriculum-registry-v0-status.sh 2>&1)" || curriculum_registry_v0_result=$?
+  capture_command curriculum_registry_v0_output curriculum_registry_v0_result bash scripts/curriculum-registry-v0-status.sh
   curriculum_registry_v0_pass="$(summary_count "${curriculum_registry_v0_output}" "PASS")"
   curriculum_registry_v0_warn="$(summary_count "${curriculum_registry_v0_output}" "WARN")"
   curriculum_registry_v0_fail="$(summary_count "${curriculum_registry_v0_output}" "FAIL")"
@@ -2368,7 +2373,7 @@ fi
 section "Curriculum Output Contract v0 Bounded Validator Foundation"
 if [[ -f scripts/curriculum-output-contract-v0-status.sh ]]; then
   curriculum_output_contract_v0_result=0
-  curriculum_output_contract_v0_output="$(bash scripts/curriculum-output-contract-v0-status.sh 2>&1)" || curriculum_output_contract_v0_result=$?
+  capture_command curriculum_output_contract_v0_output curriculum_output_contract_v0_result bash scripts/curriculum-output-contract-v0-status.sh
   curriculum_output_contract_v0_pass="$(summary_count "${curriculum_output_contract_v0_output}" "PASS")"
   curriculum_output_contract_v0_warn="$(summary_count "${curriculum_output_contract_v0_output}" "WARN")"
   curriculum_output_contract_v0_fail="$(summary_count "${curriculum_output_contract_v0_output}" "FAIL")"
@@ -2391,7 +2396,7 @@ fi
 section "Curriculum Registry–Contract Binding v0 Foundation"
 if [[ -f scripts/curriculum-binding-v0-status.sh ]]; then
   curriculum_binding_v0_result=0
-  curriculum_binding_v0_output="$(bash scripts/curriculum-binding-v0-status.sh 2>&1)" || curriculum_binding_v0_result=$?
+  capture_command curriculum_binding_v0_output curriculum_binding_v0_result bash scripts/curriculum-binding-v0-status.sh
   curriculum_binding_v0_pass="$(summary_count "${curriculum_binding_v0_output}" "PASS")"
   curriculum_binding_v0_warn="$(summary_count "${curriculum_binding_v0_output}" "WARN")"
   curriculum_binding_v0_fail="$(summary_count "${curriculum_binding_v0_output}" "FAIL")"
@@ -2414,7 +2419,7 @@ fi
 section "Teacher App Designer / Canvas LLM Local-First Foundation"
 if [[ -f scripts/teacher-app-designer-canvas-llm-status.sh ]]; then
   teacher_app_designer_canvas_llm_result=0
-  teacher_app_designer_canvas_llm_output="$(bash scripts/teacher-app-designer-canvas-llm-status.sh 2>&1)" || teacher_app_designer_canvas_llm_result=$?
+  capture_command teacher_app_designer_canvas_llm_output teacher_app_designer_canvas_llm_result bash scripts/teacher-app-designer-canvas-llm-status.sh
   teacher_app_designer_canvas_llm_pass="$(summary_count "${teacher_app_designer_canvas_llm_output}" "PASS")"
   teacher_app_designer_canvas_llm_warn="$(summary_count "${teacher_app_designer_canvas_llm_output}" "WARN")"
   teacher_app_designer_canvas_llm_fail="$(summary_count "${teacher_app_designer_canvas_llm_output}" "FAIL")"
@@ -2442,7 +2447,7 @@ begin_section_summary
 section "Document Indexing Command Detail Polish"
 if [[ -f scripts/document-indexing-command-detail-status.sh ]]; then
   document_indexing_command_detail_result=0
-  document_indexing_command_detail_output="$(bash scripts/document-indexing-command-detail-status.sh 2>&1)" || document_indexing_command_detail_result=$?
+  capture_command document_indexing_command_detail_output document_indexing_command_detail_result bash scripts/document-indexing-command-detail-status.sh
   document_indexing_command_detail_pass="$(summary_count "${document_indexing_command_detail_output}" "PASS")"
   document_indexing_command_detail_warn="$(summary_count "${document_indexing_command_detail_output}" "WARN")"
   document_indexing_command_detail_fail="$(summary_count "${document_indexing_command_detail_output}" "FAIL")"
@@ -2465,7 +2470,7 @@ fi
 section "Safe Local Document Indexing Plan"
 if [[ -f scripts/document-indexing-plan-status.sh ]]; then
   document_indexing_result=0
-  document_indexing_output="$(bash scripts/document-indexing-plan-status.sh 2>&1)" || document_indexing_result=$?
+  capture_command document_indexing_output document_indexing_result bash scripts/document-indexing-plan-status.sh
   document_indexing_pass="$(summary_count "${document_indexing_output}" "PASS")"
   document_indexing_warn="$(summary_count "${document_indexing_output}" "WARN")"
   document_indexing_fail="$(summary_count "${document_indexing_output}" "FAIL")"
@@ -2488,7 +2493,7 @@ fi
 section "Local Document Indexing Follow-Up"
 if [[ -f scripts/local-document-indexing-follow-up-status.sh ]]; then
   local_document_indexing_followup_result=0
-  local_document_indexing_followup_output="$(bash scripts/local-document-indexing-follow-up-status.sh 2>&1)" || local_document_indexing_followup_result=$?
+  capture_command local_document_indexing_followup_output local_document_indexing_followup_result bash scripts/local-document-indexing-follow-up-status.sh
   local_document_indexing_followup_pass="$(summary_count "${local_document_indexing_followup_output}" "PASS")"
   local_document_indexing_followup_warn="$(summary_count "${local_document_indexing_followup_output}" "WARN")"
   local_document_indexing_followup_fail="$(summary_count "${local_document_indexing_followup_output}" "FAIL")"
@@ -2511,7 +2516,7 @@ fi
 section "Project Memory Cleanup"
 if [[ -f scripts/project-memory-cleanup-status.sh ]]; then
   project_memory_cleanup_result=0
-  project_memory_cleanup_output="$(bash scripts/project-memory-cleanup-status.sh 2>&1)" || project_memory_cleanup_result=$?
+  capture_command project_memory_cleanup_output project_memory_cleanup_result bash scripts/project-memory-cleanup-status.sh
   project_memory_cleanup_pass="$(summary_count "${project_memory_cleanup_output}" "PASS")"
   project_memory_cleanup_warn="$(summary_count "${project_memory_cleanup_output}" "WARN")"
   project_memory_cleanup_fail="$(summary_count "${project_memory_cleanup_output}" "FAIL")"
@@ -2534,7 +2539,7 @@ fi
 section "Testing/Checklist Consolidation"
 if [[ -f scripts/testing-checklist-consolidation-status.sh ]]; then
   testing_checklist_result=0
-  testing_checklist_output="$(bash scripts/testing-checklist-consolidation-status.sh 2>&1)" || testing_checklist_result=$?
+  capture_command testing_checklist_output testing_checklist_result bash scripts/testing-checklist-consolidation-status.sh
   testing_checklist_pass="$(summary_count "${testing_checklist_output}" "PASS")"
   testing_checklist_warn="$(summary_count "${testing_checklist_output}" "WARN")"
   testing_checklist_fail="$(summary_count "${testing_checklist_output}" "FAIL")"
@@ -2557,7 +2562,7 @@ fi
 section "Command/Check Bundle Reference Polish"
 if [[ -f scripts/command-check-bundle-reference-status.sh ]]; then
   command_check_bundle_reference_result=0
-  command_check_bundle_reference_output="$(bash scripts/command-check-bundle-reference-status.sh 2>&1)" || command_check_bundle_reference_result=$?
+  capture_command command_check_bundle_reference_output command_check_bundle_reference_result bash scripts/command-check-bundle-reference-status.sh
   command_check_bundle_reference_pass="$(summary_count "${command_check_bundle_reference_output}" "PASS")"
   command_check_bundle_reference_warn="$(summary_count "${command_check_bundle_reference_output}" "WARN")"
   command_check_bundle_reference_fail="$(summary_count "${command_check_bundle_reference_output}" "FAIL")"
@@ -2580,7 +2585,7 @@ fi
 section "Checklist-Driven Prompt Template Tightening"
 if [[ -f scripts/checklist-driven-prompt-template-status.sh ]]; then
   checklist_prompt_template_result=0
-  checklist_prompt_template_output="$(bash scripts/checklist-driven-prompt-template-status.sh 2>&1)" || checklist_prompt_template_result=$?
+  capture_command checklist_prompt_template_output checklist_prompt_template_result bash scripts/checklist-driven-prompt-template-status.sh
   checklist_prompt_template_pass="$(summary_count "${checklist_prompt_template_output}" "PASS")"
   checklist_prompt_template_warn="$(summary_count "${checklist_prompt_template_output}" "WARN")"
   checklist_prompt_template_fail="$(summary_count "${checklist_prompt_template_output}" "FAIL")"
@@ -2603,7 +2608,7 @@ fi
 section "PR Lifecycle Guardrail Consolidation"
 if [[ -f scripts/pr-lifecycle-guardrail-status.sh ]]; then
   pr_lifecycle_guardrail_result=0
-  pr_lifecycle_guardrail_output="$(bash scripts/pr-lifecycle-guardrail-status.sh 2>&1)" || pr_lifecycle_guardrail_result=$?
+  capture_command pr_lifecycle_guardrail_output pr_lifecycle_guardrail_result bash scripts/pr-lifecycle-guardrail-status.sh
   pr_lifecycle_guardrail_pass="$(summary_count "${pr_lifecycle_guardrail_output}" "PASS")"
   pr_lifecycle_guardrail_warn="$(summary_count "${pr_lifecycle_guardrail_output}" "WARN")"
   pr_lifecycle_guardrail_fail="$(summary_count "${pr_lifecycle_guardrail_output}" "FAIL")"
@@ -2626,7 +2631,7 @@ fi
 section "Branch Hygiene and Cleanup Reference"
 if [[ -f scripts/branch-hygiene-cleanup-status.sh ]]; then
   branch_hygiene_cleanup_result=0
-  branch_hygiene_cleanup_output="$(bash scripts/branch-hygiene-cleanup-status.sh 2>&1)" || branch_hygiene_cleanup_result=$?
+  capture_command branch_hygiene_cleanup_output branch_hygiene_cleanup_result bash scripts/branch-hygiene-cleanup-status.sh
   branch_hygiene_cleanup_pass="$(summary_count "${branch_hygiene_cleanup_output}" "PASS")"
   branch_hygiene_cleanup_warn="$(summary_count "${branch_hygiene_cleanup_output}" "WARN")"
   branch_hygiene_cleanup_fail="$(summary_count "${branch_hygiene_cleanup_output}" "FAIL")"
@@ -2649,7 +2654,7 @@ fi
 section "Local Main Proof Report Polish"
 if [[ -f scripts/local-main-proof-report-status.sh ]]; then
   local_main_proof_report_result=0
-  local_main_proof_report_output="$(bash scripts/local-main-proof-report-status.sh 2>&1)" || local_main_proof_report_result=$?
+  capture_command local_main_proof_report_output local_main_proof_report_result bash scripts/local-main-proof-report-status.sh
   local_main_proof_report_pass="$(summary_count "${local_main_proof_report_output}" "PASS")"
   local_main_proof_report_warn="$(summary_count "${local_main_proof_report_output}" "WARN")"
   local_main_proof_report_fail="$(summary_count "${local_main_proof_report_output}" "FAIL")"
@@ -2672,7 +2677,7 @@ fi
 section "Workflow Docs Cross-Link Polish"
 if [[ -f scripts/workflow-docs-cross-link-status.sh ]]; then
   workflow_docs_cross_link_result=0
-  workflow_docs_cross_link_output="$(bash scripts/workflow-docs-cross-link-status.sh 2>&1)" || workflow_docs_cross_link_result=$?
+  capture_command workflow_docs_cross_link_output workflow_docs_cross_link_result bash scripts/workflow-docs-cross-link-status.sh
   workflow_docs_cross_link_pass="$(summary_count "${workflow_docs_cross_link_output}" "PASS")"
   workflow_docs_cross_link_warn="$(summary_count "${workflow_docs_cross_link_output}" "WARN")"
   workflow_docs_cross_link_fail="$(summary_count "${workflow_docs_cross_link_output}" "FAIL")"
@@ -2695,7 +2700,7 @@ fi
 section "Workflow Docs Navigation Status Summary"
 if [[ -f scripts/workflow-docs-navigation-status-summary.sh ]]; then
   workflow_docs_navigation_result=0
-  workflow_docs_navigation_output="$(bash scripts/workflow-docs-navigation-status-summary.sh 2>&1)" || workflow_docs_navigation_result=$?
+  capture_command workflow_docs_navigation_output workflow_docs_navigation_result bash scripts/workflow-docs-navigation-status-summary.sh
   workflow_docs_navigation_pass="$(summary_count "${workflow_docs_navigation_output}" "PASS")"
   workflow_docs_navigation_warn="$(summary_count "${workflow_docs_navigation_output}" "WARN")"
   workflow_docs_navigation_fail="$(summary_count "${workflow_docs_navigation_output}" "FAIL")"
@@ -2718,7 +2723,7 @@ fi
 section "Prompt Pack Maintenance Checklist"
 if [[ -f scripts/prompt-pack-maintenance-status.sh ]]; then
   prompt_pack_maintenance_result=0
-  prompt_pack_maintenance_output="$(bash scripts/prompt-pack-maintenance-status.sh 2>&1)" || prompt_pack_maintenance_result=$?
+  capture_command prompt_pack_maintenance_output prompt_pack_maintenance_result bash scripts/prompt-pack-maintenance-status.sh
   prompt_pack_maintenance_pass="$(summary_count "${prompt_pack_maintenance_output}" "PASS")"
   prompt_pack_maintenance_warn="$(summary_count "${prompt_pack_maintenance_output}" "WARN")"
   prompt_pack_maintenance_fail="$(summary_count "${prompt_pack_maintenance_output}" "FAIL")"
@@ -2741,7 +2746,7 @@ fi
 section "Prompt Pack Reference Index"
 if [[ -f scripts/prompt-pack-reference-index-status.sh ]]; then
   prompt_pack_reference_index_result=0
-  prompt_pack_reference_index_output="$(bash scripts/prompt-pack-reference-index-status.sh 2>&1)" || prompt_pack_reference_index_result=$?
+  capture_command prompt_pack_reference_index_output prompt_pack_reference_index_result bash scripts/prompt-pack-reference-index-status.sh
   prompt_pack_reference_index_pass="$(summary_count "${prompt_pack_reference_index_output}" "PASS")"
   prompt_pack_reference_index_warn="$(summary_count "${prompt_pack_reference_index_output}" "WARN")"
   prompt_pack_reference_index_fail="$(summary_count "${prompt_pack_reference_index_output}" "FAIL")"
@@ -2764,7 +2769,7 @@ fi
 section "Prompt Pack Stale-Reference Audit"
 if [[ -f scripts/prompt-pack-stale-reference-audit-status.sh ]]; then
   prompt_pack_stale_reference_result=0
-  prompt_pack_stale_reference_output="$(bash scripts/prompt-pack-stale-reference-audit-status.sh 2>&1)" || prompt_pack_stale_reference_result=$?
+  capture_command prompt_pack_stale_reference_output prompt_pack_stale_reference_result bash scripts/prompt-pack-stale-reference-audit-status.sh
   prompt_pack_stale_reference_pass="$(summary_count "${prompt_pack_stale_reference_output}" "PASS")"
   prompt_pack_stale_reference_warn="$(summary_count "${prompt_pack_stale_reference_output}" "WARN")"
   prompt_pack_stale_reference_fail="$(summary_count "${prompt_pack_stale_reference_output}" "FAIL")"
@@ -2787,7 +2792,7 @@ fi
 section "Prompt Pack Freshness Report Polish"
 if [[ -f scripts/prompt-pack-freshness-report-status.sh ]]; then
   prompt_pack_freshness_report_result=0
-  prompt_pack_freshness_report_output="$(bash scripts/prompt-pack-freshness-report-status.sh 2>&1)" || prompt_pack_freshness_report_result=$?
+  capture_command prompt_pack_freshness_report_output prompt_pack_freshness_report_result bash scripts/prompt-pack-freshness-report-status.sh
   prompt_pack_freshness_report_pass="$(summary_count "${prompt_pack_freshness_report_output}" "PASS")"
   prompt_pack_freshness_report_warn="$(summary_count "${prompt_pack_freshness_report_output}" "WARN")"
   prompt_pack_freshness_report_fail="$(summary_count "${prompt_pack_freshness_report_output}" "FAIL")"
@@ -2810,7 +2815,7 @@ fi
 section "Prompt Pack Handoff Summary"
 if [[ -f scripts/prompt-pack-handoff-summary-status.sh ]]; then
   prompt_pack_handoff_summary_result=0
-  prompt_pack_handoff_summary_output="$(bash scripts/prompt-pack-handoff-summary-status.sh 2>&1)" || prompt_pack_handoff_summary_result=$?
+  capture_command prompt_pack_handoff_summary_output prompt_pack_handoff_summary_result bash scripts/prompt-pack-handoff-summary-status.sh
   prompt_pack_handoff_summary_pass="$(summary_count "${prompt_pack_handoff_summary_output}" "PASS")"
   prompt_pack_handoff_summary_warn="$(summary_count "${prompt_pack_handoff_summary_output}" "WARN")"
   prompt_pack_handoff_summary_fail="$(summary_count "${prompt_pack_handoff_summary_output}" "FAIL")"
@@ -2833,7 +2838,7 @@ fi
 section "Prompt Pack Stack Completion Marker"
 if [[ -f scripts/prompt-pack-stack-completion-status.sh ]]; then
   prompt_pack_stack_completion_result=0
-  prompt_pack_stack_completion_output="$(bash scripts/prompt-pack-stack-completion-status.sh 2>&1)" || prompt_pack_stack_completion_result=$?
+  capture_command prompt_pack_stack_completion_output prompt_pack_stack_completion_result bash scripts/prompt-pack-stack-completion-status.sh
   prompt_pack_stack_completion_pass="$(summary_count "${prompt_pack_stack_completion_output}" "PASS")"
   prompt_pack_stack_completion_warn="$(summary_count "${prompt_pack_stack_completion_output}" "WARN")"
   prompt_pack_stack_completion_fail="$(summary_count "${prompt_pack_stack_completion_output}" "FAIL")"
@@ -2862,7 +2867,7 @@ printf 'Foundation stack complete for now. Live wallpaper/photo curator implemen
 section "Appearance & Vibe Wallpaper/Photo Curator Plan"
 if [[ -f scripts/wallpaper-photo-curator-plan-status.sh ]]; then
   wallpaper_curator_result=0
-  wallpaper_curator_output="$(bash scripts/wallpaper-photo-curator-plan-status.sh 2>&1)" || wallpaper_curator_result=$?
+  capture_command wallpaper_curator_output wallpaper_curator_result bash scripts/wallpaper-photo-curator-plan-status.sh
   wallpaper_curator_pass="$(summary_count "${wallpaper_curator_output}" "PASS")"
   wallpaper_curator_warn="$(summary_count "${wallpaper_curator_output}" "WARN")"
   wallpaper_curator_fail="$(summary_count "${wallpaper_curator_output}" "FAIL")"
@@ -2885,7 +2890,7 @@ fi
 section "Wallpaper/Photo Folder Design"
 if [[ -f scripts/wallpaper-photo-folder-design-status.sh ]]; then
   wallpaper_folder_design_result=0
-  wallpaper_folder_design_output="$(bash scripts/wallpaper-photo-folder-design-status.sh 2>&1)" || wallpaper_folder_design_result=$?
+  capture_command wallpaper_folder_design_output wallpaper_folder_design_result bash scripts/wallpaper-photo-folder-design-status.sh
   wallpaper_folder_design_pass="$(summary_count "${wallpaper_folder_design_output}" "PASS")"
   wallpaper_folder_design_warn="$(summary_count "${wallpaper_folder_design_output}" "WARN")"
   wallpaper_folder_design_fail="$(summary_count "${wallpaper_folder_design_output}" "FAIL")"
@@ -2908,7 +2913,7 @@ fi
 section "Wallpaper/Photo Dry-Run Folder Validator"
 if [[ -f scripts/wallpaper-photo-dry-run-folder-validator.sh ]]; then
   wallpaper_dry_run_result=0
-  wallpaper_dry_run_output="$(bash scripts/wallpaper-photo-dry-run-folder-validator.sh 2>&1)" || wallpaper_dry_run_result=$?
+  capture_command wallpaper_dry_run_output wallpaper_dry_run_result bash scripts/wallpaper-photo-dry-run-folder-validator.sh
   wallpaper_dry_run_pass="$(summary_count "${wallpaper_dry_run_output}" "PASS")"
   wallpaper_dry_run_warn="$(summary_count "${wallpaper_dry_run_output}" "WARN")"
   wallpaper_dry_run_fail="$(summary_count "${wallpaper_dry_run_output}" "FAIL")"
@@ -2931,7 +2936,7 @@ fi
 section "Wallpaper/Photo Folder Creation Helper"
 if [[ -f scripts/wallpaper-photo-folder-creation-status.sh ]]; then
   wallpaper_folder_creation_result=0
-  wallpaper_folder_creation_output="$(bash scripts/wallpaper-photo-folder-creation-status.sh 2>&1)" || wallpaper_folder_creation_result=$?
+  capture_command wallpaper_folder_creation_output wallpaper_folder_creation_result bash scripts/wallpaper-photo-folder-creation-status.sh
   wallpaper_folder_creation_pass="$(summary_count "${wallpaper_folder_creation_output}" "PASS")"
   wallpaper_folder_creation_warn="$(summary_count "${wallpaper_folder_creation_output}" "WARN")"
   wallpaper_folder_creation_fail="$(summary_count "${wallpaper_folder_creation_output}" "FAIL")"
@@ -2954,7 +2959,7 @@ fi
 section "Wallpaper/Photo Metadata Schema"
 if [[ -f scripts/wallpaper-photo-metadata-status.sh ]]; then
   wallpaper_metadata_result=0
-  wallpaper_metadata_output="$(bash scripts/wallpaper-photo-metadata-status.sh 2>&1)" || wallpaper_metadata_result=$?
+  capture_command wallpaper_metadata_output wallpaper_metadata_result bash scripts/wallpaper-photo-metadata-status.sh
   wallpaper_metadata_pass="$(summary_count "${wallpaper_metadata_output}" "PASS")"
   wallpaper_metadata_warn="$(summary_count "${wallpaper_metadata_output}" "WARN")"
   wallpaper_metadata_fail="$(summary_count "${wallpaper_metadata_output}" "FAIL")"
@@ -2977,7 +2982,7 @@ fi
 section "Wallpaper/Photo Temp Queue Rules"
 if [[ -f scripts/wallpaper-photo-temp-queue-status.sh ]]; then
   wallpaper_temp_queue_result=0
-  wallpaper_temp_queue_output="$(bash scripts/wallpaper-photo-temp-queue-status.sh 2>&1)" || wallpaper_temp_queue_result=$?
+  capture_command wallpaper_temp_queue_output wallpaper_temp_queue_result bash scripts/wallpaper-photo-temp-queue-status.sh
   wallpaper_temp_queue_pass="$(summary_count "${wallpaper_temp_queue_output}" "PASS")"
   wallpaper_temp_queue_warn="$(summary_count "${wallpaper_temp_queue_output}" "WARN")"
   wallpaper_temp_queue_fail="$(summary_count "${wallpaper_temp_queue_output}" "FAIL")"
@@ -3000,7 +3005,7 @@ fi
 section "Wallpaper/Photo Queue File Format"
 if [[ -f scripts/wallpaper-photo-queue-file-status.sh ]]; then
   wallpaper_queue_file_result=0
-  wallpaper_queue_file_output="$(bash scripts/wallpaper-photo-queue-file-status.sh 2>&1)" || wallpaper_queue_file_result=$?
+  capture_command wallpaper_queue_file_output wallpaper_queue_file_result bash scripts/wallpaper-photo-queue-file-status.sh
   wallpaper_queue_file_pass="$(summary_count "${wallpaper_queue_file_output}" "PASS")"
   wallpaper_queue_file_warn="$(summary_count "${wallpaper_queue_file_output}" "WARN")"
   wallpaper_queue_file_fail="$(summary_count "${wallpaper_queue_file_output}" "FAIL")"
@@ -3023,7 +3028,7 @@ fi
 section "Wallpaper/Photo Approve/Dismiss UI Design"
 if [[ -f scripts/wallpaper-photo-approve-dismiss-ui-status.sh ]]; then
   wallpaper_approve_dismiss_ui_result=0
-  wallpaper_approve_dismiss_ui_output="$(bash scripts/wallpaper-photo-approve-dismiss-ui-status.sh 2>&1)" || wallpaper_approve_dismiss_ui_result=$?
+  capture_command wallpaper_approve_dismiss_ui_output wallpaper_approve_dismiss_ui_result bash scripts/wallpaper-photo-approve-dismiss-ui-status.sh
   wallpaper_approve_dismiss_ui_pass="$(summary_count "${wallpaper_approve_dismiss_ui_output}" "PASS")"
   wallpaper_approve_dismiss_ui_warn="$(summary_count "${wallpaper_approve_dismiss_ui_output}" "WARN")"
   wallpaper_approve_dismiss_ui_fail="$(summary_count "${wallpaper_approve_dismiss_ui_output}" "FAIL")"
@@ -3046,7 +3051,7 @@ fi
 section "Wallpaper/Photo Image Processing Rules"
 if [[ -f scripts/wallpaper-photo-image-processing-status.sh ]]; then
   wallpaper_image_processing_result=0
-  wallpaper_image_processing_output="$(bash scripts/wallpaper-photo-image-processing-status.sh 2>&1)" || wallpaper_image_processing_result=$?
+  capture_command wallpaper_image_processing_output wallpaper_image_processing_result bash scripts/wallpaper-photo-image-processing-status.sh
   wallpaper_image_processing_pass="$(summary_count "${wallpaper_image_processing_output}" "PASS")"
   wallpaper_image_processing_warn="$(summary_count "${wallpaper_image_processing_output}" "WARN")"
   wallpaper_image_processing_fail="$(summary_count "${wallpaper_image_processing_output}" "FAIL")"
@@ -3069,7 +3074,7 @@ fi
 section "Wallpaper/Photo Local Scheduler Plan"
 if [[ -f scripts/wallpaper-photo-local-scheduler-status.sh ]]; then
   wallpaper_local_scheduler_result=0
-  wallpaper_local_scheduler_output="$(bash scripts/wallpaper-photo-local-scheduler-status.sh 2>&1)" || wallpaper_local_scheduler_result=$?
+  capture_command wallpaper_local_scheduler_output wallpaper_local_scheduler_result bash scripts/wallpaper-photo-local-scheduler-status.sh
   wallpaper_local_scheduler_pass="$(summary_count "${wallpaper_local_scheduler_output}" "PASS")"
   wallpaper_local_scheduler_warn="$(summary_count "${wallpaper_local_scheduler_output}" "WARN")"
   wallpaper_local_scheduler_fail="$(summary_count "${wallpaper_local_scheduler_output}" "FAIL")"
@@ -3092,7 +3097,7 @@ fi
 section "Wallpaper/Photo Source Fetcher Plan"
 if [[ -f scripts/wallpaper-photo-source-fetcher-plan-status.sh ]]; then
   wallpaper_source_fetcher_result=0
-  wallpaper_source_fetcher_output="$(bash scripts/wallpaper-photo-source-fetcher-plan-status.sh 2>&1)" || wallpaper_source_fetcher_result=$?
+  capture_command wallpaper_source_fetcher_output wallpaper_source_fetcher_result bash scripts/wallpaper-photo-source-fetcher-plan-status.sh
   wallpaper_source_fetcher_pass="$(summary_count "${wallpaper_source_fetcher_output}" "PASS")"
   wallpaper_source_fetcher_warn="$(summary_count "${wallpaper_source_fetcher_output}" "WARN")"
   wallpaper_source_fetcher_fail="$(summary_count "${wallpaper_source_fetcher_output}" "FAIL")"
@@ -3115,7 +3120,7 @@ fi
 section "Wallpaper/Photo Source Allowlist Foundation"
 if [[ -f scripts/wallpaper-photo-source-allowlist-status.sh ]]; then
   wallpaper_source_allowlist_result=0
-  wallpaper_source_allowlist_output="$(bash scripts/wallpaper-photo-source-allowlist-status.sh 2>&1)" || wallpaper_source_allowlist_result=$?
+  capture_command wallpaper_source_allowlist_output wallpaper_source_allowlist_result bash scripts/wallpaper-photo-source-allowlist-status.sh
   wallpaper_source_allowlist_pass="$(summary_count "${wallpaper_source_allowlist_output}" "PASS")"
   wallpaper_source_allowlist_warn="$(summary_count "${wallpaper_source_allowlist_output}" "WARN")"
   wallpaper_source_allowlist_fail="$(summary_count "${wallpaper_source_allowlist_output}" "FAIL")"
@@ -3138,7 +3143,7 @@ fi
 section "Wallpaper/Photo Simulated Discovery"
 if [[ -f scripts/wallpaper-photo-simulated-discovery-status.sh ]]; then
   wallpaper_simulated_discovery_result=0
-  wallpaper_simulated_discovery_output="$(bash scripts/wallpaper-photo-simulated-discovery-status.sh 2>&1)" || wallpaper_simulated_discovery_result=$?
+  capture_command wallpaper_simulated_discovery_output wallpaper_simulated_discovery_result bash scripts/wallpaper-photo-simulated-discovery-status.sh
   wallpaper_simulated_discovery_pass="$(summary_count "${wallpaper_simulated_discovery_output}" "PASS")"
   wallpaper_simulated_discovery_warn="$(summary_count "${wallpaper_simulated_discovery_output}" "WARN")"
   wallpaper_simulated_discovery_fail="$(summary_count "${wallpaper_simulated_discovery_output}" "FAIL")"
@@ -3161,7 +3166,7 @@ fi
 section "Wallpaper/Photo Review UI Prototype"
 if [[ -f scripts/wallpaper-photo-review-ui-prototype-status.sh ]]; then
   wallpaper_review_ui_result=0
-  wallpaper_review_ui_output="$(bash scripts/wallpaper-photo-review-ui-prototype-status.sh 2>&1)" || wallpaper_review_ui_result=$?
+  capture_command wallpaper_review_ui_output wallpaper_review_ui_result bash scripts/wallpaper-photo-review-ui-prototype-status.sh
   wallpaper_review_ui_pass="$(summary_count "${wallpaper_review_ui_output}" "PASS")"
   wallpaper_review_ui_warn="$(summary_count "${wallpaper_review_ui_output}" "WARN")"
   wallpaper_review_ui_fail="$(summary_count "${wallpaper_review_ui_output}" "FAIL")"
@@ -3184,7 +3189,7 @@ fi
 section "Wallpaper/Photo Image Processor Foundation"
 if [[ -f scripts/wallpaper-photo-image-processor-foundation-status.sh ]]; then
   wallpaper_image_processor_result=0
-  wallpaper_image_processor_output="$(bash scripts/wallpaper-photo-image-processor-foundation-status.sh 2>&1)" || wallpaper_image_processor_result=$?
+  capture_command wallpaper_image_processor_output wallpaper_image_processor_result bash scripts/wallpaper-photo-image-processor-foundation-status.sh
   wallpaper_image_processor_pass="$(summary_count "${wallpaper_image_processor_output}" "PASS")"
   wallpaper_image_processor_warn="$(summary_count "${wallpaper_image_processor_output}" "WARN")"
   wallpaper_image_processor_fail="$(summary_count "${wallpaper_image_processor_output}" "FAIL")"
@@ -3207,7 +3212,7 @@ fi
 section "Wallpaper/Photo Scheduler Foundation"
 if [[ -f scripts/wallpaper-photo-scheduler-foundation-status.sh ]]; then
   wallpaper_scheduler_foundation_result=0
-  wallpaper_scheduler_foundation_output="$(bash scripts/wallpaper-photo-scheduler-foundation-status.sh 2>&1)" || wallpaper_scheduler_foundation_result=$?
+  capture_command wallpaper_scheduler_foundation_output wallpaper_scheduler_foundation_result bash scripts/wallpaper-photo-scheduler-foundation-status.sh
   wallpaper_scheduler_foundation_pass="$(summary_count "${wallpaper_scheduler_foundation_output}" "PASS")"
   wallpaper_scheduler_foundation_warn="$(summary_count "${wallpaper_scheduler_foundation_output}" "WARN")"
   wallpaper_scheduler_foundation_fail="$(summary_count "${wallpaper_scheduler_foundation_output}" "FAIL")"
@@ -3230,7 +3235,7 @@ fi
 section "Wallpaper/Photo Notification Foundation"
 if [[ -f scripts/wallpaper-photo-notification-foundation-status.sh ]]; then
   wallpaper_notification_foundation_result=0
-  wallpaper_notification_foundation_output="$(bash scripts/wallpaper-photo-notification-foundation-status.sh 2>&1)" || wallpaper_notification_foundation_result=$?
+  capture_command wallpaper_notification_foundation_output wallpaper_notification_foundation_result bash scripts/wallpaper-photo-notification-foundation-status.sh
   wallpaper_notification_foundation_pass="$(summary_count "${wallpaper_notification_foundation_output}" "PASS")"
   wallpaper_notification_foundation_warn="$(summary_count "${wallpaper_notification_foundation_output}" "WARN")"
   wallpaper_notification_foundation_fail="$(summary_count "${wallpaper_notification_foundation_output}" "FAIL")"
@@ -3253,7 +3258,7 @@ fi
 section "Wallpaper/Photo Rotation Handoff and Safety Audit"
 if [[ -f scripts/wallpaper-photo-rotation-handoff-safety-status.sh ]]; then
   wallpaper_rotation_handoff_result=0
-  wallpaper_rotation_handoff_output="$(bash scripts/wallpaper-photo-rotation-handoff-safety-status.sh 2>&1)" || wallpaper_rotation_handoff_result=$?
+  capture_command wallpaper_rotation_handoff_output wallpaper_rotation_handoff_result bash scripts/wallpaper-photo-rotation-handoff-safety-status.sh
   wallpaper_rotation_handoff_pass="$(summary_count "${wallpaper_rotation_handoff_output}" "PASS")"
   wallpaper_rotation_handoff_warn="$(summary_count "${wallpaper_rotation_handoff_output}" "WARN")"
   wallpaper_rotation_handoff_fail="$(summary_count "${wallpaper_rotation_handoff_output}" "FAIL")"
@@ -3281,7 +3286,7 @@ begin_section_summary
 section "Cursor Workflow"
 if [[ -f scripts/cursor-workflow-status.sh ]]; then
   cursor_result=0
-  cursor_output="$(bash scripts/cursor-workflow-status.sh 2>&1)" || cursor_result=$?
+  capture_command cursor_output cursor_result bash scripts/cursor-workflow-status.sh
   cursor_pass="$(summary_count "${cursor_output}" "PASS")"
   cursor_warn="$(summary_count "${cursor_output}" "WARN")"
   cursor_fail="$(summary_count "${cursor_output}" "FAIL")"
@@ -3304,7 +3309,7 @@ fi
 section "Cursor Operating Modes and Proposal Governance"
 if [[ -f scripts/cursor-operating-modes-status.sh ]]; then
   cursor_modes_result=0
-  cursor_modes_output="$(bash scripts/cursor-operating-modes-status.sh 2>&1)" || cursor_modes_result=$?
+  capture_command cursor_modes_output cursor_modes_result bash scripts/cursor-operating-modes-status.sh
   cursor_modes_pass="$(summary_count "${cursor_modes_output}" "PASS")"
   cursor_modes_warn="$(summary_count "${cursor_modes_output}" "WARN")"
   cursor_modes_fail="$(summary_count "${cursor_modes_output}" "FAIL")"
@@ -3325,7 +3330,7 @@ fi
 section "Autonomous Build Engine Governance"
 if [[ -f scripts/autonomous-build-engine-status.sh ]]; then
   autonomous_build_engine_result=0
-  autonomous_build_engine_output="$(bash scripts/autonomous-build-engine-status.sh 2>&1)" || autonomous_build_engine_result=$?
+  capture_command autonomous_build_engine_output autonomous_build_engine_result bash scripts/autonomous-build-engine-status.sh
   autonomous_build_engine_pass="$(summary_count "${autonomous_build_engine_output}" "PASS")"
   autonomous_build_engine_warn="$(summary_count "${autonomous_build_engine_output}" "WARN")"
   autonomous_build_engine_fail="$(summary_count "${autonomous_build_engine_output}" "FAIL")"
@@ -3346,7 +3351,7 @@ fi
 section "Governance Lane Status (Aggregate)"
 if [[ -f scripts/governance-lane-status.sh ]]; then
   governance_lane_result=0
-  governance_lane_output="$(bash scripts/governance-lane-status.sh 2>&1)" || governance_lane_result=$?
+  capture_command governance_lane_output governance_lane_result bash scripts/governance-lane-status.sh
   governance_lane_pass="$(summary_count "${governance_lane_output}" "PASS")"
   governance_lane_warn="$(summary_count "${governance_lane_output}" "WARN")"
   governance_lane_fail="$(summary_count "${governance_lane_output}" "FAIL")"
@@ -3396,7 +3401,7 @@ begin_section_summary
 section "Build Queue / Next Recommended Action"
 if [[ -f scripts/chief-of-staff-next-action.sh ]]; then
   next_action_result=0
-  next_action_output="$(bash scripts/chief-of-staff-next-action.sh 2>&1)" || next_action_result=$?
+  capture_command next_action_output next_action_result bash scripts/chief-of-staff-next-action.sh
   next_action_fail="$(printf '%s\n' "${next_action_output}" | awk '/^Summary$/{p=1; next} p && /^FAIL:/{v=$2} END{print v+0}')"
   if [[ "${next_action_result}" != "0" || "${next_action_fail}" -gt 0 ]]; then
     printf '%s\n' "${next_action_output}"

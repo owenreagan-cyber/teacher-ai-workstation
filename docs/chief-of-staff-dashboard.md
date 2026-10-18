@@ -189,10 +189,18 @@ The dashboard is **bounded by construction** and can never hang indefinitely:
   dashboard script's source for section labels instead of re-invoking
   `bin/chief-of-staff --dashboard`. A prior recursive re-invocation made the
   dashboard appear to hang by running the entire dashboard a second time.
-- **Per-check containment** — `capture_command` in the dashboard runs each child
-  through `scripts/cos-run-bounded.sh` with a bounded timeout (default 60s,
-  overridable via `COS_DASHBOARD_CAPTURE_TIMEOUT_SECS`). A timed-out child is
-  terminated (TERM then KILL) with no orphan process left behind.
+- **Per-check containment** — every potentially blocking check in the
+  dashboard (each `scripts/*.sh` status script, the daily-operations test, and
+  the CLI workflow listing) runs through `capture_command`, which calls
+  `scripts/cos-run-bounded.sh` with a bounded timeout (default 60s,
+  overridable via `COS_DASHBOARD_CAPTURE_TIMEOUT_SECS`).
+- **Process-group containment** — `cos-run-bounded.sh` starts each command in
+  its own process group. On timeout, or when the runner itself gets INT or
+  TERM, it sends TERM to the **whole group**, waits a short grace period
+  (`COS_BOUNDED_GRACE_SECS`, default 2s, halved at each nesting level), then
+  sends KILL to the group. On exit it also sweeps any group member left behind
+  after a normal child exit. Grandchildren that ignore TERM do not survive.
+  The runner returns as soon as the child exits (no polling delay).
 - **Global dashboard deadline** — `bin/chief-of-staff --dashboard` wraps the
   whole run in `cos-run-bounded.sh` with a hard ceiling (default 120s,
   overridable via `COS_DASHBOARD_DEADLINE_SECS`). If the deadline is reached the
@@ -202,6 +210,21 @@ Timeout semantics: local status checks that time out are treated as FAIL (they
 are required local state); the global deadline is a WARN-level containment net.
 One failing or timed-out subsystem does not prevent later sections from
 rendering.
+
+Exit codes (dashboard and `cos-run-bounded.sh`; the runner passes its child's
+code through unchanged):
+
+| Code | Meaning |
+| --- | --- |
+| 0 | PASS |
+| 1 | WARN |
+| 2 | FAIL (also a runner usage error) |
+| 124 | Timeout. Always distinct: the runner never remaps a child's exit code to 124. The runner prints `cos-run-bounded: TIMED OUT after <N>s` to stderr, and a timed-out dashboard check shows that line in its output as timeout evidence (compact checks record `FAIL: <label> command timed out (exit 124)`). |
+| 130 / 143 | The runner was interrupted by INT / TERM; its whole process group was terminated. |
+
+Containment tests: `bash tests/cos-run-bounded-test.sh` (TERM-ignoring
+grandchild, interrupted run, nested bounded calls, exit-code pass-through,
+leftover sweep, no per-call delay).
 
 Run the hardening self-test with:
 

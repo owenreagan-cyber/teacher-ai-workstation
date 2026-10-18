@@ -151,5 +151,14 @@ bash -n "${RUNNER}"
 bash -n "${SECTION_SUMMARY}"
 echo "PASS bash syntax: dashboard, runner, section-summary"
 
+# ---------------------------------------------------------------------------
+# 8. Process-group containment (grandchildren, interrupts, nesting).
+# ---------------------------------------------------------------------------
+bash tests/cos-run-bounded-test.sh >/dev/null 2>&1 || {
+  echo "FAIL: process-group containment tests failed (run: bash tests/cos-run-bounded-test.sh)"
+  exit 1
+}
+echo "PASS process-group containment tests"
+
 echo "PASS: Chief of Staff dashboard hardening tests complete"
 echo "PASS Chief of Staff dashboard hardening tests complete"

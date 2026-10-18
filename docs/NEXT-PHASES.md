@@ -129,7 +129,8 @@ There is **one `cos` core with two faces.**
 - **Downloads cleanup:** with quarantine.
 - **Canvas track:** C0–C3.
 - **Drive and iCloud.**
-- **Merge gate and Stage 0 consolidation onto `main`.**
+- **Merge gate and Stage 0 consolidation onto `main`.** First step done: MERGE-1 (2026-10-18)
+  merged the Chief stack with `main` on `integrate/cos-into-main`; the PR into `main` is Owen's.
 
 ## Targets every run
 

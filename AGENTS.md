@@ -14,6 +14,8 @@ Implementation approval: not granted by this file
 
 Read this file first. Then follow the linked authority documents for the task at hand.
 
+Chief of Staff work (`cos/`, `bin/cos`, `apps/chief-desktop/`, `evals/`, `tools/dev_safety/`): read `CHIEF-OF-STAFF.md` and `docs/DECISIONS.md` first.
+
 ## What This File Is Not
 
 `AGENTS.md` does **not** replace:

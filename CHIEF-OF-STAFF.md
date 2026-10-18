@@ -17,6 +17,23 @@ old ones. Caveat: author and both auditors may share a model family.
 
 ---
 
+## What lives where
+
+Since MERGE-1 (2026-10-18), the Chief stack and the Teacher Workstation share one repo history.
+
+| Area | Path |
+|---|---|
+| Teacher Workstation, Canvas, and dashboard | Existing `main` paths: `bin/chief-of-staff`, `scripts/`, `apps/teacher-workstation/` and the other workstation apps, `config/`, `docs/programs/`, `tests/` |
+| Chief core | `cos/`, `bin/cos` |
+| Chief desktop | `apps/chief-desktop/` |
+| Evals | `evals/` |
+| Developer safety | `tools/dev_safety/` |
+| Decisions | `docs/DECISIONS.md` |
+| Plan | `docs/NEXT-PHASES.md` |
+| Earlier workspace architecture (`assistant/chief-of-staff/workspace/`) | On branch `wip/canvas-live-q1w9`; reference only, not yet merged |
+
+---
+
 ## 1. What the Chief of Staff is
 
 A local, Mac-resident assistant that Owen calls with a hotkey, talks to in plain language, and
@@ -58,7 +75,7 @@ Outside products were studied for logic and features to rebuild, not to adopt.
 
 | Location | Contents | Role |
 |---|---|---|
-| `~/Projects/teacher-ai-workstation` (GitHub `owenreagan-cyber/teacher-ai-workstation`) | `bin/chief-of-staff` CLI (~4,250-line bash dispatcher), `assistant/memory/` (projects, preferences, decisions, priorities, teaching context, writing style), intake review queue, status/dashboard/approval/blocker scripts, `assistant/` policies (permissions, sensitivity, memory, model routing), Canvas LLM program phases 15–27 (weekly planning, rule engine, curriculum source intelligence, renderer, deployment planner, write gate, connector, readiness diff), `config/curriculum/` (week scaffold, SM5 maps), canonical context pack and 2026–27 operating contract | **Product home candidate.** The only usable ask-a-question command and the Canvas builder. |
+| `~/Projects/teacher-ai-workstation` (GitHub `owenreagan-cyber/teacher-ai-workstation`) | `bin/chief-of-staff` CLI (~4,250-line bash dispatcher), `assistant/memory/` (projects, preferences, decisions, priorities, teaching context, writing style), intake review queue, status/dashboard/approval/blocker scripts, `assistant/` policies (permissions, sensitivity, memory, model routing), Canvas LLM program phases 15–27 (weekly planning, rule engine, curriculum source intelligence, renderer, deployment planner, write gate, connector, readiness diff) plus the approved live weekly Canvas deployment and refresh tooling (PRs #374–#384), `config/curriculum/` (week scaffold, SM5 maps), canonical context pack and 2026–27 operating contract; since MERGE-1 also the Chief stack (see "What lives where") | **Product home.** The Canvas builder and the `cos` core live here. |
 | `~/Projects/teacher-ai-workstation-chief-of-staff-recovery` | Design docs at `assistant/chief-of-staff/workspace/` (ARCHITECTURE, ROADMAP, STATUS, HISTORY), parked M-track controlled-execution code, D1 developer safety profile (`.claude/settings.json`, `tools/dev_safety/`) at commit `4a2679f`; branch `feature/cos-pacing-intelligence` | Design, safety, parked autonomy work. |
 | `~/Projects/teacher-ai-workstation-chief-of-staff-v1-phase1` (`fecd0ab`) | Phase 1 snapshot | Read-only reference. |
 | `~/Projects/math-presenter-studio` | Lesson build, staging, certification pipeline | Future Lesson specialist. |
@@ -75,7 +92,8 @@ Outside products were studied for logic and features to rebuild, not to adopt.
 - Typed one-shot questions in Terminal: `bin/chief-of-staff --workflow <name> --question "…"`,
   with chosen memory files, through the `llm` CLI.
 - Read-only status: daily status, dashboard, approval and blocker queues, next action.
-- Canvas weekly-production and readiness tooling (per its own phase status).
+- Canvas weekly-production, readiness, and approved live-deployment tooling on `main` (per its
+  own phase status; this includes real Canvas writes behind the existing approval and write gate).
 - D1.1 safety for Claude Code, versioned in `tools/dev_safety/`: the Claude Code Bash
   sandbox (macOS Seatbelt) as the boundary, plus the `dev_guard` hook as a second layer
   (credentials, student-data roots, Claude Code state, Downloads; git, inline-code,

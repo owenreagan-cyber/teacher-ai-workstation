@@ -1,9 +1,14 @@
 #!/usr/bin/env python3
 """Generate the Canvas Planner macOS app icon (pure stdlib, no Pillow).
 
-Draws a 1024x1024 rounded-square icon (calm teacher-professional blue), a white
-weekly-grid calendar, and a green checkmark badge. Outputs PNG at the requested
-sizes using a minimal PNG encoder (zlib + struct). No external deps.
+Draws a 1024x1024 rounded-square icon:
+  - deep navy -> brighter blue vertical gradient background
+  - subtle laptop/keyboard-deck silhouette (workstation reference)
+  - centered white weekly-planner card (navy header + 5-column grid)
+  - green circular checkmark badge (success/readiness cue)
+
+Transparent outside the rounded-square boundary. Outputs PNG at 16..1024 px
+using a minimal stdlib PNG encoder (zlib + struct). No external dependencies.
 
 Usage:
     python3 generate_icon.py <output_dir>
@@ -17,6 +22,16 @@ from pathlib import Path
 
 SIZE = 1024
 SIZES = (16, 32, 64, 128, 256, 512, 1024)
+
+# Palette.
+NAVY_TOP = (24, 52, 86)        # deep navy (top of background)
+BLUE_BOTTOM = (62, 130, 202)   # brighter blue (bottom of background)
+LAPTOP_DARK = (13, 33, 57)     # subtle workstation silhouette
+CARD_HEADER = (30, 58, 95)     # navy card header
+GRID_LINE = (30, 58, 95)
+TODAY_FILL = (219, 234, 254)   # light blue "today" cell
+GREEN = (34, 197, 94)          # #22C55E success badge
+WHITE = (255, 255, 255)
 
 
 def _clamp(v: float, lo: float = 0.0, hi: float = 1.0) -> float:
@@ -55,73 +70,86 @@ def _seg_dist(x: float, y: float, ax: float, ay: float, bx: float, by: float) ->
     return ((x - cx) ** 2 + (y - cy) ** 2) ** 0.5
 
 
-def _in_check(x: float, y: float, half: float = 30.0) -> bool:
-    """Green checkmark badge centered at (cx, cy)."""
-    cx, cy = 720.0, 720.0
-    # Two thick strokes forming a check (stroke half-width ~30px).
-    d1 = _seg_dist(x, y, cx - 105, cy - 8, cx - 20, cy + 78)
-    d2 = _seg_dist(x, y, cx - 20, cy + 78, cx + 130, cy - 88)
+def _in_check(x: float, y: float, cx: float, cy: float, half: float = 26.0) -> bool:
+    """Thick two-stroke checkmark centered at (cx, cy), scaled for a ~140px badge."""
+    d1 = _seg_dist(x, y, cx - 92, cy - 6, cx - 16, cy + 68)
+    d2 = _seg_dist(x, y, cx - 16, cy + 68, cx + 116, cy - 78)
     return min(d1, d2) <= half
 
 
 def _color_at(x: float, y: float) -> tuple[int, int, int, int]:
-    """Return RGBA (0-255) for pixel at fractional (x, y)."""
-    # Background rounded square.
-    top = (59, 130, 200)      # #3B82C4
-    bottom = (37, 99, 160)    # #2563A0
-    # Vertical gradient over the 1024 canvas.
-    t = y / SIZE
-    bg = _mix(top, bottom, t)
-
-    if not _in_rounded_rect(x, y, SIZE / 2, SIZE / 2, SIZE / 2, SIZE / 2, 180):
+    """Return straight (unpremultiplied) RGBA for pixel at design-space (x, y)."""
+    # 1. Background rounded square (navy -> brighter blue vertical gradient).
+    if not _in_rounded_rect(x, y, SIZE / 2, SIZE / 2, SIZE / 2, SIZE / 2, 210):
         return (0, 0, 0, 0)
+    t = _clamp(y / SIZE)
+    color = _mix(NAVY_TOP, BLUE_BOTTOM, t)
 
-    color = bg
-    alpha = 255
+    # 2. Subtle laptop silhouette (screen + keyboard deck), darker navy.
+    #    Screen: tall rounded panel; deck: a rounded bar at the bottom.
+    if _in_rounded_rect(x, y, SIZE / 2, 470.0, 330.0, 340.0, 30.0):
+        color = _mix(color, LAPTOP_DARK, 0.85)
+    if _in_rounded_rect(x, y, SIZE / 2, 830.0, 316.0, 92.0, 30.0):
+        color = _mix(color, LAPTOP_DARK, 0.92)
+        # Trackpad notch in the deck center.
+        if _in_rounded_rect(x, y, SIZE / 2, 830.0, 88.0, 26.0, 13.0):
+            color = _mix(color, LAPTOP_DARK, 0.95)
 
-    # Weekly calendar card (white rounded rect).
-    card = (200.0, 250.0, 824.0, 830.0)  # x0,y0,x1,y1
-    card_r = 70.0
-    if _in_rounded_rect(x, y, (card[0] + card[2]) / 2, (card[1] + card[3]) / 2,
-                        (card[2] - card[0]) / 2, (card[3] - card[1]) / 2, card_r):
-        # Header band.
-        if _in_rect(x, y, card[0], card[1], card[2], card[1] + 130):
-            color = (30, 58, 95)  # dark navy header
+    # 3. White weekly-planner card (navy header + 5-column grid).
+    card_x0, card_x1 = 250.0, 774.0
+    card_y0, card_y1 = 180.0, 720.0
+    card_r = 50.0
+    if _in_rounded_rect(x, y, (card_x0 + card_x1) / 2, (card_y0 + card_y1) / 2,
+                        (card_x1 - card_x0) / 2, (card_y1 - card_y0) / 2, card_r):
+        header_bottom = card_y0 + 118.0
+        if _in_rect(x, y, card_x0, card_y0, card_x1, header_bottom):
+            color = CARD_HEADER
+            # Five weekday dots in the header.
+            col_w = (card_x1 - card_x0) / 5.0
+            for i in range(5):
+                dot_x = card_x0 + (i + 0.5) * col_w
+                if _in_circle(x, y, dot_x, card_y0 + 59.0, 11.0):
+                    color = WHITE
         else:
-            color = (255, 255, 255)
-            # Grid lines + weekday header cells.
-            col_w = (card[2] - card[0]) / 5.0
-            row_h = (card[3] - (card[1] + 130)) / 2.0
-            # Column separators.
+            color = WHITE
+            col_w = (card_x1 - card_x0) / 5.0
+            row_h = (card_y1 - header_bottom) / 2.0
+            # "Today" highlight (row 2, column 3).
+            if _in_rect(x, y, card_x0 + 2 * col_w, header_bottom + row_h, card_x0 + 3 * col_w, card_y1):
+                color = TODAY_FILL
+                # A small green dot marks the readiness cue inside "today".
+                dot_x = card_x0 + 2.5 * col_w
+                if _in_circle(x, y, dot_x, card_y1 - row_h * 0.5, 20.0):
+                    color = GREEN
+            # Grid lines (columns + row separator).
             for i in range(1, 5):
-                gx = card[0] + i * col_w
-                if abs(x - gx) < 3.0 and card[1] + 130 <= y <= card[3]:
-                    color = (30, 58, 95)
-            # Row separator.
-            if abs(y - (card[1] + 130 + row_h)) < 3.0 and card[0] <= x <= card[2]:
-                color = (30, 58, 95)
-            # A highlighted "today" cell (col 3, row 2) accent.
-            if _in_rect(x, y, card[0] + 2 * col_w, card[1] + 130 + row_h, card[0] + 3 * col_w, card[3]):
-                color = (219, 234, 254)  # light blue accent
+                gx = card_x0 + i * col_w
+                if abs(x - gx) < 2.5 and header_bottom <= y <= card_y1:
+                    color = GRID_LINE
+            if abs(y - (header_bottom + row_h)) < 2.5 and card_x0 <= x <= card_x1:
+                color = GRID_LINE
 
-    # Green checkmark badge.
-    if _in_circle(x, y, 720, 720, 170):
-        color = (34, 197, 94)  # #22C55E
-        if _in_check(x, y):
-            color = (255, 255, 255)
+    # 4. Green checkmark badge (success/readiness cue), bottom-right overlap.
+    badge = (750.0, 750.0, 142.0)
+    if _in_circle(x, y, badge[0], badge[1], badge[2]):
+        # White ring separating the badge from the card/background.
+        if _in_circle(x, y, badge[0], badge[1], badge[2]) and not _in_circle(x, y, badge[0], badge[1], badge[2] - 12.0):
+            color = WHITE
+        else:
+            color = GREEN
+            if _in_check(x, y, badge[0], badge[1]):
+                color = WHITE
 
-    return (color[0], color[1], color[2], alpha)
+    return (color[0], color[1], color[2], 255)
 
 
 def render(size: int) -> bytes:
     """Render one size (pixels), supersampling from the 1024 design."""
     scale = size / SIZE
-    rows: list[bytes] = []
     raw = bytearray()
     for py in range(size):
         raw.append(0)  # filter type 0
         for px in range(size):
-            # 2x2 supersampling in design space; straight (unpremultiplied) RGBA.
             r = g = b = a = 0
             for sy in (0.0, 0.5):
                 for sx in (0.0, 0.5):
@@ -156,7 +184,6 @@ def main() -> int:
     for size in SIZES:
         data = render(size)
         (out_dir / f"icon_{size}x{size}.png").write_bytes(data)
-    # Also write the 1024 master as icon_1024.png.
     print(f"Wrote {len(SIZES)} PNGs to {out_dir}")
     return 0
 

@@ -1,10 +1,6 @@
 {
   "permissions": {
     "deny": [
-      "Read(~/.teacher-ai-workstation/**)",
-      "Edit(~/.teacher-ai-workstation/**)",
-      "Read(~/Downloads/**)",
-      "Edit(~/Downloads/**)",
       "Read(~/Library/Application Support/ChiefOfStaff/**)",
       "Edit(~/Library/Application Support/ChiefOfStaff/**)",
       "Read(~/.ssh/**)",
@@ -54,8 +50,6 @@
     "allowUnsandboxedCommands": false,
     "filesystem": {
       "denyRead": [
-        "~/.teacher-ai-workstation",
-        "~/Downloads",
         "~/Library/Application Support/ChiefOfStaff",
         "~/.ssh",
         "~/.aws",
@@ -80,14 +74,24 @@
     },
     "network": {
       "allowedDomains": [
+        "localhost",
+        "127.0.0.1",
+        "github.com",
+        "api.github.com",
+        "codeload.github.com",
+        "*.githubusercontent.com",
         "registry.npmjs.org",
+        "registry.yarnpkg.com",
         "pypi.org",
         "files.pythonhosted.org",
-        "codeload.github.com",
-        "objects.githubusercontent.com",
-        "raw.githubusercontent.com",
-        "localhost:11434"
-      ]
+        "nodejs.org",
+        "docs.python.org",
+        "developer.mozilla.org",
+        "developer.apple.com",
+        "code.claude.com",
+        "docs.anthropic.com"
+      ],
+      "allowLocalBinding": true
     },
     "credentials": {
       "envVars": [

@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
+# Pin "today" to 2026-08-19 (Q1W5, the week the synthetic fixtures plan) so the result does not depend on the
+# date the test runs. Read only by the test-clock hooks; unset in real use.
+export TAW_TODAY=2026-08-19
 
 echo "Running Canvas LLM Phase 23 weekly content production engine tests..."
 M=scripts/canvas_llm_phase23/phase23_content_engine.py

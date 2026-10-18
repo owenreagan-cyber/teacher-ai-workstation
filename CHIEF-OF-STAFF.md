@@ -79,7 +79,7 @@ Outside products were studied for logic and features to rebuild, not to adopt.
 | `~/Projects/teacher-ai-workstation-chief-of-staff-recovery` | Design docs at `assistant/chief-of-staff/workspace/` (ARCHITECTURE, ROADMAP, STATUS, HISTORY), parked M-track controlled-execution code, D1 developer safety profile (`.claude/settings.json`, `tools/dev_safety/`) at commit `4a2679f`; branch `feature/cos-pacing-intelligence` | Design, safety, parked autonomy work. |
 | `~/Projects/teacher-ai-workstation-chief-of-staff-v1-phase1` (`fecd0ab`) | Phase 1 snapshot | Read-only reference. |
 | `~/Projects/math-presenter-studio` | Lesson build, staging, certification pipeline | Future Lesson specialist. |
-| `~/.teacher-ai-workstation/` | Local runtime state, student-bearing data | Never read by dev agents. |
+| `~/.teacher-ai-workstation/` | Local runtime state | Non-sensitive under D-022. The installed D1 profile still denies it until the light profile is installed. |
 
 ### Entry points
 - **`bin/cos` is the public entry point** for the Chief of Staff (`cos ask`, `chat`, `brief`,
@@ -89,24 +89,37 @@ Outside products were studied for logic and features to rebuild, not to adopt.
   a static network-free/read-only check), but new features are not added to it.
 
 ### Works today
-- Typed one-shot questions in Terminal: `bin/chief-of-staff --workflow <name> --question "…"`,
-  with chosen memory files, through the `llm` CLI.
-- Read-only status: daily status, dashboard, approval and blocker queues, next action.
+- **Chat:** one-shot `cos ask` and multi-turn `cos chat`, on the local model, with tool calling
+  (`cos tools` lists them).
+- **Sessions:** conversations are saved and can be resumed (`cos history`).
+- **Daily brief** (`cos brief`) and the **home card** in the desktop window (see "Home card").
+- **Desktop window:** Chief.app (Electron + React) with a menu bar icon and the
+  Control+Option+C hotkey, plus the Raycast launcher. Both call the same `cos` core.
+- **Tools:** time and date, weather, today's calendar (EventKit), reminders due, Mac status,
+  and **web search** (Brave; typed "search …" command, daily and monthly caps; see
+  "Web search").
+- **Start at login** for the packaged app, with the model warmed in the background.
+- **Safety plumbing:** kill switch (`cos stop` / `cos resume`), hash-chained audit log
+  (`cos audit verify`), and the eval harness (`evals/harness/run.py`).
+- Legacy read-only status: daily status, dashboard, approval and blocker queues, next action
+  (`bin/chief-of-staff`).
 - Canvas weekly-production, readiness, and approved live-deployment tooling on `main` (per its
-  own phase status; this includes real Canvas writes behind the existing approval and write gate).
+  own phase status; this includes real Canvas writes behind the approval and write gate, and,
+  since REL-1, the local server's route protection).
 - D1.1 safety for Claude Code, versioned in `tools/dev_safety/`: the Claude Code Bash
   sandbox (macOS Seatbelt) as the boundary, plus the `dev_guard` hook as a second layer
-  (credentials, student-data roots, Claude Code state, Downloads; git, inline-code,
-  destructive-command, and process-listing denials). Reproducible here: 38 unit tests and
-  586/586 synthetic probes against the repo source. **Not yet live:** Owen installs it and runs
-  the installed-hook and fresh-session probes (`docs/d1-1-owen-steps.md`); until then the
-  older D1 hook is what runs. Limits: `tools/dev_safety/README.md`.
+  (credentials, Claude Code state, the ChiefOfStaff state folder; git, inline-code,
+  destructive-command, and process-listing denials; it also still denies
+  `~/.teacher-ai-workstation` and `~/Downloads`). The D-022 light profile (localhost, GitHub
+  fetch, and general web allowed; those two folders no longer denied) is not live yet: it
+  needs Owen's go-ahead and install. Limits: `tools/dev_safety/README.md`.
 
 ### Missing
-App icon / menu bar, hotkey, multi-turn chat, tool calling, time/date/weather, Mac status, email,
-calendar, reminders, notifications, voice, conversational memory writing, project awareness from
-real repos, file search, daily brief, proactive monitoring, routing between local and cloud
-workers, delegation to cloud agents.
+Automatic web search by intent (D-011 as revised; today only the typed command searches),
+local file search (D-021), email (D-013), notifications, voice, conversational memory writing,
+project awareness from real repos, proactive monitoring, routing between local and cloud
+workers (M2 router, D-020, D-026), delegation to cloud agents, the multi-agent orchestrator and
+MCP adapters (D-023, D-024, D-025), and the iPhone app (D-007).
 
 ### Recent history (short)
 - Roadmap Revision 3 committed at `4a2679f` with D1.

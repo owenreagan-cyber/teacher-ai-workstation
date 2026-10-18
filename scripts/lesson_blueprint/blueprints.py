@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import json
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
@@ -8,6 +7,7 @@ from typing import Any
 from scripts.curriculum_production.artifact_plan import ArtifactPlan
 from scripts.curriculum_production.content_map import ContentMap, ContentPriority
 from scripts.curriculum_production.lesson_package import LessonPackagePlan
+from scripts.python_deps import require
 
 from .blueprint_approval import BlueprintApprovalState
 from .content_budgets import ContentBudget, load_content_budgets
@@ -91,12 +91,7 @@ class LessonBlueprint:
 def _load_templates(path: Path | None = None) -> dict[str, list[str]]:
     catalog_path = path or (Path(__file__).resolve().parents[2] / "configs" / "lesson-blueprint" / "blueprint-templates.yaml")
     text = catalog_path.read_text(encoding="utf-8")
-    try:
-        import yaml
-
-        raw = yaml.safe_load(text)
-    except ImportError:  # pragma: no cover
-        raw = json.loads(text) if text.strip().startswith("{") else {}
+    raw = require("yaml").safe_load(text)
     sections: dict[str, list[str]] = {}
     if isinstance(raw, dict):
         for key, value in raw.items():

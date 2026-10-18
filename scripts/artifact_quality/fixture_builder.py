@@ -2,10 +2,14 @@ from __future__ import annotations
 
 from pathlib import Path
 
-import fitz
-from docx import Document
+from scripts.python_deps import require
+
+pymupdf = require("pymupdf")
+require("docx")
+from docx import Document  # noqa: E402
 from docx.shared import Inches, Pt
-from pptx import Presentation
+require("pptx")
+from pptx import Presentation  # noqa: E402
 from pptx.util import Inches as PInches, Pt as PPt
 
 
@@ -17,8 +21,8 @@ SAFE_Y = 100
 SAFE_BOTTOM_Y = 680
 
 
-def _new_letter_doc() -> fitz.Document:
-    doc = fitz.open()
+def _new_letter_doc() -> pymupdf.Document:
+    doc = pymupdf.open()
     doc.new_page(width=LETTER[0], height=LETTER[1])
     return doc
 
@@ -49,7 +53,7 @@ def build_passing_worksheet(path: Path) -> None:
     # Answer boxes
     for i in range(3):
         box_y = table_top + 4 * 36 + 20 + i * 50
-        page.draw_rect(fitz.Rect(table_left, box_y, table_right, box_y + 36), width=0.75)
+        page.draw_rect(pymupdf.Rect(table_left, box_y, table_right, box_y + 36), width=0.75)
         page.insert_text((table_left + 8, box_y + 10), f"Show work {i + 1}:", fontsize=12.5)
         for line_y in range(box_y + 18, box_y + 34, 8):
             page.draw_line((table_left + 4, line_y), (table_right - 4, line_y), width=0.3)
@@ -58,7 +62,7 @@ def build_passing_worksheet(path: Path) -> None:
         "Check your answers carefully before turning in your paper."
     )
     page.insert_textbox(
-        fitz.Rect(SAFE_X, SAFE_BOTTOM_Y - 60, 540, SAFE_BOTTOM_Y - 10),
+        pymupdf.Rect(SAFE_X, SAFE_BOTTOM_Y - 60, 540, SAFE_BOTTOM_Y - 10),
         directions,
         fontsize=12.5,
     )
@@ -68,7 +72,7 @@ def build_passing_worksheet(path: Path) -> None:
 
 
 def build_passing_guided_notes(path: Path) -> None:
-    doc = fitz.open()
+    doc = pymupdf.open()
     for page_no in (1, 2):
         page = doc.new_page(width=LETTER[0], height=LETTER[1])
         page.insert_text((SAFE_X + 8, SAFE_Y), f"Guided Notes — Page {page_no}", fontsize=18)
@@ -78,7 +82,7 @@ def build_passing_guided_notes(path: Path) -> None:
             page.draw_line((SAFE_X + 8, y), (520, y), width=0.4)
         # Structured response box
         box_y = SAFE_BOTTOM_Y - 110
-        page.draw_rect(fitz.Rect(SAFE_X + 8, box_y, 520, box_y + 80), width=0.75)
+        page.draw_rect(pymupdf.Rect(SAFE_X + 8, box_y, 520, box_y + 80), width=0.75)
         page.insert_text((SAFE_X + 16, box_y + 8), "Response:", fontsize=12)
         page.insert_text((500, SAFE_BOTTOM_Y), str(page_no), fontsize=10)
     doc.save(path)
@@ -86,7 +90,7 @@ def build_passing_guided_notes(path: Path) -> None:
 
 
 def build_passing_teacher_key(path: Path) -> None:
-    doc = fitz.open()
+    doc = pymupdf.open()
     for page_no in (1, 2):
         page = doc.new_page(width=LETTER[0], height=LETTER[1])
         page.insert_text((SAFE_X + 8, SAFE_Y), f"Teacher Key — Page {page_no}", fontsize=18)
@@ -102,11 +106,11 @@ def build_passing_diagram_page(path: Path) -> None:
     page = doc[0]
     page.insert_text((SAFE_X, SAFE_Y), "Science Diagram", fontsize=18)
     cx, cy = 300, 380
-    page.draw_circle(fitz.Point(cx, cy), 80, width=1.5)
-    page.draw_line(fitz.Point(cx - 80, cy), fitz.Point(cx + 80, cy), width=0.75)
-    page.draw_line(fitz.Point(cx, cy - 80), fitz.Point(cx, cy + 80), width=0.75)
-    page.draw_line(fitz.Point(cx - 50, cy - 50), fitz.Point(cx + 50, cy + 50), width=0.5)
-    page.draw_rect(fitz.Rect(SAFE_X, 520, 540, 620), width=0.75)
+    page.draw_circle(pymupdf.Point(cx, cy), 80, width=1.5)
+    page.draw_line(pymupdf.Point(cx - 80, cy), pymupdf.Point(cx + 80, cy), width=0.75)
+    page.draw_line(pymupdf.Point(cx, cy - 80), pymupdf.Point(cx, cy + 80), width=0.75)
+    page.draw_line(pymupdf.Point(cx - 50, cy - 50), pymupdf.Point(cx + 50, cy + 50), width=0.5)
+    page.draw_rect(pymupdf.Rect(SAFE_X, 520, 540, 620), width=0.75)
     page.insert_text((SAFE_X + 8, 530), "Label the diagram:", fontsize=12)
     doc.save(path)
     doc.close()
@@ -116,7 +120,7 @@ def build_warn_dense_worksheet(path: Path) -> None:
     doc = _new_letter_doc()
     page = doc[0]
     page.insert_text((SAFE_X, SAFE_Y), "Dense Worksheet", fontsize=16)
-    shade = fitz.Rect(SAFE_X, SAFE_Y + 30, 520, SAFE_BOTTOM_Y - 40)
+    shade = pymupdf.Rect(SAFE_X, SAFE_Y + 30, 520, SAFE_BOTTOM_Y - 40)
     page.draw_rect(shade, color=(0.2, 0.2, 0.2), fill=(0.92, 0.92, 0.92))
     y = SAFE_Y + 40
     while y < SAFE_BOTTOM_Y - 50:
@@ -128,7 +132,7 @@ def build_warn_dense_worksheet(path: Path) -> None:
 
 
 def build_warn_layout_shift_key(path: Path) -> None:
-    doc = fitz.open()
+    doc = pymupdf.open()
     page = doc.new_page(width=LETTER[0], height=LETTER[1])
     page.insert_text((SAFE_X + 8, SAFE_Y), "Teacher Key — Page 1", fontsize=18)
     page.insert_text((SAFE_X + 8, SAFE_Y + 40), "Main idea: sample summary line for testing.", fontsize=13)
@@ -143,7 +147,7 @@ def build_warn_layout_shift_key(path: Path) -> None:
 
 
 def build_passing_multipage(path: Path) -> None:
-    doc = fitz.open()
+    doc = pymupdf.open()
     for page_no in range(1, 6):
         page = doc.new_page(width=LETTER[0], height=LETTER[1])
         page.insert_text((SAFE_X, SAFE_Y), f"Multi-page test — Page {page_no}", fontsize=16)
@@ -189,7 +193,7 @@ def build_warn_near_boundary(path: Path) -> None:
 
 
 def build_fail_a4(path: Path) -> None:
-    doc = fitz.open()
+    doc = pymupdf.open()
     page = doc.new_page(width=A4[0], height=A4[1])
     page.insert_text((60, 60), "A4 page sample", fontsize=14)
     doc.save(path)
@@ -205,7 +209,7 @@ def build_fail_unsafe_edge(path: Path) -> None:
 
 
 def build_fail_blank_final_page(path: Path) -> None:
-    doc = fitz.open()
+    doc = pymupdf.open()
     page = doc.new_page(width=LETTER[0], height=LETTER[1])
     page.insert_text((SAFE_X, SAFE_Y), "Page 1 content", fontsize=14)
     doc.new_page(width=LETTER[0], height=LETTER[1])
@@ -214,7 +218,7 @@ def build_fail_blank_final_page(path: Path) -> None:
 
 
 def build_fail_mixed_sizes(path: Path) -> None:
-    doc = fitz.open()
+    doc = pymupdf.open()
     page = doc.new_page(width=LETTER[0], height=LETTER[1])
     page.insert_text((80, 80), "Letter page", fontsize=14)
     page = doc.new_page(width=A4[0], height=A4[1])
@@ -345,7 +349,7 @@ def build_edu_warn_huge_paragraph(path: Path) -> None:
         * 8
         + "for Grade 4 readability testing."
     )
-    page.insert_textbox(fitz.Rect(SAFE_X, SAFE_Y + 40, 520, 560), paragraph, fontsize=13)
+    page.insert_textbox(pymupdf.Rect(SAFE_X, SAFE_Y + 40, 520, 560), paragraph, fontsize=13)
     doc.save(path)
     doc.close()
 

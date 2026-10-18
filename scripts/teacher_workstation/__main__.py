@@ -1,9 +1,17 @@
 #!/usr/bin/env python3
-"""Teacher Workstation launcher — local read-only UI.
+"""Teacher Workstation launcher — local UI.
 
 Starts the local-only UI server on 127.0.0.1:4310. Does NOT open a browser by
 default; ``--no-open`` is accepted for clarity (browser opening is not
 implemented — Owen opens the printed URL himself).
+
+Read-only use: pages and GET ``/api/*`` only read local planning state.
+
+Guarded write workflow: planning edits and approvals write local ``.local``
+state; the deploy route is the one path to Canvas writes (approved packet,
+fresh preflight, typed owner confirmation). Write requests must be same-origin,
+carry the per-start request token, be JSON, and be at most 1 MB. See
+``scripts/teacher_workstation/server.py``.
 """
 from __future__ import annotations
 
@@ -23,8 +31,10 @@ def main(argv: list[str] | None = None) -> int:
     if "--help" in argv:
         print("Usage: bin/teacher-workstation [--no-open]")
         print("")
-        print("Starts the local read-only Teacher Workstation UI at http://127.0.0.1:4310")
-        print("Mode: READ ONLY — no Canvas writes.")
+        print("Starts the local Teacher Workstation UI at http://127.0.0.1:4310")
+        print("Read-only browsing; writes (local planning state, approvals, and the")
+        print("confirmed Canvas deploy route) need same-origin requests with the")
+        print("per-start request token.")
         return 0
     return server.run()
 

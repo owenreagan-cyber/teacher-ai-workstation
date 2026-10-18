@@ -39,9 +39,10 @@ other tool whose input carries a path)
   - every path-bearing key (file_path, notebook_path, path, edits[].file_path, ...)
     is checked; a write-like tool with no recognizable path is denied;
   - deny any path that resolves (after symlinks) into a denied root. Denied roots are
-    the credential stores, Claude Code state, and private folders in DENIED_ROOT_RELS,
-    plus the student-data roots in student_data_roots.txt (beside this file); if that
-    file is missing, unreadable, or invalid, ~/Documents and ~/Desktop are denied too;
+    the credential stores, Claude Code state, and the ChiefOfStaff state folder in
+    DENIED_ROOT_RELS, plus any roots in student_data_roots.txt (beside this file; empty
+    under the D-022 light profile); if that file is missing, unreadable, or invalid,
+    ~/Documents and ~/Desktop are denied too;
   - deny Glob/Grep whose search base contains a denied root;
   - deny Edit/Write-family calls into <project>/.claude or the installed
     hook directory.
@@ -64,9 +65,10 @@ WRITE_LIKE_RE = re.compile(r"(Edit|Write)", re.I)
 NON_FILE_TOOLS = {"TodoWrite"}  # name looks write-like, but it never touches a file
 SEARCH_TOOLS = {"Glob", "Grep"}
 
+# Light profile (D-022): ~/.teacher-ai-workstation and ~/Downloads are not denied; school
+# files on Owen's Mac are non-sensitive. Credential stores, Claude Code state, and the
+# ChiefOfStaff state folder stay denied.
 DENIED_ROOT_RELS = (
-    ".teacher-ai-workstation",
-    "Downloads",
     ".ssh",
     ".aws",
     ".gnupg",

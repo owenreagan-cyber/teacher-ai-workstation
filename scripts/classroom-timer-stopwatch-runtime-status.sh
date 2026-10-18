@@ -113,15 +113,33 @@ PY
 else
   warn 'python3 not available for manifest approval check'
 fi
+# Allowed folders under apps/ come from config/apps-allowlist.txt (one reason
+# per entry, D-022). Any other folder fails this gate.
+apps_allowlist="config/apps-allowlist.txt"
+allowed_apps=" "
+if [[ -f "${apps_allowlist}" ]]; then
+  while read -r app_name app_reason; do
+    [[ -z "${app_name}" || "${app_name}" == \#* ]] && continue
+    if [[ -z "${app_reason}" ]]; then
+      fail "apps allowlist entry has no reason: ${app_name}"
+      continue
+    fi
+    allowed_apps+="${app_name} "
+  done < "${apps_allowlist}"
+else
+  fail "apps allowlist missing: ${apps_allowlist}"
+fi
 other_app_dirs=0
 if [[ -d apps ]]; then
   for d in apps/*/; do
     [[ -d "${d}" ]] || continue
-    [[ "${d}" == "apps/classroom-timer-stopwatch/" ]] && continue
+    app_name="${d#apps/}"
+    app_name="${app_name%/}"
+    [[ "${allowed_apps}" == *" ${app_name} "* ]] && continue
     other_app_dirs=1
     fail "unexpected app runtime directory: ${d}"
   done
-  [[ "${other_app_dirs}" == "0" ]] && pass 'no other app directories under apps/'
+  [[ "${other_app_dirs}" == "0" ]] && pass "no app directories under apps/ outside ${apps_allowlist}"
 fi
 
 section 'No Other App Runtime Artifacts'

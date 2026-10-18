@@ -1102,13 +1102,21 @@ CREATE TABLE IF NOT EXISTS homeroom_newsletter_months(id TEXT PRIMARY KEY,month_
 CREATE TABLE IF NOT EXISTS teacher_decision_records(id TEXT PRIMARY KEY,artifact_id TEXT NOT NULL,artifact_kind TEXT NOT NULL,artifact_title TEXT NOT NULL,decision_type TEXT NOT NULL,decision_status TEXT NOT NULL,artifact_content_hash TEXT NOT NULL,artifact_revision INTEGER NOT NULL,teacher_display TEXT NOT NULL,note TEXT NOT NULL,invalidates_on_revision INTEGER NOT NULL DEFAULT 1,created_at TEXT NOT NULL,updated_at TEXT NOT NULL);
 CREATE INDEX IF NOT EXISTS idx_teacher_decision_records_artifact ON teacher_decision_records(artifact_id, created_at DESC);
 '''
+def today_eastern():
+    # TAW_TODAY=YYYY-MM-DD pins "today" for tests only; unset in real use.
+    pinned=os.environ.get('TAW_TODAY')
+    return date.fromisoformat(pinned) if pinned else datetime.now(EASTERN).date()
 def select_startup_week(workstation,today=None):
-    today=today or datetime.now(EASTERN).date(); weeks=load_instructional_weeks(); first_start,last_end=weeks[0]['startsOn'],weeks[-1]['endsOn']
+    today=today or today_eastern(); weeks=load_instructional_weeks()
+    # Weeks whose date range did not parse have startsOn/endsOn None; never compare those with a date.
+    dated=[w for w in weeks if w['startsOn'] and w['endsOn']]
+    if not dated: return {'mode':'chooser','reason':'no-dated-weeks','week':weeks[0],'startupPrompt':'No instructional week has dates; choose a week.','warning':None}
+    first_start,last_end=min(w['startsOn'] for w in dated),max(w['endsOn'] for w in dated)
     if today.isoformat()<first_start: return {'mode':'chooser','reason':'before-school-year','week':weeks[0],'startupPrompt':'School year has not started; choose a week.','warning':None}
     if today.isoformat()>last_end: return {'mode':'chooser','reason':'after-school-year','week':weeks[-1],'startupPrompt':'School year has ended; choose a week.','warning':None}
     active=instructional_week_for_date(today)
     if not active:
-        nxt=next((w for w in weeks if w['startsOn']>today.isoformat()),weeks[-1])
+        nxt=next((w for w in dated if w['startsOn']>today.isoformat()),weeks[-1])
         return {'mode':'break','reason':'break/no-school period','week':nxt,'startupPrompt':f"No instructional week contains {today.isoformat()}; showing next instructional week {nxt['code']}.",'warning':None}
     if today.weekday()>=5:
         upcoming=instructional_week_for_date(today+timedelta(days=(7-today.weekday())))

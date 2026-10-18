@@ -19,7 +19,9 @@ from scripts.artifact_quality.fixture_builder import ensure_all_fixtures  # noqa
 from scripts.artifact_quality.models import CheckStatus  # noqa: E402
 from scripts.artifact_quality.profiles import load_profile  # noqa: E402
 from scripts.artifact_quality.run_preflight import run_preflight  # noqa: E402
-import fitz  # noqa: E402
+from scripts.python_deps import require  # noqa: E402
+
+pymupdf = require("pymupdf")
 
 FIXTURES = REPO_ROOT / "fixtures" / "artifact-quality"
 
@@ -97,7 +99,7 @@ class EducationalLayoutTests(unittest.TestCase):
 
     def test_instructional_layout_section_format(self) -> None:
         profile = load_profile("worksheet-letter")
-        doc = fitz.open(FIXTURES / "passing" / "worksheet-letter.pdf")
+        doc = pymupdf.open(FIXTURES / "passing" / "worksheet-letter.pdf")
         layout = analyze_pdf_educational_layout(doc, profile, None, [])
         doc.close()
         text = format_instructional_layout_section(layout)

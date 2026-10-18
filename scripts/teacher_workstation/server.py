@@ -1,12 +1,34 @@
-"""Teacher Workstation — read-only local UI (stdlib http.server, no deps).
+"""Teacher Workstation — local UI server (stdlib http.server, no deps).
 
-Binds to 127.0.0.1:4310 only. Serves the vanilla-JS frontend from
-``apps/teacher-workstation/`` and a read-only JSON API. No write routes exist
-(no POST/PUT/PATCH/DELETE handling). No secrets are ever emitted.
+Binds to 127.0.0.1:4310 only and serves the vanilla-JS frontend from
+``apps/teacher-workstation/`` plus a JSON API. No secrets are ever emitted.
+
+Read-only use (GET): the pages and ``/api/status``, ``/api/home``,
+``/api/weeks``, ``/api/completed`` and ``/api/week/...`` only read local
+planning state. They need no token.
+
+Guarded write workflow (POST/DELETE; PUT/PATCH return 405):
+- Local planning edits (overrides, restore-source, mark-pending/blank,
+  question answers, assignment dispositions, announcements) and approvals
+  (approve / revoke-approval) write local ``.local`` planning state only.
+- Deployment: ``preflight`` is GET-only against Canvas; ``deploy`` is the one
+  route that can write to Canvas. It goes through ``deploy.py`` to the
+  deployment coordinator, which needs ``production=true``, a valid unexpired
+  preflight, matching source and approval-snapshot hashes, and the typed owner
+  confirmation (D-018, D-022).
+
+Before any of that logic runs, every request must carry a loopback ``Host``
+for this port, and every mutating request must also be same-origin
+(``Origin``, or ``Referer`` when there is no Origin), carry this server
+start's random request token in ``X-Teacher-Workstation-Token`` (the page
+receives it in a ``<meta>`` tag), use ``Content-Type: application/json``, and
+keep its body at or under 1 MB (413 above that).
 """
 from __future__ import annotations
 
+import hmac
 import json
+import secrets
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import urlparse, parse_qs
@@ -19,9 +41,23 @@ STATIC_DIR = REPO / "apps" / "teacher-workstation"
 HOST = "127.0.0.1"
 PORT = 4310
 
+TOKEN_HEADER = "X-Teacher-Workstation-Token"
+TOKEN_PLACEHOLDER = "__TEACHER_WORKSTATION_REQUEST_TOKEN__"
+MAX_BODY_BYTES = 1024 * 1024
+MUTATING_METHODS = ("POST", "PUT", "PATCH", "DELETE")
+
 
 def _json_bytes(obj) -> bytes:
     return json.dumps(obj, ensure_ascii=False, indent=2).encode("utf-8")
+
+
+class GuardRejected(Exception):
+    """A request failed a route-protection check before any route logic ran."""
+
+    def __init__(self, status: int, error: str) -> None:
+        super().__init__(error)
+        self.status = status
+        self.error = error
 
 
 class Handler(BaseHTTPRequestHandler):
@@ -45,20 +81,83 @@ class Handler(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(body)
 
-    def _send_file(self, path: Path, ctype: str) -> None:
+    def _send_file(self, path: Path, ctype: str, inject_token: bool = False) -> None:
         try:
             body = path.read_bytes()
         except OSError:
             self._send_text(404, "not found")
             return
+        if inject_token:
+            body = body.replace(TOKEN_PLACEHOLDER.encode("ascii"),
+                                self.server.request_token.encode("ascii"))
         self.send_response(200)
         self.send_header("Content-Type", ctype)
         self.send_header("Content-Length", str(len(body)))
+        if inject_token:
+            self.send_header("Cache-Control", "no-store")
         self.end_headers()
         self.wfile.write(body)
 
+    # --- route protection (runs before any route logic) --------------------
+    def _allowed_hosts(self) -> tuple[str, ...]:
+        port = self.server.server_address[1]
+        return (f"127.0.0.1:{port}", f"localhost:{port}")
+
+    def _check_host(self) -> str:
+        host = (self.headers.get("Host") or "").strip().lower()
+        if host not in self._allowed_hosts():
+            raise GuardRejected(403, "HOST_REJECTED")
+        return host
+
+    def _check_mutation(self, host: str) -> None:
+        own_origin = f"http://{host}"
+        origin = self.headers.get("Origin")
+        if origin is not None:
+            if origin.strip().lower() != own_origin:
+                raise GuardRejected(403, "ORIGIN_REJECTED")
+        else:
+            referer = (self.headers.get("Referer") or "").strip().lower()
+            if not (referer == own_origin or referer.startswith(own_origin + "/")):
+                raise GuardRejected(403, "ORIGIN_REJECTED")
+
+        token = self.headers.get(TOKEN_HEADER) or ""
+        if not hmac.compare_digest(token.encode("utf-8"),
+                                   self.server.request_token.encode("ascii")):
+            raise GuardRejected(403, "TOKEN_REJECTED")
+
+        ctype = (self.headers.get("Content-Type") or "").split(";", 1)[0].strip().lower()
+        if ctype != "application/json":
+            raise GuardRejected(415, "CONTENT_TYPE_REJECTED")
+
+        if self.headers.get("Transfer-Encoding"):
+            raise GuardRejected(411, "LENGTH_REQUIRED")
+        raw_length = self.headers.get("Content-Length") or "0"
+        try:
+            length = int(raw_length)
+        except ValueError:
+            raise GuardRejected(400, "BAD_CONTENT_LENGTH") from None
+        if length < 0:
+            raise GuardRejected(400, "BAD_CONTENT_LENGTH")
+        if length > MAX_BODY_BYTES:
+            raise GuardRejected(413, "BODY_TOO_LARGE")
+
+    def _guard(self, method: str) -> bool:
+        """Run the route-protection checks. Returns False if rejected."""
+        try:
+            host = self._check_host()
+            if method in MUTATING_METHODS:
+                self._check_mutation(host)
+        except GuardRejected as exc:
+            # The unread body (if any) must not be parsed as a next request.
+            self.close_connection = True
+            self._send_json(exc.status, {"error": exc.error})
+            return False
+        return True
+
     # --- HTTP verbs --------------------------------------------------------
     def do_GET(self) -> None:  # noqa: N802
+        if not self._guard("GET"):
+            return
         parsed = urlparse(self.path)
         path = parsed.path
 
@@ -69,7 +168,7 @@ class Handler(BaseHTTPRequestHandler):
 
         # Static files.
         if path in ("/", "/index.html"):
-            self._send_file(STATIC_DIR / "index.html", "text/html; charset=utf-8")
+            self._send_file(STATIC_DIR / "index.html", "text/html; charset=utf-8", inject_token=True)
         elif path == "/styles.css":
             self._send_file(STATIC_DIR / "styles.css", "text/css; charset=utf-8")
         elif path == "/app.js":
@@ -114,15 +213,23 @@ class Handler(BaseHTTPRequestHandler):
 
     # ---- write verbs: LOCAL planning state ONLY (never Canvas) ----
     def do_POST(self) -> None:  # noqa: N802
+        if not self._guard("POST"):
+            return
         self._handle_mutation("POST")
 
     def do_DELETE(self) -> None:  # noqa: N802
+        if not self._guard("DELETE"):
+            return
         self._handle_mutation("DELETE")
 
     def do_PUT(self) -> None:  # noqa: N802
+        if not self._guard("PUT"):
+            return
         self._send_text(405, "PUT not supported (use POST/DELETE)")
 
     def do_PATCH(self) -> None:  # noqa: N802
+        if not self._guard("PATCH"):
+            return
         self._send_text(405, "PATCH not supported (use POST/DELETE)")
 
     def _read_body(self) -> dict:
@@ -266,16 +373,20 @@ class Handler(BaseHTTPRequestHandler):
         pass
 
 
-def build_server():
-    return ThreadingHTTPServer((HOST, PORT), Handler)
+def build_server(port: int = PORT):
+    """Bind to 127.0.0.1 only. Each server start gets a fresh request token."""
+    server = ThreadingHTTPServer((HOST, port), Handler)
+    server.request_token = secrets.token_urlsafe(32)
+    return server
 
 
 def run() -> int:
     server = build_server()
     print("Teacher Workstation")
     print(f"Local URL: http://{HOST}:{PORT}")
-    print("Mode: READ ONLY")
-    print("Canvas writes: DISABLED")
+    print("Mode: read-only browsing; guarded writes (local planning state, approvals,")
+    print("      and the confirmed Canvas deploy route) need same-origin requests")
+    print("      carrying this session's request token")
     print("(Press Ctrl+C to stop)")
     try:
         server.serve_forever()

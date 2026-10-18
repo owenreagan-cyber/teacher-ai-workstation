@@ -3,7 +3,9 @@ from __future__ import annotations
 import re
 from pathlib import Path
 
-import fitz
+from scripts.python_deps import require
+
+pymupdf = require("pymupdf")
 
 from .models import CheckStatus, PreflightReport
 from .profiles import ArtifactProfile
@@ -11,7 +13,7 @@ from .validate_pdf import validate_pdf
 from .visual_geometry import visual_compare_pages
 
 
-def _page_signatures(doc: fitz.Document) -> list[dict[str, object]]:
+def _page_signatures(doc: pymupdf.Document) -> list[dict[str, object]]:
     signatures: list[dict[str, object]] = []
     for page in doc:
         text = page.get_text("text")
@@ -42,8 +44,8 @@ def compare_student_teacher_keys(
     student_doc = None
     teacher_doc = None
     try:
-        student_doc = fitz.open(student_path)
-        teacher_doc = fitz.open(teacher_path)
+        student_doc = pymupdf.open(student_path)
+        teacher_doc = pymupdf.open(teacher_path)
     except Exception as exc:  # noqa: BLE001
         report.add(CheckStatus.FAIL, "Student or teacher PDF could not be opened for comparison", details=str(exc))
         return
@@ -111,7 +113,7 @@ def validate_with_optional_key(
     analysis_dpi: int | None = None,
     visual_compare: bool = False,
     output_dir: Path | None = None,
-) -> tuple[fitz.Document | None, list, list, list]:
+) -> tuple[pymupdf.Document | None, list, list, list]:
     doc, page_metrics, ink_masks, clips = validate_pdf(student_path, profile, report, analysis_dpi=analysis_dpi)
     if teacher_path is not None:
         compare_student_teacher_keys(

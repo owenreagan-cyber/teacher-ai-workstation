@@ -2,7 +2,9 @@ from __future__ import annotations
 
 from pathlib import Path
 
-import fitz
+from scripts.python_deps import require
+
+pymupdf = require("pymupdf")
 
 from .inspect_page_usage import printable_rect, safe_rect
 from .models import CheckStatus, PreflightReport
@@ -11,7 +13,7 @@ from .visual_geometry import PageVisualMetrics, annotate_page_render, generate_c
 
 
 def render_pdf_pages(
-    doc: fitz.Document,
+    doc: pymupdf.Document,
     output_dir: Path,
     *,
     dpi: int = 144,
@@ -20,11 +22,11 @@ def render_pdf_pages(
     renders_dir = output_dir / "renders"
     renders_dir.mkdir(parents=True, exist_ok=True)
     paths: list[str] = []
-    matrix = fitz.Matrix(dpi / 72.0, dpi / 72.0)
+    matrix = pymupdf.Matrix(dpi / 72.0, dpi / 72.0)
     for index, page in enumerate(doc, start=1):
         if profile is not None:
             left, top, right, bottom = printable_rect(profile)
-            clip = fitz.Rect(left, top, right, bottom)
+            clip = pymupdf.Rect(left, top, right, bottom)
             pix = page.get_pixmap(matrix=matrix, clip=clip, alpha=False)
         else:
             pix = page.get_pixmap(matrix=matrix, alpha=False)
@@ -35,7 +37,7 @@ def render_pdf_pages(
 
 
 def render_pdf_file(path: Path, output_dir: Path, *, dpi: int = 144, profile: ArtifactProfile | None = None) -> list[str]:
-    doc = fitz.open(path)
+    doc = pymupdf.open(path)
     try:
         return render_pdf_pages(doc, output_dir, dpi=dpi, profile=profile)
     finally:
@@ -67,7 +69,7 @@ def generate_annotated_renders(
     output_dir: Path,
     *,
     ink_masks: list[list[list[bool]] | None] | None = None,
-    clips: list[fitz.Rect | None] | None = None,
+    clips: list[pymupdf.Rect | None] | None = None,
     dpi: int = 144,
 ) -> list[str]:
     annotated_dir = output_dir / "annotated"

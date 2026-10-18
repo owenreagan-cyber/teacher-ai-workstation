@@ -324,6 +324,18 @@ bin/chief-of-staff --app-ecosystem-inventory-status
 
 Status scripts must preserve parseable `PASS:` / `WARN:` / `FAIL:` Summary blocks. Do not weaken tests to make validation pass.
 
+Requirements: the Python checks need **PyYAML** and **PyMuPDF** (imported as `pymupdf`):
+
+```bash
+python3.12 -m pip install --user --break-system-packages pymupdf pyyaml
+```
+
+If either is missing, the check stops with a one-line message naming the package and the
+install command for the interpreter in use. Status scripts that call plain `python3` use
+whatever that resolves to (Homebrew Python 3.14 on Owen's Mac), so that interpreter needs the
+packages too. The artifact-quality checks also need Pillow, python-docx, and python-pptx
+(`scripts/artifact_quality/requirements.txt`).
+
 ## Escalation Conditions
 
 Stop and report to Owen when:

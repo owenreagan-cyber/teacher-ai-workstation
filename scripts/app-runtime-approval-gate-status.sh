@@ -118,14 +118,33 @@ check_doc_contains "${matrix_doc}" "Level 3" "matrix level 3 documented"
 
 section 'Timer Runtime Prototype Only'
 check_file apps/classroom-timer-stopwatch/timer.js
+# Allowed folders under apps/ come from config/apps-allowlist.txt (one reason
+# per entry, D-022). Any other folder fails this gate.
+apps_allowlist="config/apps-allowlist.txt"
+allowed_apps=" "
+if [[ -f "${apps_allowlist}" ]]; then
+  while read -r app_name app_reason; do
+    [[ -z "${app_name}" || "${app_name}" == \#* ]] && continue
+    if [[ -z "${app_reason}" ]]; then
+      fail "apps allowlist entry has no reason: ${app_name}"
+      continue
+    fi
+    allowed_apps+="${app_name} "
+  done < "${apps_allowlist}"
+else
+  fail "apps allowlist missing: ${apps_allowlist}"
+fi
 other_apps=0
 if [[ -d apps ]]; then
   for d in apps/*/; do
-    [[ "${d}" == "apps/classroom-timer-stopwatch/" ]] && continue
+    [[ -d "${d}" ]] || continue
+    app_name="${d#apps/}"
+    app_name="${app_name%/}"
+    [[ "${allowed_apps}" == *" ${app_name} "* ]] && continue
     other_apps=1
     fail "unexpected app directory: ${d}"
   done
-  [[ "${other_apps}" == "0" ]] && pass 'only classroom-timer-stopwatch under apps/'
+  [[ "${other_apps}" == "0" ]] && pass "only allowlisted app folders under apps/ (${apps_allowlist})"
 fi
 
 section 'No Unauthorized Runtime Artifacts'

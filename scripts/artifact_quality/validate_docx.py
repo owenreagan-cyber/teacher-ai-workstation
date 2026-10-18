@@ -3,7 +3,9 @@ from __future__ import annotations
 import re
 from pathlib import Path
 
-from docx import Document
+from scripts.python_deps import require
+require("docx")
+from docx import Document  # noqa: E402
 from docx.enum.section import WD_ORIENT
 from docx.shared import Inches
 

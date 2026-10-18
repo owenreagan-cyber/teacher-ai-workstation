@@ -6,7 +6,9 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Iterable
 
-import fitz
+from scripts.python_deps import require
+
+pymupdf = require("pymupdf")
 
 from .models import CheckStatus, PreflightReport
 from .profiles import ArtifactProfile, EducationalLayoutSpec
@@ -66,7 +68,7 @@ def _is_bold(flags: int) -> bool:
     return bool(flags & 2**4)
 
 
-def _extract_page_structure(page: fitz.Page, page_number: int) -> PageStructure:
+def _extract_page_structure(page: pymupdf.Page, page_number: int) -> PageStructure:
     spans: list[TextSpanInfo] = []
     block_tops: list[float] = []
     try:
@@ -128,7 +130,7 @@ def _extract_page_structure(page: fitz.Page, page_number: int) -> PageStructure:
     )
 
 
-def _extract_pages(doc: fitz.Document) -> list[PageStructure]:
+def _extract_pages(doc: pymupdf.Document) -> list[PageStructure]:
     return [_extract_page_structure(page, i + 1) for i, page in enumerate(doc)]
 
 
@@ -670,7 +672,7 @@ def analyze_pptx_educational(path: Path, profile: ArtifactProfile, spec: Educati
 
 
 def analyze_pdf_educational_layout(
-    doc: fitz.Document,
+    doc: pymupdf.Document,
     profile: ArtifactProfile,
     subject: str | None,
     page_metrics: list[PageVisualMetrics],

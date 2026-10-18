@@ -66,7 +66,12 @@ def draft_math_assessment_reminders(week: dict[str, Any]) -> list[dict[str, Any]
         # Format date -> "Tuesday, October 20"
         date_display = _display_date(date)
 
-        body = _math_body(date_display, written, fact, power)
+        # The review day is the explicit Math "Review" token day, NOT a
+        # hardcoded weekday. The owner At Home override ("Study for tomorrow's
+        # test.") lands on that review day's evening.
+        review_weekday = _math_review_weekday(week)
+
+        body = _math_body(date_display, written, fact, power, review_weekday=review_weekday)
         reminders.append({
             "type": "math_assessment",
             "title": f"Math Assessment Reminder — {date_display}",
@@ -148,7 +153,23 @@ def _display_date(iso_date: str) -> str:
         return iso_date
 
 
-def _math_body(date_display: str, written: dict[str, Any] | None, fact: dict[str, Any] | None, power: dict[str, Any] | None) -> str:
+def _math_review_weekday(week: dict[str, Any]) -> str | None:
+    """Return the weekday whose Math cell is an explicit "Review" token.
+
+    The review day drives both the in-class review sentence and the At Home
+    "review this evening" sentence. Returns None if there is no explicit Review
+    day (the reminder then uses a generic, non-day-specific phrase).
+    """
+    for wd in C.WEEKDAYS:
+        day = (week.get("days") or {}).get(wd, {})
+        raw = day.get("subjects", {}).get("math", {}).get("raw", "")
+        if (raw or "").strip().lower() == "review":
+            return wd
+    return None
+
+
+def _math_body(date_display: str, written: dict[str, Any] | None, fact: dict[str, Any] | None,
+               power: dict[str, Any] | None, *, review_weekday: str | None = None) -> str:
     wa = written.get("number") if written else None
     fa = fact.get("number") if fact else None
     lines = ["Good afternoon,", ""]
@@ -158,11 +179,19 @@ def _math_body(date_display: str, written: dict[str, Any] | None, fact: dict[str
             f"Written Assessment {wa} and Fact Assessment {fa} on {date_display}."
         )
     lines.append("")
-    lines.append(
-        "We will spend time on Monday reviewing and preparing for the assessments, and "
-        "students should continue reviewing at home Monday evening. Looking back over recent "
-        "lesson work, practice problems, and corrections is a great way to prepare."
-    )
+    if review_weekday:
+        lines.append(
+            f"We will spend time on {review_weekday} reviewing and preparing for the assessments, "
+            f"and students should continue reviewing at home {review_weekday} evening. "
+            "Looking back over recent lesson work, practice problems, and corrections is a great "
+            "way to prepare."
+        )
+    else:
+        lines.append(
+            "We will spend time in class reviewing and preparing for the assessments, and "
+            "students should continue reviewing at home the evening before. Looking back over "
+            "recent lesson work, practice problems, and corrections is a great way to prepare."
+        )
     if power is not None:
         lines.append("")
         lines.append(
@@ -170,11 +199,15 @@ def _math_body(date_display: str, written: dict[str, Any] | None, fact: dict[str
             f"{power.get('powerUpCode')}. A few minutes of focused fact practice at home "
             f"can be very helpful for building speed and confidence."
         )
-        lines.append("")
-        lines.append(
-            "The Power Up practice sheet is available in Canvas for anyone who would like some "
-            "extra practice."
-        )
+        # Only claim a Canvas practice sheet when a resource is actually verified.
+        # The Power Up resource is UNRESOLVED (no verified Canvas file ID), so the
+        # "available in Canvas" claim is omitted (fail closed).
+        if power.get("resourceStatus") == "VERIFIED":
+            lines.append("")
+            lines.append(
+                "The Power Up practice sheet is available in Canvas for anyone who would like some "
+                "extra practice."
+            )
     lines.append("")
     lines.append("Thank you for your support at home!")
     lines.append("")
@@ -202,6 +235,28 @@ def command_self_test() -> int:
     assert len(s) == 1 and s[0]["test_number"] == 40
     assert "Lists 1\u201340" in s[0]["body"]
     assert s[0]["course_id"] == 26442
+
+    # Math reminder review day: derives from the explicit "Review" token day,
+    # never a hardcoded weekday, and never claims an unverified Canvas resource.
+    math_week = {
+        "week": {"code": "Q2W3"},
+        "days": {
+            "Monday": {"date": "2026-10-26", "subjects": {"math": {"raw": "L39"}}},
+            "Tuesday": {"date": "2026-10-27", "subjects": {"math": {"raw": "L40"}}},
+            "Wednesday": {"date": "2026-10-28", "subjects": {"math": {"raw": "Review"}}},
+            "Thursday": {"date": "2026-10-29", "subjects": {"math": {"raw": "WA7/ FA7*"}}},
+            "Friday": {"date": "2026-10-30", "subjects": {"math": {"raw": "INV 4"}}},
+        },
+    }
+    ms = draft_math_assessment_reminders(math_week)
+    assert len(ms) == 1, ms
+    body = ms[0]["body"]
+    assert "Wednesday reviewing" in body, body          # review day, not hardcoded Monday
+    assert "Wednesday evening" in body, body
+    assert "Monday" not in body, body
+    assert "Power Up B" in body, body                   # canonical FA7 -> B
+    assert "available in Canvas" not in body, body      # resource UNVERIFIED -> fail closed
+    assert ms[0]["power_up"] == "B"
 
     print("PASS intake reminders self-test")
     return 0

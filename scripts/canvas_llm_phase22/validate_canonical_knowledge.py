@@ -9,6 +9,12 @@ import sys
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
 
+# Owen's term for the agenda's take-home column (OWNER_POLICY, approved
+# 2026-10-10). "Homework" is not accepted: no committed config or fixture uses
+# it for these labels any more. Canvas assignment-group names such as
+# "Homework/Class Work" are a separate thing and keep their Canvas names.
+AT_HOME_LABEL = "At Home"
+
 
 def load_json(relative: str) -> dict:
     path = ROOT / relative
@@ -378,8 +384,8 @@ checks.extend(
             "Subject agenda links are forbidden",
         ),
         (
-            agenda["rules"]["homeworkLabel"] == "Homework",
-            "Subject agenda uses Homework label",
+            agenda["rules"]["homeworkLabel"] == AT_HOME_LABEL,
+            "Subject agenda uses At Home label",
         ),
         (
             weekly_agenda["sections"]["remindersOnly"] is True,
@@ -390,8 +396,8 @@ checks.extend(
             "Weekly agenda standard forbids resource sections",
         ),
         (
-            weekly_agenda["dailyLayout"]["rightColumn"] == "Homework",
-            "Weekly agenda right column is Homework",
+            weekly_agenda["dailyLayout"]["rightColumn"] == AT_HOME_LABEL,
+            "Weekly agenda right column is At Home",
         ),
         (
             weekly_agenda["contentRules"]["studyGuidesAllowed"] is False,

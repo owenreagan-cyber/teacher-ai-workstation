@@ -42,7 +42,7 @@ Legacy applications may provide implementation ideas or historical evidence, but
 | Product architecture | APPROVED | `docs/programs/canvas-llm/canonical-context-pack/product-and-architecture-rules.md` | Context-pack validator | Single-user, local-first Teacher AI Workstation |
 | Canvas course routing | APPROVED_WITH_OPEN_FIELDS | `config/curriculum/canvas-course-mappings.json` | `scripts/canvas_llm_phase22/validate_canonical_knowledge.py` | Numeric assignment-group and module IDs remain live-read metadata |
 | Quarter-subject activation | APPROVED | `config/curriculum/canvas/quarter-subject-activation-2026-2027.json` | `scripts/canvas_llm_phase22/validate_canonical_knowledge.py` | History Q1/Q3; Science Q2/Q4; inactive subject untouched |
-| Agenda page rules | APPROVED | `config/curriculum/canvas/agenda-page-rules.json` | Phase 22/23 validators and generators | Reminders only; Homework label; no Resources section |
+| Agenda page rules | APPROVED | `config/curriculum/canvas/agenda-page-rules.json` | Phase 22/23 validators and generators | Reminders only; At Home label; no Resources section |
 | 2026–2027 instructional weeks | APPROVED | `config/curriculum/canvas/instructional-weeks-2026-2027.json` | `scripts/canvas_llm_phase22/phase22_workstation.py` | Week codes, titles, and date ranges |
 | Weekly agenda standard | APPROVED | `config/curriculum/canvas/weekly-agenda-standard-2026-2027.json` | Agenda contract validator | Current page anatomy and weekday structure |
 | Math lesson to Power Up map | APPROVED | `config/curriculum/math/saxon-math-5/lesson-power-up-map.json` | `scripts/canvas_llm_phase22/validate_canonical_knowledge.py` | Expected coverage: Lessons 1–120 |

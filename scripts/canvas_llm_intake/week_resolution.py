@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import datetime as dt
 import json
+import os
 from typing import Any
 
 from scripts.canvas_llm_phase3 import constants as P3
@@ -16,7 +17,14 @@ _TZ = dt.timezone(dt.timedelta(hours=-4))  # America/New_York (EDT)
 
 
 def _now_local() -> dt.datetime:
-    return dt.datetime.now(_TZ)
+    now = dt.datetime.now(_TZ)
+    # TAW_TODAY=YYYY-MM-DD pins the date (time of day stays real) for tests
+    # only; unset in real use.
+    pinned = os.environ.get("TAW_TODAY")
+    if pinned:
+        d = dt.date.fromisoformat(pinned)
+        return now.replace(year=d.year, month=d.month, day=d.day)
+    return now
 
 
 def load_weeks() -> list[dict[str, Any]]:

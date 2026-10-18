@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 # Teacher Workstation read-only UI tests (local server, no Canvas, no writes).
 set -euo pipefail
+# Pin "today" to 2026-10-28 (Q2W3, the week this test checks) so the result does not depend on the
+# date the test runs. Read only by the test-clock hooks; unset in real use.
+export TAW_TODAY=2026-10-28
 
 echo "Running Teacher Workstation UI tests..."
 

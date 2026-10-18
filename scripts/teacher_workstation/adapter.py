@@ -330,8 +330,8 @@ def home() -> dict[str, Any]:
 
 
 def _today_local() -> str:
-    import datetime as dt
-    return dt.datetime.now(dt.timezone(dt.timedelta(hours=-4))).strftime("%A, %B %-d, %Y")
+    # Same clock as week resolution, so TAW_TODAY (tests only) pins both.
+    return iwr._now_local().strftime("%A, %B %-d, %Y")
 
 
 def system_status() -> dict[str, Any]:

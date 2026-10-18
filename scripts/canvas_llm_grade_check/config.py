@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import datetime as dt
 import json
+import os
 import re
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -210,7 +211,9 @@ def resolve_quarter(
             raise ConfigError(f"invalid quarter {explicit_quarter!r}; expected 1-4")
         return explicit_quarter
 
-    today = today or dt.date.today()
+    # TAW_TODAY=YYYY-MM-DD pins "today" for tests only; unset in real use.
+    pinned = os.environ.get("TAW_TODAY")
+    today = today or (dt.date.fromisoformat(pinned) if pinned else dt.date.today())
     ranges = quarter_date_ranges(path=weeks_path)
     if not ranges:
         raise ConfigError(

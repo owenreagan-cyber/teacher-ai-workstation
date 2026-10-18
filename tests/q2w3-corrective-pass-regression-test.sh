@@ -2,6 +2,9 @@
 # Q2W3 corrective-pass regression tests (Science reminders + weekly announcement identity).
 # Synthetic, deterministic, no Canvas writes.
 set -euo pipefail
+# Pin "today" to 2026-10-28 (Q2W3, the week this test checks) so the result does not depend on the
+# date the test runs. Read only by the test-clock hooks; unset in real use.
+export TAW_TODAY=2026-10-28
 
 echo "Running Q2W3 corrective-pass regression tests..."
 

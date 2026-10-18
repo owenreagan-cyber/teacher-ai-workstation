@@ -49,9 +49,7 @@ def next_unprepared_week() -> tuple[int, int]:
     week whose local intake packet is already PUBLISHED_VERIFIED. This is the
     recurring-cycle target (prepare the next not-yet-published week).
     """
-    import datetime as dt
-
-    today = dt.datetime.now(dt.timezone(dt.timedelta(hours=-4))).date()
+    today = wr._now_local().date()
     weeks = sorted(
         (w for w in wr.load_weeks() if wr._week_start(w) is not None),
         key=lambda w: wr._week_start(w),

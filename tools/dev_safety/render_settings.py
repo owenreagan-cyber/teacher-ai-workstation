@@ -9,8 +9,9 @@ Writes two files next to this script:
                           ~/.claude/hooks/cos/, and Owen starts sessions with
                           `claude --settings ~/.claude/hooks/cos/sandbox-lock.json`.
                           Passing it with --settings makes the sandbox admin-required, so
-                          the repo's own files cannot loosen it, and turns on strictAllowlist,
-                          which Claude Code ignores in project settings.
+                          the repo's own files cannot loosen it. Under the D-022 light
+                          profile it no longer sets strictAllowlist: hosts outside the list
+                          prompt instead of being refused.
 
 Run `python3 tools/dev_safety/render_settings.py` after changing this file or
 student_data_roots.txt; `--check` exits 1 when the committed files are stale.
@@ -33,17 +34,28 @@ CREDENTIAL_PATHS = [
 ]
 CLAUDE_PATHS = ["~/.claude.json", "~/.claude/settings.json", "~/.claude/settings.local.json",
                 "~/.claude/projects"]
-PRIVATE_PATHS = ["~/.teacher-ai-workstation", "~/Downloads", "~/Library/Application Support/ChiefOfStaff"]
+# Light profile (D-022): ~/.teacher-ai-workstation and ~/Downloads are no longer denied.
+PRIVATE_PATHS = ["~/Library/Application Support/ChiefOfStaff"]
 ROOTS_FILE = os.path.join(HERE, "student_data_roots.txt")
 FALLBACK_ROOTS = ["~/Documents", "~/Desktop"]  # denied when ROOTS_FILE is missing or invalid
 
-# Sandboxed commands may reach only these hosts. github.com and api.github.com are left out on
-# purpose: a domain filter cannot tell a fetch from a push, so allowing them would allow push.
+# Hosts sandboxed commands reach without a prompt (an entry with no port allows every port).
+# Light profile (D-022):
+# - localhost / 127.0.0.1 so Ollama and local test servers work (with allowLocalBinding);
+# - github.com for fetch. A domain filter cannot tell fetch from push, so push is held by the
+#   hook (git push denied in every form) and the `Bash(git push *)` permission rule, and the
+#   sandbox cannot read ~/.ssh or ~/.config/gh, so a push has no credentials;
+# - package registries and common documentation hosts. The lock no longer sets
+#   strictAllowlist, so any other host prompts instead of being refused (general web access
+#   with a check). A bare "*" is not a documented allowedDomains entry, so it is not used.
 ALLOWED_DOMAINS = [
-    "registry.npmjs.org",
+    "localhost", "127.0.0.1",
+    "github.com", "api.github.com", "codeload.github.com",
+    "*.githubusercontent.com",
+    "registry.npmjs.org", "registry.yarnpkg.com",
     "pypi.org", "files.pythonhosted.org",
-    "codeload.github.com", "objects.githubusercontent.com", "raw.githubusercontent.com",
-    "localhost:11434",
+    "nodejs.org", "docs.python.org", "developer.mozilla.org", "developer.apple.com",
+    "code.claude.com", "docs.anthropic.com",
 ]
 # Removed from the environment of sandboxed commands.
 SCRUBBED_ENV = ["GITHUB_TOKEN", "GH_TOKEN", "NPM_TOKEN", "ANTHROPIC_API_KEY", "OPENAI_API_KEY"]
@@ -112,12 +124,10 @@ def sandbox_block(lock: bool) -> dict:
         "failIfUnavailable": True,
         "allowUnsandboxedCommands": False,
         "filesystem": {"denyRead": denied_paths(), "allowWrite": ["/tmp", "/private/tmp"]},
-        "network": {"allowedDomains": list(ALLOWED_DOMAINS)},
+        "network": {"allowedDomains": list(ALLOWED_DOMAINS), "allowLocalBinding": True},
         "credentials": {"envVars": [{"name": n, "mode": "deny"} for n in SCRUBBED_ENV]},
     }
-    if lock:
-        sb["network"]["strictAllowlist"] = True
-    else:
+    if not lock:
         sb["autoAllowBashIfSandboxed"] = False
     return sb
 

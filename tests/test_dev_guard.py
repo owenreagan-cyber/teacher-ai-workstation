@@ -262,10 +262,19 @@ class TestStudentRootsAndCredentials(FakeHome):
                 self.assertIsNotNone(self.read(os.path.join(self.home, "Desktop", "x.md"), f))
                 self.assertIsNone(self.read(os.path.join(self.cwd, "README.md"), f))
 
-    def test_repo_roots_file_is_valid(self):
+    def test_repo_roots_file_is_valid_and_empty(self):
+        # D-022 light profile: the file stays, documented, with no roots (and no fail-closed fallback).
         roots, globs = dev_guard.load_student_roots(dev_guard.ROOTS_FILE, self.home)
-        self.assertIn(os.path.join(self.home, ".teacher-ai-workstation"), roots)
-        self.assertNotIn(os.path.join(self.home, "Documents"), roots)
+        self.assertEqual((roots, globs), ([], []))
+        self.assertEqual(render_settings.student_roots(), [])
+
+    def test_light_profile_allows_school_folders(self):
+        for rel in (".teacher-ai-workstation/state.json", "Downloads/lesson.pdf"):
+            with self.subTest(rel=rel):
+                self.assertIsNone(self.read(os.path.join(self.home, rel), dev_guard.ROOTS_FILE))
+                self.assertIsNone(self.bash(f"cat ~/{rel}"))
+        self.assertIsNotNone(self.read(os.path.join(self.home, "Library/Application Support/ChiefOfStaff/x"),
+                                       dev_guard.ROOTS_FILE))
 
     def test_renderer_uses_roots_file(self):
         f = self.roots_file("~/School/Gradebooks\n/Volumes/Share/Students\n")
@@ -294,13 +303,22 @@ class TestRenderedSettings(unittest.TestCase):
             self.assertTrue(sb["failIfUnavailable"])
             self.assertFalse(sb["allowUnsandboxedCommands"])
             self.assertNotIn("excludedCommands", sb)
-            for need in ("~/.ssh", "~/.claude.json", "~/.claude/projects", "~/Downloads",
-                         "~/.teacher-ai-workstation", "~/Library/Application Support/ChiefOfStaff"):
+            for need in ("~/.ssh", "~/.aws", "~/.config/gh", "~/.claude.json", "~/.claude/projects",
+                         "~/Library/Application Support/ChiefOfStaff"):
                 self.assertIn(need, sb["filesystem"]["denyRead"])
+            for gone in ("~/Downloads", "~/.teacher-ai-workstation", "~/Documents", "~/Desktop"):
+                self.assertNotIn(gone, sb["filesystem"]["denyRead"])
             self.assertEqual(sb["filesystem"]["allowWrite"], ["/tmp", "/private/tmp"])
-            for host in sb["network"]["allowedDomains"]:
-                self.assertNotIn(host.split(":")[0], ("github.com", "api.github.com"))
-        self.assertTrue(render_settings.lock()["sandbox"]["network"]["strictAllowlist"])
+            hosts = sb["network"]["allowedDomains"]
+            for host in ("localhost", "127.0.0.1", "github.com", "registry.npmjs.org", "pypi.org"):
+                self.assertIn(host, hosts)
+            self.assertNotIn("*", hosts)  # not a documented allowedDomains entry
+            self.assertTrue(sb["network"]["allowLocalBinding"])
+        # General web access: unlisted hosts prompt instead of being refused.
+        self.assertNotIn("strictAllowlist", render_settings.lock()["sandbox"]["network"])
+
+    def test_push_still_denied_with_github_allowed(self):
+        self.assertIn("Bash(git push *)", render_settings.proposed()["permissions"]["deny"])
 
     def test_permission_rules_cover_claude_state(self):
         deny = render_settings.proposed()["permissions"]["deny"]

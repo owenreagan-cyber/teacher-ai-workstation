@@ -66,6 +66,11 @@ _SHURLEY_CH_LESSON_RE = re.compile(r"^Ch\.?\s*(\d+)\s*L\.?\s*(\d+)$", re.IGNOREC
 _SHURLEY_CHECKUP_RE = re.compile(r"^(?:Ch\.?|CH|Chapter)\s*(\d+)\s*Checkup$", re.IGNORECASE)
 _SHURLEY_TEST_RE = re.compile(r"^(?:Ch\.?|CH|Chapter)\s*(\d+)\s*Test$", re.IGNORECASE)
 _SHURLEY_REVIEW_RE = re.compile(r"^(?:Ch\.?|CH|Chapter)\s*(\d+)\s*Review$", re.IGNORECASE)
+# "Ch 7 Compound" -> "Chapter 7 Compound" (chapter + named lesson/activity,
+# preserved verbatim, resolved; never an assignment). Checked AFTER lesson/test.
+_SHURLEY_CH_NAMED_RE = re.compile(r"^(?:Ch\.?|CH|Chapter)\s*(\d+)\s+(.+)$", re.IGNORECASE)
+# "CP27 bridge" -> Classroom Practice 27 + a trailing named activity ("bridge").
+_SHURLEY_CP_NAMED_RE = re.compile(r"^CP\s*(\d+)\s+(.+)$", re.IGNORECASE)
 
 
 def _shurley_assignment(kind: str, number: Any, day_date: str, config: dict[str, Any]) -> dict[str, Any]:
@@ -102,7 +107,7 @@ def translate_shurley_cell(raw: str) -> dict[str, Any]:
         return {"source": "", "lines": [], "items": [], "cp_numbers": [], "test_numbers": [],
                 "assignments": [], "resolved": True, "unresolved": []}
 
-    tokens = [t.strip() for t in re.split(r"[,/]", source) if t.strip()]
+    tokens = [t.strip() for t in re.split(r"[,/+]", source) if t.strip()]
     lines: list[str] = []
     items: list[dict[str, Any]] = []
     cp_numbers: list[int] = []
@@ -142,6 +147,27 @@ def translate_shurley_cell(raw: str) -> dict[str, Any]:
             n = int(m.group(1))
             lines.append(f"Chapter {n} Review")
             items.append({"kind": "review", "chapter": n, "translation": f"Chapter {n} Review"})
+            continue
+        # "Ch 7 Compound" -> "Chapter 7 Compound" (named lesson, no assignment).
+        m = _SHURLEY_CH_NAMED_RE.match(token)
+        if m:
+            chapter = int(m.group(1))
+            named = m.group(2).strip()
+            lines.append(f"Chapter {chapter} {named}")
+            items.append({"kind": "named_lesson", "chapter": chapter,
+                          "translation": f"Chapter {chapter} {named}"})
+            continue
+        # "CP27 bridge" -> Classroom Practice 27 + trailing named activity.
+        m = _SHURLEY_CP_NAMED_RE.match(token)
+        if m:
+            n = int(m.group(1))
+            named = m.group(2).strip()
+            cp_numbers.append(n)
+            lines.append(f"Classroom Practice {n}")
+            items.append({"kind": "classroom_practice", "number": n,
+                          "translation": f"Classroom Practice {n}"})
+            lines.append(named)
+            items.append({"kind": "activity", "translation": named, "raw": named})
             continue
         lowered = token.lower()
         if lowered == "review":
@@ -196,6 +222,10 @@ _SCIENCE_SINGLE_RE = re.compile(
 _SCIENCE_FM_RE = re.compile(
     r"^F&M\s*:\s*CH\s*(\d+)\s*(Review|Check|Test|Quiz)?\s*$", re.IGNORECASE
 )
+# Self-qualified cells already carry their unit + chapter, e.g.
+# "U1 Ch4 Electricity Transfer" or "U1 Ch5 Collisions / Crash Lab". Preserve
+# verbatim (never prefix a stale unit name) and never infer an assignment.
+_SCIENCE_U_PREFIX_RE = re.compile(r"^U\s*\d+\b", re.IGNORECASE)
 _HISTORY_CHAPTER_RE = re.compile(
     r"^(?:Ch\.?|CH)\s*(\d+)\s*(Worksheet|Review|Test|Quiz)?\s*$", re.IGNORECASE
 )
@@ -248,6 +278,12 @@ def translate_science_cell(raw: str, unit_name: str | None) -> dict[str, Any]:
     source = (raw or "").strip()
     if not source:
         return {"source": "", "lines": [], "resolved": True, "unresolved": [], "unitName": unit_name, "kind": None, "assessment": False, "assignmentIntent": "NONE"}
+    if _SCIENCE_U_PREFIX_RE.match(source):
+        # Self-qualified "U1 Ch4 ..." cell: preserve verbatim (the cell already
+        # carries its unit + chapter). Never prefix a stale unit name, never
+        # auto-create an assignment (Check/activity are not tests/quizzes).
+        return _unit_result(source, [source], None, True, [],
+                            kind="chapter", assessment=False)
     if not unit_name:
         return _unit_result(source, [source], None, False, [source], kind="unknown")
 
@@ -488,6 +524,14 @@ def command_self_test() -> int:
     unk = translate_shurley_cell("HG3")
     assert unk["resolved"] is False and unk["unresolved"] == ["HG3"], unk
 
+    # Q2W3 "Ch N L M + CP N" and "Ch N <named> + CP N <named>" forms.
+    r = translate_shurley_cell("Ch 7 L1 + CP25")
+    assert r["lines"] == ["Chapter 7, Lesson 1", "Classroom Practice 25"], r
+    assert r["cp_numbers"] == [25] and r["resolved"] is True
+    r = translate_shurley_cell("Ch 7 Compound + CP27 bridge")
+    assert r["lines"] == ["Chapter 7 Compound", "Classroom Practice 27", "bridge"], r
+    assert r["cp_numbers"] == [27] and r["resolved"] is True and r["unresolved"] == []
+
     # Chapter Test assignment.
     ct = chapter_test_assignment(5, "2026-10-20", config)
     assert ct["title"] == "ELA4: Chapter 5 Test"
@@ -516,6 +560,16 @@ def command_self_test() -> int:
 
     # Science Check is not a quiz (assignmentIntent NONE).
     assert translate_science_cell("Ch. 2 Check", unit)["assignmentIntent"] == "NONE"
+
+    # Q2W3 self-qualified "U1 Ch4 ..." cells preserve verbatim (no stale unit prefix).
+    u1 = translate_science_cell("U1 Ch4 Electricity Transfer", unit)
+    assert u1["lines"] == ["U1 Ch4 Electricity Transfer"], u1
+    assert u1["resolved"] is True and u1["assignmentIntent"] == "NONE"
+    u2 = translate_science_cell("U1 Ch5 Collisions / Crash Lab", unit)
+    assert u2["lines"] == ["U1 Ch5 Collisions / Crash Lab"], u2
+    assert u2["resolved"] is True and u2["assignmentIntent"] == "NONE"
+    assert translate_science_cell("U1 Ch4 Check (MC)", unit)["assignmentIntent"] == "NONE"
+    assert translate_science_cell("U1 Ch5 Check (MC)", unit)["assignmentIntent"] == "NONE"
 
     # Science fails closed without a unit name.
     r = translate_science_cell("Ch. 1", None)

@@ -487,7 +487,7 @@ def _reminders_for(week_norm: dict[str, Any], subject: str) -> list[str]:
     try:
         facts = pa.resolve_assessment_facts(week_norm)
     except Exception:  # noqa: BLE001 - reminders are best-effort
-        return []
+        facts = []
     subject_map = {
         "math": "Math",
         "reading_spelling": "Reading/Spelling",
@@ -503,7 +503,73 @@ def _reminders_for(week_norm: dict[str, Any], subject: str) -> list[str]:
         for a in (ev.get("assessments") or []):
             if a:
                 reminders.append(f"{a} — {ev.get('assessmentDate', '')}")
+    # Active course with instructional content but no explicit assessment still
+    # needs a meaningful, source-derived reminder (never an empty Reminders box).
+    if not reminders and subject in ("science", "language_arts"):
+        fallback = _fallback_subject_reminder(week_norm, subject)
+        if fallback:
+            reminders.append(fallback)
     return reminders
+
+
+def _fallback_subject_reminder(week_norm: dict[str, Any], subject: str) -> str:
+    """Deterministic, source-derived reminder for an active course with content
+    but no explicit assessment (e.g. Science "Check (MC)" weeks).
+
+    Derived strictly from the normalized raw cells; never invents homework or
+    grading language, never labels a Check as Test/Quiz/Assessment.
+    """
+    if subject != "science":
+        return ""
+    import re as _re
+    cells: list[str] = []
+    for wd in C.WEEKDAYS:
+        day = (week_norm.get("days") or {}).get(wd, {})
+        raw = (day.get("subjects", {}).get("science", {}).get("raw") or "").strip()
+        if raw:
+            cells.append(raw)
+    if not cells:
+        return ""
+
+    unit = ""
+    chapters: list[int] = []
+    activities: list[str] = []
+    for raw in cells:
+        for seg in _re.split(r"/", raw):
+            seg = seg.strip()
+            m = _re.match(r"^U\s*(\d+)", seg, _re.IGNORECASE)
+            if m and not unit:
+                unit = f"Unit {int(m.group(1))}"
+            for cm in _re.finditer(r"Ch\.?\s*(\d+)", seg, _re.IGNORECASE):
+                n = int(cm.group(1))
+                if n not in chapters:
+                    chapters.append(n)
+            # Named activities (skip "Check" segments and pure chapter refs).
+            rest = _re.sub(r"^U\s*\d+\s*Ch\.?\s*\d+\s*", "", seg, flags=_re.IGNORECASE)
+            rest = _re.sub(r"^Ch\.?\s*\d+\s*", "", rest, flags=_re.IGNORECASE)
+            rest = rest.strip()
+            if rest and "check" not in rest.lower():
+                activities.append(rest)
+
+    chapters.sort()
+    unit_part = f"we will continue {unit}" if unit else "we will continue our current unit"
+    chapter_part = ""
+    if len(chapters) == 1:
+        chapter_part = f" as we work through Chapter {chapters[0]}"
+    elif len(chapters) >= 2:
+        chapter_part = f" as we work through Chapters {chapters[0]} and {chapters[-1]}"
+
+    activity_part = ""
+    # Keep the distinct named activities (deterministic, source-derived; bounded).
+    distinct = []
+    for a in activities:
+        if a not in distinct:
+            distinct.append(a)
+    if distinct:
+        activity_part = " with " + ", ".join(distinct[:4])
+
+    return f"This week {unit_part}{activity_part}{chapter_part}."
+
 
 
 def _draft_weekly_announcements(

@@ -3,7 +3,10 @@
 A session is a JSONL file at <state dir>/sessions/<id>.jsonl (directory 0700,
 file 0600), one completed turn per line:
 
-  {"ts", "question", "answer", "tools_used", "fast_path", "model", "notices", "total_ms"}
+  {"ts", "question", "answer", "tools_used", "fast_path", "model", "notices", "total_ms",
+   "intent" (optional: the router label, cos/intent.py),
+   "search_query" (optional: the exact query sent to web search, for follow-ups),
+   "blocks", "resources" (optional: the rich answer, cos/blocks.py, so links work after a relaunch)}
 
 Session ids must fully match [a-z0-9-]{1,40}, so an id can never name a path
 outside the sessions directory. Reading never creates anything; only a
@@ -28,6 +31,8 @@ import stat
 from pathlib import Path
 
 from cos.config import FILE_MODE, ensure_private_subdir
+from cos.blocks import BlockError, validate_blocks, validate_resources
+from cos.intent import LABELS
 
 SESSION_ID_RE = re.compile(r"[a-z0-9-]{1,40}")
 SUBDIR = "sessions"
@@ -53,8 +58,25 @@ def _is_str_list(value) -> bool:
     return isinstance(value, list) and all(isinstance(v, str) for v in value)
 
 
+OPTIONAL_CHECKS = {
+    "intent": lambda v: v is None or v in LABELS,  # the router's label, for follow-ups
+    "search_query": lambda v: v is None or (isinstance(v, str) and 0 < len(v) <= 200),
+    "blocks": lambda v: _valid(validate_blocks, v),
+    "resources": lambda v: _valid(validate_resources, v),
+}
+
+
+def _valid(check, value) -> bool:
+    try:
+        check(value)
+        return True
+    except BlockError:
+        return False
+
+
 def check_turn(turn) -> dict:
-    """Return the turn with exactly TURN_FIELDS, or raise TurnError if any field has the wrong type."""
+    """Return the turn with exactly TURN_FIELDS plus any valid OPTIONAL_CHECKS fields, or raise
+    TurnError if any field has the wrong type."""
     if not isinstance(turn, dict):
         raise TurnError("turn is not an object")
     checks = {
@@ -73,7 +95,13 @@ def check_turn(turn) -> dict:
             raise TurnError(f"turn is missing {name}")
         if not ok(turn[name]):
             raise TurnError(f"turn field {name} has the wrong type")
-    return {k: turn[k] for k in TURN_FIELDS}
+    out = {k: turn[k] for k in TURN_FIELDS}
+    for name, ok in OPTIONAL_CHECKS.items():  # absent in turns written before P1a.5
+        if name in turn:
+            if not ok(turn[name]):
+                raise TurnError(f"turn field {name} has the wrong type")
+            out[name] = turn[name]
+    return out
 
 
 def check_session_id(session_id) -> str:

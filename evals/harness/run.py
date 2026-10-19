@@ -63,9 +63,10 @@ GIT_STATUS_EXCLUDE = (":(exclude).claude",)
 
 
 def git_state() -> dict:
-    """{"git_sha", "certification", "dirty_paths"}. certification is True only when the whole
-    tree is clean (no staged, unstaged, or untracked non-ignored files, apart from
-    GIT_STATUS_EXCLUDE) and git answered; a dirty tree marks git_sha with -dirty."""
+    """{"git_sha", "clean_tree", "dirty_paths"}. clean_tree is True only when the whole tree is
+    clean (no staged, unstaged, or untracked non-ignored files, apart from GIT_STATUS_EXCLUDE)
+    and git answered; a dirty tree marks git_sha with -dirty. A clean tree is necessary for a
+    certification run, not sufficient: every CERT must also pass (report.summarize, D-009)."""
     env = {**os.environ, "GIT_OPTIONAL_LOCKS": "0"}
     try:
         head = subprocess.run(["git", "-C", str(REPO_ROOT), "rev-parse", "HEAD"], capture_output=True,
@@ -74,12 +75,12 @@ def git_state() -> dict:
                                  "--", ".", *GIT_STATUS_EXCLUDE],
                                 capture_output=True, text=True, timeout=10, check=False, env=env)
     except (OSError, subprocess.SubprocessError):
-        return {"git_sha": "unknown", "certification": False, "dirty_paths": None}
+        return {"git_sha": "unknown", "clean_tree": False, "dirty_paths": None}
     sha = head.stdout.strip()
     if head.returncode or status.returncode or not sha:
-        return {"git_sha": sha or "unknown", "certification": False, "dirty_paths": None}
+        return {"git_sha": sha or "unknown", "clean_tree": False, "dirty_paths": None}
     dirty = [line[3:] for line in status.stdout.splitlines() if line.strip()]
-    return {"git_sha": sha + ("-dirty" if dirty else ""), "certification": not dirty,
+    return {"git_sha": sha + ("-dirty" if dirty else ""), "clean_tree": not dirty,
             "dirty_paths": dirty[:50]}
 
 
@@ -334,12 +335,14 @@ def cos_args(step: dict, prompt: str) -> list[str]:
         return [cmd]
     if cmd == "audit_verify":
         return ["audit", "verify"]
+    if cmd in ("auto_search_on", "auto_search_off"):
+        return ["auto-search", cmd.rsplit("_", 1)[1]] + (["--json"] if as_json else [])
     raise SystemExit(f"unknown command {cmd!r}")
 
 
 def parse_output(cmd: str, res: dict) -> dict:
     obs = {"answer": "", "tools_used": [], "fast_path": None, "model": None, "notices": [],
-           "total_ms": None, "error_kind": None, "json": None}
+           "total_ms": None, "error_kind": None, "json": None, "intent": None, "blocks": None}
     stdout = res["stdout"].strip()
     data = None
     if stdout.startswith(("{", "[")):
@@ -351,7 +354,7 @@ def parse_output(cmd: str, res: dict) -> dict:
     if isinstance(data, dict):
         obs["error_kind"] = data.get("error_kind")
         if cmd == "ask" and data.get("ok"):
-            for k in ("answer", "tools_used", "fast_path", "model", "notices", "total_ms"):
+            for k in ("answer", "tools_used", "fast_path", "model", "notices", "total_ms", "intent", "blocks"):
                 obs[k] = data.get(k, obs[k])
         elif cmd == "brief" and data.get("ok"):
             obs["answer"] = "\n".join(data.get("lines") or [])
@@ -380,6 +383,16 @@ def history_snapshot(runner: CosRunner, state: Path, fixtures: Path, sid: str) -
 
 # ----------------------------------------------------------------------------- one case
 
+def fixture_result_urls(fixtures: Path) -> list[str]:
+    """The URLs in the fixture's synthetic search results: the only URLs a searched answer may
+    contain (CERT-011)."""
+    try:
+        data = json.loads((fixtures / "search.json").read_text(encoding="utf-8"))
+        return [str(r.get("url")) for r in data["web"]["results"] if isinstance(r, dict) and r.get("url")]
+    except (OSError, ValueError, KeyError, TypeError):
+        return []
+
+
 def run_case(case: dict, runner: CosRunner, ctx: dict, judge, tmp_root: Path) -> list[dict]:
     fixtures = FIXTURES_DIR / case.get("fixtures", "default")
     state = Path(tempfile.mkdtemp(prefix=f"{case['id'][:30]}-", dir=tmp_root)) / "state"
@@ -389,6 +402,8 @@ def run_case(case: dict, runner: CosRunner, ctx: dict, judge, tmp_root: Path) ->
     case_session = case.get("session")
     kill_switch = False
     records = []
+    owen_prompts: list[str] = []  # every message Owen sent in this case so far (CERT-010)
+    tool_urls = fixture_result_urls(fixtures)
     for idx, step in enumerate(case_steps(case)):
         step.setdefault("session", case_session)
         cmd = step.get("command", "ask")
@@ -397,7 +412,10 @@ def run_case(case: dict, runner: CosRunner, ctx: dict, judge, tmp_root: Path) ->
         sfile = session_file(state, sid) if sid and _valid_sid(sid) else None
         before = count_lines(sfile) if sfile else None
         res = runner.call(cos_args(step, prompt), state, fixtures)
-        obs = {"command": cmd, "prompt": prompt, **res, **parse_output(cmd, res)}
+        if cmd == "ask":
+            owen_prompts.append(prompt)
+        obs = {"command": cmd, "prompt": prompt, **res, **parse_output(cmd, res),
+               "owen_prompts": list(owen_prompts), "tool_urls": tool_urls}
         obs["audit"] = tail.new_records()
         obs["session_lines_before"], obs["session_lines_after"] = before, (count_lines(sfile) if sfile else None)
         obs["kill_switch_set"] = kill_switch
@@ -417,7 +435,9 @@ def run_case(case: dict, runner: CosRunner, ctx: dict, judge, tmp_root: Path) ->
             "command": cmd, "prompt": prompt[:2000], "prompt_chars": len(prompt), "session": sid,
             "fixtures": case.get("fixtures", "default"), "model_mode": runner.mode,
             "answer": obs["answer"], "tools_used": obs["tools_used"], "fast_path": obs["fast_path"],
-            "model": obs["model"], "notices": obs["notices"], "exit_code": obs["exit_code"],
+            "model": obs["model"], "notices": obs["notices"], "intent": obs["intent"],
+            "block_types": [b.get("type") for b in obs["blocks"] or [] if isinstance(b, dict)],
+            "exit_code": obs["exit_code"],
             "error_kind": obs["error_kind"], "total_ms": obs["total_ms"], "wall_ms": obs["wall_ms"],
             "model_calls": sum(1 for r in obs["audit"] if r.get("kind") == "model_call"),
             "tool_calls": [r.get("tool") for r in obs["audit"] if r.get("kind") == "tool_call"],
@@ -461,6 +481,7 @@ def run_fast_path_soak(cases, n, runner, ctx, tmp_root, out_path, log) -> dict:
                 prompt = build_prompt(case.get("prompt"))
                 res = runner.call(cos_args({"command": "ask"}, prompt), state, fixtures)
                 obs = {"command": "ask", "prompt": prompt, **res, **parse_output("ask", res),
+                       "owen_prompts": [prompt], "tool_urls": fixture_result_urls(fixtures),
                        "audit": tail.new_records(), "kill_switch_set": False,
                        "session_lines_before": None, "session_lines_after": None,
                        "chain_status": "ok"}  # whole chain verified once at the end
@@ -703,8 +724,9 @@ def main(argv=None) -> int:
         log(f"{cert['id']} {cert['status']:<4} ({cert['checked']} checked) {cert['title']}")
     for suite, s in summary["suites"].items():
         log(f"  {suite:<14} {s['passed']}/{s['cases']} cases pass")
+    # D-009: true only when every CERT passed and the tree was a clean commit
     print("certification: true" if summary["certification"]
-          else "certification: false (UNCOMMITTED CODE — not a certification run)")
+          else f"certification: false ({'; '.join(summary['certification_reasons'])})")
     print(f"Report: {html_path}")
     print(f"Summary: {summary_path}")
     return 0

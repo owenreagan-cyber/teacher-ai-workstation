@@ -10,10 +10,10 @@ research report. Those remain as history; this file is the entry point.
 **Audit outcome (2026-09-30).** Three plans were audited blind (Claude Code, with a Cursor audit
 as confirmation). This plan ("A") ranked first in both; the competing GPT and early Gemini drafts
 were rejected as written. This revision ("A+") applies the audit's fixes:
-Gmail starts read-only; no name-stripping escalation for student-derived data; a hard monthly
-cloud budget; a smaller, fully local Milestone 1; plus the sealed Canvas approval packet with
-post-write readback, local Mail/Calendar triage, and a decision log where new decisions supersede
-old ones. Caveat: author and both auditors may share a model family.
+Gmail starts read-only; a hard monthly cloud budget; a smaller, fully local Milestone 1; plus the
+sealed Canvas approval packet with post-write readback, local Mail/Calendar triage, and a decision
+log where new decisions supersede old ones. Caveat: author and both auditors may share a model
+family.
 
 ---
 
@@ -91,13 +91,27 @@ Outside products were studied for logic and features to rebuild, not to adopt.
 ### Works today
 - **Chat:** one-shot `cos ask` and multi-turn `cos chat`, on the local model, with tool calling
   (`cos tools` lists them).
-- **Sessions:** conversations are saved and can be resumed (`cos history`).
-- **Daily brief** (`cos brief`) and the **home card** in the desktop window (see "Home card").
+- **Request sorting (P1a.5):** every message gets one label (time, weather, calendar,
+  reminders, brief, Mac status, capabilities, web lookup, local files, mail, social, general):
+  patterns first, the local model only as a fallback (`cos/intent.py`). Code, not the model,
+  answers the brief, capabilities ("what can you do?", including that settings live in
+  `config.json`), social replies, greetings, weather, the reminders list, unload and loaded
+  models, the next action, and the not-built-yet answers for files and mail.
+- **Sessions:** conversations are saved and can be resumed (`cos history`); short follow-ups
+  ("and tomorrow?", "and the Islanders?") continue the previous topic.
+- **Daily brief** ("brief", `cos brief`) and the **home card** in the desktop window (see
+  "Home card").
 - **Desktop window:** Chief.app (Electron + React) with a menu bar icon and the
-  Control+Option+C hotkey, plus the Raycast launcher. Both call the same `cos` core.
-- **Tools:** time and date, weather, today's calendar (EventKit), reminders due, Mac status,
-  and **web search** (Brave; typed "search …" command, daily and monthly caps; see
-  "Web search").
+  Control+Option+C hotkey, plus the Raycast launcher. Both call the same `cos` core. Answers are
+  rich: weather cards, hourly and daily charts, collapsed sources that open by link id, the
+  "Searched:" line, and follow-up buttons (`docs/response-blocks.md`).
+- **Tools:** time and date, weather for named places (Sims, NC home and Clayton, NC work; see
+  "Weather places"), today's calendar (EventKit), reminders due, Mac status, and **web search**
+  (Brave; automatic for questions that need the web, plus the typed "search …" command; daily
+  and monthly caps; an "Auto web search" switch; see "Web search").
+- **Answer guards:** code removes delete-as-a-fix advice, URLs not from that turn's tool
+  results, offers of actions Chief can't do, and model claims about the kill switch, and names
+  only loaded models in `ollama stop` (`cos/guards.py`).
 - **Start at login** for the packaged app, with the model warmed in the background.
 - **Safety plumbing:** kill switch (`cos stop` / `cos resume`), hash-chained audit log
   (`cos audit verify`), and the eval harness (`evals/harness/run.py`).
@@ -115,8 +129,9 @@ Outside products were studied for logic and features to rebuild, not to adopt.
   needs Owen's go-ahead and install. Limits: `tools/dev_safety/README.md`.
 
 ### Missing
-Automatic web search by intent (D-011 as revised; today only the typed command searches),
-local file search (D-021), email (D-013), notifications, voice, conversational memory writing,
+Local file search (D-021; Chief says it is coming), email (D-013; Chief says it isn't
+connected), a settings screen (settings are `config.json`), a forecast beyond 7 days or for
+places other than the saved ones (no geocoding), notifications, voice, conversational memory writing,
 project awareness from real repos, proactive monitoring, routing between local and cloud
 workers (M2 router, D-020, D-026), delegation to cloud agents, the multi-agent orchestrator and
 MCP adapters (D-023, D-024, D-025), and the iPhone app (D-007).
@@ -134,29 +149,44 @@ The compact window (Chief.app), Raycast, and `bin/cos ask` all reach the same `c
 
 ### Web search
 
-Type a message that starts with **`search`**, **`look up`**, **`google`**, or **`web search`**:
+**Automatic (D-022).** Ask normally. When a question needs the web ("when do the ny rangers
+play?", "who won the game last night"), Chief searches by itself; you don't type "search".
+
+- The query comes only from your own words: your message, cleaned by code (a leading "can you",
+  "please", "tell me" and the trailing punctuation are dropped; at most 200 characters). A short
+  follow-up such as "and the Islanders?" joins your previous question, but only if that one was a
+  web question too. The local model may tidy a follow-up into one query, and code uses it only if
+  every word in it came from you. Query text never comes from web pages, mail, files, the
+  calendar, or tool results (CERT-010).
+- Every searched answer shows the exact query: **`Searched: when do the ny rangers play`**.
+- Questions about your files, mail, or calendar never go to the web, even typed as
+  "search my calendar". Questions about your own day ("what did I eat for lunch") never do either.
+- An answer keeps only links that came from that turn's search results; any other URL is
+  removed (CERT-011).
+- **Turn it off:** the menu bar icon has an **Auto web search** checkbox, or run
+  `bin/cos auto-search off` (`on`, `status`). It is stored as `"auto_search"` in `config.json`.
+  When it's off, Chief answers "Auto web search is off, so I didn't search the web" and shows the
+  `search …` line you can type instead.
+- **Typed search still works:** a message that starts with **`search`**, **`look up`**,
+  **`google`**, or **`web search`** sends the words after it exactly as typed.
 
 ```sh
+bin/cos ask "when do the ny rangers play?"
 bin/cos ask "search weather radar wilson nc"
-bin/cos ask "look up photosynthesis for kids"
 ```
 
-- Only the whole message counts: "search my calendar" is a web search for "my calendar";
-  "what's the search engine" and "can you search for …" are ordinary questions, and the model
-  cannot search on its own (D-011, CERT-009).
-- The words after the command go to Brave Search exactly as typed (trimmed, at most 200
-  characters). **They leave the Mac: never type student names or other student details**
-  (D-001).
-- The answer is 2–4 sentences from the local model, followed by numbered sources. If the local
-  model is unavailable, you get the raw results list instead. Results are untrusted data (D-002).
+- The answer is 2–4 sentences from the local model, then `Searched: …`, then numbered sources.
+  If the local model is unavailable, you get the raw results list instead. Results are untrusted
+  data (D-002).
 - The kill switch (`cos stop`) blocks search like every other tool.
-- The query text and its source (`typed`) are recorded in the audit log; the API key never is.
-- **Budget:** at most 30 searches a day and 600 a month by default (local time). Every real call
-  to Brave counts, even one that fails. At either limit Chief answers, for example, "Search limit
-  reached for today: 30/30. Resets tomorrow." and makes no call. Change the limits in
-  `config.json` in the state directory (`"search_daily_limit": 30, "search_monthly_limit": 600`;
-  0 turns search off). Counts live in `search_usage.json` there; if that file is damaged, search
-  pauses until you delete it.
+- The query text and its source (`typed` or `auto`) are recorded in the audit log; the API key
+  never is.
+- **Budget:** at most 30 searches a day and 600 a month by default (local time), automatic and
+  typed together. Every real call to Brave counts, even one that fails. At either limit Chief
+  answers, for example, "Search limit reached for today: 30/30. Resets tomorrow." and makes no
+  call. Change the limits in `config.json` in the state directory (`"search_daily_limit": 30,
+  "search_monthly_limit": 600`; 0 turns search off). Counts live in `search_usage.json` there;
+  if that file is damaged, search pauses until you delete it.
 - In the desktop app, answers built from results show "Search by Brave".
 
 #### Web search setup (once)
@@ -180,6 +210,46 @@ bin/cos ask "look up photosynthesis for kids"
 
 To replace the key, run `security delete-generic-password -s chief-search-brave` and repeat
 step 2. Until a key is stored, a search answers "web search not set up" and points here.
+
+### Weather places
+
+Weather answers are written by code from the forecast, with no model, and always start with the
+place: `Sims, NC — 61°F, overcast. High 61° · Low 47° · Rain 10%.` Chief knows the places in
+`config.json` in the state folder (`~/Library/Application Support/ChiefOfStaff/`) under
+`"places"`. It never uses the Mac's location and never invents a city name. There is no settings
+screen; this file is the setting.
+
+Owen's config today has the Sims coordinates and no name (`"latitude": 35.76, "longitude":
+-78.06`), so Chief calls that place "Home". To name it and add work, add these exact lines to
+`config.json`, inside the outer braces (put a comma at the end of the line before them):
+
+```json
+  "places": {
+    "home": {"name": "Sims, NC", "latitude": 35.76, "longitude": -78.06},
+    "work": {"name": "Clayton, NC", "latitude": 35.65, "longitude": -78.46}
+  }
+```
+
+If the file holds only the two coordinate lines today, the whole file becomes:
+
+```json
+{
+  "latitude": 35.76,
+  "longitude": -78.06,
+  "places": {
+    "home": {"name": "Sims, NC", "latitude": 35.76, "longitude": -78.06},
+    "work": {"name": "Clayton, NC", "latitude": 35.65, "longitude": -78.46}
+  }
+}
+```
+
+Once `places.home` exists, the old `latitude` and `longitude` lines are ignored (you can delete
+them). A new install with no `places` uses these same two places. Unknown keys are refused, so a
+typo stops Chief with a plain error rather than being ignored.
+
+Ask for: "weather", "weather at work", "tomorrow", "this weekend", "5 day forecast", "hourly",
+"tonight", "what city is that", "use my location". A place Chief doesn't know gets "I only know
+Sims (home) and Clayton (work) so far."
 
 ### Home card
 
@@ -303,11 +373,6 @@ A session's class is the most restrictive class of anything it has touched.
 - id: lovable      kind: agent  location: cloud  classes: [P2]        writes: true  interface: handoff+github
 ```
 
-### Sanitize-then-escalate: not allowed for student-derived data
-Redacted text can still identify people, so nothing derived from student data is ever sent to a
-cloud model, even with names removed. This pattern may be considered later for P1 personal data
-only, by explicit owner decision.
-
 ---
 
 ## 7. Control plan — policy, approvals, audit
@@ -417,7 +482,7 @@ keep one compact chat surface (Raycast first) rather than maintaining two.
 | **2 Personal assistant** | Local Mail triage (Apple Mail read-only) with quarantine reader; Reminders writes with approval; named routines; correctable daily brief; drafts later, enforced in code | Brief read every school day for two weeks; zero unapproved writes. |
 | **3 Knowledge** | Approved-folder index (content-hash cache, incremental), selected Drive folders, session search, owner decisions log | "Find the decision about X" returns the source passage. |
 | **4 Specialists + delegation** | Cloud agent adapters (Claude Code → Codex → Cursor CLI → Gemini CLI → Lovable); Canvas specialist C0–C3; Lesson specialist | One delegated coding mission returns a tested diff; one Canvas week built and deployed through the write gate with approval. |
-| **5 Advanced Siri** | Monitors that skip the model when nothing changed; impact analysis; learned routing rules (approved); sanitize-then-escalate; voice; App Intents; Finder action | Proactive notices are useful and ≤3/day. |
+| **5 Advanced Siri** | Monitors that skip the model when nothing changed; impact analysis; learned routing rules (approved); voice; App Intents; Finder action | Proactive notices are useful and ≤3/day. |
 | **6 Autonomy** | Resume parked M-track (driver hardening, controlled execution, permission conformance, repair loop); graduated autonomy; isolated session for any computer-use agent | Each auto-promoted action has a clean approved track record. |
 
 ### Canvas specialist track (Stage 4, may start early on its own branch)

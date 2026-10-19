@@ -33,13 +33,16 @@ class CliCase(StateDirTest):
 
 
 class ScriptedChat:
-    """Patches ModelClient.chat; records the messages of each call."""
+    """Patches ModelClient.chat; records the messages of each call. The router's classifier
+    requests (a JSON format) are answered "general" and not recorded or scripted."""
 
     def __init__(self, *replies):
         self.replies = list(replies)
         self.calls = []
 
     def __call__(self, messages, tools=None, fmt=None):  # not bound: patched as an instance
+        if fmt is not None:
+            return {"role": "assistant", "content": '{"label": "general"}'}, "fake-model"
         self.calls.append([dict(m) for m in messages])
         item = self.replies.pop(0)
         if isinstance(item, Exception):
@@ -222,7 +225,7 @@ class AskSessionTests(CliCase):
 
     def test_without_session_nothing_is_recorded_and_json_has_null_session(self):
         with mock.patch.object(ModelClient, "chat", ScriptedChat(answer("hi"))):
-            code, out, _ = self.run_cli("ask", "--json", "hello there")
+            code, out, _ = self.run_cli("ask", "--json", "tell me something")
         self.assertEqual(code, 0)
         self.assertIsNone(json.loads(out)["session_id"])
         self.assertFalse((self.state / "sessions").exists())
@@ -262,7 +265,7 @@ class ErrorKindTests(CliCase):
     def test_model_unavailable(self):
         down = ModelError("request to 127.0.0.1 failed: connection refused")
         with mock.patch.object(ModelClient, "chat", ScriptedChat(down)):
-            code, out, _ = self.run_cli("ask", "--session", "default", "--json", "hello there")
+            code, out, _ = self.run_cli("ask", "--session", "default", "--json", "tell me something")
         self.assertEqual(code, cli.EXIT_MODEL)
         payload = json.loads(out)
         self.assertEqual(payload["ok"], False)
@@ -277,7 +280,7 @@ class ErrorKindTests(CliCase):
 
     def test_internal_has_no_traceback(self):
         with mock.patch.object(ModelClient, "chat", side_effect=RuntimeError("boom secret")):
-            code, out, err = self.run_cli("ask", "--json", "hello there")
+            code, out, err = self.run_cli("ask", "--json", "tell me something")
         self.assertEqual(code, cli.EXIT_INTERNAL)
         payload = json.loads(out)
         self.assertEqual(payload["error_kind"], "internal")
@@ -483,7 +486,7 @@ class HistoryTests(CliCase):
 
 class StatusTests(CliCase):
     FIELDS = {"ok", "kill_switch", "kill_switch_reason", "model", "fallback_model",
-              "ollama_reachable", "loaded_models", "audit", "version"}
+              "ollama_reachable", "loaded_models", "audit", "version", "auto_search"}
 
     def test_fields_with_ollama_up(self):
         http = FakeHttp([{"models": [{"name": "qwen3.6:35b"}]}])

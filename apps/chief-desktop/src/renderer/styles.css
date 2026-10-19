@@ -29,3 +29,17 @@ body {
 .selectable {
   user-select: text;
 }
+
+/* A subtle rain animation on weather icons; off when the system asks for reduced motion. */
+@keyframes chief-rain {
+  from { transform: translateY(-2px); opacity: 0.4; }
+  to { transform: translateY(2px); opacity: 1; }
+}
+.chief-rain {
+  animation: chief-rain 0.9s ease-in-out infinite alternate;
+}
+@media (prefers-reduced-motion: reduce) {
+  .chief-rain {
+    animation: none;
+  }
+}

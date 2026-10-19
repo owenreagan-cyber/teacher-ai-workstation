@@ -3,7 +3,15 @@
 A question matches only if the WHOLE question (lowercased, apostrophes dropped,
 other punctuation treated as spaces) fully matches one of the anchored patterns
 below. A question that merely contains a keyword ("what time is my meeting")
-does not match and goes to the agent loop unchanged.
+does not match and goes to the agent loop unchanged. Two topics match anywhere
+in the question instead, because their answer must come from code: "unload"
+(Chief names only models that are loaded right now, from mac.status) and
+"which models are loaded".
+
+Social replies ("thanks", "thank you", "ok", "got it", "cool") get a fixed short
+reply with no tool and no model, and never use Owen's name. A bare greeting
+("hi", "good morning chief") gets the home card's time-of-day greeting, which is
+the one place Owen's name is used.
 
 On a match the tool runs through the same policy gate and executor as agent
 tool calls. The gate decision is audited with subject=fast_path, the kill
@@ -18,7 +26,9 @@ typed (trimmed, at most 200 characters; longer is refused, never cut), with
 query_source "typed". The model never writes or edits it. The local model then
 writes a 2-4 sentence answer from the results (Agent.answer_from_search), and
 cos appends numbered sources. If the model is unavailable the answer is the raw
-results list instead, still marked fast path (no model).
+results list instead, still marked fast path (no model). A typed search whose
+words are about Owen's files, mail, or calendar ("search my calendar") is not a
+web search: it goes to the router, and those never reach web search.
 """
 from __future__ import annotations
 
@@ -30,7 +40,10 @@ from typing import Callable
 
 from cos.agent import AgentResult, Stopped
 from cos.audit import text_digest
+from cos.brief import greeting
 from cos.executor import run_tool
+from cos.guards import strip_urls
+from cos.intent import GREETING as GREETING_RE, SOCIAL as SOCIAL_RE, classify_rules, normalize
 from cos.model import ModelError
 from cos.policy import PolicyGate
 from cos.registry import Registry
@@ -39,12 +52,6 @@ from cos.tools.web_search import MAX_QUERY_CHARS, QUERY_SOURCE
 
 WEEKDAYS = ("monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday")
 _NOW = r"(?: (?:now|right now|today))?"
-
-
-def normalize(question: str) -> str:
-    q = question.lower().replace("’", "'").replace("‘", "'").replace("'", "")
-    q = re.sub(r"[^a-z0-9-]+", " ", q)
-    return " ".join(q.split())
 
 
 def _plural(n: int, word: str) -> str:
@@ -78,16 +85,62 @@ def _fmt_days_until(r: dict) -> str:
             f"({_plural(du['school_days'], 'weekday')}, holidays not counted).")
 
 
-def _fmt_weather(r: dict) -> str:
-    if "error" in r:
-        return f"Weather is unavailable: {r['error']}."
-    return (f"Now {r.get('now_f')}°F and {r.get('conditions')} (feels like {r.get('feels_like_f')}°F). "
-            f"Today: high {r.get('high_f')}°F, low {r.get('low_f')}°F, "
-            f"{r.get('rain_chance_pct')}% chance of rain.")
-
-
 def _fmt_mac(r: dict) -> str:
     return f"Mac: {one_line(r)}."
+
+
+def _loaded(r: dict) -> list[str] | None:
+    loaded = r.get("ollama_loaded")
+    return [str(m) for m in loaded] if isinstance(loaded, list) else None
+
+
+def _fmt_models(r: dict) -> str:
+    loaded = _loaded(r)
+    if loaded is None:
+        return "I couldn't check which models are loaded. Run `ollama ps` to see them."
+    if not loaded:
+        return "No model is loaded right now."
+    return "Loaded right now: " + ", ".join(loaded) + "."
+
+
+def _fmt_unload(r: dict) -> str:
+    """Only models that are loaded right now are named (ollama ps, via mac.status)."""
+    lead = "I can't unload models myself. "
+    loaded = _loaded(r)
+    if loaded is None:
+        return (lead + "I couldn't check what's loaded: run `ollama ps` to see, then `ollama stop <model>` "
+                "to unload one (it stays installed).")
+    if not loaded:
+        return (lead + "No model is loaded right now, so there's nothing to unload. When one is, "
+                "`ollama stop <model>` unloads it (it stays installed).")
+    cmds = "\n".join(f"`ollama stop {m}`" for m in loaded)
+    return (lead + "To unload a model (it stays installed), run this in Terminal:\n" + cmds
+            + "\n\nLoaded right now: " + ", ".join(loaded) + ".")
+
+
+NEXT_ACTION_PREFIXES = ("Recommended daily focus:", "Next action:")
+
+
+def _fmt_next_action(r: dict) -> str:
+    """The next-action report's own lines, quoted as data (never rewritten by a model)."""
+    if "error" in r:
+        return f"The next-action report is unavailable: {r['error']}."
+    lines = [line.strip() for line in str(r.get("output", "")).splitlines()]
+    picked = [line for prefix in NEXT_ACTION_PREFIXES for line in lines if line.startswith(prefix)][:2]
+    if not picked:
+        return "The next-action report has no recommended focus right now."
+    return "From the next-action report:\n" + "\n".join(picked)
+
+
+SOCIAL_REPLIES = (("thanks", "You're welcome."), ("thank", "You're welcome."), ("thx", "You're welcome."))
+
+
+def _fmt_social(question: str) -> str:
+    q = normalize(question)
+    for word, reply in SOCIAL_REPLIES:
+        if word in q:
+            return reply
+    return "Sounds good."
 
 
 # ----------------------------------------------------------------------------- intents
@@ -99,6 +152,7 @@ class Intent:
     pattern: re.Pattern
     args: Callable[[re.Match, date], dict]
     render: Callable[[dict], str]
+    anywhere: bool = False  # match the pattern anywhere in the question, not the whole question
 
 
 def _no_args(m, today):
@@ -131,17 +185,21 @@ INTENTS = (
            _p(r"(?:how many )?days (?:until|till|til|to|before) (?:next )?"
               rf"(?P<target>{'|'.join(WEEKDAYS)}|\d{{4}}-\d{{2}}-\d{{2}})"),
            _days_until_args, _fmt_days_until),
-    Intent("weather", "weather.today",
-           _p(r"whats the weather(?: like)?(?: today| now| outside)?|"
-              r"what is the weather(?: like)?(?: today| now| outside)?|weather(?: today| now)?|"
-              r"hows the weather(?: today)?|how is the weather(?: today)?|"
-              r"is it going to rain(?: today)?|will it rain(?: today)?"),
-           _no_args, _fmt_weather),
     Intent("mac", "mac.status",
            _p(r"hows my mac(?: doing)?|how is my mac(?: doing)?|mac status|my mac status|"
               r"whats my mac status|what is my mac status"),
            _no_args, _fmt_mac),
+    Intent("next_action", "status.next_action",
+           _p(r"what should i (?:work on|do|focus on)(?: next| today| now)?|whats next|what is next|"
+              r"whats my focus(?: today)?|what is my focus(?: today)?|(?:whats )?(?:my |the )?next action"),
+           _no_args, _fmt_next_action),
+    Intent("unload", "mac.status", _p(r"\bunload(?:ing)?\b"), _no_args, _fmt_unload, anywhere=True),
+    Intent("models", "mac.status",
+           _p(r"\b(?:what|which)(?: ollama| local)? models? (?:are|is) (?:currently )?(?:loaded|running|in memory)\b|"
+              r"\bloaded models?\b|\bmodels? (?:are |is )?(?:currently )?loaded\b"),
+           _no_args, _fmt_models, anywhere=True),
 )
+
 
 
 SEARCH_TOOL = "web.search"
@@ -158,6 +216,17 @@ def match_search(question: str) -> str | None:
     return q or None
 
 
+# Questions about Owen's files, mail, and calendar never reach web search, even typed as
+# "search …" ("search my calendar", "search my files for the field trip form"). Only rules that
+# name his own data count: "search ny rangers schedule" is still a web search.
+LOCAL_ONLY_RULES = frozenset({"calendar_named", "local_files", "mail", "mail_send"})
+
+
+def local_only(query: str) -> bool:
+    route = classify_rules(query)
+    return route is not None and route.rule in LOCAL_ONLY_RULES
+
+
 def _sources(results: list[dict]) -> str:
     return "Sources:\n" + "\n".join(f"{i}. {r['title']} — {r['url']}" for i, r in enumerate(results, 1))
 
@@ -170,10 +239,25 @@ def _raw_results(query: str, results: list[dict]) -> str:
     return "\n".join(lines)
 
 
+def searched_line(query: str) -> str:
+    """Every searched answer shows the exact query that left the Mac."""
+    return f"Searched: {query}"
+
+
+# Fast-path intent -> the router label it answers (cos/intent.py LABELS).
+INTENT_LABELS = {"time": "time", "date": "time", "days_until": "time", "mac": "mac_status",
+                 "next_action": "general", "unload": "mac_status", "models": "mac_status"}
+
+
+def _labeled(result: AgentResult, label: str) -> AgentResult:
+    result.intent = label
+    return result
+
+
 def match(question: str) -> tuple[Intent, re.Match] | None:
     q = normalize(question)
     for intent in INTENTS:
-        m = intent.pattern.fullmatch(q)
+        m = intent.pattern.search(q) if intent.anywhere else intent.pattern.fullmatch(q)
         if m:
             return intent, m
     return None
@@ -190,13 +274,19 @@ class FastPath:
         self.summarize = summarize
 
     def answer(self, question: str, mode: str = "ask") -> AgentResult | None:
-        """Return a fast-path answer, None if the question does not match, or raise Stopped."""
+        """Return a fast-path answer, None if the question does not match, or raise Stopped.
+        The result carries the router label (cos/intent.py) of what it answered."""
         query = match_search(question)
-        if query is not None:
-            return self._search(question, query, mode)
+        if query is not None and not local_only(query):
+            return _labeled(self.search(question, query, mode), "web_lookup")
+        if SOCIAL_RE.fullmatch(normalize(question)) or GREETING_RE.fullmatch(normalize(question)):
+            return _labeled(self._social(question, mode), "social")
         hit = match(question)
         if hit is None:
             return None
+        return _labeled(self._intent(question, hit, mode), INTENT_LABELS[hit[0].name])
+
+    def _intent(self, question: str, hit: tuple[Intent, re.Match], mode: str) -> AgentResult:
         intent, m = hit
         started = time.monotonic()
         timing = {"tool_ms": 0}
@@ -228,30 +318,58 @@ class FastPath:
         close("answer", tools_used=[tool.name], chars=len(text))
         return AgentResult(text, [tool.name], None, fast_path=True)
 
-    def _search(self, question: str, query: str, mode: str) -> AgentResult:
+    def _social(self, question: str, mode: str) -> AgentResult:
+        """A fixed short reply: no tool, no model, never Owen's name. The kill switch still applies."""
         started = time.monotonic()
-        timing = {"tool_ms": 0, "model_ms": 0}
 
         def close(kind, **fields):
-            self.audit(kind, path="fast_path", intent="web_search", model_ms=timing["model_ms"],
+            self.audit(kind, path="fast_path", intent="social", model_ms=0, tool_ms=0,
+                       total_ms=int((time.monotonic() - started) * 1000), **fields)
+
+        self.audit("request", mode=mode, path="fast_path", intent="social", prompt=text_digest(question),
+                   tools_offered=[])
+        if self.gate.kill_switch.is_set():
+            close("request_stopped", reason="kill_switch")
+            raise Stopped("kill switch is set")
+        text = (f"{greeting(self.clock())}. What do you need?" if GREETING_RE.fullmatch(normalize(question))
+                else _fmt_social(question))
+        close("answer", tools_used=[], chars=len(text))
+        return AgentResult(text, [], None, fast_path=True)
+
+    def search(self, question: str, query: str, mode: str, source: str = QUERY_SOURCE) -> AgentResult:
+        """One web search. source "typed": Owen's "search …" command, exactly as typed (fast path).
+        source "auto": a web_lookup question, the query built by cos/search_query.py (router)."""
+        started = time.monotonic()
+        timing = {"tool_ms": 0, "model_ms": 0}
+        path = "fast_path" if source == QUERY_SOURCE else "router"
+
+        def close(kind, **fields):
+            self.audit(kind, path=path, intent="web_search", model_ms=timing["model_ms"],
                        tool_ms=timing["tool_ms"], total_ms=int((time.monotonic() - started) * 1000),
                        **fields)
 
-        self.audit("request", mode=mode, path="fast_path", intent="web_search",
-                   prompt=text_digest(question), tools_offered=[SEARCH_TOOL], query_source=QUERY_SOURCE)
+        def done(text, used, model=None, notices=(), fast=True, urls=(), results=None):
+            res = AgentResult(text, used, model, list(notices), fast_path=fast)
+            res.search_query, res.allowed_urls = query, list(urls)
+            if results:
+                res.extras["search"] = results
+            return res
+
+        self.audit("request", mode=mode, path=path, intent="web_search",
+                   prompt=text_digest(question), tools_offered=[SEARCH_TOOL], query_source=source)
         if len(query) > MAX_QUERY_CHARS:
             close("answer", tools_used=[], denied="query_too_long")
-            return AgentResult(f"That search is {len(query)} characters; the limit is {MAX_QUERY_CHARS}. "
-                               "Shorten it and try again.", [], None, fast_path=True)
-        args = {"query": query, "query_source": QUERY_SOURCE}
-        decision = self.gate.decide(SEARCH_TOOL, args, subject="fast_path")
+            return done(f"That search is {len(query)} characters; the limit is {MAX_QUERY_CHARS}. "
+                        "Shorten it and try again.", [])
+        args = {"query": query, "query_source": source}
+        decision = self.gate.decide(SEARCH_TOOL, args, subject=path)
         tool = self.registry.get(SEARCH_TOOL)
         if not decision.allowed or tool is None:
             if decision.rule == "kill_switch":
                 close("request_stopped", reason="kill_switch")
                 raise Stopped("kill switch is set")
             close("answer", tools_used=[], denied=decision.rule)
-            return AgentResult(f"I can't search right now ({decision.reason}).", [], None, fast_path=True)
+            return done(f"I can't search right now ({decision.reason}).", [])
         tool_started = time.monotonic()
         result = run_tool(tool, args, decision, audit=self.audit)
         timing["tool_ms"] = int((time.monotonic() - tool_started) * 1000)
@@ -261,16 +379,17 @@ class FastPath:
         if result.get("limit_reached"):
             text = result["error"]
             close("answer", tools_used=[tool.name], chars=len(text), denied="search_limit")
-            return AgentResult(text, [tool.name], None, fast_path=True)
+            return done(text, [tool.name])
         if "error" in result:
             text = f"Web search is unavailable: {result['error']}."
             close("answer", tools_used=[tool.name], chars=len(text))
-            return AgentResult(text, [tool.name], None, fast_path=True)
+            return done(text, [tool.name])
         results = result.get("results") or []
         if not results:
-            text = f'No web results for "{query}".'
+            text = f'No web results for "{query}".\n\n{searched_line(query)}'
             close("answer", tools_used=[tool.name], chars=len(text))
-            return AgentResult(text, [tool.name], None, fast_path=True)
+            return done(text, [tool.name])
+        urls = [r["url"] for r in results]
         summary, model_used, notices = None, None, []
         if self.summarize is not None:
             try:
@@ -282,9 +401,11 @@ class FastPath:
                 notices.append("The local model is unavailable, so these are the raw results.")
                 self.audit("search_summary_failed", error=str(e)[:200])
         if summary:
-            text = f"{summary}\n\n{_sources(results)}"
+            summary, _ = strip_urls(summary)  # the numbered sources list the links
+        if summary:
+            text = f"{summary}\n\n{searched_line(query)}\n\n{_sources(results)}"
             close("answer", tools_used=[tool.name], model=model_used, chars=len(text))
-            return AgentResult(text, [tool.name], model_used, notices)
-        text = _raw_results(query, results)
+            return done(text, [tool.name], model_used, notices, fast=False, urls=urls, results=results)
+        text = f"{_raw_results(query, results)}\n\n{searched_line(query)}"
         close("answer", tools_used=[tool.name], chars=len(text))
-        return AgentResult(text, [tool.name], None, notices, fast_path=True)
+        return done(text, [tool.name], notices=notices, urls=urls, results=results)

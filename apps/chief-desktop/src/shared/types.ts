@@ -1,5 +1,6 @@
 // Shapes of what cos prints (cos ask/history/status/brief --json) plus the few envelopes the
 // main process adds. The renderer displays these; it never invents their values.
+import type { Block } from "./blocks.js";
 
 export type CosErrorKind = "usage" | "stopped" | "model_unavailable" | "internal";
 // Kinds the desktop shell itself can report before or around a cos call.
@@ -17,6 +18,9 @@ export type Turn = {
   model: string | null;
   notices: string[];
   total_ms: number;
+  // Rich answer (docs/response-blocks.md). Empty for old turns. Never holds a URL: sources carry
+  // link ids, and the URLs stay in the main process's resource table.
+  blocks: Block[];
 };
 
 export type AskResult =
@@ -30,8 +34,12 @@ export type AskResult =
       session_id: string | null;
       ts: string;
       total_ms: number;
+      blocks: Block[];
     }
   | Failure;
+
+// openLink: the main process looked the link id up in its resource table and opened it (or not).
+export type OpenLinkResult = { ok: true } | Failure;
 
 export type HistoryResult = { ok: true; turns: Turn[] } | Failure;
 
@@ -61,8 +69,12 @@ export type StatusResult =
       loaded_models: string[];
       audit: "ok" | "empty" | "fail";
       version: string;
+      auto_search: boolean;
     }
   | Failure;
+
+// cos auto-search on|off --json. Main process only (the tray toggle); no bridge.
+export type AutoSearchResult = { ok: true; auto_search: boolean } | Failure;
 
 // cos warm --json. Main process only (app launch, window shown after a long hide); no bridge.
 export type WarmResult = { ok: true; model: string; loaded: boolean; keep_alive: string } | Failure;
@@ -82,6 +94,7 @@ export type ShellEvent =
 export interface ChiefBridge {
   ask(question: string, sessionId: string): Promise<AskResult>;
   history(sessionId: string): Promise<HistoryResult>;
+  openLink(linkId: string): Promise<OpenLinkResult>;
   brief(): Promise<BriefResult>;
   status(): Promise<StatusResult>;
   stop(): Promise<ControlResult>;

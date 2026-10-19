@@ -1,8 +1,10 @@
-"""weather.today: current conditions and the forecast from Open-Meteo for the configured lat/lon.
+"""weather.today: current conditions and the forecast from Open-Meteo for one of Owen's places.
 
-Coordinates come from config.json (Owen fills them in) and are rounded to
-two decimals (~1 km) before leaving the Mac. Responses are cached for 30
-minutes in the state directory.
+Places come from config.json ("places", see cos/config.py): the optional
+"place" argument is one of their keys (default home). Coordinates are rounded
+to two decimals (~1 km) before leaving the Mac. Responses are cached for 30
+minutes per place in the state directory. The result names the place ("place",
+"place_key") so every answer can say where the weather is for.
 
 The result keeps today's flat fields (now_f, high_f, low_f, rain_chance_pct,
 conditions, ...) and adds is_day, sunrise, sunset, "tomorrow", "daily" (7 days,
@@ -16,7 +18,7 @@ import json
 import urllib.parse
 from datetime import date, datetime
 
-from cos.config import ensure_private_subdir, open_private
+from cos.config import Place, ensure_private_subdir, open_private, weather_places
 from cos.registry import Tool
 
 API = "https://api.open-meteo.com/v1/forecast"
@@ -148,19 +150,36 @@ def _flat(cur, first, num) -> dict:
     }
 
 
+def resolve_place(cfg, args: dict) -> tuple[Place | None, str | None]:
+    """(place, None) for args["place"] (default home), or (None, error)."""
+    places = weather_places(cfg)
+    if not places:
+        return None, ("weather location not configured: add \"places\" (or latitude and longitude) to "
+                      f"{cfg.state_dir / 'config.json'}")
+    key = args.get("place") or ("home" if "home" in places else next(iter(places)))
+    place = places.get(key)
+    if place is None:
+        return None, f"unknown place {key!r}; known places: {', '.join(places)}"
+    return place, None
+
+
+def place_fields(place: Place) -> dict:
+    return {"place": place.name, "place_key": place.key}
+
+
 def today(ctx, args: dict) -> dict:
     cfg = ctx.config
-    if cfg.latitude is None or cfg.longitude is None:
-        return {"error": "weather location not configured: set latitude and longitude in "
-                         f"{cfg.state_dir / 'config.json'}"}
-    url = build_url(cfg.latitude, cfg.longitude)
+    place, error = resolve_place(cfg, args)
+    if error:
+        return {"error": error}
+    url = build_url(place.latitude, place.longitude)
     now = ctx.clock()
-    cache_file = ensure_private_subdir("cache", cfg.state_dir) / "weather.json"
+    cache_file = ensure_private_subdir("cache", cfg.state_dir) / f"weather-{place.key}.json"
     try:
         cached = json.loads(cache_file.read_text(encoding="utf-8"))
         age = now.timestamp() - cached["fetched_at"]
         if cached.get("url") == url and 0 <= age < CACHE_SECONDS:
-            return {**cached["weather"], "cached": True}
+            return {**cached["weather"], **place_fields(place), "cached": True}
     except (OSError, ValueError, KeyError, TypeError):
         pass
     raw = ctx.http("GET", url, headers={"User-Agent": "ChiefOfStaff/0.1 (local)"},
@@ -168,17 +187,20 @@ def today(ctx, args: dict) -> dict:
     weather = parse(json.loads(raw))
     with open_private(cache_file, "w") as fh:
         json.dump({"fetched_at": now.timestamp(), "url": url, "weather": weather}, fh)
-    return {**weather, "cached": False,
+    return {**weather, **place_fields(place), "cached": False,
             "as_of": now.strftime("%I:%M %p").lstrip("0")}
 
 
 def tools(ctx):
+    keys = list(weather_places(ctx.config)) or ["home"]
     return [Tool(
         name="weather.today",
-        description=("Weather at Owen's configured location: now (temperature, conditions, wind, day or "
-                     "night), today's high/low and rain chance, sunrise and sunset, tomorrow, a 7-day daily "
-                     "forecast, and the next 12 hours."),
-        parameters={"type": "object", "properties": {}, "additionalProperties": False},
+        description=("Weather at one of Owen's named places (default home): now (temperature, conditions, "
+                     "wind, day or night), today's high/low and rain chance, sunrise and sunset, tomorrow, "
+                     "a 7-day daily forecast, and the next 12 hours."),
+        parameters={"type": "object", "properties": {
+            "place": {"type": "string", "enum": keys, "description": "Which named place (default home)"},
+        }, "additionalProperties": False},
         side_effect="none", data_class="P2", timeout_s=15,
         func=lambda args: today(ctx, args), keywords=KEYWORDS,
     )]

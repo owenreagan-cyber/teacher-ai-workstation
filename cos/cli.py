@@ -4,7 +4,11 @@
                                 one-shot answer; --session adds prior turns of that
                                 session as history and appends the new turn
   cos history --session ID [--json]   turns of a session (read-only)
-  cos status [--json]           kill switch, models, Ollama, audit (read-only, no model call)
+  cos status [--json]           kill switch, models, Ollama, audit, auto search (read-only,
+                                no model call)
+  cos auto-search on|off|status [--json]
+                                automatic web search for questions that need it (config.json
+                                auto_search; the desktop tray toggle runs this)
   cos warm [--json]             load the configured model and keep it loaded (keep_alive)
   cos chat                      multi-turn; history saved in the state directory
   cos brief [--json]            deterministic daily brief (no model); --json adds the
@@ -27,12 +31,14 @@ from cos.agent import Agent, Stopped, build_system_prompt
 from cos.audit import AuditLog, verify
 from cos.brief import format_brief, gather, home_card
 from cos.config import (CloudModelError, Config, ConfigError, ensure_private_subdir, load_config,
-                        open_private)
+                        open_private, write_config_value)
+from cos.executor import run_tool
 from cos.fastpath import FastPath
 from cos.memory import load_identity, load_memory, load_personality
 from cos.model import CloudModelRefused, ModelClient, ModelError, ModelRefused
 from cos.policy import KillSwitch, PolicyGate
 from cos.registry import Registry
+from cos.respond import Responder
 from cos.sessions import (SessionIdError, SessionReadError, TurnError, append_turn, check_session_id,
                           history_messages, read_session, read_turns)
 from cos.tools import ToolContext, build_registry
@@ -76,10 +82,25 @@ def make_fastpath(rt: Runtime) -> FastPath:
     return FastPath(rt.registry, rt.gate, rt.ctx.clock, audit=rt.audit, summarize=summarize)
 
 
+def loaded_models(rt: Runtime) -> list[str] | None:
+    """Models loaded right now (ollama ps, via mac.status through the gate), or None if unknown."""
+    decision = rt.gate.decide("mac.status", {}, subject="guard")
+    tool = rt.registry.get("mac.status")
+    if not decision.allowed or tool is None:
+        return None
+    loaded = run_tool(tool, {}, decision, audit=rt.audit).get("ollama_loaded")
+    return [str(m) for m in loaded] if isinstance(loaded, list) else None
+
+
 def make_agent(rt: Runtime) -> Agent:
     memory, _ = load_memory(rt.config.repo_root)
     prompt = build_system_prompt(load_identity(), memory, load_personality())
-    return Agent(rt.model, rt.registry, rt.gate, prompt, audit=rt.audit)
+    return Agent(rt.model, rt.registry, rt.gate, prompt, audit=rt.audit,
+                 loaded_models=lambda: loaded_models(rt))
+
+
+def make_responder(rt: Runtime) -> Responder:
+    return Responder(rt, make_fastpath, make_agent)
 
 
 def _emit_error(as_json: bool, message: str, kind: str) -> None:
@@ -101,10 +122,11 @@ def cmd_ask(rt: Runtime, args) -> int:
         return EXIT_USAGE
     session_id = args.session
     try:
-        history = history_messages(read_turns(rt.config.state_dir, session_id)) if session_id else None
+        turns = read_turns(rt.config.state_dir, session_id) if session_id else []
+        history = history_messages(turns) if session_id else None
         started = time.monotonic()
-        result = (make_fastpath(rt).answer(question, mode="ask")
-                  or make_agent(rt).run(question, history=history, mode="ask"))
+        result = make_responder(rt).answer(question, previous=turns[-1] if turns else None,
+                                           history=history, mode="ask")
         total_ms = int((time.monotonic() - started) * 1000)
     except Stopped:
         _emit_error(args.json, f"stopped by kill switch ({rt.kill_switch.reason()}); run cos resume",
@@ -130,7 +152,9 @@ def cmd_ask(rt: Runtime, args) -> int:
             append_turn(rt.config.state_dir, session_id, {
                 "ts": stamp, "question": question, "answer": result.answer,
                 "tools_used": result.tools_used, "fast_path": result.fast_path, "model": result.model,
-                "notices": result.notices, "total_ms": total_ms})
+                "notices": result.notices, "total_ms": total_ms, "intent": result.intent,
+                "search_query": result.search_query, "blocks": result.blocks,
+                "resources": result.resources})
         except TurnError as e:
             print(f"cos: turn not recorded in session ({e})", file=sys.stderr)
     if args.json:
@@ -142,8 +166,8 @@ def cmd_ask(rt: Runtime, args) -> int:
 
 
 def cmd_chat(rt: Runtime, args) -> int:
-    agent = make_agent(rt)
-    fastpath = make_fastpath(rt)
+    responder = make_responder(rt)
+    previous: dict | None = None
     hist_dir = ensure_private_subdir("history", rt.config.state_dir)
     hist_path = hist_dir / f"chat-{datetime.now():%Y%m%d-%H%M%S}.jsonl"
     history: list[dict] = []
@@ -160,8 +184,8 @@ def cmd_chat(rt: Runtime, args) -> int:
             if not line:
                 continue
             try:
-                result = (fastpath.answer(line, mode="chat")
-                          or agent.run(line, history=history[-CHAT_CONTEXT_MESSAGES:], mode="chat"))
+                result = responder.answer(line, previous=previous, history=history[-CHAT_CONTEXT_MESSAGES:],
+                                          mode="chat")
             except Stopped:
                 print("Stopped by kill switch; run cos resume.")
                 return EXIT_STOPPED
@@ -172,6 +196,7 @@ def cmd_chat(rt: Runtime, args) -> int:
                 print(f"Refused: {e}")
                 return EXIT_INTERNAL
             print(f"chief> {result.text()}\n")
+            previous = {"question": line, "intent": result.intent, "search_query": result.search_query}
             stamp = datetime.now().astimezone().isoformat(timespec="seconds")
             for role, content in (("user", line), ("assistant", result.answer)):
                 history.append({"role": role, "content": content})
@@ -282,6 +307,7 @@ def status_report(cfg: Config, http=None) -> dict:
         "loaded_models": loaded,
         "audit": {"ok": "ok", "uninitialized": "empty", "fail": "fail"}[audit_status],
         "version": VERSION,
+        "auto_search": cfg.auto_search,
         **extra,
     }
 
@@ -298,6 +324,25 @@ def cmd_status(cfg: Config, args) -> int:
           f"(fallback {report['fallback_model']}) · Ollama {ollama}, loaded: {loaded} "
           f"· audit {report['audit']}"
           + (" · FIXTURE MODE (synthetic data)" if report.get("fixture") else ""))
+    return EXIT_OK
+
+
+def cmd_auto_search(cfg: Config, args) -> int:
+    """Turn automatic web search on or off (config.json auto_search), or report it. Audited."""
+    if args.action != "status":
+        enabled = args.action == "on"
+        try:
+            write_config_value("auto_search", enabled, cfg.state_dir)
+        except ConfigError as e:
+            _emit_error(args.json, str(e), "usage")
+            return EXIT_USAGE
+        AuditLog(cfg.audit_path, extra={"fixture": True} if cfg.fixture_dir else None)(
+            "config_change", key="auto_search", value=enabled)
+        cfg = load_config(cfg.state_dir)
+    if args.json:
+        print(json.dumps({"ok": True, "auto_search": cfg.auto_search}))
+    else:
+        print(f"Auto web search: {'on' if cfg.auto_search else 'off'}")
     return EXIT_OK
 
 
@@ -349,6 +394,10 @@ def parser() -> argparse.ArgumentParser:
     status = sub.add_parser("status", help="health snapshot (read-only, no model call)")
     status.add_argument("--json", action="store_true")
     status.set_defaults(func=cmd_status, config_only=True)
+    auto = sub.add_parser("auto-search", help="automatic web search on, off, or status")
+    auto.add_argument("action", choices=["on", "off", "status"])
+    auto.add_argument("--json", action="store_true")
+    auto.set_defaults(func=cmd_auto_search, config_only=True)
     warm = sub.add_parser("warm", help="load the configured model and keep it loaded")
     warm.add_argument("--json", action="store_true")
     warm.set_defaults(func=cmd_warm)

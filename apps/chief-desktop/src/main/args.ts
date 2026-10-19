@@ -5,9 +5,9 @@ export const SESSION_ID_RE = /^[a-z0-9-]{1,40}$/; // must match cos/sessions.py
 export const MAX_QUESTION_CHARS = 4000;
 export const STOP_REASON = "chief-desktop";
 
-export type Action = "ask" | "history" | "brief" | "status" | "stop" | "resume" | "warm";
+export type Action = "ask" | "history" | "brief" | "status" | "stop" | "resume" | "warm" | "auto-search";
 
-export type Params = { question?: unknown; sessionId?: unknown };
+export type Params = { question?: unknown; sessionId?: unknown; enabled?: unknown };
 
 export class ArgsError extends Error {}
 
@@ -46,6 +46,9 @@ export function buildArgs(action: Action, params: Params = {}): string[] {
       return ["resume"];
     case "warm":
       return ["warm", "--json"];
+    case "auto-search":
+      // Main process only (the tray toggle). Only a real boolean turns it on.
+      return ["auto-search", params.enabled === true ? "on" : "off", "--json"];
     default:
       throw new ArgsError(`unknown action: ${String(action)}`);
   }

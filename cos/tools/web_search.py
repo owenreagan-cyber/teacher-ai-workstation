@@ -1,12 +1,13 @@
-"""web.search: the top web results for a query Owen typed (Brave Search API, read-only).
+"""web.search: the top web results for a query built from Owen's words (Brave Search API, read-only).
 
-Query provenance (D-011): this tool is fast_path_only. The router never offers
-it to the model, and the policy gate denies it to every caller except the fast
-path, which runs it only when Owen's whole message is "search <q>",
-"look up <q>", "google <q>", or "web search <q>". The query reaches the
-provider exactly as typed (trimmed, at most 200 characters), and its text and
-source ("typed") are recorded in an egress_request audit record before the
-request is made.
+Query provenance (D-011 as revised, D-022): this tool is fast_path_only. It is
+never offered to the model, and the policy gate denies it to every caller
+except Chief's own code paths: the fast path, for a typed "search <q>",
+"look up <q>", "google <q>", or "web search <q>" (query_source "typed", the
+text exactly as typed), and the router, for an automatic search of a
+web_lookup question (query_source "auto", built by cos/search_query.py from
+Owen's own messages only). The query (at most 200 characters) and its source
+are recorded in an egress_request audit record before the request is made.
 
 The API key lives in the macOS Keychain (service chief-search-brave) and is
 read with a fixed argv, no shell. It is sent only in the request header: never
@@ -51,6 +52,8 @@ TITLE_CAP = 120
 SNIPPET_CAP = 300
 URL_CAP = 300
 QUERY_SOURCE = "typed"
+AUTO_SOURCE = "auto"
+QUERY_SOURCES = (QUERY_SOURCE, AUTO_SOURCE)
 KEYCHAIN_SERVICE = "chief-search-brave"
 SECURITY = "/usr/bin/security"
 SETUP_HINT = ("web search not set up: store a Brave Search API key in the macOS Keychain "
@@ -240,9 +243,9 @@ def search(ctx, args: dict, provider: SearchProvider = BRAVE,
            key_source: Callable[[], str | None] | None = None,
            http: Callable[..., bytes] | None = None, budget: SearchBudget | None = None) -> dict:
     query, source = args.get("query"), args.get("query_source")
-    if source != QUERY_SOURCE or not isinstance(query, str) or not query.strip() \
+    if source not in QUERY_SOURCES or not isinstance(query, str) or not query.strip() \
             or len(query) > MAX_QUERY_CHARS:
-        return {"error": "web search needs a typed query of 1-200 characters"}
+        return {"error": "web search needs a query of 1-200 characters from Owen's words"}
     key = (key_source or (lambda: keychain_key(ctx)))()
     if not key:
         return {"error": SETUP_HINT, "setup_needed": True}
@@ -270,18 +273,19 @@ def search(ctx, args: dict, provider: SearchProvider = BRAVE,
     except (ValueError, UnicodeDecodeError):
         return {"error": "web search returned an unreadable response"}
     results = clean_results(provider.parse(data))
-    return {"query": query, "provider": provider.name, "count": len(results), "results": results}
+    return {"query": query, "query_source": source, "provider": provider.name, "count": len(results),
+            "results": results}
 
 
 def tool(ctx, func: Callable[[dict], dict] | None = None) -> Tool:
     return Tool(
         name="web.search",
-        description=("Top web results (title, URL, snippet) for a search Owen typed. Fast path only: "
-                     "never offered to the model."),
+        description=("Top web results (title, URL, snippet) for a query built from Owen's words. Run only "
+                     "by Chief's code (a typed search or an automatic one): never offered to the model."),
         parameters={"type": "object", "properties": {
-            "query": {"type": "string", "description": "The query exactly as Owen typed it",
+            "query": {"type": "string", "description": "The query, from Owen's own words",
                       "maxLength": MAX_QUERY_CHARS},
-            "query_source": {"type": "string", "enum": [QUERY_SOURCE]},
+            "query_source": {"type": "string", "enum": list(QUERY_SOURCES)},
         }, "required": ["query", "query_source"], "additionalProperties": False},
         side_effect="none", data_class="P2", timeout_s=15,
         func=func or (lambda args: search(ctx, args)), keywords=(), fast_path_only=True,

@@ -33,7 +33,7 @@ for (const file of walk("src/renderer", [".ts", ".tsx", ".html", ".css"])) {
 const MAIN_FORBIDDEN = [
   [/\bexec\s*\(/, "exec("], [/\bexecSync\b/, "execSync"], [/\bspawn(Sync)?\s*\(/, "spawn("], [/\bfork\s*\(/, "fork("],
   [/\bshell\s*:/, "shell option"], [/["']node:(https?|net|tls|dgram|http2)["']/, "network module"],
-  [/\bfetch\s*\(/, "fetch("], [/\bnet\.request\b/, "net.request"], [/\bshell\.openExternal\b/, "shell.openExternal"],
+  [/\bfetch\s*\(/, "fetch("], [/\bnet\.request\b/, "net.request"],
   [/webviewTag\s*:\s*true/, "webviewTag: true"], [/nodeIntegration\s*:\s*true/, "nodeIntegration: true"],
 ];
 for (const file of [...walk("src/main", [".ts"]), ...walk("src/preload", [".ts"])]) {
@@ -76,13 +76,13 @@ check("dev server only when unpackaged and on localhost", securityTs.includes("!
 
 // 6. Preload: exactly the allowed bridge, fixed channels only.
 const preload = read("src/preload/preload.ts");
-const ALLOWED = ["ask", "history", "brief", "status", "stop", "resume", "setPin", "setProtection", "hide", "onEvent"];
+const ALLOWED = ["ask", "history", "openLink", "brief", "status", "stop", "resume", "setPin", "setProtection", "hide", "onEvent"];
 const bridgeBody = preload.match(/const bridge: PreloadBridge = \{([\s\S]*?)\n\};/)?.[1] ?? "";
 const keys = [...bridgeBody.matchAll(/^ {2}(\w+):/gm)].map((m) => m[1]);
 check("preload exposes exactly the allowed functions", JSON.stringify(keys) === JSON.stringify(ALLOWED), keys.join(","));
 check("preload exposes only window.chief", (preload.match(/exposeInMainWorld\(/g) ?? []).length === 1 && preload.includes('exposeInMainWorld("chief", bridge)'));
 const invokes = [...preload.matchAll(/ipcRenderer\.invoke\(([^,)]+)/g)].map((m) => m[1]);
-check("every invoke uses a literal chief: channel", invokes.length === 9 && invokes.every((c) => /^"chief:[a-z-]+"$/.test(c)), invokes.join(","));
+check("every invoke uses a literal chief: channel", invokes.length === 10 && invokes.every((c) => /^"chief:[a-z-]+"$/.test(c)), invokes.join(","));
 check("preload never sends or exposes ipcRenderer", !/ipcRenderer\.(send|sendSync|postMessage)\b/.test(preload) && !/exposeInMainWorld\([^)]*ipcRenderer/.test(preload));
 
 // 6b. cos warm: main process only, on launch and when shown after more than 90 minutes hidden.
@@ -129,6 +129,39 @@ check("the model still warms on every launch", /createTray\(\);\s*registerHotkey
 
 // 6e. Search answers carry "Search by Brave" in the window.
 check("search answers show Brave attribution", /searchAttribution\(turn\)/.test(read("src/renderer/App.tsx")));
+
+// 6e2. Auto web search: a tray checkbox in the main process that runs `cos auto-search on|off`.
+// No preload bridge or IPC channel can change it; cos writes its own config.json.
+check("buildArgs has auto-search", /case "auto-search":[\s\S]*?\["auto-search", params\.enabled === true \? "on" : "off", "--json"\]/.test(read("src/main/args.ts")));
+check("tray has an Auto web search toggle", /label: "Auto web search",\s*type: "checkbox"/.test(mainTs) && /click: \(\) => void toggleAutoSearch\(\)/.test(mainTs));
+check("auto search has no preload bridge or IPC channel", !/auto.?search/i.test(preload) && !/chief:[a-z-]*auto/i.test(mainTs));
+
+// 6g. Links (P1a.5): URLs stay in the main process. The renderer gets link ids; the only call that
+// opens anything is openLink(linkId), looked up in the main process's resource table, https only.
+const opens = mainFiles.flatMap((f) => [...read(f).matchAll(/shell\.openExternal\(([^)]*)\)/g)].map((m) => `${f}:${m[1]}`));
+check("shell.openExternal is called exactly once, with a URL from the resource table",
+  opens.length === 1 && opens[0] === `${path.join("src", "main", "main.ts")}:url` &&
+  /handle\("chief:open-link", \(linkId\) => openLink\(resources, linkId, \(url\) => shell\.openExternal\(url\)\)\)/.test(mainTs),
+  opens.join(","));
+const resourcesTs = read("src/main/resources.ts");
+check("openLink looks the id up and re-checks https", /const url = table\.get\(linkId\)/.test(resourcesTs) && /return url === undefined \? null : httpsUrl\(url\)/.test(resourcesTs));
+check("preload openLink passes only a string id", /openLink: \(linkId\) => electron\.ipcRenderer\.invoke\("chief:open-link", String\(linkId\)\)/.test(preload));
+check("renderer-bound text has URLs removed", /answer: stripUrls\(answer\)/.test(cosTs) && /notices: notices\.map\(stripUrls\)/.test(cosTs) && /blocks: toBlocks\(o\.blocks\)/.test(cosTs));
+check("resources go to the main process sink, not the renderer", /this\.onResources\(resourcesOf\(v\)\)/.test(cosTs) && !/resources/.test(read("src/shared/types.ts").replace(/^\s*\/\/.*$/gm, "")));
+for (const file of rendererFiles) {
+  check("renderer source holds no URL", !/https?:\/\//.test(read(file).replace(/xmlns="http:\/\/www\.w3\.org\/2000\/svg"/g, "")), file);
+}
+const blocksTsx = read("src/renderer/Blocks.tsx");
+check("suggestion buttons send only their message text", /onClick=\{\(\) => \{ const m = suggestionMessage\(b, j\); if \(m !== null\) onSend\(m\); \}\}/.test(blocksTsx));
+check("suggestions use the same ask path as typing", /onSend=\{\(m\) => void send\(m\)\}/.test(read("src/renderer/App.tsx")) &&
+  /const question = \(message \?\? input\)\.trim\(\);/.test(read("src/renderer/App.tsx")));
+check("rain animation is off for reduced motion", /prefers-reduced-motion: reduce[\s\S]*chief-rain[\s\S]*animation: none/.test(read("src/renderer/styles.css")));
+
+// 6f. Packaging: every build checks that the startup modules are packaged (and inside app.asar
+// after `npm run package`), so a missing file fails the build instead of the installed app.
+const pkgJson = JSON.parse(read("package.json"));
+check("build runs the packaging check", /&& node scripts\/check-package\.mjs$/.test(pkgJson.scripts.build));
+check("package checks app.asar", /electron-builder [^&]*&& node scripts\/check-package\.mjs --asar$/.test(pkgJson.scripts.package));
 
 // 7. Dev script: no package-internal paths (TypeScript 7 stopped exporting typescript/bin/tsc,
 // which broke `npm run dev` with ERR_PACKAGE_PATH_NOT_EXPORTED). Compile through build:main.

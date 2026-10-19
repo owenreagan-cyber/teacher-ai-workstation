@@ -7,6 +7,7 @@ import {
   app,
   BrowserWindow,
   globalShortcut,
+  shell,
   ipcMain,
   type IpcMainInvokeEvent,
   Menu,
@@ -28,6 +29,7 @@ import {
   saveWindowState,
 } from "./config.js";
 import { CosRunner } from "./cos.js";
+import { openLink, ResourceTable } from "./resources.js";
 import { APP_URL, devServerUrl, lockDownContents, lockDownSession, registerAppScheme, serveRenderer } from "./security.js";
 import { trayTemplateImage } from "./trayIcon.js";
 
@@ -39,6 +41,7 @@ let tray: Tray | null = null;
 let quitting = false;
 let hotkeyNotice: string | null = null;
 let lastKillSwitch: boolean | null = null; // from the latest cos status, for the tray label only
+let lastAutoSearch: boolean | null = null; // from the latest cos status, for the tray checkbox only
 let saved: SavedWindow;
 let windowState: WindowState = { pinned: false, protected: true };
 let hiddenSince: number | null = null;
@@ -46,7 +49,8 @@ let warming = false;
 let prefs: Prefs = { startAtLogin: null };
 
 const config = loadDesktopConfig();
-const cos = new CosRunner(config.cosPath, config.error);
+const resources = new ResourceTable(); // link id -> URL; never sent to the renderer
+const cos = new CosRunner(config.cosPath, config.error, (list) => resources.add(list));
 const devUrl = devServerUrl();
 const stateFile = () => path.join(app.getPath("userData"), "window-state.json");
 const prefsFile = () => path.join(app.getPath("userData"), "prefs.json");
@@ -232,6 +236,14 @@ function createTray(): void {
 async function refreshKillSwitch(): Promise<void> {
   const status = await cos.status();
   lastKillSwitch = status.ok ? status.kill_switch : null;
+  lastAutoSearch = status.ok ? status.auto_search : null;
+}
+
+// Main process only (no preload bridge): cos writes auto_search in its own config.json.
+async function toggleAutoSearch(): Promise<void> {
+  if (lastAutoSearch === null) return;
+  const res = await cos.setAutoSearch(!lastAutoSearch);
+  if (res.ok) lastAutoSearch = res.auto_search;
 }
 
 function trayMenu(): Menu {
@@ -250,6 +262,13 @@ function trayMenu(): Menu {
     lastKillSwitch
       ? { label: "Resume Chief", click: () => void control("resume") }
       : { label: "Stop Chief", enabled: lastKillSwitch !== null, click: () => void control("stop") },
+    {
+      label: "Auto web search",
+      type: "checkbox",
+      checked: lastAutoSearch === true,
+      enabled: lastAutoSearch !== null,
+      click: () => void toggleAutoSearch(),
+    },
     {
       label: `Screen protection: ${windowState.protected ? "on" : "off"}`,
       type: "checkbox",
@@ -320,10 +339,13 @@ function handle(channel: string, fn: (...args: unknown[]) => unknown): void {
 function registerIpc(): void {
   handle("chief:ask", (question, sessionId) => cos.ask(question, sessionId));
   handle("chief:history", (sessionId) => cos.history(sessionId));
+  // The only way a link opens: by id, looked up in the main process's table, https only.
+  handle("chief:open-link", (linkId) => openLink(resources, linkId, (url) => shell.openExternal(url)));
   handle("chief:brief", () => cos.brief());
   handle("chief:status", async () => {
     const status: StatusResult = await cos.status();
     lastKillSwitch = status.ok ? status.kill_switch : null;
+    lastAutoSearch = status.ok ? status.auto_search : null;
     return status;
   });
   handle("chief:stop", () => cos.stop());

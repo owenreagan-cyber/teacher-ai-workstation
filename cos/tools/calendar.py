@@ -28,7 +28,8 @@ HELPER_DIR = REPO_ROOT / "cos" / "helpers" / "eventkit-reader"
 DEFAULT_APP = HELPER_DIR / "build" / "ChiefOfStaffEventKitReader.app"
 OPEN = "/usr/bin/open"
 KEYWORDS = ("calendar", "meeting", "meetings", "schedule", "event", "events", "appointment",
-            "busy", "free", "today", "tomorrow", "conference", "agenda")
+            "busy", "free", "today", "tomorrow", "conference", "agenda", "trip", "field trip", "assembly",
+            "when is", "when are")
 TITLE_CAP = 120
 POLL_S = 0.05
 

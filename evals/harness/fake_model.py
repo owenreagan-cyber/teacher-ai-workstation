@@ -124,7 +124,7 @@ def _summary(wire: str, data: dict) -> str:
             return "Your calendar has nothing scheduled today."
         bits = [f"\"{e.get('title')}\" ({'all day' if e.get('all_day') else e.get('start')})"
                 for e in events]
-        return f"Today's calendar has {len(events)} events: " + "; ".join(bits) + "."
+        return f"Today's calendar has {len(events)} events: " + "; ".join(bits) + ". That's today only."
     if wire == "reminders_due":
         items = data.get("reminders") or []
         if not items:
@@ -164,8 +164,41 @@ def _summary(wire: str, data: dict) -> str:
     return f"{wire} returned data."
 
 
+# The router's model fallback (cos/intent.py): a request with a JSON "format" asks for one label.
+# The fake labels public-fact questions web_lookup and everything else general.
+WEB_FACT_RE = re.compile(r"\b(?:play|plays|game|games|score|won|win|news|price|president|capital|population|"
+                         r"tallest|biggest|who is|who was|when was|how old is|what year)\b", re.IGNORECASE)
+
+
+def classify(payload: dict) -> dict:
+    messages = payload.get("messages") or []
+    text = _last_user(messages).rsplit("Message to sort: ", 1)[-1]
+    label = "web_lookup" if WEB_FACT_RE.search(text) else "general"
+    return {"role": "assistant", "content": json.dumps({"label": label})}
+
+
+def rewrite(payload: dict) -> dict:
+    """The follow-up search rewrite (cos/search_query.py): swap the previous search's team or topic
+    ("the ny rangers") for the follow-up's ("the islanders"), using only Owen's words."""
+    text = _last_user(payload.get("messages") or [])
+    prev = re.search(r"Previous search: (.*)", text)
+    follow = re.search(r"Follow-up: (.*)", text)
+    prev_q = prev.group(1).strip() if prev else ""
+    core = re.sub(r"^(?:and|what about|how about)\s+", "", (follow.group(1) if follow else "").strip(),
+                  flags=re.IGNORECASE).rstrip("?!. ")
+    m = re.search(r"\bthe (.+?) (play|plays|playing|game|score)\b", prev_q, re.IGNORECASE)
+    query = (prev_q[:m.start(1)] + re.sub(r"^the\s+", "", core, flags=re.IGNORECASE) + prev_q[m.end(1):]
+             if m and core else f"{prev_q} {core}".strip())
+    return {"role": "assistant", "content": json.dumps({"query": query})}
+
+
 def reply(payload: dict) -> dict:
     """The assistant message for one /api/chat request."""
+    fmt = payload.get("format")
+    if isinstance(fmt, dict) and "query" in (fmt.get("properties") or {}):
+        return rewrite(payload)
+    if fmt is not None:
+        return classify(payload)
     messages = payload.get("messages") or []
     offered = _offered(payload.get("tools"))
     last = messages[-1] if messages else {}

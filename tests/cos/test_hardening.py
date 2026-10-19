@@ -116,7 +116,7 @@ class KillSwitchInFlightTests(StateDirTest):
 
         def target():
             with contextlib.redirect_stdout(out), contextlib.redirect_stderr(err):
-                box["code"] = cli.main(["ask", "--json", "hello there"])
+                box["code"] = cli.main(["ask", "--json", "tell me something"])
 
         with mock.patch.object(ModelClient, "chat", lambda self, *a, **k: blocking.chat(*a, **k)):
             worker = threading.Thread(target=target)

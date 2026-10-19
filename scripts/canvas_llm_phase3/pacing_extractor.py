@@ -98,6 +98,31 @@ def instructional_status(week_code: str) -> str:
     return "ACTIVE" if week_bounds(week_code) else "NON_INSTRUCTIONAL"
 
 
+def format_weekday_date(d: datetime) -> str:
+    """Canonical student/family-facing date: 'Monday, October 19'.
+
+    Full weekday + full month, numeric day with no leading zero, no year.
+    """
+    return f"{d.strftime('%A')}, {d.strftime('%B')} {d.day}"
+
+
+def format_weekday_date_iso(iso_date: str) -> str:
+    """Canonical format for an ISO date string 'YYYY-MM-DD' -> 'Monday, October 19'.
+
+    Falls back to the raw string (unchanged) if the date is not parseable, so a
+    non-date value is never corrupted.
+    """
+    try:
+        return format_weekday_date(datetime.fromisoformat(iso_date))
+    except (ValueError, TypeError):
+        return iso_date
+
+
+def format_date_range(start: datetime, end: datetime) -> str:
+    """Canonical inclusive date range: 'Monday, October 19 through Friday, October 23'."""
+    return f"{format_weekday_date(start)} through {format_weekday_date(end)}"
+
+
 # --------------------------------------------------------------------------- #
 # CSV column discovery
 # --------------------------------------------------------------------------- #

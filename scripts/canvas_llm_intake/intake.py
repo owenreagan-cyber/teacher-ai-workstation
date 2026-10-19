@@ -500,9 +500,10 @@ def _reminders_for(week_norm: dict[str, Any], subject: str) -> list[str]:
     for ev in facts:
         if ev.get("course") != label:
             continue
+        date_display = pe.format_weekday_date_iso(ev.get("assessmentDate", ""))
         for a in (ev.get("assessments") or []):
             if a:
-                reminders.append(f"{a} — {ev.get('assessmentDate', '')}")
+                reminders.append(f"{a} — {date_display}")
     # Active course with instructional content but no explicit assessment still
     # needs a meaningful, source-derived reminder (never an empty Reminders box).
     if not reminders and subject in ("science", "language_arts"):

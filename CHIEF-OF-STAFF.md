@@ -91,13 +91,27 @@ Outside products were studied for logic and features to rebuild, not to adopt.
 ### Works today
 - **Chat:** one-shot `cos ask` and multi-turn `cos chat`, on the local model, with tool calling
   (`cos tools` lists them).
-- **Sessions:** conversations are saved and can be resumed (`cos history`).
-- **Daily brief** (`cos brief`) and the **home card** in the desktop window (see "Home card").
+- **Request sorting (P1a.5):** every message gets one label (time, weather, calendar,
+  reminders, brief, Mac status, capabilities, web lookup, local files, mail, social, general):
+  patterns first, the local model only as a fallback (`cos/intent.py`). Code, not the model,
+  answers the brief, capabilities ("what can you do?", including that settings live in
+  `config.json`), social replies, greetings, weather, the reminders list, unload and loaded
+  models, the next action, and the not-built-yet answers for files and mail.
+- **Sessions:** conversations are saved and can be resumed (`cos history`); short follow-ups
+  ("and tomorrow?", "and the Islanders?") continue the previous topic.
+- **Daily brief** ("brief", `cos brief`) and the **home card** in the desktop window (see
+  "Home card").
 - **Desktop window:** Chief.app (Electron + React) with a menu bar icon and the
-  Control+Option+C hotkey, plus the Raycast launcher. Both call the same `cos` core.
-- **Tools:** time and date, weather, today's calendar (EventKit), reminders due, Mac status,
-  and **web search** (Brave; typed "search …" command, daily and monthly caps; see
-  "Web search").
+  Control+Option+C hotkey, plus the Raycast launcher. Both call the same `cos` core. Answers are
+  rich: weather cards, hourly and daily charts, collapsed sources that open by link id, the
+  "Searched:" line, and follow-up buttons (`docs/response-blocks.md`).
+- **Tools:** time and date, weather for named places (Sims, NC home and Clayton, NC work; see
+  "Weather places"), today's calendar (EventKit), reminders due, Mac status, and **web search**
+  (Brave; automatic for questions that need the web, plus the typed "search …" command; daily
+  and monthly caps; an "Auto web search" switch; see "Web search").
+- **Answer guards:** code removes delete-as-a-fix advice, URLs not from that turn's tool
+  results, offers of actions Chief can't do, and model claims about the kill switch, and names
+  only loaded models in `ollama stop` (`cos/guards.py`).
 - **Start at login** for the packaged app, with the model warmed in the background.
 - **Safety plumbing:** kill switch (`cos stop` / `cos resume`), hash-chained audit log
   (`cos audit verify`), and the eval harness (`evals/harness/run.py`).
@@ -115,8 +129,9 @@ Outside products were studied for logic and features to rebuild, not to adopt.
   needs Owen's go-ahead and install. Limits: `tools/dev_safety/README.md`.
 
 ### Missing
-Automatic web search by intent (D-011 as revised; today only the typed command searches),
-local file search (D-021), email (D-013), notifications, voice, conversational memory writing,
+Local file search (D-021; Chief says it is coming), email (D-013; Chief says it isn't
+connected), a settings screen (settings are `config.json`), a forecast beyond 7 days or for
+places other than the saved ones (no geocoding), notifications, voice, conversational memory writing,
 project awareness from real repos, proactive monitoring, routing between local and cloud
 workers (M2 router, D-020, D-026), delegation to cloud agents, the multi-agent orchestrator and
 MCP adapters (D-023, D-024, D-025), and the iPhone app (D-007).

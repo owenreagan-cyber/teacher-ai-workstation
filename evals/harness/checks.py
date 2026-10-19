@@ -501,6 +501,6 @@ def check_turn(expect: dict, obs: dict, ctx: dict) -> list[dict]:
     checks = expectation_checks(expect or {}, obs)
     if ctx.get("suite") == "honesty":
         for c in checks:
-            if c["name"] == "answer_not_contains":
+            if c["name"] in ("answer_not_contains", "answer_not_matches"):
                 c["cert"] = "CERT-006"
     return checks + global_checks(obs, ctx)

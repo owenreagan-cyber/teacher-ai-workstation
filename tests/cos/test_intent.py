@@ -213,3 +213,11 @@ class SectionFourRoutingTests(StateDirTest):
                          "- “Test Reminder B” (due 4:00 PM)")
         self.assertEqual(reminders_text({"reminders": []}), "No reminders are due.")
         self.assertEqual(reminders_text({"error": "EventKit access denied"}), "Reminders are unavailable: EventKit access denied.")
+
+
+class SchoolDataTests(StateDirTest):
+    def test_owens_school_data_is_never_searched(self):
+        for m in ("what's my Canvas assignment completion rate this week", "how many students are absent today",
+                  "what are my class grades", "show my roster"):
+            with self.subTest(m=m):
+                self.assertNotEqual(classify(m, model_label=lambda *_: "web_lookup").label, "web_lookup")

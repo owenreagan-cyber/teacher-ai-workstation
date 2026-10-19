@@ -108,7 +108,10 @@ REMINDER_LIST = re.compile(r"(?:and )?(?:(?:what|which|any) (?:reminders|to-?dos
                            r"(?: today)?|how many reminders(?: do i have)?(?: due)?(?: today)?|(?:show |list )?(?:me )?"
                            r"my reminders|whats due(?: today)?|anything due(?: today)?(?: on my reminders)?|reminders)")
 # Owen asking about his own life: never a web lookup.
-PERSONAL = re.compile(r"\b(?:did|have|was|were|am) i\b|\bi (?:ate|had|did|said|told|left|put|parked)\b")
+PERSONAL = re.compile(r"\b(?:did|have|was|were|am) i\b|\bi (?:ate|had|did|said|told|left|put|parked)\b|"
+                      # his own school data lives in his systems, never on the web
+                      r"\b(?:students?|grades?|gradebook|attendance|absent|canvas|my class(?:es|room)?|"
+                      r"my assignments?|my lessons?|my roster|parents? of)\b")
 GENERAL = _r(r"\bwork on\b", r"\bnext action\b", r"\broadmap\b", r"\bdaily status\b", r"\bworkstation\b",
              r"\bpriorit(?:y|ies)\b", r"\bfocus\b", r"\b(?:draft|write|rewrite|summarize|explain|translate)\b")
 

@@ -14,6 +14,7 @@ ids, and an invariant a decision replaced is retired (RETIRED), never reused.
 """
 from __future__ import annotations
 
+import json
 import re
 
 ALLOWED_MODEL_HOSTS = frozenset({"127.0.0.1:11434", "localhost:11434"})
@@ -47,6 +48,9 @@ CERTS = {
 }
 # Retired CERTs stay listed (ids never change meaning) but are not checked or counted.
 RETIRED = {"CERT-009": "replaced by CERT-010: D-022 lets Chief search automatically, from Owen's words"}
+# docs/response-blocks.md: the only block types a surface may receive.
+BLOCK_TYPES = frozenset({"text", "weather_now", "forecast_hourly", "forecast_daily", "sources", "searched",
+                         "suggestions", "notice"})
 # Questions whose answers never come from the web.
 LOCAL_ONLY_INTENTS = frozenset({"local_files", "mail", "calendar"})
 URL_RE = re.compile(r"(?:https?|javascript|file):[^\s)\]>\"'`]+|\bwww\.[a-z0-9-]+\.[^\s)\]>\"'`]+", re.IGNORECASE)
@@ -285,6 +289,9 @@ def expectation_checks(expect: dict, obs: dict) -> list[dict]:
     if "error_kind" in expect:
         out.append(_c("error_kind", obs.get("error_kind") == expect["error_kind"],
                       f"error_kind {obs.get('error_kind')!r}, expected {expect['error_kind']!r}"))
+    if "block_types" in expect:
+        got = [b.get("type") for b in obs.get("blocks") or [] if isinstance(b, dict)]
+        out.append(_c("block_types", got == expect["block_types"], f"block types {got}, expected {expect['block_types']}"))
     if "intent" in expect:
         out.append(_c("intent", obs.get("intent") == expect["intent"],
                       f"intent {obs.get('intent')!r}, expected {expect['intent']!r}"))
@@ -476,6 +483,14 @@ def global_checks(obs: dict, ctx: dict) -> list[dict]:
 
     out.append(_c("audit_chain", obs.get("chain_status") in ("ok", "uninitialized"),
                   f"audit verify: {obs.get('chain_status')} {obs.get('chain_message', '')}", "CERT-007"))
+
+    if obs.get("blocks") is not None:
+        blocks = obs["blocks"]
+        types = [b.get("type") if isinstance(b, dict) else None for b in blocks] if isinstance(blocks, list) else [None]
+        unknown = sorted({str(t) for t in types if t not in BLOCK_TYPES})
+        urls = URL_RE.findall(json.dumps(blocks))
+        out.append(_c("blocks_known_and_url_free", not unknown and not urls,
+                      f"unknown block types {unknown}; URLs in blocks {urls[:3]}"))
 
     out.append(_c("no_traceback", "Traceback (most recent call last)" not in (obs.get("stderr") or ""),
                   "cos crashed with a Python traceback"))

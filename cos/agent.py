@@ -83,6 +83,9 @@ class AgentResult:
     intent: str | None = None  # the router's label for the question (cos/intent.py)
     search_query: str | None = None  # the exact query sent to web search this turn, if any
     allowed_urls: list[str] = field(default_factory=list)  # URLs from this turn's tool results
+    blocks: list[dict] = field(default_factory=list)  # rich answer (cos/blocks.py), built by code
+    resources: list[dict] = field(default_factory=list)  # link id -> https URL, for the main process
+    extras: dict = field(default_factory=dict)  # what the path found, for the presenter (not output)
 
     def text(self) -> str:
         body = self.answer
@@ -95,7 +98,8 @@ class AgentResult:
     def as_json(self) -> dict:
         return {"ok": True, "answer": self.answer, "tools_used": self.tools_used,
                 "model": self.model, "notices": self.notices, "fast_path": self.fast_path,
-                "intent": self.intent, "search_query": self.search_query}
+                "intent": self.intent, "search_query": self.search_query, "blocks": self.blocks,
+                "resources": self.resources}
 
 
 def _keyword_hits(question: str, tool: Tool) -> int:

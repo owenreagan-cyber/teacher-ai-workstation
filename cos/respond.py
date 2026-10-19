@@ -35,6 +35,7 @@ from cos.executor import run_tool
 from cos.guards import strip_urls
 from cos.intent import REMINDER_LIST, Route, classify, normalize
 from cos.model import ModelError
+from cos.present import present, weather_suggestions
 from cos.search_query import build as build_query
 from cos.tools.web_search import AUTO_SOURCE
 
@@ -80,6 +81,7 @@ class Responder:
         result.answer, removed = strip_urls(result.answer, result.allowed_urls)
         if removed:
             self.rt.audit("answer_guard", guard="urls", removed=removed)
+        present(result, self.rt.config)
         return result
 
     def _routed(self, question: str, previous: dict | None, history: list[dict] | None,
@@ -118,14 +120,20 @@ class Responder:
         if self.rt.kill_switch.is_set():
             close("request_stopped", reason="kill_switch")
             raise Stopped("kill switch is set")
+        suggestions = None
         if route.label == "capabilities":
             text = capabilities_answer(self.rt.registry, self.rt.config)
+            suggestions = [("Today's brief", "brief"), ("Weather", "weather"),
+                           ("Today's calendar", "what's on my calendar today?")]
         elif route.label == "mail" and route.rule == "mail_send":
             text = answer_for("mail_send")
         else:
             text = answer_for(route.label)
         close("answer", tools_used=[], chars=len(text))
-        return AgentResult(text, [], None, fast_path=True)
+        result = AgentResult(text, [], None, fast_path=True)
+        if suggestions:
+            result.extras["suggestions"] = suggestions
+        return result
 
     def _rewrite(self, message: str, previous_query: str) -> str | None:
         try:
@@ -152,7 +160,10 @@ class Responder:
             text = (f"Auto web search is off, so I didn't search the web. Type \"search {query.text}\" to "
                     "search, or turn Auto web search on from the menu bar icon.")
             close("answer", tools_used=[], chars=len(text), auto_search=False)
-            return AgentResult(text, [], None, fast_path=True)
+            result = AgentResult(text, [], None, fast_path=True)
+            result.extras["suggestions"] = [("Search the web", f"search {query.text}"),
+                                            ("What can you do?", "what can you do?")]
+            return result
         return self.fastpath.search(question, query.text, mode, source=AUTO_SOURCE)
 
     def _weather(self, question: str, previous: dict | None, mode: str) -> AgentResult:
@@ -171,7 +182,9 @@ class Responder:
         if places and req is None:
             text = weather_answer.unknown_place_answer(places)
             close("answer", tools_used=[], chars=len(text))
-            return AgentResult(text, [], None, fast_path=True)
+            result = AgentResult(text, [], None, fast_path=True)
+            result.extras["suggestions"] = weather_suggestions(None, places)
+            return result
         args = {"place": req.place.key} if req else {}
         decision = self.rt.gate.decide("weather.today", args, subject="router")
         tool = self.rt.registry.get("weather.today")
@@ -187,12 +200,17 @@ class Responder:
         if self.rt.kill_switch.is_set():
             close("request_stopped", reason="kill_switch")
             raise Stopped("kill switch was set during the weather call")
+        answer = AgentResult("", [tool.name], None, fast_path=True)
         if req is None:
-            text = f"Weather is unavailable: {result.get('error', 'no weather places are set')}."
+            answer.answer = f"Weather is unavailable: {result.get('error', 'no weather places are set')}."
         else:
-            text, _shown = weather_answer.render(req, result, places)
-        close("answer", tools_used=[tool.name], chars=len(text))
-        return AgentResult(text, [tool.name], None, fast_path=True)
+            answer.answer, shown = weather_answer.render(req, result, places)
+            answer.extras["weather_request"] = req
+            if "error" not in result:
+                answer.extras["weather"] = {"result": result, "shown": shown,
+                                            "place": result.get("place") or req.place.name}
+        close("answer", tools_used=[tool.name], chars=len(answer.answer))
+        return answer
 
     def _reminders(self, question: str, mode: str) -> AgentResult:
         """The reminders that are due, listed by code. Titles are quoted as data (D-002)."""
@@ -234,7 +252,10 @@ class Responder:
                 and not str(results.get(name, {}).get("error", "")).startswith("denied:")]
         text = "\n".join(format_brief(results))
         close("answer", tools_used=used, chars=len(text))
-        return AgentResult(text, used, None, fast_path=True)
+        result = AgentResult(text, used, None, fast_path=True)
+        result.extras["suggestions"] = [("Weather tomorrow", "weather tomorrow"),
+                                        ("What should I work on next?", "what should I work on next")]
+        return result
 
 
 def reminders_text(result: dict) -> str:

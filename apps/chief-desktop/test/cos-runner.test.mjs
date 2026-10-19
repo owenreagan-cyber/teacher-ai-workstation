@@ -120,7 +120,7 @@ const MALFORMED = {
   "null answer": { ...VALID, answer: null },
   "non-object turn": "not a turn",
 };
-const KEYS = ["answer", "fast_path", "model", "notices", "question", "tools_used", "total_ms", "ts"];
+const KEYS = ["answer", "blocks", "fast_path", "model", "notices", "question", "tools_used", "total_ms", "ts"];
 
 test("history drops each malformed turn and keeps the valid ones", async () => {
   for (const [name, bad] of Object.entries(MALFORMED)) {
@@ -159,7 +159,7 @@ test("a valid ask passes only known fields", async () => {
     `console.log(JSON.stringify(${JSON.stringify({ ok: true, ...fields, session_id: "default", injected: "<b>x</b>" })}));`);
   const res = await new CosRunner(fake).ask("hi", "default");
   assert.equal(res.ok, true);
-  assert.deepEqual(Object.keys(res).sort(), ["answer", "fast_path", "model", "notices", "ok", "session_id", "tools_used", "total_ms", "ts"]);
+  assert.deepEqual(Object.keys(res).sort(), ["answer", "blocks", "fast_path", "model", "notices", "ok", "session_id", "tools_used", "total_ms", "ts"]);
 });
 
 // Status is rebuilt field by field: a wrong type in any field rejects it, and only known fields pass.

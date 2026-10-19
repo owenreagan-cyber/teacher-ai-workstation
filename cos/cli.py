@@ -153,7 +153,8 @@ def cmd_ask(rt: Runtime, args) -> int:
                 "ts": stamp, "question": question, "answer": result.answer,
                 "tools_used": result.tools_used, "fast_path": result.fast_path, "model": result.model,
                 "notices": result.notices, "total_ms": total_ms, "intent": result.intent,
-                "search_query": result.search_query})
+                "search_query": result.search_query, "blocks": result.blocks,
+                "resources": result.resources})
         except TurnError as e:
             print(f"cos: turn not recorded in session ({e})", file=sys.stderr)
     if args.json:

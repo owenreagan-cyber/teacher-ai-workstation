@@ -7,6 +7,7 @@ import {
   app,
   BrowserWindow,
   globalShortcut,
+  shell,
   ipcMain,
   type IpcMainInvokeEvent,
   Menu,
@@ -28,6 +29,7 @@ import {
   saveWindowState,
 } from "./config.js";
 import { CosRunner } from "./cos.js";
+import { openLink, ResourceTable } from "./resources.js";
 import { APP_URL, devServerUrl, lockDownContents, lockDownSession, registerAppScheme, serveRenderer } from "./security.js";
 import { trayTemplateImage } from "./trayIcon.js";
 
@@ -47,7 +49,8 @@ let warming = false;
 let prefs: Prefs = { startAtLogin: null };
 
 const config = loadDesktopConfig();
-const cos = new CosRunner(config.cosPath, config.error);
+const resources = new ResourceTable(); // link id -> URL; never sent to the renderer
+const cos = new CosRunner(config.cosPath, config.error, (list) => resources.add(list));
 const devUrl = devServerUrl();
 const stateFile = () => path.join(app.getPath("userData"), "window-state.json");
 const prefsFile = () => path.join(app.getPath("userData"), "prefs.json");
@@ -336,6 +339,8 @@ function handle(channel: string, fn: (...args: unknown[]) => unknown): void {
 function registerIpc(): void {
   handle("chief:ask", (question, sessionId) => cos.ask(question, sessionId));
   handle("chief:history", (sessionId) => cos.history(sessionId));
+  // The only way a link opens: by id, looked up in the main process's table, https only.
+  handle("chief:open-link", (linkId) => openLink(resources, linkId, (url) => shell.openExternal(url)));
   handle("chief:brief", () => cos.brief());
   handle("chief:status", async () => {
     const status: StatusResult = await cos.status();

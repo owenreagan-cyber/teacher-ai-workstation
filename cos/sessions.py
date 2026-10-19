@@ -5,7 +5,8 @@ file 0600), one completed turn per line:
 
   {"ts", "question", "answer", "tools_used", "fast_path", "model", "notices", "total_ms",
    "intent" (optional: the router label, cos/intent.py),
-   "search_query" (optional: the exact query sent to web search, for follow-ups)}
+   "search_query" (optional: the exact query sent to web search, for follow-ups),
+   "blocks", "resources" (optional: the rich answer, cos/blocks.py, so links work after a relaunch)}
 
 Session ids must fully match [a-z0-9-]{1,40}, so an id can never name a path
 outside the sessions directory. Reading never creates anything; only a
@@ -30,6 +31,7 @@ import stat
 from pathlib import Path
 
 from cos.config import FILE_MODE, ensure_private_subdir
+from cos.blocks import BlockError, validate_blocks, validate_resources
 from cos.intent import LABELS
 
 SESSION_ID_RE = re.compile(r"[a-z0-9-]{1,40}")
@@ -59,7 +61,17 @@ def _is_str_list(value) -> bool:
 OPTIONAL_CHECKS = {
     "intent": lambda v: v is None or v in LABELS,  # the router's label, for follow-ups
     "search_query": lambda v: v is None or (isinstance(v, str) and 0 < len(v) <= 200),
+    "blocks": lambda v: _valid(validate_blocks, v),
+    "resources": lambda v: _valid(validate_resources, v),
 }
+
+
+def _valid(check, value) -> bool:
+    try:
+        check(value)
+        return True
+    except BlockError:
+        return False
 
 
 def check_turn(turn) -> dict:

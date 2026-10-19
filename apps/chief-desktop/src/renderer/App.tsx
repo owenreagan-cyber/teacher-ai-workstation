@@ -3,6 +3,7 @@ import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react
 import { searchAttribution } from "../shared/attribution";
 import { isStale } from "../shared/homeCard";
 import type { ErrorKind, StatusResult, Turn, WindowState } from "../shared/types";
+import { BlockList } from "./Blocks";
 import { HomeCardView, type HomeState } from "./HomeCard";
 import { BriefIcon, ExpandIcon, PinIcon, PlayIcon, ShieldIcon, StopIcon } from "./icons";
 import { errorMessage, statusDot } from "./messages";
@@ -68,7 +69,7 @@ function AnswerFooter({ turn }: { turn: Pick<Turn, "fast_path" | "model" | "tool
   );
 }
 
-function TurnView({ turn }: { turn: Turn }) {
+function TurnView({ turn, busy, onSend }: { turn: Turn; busy: boolean; onSend: (message: string) => void }) {
   const [copied, setCopied] = useState(false);
   const onCopy = () => {
     if (copyText(turn.answer)) {
@@ -85,12 +86,18 @@ function TurnView({ turn }: { turn: Turn }) {
       </div>
       <div className="flex justify-start">
         <div className="max-w-[92%] rounded-2xl rounded-bl-md bg-neutral-200/70 px-3 py-2 text-[13px] dark:bg-neutral-800">
-          <div className="selectable whitespace-pre-wrap break-words">{turn.answer}</div>
-          {turn.notices.map((n, i) => (
-            <div key={i} className="selectable mt-1 text-[12px] text-amber-700 dark:text-amber-400">
-              Note: {n}
-            </div>
-          ))}
+          {turn.blocks.length > 0 ? (
+            <BlockList blocks={turn.blocks} busy={busy} onSend={onSend} />
+          ) : (
+            <>
+              <div className="selectable whitespace-pre-wrap break-words">{turn.answer}</div>
+              {turn.notices.map((n, i) => (
+                <div key={i} className="selectable mt-1 text-[12px] text-amber-700 dark:text-amber-400">
+                  Note: {n}
+                </div>
+              ))}
+            </>
+          )}
           {searchAttribution(turn) && (
             <div className="mt-1 text-[10.5px] font-medium text-neutral-500">{searchAttribution(turn)}</div>
           )}
@@ -248,8 +255,9 @@ export function App() {
     el.style.height = `${Math.min(el.scrollHeight, line * MAX_INPUT_LINES + pad)}px`;
   }, [input]);
 
-  const send = async () => {
-    const question = input.trim();
+  // Typed input, or a suggestion button's message (text only, through the same ask path).
+  const send = async (message?: string) => {
+    const question = (message ?? input).trim();
     if (!question || asking) return;
     stickToBottom.current = true;
     setHomeCollapsed(true); // the card becomes a thin header after the first question
@@ -266,7 +274,7 @@ export function App() {
         }
       } else {
         addError(res.error_kind, res.error);
-        setInput(question); // give the question back so it can be retried
+        if (message === undefined) setInput(question); // give typed text back so it can be retried
       }
     } finally {
       setPending(null);
@@ -298,7 +306,9 @@ export function App() {
   const feed: React.ReactNode[] = [];
   for (let i = 0; i <= turns.length; i++) {
     for (const card of cards.filter((c) => c.afterTurns === i)) feed.push(<CardView key={`c${card.id}`} card={card} />);
-    if (i < turns.length) feed.push(<TurnView key={`t${i}-${turns[i].ts}`} turn={turns[i]} />);
+    if (i < turns.length) {
+      feed.push(<TurnView key={`t${i}-${turns[i].ts}`} turn={turns[i]} busy={asking} onSend={(m) => void send(m)} />);
+    }
   }
 
   return (
@@ -347,7 +357,7 @@ export function App() {
       <div ref={feedRef} onScroll={onScroll} className="flex-1 space-y-3 overflow-y-auto px-3 py-3">
         {feed.length === 0 && pending === null && (
           <div className="mt-6 text-center text-[12px] text-neutral-500">
-            Ask Chief anything, or type "search …" to search the web. Conversations stay on this Mac.
+            Ask Chief anything. Questions that need the web are searched automatically. Conversations stay on this Mac.
           </div>
         )}
         {feed}

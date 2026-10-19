@@ -19,6 +19,7 @@ electron.ipcRenderer.on("chief:event", (_e, event: PreloadEvent) => {
 const bridge: PreloadBridge = {
   ask: (question, sessionId) => electron.ipcRenderer.invoke("chief:ask", String(question), String(sessionId)),
   history: (sessionId) => electron.ipcRenderer.invoke("chief:history", String(sessionId)),
+  openLink: (linkId) => electron.ipcRenderer.invoke("chief:open-link", String(linkId)),
   brief: () => electron.ipcRenderer.invoke("chief:brief"),
   status: () => electron.ipcRenderer.invoke("chief:status"),
   stop: () => electron.ipcRenderer.invoke("chief:stop"),

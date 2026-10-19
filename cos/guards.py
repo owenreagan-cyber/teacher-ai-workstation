@@ -174,7 +174,7 @@ def strip_urls(text: str, allowed=frozenset()) -> tuple[str, int]:
     out = BARE_URL.sub(bare, MD_LINK.sub(md, text))
     if removed:
         out = re.sub(r"\(\s*\)|\[\s*\]", "", out)
-        out = re.sub(r"[ \t]+([.,;:!?])", r"\1", out)
+        out = re.sub(r"[ \t]+([.,;:!?)\]])", r"\1", out)
         out = re.sub(r"[ \t]{2,}", " ", out)
         out = re.sub(r"[ \t]+$", "", out, flags=re.MULTILINE)
     return out, removed

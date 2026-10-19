@@ -16,6 +16,7 @@ import type {
   Turn,
   WarmResult,
 } from "../shared/types.js";
+import { type Resource, stripUrls, toBlocks, toResources } from "../shared/blocks.js";
 import { toHomeCard } from "../shared/homeCard.js";
 import { type Action, ArgsError, buildArgs, type Params } from "./args.js";
 
@@ -42,13 +43,23 @@ export function minimalEnv(): Record<string, string> {
 const isStr = (v: unknown): v is string => typeof v === "string";
 const isStrList = (v: unknown): v is string[] => Array.isArray(v) && v.every(isStr);
 
-/** The answer half of a turn, rebuilt field by field (same rules as cos/sessions.py check_turn), or null. */
+/** The answer half of a turn, rebuilt field by field (same rules as cos/sessions.py check_turn), or null.
+ * Text bound for the renderer has every URL removed; links reach it only as block link ids. */
 function answerFields(o: Record<string, unknown>): Omit<Turn, "question"> | null {
   const { ts, answer, tools_used, fast_path, model, notices, total_ms } = o;
   if (!isStr(ts) || !isStr(answer) || !isStrList(tools_used) || typeof fast_path !== "boolean") return null;
   if (!(model === null || isStr(model)) || !isStrList(notices)) return null;
   if (typeof total_ms !== "number" || !Number.isSafeInteger(total_ms) || total_ms < 0) return null;
-  return { ts, answer, tools_used: [...tools_used], fast_path, model, notices: [...notices], total_ms };
+  return {
+    ts,
+    answer: stripUrls(answer),
+    tools_used: [...tools_used],
+    fast_path,
+    model,
+    notices: notices.map(stripUrls),
+    total_ms,
+    blocks: toBlocks(o.blocks),
+  };
 }
 
 /** A full Turn with exactly the known fields and correct types, or null (dropped). */
@@ -56,7 +67,14 @@ export function toTurn(value: unknown): Turn | null {
   if (typeof value !== "object" || value === null || Array.isArray(value)) return null;
   const o = value as Record<string, unknown>;
   const rest = answerFields(o);
-  return rest && isStr(o.question) ? { ...rest, question: o.question } : null;
+  return rest && isStr(o.question) ? { ...rest, question: stripUrls(o.question) } : null;
+}
+
+/** The resources ({id, url}) a cos answer or history turn carries; they go to the main process only. */
+function resourcesOf(value: unknown): Resource[] {
+  return typeof value === "object" && value !== null && !Array.isArray(value)
+    ? toResources((value as Record<string, unknown>).resources)
+    : [];
 }
 
 const AUDIT_STATES = ["ok", "empty", "fail"] as const;
@@ -107,9 +125,11 @@ function run(cosPath: string, args: string[], timeout: number): Promise<Raw> {
 }
 
 export class CosRunner {
+  /** onResources receives the link table entries of every answer and history turn (main process). */
   constructor(
     private readonly cosPath: string,
     private readonly setupError: string | null = null,
+    private readonly onResources: (resources: Resource[]) => void = () => {},
   ) {}
 
   private preflight(action: Action, params: Params): string[] | Failure {
@@ -153,17 +173,20 @@ export class CosRunner {
 
   async ask(question: unknown, sessionId: unknown): Promise<AskResult> {
     const v = await this.json("ask", { question, sessionId });
-    return CosRunner.envelope<AskResult>(v, (o) => {
+    const result = CosRunner.envelope<AskResult>(v, (o) => {
       const fields = answerFields(o);
       if (!fields || !(o.session_id === null || isStr(o.session_id))) return null;
       return { ok: true, ...fields, session_id: o.session_id };
     });
+    if (result.ok) this.onResources(resourcesOf(v));
+    return result;
   }
 
   async history(sessionId: unknown): Promise<HistoryResult> {
     const v = await this.json("history", { sessionId });
     if (Array.isArray(v)) {
       const turns = v.map(toTurn).filter((t): t is Turn => t !== null); // invalid turns are dropped
+      this.onResources(v.flatMap(resourcesOf));
       return { ok: true, turns };
     }
     return CosRunner.envelope<HistoryResult>(v, () => null);

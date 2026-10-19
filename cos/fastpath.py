@@ -348,9 +348,11 @@ class FastPath:
                        tool_ms=timing["tool_ms"], total_ms=int((time.monotonic() - started) * 1000),
                        **fields)
 
-        def done(text, used, model=None, notices=(), fast=True, urls=()):
+        def done(text, used, model=None, notices=(), fast=True, urls=(), results=None):
             res = AgentResult(text, used, model, list(notices), fast_path=fast)
             res.search_query, res.allowed_urls = query, list(urls)
+            if results:
+                res.extras["search"] = results
             return res
 
         self.audit("request", mode=mode, path=path, intent="web_search",
@@ -403,7 +405,7 @@ class FastPath:
         if summary:
             text = f"{summary}\n\n{searched_line(query)}\n\n{_sources(results)}"
             close("answer", tools_used=[tool.name], model=model_used, chars=len(text))
-            return done(text, [tool.name], model_used, notices, fast=False, urls=urls)
+            return done(text, [tool.name], model_used, notices, fast=False, urls=urls, results=results)
         text = f"{_raw_results(query, results)}\n\n{searched_line(query)}"
         close("answer", tools_used=[tool.name], chars=len(text))
-        return done(text, [tool.name], notices=notices, urls=urls)
+        return done(text, [tool.name], notices=notices, urls=urls, results=results)

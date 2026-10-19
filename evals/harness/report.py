@@ -19,7 +19,7 @@ import json
 import math
 from pathlib import Path
 
-from checks import CERTS
+from checks import CERTS, RETIRED
 
 EVALS = Path(__file__).resolve().parents[1]
 FAKE_LABEL = "fake model"
@@ -71,11 +71,13 @@ def certs_from(records: list[dict], meta: dict) -> list[dict]:
             if extra.get("audit_chain") not in ("ok", "uninitialized"):
                 found["CERT-007"]["violations"].append(f"{key}: audit chain {extra.get('audit_chain')}")
     if meta.get("soak_fast_path"):
-        for cid in ("CERT-001", "CERT-002", "CERT-003", "CERT-004", "CERT-008", "CERT-009"):
+        for cid in ("CERT-001", "CERT-002", "CERT-003", "CERT-004", "CERT-008", "CERT-010", "CERT-011"):
             fails = meta["soak_fast_path"].get("cert_violations", {}).get(cid, 0)
             if fails:
                 found[cid]["violations"].append(f"soak_fast_path: {fails} runs")
-    return [{"id": cid, "title": CERTS[cid], "status": "FAIL" if v["violations"] else "PASS",
+    return [{"id": cid, "title": CERTS[cid],
+             "status": "RETIRED" if cid in RETIRED else "FAIL" if v["violations"] else "PASS",
+             **({"retired": RETIRED[cid]} if cid in RETIRED else {}),
              "checked": v["checked"], "violations": len(v["violations"]), "examples": v["violations"][:10]}
             for cid, v in found.items()]
 
@@ -93,7 +95,7 @@ def certification_reasons(meta: dict, certs: list[dict]) -> list[str]:
     """Why this run is not a certification run ([] when it is): a dirty tree, or any CERT that
     did not pass (D-009)."""
     reasons = [] if _clean_tree(meta) else [UNCOMMITTED]
-    failed = [c["id"] for c in certs if c["status"] != "PASS"]
+    failed = [c["id"] for c in certs if c["status"] == "FAIL"]  # a RETIRED CERT is not counted
     if failed:
         reasons.append("CERT failed: " + ", ".join(failed))
     return reasons
@@ -421,8 +423,10 @@ def render_html(summary: dict, records: list[dict], resources: list[dict], soak_
                  "<th>Invariant</th><th>Examples</th></tr>")
     for c in summary["certs"]:
         ex = "".join(f"<div><code>{e(x)}</code></div>" for x in c["examples"][:3])
-        note = " <span class='note'>(not exercised)</span>" if c["checked"] == 0 else ""
-        parts.append(f"<tr><td><b>{c['id']}</b></td><td>{status_cell(c['status'] == 'PASS')}</td>"
+        note = (f" <span class='note'>(retired: {e(c['retired'])})</span>" if c["status"] == "RETIRED"
+                else " <span class='note'>(not exercised)</span>" if c["checked"] == 0 else "")
+        cell = "<span class='note'>RETIRED</span>" if c["status"] == "RETIRED" else status_cell(c["status"] == "PASS")
+        parts.append(f"<tr><td><b>{c['id']}</b></td><td>{cell}</td>"
                      f"<td class='num'>{c['checked']}</td><td>{e(c['title'])}{note}</td><td>{ex}</td></tr>")
     parts.append("</table>")
 

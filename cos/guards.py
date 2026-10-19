@@ -1,6 +1,10 @@
 """Answer guards: deterministic checks on model-written text before Owen sees it.
 
-The model proposes words; code decides what reaches Owen (D-003). Two guards:
+The model proposes words; code decides what reaches Owen (D-003). Three guards:
+
+  strip_urls(text, allowed)
+      An answer may contain only URLs that came from that turn's tool results (D-011): any
+      other URL is removed, on every answer (cos/respond.py).
 
   scrub_cleanup(answer, question)
       Chief never suggests deleting files, emptying the Trash, or running a destructive command
@@ -138,6 +142,44 @@ def scrub_cleanup(answer: str, question: str) -> tuple[str, bool]:
     return text, True
 
 
+MD_LINK = re.compile(r"\[([^\]\n]{1,300})\]\(\s*<?((?:https?://|www\.)[^)\s>]+)>?\s*\)")
+BARE_URL = re.compile(r"(?<![\w/@.-])(?:https?://|www\.)[^\s<>()\"'`\]]+", re.IGNORECASE)
+
+
+def strip_urls(text: str, allowed=frozenset()) -> tuple[str, int]:
+    """(text, removed): every URL that is not in `allowed` (the URLs in this turn's tool results)
+    is removed. A markdown link to one keeps its text. Trailing punctuation is not part of a URL."""
+    allowed = {str(u).rstrip("/") for u in allowed}
+    removed = 0
+
+    def ok(url: str) -> bool:
+        return url.rstrip(".,;:!?").rstrip("/") in allowed
+
+    def md(m):
+        nonlocal removed
+        if ok(m.group(2)):
+            return m.group(0)
+        removed += 1
+        return m.group(1)
+
+    def bare(m):
+        nonlocal removed
+        url = m.group(0)
+        tail = url[len(url.rstrip(".,;:!?")):]
+        if ok(url):
+            return url
+        removed += 1
+        return tail
+
+    out = BARE_URL.sub(bare, MD_LINK.sub(md, text))
+    if removed:
+        out = re.sub(r"\(\s*\)|\[\s*\]", "", out)
+        out = re.sub(r"[ \t]+([.,;:!?])", r"\1", out)
+        out = re.sub(r"[ \t]{2,}", " ", out)
+        out = re.sub(r"[ \t]+$", "", out, flags=re.MULTILINE)
+    return out, removed
+
+
 OLLAMA_STOP = re.compile(r"(\bollama\s+stop\s+)(`?)([A-Za-z0-9][\w.:/-]*)(`?)")
 
 
@@ -156,6 +198,58 @@ def scrub_unload(answer: str, loaded: list[str] | None) -> tuple[str, bool]:
         return f"{m.group(1)}{m.group(2)}<model>{m.group(4)}{m.group(3)[len(name):]}"
 
     return OLLAMA_STOP.sub(fix, answer), changed
+
+
+# Offers to do something Chief can't do (it is read-only): "Want me to set a quick alert later?"
+OFFER = re.compile(r"\b(?:(?:do |would )?you want me to|would you like me to|want me to|shall i|should i|"
+                   r"let me know if you'?d like me to|if you'?d like,? i can|i can also|i could also|happy to)\s+"
+                   r"(?:\w+\s+(?:or|and)\s+)?(?:send|e-?mail|text|message|set|add|create|schedule|reschedule|book|"
+                   r"remind|delete|remove|move|archive|post|cancel|edit|change|update|forward|reply|mark|install|"
+                   r"uninstall|order|buy|share|upload|print|load|unload|restart|turn (?:on|off)|open)\b", re.IGNORECASE)
+
+
+def scrub_offers(answer: str) -> tuple[str, int]:
+    """(answer, dropped): sentences that offer an action Chief can't do are removed."""
+    dropped = 0
+    lines = []
+    for line in answer.split("\n"):
+        sentences = SENTENCE_END.split(line)
+        kept = [s for s in sentences if not OFFER.search(_normalize(s))]
+        dropped += len(sentences) - len(kept)
+        if kept or not line.strip():
+            lines.append(" ".join(kept) if len(kept) != len(sentences) else line)
+    if not dropped:
+        return answer, 0
+    text = re.sub(r"\n{3,}", "\n\n", "\n".join(lines)).strip()
+    return text or answer, dropped
+
+
+# A model can't know the kill switch's state; code states it (agent.Agent.guard).
+# The model's own sentence ("The kill switch is disabled."), not a quoted title that mentions it.
+KILL_SWITCH_CLAIM = re.compile(r"^[\s*_>#-]*(?:(?:yes|no)[,.]?\s+)?(?:the\s+|your\s+|chief'?s\s+)?kill[ -]?switch\b"
+                               r"[^.\n\"“”]{0,40}?\b(?:is|was|has been|isn'?t|is not|remains)\b", re.IGNORECASE)
+KILL_SWITCH_QUESTION = re.compile(r"\bkill[ -]?switch\b", re.IGNORECASE)
+KILL_SWITCH_STATE = "Kill switch: not set (Chief is running; `cos stop` or the Stop button sets it)."
+
+
+def scrub_kill_switch(answer: str, question: str) -> tuple[str, bool]:
+    """(answer, changed): model sentences about the kill switch's state are dropped; if Owen
+    asked about it, code's line states it. Chief only answers while it is not set."""
+    lines, changed = [], False
+    for line in answer.split("\n"):
+        sentences = SENTENCE_END.split(line)
+        kept = [s for s in sentences if not KILL_SWITCH_CLAIM.search(_normalize(s))]
+        if len(kept) != len(sentences):
+            changed = True
+            if kept:
+                lines.append(" ".join(kept))
+            continue
+        lines.append(line)
+    text = re.sub(r"\n{3,}", "\n\n", "\n".join(lines)).strip()
+    if KILL_SWITCH_QUESTION.search(question or ""):
+        text = f"{KILL_SWITCH_STATE}\n\n{text}".strip()
+        changed = True
+    return text, changed
 
 
 def mentions_unload(answer: str) -> bool:

@@ -302,7 +302,7 @@ class FastPathSearchTests(StateDirTest):
         self.assertTrue(res.fast_path)
         self.assertIsNone(res.model)
         self.assertTrue(res.answer.startswith('Web results for "synthetic radar":\n1. Test Result A'))
-        self.assertTrue(res.answer.endswith("https://example.org/test-result-e"))
+        self.assertTrue(res.answer.endswith("https://example.org/test-result-e\n\nSearched: synthetic radar"))
         self.assertIn("raw results", res.notices[0])
 
     def test_without_a_summarizer_the_raw_list_is_shown(self):

@@ -71,7 +71,8 @@ CAPABILITIES = _r(r"\bwhat (?:else )?can (?:you|chief) do\b", r"\bwhat are (?:yo
 ACTION = re.compile(r"^(?:hey chief )?(?:please )?(?:(?:can|could|would|will) you (?:please )?)?"
                     r"(?:empty|delete|remove|erase|move|rename|archive|post|publish|schedule|book|cancel|"
                     r"create|make(?! sure)|add|set|turn on|turn off|enable|disable|install|uninstall|restart|reboot|"
-                    r"shut down|buy|order|purchase|print|open|launch|upload|share|update|change|edit)\b")
+                    r"shut down|buy|order|purchase|print|open|launch|upload|share|update|change|edit|mark|"
+                    r"complete|check off|clear|snooze|dismiss|rename|reschedule)\b")
 MAIL_SEND = re.compile(r"^(?:hey chief )?(?:please )?(?:(?:can|could|would|will) you (?:please )?)?"
                        r"(?:send|e-?mail|reply to|respond to|forward|text|message)\b")
 MAIL = _r(r"\binbox\b", r"\bunread\b", r"\b(?:my|new|any|latest|recent|last) (?:e-?mails?|mail)\b",
@@ -99,6 +100,13 @@ CALENDAR = _r(r"\bcalendar\b", r"\bmeetings?\b", r"\bschedule\b", r"\bevents?\b"
 REMINDERS = _r(r"\bremind(?:er|ers)?\b", r"\bto-?dos?\b", r"\btasks?\b", r"\bdue\b", r"\boverdue\b", r"\bdeadlines?\b")
 TIME = _r(r"\btime\b", r"\bdate\b", r"\bwhat day\b", r"\bdays (?:until|till|til|to|before)\b", r"\bclock\b",
           r"\bweekday\b", r"\bhow long until\b")
+# Owen asking about an earlier answer ("what did that search say?"): the conversation answers it.
+REFERS_BACK = re.compile(r"\bwhat did (?:that|it|the search|you|those) (?:say|find|show|mean)\b|"
+                         r"\b(?:that|those|the last|your last) (?:search|results?|answer|sources?|links?)\b")
+# A plain request for the reminders list: code lists them (cos/respond.py), never the model.
+REMINDER_LIST = re.compile(r"(?:and )?(?:(?:what|which|any) (?:reminders|to-?dos|tasks)(?: are| do i have)?(?: due)?"
+                           r"(?: today)?|how many reminders(?: do i have)?(?: due)?(?: today)?|(?:show |list )?(?:me )?"
+                           r"my reminders|whats due(?: today)?|anything due(?: today)?(?: on my reminders)?|reminders)")
 # Owen asking about his own life: never a web lookup.
 PERSONAL = re.compile(r"\b(?:did|have|was|were|am) i\b|\bi (?:ate|had|did|said|told|left|put|parked)\b")
 GENERAL = _r(r"\bwork on\b", r"\bnext action\b", r"\broadmap\b", r"\bdaily status\b", r"\bworkstation\b",
@@ -124,6 +132,7 @@ RULES: tuple[tuple[str, str, Callable[[str], bool]], ...] = (
     ("weather", "weather", lambda q: WEATHER.search(q) is not None),
     ("mac_status", "mac_status", lambda q: _mac_status(q)),
     ("local_files", "local_files", lambda q: LOCAL_FILES.search(q) is not None),
+    ("refers_back", "general", lambda q: REFERS_BACK.search(q) is not None),
     ("web_lookup", "web_lookup", lambda q: WEB_LOOKUP.search(q) is not None and PERSONAL.search(q) is None),
     ("general", "general", lambda q: GENERAL.search(q) is not None),
     ("calendar", "calendar", lambda q: CALENDAR.search(q) is not None),
@@ -189,15 +198,18 @@ def classify(message: str, previous: dict | None = None,
     ({"question", "intent"}) or None; model_label(message, previous_question) asks the local
     model and returns a label or None (it may raise; the caller decides what that means)."""
     prev_label = (previous or {}).get("intent")
-    if prev_label in FOLLOW_UP_LABELS and is_follow_up(message):
-        return Route(prev_label, "follow_up")
     hit = classify_rules(message)
+    # A follow-up continues the previous label unless it names another topic ("and my reminders?").
+    if prev_label in FOLLOW_UP_LABELS and is_follow_up(message) and (hit is None or hit.label == prev_label):
+        return Route(prev_label, "follow_up")
     if hit is not None:
         return hit
     if model_label is not None:
         label = model_label(message, (previous or {}).get("question"))
         if label == "web_lookup" and PERSONAL.search(normalize(message)):
             return Route("general", "model", "personal")  # Owen's own life is never searched for
+        if label == "web_lookup" and REFERS_BACK.search(normalize(message)):
+            return Route("general", "model", "refers_back")  # about an earlier answer, not the web
         if label in LABELS:
             return Route(label, "model")
     return Route("general", "default")

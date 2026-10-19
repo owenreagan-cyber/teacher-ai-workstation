@@ -134,29 +134,44 @@ The compact window (Chief.app), Raycast, and `bin/cos ask` all reach the same `c
 
 ### Web search
 
-Type a message that starts with **`search`**, **`look up`**, **`google`**, or **`web search`**:
+**Automatic (D-022).** Ask normally. When a question needs the web ("when do the ny rangers
+play?", "who won the game last night"), Chief searches by itself; you don't type "search".
+
+- The query comes only from your own words: your message, cleaned by code (a leading "can you",
+  "please", "tell me" and the trailing punctuation are dropped; at most 200 characters). A short
+  follow-up such as "and the Islanders?" joins your previous question, but only if that one was a
+  web question too. The local model may tidy a follow-up into one query, and code uses it only if
+  every word in it came from you. Query text never comes from web pages, mail, files, the
+  calendar, or tool results (CERT-010).
+- Every searched answer shows the exact query: **`Searched: when do the ny rangers play`**.
+- Questions about your files, mail, or calendar never go to the web, even typed as
+  "search my calendar". Questions about your own day ("what did I eat for lunch") never do either.
+- An answer keeps only links that came from that turn's search results; any other URL is
+  removed (CERT-011).
+- **Turn it off:** the menu bar icon has an **Auto web search** checkbox, or run
+  `bin/cos auto-search off` (`on`, `status`). It is stored as `"auto_search"` in `config.json`.
+  When it's off, Chief answers "Auto web search is off, so I didn't search the web" and shows the
+  `search …` line you can type instead.
+- **Typed search still works:** a message that starts with **`search`**, **`look up`**,
+  **`google`**, or **`web search`** sends the words after it exactly as typed.
 
 ```sh
+bin/cos ask "when do the ny rangers play?"
 bin/cos ask "search weather radar wilson nc"
-bin/cos ask "look up photosynthesis for kids"
 ```
 
-- Only the whole message counts: "search my calendar" is a web search for "my calendar";
-  "what's the search engine" and "can you search for …" are ordinary questions, and the model
-  cannot search on its own (D-011, CERT-009).
-- The words after the command go to Brave Search exactly as typed (trimmed, at most 200
-  characters). **They leave the Mac: never type student names or other student details**
-  (D-001).
-- The answer is 2–4 sentences from the local model, followed by numbered sources. If the local
-  model is unavailable, you get the raw results list instead. Results are untrusted data (D-002).
+- The answer is 2–4 sentences from the local model, then `Searched: …`, then numbered sources.
+  If the local model is unavailable, you get the raw results list instead. Results are untrusted
+  data (D-002).
 - The kill switch (`cos stop`) blocks search like every other tool.
-- The query text and its source (`typed`) are recorded in the audit log; the API key never is.
-- **Budget:** at most 30 searches a day and 600 a month by default (local time). Every real call
-  to Brave counts, even one that fails. At either limit Chief answers, for example, "Search limit
-  reached for today: 30/30. Resets tomorrow." and makes no call. Change the limits in
-  `config.json` in the state directory (`"search_daily_limit": 30, "search_monthly_limit": 600`;
-  0 turns search off). Counts live in `search_usage.json` there; if that file is damaged, search
-  pauses until you delete it.
+- The query text and its source (`typed` or `auto`) are recorded in the audit log; the API key
+  never is.
+- **Budget:** at most 30 searches a day and 600 a month by default (local time), automatic and
+  typed together. Every real call to Brave counts, even one that fails. At either limit Chief
+  answers, for example, "Search limit reached for today: 30/30. Resets tomorrow." and makes no
+  call. Change the limits in `config.json` in the state directory (`"search_daily_limit": 30,
+  "search_monthly_limit": 600`; 0 turns search off). Counts live in `search_usage.json` there;
+  if that file is damaged, search pauses until you delete it.
 - In the desktop app, answers built from results show "Search by Brave".
 
 #### Web search setup (once)

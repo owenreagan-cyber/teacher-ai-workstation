@@ -335,6 +335,8 @@ def cos_args(step: dict, prompt: str) -> list[str]:
         return [cmd]
     if cmd == "audit_verify":
         return ["audit", "verify"]
+    if cmd in ("auto_search_on", "auto_search_off"):
+        return ["auto-search", cmd.rsplit("_", 1)[1]] + (["--json"] if as_json else [])
     raise SystemExit(f"unknown command {cmd!r}")
 
 
@@ -381,6 +383,16 @@ def history_snapshot(runner: CosRunner, state: Path, fixtures: Path, sid: str) -
 
 # ----------------------------------------------------------------------------- one case
 
+def fixture_result_urls(fixtures: Path) -> list[str]:
+    """The URLs in the fixture's synthetic search results: the only URLs a searched answer may
+    contain (CERT-011)."""
+    try:
+        data = json.loads((fixtures / "search.json").read_text(encoding="utf-8"))
+        return [str(r.get("url")) for r in data["web"]["results"] if isinstance(r, dict) and r.get("url")]
+    except (OSError, ValueError, KeyError, TypeError):
+        return []
+
+
 def run_case(case: dict, runner: CosRunner, ctx: dict, judge, tmp_root: Path) -> list[dict]:
     fixtures = FIXTURES_DIR / case.get("fixtures", "default")
     state = Path(tempfile.mkdtemp(prefix=f"{case['id'][:30]}-", dir=tmp_root)) / "state"
@@ -390,6 +402,8 @@ def run_case(case: dict, runner: CosRunner, ctx: dict, judge, tmp_root: Path) ->
     case_session = case.get("session")
     kill_switch = False
     records = []
+    owen_prompts: list[str] = []  # every message Owen sent in this case so far (CERT-010)
+    tool_urls = fixture_result_urls(fixtures)
     for idx, step in enumerate(case_steps(case)):
         step.setdefault("session", case_session)
         cmd = step.get("command", "ask")
@@ -398,7 +412,10 @@ def run_case(case: dict, runner: CosRunner, ctx: dict, judge, tmp_root: Path) ->
         sfile = session_file(state, sid) if sid and _valid_sid(sid) else None
         before = count_lines(sfile) if sfile else None
         res = runner.call(cos_args(step, prompt), state, fixtures)
-        obs = {"command": cmd, "prompt": prompt, **res, **parse_output(cmd, res)}
+        if cmd == "ask":
+            owen_prompts.append(prompt)
+        obs = {"command": cmd, "prompt": prompt, **res, **parse_output(cmd, res),
+               "owen_prompts": list(owen_prompts), "tool_urls": tool_urls}
         obs["audit"] = tail.new_records()
         obs["session_lines_before"], obs["session_lines_after"] = before, (count_lines(sfile) if sfile else None)
         obs["kill_switch_set"] = kill_switch
@@ -463,6 +480,7 @@ def run_fast_path_soak(cases, n, runner, ctx, tmp_root, out_path, log) -> dict:
                 prompt = build_prompt(case.get("prompt"))
                 res = runner.call(cos_args({"command": "ask"}, prompt), state, fixtures)
                 obs = {"command": "ask", "prompt": prompt, **res, **parse_output("ask", res),
+                       "owen_prompts": [prompt], "tool_urls": fixture_result_urls(fixtures),
                        "audit": tail.new_records(), "kill_switch_set": False,
                        "session_lines_before": None, "session_lines_after": None,
                        "chain_status": "ok"}  # whole chain verified once at the end

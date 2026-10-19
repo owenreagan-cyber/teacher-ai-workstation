@@ -15,6 +15,10 @@ longitude become places.home named "Home" (Chief never invents a city name).
 When "places" is not written at all, the defaults fill in what is missing:
 home Sims, NC and work Clayton, NC. Unknown keys are refused, inside a place too.
 
+auto_search (default true): a question that needs the web is searched without
+Owen typing "search". `cos auto-search on|off` (and the desktop tray toggle)
+changes it with write_config_value, which keeps every other key as written.
+
 model and fallback_model must be local: a name ending in ":cloud" or containing
 "-cloud" (an Ollama cloud model) is refused (CloudModelError). ModelClient also
 asks /api/show before every call and refuses a model that reports a remote host.
@@ -46,6 +50,7 @@ DEFAULTS = {
     "places": None,
     "search_daily_limit": 30,
     "search_monthly_limit": 600,
+    "auto_search": True,
 }
 
 
@@ -141,6 +146,7 @@ class Config:
     search_daily_limit: int = 30
     search_monthly_limit: int = 600
     places: dict[str, Place] = field(default_factory=dict)
+    auto_search: bool = True
 
     @property
     def audit_path(self) -> Path:
@@ -273,6 +279,8 @@ def load_config(root: Path | None = None) -> Config:
     keep_alive = data["model_keep_alive"]
     if not isinstance(keep_alive, str) or not KEEP_ALIVE_RE.fullmatch(keep_alive):
         raise ConfigError('model_keep_alive must be an Ollama duration such as "30m", "2h", or "0"')
+    if not isinstance(data["auto_search"], bool):
+        raise ConfigError("auto_search must be true or false")
     for name in ("search_daily_limit", "search_monthly_limit"):
         v = data[name]
         if not isinstance(v, int) or isinstance(v, bool) or v < 0:
@@ -294,4 +302,29 @@ def load_config(root: Path | None = None) -> Config:
         search_daily_limit=data["search_daily_limit"],
         search_monthly_limit=data["search_monthly_limit"],
         places=resolve_places(data["places"], latitude, longitude),
+        auto_search=data["auto_search"],
     )
+
+
+def write_config_value(key: str, value, root: Path | None = None) -> Path:
+    """Set one known key in config.json, keeping every other key as written. The file is
+    replaced atomically (0600). Refuses (ConfigError) if config.json is unreadable or the
+    result would not load."""
+    if key not in DEFAULTS:
+        raise ConfigError(f"unknown config key {key!r}")
+    root = ensure_state_dir(root)
+    path = root / "config.json"
+    data: dict = {}
+    if path.exists():
+        try:
+            data = json.loads(path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError) as e:
+            raise ConfigError(f"config.json unreadable: {e}")
+        if not isinstance(data, dict):
+            raise ConfigError("config.json must be a JSON object")
+    data[key] = value
+    tmp = root / ".config.json.tmp"
+    with open_private(tmp, "w") as fh:
+        fh.write(json.dumps(data, indent=2) + "\n")
+    os.replace(tmp, path)
+    return path

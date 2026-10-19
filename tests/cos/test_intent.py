@@ -188,3 +188,28 @@ class ResponderPathTests(StateDirTest):
                 self.assertEqual(res["intent"], label)
                 self.assertNotIn("web.search", res["tools_used"])
                 self.assertFalse([r for r in audit if str(r["kind"]).startswith("egress")])
+
+
+class SectionFourRoutingTests(StateDirTest):
+    def test_questions_about_an_earlier_answer_are_not_web_lookups(self):
+        for m in ("what did that search say?", "what do those results mean", "summarize your last answer"):
+            with self.subTest(m=m):
+                self.assertEqual(classify(m, model_label=lambda *_: "web_lookup").label, "general")
+
+    def test_a_follow_up_naming_another_topic_takes_that_topic(self):
+        self.assertEqual(classify("and my reminders?", {"question": "x", "intent": "weather"}).label, "reminders")
+        self.assertEqual(classify("and tomorrow?", {"question": "x", "intent": "weather"}).label, "weather")
+
+    def test_reminder_lists_are_written_by_code(self):
+        from cos.intent import REMINDER_LIST
+        from cos.respond import reminders_text
+        for m in ("what reminders are due", "any reminders due?", "how many reminders do I have due", "and my reminders?"):
+            self.assertIsNotNone(REMINDER_LIST.fullmatch(intent.normalize(m)), m)
+        for m in ("which reminder is due latest today?", "remind me to grade at 3", "delete my reminder"):
+            self.assertIsNone(REMINDER_LIST.fullmatch(intent.normalize(m)), m)
+        self.assertEqual(reminders_text({"reminders": [{"title": "Test Reminder A", "overdue": True, "due": "Tue Sep 29"},
+                                                       {"title": "Test Reminder B", "due": "4:00 PM"}]}),
+                         "2 reminders due:\n- “Test Reminder A” (overdue since Tue Sep 29)\n"
+                         "- “Test Reminder B” (due 4:00 PM)")
+        self.assertEqual(reminders_text({"reminders": []}), "No reminders are due.")
+        self.assertEqual(reminders_text({"error": "EventKit access denied"}), "Reminders are unavailable: EventKit access denied.")

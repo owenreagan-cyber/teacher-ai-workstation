@@ -486,7 +486,7 @@ class HistoryTests(CliCase):
 
 class StatusTests(CliCase):
     FIELDS = {"ok", "kill_switch", "kill_switch_reason", "model", "fallback_model",
-              "ollama_reachable", "loaded_models", "audit", "version"}
+              "ollama_reachable", "loaded_models", "audit", "version", "auto_search"}
 
     def test_fields_with_ollama_up(self):
         http = FakeHttp([{"models": [{"name": "qwen3.6:35b"}]}])

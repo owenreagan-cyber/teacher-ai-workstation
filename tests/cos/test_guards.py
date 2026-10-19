@@ -198,3 +198,46 @@ class GuardInAgentTests(FixtureFastPath):
         self.assertEqual(res.answer, "Your disk has 214 GB free.")
         self.assertEqual(res.notices, [CLEANUP_NOTE])
         self.assertIn(("answer_guard", {"guard": "cleanup"}), self.audit.events)
+
+
+class OfferGuardTests(StateDirTest):
+    def test_offers_of_write_actions_are_dropped(self):
+        from cos.guards import scrub_offers
+        text = ("I can't create reminders. Add it in Reminders for 3:00 PM. "
+                "Want me to set a quick alert later instead?")
+        self.assertEqual(scrub_offers(text), ("I can't create reminders. Add it in Reminders for 3:00 PM.", 1))
+        for keep in ("Want me to check the forecast for tomorrow too?", "I can read your calendar.",
+                     "Should I look at tomorrow instead?"):
+            self.assertEqual(scrub_offers(keep), (keep, 0))
+
+
+class PrefetchTests(FixtureFastPath):
+    def test_code_fetches_live_data_before_the_model_answers(self):
+        seen = []
+
+        class Model:
+            def chat(self, messages, tools=None, fmt=None):
+                seen.append([m for m in messages if m["role"] == "tool"])
+                return {"role": "assistant", "content": "Battery is at 82%."}, "m"
+        agent = Agent(Model(), self.registry, self.gate, "system", audit=self.audit)
+        res = agent.run("is my battery going to last the afternoon?", prefetch=("mac.status",))
+        self.assertEqual(res.tools_used, ["mac.status"])
+        self.assertIn('"battery_pct": 82', seen[0][0]["content"])
+
+    def test_prefetch_is_refused_while_stopped(self):
+        self.kill.stop("test")
+        agent = Agent(object(), self.registry, self.gate, "system", audit=self.audit)
+        with self.assertRaises(Stopped):
+            agent.run("how's my battery", prefetch=("mac.status",))
+        self.assertFalse([e for e in self.audit.events if e[0] == "tool_result"])
+
+
+class KillSwitchClaimTests(StateDirTest):
+    def test_the_state_comes_from_code(self):
+        from cos.guards import KILL_SWITCH_STATE, scrub_kill_switch
+        answer = "The kill switch is disabled. Here are your events for today."
+        self.assertEqual(scrub_kill_switch(answer, "Is the kill switch on? Check my calendar too."),
+                         (f"{KILL_SWITCH_STATE}\n\nHere are your events for today.", True))
+        self.assertEqual(scrub_kill_switch("The kill switch has been turned on.", "what's on my calendar?"), ("", True))
+        self.assertEqual(scrub_kill_switch("Here are your events.", "what's on my calendar?"),
+                         ("Here are your events.", False))

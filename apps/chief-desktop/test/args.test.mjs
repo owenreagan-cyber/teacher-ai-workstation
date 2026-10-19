@@ -16,6 +16,10 @@ test("every action produces the exact expected argv", () => {
   assert.deepEqual(buildArgs("stop"), ["stop", "chief-desktop"]);
   assert.deepEqual(buildArgs("resume"), ["resume"]);
   assert.deepEqual(buildArgs("warm"), ["warm", "--json"]);
+  assert.deepEqual(buildArgs("auto-search", { enabled: true }), ["auto-search", "on", "--json"]);
+  for (const enabled of [false, "true", 1, undefined]) {
+    assert.deepEqual(buildArgs("auto-search", { enabled }), ["auto-search", "off", "--json"], String(enabled));
+  }
 });
 
 test("question is trimmed and kept as one argv element after --", () => {

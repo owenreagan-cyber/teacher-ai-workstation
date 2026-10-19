@@ -6,6 +6,7 @@ import os from "node:os";
 
 import type {
   AskResult,
+  AutoSearchResult,
   BriefResult,
   ControlResult,
   ErrorKind,
@@ -26,6 +27,7 @@ const TIMEOUT_MS: Record<Action, number> = {
   stop: 10_000,
   resume: 10_000,
   warm: 300_000, // loading the model from disk
+  "auto-search": 10_000,
 };
 const MAX_BUFFER = 2_000_000;
 
@@ -62,7 +64,9 @@ const AUDIT_STATES = ["ok", "empty", "fail"] as const;
 /** `cos status --json`, rebuilt field by field with exactly the known fields, or null (invalid). */
 export function toStatus(o: Record<string, unknown>): Extract<StatusResult, { ok: true }> | null {
   const { kill_switch, kill_switch_reason, model, fallback_model, ollama_reachable, loaded_models, audit, version } = o;
+  const { auto_search } = o;
   if (typeof kill_switch !== "boolean" || typeof ollama_reachable !== "boolean") return null;
+  if (typeof auto_search !== "boolean") return null;
   if (!(kill_switch_reason === null || isStr(kill_switch_reason)) || !isStr(model)) return null;
   if (!(fallback_model === null || isStr(fallback_model)) || !isStrList(loaded_models) || !isStr(version)) return null;
   const auditState = AUDIT_STATES.find((s) => s === audit);
@@ -77,6 +81,7 @@ export function toStatus(o: Record<string, unknown>): Extract<StatusResult, { ok
     loaded_models: [...loaded_models],
     audit: auditState,
     version,
+    auto_search,
   };
 }
 
@@ -181,6 +186,13 @@ export class CosRunner {
       isStr(o.model) && typeof o.loaded === "boolean" && isStr(o.keep_alive)
         ? { ok: true, model: o.model, loaded: o.loaded, keep_alive: o.keep_alive }
         : null);
+  }
+
+  /** Main process only (the tray toggle): `cos auto-search on|off --json`. */
+  async setAutoSearch(enabled: boolean): Promise<AutoSearchResult> {
+    const v = await this.json("auto-search", { enabled: enabled === true });
+    return CosRunner.envelope<AutoSearchResult>(v, (o) =>
+      typeof o.auto_search === "boolean" ? { ok: true, auto_search: o.auto_search } : null);
   }
 
   // stop/resume print text; success is exit code 0. The UI re-reads status for the truth.

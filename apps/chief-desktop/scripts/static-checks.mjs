@@ -130,6 +130,12 @@ check("the model still warms on every launch", /createTray\(\);\s*registerHotkey
 // 6e. Search answers carry "Search by Brave" in the window.
 check("search answers show Brave attribution", /searchAttribution\(turn\)/.test(read("src/renderer/App.tsx")));
 
+// 6e2. Auto web search: a tray checkbox in the main process that runs `cos auto-search on|off`.
+// No preload bridge or IPC channel can change it; cos writes its own config.json.
+check("buildArgs has auto-search", /case "auto-search":[\s\S]*?\["auto-search", params\.enabled === true \? "on" : "off", "--json"\]/.test(read("src/main/args.ts")));
+check("tray has an Auto web search toggle", /label: "Auto web search",\s*type: "checkbox"/.test(mainTs) && /click: \(\) => void toggleAutoSearch\(\)/.test(mainTs));
+check("auto search has no preload bridge or IPC channel", !/auto.?search/i.test(preload) && !/chief:[a-z-]*auto/i.test(mainTs));
+
 // 6f. Packaging: every build checks that the startup modules are packaged (and inside app.asar
 // after `npm run package`), so a missing file fails the build instead of the installed app.
 const pkgJson = JSON.parse(read("package.json"));

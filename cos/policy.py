@@ -4,8 +4,9 @@ Rules, in order (any failure, exception, or timeout inside the gate denies):
   1. kill switch set           -> deny everything
   2. tool not registered        -> deny
   3. side_effect is not "none"  -> deny (M1 has no write tools)
-  4. fast_path_only tool asked for by anything but the fast path -> deny
-     (web.search: the query must be text Owen typed, never model-written)
+  4. fast_path_only tool asked for by anything but Chief's own code paths (the fast path and
+     the router) -> deny (web.search: the query comes from Owen's words, never from a model's
+     tool call)
   5. arguments fail the schema  -> deny
   otherwise                     -> allow
 """
@@ -20,6 +21,8 @@ from cos.config import open_private
 from cos.registry import ArgumentError, Registry, validate_args
 
 GATE_TIMEOUT_S = 2.0
+# Callers that are Chief's deterministic code, never a model's tool call.
+CODE_SUBJECTS = frozenset({"fast_path", "router"})
 
 
 @dataclass(frozen=True)
@@ -77,9 +80,9 @@ class PolicyGate:
         if tool.side_effect != "none":
             return Decision(False, "side_effect",
                             f"{tool.name} has side_effect {tool.side_effect!r}; M1 allows none")
-        if tool.fast_path_only and subject != "fast_path":
+        if tool.fast_path_only and subject not in CODE_SUBJECTS:
             return Decision(False, "fast_path_only",
-                            f"{tool.name} runs only from text Owen types, never from a model call")
+                            f"{tool.name} runs only from Chief's code with Owen's words, never from a model call")
         try:
             validate_args(tool, args)
         except ArgumentError as e:

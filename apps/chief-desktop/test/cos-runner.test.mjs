@@ -164,7 +164,7 @@ test("a valid ask passes only known fields", async () => {
 
 // Status is rebuilt field by field: a wrong type in any field rejects it, and only known fields pass.
 const STATUS = { ok: true, kill_switch: false, kill_switch_reason: null, model: "qwen3.6:35b", fallback_model: "gpt-oss:20b",
-  ollama_reachable: true, loaded_models: ["qwen3.6:35b"], audit: "ok", version: "0.1.0" };
+  ollama_reachable: true, loaded_models: ["qwen3.6:35b"], audit: "ok", version: "0.1.0", auto_search: true };
 const statusCos = (name, payload) => fakeCos(name, `console.log(JSON.stringify(${JSON.stringify(payload)}));`);
 
 test("a valid status passes only known fields", async () => {
@@ -184,9 +184,22 @@ test("a status with any malformed field is rejected, never cast", async () => {
     "loaded item not a string": { loaded_models: ["qwen", 1] },
     "unknown audit state": { audit: "fine" },
     "missing version": { version: undefined },
+    "string auto_search": { auto_search: "on" },
+    "missing auto_search": { auto_search: undefined },
   };
   for (const [name, change] of Object.entries(bad)) {
     const res = await new CosRunner(statusCos(`status-${name.replace(/\W+/g, "-")}`, { ...STATUS, ...change })).status();
     assert.deepEqual([res.ok, res.error_kind], [false, "internal"], name);
   }
+});
+
+test("the tray toggle runs cos auto-search and passes only known fields", async () => {
+  const fake = fakeCos("auto-cos",
+    `const a = process.argv.slice(2);
+     if (a[0] !== "auto-search" || a[2] !== "--json") process.exit(9);
+     console.log(JSON.stringify({ ok: true, auto_search: a[1] === "on", extra: "x" }));`);
+  assert.deepEqual(await new CosRunner(fake).setAutoSearch(true), { ok: true, auto_search: true });
+  assert.deepEqual(await new CosRunner(fake).setAutoSearch(false), { ok: true, auto_search: false });
+  const bad = fakeCos("auto-bad-cos", `console.log(JSON.stringify({ ok: true, auto_search: "on" }));`);
+  assert.equal((await new CosRunner(bad).setAutoSearch(true)).ok, false);
 });

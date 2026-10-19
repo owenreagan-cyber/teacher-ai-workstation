@@ -39,6 +39,7 @@ let tray: Tray | null = null;
 let quitting = false;
 let hotkeyNotice: string | null = null;
 let lastKillSwitch: boolean | null = null; // from the latest cos status, for the tray label only
+let lastAutoSearch: boolean | null = null; // from the latest cos status, for the tray checkbox only
 let saved: SavedWindow;
 let windowState: WindowState = { pinned: false, protected: true };
 let hiddenSince: number | null = null;
@@ -232,6 +233,14 @@ function createTray(): void {
 async function refreshKillSwitch(): Promise<void> {
   const status = await cos.status();
   lastKillSwitch = status.ok ? status.kill_switch : null;
+  lastAutoSearch = status.ok ? status.auto_search : null;
+}
+
+// Main process only (no preload bridge): cos writes auto_search in its own config.json.
+async function toggleAutoSearch(): Promise<void> {
+  if (lastAutoSearch === null) return;
+  const res = await cos.setAutoSearch(!lastAutoSearch);
+  if (res.ok) lastAutoSearch = res.auto_search;
 }
 
 function trayMenu(): Menu {
@@ -250,6 +259,13 @@ function trayMenu(): Menu {
     lastKillSwitch
       ? { label: "Resume Chief", click: () => void control("resume") }
       : { label: "Stop Chief", enabled: lastKillSwitch !== null, click: () => void control("stop") },
+    {
+      label: "Auto web search",
+      type: "checkbox",
+      checked: lastAutoSearch === true,
+      enabled: lastAutoSearch !== null,
+      click: () => void toggleAutoSearch(),
+    },
     {
       label: `Screen protection: ${windowState.protected ? "on" : "off"}`,
       type: "checkbox",
@@ -324,6 +340,7 @@ function registerIpc(): void {
   handle("chief:status", async () => {
     const status: StatusResult = await cos.status();
     lastKillSwitch = status.ok ? status.kill_switch : null;
+    lastAutoSearch = status.ok ? status.auto_search : null;
     return status;
   });
   handle("chief:stop", () => cos.stop());

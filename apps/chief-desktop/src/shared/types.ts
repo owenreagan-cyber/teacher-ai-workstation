@@ -61,8 +61,12 @@ export type StatusResult =
       loaded_models: string[];
       audit: "ok" | "empty" | "fail";
       version: string;
+      auto_search: boolean;
     }
   | Failure;
+
+// cos auto-search on|off --json. Main process only (the tray toggle); no bridge.
+export type AutoSearchResult = { ok: true; auto_search: boolean } | Failure;
 
 // cos warm --json. Main process only (app launch, window shown after a long hide); no bridge.
 export type WarmResult = { ok: true; model: string; loaded: boolean; keep_alive: string } | Failure;

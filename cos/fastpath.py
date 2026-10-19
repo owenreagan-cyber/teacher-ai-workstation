@@ -42,6 +42,7 @@ from cos.agent import AgentResult, Stopped
 from cos.audit import text_digest
 from cos.brief import greeting
 from cos.executor import run_tool
+from cos.guards import strip_urls
 from cos.intent import GREETING as GREETING_RE, SOCIAL as SOCIAL_RE, classify_rules, normalize
 from cos.model import ModelError
 from cos.policy import PolicyGate
@@ -216,13 +217,14 @@ def match_search(question: str) -> str | None:
 
 
 # Questions about Owen's files, mail, and calendar never reach web search, even typed as
-# "search …" ("search my calendar", "search my files for the field trip form").
-LOCAL_ONLY = frozenset({"local_files", "mail", "calendar"})
+# "search …" ("search my calendar", "search my files for the field trip form"). Only rules that
+# name his own data count: "search ny rangers schedule" is still a web search.
+LOCAL_ONLY_RULES = frozenset({"calendar_named", "local_files", "mail", "mail_send"})
 
 
 def local_only(query: str) -> bool:
     route = classify_rules(query)
-    return route is not None and route.label in LOCAL_ONLY
+    return route is not None and route.rule in LOCAL_ONLY_RULES
 
 
 def _sources(results: list[dict]) -> str:
@@ -235,6 +237,11 @@ def _raw_results(query: str, results: list[dict]) -> str:
         lines.append(f"{i}. {r['title']}" + (f" — {r['snippet']}" if r["snippet"] else ""))
         lines.append(f"   {r['url']}")
     return "\n".join(lines)
+
+
+def searched_line(query: str) -> str:
+    """Every searched answer shows the exact query that left the Mac."""
+    return f"Searched: {query}"
 
 
 # Fast-path intent -> the router label it answers (cos/intent.py LABELS).
@@ -271,7 +278,7 @@ class FastPath:
         The result carries the router label (cos/intent.py) of what it answered."""
         query = match_search(question)
         if query is not None and not local_only(query):
-            return _labeled(self._search(question, query, mode), "web_lookup")
+            return _labeled(self.search(question, query, mode), "web_lookup")
         if SOCIAL_RE.fullmatch(normalize(question)) or GREETING_RE.fullmatch(normalize(question)):
             return _labeled(self._social(question, mode), "social")
         hit = match(question)
@@ -329,30 +336,38 @@ class FastPath:
         close("answer", tools_used=[], chars=len(text))
         return AgentResult(text, [], None, fast_path=True)
 
-    def _search(self, question: str, query: str, mode: str) -> AgentResult:
+    def search(self, question: str, query: str, mode: str, source: str = QUERY_SOURCE) -> AgentResult:
+        """One web search. source "typed": Owen's "search …" command, exactly as typed (fast path).
+        source "auto": a web_lookup question, the query built by cos/search_query.py (router)."""
         started = time.monotonic()
         timing = {"tool_ms": 0, "model_ms": 0}
+        path = "fast_path" if source == QUERY_SOURCE else "router"
 
         def close(kind, **fields):
-            self.audit(kind, path="fast_path", intent="web_search", model_ms=timing["model_ms"],
+            self.audit(kind, path=path, intent="web_search", model_ms=timing["model_ms"],
                        tool_ms=timing["tool_ms"], total_ms=int((time.monotonic() - started) * 1000),
                        **fields)
 
-        self.audit("request", mode=mode, path="fast_path", intent="web_search",
-                   prompt=text_digest(question), tools_offered=[SEARCH_TOOL], query_source=QUERY_SOURCE)
+        def done(text, used, model=None, notices=(), fast=True, urls=()):
+            res = AgentResult(text, used, model, list(notices), fast_path=fast)
+            res.search_query, res.allowed_urls = query, list(urls)
+            return res
+
+        self.audit("request", mode=mode, path=path, intent="web_search",
+                   prompt=text_digest(question), tools_offered=[SEARCH_TOOL], query_source=source)
         if len(query) > MAX_QUERY_CHARS:
             close("answer", tools_used=[], denied="query_too_long")
-            return AgentResult(f"That search is {len(query)} characters; the limit is {MAX_QUERY_CHARS}. "
-                               "Shorten it and try again.", [], None, fast_path=True)
-        args = {"query": query, "query_source": QUERY_SOURCE}
-        decision = self.gate.decide(SEARCH_TOOL, args, subject="fast_path")
+            return done(f"That search is {len(query)} characters; the limit is {MAX_QUERY_CHARS}. "
+                        "Shorten it and try again.", [])
+        args = {"query": query, "query_source": source}
+        decision = self.gate.decide(SEARCH_TOOL, args, subject=path)
         tool = self.registry.get(SEARCH_TOOL)
         if not decision.allowed or tool is None:
             if decision.rule == "kill_switch":
                 close("request_stopped", reason="kill_switch")
                 raise Stopped("kill switch is set")
             close("answer", tools_used=[], denied=decision.rule)
-            return AgentResult(f"I can't search right now ({decision.reason}).", [], None, fast_path=True)
+            return done(f"I can't search right now ({decision.reason}).", [])
         tool_started = time.monotonic()
         result = run_tool(tool, args, decision, audit=self.audit)
         timing["tool_ms"] = int((time.monotonic() - tool_started) * 1000)
@@ -362,16 +377,17 @@ class FastPath:
         if result.get("limit_reached"):
             text = result["error"]
             close("answer", tools_used=[tool.name], chars=len(text), denied="search_limit")
-            return AgentResult(text, [tool.name], None, fast_path=True)
+            return done(text, [tool.name])
         if "error" in result:
             text = f"Web search is unavailable: {result['error']}."
             close("answer", tools_used=[tool.name], chars=len(text))
-            return AgentResult(text, [tool.name], None, fast_path=True)
+            return done(text, [tool.name])
         results = result.get("results") or []
         if not results:
-            text = f'No web results for "{query}".'
+            text = f'No web results for "{query}".\n\n{searched_line(query)}'
             close("answer", tools_used=[tool.name], chars=len(text))
-            return AgentResult(text, [tool.name], None, fast_path=True)
+            return done(text, [tool.name])
+        urls = [r["url"] for r in results]
         summary, model_used, notices = None, None, []
         if self.summarize is not None:
             try:
@@ -383,9 +399,11 @@ class FastPath:
                 notices.append("The local model is unavailable, so these are the raw results.")
                 self.audit("search_summary_failed", error=str(e)[:200])
         if summary:
-            text = f"{summary}\n\n{_sources(results)}"
+            summary, _ = strip_urls(summary)  # the numbered sources list the links
+        if summary:
+            text = f"{summary}\n\n{searched_line(query)}\n\n{_sources(results)}"
             close("answer", tools_used=[tool.name], model=model_used, chars=len(text))
-            return AgentResult(text, [tool.name], model_used, notices)
-        text = _raw_results(query, results)
+            return done(text, [tool.name], model_used, notices, fast=False, urls=urls)
+        text = f"{_raw_results(query, results)}\n\n{searched_line(query)}"
         close("answer", tools_used=[tool.name], chars=len(text))
-        return AgentResult(text, [tool.name], None, notices, fast_path=True)
+        return done(text, [tool.name], notices=notices, urls=urls)

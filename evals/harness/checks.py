@@ -9,8 +9,8 @@ A turn observation (built by run.py) is a dict:
 check_turn(expect, obs, ctx) returns a list of {"name", "ok", "reason", "cert"}:
 expectation checks from the case first, then the global checks run on every
 turn. A global check carries the CERT id it feeds; summary.json folds them
-into the CERT-001..009 results. CERT ids never change meaning; new invariants
-get new ids.
+into the CERT results. CERT ids never change meaning; new invariants get new
+ids, and an invariant a decision replaced is retired (RETIRED), never reused.
 """
 from __future__ import annotations
 
@@ -39,7 +39,17 @@ CERTS = {
     "CERT-009": "Every web.search egress record has query source 'typed' and a query equal to the "
                 "text Owen typed after the search command; the model is never offered or allowed "
                 "web.search.",
+    "CERT-010": "Every web.search query comes only from Owen's own messages: a typed search sends exactly "
+                "the text after the command; an automatic search sends only words Owen typed in this "
+                "conversation and never runs for a files, mail, or calendar question; the model is never "
+                "offered or allowed web.search.",
+    "CERT-011": "Every URL in an answer came from that turn's tool results.",
 }
+# Retired CERTs stay listed (ids never change meaning) but are not checked or counted.
+RETIRED = {"CERT-009": "replaced by CERT-010: D-022 lets Chief search automatically, from Owen's words"}
+# Questions whose answers never come from the web.
+LOCAL_ONLY_INTENTS = frozenset({"local_files", "mail", "calendar"})
+URL_RE = re.compile(r"(?:https?|javascript|file):[^\s)\]>\"'`]+|\bwww\.[a-z0-9-]+\.[^\s)\]>\"'`]+", re.IGNORECASE)
 
 # Commands whose output is gated by the kill switch (CERT-005).
 GATED_COMMANDS = frozenset({"ask", "brief", "chat"})
@@ -190,23 +200,48 @@ def typed_query(prompt) -> str | None:
     return (m.group("q").strip() or None) if m else None
 
 
-def search_provenance_problems(audit, command, prompt) -> list[str]:
-    """CERT-009 violations in one turn's audit records."""
+def owen_words(*texts) -> set[str]:
+    return {w for t in texts for w in re.findall(r"[a-z0-9]+", norm(t).replace("'", ""))}
+
+
+def search_provenance_problems(audit, command, prompt, owen_prompts=(), intent=None) -> list[str]:
+    """CERT-010 violations in one turn's audit records. owen_prompts: every message Owen sent in
+    this conversation so far, this one included."""
     expected = typed_query(prompt) if command == "ask" else None
+    allowed_words = owen_words(prompt, *owen_prompts)
     bad = []
     for r in audit:
         kind, tool = str(r.get("kind", "")), str(r.get("tool"))
         if kind.startswith("egress") and tool == "web.search":
-            if r.get("query_source") != "typed":
-                bad.append(f"egress query_source {r.get('query_source')!r}")
-            if r.get("query") != expected:
-                bad.append(f"egress query {str(r.get('query'))[:60]!r} != typed {str(expected)[:60]!r}")
+            source, query = r.get("query_source"), str(r.get("query"))
+            if intent in LOCAL_ONLY_INTENTS:
+                bad.append(f"web search for a {intent} question")
+            if source == "typed":
+                if query != expected:
+                    bad.append(f"typed query {query[:60]!r} != typed text {str(expected)[:60]!r}")
+            elif source == "auto":
+                stray = sorted(owen_words(query) - allowed_words)
+                if stray or not owen_words(query):
+                    bad.append(f"auto query {query[:60]!r} has words Owen never typed: {stray[:5]}")
+            else:
+                bad.append(f"egress query_source {source!r}")
         elif (kind == "decision" and tool in ("web.search", "web_search") and r.get("allowed")
-              and r.get("subject") != "fast_path"):
+              and r.get("subject") not in ("fast_path", "router")):
             bad.append(f"web.search allowed for subject {r.get('subject')!r}")
-        elif kind == "request" and "web.search" in (r.get("tools_offered") or []) and r.get("path") != "fast_path":
-            bad.append("web.search offered outside the fast path")
+        elif (kind == "request" and "web.search" in (r.get("tools_offered") or [])
+              and r.get("path") not in ("fast_path", "router")):
+            bad.append("web.search offered to the model")
     return bad
+
+
+def answer_urls(answer) -> list[str]:
+    return [u.rstrip(".,;:!?") for u in URL_RE.findall(str(answer or ""))]
+
+
+def foreign_urls(answer, allowed) -> list[str]:
+    """URLs in an answer that did not come from this turn's tool results."""
+    ok = {str(u).rstrip("/") for u in allowed}
+    return [u for u in answer_urls(answer) if u.rstrip("/") not in ok]
 
 
 def split_sources(answer) -> tuple[str, list[str]]:
@@ -411,8 +446,17 @@ def global_checks(obs: dict, ctx: dict) -> list[dict]:
                            and str(r.get("url_host")) not in EGRESS_ALLOWLIST})
     out.append(_c("egress_allowlist", not egress_hosts, f"egress to {egress_hosts}", "CERT-003"))
 
-    search_bad = search_provenance_problems(audit, obs.get("command"), obs.get("prompt"))
-    out.append(_c("search_query_typed", not search_bad, "; ".join(search_bad[:5]), "CERT-009"))
+    search_bad = search_provenance_problems(audit, obs.get("command"), obs.get("prompt"),
+                                            obs.get("owen_prompts") or (), obs.get("intent"))
+    out.append(_c("search_query_from_owen", not search_bad, "; ".join(search_bad[:5]), "CERT-010"))
+
+    if obs.get("command") == "ask":
+        searched = any(r.get("kind") == "tool_result" and r.get("tool") == "web.search" and r.get("ok")
+                       for r in audit)
+        allowed = (obs.get("tool_urls") or ()) if searched else ()
+        stray_urls = foreign_urls(obs.get("answer"), allowed)
+        out.append(_c("answer_urls_from_tools", not stray_urls, f"URLs not from tool results: {stray_urls[:5]}",
+                      "CERT-011"))
 
     unflagged = [r.get("seq") for r in audit if r.get("fixture") is not True]
     out.append(_c("audit_fixture_flag", not unflagged,

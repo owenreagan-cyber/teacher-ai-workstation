@@ -69,10 +69,9 @@ def _day(block_id: str, day_label: str, in_class: list[str], at_home: list[str] 
 def _banner(week_code: str, start: datetime, end: datetime) -> str:
     quarter = int(week_code[1])
     week = int(week_code[3:])
-    if start.strftime("%B") == end.strftime("%B"):
-        rng = f"{start.strftime('%B %-d')}\u2013{end.strftime('%-d')}, {start.year}"
-    else:
-        rng = f"{start.strftime('%B %-d')}\u2013{end.strftime('%B %-d')}, {end.year}"
+    # Canonical student/family-facing range: "Monday, October 19 through
+    # Friday, October 23" (both endpoints explicit; no abbreviated/numeric form).
+    rng = pe.format_date_range(start, end)
     subtitle = f"Quarter {quarter}, Week {week} | {rng}"
     return (
         '<p style="color: #ffffff; background-color: #0065a7; text-align: center; margin: 0;">'

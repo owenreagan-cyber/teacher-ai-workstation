@@ -84,13 +84,25 @@ def weekly_update_delayed_post_at(week_start_date: str) -> str:
 
 
 def compose_announcement_body(ann: dict[str, Any], agenda_html: str) -> str:
-    """Compose the full weekly-update message: greeting + transition + agenda + closing."""
+    """Compose the full weekly-update message.
+
+    Canonical order (§6): greeting → week in review → next-week overview →
+    transition → full exact agenda → closing. ``week_in_review`` /
+    ``next_week_overview`` are optional (absent in older staged drafts), so this
+    remains backward compatible.
+    """
     greeting = ann.get("greeting") or "Good afternoon,"
+    week_in_review = ann.get("week_in_review") or ""
+    next_week_overview = ann.get("next_week_overview") or ""
     transition = ann.get("transition") or ""
     closing = ann.get("closing") or ""
     parts: list[str] = []
     if greeting:
         parts.append(f"<p>{greeting}</p>")
+    if week_in_review:
+        parts.append(f"<p>{week_in_review}</p>")
+    if next_week_overview:
+        parts.append(f"<p>{next_week_overview}</p>")
     if transition:
         parts.append(f"<p>{transition}</p>")
     if agenda_html:

@@ -592,6 +592,9 @@ def _draft_weekly_announcements(
         "science": "Science",
         "history": "History",
     }
+    # Subject-isolated narrative (lazy import avoids an intake <-> rollover cycle).
+    from scripts.canvas_llm_rollover import narrative as _narrative
+    prior_norm = _prior_week_norm(week_norm)
     out: list[dict[str, Any]] = []
     for subject in subject_reports:
         label = labels.get(subject, subject)
@@ -600,6 +603,8 @@ def _draft_weekly_announcements(
             "course": label,
             "title": f"{label} Canvas Weekly Update",
             "greeting": "Good afternoon,",
+            "week_in_review": _narrative.week_in_review(subject, prior_norm),
+            "next_week_overview": _narrative.next_week_overview(subject, week_norm),
             "transition": f"The Canvas {label} page has been updated. Please see the upcoming week ahead.",
             "closing": "Have a great weekend!\n\nMr. Reagan",
             "agenda_hash": agenda_hash,
@@ -608,6 +613,29 @@ def _draft_weekly_announcements(
             "preview_only": True,
         })
     return out
+
+
+def _prior_week_norm(week_norm: dict[str, Any]) -> dict[str, Any] | None:
+    """Load the immediately-preceding instructional week's normalized data."""
+    code = (week_norm or {}).get("week", {}).get("code", "")
+    if not code:
+        return None
+    from . import week_resolution as _wr
+    weeks = sorted(
+        (w for w in _wr.load_weeks() if _wr._week_start(w) is not None),
+        key=lambda w: _wr._week_start(w),
+    )
+    idx = next((i for i, w in enumerate(weeks) if w.get("code") == code), None)
+    if idx is None or idx == 0:
+        return None
+    prev = weeks[idx - 1]
+    p = mf.staging_dir(int(prev["quarter"]), int(prev["week"])) / "normalized" / "week.json"
+    if not p.exists():
+        return None
+    try:
+        return json.loads(p.read_text(encoding="utf-8"))
+    except (json.JSONDecodeError, OSError):
+        return None
 
 
 def _write_review(

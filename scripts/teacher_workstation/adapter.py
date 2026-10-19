@@ -342,6 +342,16 @@ def system_status() -> dict[str, Any]:
     return {"text": s["text"], "overall": s["overall"]}
 
 
+def friday_rollover() -> dict[str, Any]:
+    """Compact Friday Rollover status for the local UI (read-only, no Canvas)."""
+    from scripts.canvas_llm_rollover import rollover as rr
+    from scripts.canvas_llm_rollover import status as rstatus
+
+    from_week, to_week = rstatus.resolve_weeks()
+    s = rr.status(*from_week, *to_week)
+    return s
+
+
 def self_test() -> int:
     # Pure adapter smoke: no network, no Canvas. Assert only STRUCTURAL
     # invariants that hold regardless of Q2W3 planning state (which changes as

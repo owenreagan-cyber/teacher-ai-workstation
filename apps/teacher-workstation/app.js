@@ -60,6 +60,9 @@ function statePill(state) {
     'NEEDS_INPUT': 'warn', 'DRAFTED': 'pending', 'NORMALIZED': 'pending', 'SOURCE_FETCHED': 'pending',
     'APPROVED': 'pass', 'PENDING': 'pending', 'NEEDS_CHANGES': 'warn', 'BLOCKED': 'fail',
     'STALE': 'fail', 'NOT_REQUIRED': 'neutral',
+    // Friday rollover lifecycle.
+    'READY': 'pass', 'HELD_UNTIL_4PM': 'pass', 'EXECUTING': 'pending',
+    'NEEDS_OWEN': 'warn', 'PREPARING': 'pending', 'NOT_DUE': 'neutral',
   };
   const label = { 'PENDING': 'PENDING', 'STALE': 'APPROVAL STALE', 'NOT_REQUIRED': 'NOT REQUIRED', 'BLOCKED': 'BLOCKED' };
   return `<span class="pill ${map[state] || 'neutral'}">${esc(label[state] || state)}</span>`;
@@ -115,6 +118,7 @@ async function viewHome() {
   const s = await api('/api/status');
   const completed = h.latest_completed;
   const next = h.next_prepared;
+  const rollover = await api('/api/friday-rollover').catch(() => null);
   let needs = [];
   let approval = null;
   if (next) {
@@ -131,9 +135,9 @@ async function viewHome() {
     }
     // Approval tasks needing Owen.
     const approvalNeeds = approval ? approval.pendingApprovals.map(a => ({ subject: a.subject, artifact: a.artifact })) : [];
-    return renderHome(h, s, completed, next, needs, pending, approval, approvalNeeds);
+    return renderHome(h, s, completed, next, needs, pending, approval, approvalNeeds, rollover);
   }
-  return renderHome(h, s, completed, next, needs, [], approval, []);
+  return renderHome(h, s, completed, next, needs, [], approval, [], rollover);
 }
 
 function approvalProgress(d) {
@@ -159,10 +163,19 @@ function approvalProgress(d) {
   return { approved, required, ready: d.ready_to_publish, pendingApprovals };
 }
 
-function renderHome(h, s, completed, next, needs, pending, approval, approvalNeeds) {
+function renderHome(h, s, completed, next, needs, pending, approval, approvalNeeds, rollover) {
   const approvalLine = approval && next
     ? `<div class="kv"><span class="k">Approval</span><span class="v">${approval.approved} of ${approval.required} required artifacts approved</span></div>
        <div class="kv"><span class="k">Publish readiness</span><span class="v">${approval.ready ? statePill('READY_TO_PUBLISH') : '<span class="pill warn">NOT READY</span>'}</span></div>`
+    : '';
+  const rolloverLine = rollover
+    ? `<div class="section">
+        <h2>Friday Rollover</h2>
+        <div class="kv"><span class="k">Transition</span><span class="v">${esc(rollover.from_week)} → ${esc(rollover.to_week)}</span></div>
+        <div class="kv"><span class="k">Scheduled</span><span class="v">${esc(rollover.scheduled_at || '—')}</span></div>
+        <div class="kv"><span class="k">Status</span><span class="v">${statePill(rollover.status)}</span></div>
+        ${(rollover.blockers || []).length ? `<ul class="needs-list">${rollover.blockers.map(b => `<li>${esc(b)}</li>`).join('')}</ul>` : ''}
+      </div>`
     : '';
   const needsList = [
     ...pending.map(p => `<li><a href="#subject/${next.quarter}/${next.week}/${SUBJECTS.find(x=>x.label===p.subject).key}"><span class="q-subject">${esc(p.subject)}</span> — ${esc(p.day)} plan pending</a></li>`),
@@ -197,6 +210,7 @@ function renderHome(h, s, completed, next, needs, pending, approval, approvalNee
         ${approvalLine}` : '<div class="empty">No next week prepared.</div>'}
     </div>
     <div class="section"><h2>What needs Owen?</h2>${needsHtml}</div>
+    ${rolloverLine}
     <div class="section"><h2>System status</h2><pre class="mono" style="white-space:pre-wrap;font-size:12.5px;">${esc(s.text)}</pre></div>
   `;
 }

@@ -45,6 +45,7 @@ ALLOWED_PUT_PATH_RES = (
     re.compile(r'^/api/v1/courses/(?P<course_id>\d+)/assignments/\d+$'),
     re.compile(r'^/api/v1/courses/(?P<course_id>\d+)/discussion_topics/\d+$'),
     re.compile(r'^/api/v1/courses/(?P<course_id>\d+)/pages/[^/]+$'),
+    re.compile(r'^/api/v1/courses/(?P<course_id>\d+)/front_page$'),
 )
 ALLOWED_DELETE_PATH_RES = (
     re.compile(r'^/api/v1/courses/(?P<course_id>\d+)/assignments/\d+$'),

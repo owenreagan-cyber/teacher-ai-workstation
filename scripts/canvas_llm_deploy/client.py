@@ -41,6 +41,9 @@ class DeployClient:
     def find_page(self, course_id: int, slug: str) -> dict[str, Any] | None:
         raise NotImplementedError
 
+    def list_pages(self, course_id: int) -> list[dict[str, Any]]:
+        raise NotImplementedError
+
     def list_assignments(self, course_id: int) -> list[dict[str, Any]]:
         raise NotImplementedError
 
@@ -59,6 +62,13 @@ class DeployClient:
 
     def update_page(self, course_id: int, page_ref: str, *, body: str,
                     published: bool = True, front_page: bool = False) -> dict[str, Any]:
+        raise NotImplementedError
+
+    def set_front_page(self, course_id: int, page_id: Any) -> dict[str, Any]:
+        """Make the given page the course front page (homepage).
+
+        A course has exactly one front page; Canvas unsets the previous one.
+        """
         raise NotImplementedError
 
     def get_assignment(self, course_id: int, assignment_id: str) -> dict[str, Any]:
@@ -101,6 +111,9 @@ class LiveDeployClient(DeployClient):
 
     def find_page(self, course_id: int, slug: str) -> dict[str, Any] | None:
         return self._read.find_page(course_id, slug)
+
+    def list_pages(self, course_id: int) -> list[dict[str, Any]]:
+        return [self._norm_page(p) for p in self._read.list_pages(course_id)]
 
     def list_assignments(self, course_id: int) -> list[dict[str, Any]]:
         return self._read.list_assignments(course_id)
@@ -155,6 +168,15 @@ class LiveDeployClient(DeployClient):
         return self._norm_page(self._write.update_page(
             course_id, page_ref, body=body, published=published, front_page=front_page))
 
+    def set_front_page(self, course_id: int, page_id: Any) -> dict[str, Any]:
+        # Canonical Canvas endpoint: PUT /courses/:id/front_page {wiki_page_id}.
+        # This unsets the prior front page and marks the target page as front.
+        self._write.request(
+            "PUT", f"/api/v1/courses/{course_id}/front_page",
+            data={"wiki_page_id": str(page_id)},
+        )
+        return {"course_id": course_id, "page_id": str(page_id), "front_page": True}
+
     def get_assignment(self, course_id: int, assignment_id: str) -> dict[str, Any]:
         return self._norm_assignment(self._write.get_assignment(course_id, assignment_id))
 
@@ -204,6 +226,9 @@ class FakeDeployClient(DeployClient):
     def find_page(self, course_id: int, slug: str) -> dict[str, Any] | None:
         return self.pages.get((course_id, slug))
 
+    def list_pages(self, course_id: int) -> list[dict[str, Any]]:
+        return [p for (cid, _slug), p in self.pages.items() if cid == course_id]
+
     def list_assignments(self, course_id: int) -> list[dict[str, Any]]:
         return [a for a in self.assignments.values() if a.get("course_id") == course_id]
 
@@ -249,6 +274,20 @@ class FakeDeployClient(DeployClient):
         page["published"] = published
         page["front_page"] = front_page
         return page
+
+    def set_front_page(self, course_id: int, page_id: Any) -> dict[str, Any]:
+        self._write_counts["PUT"] += 1
+        target = None
+        for (cid, _slug), page in self.pages.items():
+            if cid == course_id:
+                if str(page.get("page_id")) == str(page_id):
+                    target = page
+                    page["front_page"] = True
+                else:
+                    page["front_page"] = False
+        if target is None:
+            raise DeployClientError(f"page not found for set_front_page: {page_id}")
+        return target
 
     def get_assignment(self, course_id: int, assignment_id: str) -> dict[str, Any]:
         a = self.assignments.get(str(assignment_id))

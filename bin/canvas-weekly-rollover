@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+# Friday 4 PM Canvas weekly rollover — manual fallback command.
+#
+# Same engine as scheduled execution; no second code path.
+#   bin/canvas-weekly-rollover --week q2w3 --dry-run
+#   bin/canvas-weekly-rollover --week q2w3 --preflight
+#   bin/canvas-weekly-rollover --week q2w3 --execute --production --confirm "ROLLOVER Q2W3"
+set -euo pipefail
+
+REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+cd "${REPO_ROOT}"
+
+exec python3 -m scripts.canvas_llm_rollover.cli "$@"

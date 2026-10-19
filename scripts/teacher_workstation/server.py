@@ -126,6 +126,8 @@ class Handler(BaseHTTPRequestHandler):
         try:
             if resource == "status":
                 self._send_json(200, adapter.system_status())
+            elif resource == "friday-rollover":
+                self._send_json(200, adapter.friday_rollover())
             elif resource == "home":
                 self._send_json(200, adapter.home())
             elif resource == "weeks":

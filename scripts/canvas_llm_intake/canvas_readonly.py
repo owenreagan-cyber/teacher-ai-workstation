@@ -51,6 +51,11 @@ class CanvasReadOnly:
         """Return the page object if a single page with this slug exists, else None."""
         return self._get(f"/api/v1/courses/{course_id}/pages/{urllib.parse.quote(slug)}")
 
+    def list_pages(self, course_id: int) -> list[dict[str, Any]]:
+        """GET all pages for a course (unique-target / duplicate detection)."""
+        data = self._get(f"/api/v1/courses/{course_id}/pages?per_page=100")
+        return data if isinstance(data, list) else []
+
     def list_assignments(self, course_id: int) -> list[dict[str, Any]]:
         data = self._get(f"/api/v1/courses/{course_id}/assignments?per_page=100")
         return data if isinstance(data, list) else []

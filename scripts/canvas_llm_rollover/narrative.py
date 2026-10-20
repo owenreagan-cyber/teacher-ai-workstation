@@ -31,6 +31,8 @@ from __future__ import annotations
 import re
 from typing import Iterable
 
+from scripts.canvas_llm_phase3 import pacing_extractor as _pe
+
 WEEKDAYS = ("Monday", "Tuesday", "Wednesday", "Thursday", "Friday")
 
 SUBJECT_LABELS = {
@@ -63,6 +65,80 @@ def _cells(week_norm: dict, subject: str) -> list[str]:
             raw = str(raw).strip()
             if raw:
                 out.append(raw)
+    return out
+
+
+def _cells_by_day(week_norm: dict, subject: str) -> dict[str, dict[str, str]]:
+    """Return ``{weekday: {subject_key: raw}}`` for a subject's week.
+
+    Preserves the weekday -> raw-cell mapping (unlike ``_cells``, which flattens
+    across weekdays), so assessment dates can be derived from the day a major
+    assessment actually occurs on.
+    """
+    keys = _KEYS.get(subject, (subject,))
+    out: dict[str, dict[str, str]] = {}
+    for wd in WEEKDAYS:
+        day = (week_norm or {}).get("days", {}).get(wd, {})
+        subs = day.get("subjects", {}) if isinstance(day, dict) else {}
+        for key in keys:
+            cell = subs.get(key, {}) if isinstance(subs, dict) else {}
+            raw = (cell.get("raw") if isinstance(cell, dict) else "") or ""
+            raw = str(raw).strip()
+            if raw:
+                out.setdefault(wd, {})[key] = raw
+    return out
+
+
+def _weekday_dates(week_norm: dict) -> dict[str, str]:
+    """Return ``{weekday: 'Thursday, October 29'}`` for days with a known date."""
+    out: dict[str, str] = {}
+    for wd in WEEKDAYS:
+        day = (week_norm or {}).get("days", {}).get(wd, {})
+        iso = (day.get("date") if isinstance(day, dict) else "") or ""
+        if iso:
+            out[wd] = _pe.format_weekday_date_iso(iso)
+    return out
+
+
+def _major_assessments(subject: str, week_norm: dict) -> list[tuple[str, str]]:
+    """Return ``[(weekday, label)]`` for major assessments in the upcoming week.
+
+    Only items the source/policy classifies as major assessments get a date:
+    Math Written/ Fact Assessment; Spelling Test; Reading Mastery Test/Checkout;
+    Language Arts Chapter Test. Science ``Check (MC)``, labs, investigations,
+    classroom practice, workbook, and ordinary lessons are NOT assessments
+    (no date is added for them).
+    """
+    by_day = _cells_by_day(week_norm, subject)
+    out: list[tuple[str, str]] = []
+    for wd in WEEKDAYS:
+        day = by_day.get(wd, {})
+        if not day:
+            continue
+        labels: list[str] = []
+        if subject == "math":
+            raw = day.get("math", "")
+            wa = _ints([raw], r"\bWA\s*(\d+)")
+            fa = _ints([raw], r"\bFA\s*(\d+)")
+            if wa:
+                labels.append(f"Written Assessment {' and '.join(str(n) for n in wa)}")
+            if fa:
+                labels.append(f"Fact Assessment {' and '.join(str(n) for n in fa)}")
+        elif subject == "reading_spelling":
+            st = _ints([day.get("spelling", "")], r"\bTest\s*(\d+)")
+            rt = _ints([day.get("reading", "")], r"\b(?:RMT|Mastery Test|Checkout|MT)\s*(\d+)")
+            if st:
+                labels.append(f"Spelling Test {' and '.join(str(n) for n in st)}")
+            if rt:
+                labels.append(f"Reading Test {' and '.join(str(n) for n in rt)}")
+        elif subject == "language_arts":
+            m = re.search(r"\b(?:CH|Ch|Chapter)\.?\s*(\d+)\s*Test\b",
+                          day.get("language_arts", ""), re.IGNORECASE)
+            if m:
+                labels.append(f"Chapter {m.group(1)} Test")
+        # science / history: no automatic major assessment
+        if labels:
+            out.append((wd, _join_and(labels)))
     return out
 
 
@@ -277,11 +353,41 @@ def week_in_review(subject: str, prior_norm: dict | None) -> str:
 
 
 def next_week_overview(subject: str, next_norm: dict | None) -> str:
-    """One deterministic, source-derived preview sentence for the upcoming week."""
+    """One deterministic, source-derived preview sentence for the upcoming week.
+
+    Major assessments with a known, source-supported date include that date in
+    the prose (canonical ``Day of the week, Month day`` form), per the
+    weekly-update communication contract.
+    """
     cells = _cells(next_norm or {}, subject)
+    dates = _weekday_dates(next_norm or {})
+    assess_days = _major_assessments(subject, next_norm or {})
+    assess_clauses = [
+        f"{label} on {dates[wd]}" if wd in dates else label
+        for wd, label in assess_days
+    ]
+    assess = _join_and(assess_clauses) if assess_clauses else ""
+
     if subject == "math":
         parts = _math_parts(cells)
-        return f"Next week, students {_math_summary(parts, future=True)}."
+        items = []
+        if parts["lessons"]:
+            items.append(_lesson_range(parts["lessons"]))
+        if parts["review"]:
+            items.append("the weekly review")
+        if parts["inv"]:
+            inv_noun = "Investigation" if len(parts["inv"]) == 1 else "Investigations"
+            items.append(f"{inv_noun} {', '.join(str(n) for n in parts['inv'])}")
+        completed = _join_and(items)
+        if completed and assess:
+            body = f"will complete {completed}, and finish {assess}"
+        elif completed:
+            body = f"will complete {completed}"
+        elif assess:
+            body = f"will finish {assess}"
+        else:
+            body = "will continue the upcoming lessons"
+        return f"Next week, students {body}."
     if subject == "reading_spelling":
         rk = {k: _cells(next_norm or {}, k) for k in ("reading", "spelling")}
         parts = _rs_parts(rk)
@@ -290,10 +396,8 @@ def next_week_overview(subject: str, next_norm: dict | None) -> str:
             seg.append(f"complete Reading {_lesson_range(parts['reading'])}")
         if parts["spelling"]:
             seg.append(f"complete Spelling {_lesson_range(parts['spelling'])}")
-        if parts["spell_tests"]:
-            seg.append(f"finish Spelling Test {', '.join(str(n) for n in parts['spell_tests'])}")
-        if parts["reading_tests"]:
-            seg.append(f"finish Reading Test {', '.join(str(n) for n in parts['reading_tests'])}")
+        if assess:
+            seg.append(f"finish {assess}")
         body = _join_and(seg) or "continue their reading and spelling work"
         return f"Next week, students will {body}."
     if subject == "language_arts":
@@ -301,14 +405,14 @@ def next_week_overview(subject: str, next_norm: dict | None) -> str:
         seg = []
         if parts["checkup"]:
             seg.append("take the chapter checkup")
-        if parts["test"]:
-            seg.append("take the chapter test")
         if parts["lessons"]:
             seg.append(f"begin {_lesson_range(parts['lessons'])}")
         if parts["cp"]:
             seg.append(f"practice Classroom {_lesson_range(parts['cp'], 'Practice')}")
         if parts["compound"]:
             seg.append("work on the compound sentence bridge")
+        if assess:
+            seg.append(f"take the {assess}")
         body = _join_and(seg) or "continue their Shurley grammar work"
         return f"Next week, students will {body}."
     if subject == "science":
@@ -322,6 +426,8 @@ def next_week_overview(subject: str, next_norm: dict | None) -> str:
             seg.append(f"complete the {_join_and(parts['activities'][:4])}")
         if parts["check"]:
             seg.append("take the chapter Check")
+        # Science has no auto major assessment (Check (MC) / lab are not
+        # tests/quizzes), so no assessment date is ever injected here.
         body = _join_and(seg) or "continue their science investigations"
         return f"Next week, students will {body}."
     return ""
@@ -329,41 +435,51 @@ def next_week_overview(subject: str, next_norm: dict | None) -> str:
 
 def command_self_test() -> int:
     # Deterministic Q2W2 (prior) and Q2W3 (upcoming) fixtures from the real
-    # normalized-week cells.
+    # normalized-week cells (including per-day dates for assessment-date tests).
     prior = {
         "days": {
-            "Monday": {"subjects": {"math": {"raw": "inv 3"}, "reading": {"raw": "41"},
+            "Monday": {"date": "2026-10-19",
+                       "subjects": {"math": {"raw": "inv 3"}, "reading": {"raw": "41"},
                                     "spelling": {"raw": "36"}, "language_arts": {"raw": "5.3, CP20"},
                                     "science": {"raw": "Ch. 3"}}},
-            "Tuesday": {"subjects": {"math": {"raw": "WA6/ FA6*"}, "reading": {"raw": "42"},
+            "Tuesday": {"date": "2026-10-20",
+                        "subjects": {"math": {"raw": "WA6/ FA6*"}, "reading": {"raw": "42"},
                                      "spelling": {"raw": "37"}, "language_arts": {"raw": "5.4, CP21"},
                                      "science": {"raw": "Ramp Lab"}}},
-            "Wednesday": {"subjects": {"math": {"raw": "L36"}, "reading": {"raw": "43"},
+            "Wednesday": {"date": "2026-10-21",
+                          "subjects": {"math": {"raw": "L36"}, "reading": {"raw": "43"},
                                        "spelling": {"raw": "38"}, "language_arts": {"raw": "5.5"},
                                        "science": {"raw": "Ramp Lab"}}},
-            "Thursday": {"subjects": {"math": {"raw": "L37"}, "reading": {"raw": "44"},
+            "Thursday": {"date": "2026-10-22",
+                         "subjects": {"math": {"raw": "L37"}, "reading": {"raw": "44"},
                                       "spelling": {"raw": "39"}, "language_arts": {"raw": "5.6"},
                                       "science": {"raw": "Ch. 3"}}},
-            "Friday": {"subjects": {"math": {"raw": "L38"}, "reading": {"raw": "45"},
+            "Friday": {"date": "2026-10-23",
+                       "subjects": {"math": {"raw": "L38"}, "reading": {"raw": "45"},
                                     "spelling": {"raw": "Test 40"}, "language_arts": {"raw": "Review / CP23"},
                                     "science": {"raw": "Ch. 3 Check"}}},
         }
     }
     upcoming = {
         "days": {
-            "Monday": {"subjects": {"math": {"raw": "L39"}, "reading": {"raw": "46"},
+            "Monday": {"date": "2026-10-26",
+                       "subjects": {"math": {"raw": "L39"}, "reading": {"raw": "46"},
                                     "spelling": {"raw": "41"}, "language_arts": {"raw": "CH 5 Checkup"},
                                     "science": {"raw": "U1 Ch4 Electricity Transfer"}}},
-            "Tuesday": {"subjects": {"math": {"raw": "L40"}, "reading": {"raw": "47"},
+            "Tuesday": {"date": "2026-10-27",
+                        "subjects": {"math": {"raw": "L40"}, "reading": {"raw": "47"},
                                      "spelling": {"raw": "42"}, "language_arts": {"raw": "CH 5 Test"},
                                      "science": {"raw": "U1 Ch4 Electricity Detective"}}},
-            "Wednesday": {"subjects": {"math": {"raw": "Review"}, "reading": {"raw": "48"},
+            "Wednesday": {"date": "2026-10-28",
+                          "subjects": {"math": {"raw": "Review"}, "reading": {"raw": "48"},
                                        "spelling": {"raw": "43"}, "language_arts": {"raw": "Ch 7 L1 + CP25"},
                                        "science": {"raw": "U1 Ch4 Check (MC)"}}},
-            "Thursday": {"subjects": {"math": {"raw": "WA7/ FA7*"}, "reading": {"raw": "49"},
+            "Thursday": {"date": "2026-10-29",
+                         "subjects": {"math": {"raw": "WA7/ FA7*"}, "reading": {"raw": "49"},
                                       "spelling": {"raw": "44"}, "language_arts": {"raw": "Ch 7 L2 + CP26"},
                                       "science": {"raw": "U1 Ch5 Collisions / Crash Lab"}}},
-            "Friday": {"subjects": {"math": {"raw": "INV 4"}, "reading": {"raw": "50"},
+            "Friday": {"date": "2026-10-30",
+                       "subjects": {"math": {"raw": "INV 4"}, "reading": {"raw": "50"},
                                     "spelling": {"raw": "Test 45"}, "language_arts": {"raw": "Ch 7 Compound + CP27 bridge"},
                                     "science": {"raw": "U1 Ch5 Check (MC)"}}},
         }
@@ -375,14 +491,29 @@ def command_self_test() -> int:
     assert "Written Assessment 6" in math_review and "Fact Assessment 6" in math_review, math_review
     assert "39-40" in math_overview and "Written Assessment 7" in math_overview, math_overview
 
+    # CASE A — Math same-day dual assessment gets a dated phrase.
+    assert "Written Assessment 7 and Fact Assessment 7 on Thursday, October 29" in math_overview, math_overview
+    # CASE G — canonical date form; no ISO/slashed dates in prose.
+    for bad in ("2026-10-29", "10/29", "Thu 10/29"):
+        assert bad not in math_overview, (bad, math_overview)
+
     rs_review = week_in_review("reading_spelling", prior)
     assert "Reading" in rs_review and "41-45" in rs_review and "Spelling Test 40" in rs_review, rs_review
+    rs_overview = next_week_overview("reading_spelling", upcoming)
+    # CASE B — Spelling Test 45 carries its date.
+    assert "Spelling Test 45 on Friday, October 30" in rs_overview, rs_overview
 
     la_overview = next_week_overview("language_arts", upcoming)
-    assert "checkup" in la_overview and "chapter test" in la_overview, la_overview
+    assert "checkup" in la_overview, la_overview
+    # CASE C — Chapter 5 Test carries its date.
+    assert "Chapter 5 Test on Tuesday, October 27" in la_overview, la_overview
 
     sci_overview = next_week_overview("science", upcoming)
     assert "Unit 1" in sci_overview and "Electricity" in sci_overview, sci_overview
+    # CASE D — Science non-assessment items never get a fake assessment date.
+    assert "on Thursday" not in sci_overview and "on Friday" not in sci_overview, sci_overview
+    for bad in ("Test", "Quiz", "Assessment"):
+        assert bad not in sci_overview, (bad, sci_overview)
 
     # Course isolation: each subject's narrative must never leak another
     # subject's distinctive markers (§9 hard rule).
@@ -398,7 +529,7 @@ def command_self_test() -> int:
     }
     outputs = {
         "math": [math_review, math_overview],
-        "reading_spelling": [rs_review, next_week_overview("reading_spelling", upcoming)],
+        "reading_spelling": [rs_review, rs_overview],
         "language_arts": [week_in_review("language_arts", prior), la_overview],
         "science": [week_in_review("science", prior), sci_overview],
     }

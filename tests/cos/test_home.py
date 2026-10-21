@@ -53,7 +53,7 @@ class HomeSnapshotTests(StateDirTest):
             self.assertIsNone(s["reason"], name)
             self.assertEqual(s["generated_at"], T0.isoformat(timespec="seconds"))
             self.assertEqual(s["interval_s"], home.INTERVALS[name])
-            self.assertEqual(s["data"], {"name": name})
+            self.assertEqual(s["data"], {"items": []} if name == "needs" else {"name": name})
 
     def test_intervals_match_the_plan(self):
         self.assertEqual((home.INTERVALS["weather"], home.INTERVALS["calendar"], home.INTERVALS["reminders"],

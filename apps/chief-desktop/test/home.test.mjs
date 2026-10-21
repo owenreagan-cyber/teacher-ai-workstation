@@ -70,6 +70,21 @@ test("URLs never reach the renderer, and one bad need is dropped alone", () => {
   assert.equal(snap.needs.data.items.length, SNAPSHOT.needs.data.items.length);
 });
 
+test("need links reach the main process's resource table, never the renderer", async () => {
+  const s = structuredClone(SNAPSHOT);
+  const link = { type: "open_link", label: "Open doc", link_id: "lnk-0123456789abcdef" };
+  s.needs.data.items[0].action = link;
+  s.resources = [{ id: "lnk-0123456789abcdef", url: "https://example.com/doc" }];
+  const sink = [];
+  const res = await new CosRunner(printing("home-links", s), null, (r) => sink.push(...r)).home(false);
+  assert.deepEqual(res.needs.data.items[0].action, link);
+  assert.deepEqual(sink, [{ id: "lnk-0123456789abcdef", url: "https://example.com/doc" }]);
+  assert.equal(JSON.stringify(res).includes("example.com"), false);
+  // A command action is text to copy; an item with an unknown action type is dropped.
+  s.needs.data.items[0].action = { type: "run", label: "Run", command: "rm -rf ~" };
+  assert.equal(toHomeSnapshot(s).needs.data.items.length, SNAPSHOT.needs.data.items.length - 1);
+});
+
 test("decisions and suggestions are split by kind only", () => {
   const { decisions, decisionCount, suggestions, info } = splitNeeds(toHomeSnapshot(SNAPSHOT).needs.data.items);
   assert.ok(decisions.every((i) => i.kind === "decision"));

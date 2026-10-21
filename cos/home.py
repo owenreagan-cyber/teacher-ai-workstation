@@ -8,6 +8,9 @@ its own freshness:
    "reason": human text when status is not "current" (else null),
    "data": the section's fields (or null when nothing was ever fetched)}
 
+needs comes from cos/needs.py. Its https links become link ids; the URLs are in the
+top-level "resources", as in `cos ask`.
+
 Cache first. The snapshot lives in cache/home.json in the state folder (0600).
 `cos home --json --cached` reads only that file and runs nothing, so the window
 paints at once; a section past its interval says "updating". `cos home --json`
@@ -209,17 +212,18 @@ def builds_from_fixture(fixture_dir: Path) -> dict:
     return {"branch": "main", "items": items[:MAX_BUILDS]}
 
 
-def default_sources(rt, needs: Callable[[], dict] | None = None) -> list[Source]:
+def default_sources(rt) -> list[Source]:
     """The real sources, from a cli.Runtime (fixture mode uses fixture readers throughout)."""
+    from cos import needs
+
     reg, gate, ctx = rt.registry, rt.gate, rt.ctx
 
     def builds():
         return builds_from_fixture(rt.config.fixture_dir) if rt.config.fixture_dir else builds_from_git(ctx)
 
     def needs_source():
-        if needs is None:
-            raise SourceError("Needs aren't connected yet")
-        return needs()
+        got = needs.gather(rt.config, ctx, ctx.clock())
+        return {"items": got["items"], "resources": got["resources"]}
 
     return [
         Source("weather", INTERVALS["weather"], lambda: weather_data(_tool(reg, gate, "weather.today"))),
@@ -358,6 +362,14 @@ def snapshot(state_dir: Path, sources: list[Source], now: datetime, *, place: st
     def pending(name: str) -> bool:  # due, but this call does not refresh it
         return cached_only or busy or name not in wanted
 
+    views = {name: section_view(name, cache.get(name), now, stopped=stopped, pending=pending(name))
+             for name in SECTIONS}
+    # Needs' https links travel as link ids; their URLs go in "resources" (main process only).
+    needs = views["needs"]["data"]
+    resources = []
+    if needs is not None:
+        resources = needs.get("resources") or []
+        views["needs"]["data"] = {"items": needs.get("items") or []}
     return {
         "ok": True,
         "generated_at": _iso(now),
@@ -365,7 +377,8 @@ def snapshot(state_dir: Path, sources: list[Source], now: datetime, *, place: st
         "date": now.strftime("%A, %B ") + str(now.day),
         "place": place,
         "stopped": stopped,
-        **{name: section_view(name, cache.get(name), now, stopped=stopped, pending=pending(name)) for name in SECTIONS},
+        **views,
+        "resources": resources,
     }
 
 

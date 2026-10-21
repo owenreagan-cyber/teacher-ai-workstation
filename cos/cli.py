@@ -17,6 +17,8 @@
                                 Today page snapshot: weather, calendar, reminders, mac,
                                 needs, builds, agents, each with its own freshness;
                                 --cached reads the cache only (no model, ever)
+  cos needs [--json]            decisions, suggestions, and notes from the providers in
+                                cos/needs.py (config, needs.json, Canvas planner, harness)
   cos stop [reason] / resume    kill switch
   cos tools                     registered tools and their modes
   cos audit verify              check the audit hash chain
@@ -30,7 +32,7 @@ import time
 from dataclasses import dataclass
 from datetime import datetime
 
-from cos import VERSION, egress, fixture, home
+from cos import VERSION, egress, fixture, home, needs
 from cos.agent import Agent, Stopped, build_system_prompt
 from cos.audit import AuditLog, verify
 from cos.brief import format_brief, gather, home_card
@@ -266,6 +268,24 @@ def cmd_home(rt: Runtime, args) -> int:
     return EXIT_OK
 
 
+def cmd_needs(rt: Runtime, args) -> int:
+    """What needs Owen, from the providers in cos/needs.py (never the model). Read-only."""
+    if rt.kill_switch.is_set():
+        _emit_error(args.json, f"stopped by kill switch ({rt.kill_switch.reason()}); run cos resume",
+                    "stopped")
+        return EXIT_STOPPED
+    now = rt.ctx.clock()
+    got = needs.gather(rt.config, rt.ctx, now)
+    if args.json:
+        print(json.dumps({"ok": True, "generated_at": now.isoformat(timespec="seconds"), **got}))
+        return EXIT_OK
+    if not got["items"]:
+        print("Nothing needs your decision.")
+    for it in got["items"]:
+        print(f"[{it['kind']}] {it['title']} — {it['reason']} ({it['source']})")
+    return EXIT_OK
+
+
 def cmd_stop(rt: Runtime, args) -> int:
     reason = " ".join(args.reason)
     rt.kill_switch.stop(reason)
@@ -442,6 +462,9 @@ def parser() -> argparse.ArgumentParser:
     home_p.add_argument("--cached", action="store_true", help="read the cache only; refresh nothing")
     home_p.add_argument("--only", help="comma-separated sections to refresh (default: all that are due)")
     home_p.set_defaults(func=cmd_home)
+    needs_p = sub.add_parser("needs", help="decisions and suggestions from the providers (no model)")
+    needs_p.add_argument("--json", action="store_true")
+    needs_p.set_defaults(func=cmd_needs)
     stop = sub.add_parser("stop", help="set the kill switch")
     stop.add_argument("reason", nargs="*")
     stop.set_defaults(func=cmd_stop)

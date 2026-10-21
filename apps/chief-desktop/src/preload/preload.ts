@@ -22,6 +22,8 @@ const bridge: PreloadBridge = {
   openLink: (linkId) => electron.ipcRenderer.invoke("chief:open-link", String(linkId)),
   brief: () => electron.ipcRenderer.invoke("chief:brief"),
   home: (cached) => electron.ipcRenderer.invoke("chief:home", cached === true),
+  configGet: () => electron.ipcRenderer.invoke("chief:config-get"),
+  configSet: (key, value) => electron.ipcRenderer.invoke("chief:config-set", String(key), value),
   status: () => electron.ipcRenderer.invoke("chief:status"),
   stop: () => electron.ipcRenderer.invoke("chief:stop"),
   resume: () => electron.ipcRenderer.invoke("chief:resume"),

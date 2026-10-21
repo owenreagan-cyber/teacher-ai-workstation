@@ -44,7 +44,7 @@ let hotkeyNotice: string | null = null;
 let lastKillSwitch: boolean | null = null; // from the latest cos status, for the tray label only
 let lastAutoSearch: boolean | null = null; // from the latest cos status, for the tray checkbox only
 let saved: SavedWindow;
-let windowState: WindowState = { pinned: false, protected: true };
+let windowState: WindowState = { pinned: false, protected: true, startAtLogin: null, hotkey: "" };
 let hiddenSince: number | null = null;
 let warming = false;
 let prefs: Prefs = { startAtLogin: null };
@@ -102,6 +102,8 @@ function setStartAtLogin(enabled: boolean): void {
   app.setLoginItemSettings({ openAtLogin: enabled });
   prefs = { ...prefs, startAtLogin: enabled };
   savePrefs(prefsFile(), prefs);
+  windowState = { ...windowState, startAtLogin: enabled };
+  sendEvent({ kind: "window-state", state: windowState });
 }
 
 function startAtLoginChecked(): boolean {
@@ -149,7 +151,7 @@ function createWindow(showWhenReady: boolean): void {
   });
 
   // Every launch starts protected, whatever was remembered.
-  windowState = { pinned: saved.pinned, protected: true };
+  windowState = { pinned: saved.pinned, protected: true, startAtLogin: startAtLoginChecked(), hotkey: config.hotkey };
   win.setContentProtection(true);
   if (windowState.pinned) win.setAlwaysOnTop(true, "floating");
 
@@ -171,6 +173,9 @@ function createWindow(showWhenReady: boolean): void {
   win.on("show", () => {
     if (hiddenSince !== null && Date.now() - hiddenSince > REWARM_AFTER_HIDDEN_MS) warmModel();
     hiddenSince = null;
+    // Owen may change the login item in System Settings; Settings shows what macOS says now.
+    windowState = { ...windowState, startAtLogin: startAtLoginChecked() };
+    sendEvent({ kind: "window-state", state: windowState });
   });
   win.on("resize", scheduleSave);
   win.on("move", scheduleSave);
@@ -357,6 +362,9 @@ function registerIpc(): void {
   handle("chief:open-link", (linkId) => openLink(resources, linkId, (url) => shell.openExternal(url)));
   handle("chief:brief", () => cos.brief());
   handle("chief:home", (cached) => home(cached === true));
+  // Settings: cos validates every write (config schema, settable keys); buildArgs re-checks the key.
+  handle("chief:config-get", () => cos.configGet());
+  handle("chief:config-set", (key, value) => cos.configSet(key, value));
   handle("chief:status", async () => {
     const status: StatusResult = await cos.status();
     lastKillSwitch = status.ok ? status.kill_switch : null;

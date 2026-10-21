@@ -76,7 +76,7 @@ check("dev server only when unpackaged and on localhost", securityTs.includes("!
 
 // 6. Preload: exactly the allowed bridge, fixed channels only.
 const preload = read("src/preload/preload.ts");
-const ALLOWED = ["ask", "history", "openLink", "brief", "home", "status", "stop", "resume", "setPin", "setProtection", "hide", "onEvent"];
+const ALLOWED = ["ask", "history", "openLink", "brief", "home", "configGet", "configSet", "status", "stop", "resume", "setPin", "setProtection", "hide", "onEvent"];
 const bridgeBody = preload.match(/const bridge: PreloadBridge = \{([\s\S]*?)\n\};/)?.[1] ?? "";
 const keys = [...bridgeBody.matchAll(/^ {2}(\w+):/gm)].map((m) => m[1]);
 check("preload exposes exactly the allowed functions", JSON.stringify(keys) === JSON.stringify(ALLOWED), keys.join(","));
@@ -184,6 +184,10 @@ const railTsx = read("src/renderer/Rail.tsx");
 check("collapsed rail buttons keep their names in aria-label", /aria-label=\{props\.collapsed \? name : undefined\}/.test(railTsx) && /aria-label=\{stopped \? "Resume Chief" : "Stop Chief"\}/.test(railTsx));
 check("Today paints from the cache first, then refreshes", /loadHome\(true\)\.then\(\(\) => loadHome\(false\)\)/.test(read("src/renderer/App.tsx")));
 check("buildArgs has home (--cached only on request)", /case "home":[\s\S]*?params\.cached === true \? \["home", "--json", "--cached"\] : \["home", "--json"\]/.test(read("src/main/args.ts")));
+check("config set accepts only the settable keys", /return \["config", "set", "--json", "--", checkConfigKey\(params\.key\), configValue\(params\.value\)\];/.test(read("src/main/args.ts")) &&
+  /export const SETTABLE_KEYS = \["places", "auto_search", "model", "model_keep_alive"\] as const;/.test(read("src/shared/settings.ts")));
+check("preload configSet passes the key as a string", /configSet: \(key, value\) => electron\.ipcRenderer\.invoke\("chief:config-set", String\(key\), value\)/.test(preload));
+check("start at login is display-only in Settings (no bridge)", !/startAtLogin|setLoginItem/.test(preload) && !/setLoginItemSettings/.test(read("src/renderer/Settings.tsx")));
 check("a need's command action is only copied, never run", /else copyText\(action\.command\);/.test(read("src/renderer/App.tsx")));
 
 // 7. Dev script: no package-internal paths (TypeScript 7 stopped exporting typescript/bin/tsc,

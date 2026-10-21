@@ -63,6 +63,7 @@ PLACE_KEY_RE = re.compile(r"[a-z][a-z0-9_]{0,19}")
 PLACE_FIELDS = ("name", "latitude", "longitude")
 MAX_PLACES = 10
 MAX_PLACE_NAME = 60
+MAX_MODEL_NAME = 100
 
 # Ollama keep_alive: "0" (unload right after the request) or a duration such as "30m", "2h", "1h30m".
 KEEP_ALIVE_RE = re.compile(r"0|(?:\d+(?:\.\d+)?(?:ms|s|m|h))+")
@@ -252,25 +253,38 @@ def fixture_dir_from_env(root: Path | None = None) -> Path | None:
     return fixtures
 
 
+def read_config_file(root: Path) -> dict:
+    """config.json as written ({} when there is none). Refuses unknown keys."""
+    cfg_file = root / "config.json"
+    if not cfg_file.exists():
+        return {}
+    try:
+        user = json.loads(cfg_file.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as e:
+        raise ConfigError(f"config.json unreadable: {e}")
+    if not isinstance(user, dict):
+        raise ConfigError("config.json must be a JSON object")
+    unknown = set(user) - set(DEFAULTS)
+    if unknown:
+        raise ConfigError(f"unknown config keys: {sorted(unknown)}")
+    return user
+
+
 def load_config(root: Path | None = None) -> Config:
     fixtures = fixture_dir_from_env(root)  # before anything is created
     root = ensure_state_dir(root)
+    return config_from(read_config_file(root), root, fixtures)
+
+
+def config_from(user: dict, root: Path, fixtures: Path | None = None) -> Config:
+    """Validate config.json's keys (as written) over the defaults and build the Config."""
     data = dict(DEFAULTS)
-    cfg_file = root / "config.json"
-    if cfg_file.exists():
-        try:
-            user = json.loads(cfg_file.read_text(encoding="utf-8"))
-        except (OSError, json.JSONDecodeError) as e:
-            raise ConfigError(f"config.json unreadable: {e}")
-        if not isinstance(user, dict):
-            raise ConfigError("config.json must be a JSON object")
-        unknown = set(user) - set(DEFAULTS)
-        if unknown:
-            raise ConfigError(f"unknown config keys: {sorted(unknown)}")
-        data.update(user)
+    data.update(user)
     for name in ("model", "fallback_model"):
         if data[name] and is_cloud_model_name(data[name]):
             raise CloudModelError(name, str(data[name]), root, fixtures is not None)
+    if not isinstance(data["model"], str) or not data["model"].strip() or len(data["model"]) > MAX_MODEL_NAME:
+        raise ConfigError(f"model must be a model name of 1-{MAX_MODEL_NAME} characters")
     if not isinstance(data["model_think"], bool):
         raise ConfigError("model_think must be true or false")
     num_ctx = data["model_num_ctx"]
@@ -307,24 +321,41 @@ def load_config(root: Path | None = None) -> Config:
 
 
 def write_config_value(key: str, value, root: Path | None = None) -> Path:
-    """Set one known key in config.json, keeping every other key as written. The file is
-    replaced atomically (0600). Refuses (ConfigError) if config.json is unreadable or the
-    result would not load."""
+    """Set one known key in config.json, keeping every other key as written. The result is
+    validated exactly as load_config would read it, then the file is replaced atomically
+    (0600). Refuses (ConfigError) if config.json is unreadable or the result would not load."""
     if key not in DEFAULTS:
         raise ConfigError(f"unknown config key {key!r}")
     root = ensure_state_dir(root)
     path = root / "config.json"
-    data: dict = {}
-    if path.exists():
-        try:
-            data = json.loads(path.read_text(encoding="utf-8"))
-        except (OSError, json.JSONDecodeError) as e:
-            raise ConfigError(f"config.json unreadable: {e}")
-        if not isinstance(data, dict):
-            raise ConfigError("config.json must be a JSON object")
+    data = read_config_file(root)
     data[key] = value
-    tmp = root / ".config.json.tmp"
+    config_from(data, root)  # raises before anything is written
+    tmp = root / f".config.json.{os.getpid()}.tmp"
     with open_private(tmp, "w") as fh:
         fh.write(json.dumps(data, indent=2) + "\n")
-    os.replace(tmp, path)
+    try:
+        os.chmod(tmp, FILE_MODE)
+        os.replace(tmp, path)
+    except OSError:
+        tmp.unlink(missing_ok=True)
+        raise
     return path
+
+
+# What `cos config set` (and so the Settings screen) may change. Everything else stays a hand edit.
+SETTABLE = ("places", "auto_search", "model", "model_keep_alive")
+
+
+def config_values(cfg: Config) -> dict:
+    """The effective settings the Settings screen shows (defaults filled in)."""
+    return {
+        "places": {k: {"name": p.name, "latitude": p.latitude, "longitude": p.longitude}
+                   for k, p in weather_places(cfg).items()},
+        "auto_search": cfg.auto_search,
+        "model": cfg.model,
+        "fallback_model": cfg.fallback_model,
+        "model_keep_alive": cfg.model_keep_alive,
+        "search_daily_limit": cfg.search_daily_limit,
+        "search_monthly_limit": cfg.search_monthly_limit,
+    }

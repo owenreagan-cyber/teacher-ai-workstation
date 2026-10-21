@@ -239,7 +239,7 @@ export function App() {
   };
 
   // A need's action: a link opens by id in the main process, a page switches here, a command is
-  // copied for Owen to run himself. Nothing here runs a command.
+  // copied so Owen can run it. Nothing here runs a command.
   const onAction = (action: NeedAction) => {
     if (action.type === "open_link") void window.chief.openLink(action.link_id);
     else if (action.type === "page") goTo(action.page as Page);

@@ -9,6 +9,9 @@
   cos auto-search on|off|status [--json]
                                 automatic web search for questions that need it (config.json
                                 auto_search; the desktop tray toggle runs this)
+  cos config get [--json] / cos config set KEY JSON [--json]
+                                settings in config.json (the Settings screen uses these);
+                                set takes places, auto_search, model, model_keep_alive
   cos warm [--json]             load the configured model and keep it loaded (keep_alive)
   cos chat                      multi-turn; history saved in the state directory
   cos brief [--json]            deterministic daily brief (no model); --json adds the
@@ -36,8 +39,8 @@ from cos import VERSION, egress, fixture, home, needs
 from cos.agent import Agent, Stopped, build_system_prompt
 from cos.audit import AuditLog, verify
 from cos.brief import format_brief, gather, home_card
-from cos.config import (CloudModelError, Config, ConfigError, ensure_private_subdir, load_config,
-                        open_private, write_config_value)
+from cos.config import (DEFAULTS, SETTABLE, CloudModelError, Config, ConfigError, config_values,
+                        ensure_private_subdir, load_config, open_private, write_config_value)
 from cos.executor import run_tool
 from cos.fastpath import FastPath
 from cos.memory import load_identity, load_memory, load_personality
@@ -398,6 +401,51 @@ def cmd_auto_search(cfg: Config, args) -> int:
     return EXIT_OK
 
 
+def _config_report(cfg: Config) -> dict:
+    from cos.capabilities import home_relative
+    return {"ok": True, "path": home_relative(cfg.state_dir / "config.json"), "values": config_values(cfg),
+            "settable": list(SETTABLE)}
+
+
+def cmd_config(cfg: Config, args) -> int:
+    """cos config get / set: what the Settings screen reads and writes. set validates the whole
+    result against the config schema, refuses unknown and non-settable keys, writes config.json
+    atomically (0600), and records the change in the audit log."""
+    if args.action == "set":
+        if args.key is None or args.value is None:
+            _emit_error(args.json, "config set needs a key and a JSON value", "usage")
+            return EXIT_USAGE
+        if args.key not in DEFAULTS:
+            _emit_error(args.json, f"unknown config key {args.key!r}", "usage")
+            return EXIT_USAGE
+        if args.key not in SETTABLE:
+            _emit_error(args.json, f"{args.key} can't be changed here; edit config.json", "usage")
+            return EXIT_USAGE
+        try:
+            value = json.loads(args.value)
+        except json.JSONDecodeError:
+            _emit_error(args.json, f"{args.key}: the value must be JSON (for example true, \"2h\", or an object)", "usage")
+            return EXIT_USAGE
+        try:
+            write_config_value(args.key, value, cfg.state_dir)
+        except ConfigError as e:
+            _emit_error(args.json, str(e), "usage")
+            return EXIT_USAGE
+        # Places are logged by key only: coordinates stay in config.json.
+        logged = sorted(value) if args.key == "places" and isinstance(value, dict) else value
+        AuditLog(cfg.audit_path, extra={"fixture": True} if cfg.fixture_dir else None)(
+            "config_change", key=args.key, value=logged, source="cos config set")
+        cfg = load_config(cfg.state_dir)
+    report = _config_report(cfg)
+    if args.json:
+        print(json.dumps(report))
+    else:
+        print(f"Settings ({report['path']}):")
+        for key, value in report["values"].items():
+            print(f"  {key}: {json.dumps(value)}")
+    return EXIT_OK
+
+
 def cmd_warm(rt: Runtime, args) -> int:
     """Load the configured model with the configured keep_alive (one empty-prompt request,
     one model_warm audit record). Refused while the kill switch is set."""
@@ -450,6 +498,12 @@ def parser() -> argparse.ArgumentParser:
     auto.add_argument("action", choices=["on", "off", "status"])
     auto.add_argument("--json", action="store_true")
     auto.set_defaults(func=cmd_auto_search, config_only=True)
+    conf = sub.add_parser("config", help="read or change settings in config.json (validated, audited)")
+    conf.add_argument("action", choices=["get", "set"])
+    conf.add_argument("key", nargs="?")
+    conf.add_argument("value", nargs="?", help="a JSON value")
+    conf.add_argument("--json", action="store_true")
+    conf.set_defaults(func=cmd_config, config_only=True)
     warm = sub.add_parser("warm", help="load the configured model and keep it loaded")
     warm.add_argument("--json", action="store_true")
     warm.set_defaults(func=cmd_warm)

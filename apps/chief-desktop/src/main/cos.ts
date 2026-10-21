@@ -8,6 +8,7 @@ import type {
   AskResult,
   AutoSearchResult,
   BriefResult,
+  ConfigResult,
   ControlResult,
   ErrorKind,
   Failure,
@@ -19,6 +20,7 @@ import type {
 } from "../shared/types.js";
 import { type Resource, stripUrls, toBlocks, toResources } from "../shared/blocks.js";
 import { toHomeSnapshot } from "../shared/home.js";
+import { toConfigReport } from "../shared/settings.js";
 import { toHomeCard } from "../shared/homeCard.js";
 import { type Action, ArgsError, buildArgs, type Params } from "./args.js";
 
@@ -32,6 +34,8 @@ const TIMEOUT_MS: Record<Action, number> = {
   warm: 300_000, // loading the model from disk
   "auto-search": 10_000,
   home: 40_000, // due sources refresh in parallel inside cos, each with its own timeout
+  "config-get": 10_000,
+  "config-set": 10_000,
 };
 const MAX_BUFFER = 2_000_000;
 
@@ -210,6 +214,24 @@ export class CosRunner {
     });
     if (result.ok) this.onResources(resourcesOf(v));
     return result;
+  }
+
+  /** `cos config get --json`: the Settings screen's values. */
+  async configGet(): Promise<ConfigResult> {
+    const v = await this.json("config-get");
+    return CosRunner.envelope<ConfigResult>(v, (o) => {
+      const report = toConfigReport(o);
+      return report ? { ok: true, ...report } : null;
+    });
+  }
+
+  /** `cos config set --json -- KEY JSON`: cos validates and writes; the result is the new values. */
+  async configSet(key: unknown, value: unknown): Promise<ConfigResult> {
+    const v = await this.json("config-set", { key, value });
+    return CosRunner.envelope<ConfigResult>(v, (o) => {
+      const report = toConfigReport(o);
+      return report ? { ok: true, ...report } : null;
+    });
   }
 
   async status(): Promise<StatusResult> {

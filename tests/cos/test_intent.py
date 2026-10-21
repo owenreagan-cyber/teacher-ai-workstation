@@ -127,7 +127,7 @@ class CapabilityAnswerTests(StateDirTest):
         text = capabilities_answer(reg, cfg)
         for want in ("tell the time", "read today's calendar", "search the web", "Connected:", "qwen3.6:35b",
                      "Not built yet: searching files on your Mac, and mail.", "can't send",
-                     "there's no settings screen yet", "config.json in the Chief state folder"):
+                     "has a Settings screen", "config.json in the Chief state folder"):
             self.assertIn(want, text)
         self.assertNotRegex(text.lower(), r"settings (?:>|→)|preferences (?:>|→)|menu bar → settings|click settings")
 
@@ -169,7 +169,7 @@ class ResponderPathTests(StateDirTest):
     def test_capabilities_and_brief(self):
         res, _ = self.ask("what can you do?")
         self.assertEqual(res["intent"], "capabilities")
-        self.assertIn("no settings screen", res["answer"])
+        self.assertIn("Settings screen", res["answer"])
         for q in ("brief", "today's brief"):
             with self.subTest(q=q):
                 res, _ = self.ask(q)

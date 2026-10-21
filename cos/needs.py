@@ -238,7 +238,7 @@ def harness_provider(config, now: str) -> list[tuple[dict, list]]:
         path = config.fixture_dir / "harness-summary.json"
         summary = json.loads(path.read_text(encoding="utf-8")) if path.exists() else None
     else:
-        summary = latest_real_report(Path(config.repo_root) / "evals" / "reports")
+        summary = latest_real_report(Path(config.repo_root) / "evals/reports")
     if not summary or summary.get("certification") is not False:
         return []
     reasons = [str(r) for r in summary.get("certification_reasons") or [] if r != UNCOMMITTED]

@@ -56,7 +56,10 @@ class PlannerViewTest(unittest.TestCase):
             for name in ("Math", "Reading/Spelling", "Language Arts", "Science")
         ])
         _write(self.week_dir / "drafts/assessment-reminders.json", [])
-        _write(self.week_dir / "questions/questions.json", [])
+        _write(self.week_dir / "questions/questions.json", [{
+            "question_id": "math-q", "subject": "math", "status": "OPEN", "reason": "Confirm practice",
+            "recommended_default": "Use practice",
+        }])
         _write(self.week_dir / "approvals/approval-manifest.json", {"subjects": {
             subject: {artifact: {"state": "PENDING"} for artifact in ("page", "announcement", "assignments", "assessment_reminder")}
             for subject in subjects
@@ -77,6 +80,8 @@ class PlannerViewTest(unittest.TestCase):
         self.assertIn(math["page_html"], math["announcement"]["exact_html"])
         self.assertEqual(math["days"][0]["assignments"][0]["title"], "Lesson 39")
         self.assertEqual(data["settings"]["state_root"], str(self.root))
+        self.assertEqual(data["questions"][0]["question_id"], "math-q")
+        self.assertEqual(data["settings"]["system_status"]["domain"], "canvas_weekly_planning")
         package = rollover_manifest.build_rollover_manifest(2, 2, 2, 3)
         math_update = next(item for item in package["weekly_announcements"] if item["subject"] == "math")
         self.assertEqual(math["announcement"]["exact_html"], math_update["message"])
@@ -90,6 +95,8 @@ class PlannerViewTest(unittest.TestCase):
         self.assertNotIn("{ id: 'deploy'", app)
         self.assertIn('class="preview-frame" data-preview="page" sandbox', app)
         self.assertIn("Nothing goes to Canvas until Friday 4 PM", index)
+        for restored in ("Restore source", "Mark pending", "Intentionally blank", "Reject proposal", "answer-question", "System status"):
+            self.assertIn(restored, app)
 
 
 if __name__ == "__main__":

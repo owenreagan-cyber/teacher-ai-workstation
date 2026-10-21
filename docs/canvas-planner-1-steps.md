@@ -25,6 +25,15 @@ cd /Users/owen/Projects/teacher-ai-workstation
 TAW_STATE_ROOT=/Users/owen/Projects/teacher-ai-workstation/.local bin/canvas-weekly-rollover --week q2w3 --dry-run
 ```
 
+Run the live GET-only dry run. This reads Canvas to resolve existing pages,
+assignment groups, assignments, and announcements, then prints every write the
+Friday rollover would make or skip. It performs no POST, PUT, PATCH, or DELETE:
+
+```bash
+cd /Users/owen/Projects/teacher-ai-workstation
+TAW_STATE_ROOT=/Users/owen/Projects/teacher-ai-workstation/.local bin/canvas-weekly-rollover --dry-run --live-readonly
+```
+
 ## Install the one Friday LaunchAgent
 
 The single job runs the same `bin/canvas-weekly-rollover --scheduled` entrypoint

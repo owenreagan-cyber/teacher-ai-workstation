@@ -157,14 +157,24 @@ function viewSource(data) {
 
 function viewPlan(data, requested) {
   const course = activeCourse(data,requested);
+  const questions = (data.questions || []).filter((question) => question.subject === course.id && question.status !== 'ANSWERED');
   const rows = course.days.map((day) => `<tr data-plan-row data-course="${course.id}" data-day="${day.day}">
     <td><strong>${esc(day.day)}</strong><br><span class="muted">${esc(day.date || '')}</span></td><td>${esc(day.sheet_says || '—')}</td>
     <td><label>In Class<textarea data-field="in_class" rows="2">${esc((day.in_class || []).join('\n'))}</textarea></label>
-    <label>At Home<input data-field="at_home" value="${esc(day.at_home || '')}"></label>${day.edited ? '<span class="edited-badge">Edited</span>' : ''}<div class="autosave-status" aria-live="polite"></div></td>
-    <td>${day.assignments.length ? day.assignments.map((a) => `<div class="assignment-chip"><strong>${esc(a.title)}</strong><br>${esc(a.assignment_group || 'Assignment')} · due ${esc(a.due_date || '')}</div>`).join('') : '<span class="empty">None proposed</span>'}
+    <label>At Home<input data-field="at_home" value="${esc(day.at_home || '')}"></label>${day.edited ? '<span class="edited-badge">Edited</span>' : ''}
+    <div class="btn-row"><button class="btn neutral small" data-action="restore-source" data-course="${course.id}" data-day="${day.day}">Restore source</button>
+    <button class="btn neutral small" data-action="mark-pending" data-course="${course.id}" data-day="${day.day}" data-source="${esc(day.sheet_says || '')}">Mark pending</button>
+    <button class="btn neutral small" data-action="mark-blank" data-course="${course.id}" data-day="${day.day}" data-source="${esc(day.sheet_says || '')}">Intentionally blank</button></div>
+    <div class="autosave-status" aria-live="polite">${esc(teacherState(day.status))}</div></td>
+    <td>${day.assignments.length ? day.assignments.map((a) => `<div class="assignment-chip"><strong>${esc(a.title)}</strong><br>${esc(a.assignment_group || 'Assignment')} · due ${esc(a.due_date || '')}
+    <button class="btn reject small" data-action="reject-assignment" data-course="${course.id}" data-title="${esc(a.title)}">Reject proposal</button></div>`).join('') : '<span class="empty">None proposed</span>'}
     ${day.reminders.map((r) => `<div class="reminder-chip">${esc(r.title)}</div>`).join('')}</td></tr>`).join('');
   return `${header(data,'2 · Plan','Edit lesson plans and see the assignments they will create.')}${courseTabs(data,'plan',course.id)}
     <section class="section"><div class="table-wrap"><table class="plan-table"><thead><tr><th>Day</th><th>Sheet says</th><th>Your lesson plan</th><th>Assignments it will create</th></tr></thead><tbody>${rows}</tbody></table></div></section>
+    <section class="section"><h2>Questions for ${esc(course.name)}</h2>${questions.length ? questions.map((question) => `<article class="finding needs"><h3>${esc(question.reason)}</h3>
+    <p>${esc(question.evidence || '')}</p><label>Your answer<input data-question-input="${esc(question.question_id)}" value="${esc(question.answer || '')}"></label>
+    <div class="btn-row"><button class="btn small" data-action="answer-question" data-id="${esc(question.question_id)}">Answer</button>
+    ${question.recommended_default ? `<button class="btn neutral small" data-action="answer-question" data-id="${esc(question.question_id)}" data-answer="${esc(question.recommended_default)}">Use recommended</button>` : ''}</div></article>`).join('') : '<p class="empty">No open questions.</p>'}</section>
     <div class="sticky-actions"><button class="btn neutral" data-action="add-assignment">Add an assignment</button><button class="btn neutral" data-action="undo-plan">Undo last edit</button>
     <a class="btn" href="${routeFor(data.week.code,course.id,'ai')}">${esc(course.name)} is planned · See AI review</a></div>`;
 }
@@ -228,6 +238,7 @@ function viewSettings(data) {
     <div class="kv"><span class="k">Source fingerprint</span><span class="v mono">${esc(data.settings.source_hash || '—')}</span></div>
     <div class="kv"><span class="k">Approval store updated</span><span class="v">${esc(formatDate(data.settings.approval_updated_at))}</span></div>
     <details><summary>Page identifiers</summary><pre>${esc(JSON.stringify(data.settings.page_lookup,null,2))}</pre></details></section>
+    <section class="section"><h2>System status</h2><pre class="mono">${esc(JSON.stringify(data.settings.system_status,null,2))}</pre></section>
     <section class="section"><h2>Recent history</h2>${data.history.length ? data.history.map((event) => `<div class="history-row"><strong>${esc(event.action.replaceAll('_',' '))}</strong><span>${esc(event.reason)} · ${esc(formatDate(event.at))}</span></div>`).join('') : '<p class="empty">No planner history yet.</p>'}</section>`;
 }
 
@@ -298,6 +309,14 @@ async function act(button) {
   if (action === 'resync-source') await api(`/api/weeks/${quarter}/${week}/resync-source`,{method:'POST',body:requestBody()});
   else if (action === 'apply-source' || action === 'keep-source') await api(`/api/weeks/${quarter}/${week}/${action}`,{method:'POST',body:requestBody()});
   else if (action === 'undo-plan') await api(`/api/weeks/${quarter}/${week}/undo-plan`,{method:'POST',body:requestBody()});
+  else if (['restore-source','mark-pending','mark-blank'].includes(action)) {
+    await api(`/api/weeks/${quarter}/${week}/${action}`,{method:'POST',body:requestBody({subject:button.dataset.course,day:button.dataset.day,source_value:button.dataset.source || ''})});
+  } else if (action === 'answer-question') {
+    const answer = button.dataset.answer ?? document.querySelector(`[data-question-input="${CSS.escape(button.dataset.id)}"]`)?.value ?? '';
+    await api(`/api/weeks/${quarter}/${week}/questions/${encodeURIComponent(button.dataset.id)}/answer`,{method:'POST',body:requestBody({answer})});
+  } else if (action === 'reject-assignment') {
+    await api(`/api/weeks/${quarter}/${week}/assignments/disposition`,{method:'POST',body:requestBody({subject:button.dataset.course,title:button.dataset.title,action:'REJECT'})});
+  }
   else if (action === 'answer-ai') await api(`/api/weeks/${quarter}/${week}/ai-findings/${encodeURIComponent(button.dataset.id)}`,{method:'POST',body:requestBody({answer:button.dataset.answer})});
   else if (action === 'approve-course') {
     const course = activeCourse(APP.data,button.dataset.course);

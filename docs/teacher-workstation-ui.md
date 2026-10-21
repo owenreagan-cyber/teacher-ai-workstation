@@ -59,18 +59,17 @@ POST   /api/weeks/{q}/{w}/restore-source     remove a day override
 POST   /api/weeks/{q}/{w}/mark-pending       mark a day pending
 POST   /api/weeks/{q}/{w}/mark-blank         mark a day intentionally blank
 POST   /api/weeks/{q}/{w}/questions/{id}/answer   answer a question
-POST   /api/weeks/{q}/{w}/assignments        REJECT / RESTORE an assignment proposal
-POST   /api/weeks/{q}/{w}/announcements      edit weekly-update transition wording
+POST   /api/weeks/{q}/{w}/assignments/{action}   REJECT / RESTORE an assignment proposal
+POST   /api/weeks/{q}/{w}/announcements/{action} edit weekly-update transition wording
 POST   /api/weeks/{q}/{w}/approve            approve one artifact (hash-bound)
 POST   /api/weeks/{q}/{w}/revoke-approval    revoke one artifact approval
 POST   /api/weeks/{q}/{w}/preflight          guarded deployment preflight (dry-run or GET-only)
-POST   /api/weeks/{q}/{w}/deploy             guarded production deploy (production-gated)
+POST   /api/weeks/{q}/{w}/deploy             legacy route; always blocked by D-028
 ```
 
-The deployment routes are the **only** routes that can reach Canvas mutation
-code. They delegate to `scripts/canvas_llm_deploy/` (the guarded coordinator),
-require explicit production mode + confirmation, and never expose a generic
-Canvas proxy. See `docs/canvas-deployment-workflow.md`.
+The Friday rollover engine is the only weekly-package publisher. The legacy
+deploy route remains only as an explicit blocked response; it cannot call the
+old coordinator. See `docs/canvas-deployment-workflow.md`.
 
 `PUT`/`PATCH` are not implemented (405). No local route reaches Canvas
 mutation code — the server source statically forbids importing the Canvas
@@ -169,10 +168,9 @@ There is no DEPLOY / PUBLISH NOW / SEND TO CANVAS button.
 
 ## Approval / deployment
 
-Approval is local only. Deployment is a **separate guarded workflow** (Phase 4)
-behind the Deploy screen and the narrowly-scoped `/preflight` and `/deploy`
-routes. `READY_TO_PUBLISH` does not deploy. See
-`docs/canvas-deployment-workflow.md`.
+Approval is local only. `READY_TO_PUBLISH` does not deploy. The Friday rollover
+is the only publisher; the old Deploy screen and direct deploy CLI are retired.
+See `docs/canvas-deployment-workflow.md`.
 
 ## Future phases (documented only — not implemented)
 

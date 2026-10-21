@@ -124,7 +124,10 @@ def run_preflight(
     plan = readiness["manifest"]
     blockers = list(readiness["blockers"])
     warnings: list[str] = []
-    live: dict[str, Any] = {"academic": {}, "homeroom": {}}
+    live: dict[str, Any] = {
+        "academic": {}, "homeroom": {}, "assignments": {},
+        "weekly_announcements": {}, "assessment_reminders": {},
+    }
 
     if client is None:
         warnings.append("LIVE CANVAS CONTEXT UNAVAILABLE — dry-run (no Canvas GET performed)")
@@ -151,6 +154,14 @@ def run_preflight(
         course["page_id"] = res["page_id"]
         course["already_front_page"] = res["front_page"]
         course["front_page_action"] = "SKIP" if res["front_page"] else "SET_FRONT_PAGE"
+        if res["page_id"] is not None:
+            try:
+                current = client.get_page(cid, slug)
+                matches = deploy_plan._sha(current.get("body") or "") == course.get("to_page_hash")
+                course["page_body_action"] = "SKIP" if matches else "UPDATE"
+                res["page_body_action"] = course["page_body_action"]
+            except Exception as exc:  # noqa: BLE001
+                blockers.append(f"{course['subject']}: page body lookup failed: {type(exc).__name__}")
 
     # Homeroom target.
     h = plan["homeroom"]
@@ -160,6 +171,38 @@ def run_preflight(
     h["page_id"] = hres["page_id"]
     h["already_front_page"] = hres["front_page"]
     h["front_page_action"] = "SKIP" if hres["front_page"] else "SET_FRONT_PAGE"
+    if hres["page_id"] is not None:
+        try:
+            from . import homeroom as homeroom_mod
+            current = client.get_page(h["course_id"], h["to_page_slug"])
+            matches = homeroom_mod._body_hash(current.get("body") or "") == h.get("proposed_content_hash")
+            h["page_body_action"] = "SKIP" if matches else "UPDATE"
+            hres["page_body_action"] = h["page_body_action"]
+        except Exception as exc:  # noqa: BLE001
+            blockers.append(f"homeroom: page body lookup failed: {type(exc).__name__}")
+
+    # Approved assignment routes and exact duplicate dispositions.
+    assignments_by_course: dict[int, list[dict[str, Any]]] = {}
+    groups_by_course: dict[int, set[str]] = {}
+    for assignment in plan.get("assignments", []):
+        cid = int(assignment["course_id"])
+        if cid not in groups_by_course:
+            try:
+                groups_by_course[cid] = {str(g.get("name") or "") for g in client.list_assignment_groups(cid)}
+                assignments_by_course[cid] = client.list_assignments(cid)
+            except Exception as exc:  # noqa: BLE001
+                blockers.append(f"course {cid}: assignment lookup failed: {type(exc).__name__}")
+                groups_by_course[cid], assignments_by_course[cid] = set(), []
+        group = str(assignment.get("assignment_group") or "")
+        if group not in groups_by_course[cid]:
+            blockers.append(f"assignment {assignment.get('title')!r}: group {group!r} missing")
+        exact = next((item for item in assignments_by_course[cid]
+                      if (item.get("name") or item.get("title")) == assignment.get("title")
+                      and str(item.get("due_at") or "")[:10] == str(assignment.get("due_utc") or "")[:10]), None)
+        assignment["classification"] = "EXACT_MATCH" if exact else "NEW"
+        assignment["action"] = "SKIP" if exact else "CREATE"
+        live["assignments"][assignment.get("title")] = {
+            "classification": assignment["classification"], "action": assignment["action"]}
 
     # Announcement duplicate classification (week-aware).
     for a in plan.get("weekly_announcements", []):
@@ -168,11 +211,33 @@ def run_preflight(
             continue
         try:
             existing = client.list_announcements(int(cid))
-        except Exception:  # noqa: BLE001
+        except Exception as exc:  # noqa: BLE001
+            blockers.append(f"{a['subject']}: weekly announcement lookup failed: {type(exc).__name__}")
             existing = []
         a["classification"] = deploy_preflight.classify_weekly_announcement(a, existing)
+        a["action"] = "SKIP" if a["classification"] == "EXACT_MATCH" else "CREATE"
+        live["weekly_announcements"][a["title"]] = {
+            "classification": a["classification"], "action": a["action"]}
         if a["classification"] == "BODY_CHANGED_SAME_WEEK":
             blockers.append(f"{a['subject']}: weekly update body changed within the same week (owner review required)")
+
+    # Approved assessment reminders are Canvas announcements without delay.
+    announcement_cache: dict[int, list[dict[str, Any]]] = {}
+    for reminder in plan.get("assessment_reminders", []):
+        cid = int(reminder["course_id"])
+        if cid not in announcement_cache:
+            try:
+                announcement_cache[cid] = client.list_announcements(cid)
+            except Exception as exc:  # noqa: BLE001
+                blockers.append(f"course {cid}: reminder lookup failed: {type(exc).__name__}")
+                announcement_cache[cid] = []
+        exact = next((item for item in announcement_cache[cid]
+                      if item.get("title") == reminder.get("title")
+                      and item.get("message", "") == reminder.get("message", "")), None)
+        reminder["classification"] = "EXACT_MATCH" if exact else "NEW"
+        reminder["action"] = "SKIP" if exact else "CREATE"
+        live["assessment_reminders"][reminder.get("title")] = {
+            "classification": reminder["classification"], "action": reminder["action"]}
 
     return {
         **readiness,

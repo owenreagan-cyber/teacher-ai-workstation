@@ -3,6 +3,7 @@
 #
 # Same engine as scheduled execution; no second code path.
 #   bin/canvas-weekly-rollover --week q2w3 --dry-run
+#   bin/canvas-weekly-rollover --dry-run --live-readonly  # Canvas GETs only
 #   bin/canvas-weekly-rollover --week q2w3 --preflight
 #   bin/canvas-weekly-rollover --week q2w3 --execute --production --confirm "ROLLOVER Q2W3"
 #   bin/canvas-weekly-rollover --scheduled  # LaunchAgent entrypoint

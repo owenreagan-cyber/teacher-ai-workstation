@@ -285,6 +285,7 @@ class CanvasPlannerService:
         assignments = _read_json(week_dir / "drafts" / "assignments.json", [])
         announcements = _read_json(week_dir / "drafts" / "announcements.json", [])
         reminders = _read_json(week_dir / "drafts" / "assessment-reminders.json", [])
+        questions = _read_json(week_dir / "questions" / "questions.json", [])
         approvals = (_read_json(week_dir / "approvals" / "approval-manifest.json", {}).get("subjects") or {})
         overrides = _read_json(week_dir / "owner-overrides.json", {})
         ai = _read_json(week_dir / "planner" / "ai-review.json", {})
@@ -316,6 +317,7 @@ class CanvasPlannerService:
                     "in_class": override.get("in_class") or ([source_cell] if source_cell else []),
                     "at_home": override.get("at_home"),
                     "edited": bool(override),
+                    "status": override.get("status") or ("PLANNED" if source_cell else "PENDING_SOURCE"),
                     "assignments": [a for a in assignments if a.get("course") == course and a.get("due_date") == date_value],
                     "reminders": [r for r in reminders if r.get("course") == label and r.get("assessment_date") == date_value],
                 })
@@ -357,6 +359,7 @@ class CanvasPlannerService:
                 "sheet_preview": sheet_preview,
             },
             "courses": courses,
+            "questions": questions,
             "ai_review": ai,
             "history": read_events(week_dir)[-100:][::-1],
             "settings": {
@@ -367,6 +370,14 @@ class CanvasPlannerService:
                 "automatic_rollover": __import__(
                     "scripts.canvas_planner.friday", fromlist=["load_settings"]
                 ).load_settings(self.root / "canvas-planner")["automatic_rollover"],
+                "system_status": {
+                    "domain": status["domain"],
+                    "contract_version": status["contract_version"],
+                    "generated_at": status["generated_at"],
+                    "week_state": status["week"]["state"],
+                    "rollover_state": status["week"]["rollover_state"],
+                    "action_item_count": len(status["action_items"]),
+                },
             },
         }
 

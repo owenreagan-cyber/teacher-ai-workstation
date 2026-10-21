@@ -1,6 +1,7 @@
 """Friday scheduler and single-publisher tests (fixtures/fakes only)."""
 from __future__ import annotations
 
+import io
 import tempfile
 import unittest
 from datetime import datetime
@@ -10,12 +11,85 @@ from unittest import mock
 from zoneinfo import ZoneInfo
 
 from scripts.canvas_llm_rollover import rollover
+from scripts.canvas_llm_rollover import cli as rollover_cli
+from scripts.canvas_llm_deploy.client import FakeDeployClient
 from scripts.canvas_llm_deploy import cli as deploy_cli
 from scripts.canvas_planner import friday
 from scripts.teacher_workstation import deploy
 
 
 class FridayWorkflowTest(unittest.TestCase):
+    def test_live_readonly_plans_every_write_and_performs_none(self) -> None:
+        academic_body = "<div>approved math</div>"
+        plan = {
+            "from_week": "Q2W2", "to_week": "Q2W3", "scheduled_at": "2026-10-23T20:00:00Z",
+            "timezone": "America/New_York",
+            "academic_courses": [{
+                "subject": "math", "label": "Math", "course_id": 1, "to_page_slug": "q2w3",
+                "to_page_hash": rollover.deploy_plan._sha(academic_body), "page_body": academic_body,
+                "approved": True, "front_page_action": "SET_FRONT_PAGE",
+            }],
+            "homeroom": {
+                "course_id": 2, "to_page_slug": "q2w3", "proposed_content_hash": "different",
+                "proposed_content": {"week_label": "Q2W3"}, "approved": True,
+                "source_content_hash": "source", "front_page_action": "SET_FRONT_PAGE",
+            },
+            "assignments": [{
+                "course": "math", "course_id": 1, "title": "Practice", "assignment_group": "Homework",
+                "due_utc": "", "points_possible": 100, "grading_type": "percent",
+            }],
+            "weekly_announcements": [{
+                "subject": "math", "course_id": 1, "title": "Math update", "message": "body",
+                "week_code": "Q2W3", "agenda_hash": "agenda", "delayed_post_at": "2026-10-23T20:00:00Z",
+                "hash_consistent": True,
+            }],
+            "assessment_reminders": [{
+                "subject": "math", "course_id": 1, "title": "Assessment", "message": "Study",
+            }],
+        }
+        fake = FakeDeployClient(courses={1: {"id": 1}, 2: {"id": 2}})
+        fake.assignment_groups[1] = [{"id": "g1", "name": "Homework"}]
+        fake.seed_page(1, "q2w3", title="Q2W3", body=academic_body, front_page=True)
+        fake.seed_page(2, "q2w3", title="Q2W3 Homeroom", body="old", front_page=False)
+        fake.seed_assignment(1, "Practice", assignment_group="Homework")
+        fake.announcements = {
+            "w": {"id": "w", "course_id": 1, "title": "Math update", "message": "body",
+                  "week_code": "Q2W3", "agenda_hash": "agenda", "delayed_post_at": "2026-10-23T20:00:00Z"},
+            "r": {"id": "r", "course_id": 1, "title": "Assessment", "message": "Study"},
+        }
+        with mock.patch.object(rollover, "build_readiness", return_value={
+            "manifest": plan, "ready": True, "blockers": [], "needs_owen": False,
+        }):
+            result = rollover.run_preflight(2, 2, 2, 3, fake)
+        self.assertEqual(result["canvas_writes"], 0)
+        self.assertEqual(fake._write_counts["POST"], 0)
+        self.assertEqual(fake._write_counts["PUT"], 0)
+        self.assertEqual(plan["academic_courses"][0]["page_body_action"], "SKIP")
+        self.assertEqual(plan["academic_courses"][0]["front_page_action"], "SKIP")
+        self.assertEqual(plan["assignments"][0]["action"], "SKIP")
+        self.assertEqual(plan["weekly_announcements"][0]["action"], "SKIP")
+        self.assertEqual(plan["assessment_reminders"][0]["action"], "SKIP")
+        self.assertEqual(plan["homeroom"]["page_body_action"], "UPDATE")
+        self.assertEqual(plan["homeroom"]["front_page_action"], "SET_FRONT_PAGE")
+
+    def test_live_readonly_cli_constructs_only_get_capable_preflight(self) -> None:
+        manifest = {
+            "from_week": "Q2W2", "to_week": "Q2W3", "scheduled_at": "x", "timezone": "America/New_York",
+            "academic_courses": [], "homeroom": {"course_id": 2, "to_page_slug": "q2w3",
+            "front_page_action": "SKIP", "page_body_action": "SKIP", "proposed_content_hash": "h"},
+            "weekly_announcements": [], "assignments": [], "assessment_reminders": [],
+        }
+        fake = FakeDeployClient()
+        output = io.StringIO()
+        with mock.patch.object(rollover_cli, "_resolve", return_value=(2, 2, 2, 3)), \
+             mock.patch("scripts.canvas_llm_deploy.client.LiveDeployClient", return_value=fake), \
+             mock.patch.object(rollover, "run_preflight", return_value={
+                 "manifest": manifest, "ready": True, "blockers": [], "warnings": [], "canvas_writes": 0,
+             }), mock.patch("sys.stdout", output):
+            code = rollover_cli.main(["--dry-run", "--live-readonly"])
+        self.assertEqual(code, 0)
+        self.assertIn('"MODE": "LIVE_READONLY"', output.getvalue())
+        self.assertIn('"CANVAS_WRITES_PERFORMED": 0', output.getvalue())
     def test_setting_is_local_and_defaults_on(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

@@ -30,7 +30,7 @@ if str(REPO) not in sys.path:
     sys.path.insert(0, str(REPO))
 
 from scripts.teacher_workstation import adapter, deploy, mutate, server  # noqa: E402
-from scripts.canvas_planner import source_sync  # noqa: E402
+from scripts.canvas_planner import ai_review, approval_bundle, source_sync  # noqa: E402
 
 MB = 1024 * 1024
 
@@ -48,6 +48,9 @@ MUTATING_ROUTES = [
     ("POST", "/api/weeks/2/3/resync-source", {"source_hash": "h"}, source_sync, "resync"),
     ("POST", "/api/weeks/2/3/apply-source", {"source_hash": "h"}, source_sync, "decide"),
     ("POST", "/api/weeks/2/3/keep-source", {"source_hash": "h"}, source_sync, "decide"),
+    ("POST", "/api/weeks/2/3/undo-plan", {"source_hash": "h"}, mutate, "undo_last_plan_edit"),
+    ("POST", "/api/weeks/2/3/approve-course", {"source_hash": "h", "course": "math", "expected_hashes": {}}, approval_bundle, "approve_course"),
+    ("POST", "/api/weeks/2/3/ai-findings/f1", {"source_hash": "h", "answer": "DECLINE"}, ai_review, "answer_finding"),
     ("POST", "/api/weeks/2/3/preflight", {"production": False}, deploy, "run_preflight"),
     ("POST", "/api/weeks/2/3/deploy", {"preflight_id": "p", "owner_confirmation": "DEPLOY Q2W3", "production": True}, deploy, "run_deploy"),
     ("DELETE", "/api/weeks/2/3/overrides/math:Monday", None, mutate, "restore_source"),

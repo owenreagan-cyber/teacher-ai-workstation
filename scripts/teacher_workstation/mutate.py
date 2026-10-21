@@ -15,10 +15,13 @@ from pathlib import Path
 from typing import Any
 
 from scripts.canvas_llm_intake import intake
+from scripts.canvas_llm_intake import constants as IC
 from scripts.canvas_llm_intake import manifest as imf
 from scripts.canvas_llm_intake import owner_overrides as ioo
 from scripts.canvas_llm_intake import teacher_input as iti
 from scripts.canvas_llm_intake import approval as iap
+from scripts.canvas_planner import ai_review
+from scripts.canvas_planner.events import append_event, read_events
 
 # Owner-override statuses that come from the UI (allowed via PATCH).
 _UI_STATUSES = {"PLANNED", "PENDING_SOURCE", "OWNER_CONFIRMED_BLANK"}
@@ -70,6 +73,7 @@ def apply_day_edit(
     # Distinguish "no at_home change" from "clear": use sentinel.
     at_home_arg = at_home_value if (at_home_value is not None or clear_at_home) else None
 
+    before = ioo.day_override(quarter, week, subject, day)
     rec = ioo.upsert_override(
         quarter, week, subject=subject, day=day,
         source_value=source_value,
@@ -79,7 +83,49 @@ def apply_day_edit(
         note=note,
     )
     summary = _regenerate(quarter, week)
+    _update_assignment_for_edit(quarter, week, subject, day, at_home)
+    append_event(
+        imf.staging_dir(quarter, week), action="plan_edit", actor="owner",
+        reason=note or f"Owen edited {subject} {day}.", before=before, after=rec,
+        undo={"action": "restore_day_override", "subject": subject, "day": day, "value": before},
+    )
+    ai_review.schedule(quarter, week, reason=f"Plan changed for {subject} {day}")
     return {"override": rec, "summary": summary, "affected": _affected(subject)}
+
+
+def _update_assignment_for_edit(
+    quarter: int, week: int, subject: str, day: str, at_home: str | None
+) -> None:
+    """Keep the proposed assignment beside an edited lesson in sync."""
+    if at_home is None:
+        return
+    import json
+    d = imf.staging_dir(quarter, week)
+    assignments_path = d / "drafts" / "assignments.json"
+    normalized_path = d / "normalized" / "week.json"
+    try:
+        assignments = json.loads(assignments_path.read_text(encoding="utf-8"))
+        normalized = json.loads(normalized_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return
+    due = ((normalized.get("days") or {}).get(day) or {}).get("date")
+    changed = False
+    for assignment in assignments:
+        if assignment.get("course") == subject and assignment.get("due_date") == due:
+            assignment["title"] = at_home
+            assignment["source_reason"] = "OWNER_OVERRIDE"
+            changed = True
+    if changed:
+        assignments_path.write_text(json.dumps(assignments, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+        from scripts.teacher_workstation import adapter
+        active = IC.active_subject_keys_for_quarter(quarter)
+        approvals = iap.load_approvals(quarter, week, active)
+        hashes = adapter._compute_draft_hashes(quarter, week, active)
+        iap.invalidate_if_stale(
+            approvals, subject=subject, draft_hashes=hashes.get(subject, {}),
+            source_hash=(imf.load_manifest(quarter, week) or {}).get("source_hash"),
+        )
+        iap.save_approvals(quarter, week, approvals)
 
 
 def restore_source(
@@ -250,6 +296,44 @@ def _affected(subject: str) -> list[str]:
         f"{subject} weekly announcement",
         f"{subject} page/announcement approvals become stale",
     ]
+
+
+def undo_last_plan_edit(*, quarter: int, week: int, source_hash: str | None = None) -> dict[str, Any]:
+    """Undo the latest not-yet-undone plan edit for this week."""
+    _assert_current(quarter, week, source_hash)
+    week_dir = imf.staging_dir(quarter, week)
+    history = read_events(week_dir)
+    undone = {
+        str((event.get("after") or {}).get("undo_of"))
+        for event in history if event.get("action") == "plan_edit_undone"
+    }
+    target = next(
+        (event for event in reversed(history)
+         if event.get("action") == "plan_edit" and event.get("event_id") not in undone),
+        None,
+    )
+    if target is None:
+        raise ValueError("no plan edit is available to undo")
+    undo = target.get("undo") or {}
+    subject, day = undo.get("subject"), undo.get("day")
+    if not subject or not day:
+        raise ValueError("plan edit has no undo record")
+    data = ioo.load_overrides(quarter, week)
+    key = f"{subject}|{day}"
+    before = undo.get("value")
+    if before is None:
+        data.pop(key, None)
+    else:
+        data[key] = before
+    ioo.save_overrides(quarter, week, data)
+    summary = _regenerate(quarter, week)
+    append_event(
+        week_dir, action="plan_edit_undone", actor="owner",
+        reason=f"Owen undid the last edit to {subject} {day}.",
+        before=target.get("after"), after={"undo_of": target["event_id"], "value": before},
+    )
+    ai_review.schedule(quarter, week, reason=f"Plan edit undone for {subject} {day}")
+    return {"undone_event_id": target["event_id"], "subject": subject, "day": day, "summary": summary}
 
 
 def command_self_test() -> int:

@@ -282,6 +282,26 @@ class Handler(BaseHTTPRequestHandler):
                 elif len(parts) == 5 and parts[4] == "keep-source":
                     from scripts.canvas_planner import source_sync
                     self._send_json(200, source_sync.decide(quarter, week, decision="KEEP"))
+                elif len(parts) == 5 and parts[4] == "undo-plan":
+                    result = mutate.undo_last_plan_edit(
+                        quarter=quarter, week=week, source_hash=source_hash
+                    )
+                    self._send_json(200, result)
+                elif len(parts) == 5 and parts[4] == "approve-course":
+                    from scripts.canvas_planner import approval_bundle
+                    result = approval_bundle.approve_course(
+                        quarter, week,
+                        course=body.get("course"),
+                        expected_hashes=body.get("expected_hashes"),
+                        confirm_without_ai=bool(body.get("confirm_without_ai")),
+                    )
+                    self._send_json(200, result)
+                elif len(parts) == 6 and parts[4] == "ai-findings" and parts[5]:
+                    from scripts.canvas_planner import ai_review
+                    result = ai_review.answer_finding(
+                        quarter, week, finding_id=parts[5], answer=body.get("answer")
+                    )
+                    self._send_json(200, result)
                 elif len(parts) == 5 and parts[4] == "preflight":
                     # POST /api/weeks/{q}/{w}/preflight — GET-only deployment preflight
                     from . import deploy

@@ -47,9 +47,11 @@ export function loadDesktopConfig(file = DESKTOP_CONFIG_PATH): DesktopConfig {
   return config;
 }
 
-export const MIN_SIZE = { width: 340, height: 420 };
-export const MAX_SIZE = { width: 520, height: 900 };
-export const DEFAULT_SIZE = { width: 380, height: 540 };
+// The full window (UI-1): rail, page, and chat. A size remembered from the old compact window
+// (narrower than MIN_SIZE) starts at DEFAULT_SIZE instead of being stretched to the minimum.
+export const MIN_SIZE = { width: 760, height: 560 };
+export const MAX_SIZE = { width: 3840, height: 2400 };
+export const DEFAULT_SIZE = { width: 1320, height: 860 };
 
 export type SavedWindow = {
   x?: number;
@@ -70,8 +72,8 @@ export function loadWindowState(file: string): SavedWindow {
     return {
       x: isNum(d.x) ? Math.round(d.x) : undefined,
       y: isNum(d.y) ? Math.round(d.y) : undefined,
-      width: isNum(d.width) ? clamp(Math.round(d.width), MIN_SIZE.width, MAX_SIZE.width) : DEFAULT_SIZE.width,
-      height: isNum(d.height) ? clamp(Math.round(d.height), MIN_SIZE.height, MAX_SIZE.height) : DEFAULT_SIZE.height,
+      width: isNum(d.width) && d.width >= MIN_SIZE.width ? clamp(Math.round(d.width), MIN_SIZE.width, MAX_SIZE.width) : DEFAULT_SIZE.width,
+      height: isNum(d.height) && d.height >= MIN_SIZE.height ? clamp(Math.round(d.height), MIN_SIZE.height, MAX_SIZE.height) : DEFAULT_SIZE.height,
       pinned: d.pinned === true,
       protected: d.protected !== false,
     };

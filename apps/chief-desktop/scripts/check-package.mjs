@@ -78,9 +78,29 @@ export function startupFiles(root) {
   for (const m of html.matchAll(/\b(?:src|href)="(\.\/[^"]+|[^":/][^":]*)"/g)) {
     const asset = path.normalize(path.join(path.dirname(RENDERER_INDEX), m[1]));
     files.add(asset);
-    if (!fs.existsSync(path.join(root, asset))) problems.push(`missing ${asset} (referenced by ${RENDERER_INDEX})`);
+    if (!fs.existsSync(path.join(root, asset))) {
+      problems.push(`missing ${asset} (referenced by ${RENDERER_INDEX})`);
+    } else if (asset.endsWith(".css")) {
+      cssAssets(root, asset, files, problems);
+    }
   }
   return { files: [...files].sort(), problems };
+}
+
+/** Files a built stylesheet loads (the bundled fonts): each must exist, and none may be remote. */
+function cssAssets(root, css, files, problems) {
+  const text = fs.readFileSync(path.join(root, css), "utf-8");
+  for (const m of text.matchAll(/url\(\s*["']?([^"')]+)["']?\s*\)/g)) {
+    const ref = m[1].trim();
+    if (ref.startsWith("data:")) continue;
+    if (/^([a-z]+:)?\/\//i.test(ref)) {
+      problems.push(`${css} loads ${ref}, which is not bundled (the renderer makes no network requests)`);
+      continue;
+    }
+    const asset = path.normalize(path.join(path.dirname(css), ref.split(/[?#]/)[0]));
+    files.add(asset);
+    if (!fs.existsSync(path.join(root, asset))) problems.push(`missing ${asset} (referenced by ${css})`);
+  }
 }
 
 /** Paths of the files inside an asar archive (header only; contents are never read). */

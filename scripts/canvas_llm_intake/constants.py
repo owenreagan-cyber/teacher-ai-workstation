@@ -11,13 +11,14 @@ from pathlib import Path
 from typing import Any
 
 from scripts.canvas_llm_phase3 import constants as P3
+from scripts.canvas_planner.state_root import intake_root
 
 REPO_ROOT = P3.REPO_ROOT
 
 # --------------------------------------------------------------------------- #
 # Staging workspace
 # --------------------------------------------------------------------------- #
-INTAKE_ROOT = REPO_ROOT / ".local" / "canvas-llm" / "intake"
+INTAKE_ROOT = intake_root()
 
 # Lifecycle states (intake/staging specific; PUBLISHED_VERIFIED is never reached
 # by this package — publishing belongs to the guarded deployment workflow).

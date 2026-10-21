@@ -170,7 +170,13 @@ External device access requires a separately reviewed local-network design with 
 
 ## SQLite authority
 
-Canonical teacher work lives in SQLite.
+> **Legacy/stale for Canvas Planner 1 (D-027, 2026-10-21).** This section
+> documents the Phase 22/26 design. For the approved Canvas Planner 1 mission,
+> canonical teacher work lives in JSON intake/deployment packets under the one
+> configured `TAW_STATE_ROOT`. No active planner screen reads Phase 22/26
+> SQLite. A migration back to SQLite requires a separate future mission.
+
+The historical Phase 22/26 design placed canonical teacher work in SQLite.
 
 SQLite should store:
 

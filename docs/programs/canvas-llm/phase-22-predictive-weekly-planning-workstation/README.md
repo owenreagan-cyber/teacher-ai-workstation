@@ -1,5 +1,11 @@
 # Phase 22 Predictive Weekly Planning Workstation
 
+> **Legacy authority notice (D-027, 2026-10-21):** this SQLite workstation is
+> retained for historical behavior and migration research. It is not the active
+> Canvas Planner state authority. The authoritative state for Canvas Planner 1
+> is the JSON intake/deployment packet tree under `TAW_STATE_ROOT`. Any SQLite
+> migration requires a separate future mission.
+
 Durable local-first SQLite workstation for startup/week selection, yearly pacing import/review, weekly plans, guided builder, resource registry, editable draft generation, revision restore, backup/export, daily brief, and preview-only scheduling/deployment.
 
 Architecture: Python standard-library HTTP server, JSON API, SQLite WAL migrations, static frontend. Default DB: `.local/canvas-llm/phase-22-predictive-weekly-planning/workstation.sqlite3`; override with `--db` or `PHASE22_DB_PATH`.

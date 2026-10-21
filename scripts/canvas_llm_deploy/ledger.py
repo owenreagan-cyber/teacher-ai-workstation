@@ -7,8 +7,9 @@ from pathlib import Path
 from typing import Any
 
 from scripts.canvas_llm_intake import manifest as imf
+from scripts.canvas_planner.state_root import deployment_root
 
-DEPLOY_ROOT = Path(__file__).resolve().parents[2] / ".local" / "canvas-llm" / "deployments"
+DEPLOY_ROOT = deployment_root()
 
 
 def _now() -> str:

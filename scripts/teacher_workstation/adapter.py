@@ -20,10 +20,11 @@ from scripts.canvas_llm_intake import week_resolution as iwr
 from scripts.canvas_llm_intake import owner_overrides as ioo
 from scripts.canvas_llm_intake import teacher_input as iti
 from scripts.canvas_llm_intake import approval as iap
+from scripts.canvas_llm_deploy import ledger as deploy_ledger
 
 REPO = Path(__file__).resolve().parents[2]
-INTAKE_ROOT = REPO / ".local" / "canvas-llm" / "intake"
-DEPLOY_ROOT = REPO / ".local" / "canvas-llm" / "deployments"
+INTAKE_ROOT = IC.INTAKE_ROOT
+DEPLOY_ROOT = deploy_ledger.DEPLOY_ROOT
 
 # Academic subject display order (Homeroom separate).
 SUBJECT_ORDER = ("math", "reading_spelling", "language_arts", "science", "history")
@@ -47,11 +48,11 @@ def _read_json(path: Path) -> dict[str, Any] | list[Any] | None:
 
 
 def _staging_dir(quarter: int, week: int) -> Path:
-    return INTAKE_ROOT / "2026-2027" / f"q{quarter}" / f"w{week}"
+    return imf.staging_dir(quarter, week)
 
 
 def _deploy_dir(quarter: int, week: int) -> Path:
-    return DEPLOY_ROOT / "2026-2027" / f"q{quarter}" / f"w{week}"
+    return deploy_ledger.deploy_dir(quarter, week)
 
 
 def list_weeks() -> list[dict[str, Any]]:

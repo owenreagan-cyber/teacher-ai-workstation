@@ -88,6 +88,12 @@ class TestClockTest(unittest.TestCase):
         with mock.patch.dict(os.environ, {"TAW_TODAY": "2026-08-19"}):
             self.assertEqual(gc.resolve_quarter(dt.date(2027, 1, 13)), 3)
 
+    def test_new_york_clock_crosses_november_2026_dst_boundary(self) -> None:
+        before = dt.datetime(2026, 10, 31, 12, 0, tzinfo=wr._TZ)
+        after = dt.datetime(2026, 11, 1, 12, 0, tzinfo=wr._TZ)
+        self.assertEqual(before.utcoffset(), dt.timedelta(hours=-4))
+        self.assertEqual(after.utcoffset(), dt.timedelta(hours=-5))
+
 
 if __name__ == "__main__":
     unittest.main()

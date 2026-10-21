@@ -1,6 +1,7 @@
 // Shapes of what cos prints (cos ask/history/status/brief --json) plus the few envelopes the
 // main process adds. The renderer displays these; it never invents their values.
 import type { Block } from "./blocks.js";
+import type { HomeSnapshot } from "./home.js";
 
 export type CosErrorKind = "usage" | "stopped" | "model_unavailable" | "internal";
 // Kinds the desktop shell itself can report before or around a cos call.
@@ -73,6 +74,9 @@ export type StatusResult =
     }
   | Failure;
 
+// cos home --json (src/shared/home.ts), plus the main process's in-memory Mac samples.
+export type HomeResult = ({ ok: true } & HomeSnapshot) | Failure;
+
 // cos auto-search on|off --json. Main process only (the tray toggle); no bridge.
 export type AutoSearchResult = { ok: true; auto_search: boolean } | Failure;
 
@@ -96,6 +100,7 @@ export interface ChiefBridge {
   history(sessionId: string): Promise<HistoryResult>;
   openLink(linkId: string): Promise<OpenLinkResult>;
   brief(): Promise<BriefResult>;
+  home(cached: boolean): Promise<HomeResult>;
   status(): Promise<StatusResult>;
   stop(): Promise<ControlResult>;
   resume(): Promise<ControlResult>;

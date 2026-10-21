@@ -12,11 +12,13 @@ import type {
   ErrorKind,
   Failure,
   HistoryResult,
+  HomeResult,
   StatusResult,
   Turn,
   WarmResult,
 } from "../shared/types.js";
 import { type Resource, stripUrls, toBlocks, toResources } from "../shared/blocks.js";
+import { toHomeSnapshot } from "../shared/home.js";
 import { toHomeCard } from "../shared/homeCard.js";
 import { type Action, ArgsError, buildArgs, type Params } from "./args.js";
 
@@ -29,6 +31,7 @@ const TIMEOUT_MS: Record<Action, number> = {
   resume: 10_000,
   warm: 300_000, // loading the model from disk
   "auto-search": 10_000,
+  home: 40_000, // due sources refresh in parallel inside cos, each with its own timeout
 };
 const MAX_BUFFER = 2_000_000;
 
@@ -196,6 +199,17 @@ export class CosRunner {
     const v = await this.json("brief");
     return CosRunner.envelope<BriefResult>(v, (o) =>
       isStrList(o.lines) ? { ok: true, lines: [...o.lines], card: toHomeCard(o.card) } : null);
+  }
+
+  /** `cos home --json [--cached]`. mac_history starts empty; the main process fills it in. */
+  async home(cached: boolean): Promise<HomeResult> {
+    const v = await this.json("home", { cached: cached === true });
+    const result = CosRunner.envelope<HomeResult>(v, (o) => {
+      const snap = toHomeSnapshot(o);
+      return snap ? { ok: true, ...snap, mac_history: [] } : null;
+    });
+    if (result.ok) this.onResources(resourcesOf(v));
+    return result;
   }
 
   async status(): Promise<StatusResult> {

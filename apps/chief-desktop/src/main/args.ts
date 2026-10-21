@@ -5,9 +5,9 @@ export const SESSION_ID_RE = /^[a-z0-9-]{1,40}$/; // must match cos/sessions.py
 export const MAX_QUESTION_CHARS = 4000;
 export const STOP_REASON = "chief-desktop";
 
-export type Action = "ask" | "history" | "brief" | "status" | "stop" | "resume" | "warm" | "auto-search";
+export type Action = "ask" | "history" | "brief" | "status" | "stop" | "resume" | "warm" | "auto-search" | "home";
 
-export type Params = { question?: unknown; sessionId?: unknown; enabled?: unknown };
+export type Params = { question?: unknown; sessionId?: unknown; enabled?: unknown; cached?: unknown };
 
 export class ArgsError extends Error {}
 
@@ -38,6 +38,9 @@ export function buildArgs(action: Action, params: Params = {}): string[] {
       return ["history", "--session", checkSessionId(params.sessionId), "--json"];
     case "brief":
       return ["brief", "--json"];
+    case "home":
+      // --cached reads cos's cache only (the window paints at once); otherwise due sections refresh.
+      return params.cached === true ? ["home", "--json", "--cached"] : ["home", "--json"];
     case "status":
       return ["status", "--json"];
     case "stop":

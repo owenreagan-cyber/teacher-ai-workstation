@@ -13,6 +13,10 @@
   cos chat                      multi-turn; history saved in the state directory
   cos brief [--json]            deterministic daily brief (no model); --json adds the
                                 home card's structured fields ("card")
+  cos home [--json] [--cached] [--only a,b]
+                                Today page snapshot: weather, calendar, reminders, mac,
+                                needs, builds, agents, each with its own freshness;
+                                --cached reads the cache only (no model, ever)
   cos stop [reason] / resume    kill switch
   cos tools                     registered tools and their modes
   cos audit verify              check the audit hash chain
@@ -26,7 +30,7 @@ import time
 from dataclasses import dataclass
 from datetime import datetime
 
-from cos import VERSION, egress, fixture
+from cos import VERSION, egress, fixture, home
 from cos.agent import Agent, Stopped, build_system_prompt
 from cos.audit import AuditLog, verify
 from cos.brief import format_brief, gather, home_card
@@ -234,6 +238,34 @@ def cmd_brief(rt: Runtime, args) -> int:
     return EXIT_OK
 
 
+def cmd_home(rt: Runtime, args) -> int:
+    """The Today page snapshot (cos/home.py). Polled by the window, so it is quiet: no gate
+    decision records, and the loaded-model check is not audited (like cos status)."""
+    only = None
+    if args.only:
+        only = {s.strip() for s in args.only.split(",") if s.strip()}
+        unknown = only - set(home.SECTIONS)
+        if unknown:
+            _emit_error(args.json, f"unknown home sections: {', '.join(sorted(unknown))}", "usage")
+            return EXIT_USAGE
+    quiet = Runtime(rt.config, rt.audit, rt.kill_switch, rt.model, rt.registry,
+                    PolicyGate(rt.registry, rt.kill_switch, audit=None), rt.ctx)
+    if not rt.config.fixture_dir:
+        client = ModelClient(rt.config.ollama_url, rt.config.model, rt.config.fallback_model)
+        rt.ctx.loaded_models = lambda: client.loaded_models(timeout_s=STATUS_TIMEOUT_S)
+    snap = home.snapshot(rt.config.state_dir, home.default_sources(quiet), rt.ctx.clock(),
+                         place=home.home_place(rt.config), cached_only=args.cached, only=only,
+                         stopped=rt.kill_switch.is_set(), audit=rt.audit)
+    if args.json:
+        print(json.dumps(snap))
+        return EXIT_OK
+    print(f"{snap['greeting']} · {snap['date']}" + (f" · {snap['place']}" if snap["place"] else ""))
+    for name in home.SECTIONS:
+        s = snap[name]
+        print(f"  {name:<10} {s['status']}" + (f" ({s['reason']})" if s["reason"] else ""))
+    return EXIT_OK
+
+
 def cmd_stop(rt: Runtime, args) -> int:
     reason = " ".join(args.reason)
     rt.kill_switch.stop(reason)
@@ -405,6 +437,11 @@ def parser() -> argparse.ArgumentParser:
     brief = sub.add_parser("brief", help="daily brief")
     brief.add_argument("--json", action="store_true")
     brief.set_defaults(func=cmd_brief)
+    home_p = sub.add_parser("home", help="Today page snapshot (cache first, per-section freshness)")
+    home_p.add_argument("--json", action="store_true")
+    home_p.add_argument("--cached", action="store_true", help="read the cache only; refresh nothing")
+    home_p.add_argument("--only", help="comma-separated sections to refresh (default: all that are due)")
+    home_p.set_defaults(func=cmd_home)
     stop = sub.add_parser("stop", help="set the kill switch")
     stop.add_argument("reason", nargs="*")
     stop.set_defaults(func=cmd_stop)

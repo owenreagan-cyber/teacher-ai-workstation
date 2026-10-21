@@ -16,7 +16,8 @@ import {
   Tray,
 } from "electron";
 
-import type { ShellEvent, StatusResult, WindowState } from "../shared/types.js";
+import { addMacSample, type MacSample } from "../shared/home.js";
+import type { HomeResult, ShellEvent, StatusResult, WindowState } from "../shared/types.js";
 import {
   loadDesktopConfig,
   loadPrefs,
@@ -47,6 +48,7 @@ let windowState: WindowState = { pinned: false, protected: true };
 let hiddenSince: number | null = null;
 let warming = false;
 let prefs: Prefs = { startAtLogin: null };
+let macHistory: MacSample[] = [];
 
 const config = loadDesktopConfig();
 const resources = new ResourceTable(); // link id -> URL; never sent to the renderer
@@ -217,6 +219,18 @@ function setProtection(enabled: boolean): WindowState {
   return windowState;
 }
 
+// The Today snapshot. Each fresh Mac reading becomes a sample for the trend lines: the last 30
+// minutes, kept in this process's memory only (never written to disk).
+async function home(cached: boolean): Promise<HomeResult> {
+  const res = await cos.home(cached);
+  if (!res.ok) return res;
+  const at = res.mac.generated_at ? Date.parse(res.mac.generated_at) : NaN;
+  if (res.mac.data && Number.isFinite(at)) {
+    macHistory = addMacSample(macHistory, { t: at, memory_free_pct: res.mac.data.memory_free_pct, cpu_load_pct: res.mac.data.cpu_load_pct });
+  }
+  return { ...res, mac_history: macHistory };
+}
+
 function sendEvent(event: ShellEvent): void {
   if (win && !win.isDestroyed()) win.webContents.send("chief:event", event);
 }
@@ -342,6 +356,7 @@ function registerIpc(): void {
   // The only way a link opens: by id, looked up in the main process's table, https only.
   handle("chief:open-link", (linkId) => openLink(resources, linkId, (url) => shell.openExternal(url)));
   handle("chief:brief", () => cos.brief());
+  handle("chief:home", (cached) => home(cached === true));
   handle("chief:status", async () => {
     const status: StatusResult = await cos.status();
     lastKillSwitch = status.ok ? status.kill_switch : null;

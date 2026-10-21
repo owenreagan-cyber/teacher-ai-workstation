@@ -1,4 +1,7 @@
-"""mac.status: battery, memory, disk, uptime, and loaded Ollama models.
+"""mac.status: battery, memory, disk, CPU load, uptime, and loaded Ollama models.
+
+CPU load is the 1-minute load average divided by the number of cores, as a percentage
+(cpu_load_pct; 100 means every core busy on average).
 
 Fixed argv only. Process listings are never needed or printed.
 """
@@ -47,6 +50,18 @@ def parse_boottime(text: str, now_ts: float) -> dict:
     return {"uptime": f"{days}d {hours}h" if days else f"{hours}h {rem // 60}m"}
 
 
+def parse_loadavg(loadavg: str, ncpu: str) -> dict:
+    m = re.search(r"(\d+(?:\.\d+)?)", loadavg)
+    try:
+        cores = int(ncpu.strip())
+    except ValueError:
+        cores = 0
+    if not m or cores <= 0:
+        return {"cpu_load_pct": None}
+    load = float(m.group(1))
+    return {"cpu_load_1m": round(load, 2), "cpu_cores": cores, "cpu_load_pct": round(load / cores * 100)}
+
+
 def status(ctx, args: dict) -> dict:
     out: dict = {}
     probes = (
@@ -65,6 +80,12 @@ def status(ctx, args: dict) -> dict:
         out.update(parse_boottime(res.stdout, ctx.clock().timestamp()))
     except Exception as e:  # noqa: BLE001
         out["uptime_error"] = type(e).__name__
+    try:
+        load = ctx.run(["/usr/sbin/sysctl", "-n", "vm.loadavg"], timeout=5)
+        cores = ctx.run(["/usr/sbin/sysctl", "-n", "hw.ncpu"], timeout=5)
+        out.update(parse_loadavg(load.stdout, cores.stdout))
+    except Exception as e:  # noqa: BLE001
+        out["cpu_error"] = type(e).__name__
     if ctx.loaded_models is not None:
         try:
             out["ollama_loaded"] = ctx.loaded_models()
@@ -94,7 +115,7 @@ def one_line(s: dict) -> str:
 def tools(ctx):
     return [Tool(
         name="mac.status",
-        description="Mac status: battery, memory free, disk free, uptime, and loaded local Ollama models.",
+        description="Mac status: battery, memory free, disk free, CPU load, uptime, and loaded local Ollama models.",
         parameters={"type": "object", "properties": {}, "additionalProperties": False},
         side_effect="none", data_class="P1", timeout_s=15,
         func=lambda args: status(ctx, args), keywords=KEYWORDS,

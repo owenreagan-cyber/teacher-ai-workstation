@@ -360,6 +360,9 @@ class CanvasPlannerService:
                 "source_hash": manifest.get("source_hash"),
                 "page_lookup": manifest.get("page_lookup") or {},
                 "approval_updated_at": _read_json(week_dir / "approvals" / "approval-manifest.json", {}).get("updated_at"),
+                "automatic_rollover": __import__(
+                    "scripts.canvas_planner.friday", fromlist=["load_settings"]
+                ).load_settings(self.root / "canvas-planner")["automatic_rollover"],
             },
         }
 
@@ -445,6 +448,22 @@ class CanvasPlannerService:
                 evidence="local draft hashes and approval history",
                 link=deep_link(week_code, cid, "preview"), stamp=stamp,
             ))
+
+        rollover_at = _rollover_at(manifest.get("date_range") or {})
+        if rollover_at and any(c["stages"]["preview"] != "approved" for c in courses):
+            rollover_local = datetime.fromisoformat(
+                rollover_at.replace("Z", "+00:00")
+            ).astimezone(EASTERN)
+            now_local = now.astimezone(EASTERN)
+            if now_local.date() == rollover_local.date() and now_local.time() >= time(13, 0):
+                items.append(self._item(
+                    id_value=f"friday-readiness:{week_code.lower()}",
+                    kind="decision", priority="high", course=None,
+                    title=f"Friday rollover for {week_code} still needs approval",
+                    reason="At least one course or the Homeroom newsletter is not approved.",
+                    evidence="Friday 1:00 PM readiness gate",
+                    link=deep_link(week_code, "friday"), stamp=rollover_at,
+                ))
         course_order = {course["id"]: index for index, course in enumerate(courses)}
 
         def action_order(item: dict[str, Any]) -> tuple[int, int, str]:

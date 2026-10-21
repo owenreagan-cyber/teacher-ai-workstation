@@ -200,7 +200,7 @@ function viewFriday(data) {
   const blocked = data.week.rollover_state === 'BLOCKED';
   const rows = data.courses.map((course) => `<li><strong>${esc(course.name)}</strong><span>${course.stages.preview === 'approved' ? 'Approved and ready' : 'Still needs your approval'}</span></li>`).join('');
   return `${header(data,'5 · Friday',`${formatDate(data.week.rollover_at)} · ${relativeDays(data.week.rollover_at)}`)}
-    <section class="section friday-head"><label class="switch-line"><span><strong>Automatic rollover</strong><small>Runs only when all five courses are approved.</small></span><input type="checkbox" checked data-action="automatic-toggle"></label></section>
+    <section class="section friday-head"><label class="switch-line"><span><strong>Automatic rollover</strong><small>Runs only when all five courses are approved.</small></span><input type="checkbox" ${data.settings.automatic_rollover ? 'checked' : ''} data-action="automatic-toggle"></label></section>
     ${blocked ? '<div class="banner fail"><strong>Friday rollover is blocked.</strong> Nothing publishes until all 5 are approved.</div>' : '<div class="banner pass"><strong>Ready.</strong> The package will publish Friday at 4:00 PM.</div>'}
     <section class="section"><h2>Readiness</h2><ul class="readiness-list">${rows}</ul></section>
     <section class="section"><h2>At 4:00 PM, the planner will</h2><ol><li>Make each course's page its home page.</li><li>Post the weekly updates.</li>
@@ -296,13 +296,15 @@ async function act(button) {
   } else if (action === 'change-sheet') { window.alert('No source was changed. A new sheet must first preview its name, tab, week columns, subjects, and sample values.'); return; }
   else if (action === 'add-assignment' || action === 'individual-items') { window.alert('Use the course plan and artifact list to review the individual item.'); return; }
   else if (action === 'dry-run') {
-    const result = await api(`/api/weeks/${quarter}/${week}/rollover-dry-run`,{method:'POST',body:requestBody()});
+    const result = await api(`/api/weeks/${quarter}/${week}/rollover-dry-run`,{method:'POST',body:requestBody({production:true})});
     window.alert(result.summary || 'Dry run finished. Nothing was changed.');
   } else if (action === 'partial-publish') {
     const phrase = window.prompt('Families may see mixed weeks. Type PUBLISH APPROVED COURSES to continue.');
     if (phrase !== 'PUBLISH APPROVED COURSES') return;
-    await api(`/api/weeks/${quarter}/${week}/rollover-partial`,{method:'POST',body:requestBody({owner_confirmation:phrase,production:false})});
-  } else if (action === 'automatic-toggle') { window.alert('Automatic rollover remains all-or-nothing. This preference is saved in the Friday workflow.'); return; }
+    await api(`/api/weeks/${quarter}/${week}/rollover-partial`,{method:'POST',body:requestBody({owner_confirmation:phrase,production:true})});
+  } else if (action === 'automatic-toggle') {
+    await api(`/api/weeks/${quarter}/${week}/automatic-rollover`,{method:'POST',body:requestBody({enabled:Boolean(button.checked)})});
+  }
   await refresh();
 }
 

@@ -10,9 +10,11 @@ if str(Path(__file__).resolve().parents[2]) not in sys.path:
     sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 import tempfile
+import hashlib
 
 from scripts.canvas_llm_deploy import ledger as deploy_ledger
 from scripts.canvas_llm_deploy.client import FakeDeployClient
+from scripts.canvas_llm_intake import manifest as intake_manifest
 from scripts.canvas_llm_rollover import rollover, schedule
 
 SLUG = "q2w3-october-26-30-2026"
@@ -24,9 +26,16 @@ COURSES = {"math": 26404, "reading_spelling": 26442,
 
 
 def _manifest():
+    from scripts.canvas_llm_rollover import homeroom
+    proposed_homeroom = {"classMotto": {"motto": "Level Up Together."}}
+    def page_body(subject):
+        return f'<div class="kl_wrapper_3"><h2>{LABELS[subject]}</h2><h3>Reminders</h3></div>'
     academic = [
         {"subject": s, "label": LABELS[s], "course_id": COURSES[s],
-         "to_page_slug": SLUG, "front_page_action": "SET_FRONT_PAGE"}
+         "to_page_slug": SLUG, "front_page_action": "SET_FRONT_PAGE",
+         "page_body": page_body(s),
+         "to_page_hash": hashlib.sha256(page_body(s).encode()).hexdigest(),
+         "approved": True}
         for s in SUBJECTS
     ]
     anns = [
@@ -43,10 +52,23 @@ def _manifest():
         "academic_courses": academic,
         "homeroom": {
             "course_id": 26429, "to_page_slug": SLUG, "front_page_action": "SET_FRONT_PAGE",
-            "source_content_hash": "src", "proposed_content_hash": "prop",
-            "proposed_content": {"classMotto": {"motto": "Level Up Together."}},
+            "source_content_hash": "src",
+            "proposed_content_hash": hashlib.sha256(
+                homeroom.render_proposed(proposed_homeroom).encode()
+            ).hexdigest(),
+            "proposed_content": proposed_homeroom,
         },
         "weekly_announcements": anns,
+        "assignments": [{
+            "course": "math", "course_id": COURSES["math"], "title": "Math Lesson 41",
+            "assignment_group": "Classwork", "points_possible": 100,
+            "grading_type": "percent", "submission_types": ["on_paper"],
+            "due_utc": "2026-10-27T03:59:00Z", "omit_from_final_grade": False,
+        }],
+        "assessment_reminders": [{
+            "subject": "math", "course_id": COURSES["math"], "title": "Math test reminder",
+            "message": "<p>Math test Monday.</p>",
+        }],
     }
 
 
@@ -56,6 +78,7 @@ def _client(*, skip=None):
         (26404, "Math"), (26442, "Reading/Spelling"), (28171, "Language Arts"),
         (28166, "Science"), (26429, "Homeroom")]}
     c = FakeDeployClient(courses=courses)
+    c.assignment_groups[COURSES["math"]] = [{"id": "group-1", "name": "Classwork"}]
     for s in SUBJECTS:
         if s in skip:
             continue
@@ -68,13 +91,15 @@ def _client(*, skip=None):
 
 def _tmp_ledger():
     orig = deploy_ledger.DEPLOY_ROOT
+    orig_staging = intake_manifest.staging_dir
     tmp = tempfile.TemporaryDirectory()
     deploy_ledger.DEPLOY_ROOT = Path(tmp.name) / "deployments"
-    return orig, tmp
+    intake_manifest.staging_dir = lambda q, w: Path(tmp.name) / "intake" / f"q{q}w{w}"
+    return orig, orig_staging, tmp
 
 
 def test_happy_path_published_verified():
-    orig, tmp = _tmp_ledger()
+    orig, orig_staging, tmp = _tmp_ledger()
     try:
         c = _client()
         r = rollover.execute(2, 2, 2, 3, client=c, owner_confirmation="ROLLOVER Q2W3",
@@ -93,13 +118,18 @@ def test_happy_path_published_verified():
         assert len(r["weekly_announcements"]) == 4
         for rec in r["weekly_announcements"]:
             assert rec["state"] == "HELD_SCHEDULED"
+        assert r["pages"] and all(item["verified"] for item in r["pages"])
+        assert r["assignments"][0]["verified"] is True
+        assert r["assessment_reminders"][0]["verified"] is True
+        assert c.get_page(COURSES["math"], SLUG)["body"] == _manifest()["academic_courses"][0]["page_body"]
     finally:
         tmp.cleanup()
         deploy_ledger.DEPLOY_ROOT = orig
+        intake_manifest.staging_dir = orig_staging
 
 
 def test_idempotent_rerun_skips():
-    orig, tmp = _tmp_ledger()
+    orig, orig_staging, tmp = _tmp_ledger()
     try:
         c = _client()
         m = _manifest()
@@ -110,10 +140,11 @@ def test_idempotent_rerun_skips():
     finally:
         tmp.cleanup()
         deploy_ledger.DEPLOY_ROOT = orig
+        intake_manifest.staging_dir = orig_staging
 
 
 def test_partial_failure_blocks():
-    orig, tmp = _tmp_ledger()
+    orig, orig_staging, tmp = _tmp_ledger()
     try:
         c = _client(skip={"science"})
         r = rollover.execute(2, 2, 2, 3, client=c, owner_confirmation="ROLLOVER Q2W3",
@@ -124,10 +155,11 @@ def test_partial_failure_blocks():
     finally:
         tmp.cleanup()
         deploy_ledger.DEPLOY_ROOT = orig
+        intake_manifest.staging_dir = orig_staging
 
 
 def test_confirmation_gate_blocks():
-    orig, tmp = _tmp_ledger()
+    orig, orig_staging, tmp = _tmp_ledger()
     try:
         c = _client()
         try:
@@ -139,6 +171,7 @@ def test_confirmation_gate_blocks():
     finally:
         tmp.cleanup()
         deploy_ledger.DEPLOY_ROOT = orig
+        intake_manifest.staging_dir = orig_staging
 
 
 def _run():

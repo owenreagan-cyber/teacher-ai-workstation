@@ -5,6 +5,7 @@
 #   bin/canvas-weekly-rollover --week q2w3 --dry-run
 #   bin/canvas-weekly-rollover --week q2w3 --preflight
 #   bin/canvas-weekly-rollover --week q2w3 --execute --production --confirm "ROLLOVER Q2W3"
+#   bin/canvas-weekly-rollover --scheduled  # LaunchAgent entrypoint
 set -euo pipefail
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"

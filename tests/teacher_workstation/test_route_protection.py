@@ -31,6 +31,7 @@ if str(REPO) not in sys.path:
 
 from scripts.teacher_workstation import adapter, deploy, mutate, server  # noqa: E402
 from scripts.canvas_planner import ai_review, approval_bundle, source_sync  # noqa: E402
+from scripts.canvas_planner import friday  # noqa: E402
 
 MB = 1024 * 1024
 
@@ -53,6 +54,9 @@ MUTATING_ROUTES = [
     ("POST", "/api/weeks/2/3/ai-findings/f1", {"source_hash": "h", "answer": "DECLINE"}, ai_review, "answer_finding"),
     ("POST", "/api/weeks/2/3/preflight", {"production": False}, deploy, "run_preflight"),
     ("POST", "/api/weeks/2/3/deploy", {"preflight_id": "p", "owner_confirmation": "DEPLOY Q2W3", "production": True}, deploy, "run_deploy"),
+    ("POST", "/api/weeks/2/3/rollover-dry-run", {"production": False}, deploy, "run_rollover_dry_run"),
+    ("POST", "/api/weeks/2/3/rollover-partial", {"owner_confirmation": "PUBLISH APPROVED COURSES", "production": True}, deploy, "run_rollover_partial"),
+    ("POST", "/api/weeks/2/3/automatic-rollover", {"enabled": True}, friday, "set_automatic_rollover"),
     ("DELETE", "/api/weeks/2/3/overrides/math:Monday", None, mutate, "restore_source"),
 ]
 

@@ -10,10 +10,9 @@ import json
 from typing import Any
 
 from . import coordinator
-from . import ledger
 from . import plan as plan_mod
 from . import preflight as preflight_mod
-from .client import LiveDeployClient, DeployClientError
+from .client import LiveDeployClient
 
 
 def _resolve(args: Any) -> tuple[int, int]:
@@ -44,61 +43,11 @@ def cmd_deploy(args: Any) -> int:
         print(json.dumps(plan, indent=2, ensure_ascii=False))
         return 0
 
-    if not args.production:
-        print("BLOCKED: production Canvas writes require --production (use --dry-run to preview the plan)")
-        return 2
-
-    try:
-        client = LiveDeployClient()
-    except Exception as exc:  # noqa: BLE001
-        print(f"BLOCKED: Canvas transport unavailable: {type(exc).__name__}")
-        return 2
-
-    # A deploy requires a fresh preflight + confirmation.
-    preflight_id = args.preflight_id
-    if not preflight_id:
-        rec = preflight_mod.run_preflight(quarter, week, client)
-        if not rec.get("ready"):
-            print("BLOCKED: preflight not ready")
-            for b in rec.get("blockers", []):
-                print(f"  - {b}")
-            return 2
-        preflight_id = rec["preflight_id"]
-        expected_source = rec["source_hash"]
-        expected_approval = rec["approval_snapshot_hash"]
-        print(f"Preflight {preflight_id} ready.")
-    else:
-        rec = ledger.load_preflight(quarter, week, preflight_id)
-        if rec is None:
-            print(f"BLOCKED: preflight {preflight_id} not found")
-            return 2
-        expected_source = rec.get("source_hash", "")
-        expected_approval = rec.get("approval_snapshot_hash", "")
-
-    if not args.confirm:
-        print("BLOCKED: deploy requires --confirm with explicit owner confirmation (e.g. 'DEPLOY Q2W3')")
-        return 2
-
-    try:
-        report = coordinator.deploy(
-            quarter, week, preflight_id=preflight_id,
-            expected_source_hash=expected_source,
-            expected_approval_snapshot_hash=expected_approval,
-            owner_confirmation=args.confirm, client=client, source="OWNER_CLI",
-        )
-    except coordinator.DeploymentBlocked as exc:
-        print(f"BLOCKED: {exc}")
-        return 2
-    except Exception as exc:  # noqa: BLE001
-        print(f"BLOCKED: deployment failed: {type(exc).__name__}")
-        return 2
-
-    print(json.dumps(report, indent=2, ensure_ascii=False))
-    if report.get("deployment_state") == "PUBLISHED_VERIFIED":
-        print("DEPLOYED AND VERIFIED")
-        return 0
-    print(f"DEPLOYMENT {report.get('deployment_state')} — ATTENTION REQUIRED")
-    return 1
+    print(
+        "BLOCKED: weekly publishing is owned exclusively by "
+        "bin/canvas-weekly-rollover (use --dry-run to preview)"
+    )
+    return 2
 
 
 def cmd_verify(args: Any) -> int:

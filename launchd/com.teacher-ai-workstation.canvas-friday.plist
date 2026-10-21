@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!-- Prepared in-repo only. Do not load from a feature checkout. -->
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>com.teacher-ai-workstation.canvas-friday</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>/Users/owen/Projects/teacher-ai-workstation/bin/canvas-weekly-rollover</string>
+    <string>--scheduled</string>
+  </array>
+  <key>WorkingDirectory</key>
+  <string>/Users/owen/Projects/teacher-ai-workstation</string>
+  <key>EnvironmentVariables</key>
+  <dict>
+    <key>PATH</key>
+    <string>/usr/bin:/bin:/usr/sbin:/sbin:/opt/homebrew/bin</string>
+    <key>TAW_STATE_ROOT</key>
+    <string>/Users/owen/Projects/teacher-ai-workstation/.local</string>
+  </dict>
+  <key>StartCalendarInterval</key>
+  <array>
+    <dict>
+      <key>Weekday</key><integer>5</integer>
+      <key>Hour</key><integer>13</integer>
+      <key>Minute</key><integer>0</integer>
+    </dict>
+    <dict>
+      <key>Weekday</key><integer>5</integer>
+      <key>Hour</key><integer>16</integer>
+      <key>Minute</key><integer>0</integer>
+    </dict>
+  </array>
+  <key>StandardOutPath</key>
+  <string>/Users/owen/Projects/teacher-ai-workstation/.local/canvas-planner/logs/friday-rollover.log</string>
+  <key>StandardErrorPath</key>
+  <string>/Users/owen/Projects/teacher-ai-workstation/.local/canvas-planner/logs/friday-rollover.log</string>
+  <key>RunAtLoad</key>
+  <false/>
+</dict>
+</plist>

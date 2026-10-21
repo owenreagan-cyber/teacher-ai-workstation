@@ -59,7 +59,16 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--execute", action="store_true", help="execute the rollover")
     parser.add_argument("--production", action="store_true", help="use live Canvas")
     parser.add_argument("--confirm", help="owner confirmation 'ROLLOVER Q2W3'")
+    parser.add_argument("--scheduled", action="store_true",
+                        help="run the single Friday 1 PM/4 PM LaunchAgent action")
     args = parser.parse_args(argv)
+
+    if args.scheduled:
+        from scripts.canvas_planner.friday import scheduled_run
+        result = scheduled_run()
+        print(json.dumps(result, indent=2, ensure_ascii=False))
+        action = result.get("action")
+        return 0 if action in ("REMINDER", "ROLLOVER", "ROLLOVER_DISABLED", "NOOP") else 2
 
     fq, fw, tq, tw = _resolve(args.from_week, args.to_week, args.week)
 
@@ -93,7 +102,7 @@ def main(argv: list[str] | None = None) -> int:
             print(f"BLOCKED: Canvas transport unavailable: {type(exc).__name__}")
             return 2
         try:
-            report = rollover.execute(
+            report = rollover.publish_weekly_package(
                 fq, fw, tq, tw, client=client, owner_confirmation=args.confirm or "")
         except rollover.RolloverBlocked as exc:
             print(f"BLOCKED: {exc}")
@@ -131,7 +140,10 @@ def _dry_run_view(plan: dict[str, Any]) -> dict[str, Any]:
         ],
         "WRITES_IF_EXECUTED": {
             "front_page_put": len(plan.get("academic_courses", [])) + 1,
+            "page_update_put": len(plan.get("academic_courses", [])) + 1,
+            "assignment_post": len(plan.get("assignments", [])),
             "announcement_post": len(plan.get("weekly_announcements", [])),
+            "reminder_post": len(plan.get("assessment_reminders", [])),
         },
     }
 

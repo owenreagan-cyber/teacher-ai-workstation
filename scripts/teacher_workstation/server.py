@@ -11,11 +11,9 @@ Guarded write workflow (POST/DELETE; PUT/PATCH return 405):
 - Local planning edits (overrides, restore-source, mark-pending/blank,
   question answers, assignment dispositions, announcements) and approvals
   (approve / revoke-approval) write local ``.local`` planning state only.
-- Deployment: ``preflight`` is GET-only against Canvas; ``deploy`` is the one
-  route that can write to Canvas. It goes through ``deploy.py`` to the
-  deployment coordinator, which needs ``production=true``, a valid unexpired
-  preflight, matching source and approval-snapshot hashes, and the typed owner
-  confirmation (D-018, D-022).
+- Publishing: the Friday rollover engine is the only weekly-package publisher.
+  Dry-run is read-only; the mixed-week exception requires production mode and
+  the exact typed owner warning. The legacy direct deploy route is blocked.
 
 Before any of that logic runs, every request must carry a loopback ``Host``
 for this port, and every mutating request must also be same-origin
@@ -313,7 +311,7 @@ class Handler(BaseHTTPRequestHandler):
                                                   production=bool(body.get("production")))
                     self._send_json(200, result)
                 elif len(parts) == 5 and parts[4] == "deploy":
-                    # POST /api/weeks/{q}/{w}/deploy — guarded production deploy
+                    # Legacy route: deliberately blocked; Friday rollover owns publishing.
                     from . import deploy
                     result = deploy.run_deploy(
                         quarter=quarter, week=week,
@@ -323,6 +321,24 @@ class Handler(BaseHTTPRequestHandler):
                         owner_confirmation=body.get("owner_confirmation") or "",
                         production=bool(body.get("production")),
                     )
+                    self._send_json(200, result)
+                elif len(parts) == 5 and parts[4] == "rollover-dry-run":
+                    from . import deploy
+                    result = deploy.run_rollover_dry_run(
+                        quarter, week, production=bool(body.get("production")),
+                    )
+                    self._send_json(200, result)
+                elif len(parts) == 5 and parts[4] == "rollover-partial":
+                    from . import deploy
+                    result = deploy.run_rollover_partial(
+                        quarter, week,
+                        owner_confirmation=body.get("owner_confirmation") or "",
+                        production=bool(body.get("production")),
+                    )
+                    self._send_json(200, result)
+                elif len(parts) == 5 and parts[4] == "automatic-rollover":
+                    from scripts.canvas_planner.friday import set_automatic_rollover
+                    result = set_automatic_rollover(bool(body.get("enabled")))
                     self._send_json(200, result)
                 else:
                     self._send_text(405, "read-only: no write route here")
@@ -341,7 +357,8 @@ class Handler(BaseHTTPRequestHandler):
             self._send_json(400, {"error": type(exc).__name__, "detail": str(exc)})
         except Exception as exc:  # noqa: BLE001 — never crash the UI
             from scripts.canvas_llm_deploy.coordinator import DeploymentBlocked
-            if isinstance(exc, DeploymentBlocked):
+            from scripts.canvas_llm_rollover.rollover import RolloverBlocked
+            if isinstance(exc, (DeploymentBlocked, RolloverBlocked)):
                 self._send_json(409, {"error": "DEPLOYMENT_BLOCKED", "detail": str(exc)})
             else:
                 self._send_json(500, {"error": type(exc).__name__})

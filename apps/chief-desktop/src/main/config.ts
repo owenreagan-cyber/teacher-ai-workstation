@@ -5,12 +5,13 @@ import path from "node:path";
 
 export const COS_STATE_DIR = path.join(os.homedir(), "Library", "Application Support", "ChiefOfStaff");
 export const DESKTOP_CONFIG_PATH = path.join(COS_STATE_DIR, "desktop.json");
-export const DEFAULT_COS_PATH = "~/Projects/taw-cos-m1/bin/cos";
+export const DEFAULT_COS_PATH = "~/Projects/teacher-ai-workstation/bin/cos"; // the main checkout since MERGE-1
 export const DEFAULT_HOTKEY = "Control+Alt+C"; // Control+Option+C
 
 export type DesktopConfig = { cosPath: string; hotkey: string; error: string | null };
 
-function expandHome(p: string): string {
+/** A leading "~" or "~/" becomes the home folder; "~user/..." is not expanded (and is then refused). */
+export function expandHome(p: string): string {
   return p === "~" ? os.homedir() : p.startsWith("~/") ? path.join(os.homedir(), p.slice(2)) : p;
 }
 

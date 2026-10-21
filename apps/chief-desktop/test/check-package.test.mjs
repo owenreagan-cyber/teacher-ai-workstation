@@ -101,6 +101,12 @@ test("--asar checks the startup files inside app.asar", () => {
   assert.deepEqual(checkPackage(root, { asar: true }).problems, []);
 });
 
-test("the real build passes the check", () => {
+// `npm test` does not run the renderer build (vite), so on a fresh checkout dist/ does not exist yet.
+// `npm run build` runs this same check itself, after building.
+const NO_BUILD = fs.existsSync(path.join(APP, "dist", "renderer", "index.html"))
+  ? false
+  : "dist/renderer is missing: run `npm run build` first (it runs this check after building)";
+
+test("the real build passes the check", { skip: NO_BUILD }, () => {
   assert.deepEqual(checkPackage(APP).problems, []);
 });

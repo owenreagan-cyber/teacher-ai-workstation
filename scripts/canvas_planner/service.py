@@ -17,6 +17,7 @@ from scripts.canvas_llm_intake import week_resolution
 
 from .deep_links import deep_link
 from .state_root import state_root
+from .events import read_events
 
 CONTRACT_VERSION = 1
 SCHOOL_YEAR = "2026-2027"
@@ -216,6 +217,9 @@ class CanvasPlannerService:
         reminders = _read_json(week_dir / "drafts" / "assessment-reminders.json", [])
         changes = _read_json(week_dir / "changes.json", {})
         ai_review = _read_json(week_dir / "planner" / "ai-review.json", {})
+        homeroom_approval = _read_json(week_dir / "planner" / "homeroom-approval.json", {})
+        manifest = dict(manifest)
+        manifest["homeroom_approved"] = homeroom_approval.get("state") == "APPROVED"
         rollover_ledger = _read_json(deploy_dir / "rollover-ledger.json", {})
         verified = _read_json(deploy_dir / "published-verified-ledger.json", {})
         week_code = str(manifest.get("week_code") or f"Q{quarter}W{week}")
@@ -266,6 +270,113 @@ class CanvasPlannerService:
             "action_items": actions,
             "completed": self._completed(),
         }
+
+    def planner_week(self, quarter: int, week: int, *, now: datetime | None = None) -> dict[str, Any]:
+        """Return the complete local view model for every Planner screen."""
+        from scripts.canvas_llm_deploy.plan import compose_announcement_body
+        from .approval_bundle import current_bundle, reapproval_diff
+
+        week_dir = _week_dir(self.root, quarter, week)
+        manifest = _read_json(week_dir / "intake-manifest.json", {})
+        if not manifest:
+            raise FileNotFoundError(f"no packet for Q{quarter}W{week}")
+        status = self.weekly_status(quarter, week, now=now)
+        normalized = _read_json(week_dir / "normalized" / "week.json", {})
+        assignments = _read_json(week_dir / "drafts" / "assignments.json", [])
+        announcements = _read_json(week_dir / "drafts" / "announcements.json", [])
+        reminders = _read_json(week_dir / "drafts" / "assessment-reminders.json", [])
+        approvals = (_read_json(week_dir / "approvals" / "approval-manifest.json", {}).get("subjects") or {})
+        overrides = _read_json(week_dir / "owner-overrides.json", {})
+        ai = _read_json(week_dir / "planner" / "ai-review.json", {})
+        changes = _read_json(week_dir / "changes.json", {})
+        source_snapshot = _read_json(week_dir / "source" / "pacing-snapshot.json", {})
+        proposal = _read_json(week_dir / "planner" / "source-proposal.json", {})
+        courses: list[dict[str, Any]] = []
+        projected = {course["id"]: course for course in status["courses"]}
+        for course in _active_courses(quarter):
+            bundle = current_bundle(quarter, week, course)
+            label = COURSE_LABELS[course]
+            announcement = next((a for a in announcements if a.get("course") == label), {})
+            page_html = str(bundle["artifacts"]["page"] or "")
+            announcement_html = compose_announcement_body(announcement, page_html) if course != "homeroom" else ""
+            days = []
+            for weekday in ("Monday", "Tuesday", "Wednesday", "Thursday", "Friday"):
+                source_cell = self._source_cell(normalized, course, weekday)
+                override = overrides.get(f"{course}|{weekday}") or {}
+                if not override.get("active", True):
+                    override = {}
+                date_value = ((normalized.get("days") or {}).get(weekday) or {}).get("date")
+                days.append({
+                    "day": weekday,
+                    "date": date_value,
+                    "sheet_says": source_cell,
+                    "in_class": override.get("in_class") or ([source_cell] if source_cell else []),
+                    "at_home": override.get("at_home"),
+                    "edited": bool(override),
+                    "assignments": [a for a in assignments if a.get("course") == course and a.get("due_date") == date_value],
+                    "reminders": [r for r in reminders if r.get("course") == label and r.get("assessment_date") == date_value],
+                })
+            courses.append({
+                **projected[course],
+                "days": days,
+                "page_html": page_html,
+                "announcement": {**announcement, "exact_html": announcement_html,
+                                 "posting_time": status["week"]["rollover_at"]},
+                "assignments": bundle["artifacts"]["assignments"],
+                "reminders": bundle["artifacts"]["assessment_reminder"],
+                "hashes": bundle["hashes"],
+                "approvals": approvals.get(course) or {},
+                "reapproval": reapproval_diff(quarter, week, course),
+                "ai_review": (ai.get("courses") or {}).get(course, {}),
+            })
+        week_list = self.available_weeks()
+        index = week_list.index((quarter, week)) if (quarter, week) in week_list else -1
+        previous = week_list[index - 1] if index > 0 else None
+        following = week_list[index + 1] if 0 <= index < len(week_list) - 1 else None
+        return {
+            "status": status,
+            "week": {
+                **status["week"],
+                "quarter": quarter,
+                "number": week,
+                "date_range": manifest.get("date_range") or {},
+                "previous": self._week_ref(previous),
+                "next": self._week_ref(following),
+            },
+            "source": {
+                "name": manifest.get("pacing_source", "2026-2027 FPK Pacing Guides"),
+                "tab": manifest.get("pacing_tab", "4A - Reagan"),
+                "synced_at": manifest.get("source_retrieved_at"),
+                "connected": bool(source_snapshot),
+                "spreadsheet_id": source_snapshot.get("spreadsheet_id"),
+                "proposal": proposal,
+                "changes": changes,
+            },
+            "courses": courses,
+            "ai_review": ai,
+            "history": read_events(week_dir)[-100:][::-1],
+            "settings": {
+                "state_root": str(self.root),
+                "source_hash": manifest.get("source_hash"),
+                "page_lookup": manifest.get("page_lookup") or {},
+                "approval_updated_at": _read_json(week_dir / "approvals" / "approval-manifest.json", {}).get("updated_at"),
+            },
+        }
+
+    @staticmethod
+    def _week_ref(value: tuple[int, int] | None) -> dict[str, Any] | None:
+        return {"quarter": value[0], "week": value[1], "code": f"Q{value[0]}W{value[1]}"} if value else None
+
+    @staticmethod
+    def _source_cell(normalized: dict[str, Any], course: str, weekday: str) -> str:
+        subjects = ((normalized.get("days") or {}).get(weekday) or {}).get("subjects") or {}
+        if course == "reading_spelling":
+            reading = str((subjects.get("reading") or {}).get("raw") or "")
+            spelling = str((subjects.get("spelling") or {}).get("raw") or "")
+            return " · ".join(part for part in (f"Reading {reading}" if reading else "", f"Spelling {spelling}" if spelling else "") if part)
+        if course == "homeroom":
+            return "Approved Homeroom newsletter source"
+        return str((subjects.get(course) or {}).get("raw") or "")
 
     def _actions(
         self,

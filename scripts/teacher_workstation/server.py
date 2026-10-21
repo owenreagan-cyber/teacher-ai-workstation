@@ -138,6 +138,10 @@ class Handler(BaseHTTPRequestHandler):
                 from scripts.canvas_planner.service import CanvasPlannerService
                 quarter, week = int(parts[2]), int(parts[3])
                 self._send_json(200, CanvasPlannerService().weekly_status(quarter, week))
+            elif resource == "planner-week" and len(parts) == 4:
+                from scripts.canvas_planner.service import CanvasPlannerService
+                quarter, week = int(parts[2]), int(parts[3])
+                self._send_json(200, CanvasPlannerService().planner_week(quarter, week))
             elif resource == "week" and len(parts) == 4:
                 quarter, week = int(parts[2]), int(parts[3])
                 detail = adapter.week_detail(quarter, week)

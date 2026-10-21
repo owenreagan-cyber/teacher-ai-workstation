@@ -5,6 +5,7 @@ import copy
 import difflib
 import hashlib
 import json
+from datetime import date, timedelta
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -41,6 +42,23 @@ def _hash(value: Any) -> str:
 
 def current_bundle(quarter: int, week: int, course: str) -> dict[str, Any]:
     d = manifest.staging_dir(quarter, week)
+    if course == "homeroom":
+        from scripts.canvas_llm_rollover import homeroom
+        m = manifest.load_manifest(quarter, week) or {}
+        date_range = m.get("date_range") or {}
+        try:
+            rollover_day = date.fromisoformat(date_range["start"]) - timedelta(days=3)
+        except (KeyError, TypeError, ValueError):
+            rollover_day = date.today()
+        proposed = homeroom.copy_forward(
+            homeroom.load_approved_content(), today=rollover_day, to_date_range=date_range
+        )
+        body = homeroom.render_proposed(proposed)
+        return {
+            "course": course,
+            "artifacts": {"page": body, "announcement": {}, "assignments": [], "assessment_reminder": []},
+            "hashes": {"page": _hash(body), "announcement": "", "assignments": "", "assessment_reminder": ""},
+        }
     label = LABELS.get(course, course)
     page_name = "reading-page.html" if course == "reading_spelling" else f"{course}-page.html"
     try:
@@ -73,6 +91,11 @@ def approve_course(
     m = manifest.load_manifest(quarter, week)
     if not m:
         raise ValueError("no canonical packet")
+    if course == "homeroom":
+        return _approve_homeroom(
+            quarter, week, expected_hashes=expected_hashes,
+            confirm_without_ai=confirm_without_ai,
+        )
     active = constants.active_subject_keys_for_quarter(quarter)
     if course not in active:
         raise ValueError("course is not active for this week")
@@ -122,6 +145,38 @@ def approve_course(
         undo={"action": "restore_course_approvals", "course": course, "value": before},
     )
     return {"course": course, "state": "APPROVED", "hashes": bundle["hashes"], "approved_at": now}
+
+
+def _approve_homeroom(
+    quarter: int, week: int, *, expected_hashes: dict[str, str] | None,
+    confirm_without_ai: bool,
+) -> dict[str, Any]:
+    review = ai_review.load(quarter, week)
+    if review and review.get("state") == "UNAVAILABLE" and not confirm_without_ai:
+        raise ValueError("confirm_without_ai is required while AI review is unavailable")
+    bundle = current_bundle(quarter, week, "homeroom")
+    if expected_hashes and expected_hashes.get("page") != bundle["hashes"]["page"]:
+        raise ValueError("client hash cross-check failed: page")
+    now = _now()
+    record = {
+        "schemaVersion": 1, "course": "homeroom", "state": "APPROVED",
+        "approved_at": now, "approved_by": "OWNER_UI",
+        "source_hash": (manifest.load_manifest(quarter, week) or {}).get("source_hash"),
+        "hashes": bundle["hashes"],
+    }
+    path = manifest.staging_dir(quarter, week) / "planner" / "homeroom-approval.json"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(record, indent=2) + "\n", encoding="utf-8")
+    snap = {**bundle, "approved_at": now, "source_hash": record["source_hash"]}
+    snapshot = snapshot_path(quarter, week, "homeroom")
+    snapshot.parent.mkdir(parents=True, exist_ok=True)
+    snapshot.write_text(json.dumps(snap, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    append_event(
+        manifest.staging_dir(quarter, week), action="course_approved", actor="owner",
+        reason="Owen approved the exact Homeroom newsletter bundle.",
+        after={"course": "homeroom", "hashes": bundle["hashes"]},
+    )
+    return {"course": "homeroom", "state": "APPROVED", "hashes": bundle["hashes"], "approved_at": now}
 
 
 def snapshot_path(quarter: int, week: int, course: str) -> Path:

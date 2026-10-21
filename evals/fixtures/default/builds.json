@@ -1,0 +1,5 @@
+{"items": [
+  {"title": "Test build five", "ref": "aaaa005", "pr": 105, "merged_at": "2026-10-01T12:00:00-04:00"},
+  {"title": "Test build four", "ref": "aaaa004", "pr": 104, "merged_at": "2026-09-30T12:00:00-04:00"},
+  {"title": "Test build three", "ref": "aaaa003", "pr": 103, "merged_at": "2026-09-29T12:00:00-04:00"}
+]}

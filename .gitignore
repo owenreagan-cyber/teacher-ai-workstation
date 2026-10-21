@@ -66,6 +66,7 @@ apps/raycast-chief-of-staff/raycast-env.d.ts
 apps/chief-desktop/node_modules/
 apps/chief-desktop/dist/
 apps/chief-desktop/out/
+apps/chief-desktop/out-test/
 apps/chief-desktop/release/
 
 # Chief certification harness outputs (E1); never commit run results.

@@ -16,7 +16,8 @@ import {
   Tray,
 } from "electron";
 
-import type { ShellEvent, StatusResult, WindowState } from "../shared/types.js";
+import { addMacSample, type MacSample } from "../shared/home.js";
+import type { HomeResult, ShellEvent, StatusResult, WindowState } from "../shared/types.js";
 import {
   loadDesktopConfig,
   loadPrefs,
@@ -43,10 +44,11 @@ let hotkeyNotice: string | null = null;
 let lastKillSwitch: boolean | null = null; // from the latest cos status, for the tray label only
 let lastAutoSearch: boolean | null = null; // from the latest cos status, for the tray checkbox only
 let saved: SavedWindow;
-let windowState: WindowState = { pinned: false, protected: true };
+let windowState: WindowState = { pinned: false, protected: true, startAtLogin: null, hotkey: "" };
 let hiddenSince: number | null = null;
 let warming = false;
 let prefs: Prefs = { startAtLogin: null };
+let macHistory: MacSample[] = [];
 
 const config = loadDesktopConfig();
 const resources = new ResourceTable(); // link id -> URL; never sent to the renderer
@@ -100,6 +102,8 @@ function setStartAtLogin(enabled: boolean): void {
   app.setLoginItemSettings({ openAtLogin: enabled });
   prefs = { ...prefs, startAtLogin: enabled };
   savePrefs(prefsFile(), prefs);
+  windowState = { ...windowState, startAtLogin: enabled };
+  sendEvent({ kind: "window-state", state: windowState });
 }
 
 function startAtLoginChecked(): boolean {
@@ -147,7 +151,7 @@ function createWindow(showWhenReady: boolean): void {
   });
 
   // Every launch starts protected, whatever was remembered.
-  windowState = { pinned: saved.pinned, protected: true };
+  windowState = { pinned: saved.pinned, protected: true, startAtLogin: startAtLoginChecked(), hotkey: config.hotkey };
   win.setContentProtection(true);
   if (windowState.pinned) win.setAlwaysOnTop(true, "floating");
 
@@ -169,6 +173,9 @@ function createWindow(showWhenReady: boolean): void {
   win.on("show", () => {
     if (hiddenSince !== null && Date.now() - hiddenSince > REWARM_AFTER_HIDDEN_MS) warmModel();
     hiddenSince = null;
+    // Owen may change the login item in System Settings; Settings shows what macOS says now.
+    windowState = { ...windowState, startAtLogin: startAtLoginChecked() };
+    sendEvent({ kind: "window-state", state: windowState });
   });
   win.on("resize", scheduleSave);
   win.on("move", scheduleSave);
@@ -215,6 +222,18 @@ function setProtection(enabled: boolean): WindowState {
   rememberWindow();
   sendEvent({ kind: "window-state", state: windowState });
   return windowState;
+}
+
+// The Today snapshot. Each fresh Mac reading becomes a sample for the trend lines: the last 30
+// minutes, kept in this process's memory only (never written to disk).
+async function home(cached: boolean): Promise<HomeResult> {
+  const res = await cos.home(cached);
+  if (!res.ok) return res;
+  const at = res.mac.generated_at ? Date.parse(res.mac.generated_at) : NaN;
+  if (res.mac.data && Number.isFinite(at)) {
+    macHistory = addMacSample(macHistory, { t: at, memory_free_pct: res.mac.data.memory_free_pct, cpu_load_pct: res.mac.data.cpu_load_pct });
+  }
+  return { ...res, mac_history: macHistory };
 }
 
 function sendEvent(event: ShellEvent): void {
@@ -342,6 +361,10 @@ function registerIpc(): void {
   // The only way a link opens: by id, looked up in the main process's table, https only.
   handle("chief:open-link", (linkId) => openLink(resources, linkId, (url) => shell.openExternal(url)));
   handle("chief:brief", () => cos.brief());
+  handle("chief:home", (cached) => home(cached === true));
+  // Settings: cos validates every write (config schema, settable keys); buildArgs re-checks the key.
+  handle("chief:config-get", () => cos.configGet());
+  handle("chief:config-set", (key, value) => cos.configSet(key, value));
   handle("chief:status", async () => {
     const status: StatusResult = await cos.status();
     lastKillSwitch = status.ok ? status.kill_switch : null;

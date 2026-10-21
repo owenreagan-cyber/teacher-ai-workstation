@@ -45,7 +45,10 @@ coordinates "Home".
 cat ~/Library/Application\ Support/ChiefOfStaff/desktop.json
 ```
 
-If `cosPath` is not `~/Projects/teacher-ai-workstation/bin/cos`, set it:
+If `cosPath` is not `~/Projects/teacher-ai-workstation/bin/cos`, set it. Chief expands a leading
+`~/` to your home folder (tested in `apps/chief-desktop/test/desktop-config.test.mjs`); the full
+path, `/Users/owen/Projects/teacher-ai-workstation/bin/cos`, works too. Since UI-1 this is also the
+default when `desktop.json` has no `cosPath`.
 
 ```bash
 cat > ~/Library/Application\ Support/ChiefOfStaff/desktop.json <<'EOF'

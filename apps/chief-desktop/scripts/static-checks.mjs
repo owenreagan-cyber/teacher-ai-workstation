@@ -76,13 +76,13 @@ check("dev server only when unpackaged and on localhost", securityTs.includes("!
 
 // 6. Preload: exactly the allowed bridge, fixed channels only.
 const preload = read("src/preload/preload.ts");
-const ALLOWED = ["ask", "history", "openLink", "brief", "status", "stop", "resume", "setPin", "setProtection", "hide", "onEvent"];
+const ALLOWED = ["ask", "history", "openLink", "brief", "home", "configGet", "configSet", "status", "stop", "resume", "setPin", "setProtection", "hide", "onEvent"];
 const bridgeBody = preload.match(/const bridge: PreloadBridge = \{([\s\S]*?)\n\};/)?.[1] ?? "";
 const keys = [...bridgeBody.matchAll(/^ {2}(\w+):/gm)].map((m) => m[1]);
 check("preload exposes exactly the allowed functions", JSON.stringify(keys) === JSON.stringify(ALLOWED), keys.join(","));
 check("preload exposes only window.chief", (preload.match(/exposeInMainWorld\(/g) ?? []).length === 1 && preload.includes('exposeInMainWorld("chief", bridge)'));
 const invokes = [...preload.matchAll(/ipcRenderer\.invoke\(([^,)]+)/g)].map((m) => m[1]);
-check("every invoke uses a literal chief: channel", invokes.length === 10 && invokes.every((c) => /^"chief:[a-z-]+"$/.test(c)), invokes.join(","));
+check("every invoke uses a literal chief: channel", invokes.length === ALLOWED.length - 1 && invokes.every((c) => /^"chief:[a-z-]+"$/.test(c)), invokes.join(","));
 check("preload never sends or exposes ipcRenderer", !/ipcRenderer\.(send|sendSync|postMessage)\b/.test(preload) && !/exposeInMainWorld\([^)]*ipcRenderer/.test(preload));
 
 // 6b. cos warm: main process only, on launch and when shown after more than 90 minutes hidden.
@@ -113,7 +113,7 @@ for (const file of rendererFiles) {
   check("renderer shows no notifications", !/\bNotification\b/.test(text), file);
 }
 check("index.html title is the fixed name", /<title>Chief<\/title>/.test(html));
-check("home card renders only from App", rendererFiles.filter((f) => /<HomeCardView\b/.test(read(f))).join() === path.join("src", "renderer", "App.tsx"));
+check("Today page renders only from App", rendererFiles.filter((f) => /<TodayPage\b/.test(read(f))).join() === path.join("src", "renderer", "App.tsx"));
 check("cos runner validates the card", /card: toHomeCard\(o\.card\)/.test(cosTs));
 
 // 6d. Start at login: set only by the main process (never from preload, renderer, or an IPC call),
@@ -128,7 +128,7 @@ check("tray has a Start at login toggle", /label: app\.isPackaged \? "Start at l
 check("the model still warms on every launch", /createTray\(\);\s*registerHotkey\(\);\s*registerIpc\(\);\s*warmModel\(\);/.test(mainTs));
 
 // 6e. Search answers carry "Search by Brave" in the window.
-check("search answers show Brave attribution", /searchAttribution\(turn\)/.test(read("src/renderer/App.tsx")));
+check("search answers show Brave attribution", /searchAttribution\(turn\)/.test(read("src/renderer/Chat.tsx")));
 
 // 6e2. Auto web search: a tray checkbox in the main process that runs `cos auto-search on|off`.
 // No preload bridge or IPC channel can change it; cos writes its own config.json.
@@ -162,6 +162,33 @@ check("rain animation is off for reduced motion", /prefers-reduced-motion: reduc
 const pkgJson = JSON.parse(read("package.json"));
 check("build runs the packaging check", /&& node scripts\/check-package\.mjs$/.test(pkgJson.scripts.build));
 check("package checks app.asar", /electron-builder [^&]*&& node scripts\/check-package\.mjs --asar$/.test(pkgJson.scripts.package));
+
+// 6h. UI-1 window: bundled fonts, readable text, labelled icon-only buttons, cache-first Today.
+const mainTsx = read("src/renderer/main.tsx");
+const stylesCss = read("src/renderer/styles.css");
+for (const font of ["ibm-plex-sans", "ibm-plex-mono"]) {
+  check(`renderer imports the bundled ${font} font`, new RegExp(`import "@fontsource/${font}/latin-\\d00\\.css";`).test(mainTsx));
+  check(`${font} is pinned to an exact version`, /^\d+\.\d+\.\d+$/.test(pkgJson.devDependencies?.[`@fontsource/${font}`] ?? ""));
+}
+check("styles use IBM Plex Sans and Mono", /--font-sans: "IBM Plex Sans"/.test(stylesCss) && /--font-mono: "IBM Plex Mono"/.test(stylesCss));
+for (const file of walk("src/renderer", [".ts", ".tsx", ".html", ".css"])) {
+  const t = read(file);
+  check("renderer loads no remote font or stylesheet", !/fonts\.(googleapis|gstatic)|@import\s+url\(|url\(\s*["']?(https?:)?\/\//.test(t), file);
+  const small = [...t.matchAll(/text-\[(\d+(?:\.\d+)?)px\]/g)].map((m) => Number(m[1])).filter((px) => px < 12);
+  check("renderer text is at least 12px", small.length === 0, `${file}: ${small.join(",")}px`);
+  check("renderer uses no text-[10px]-style or text-[0.x rem] sizes", !/text-\[\d*\.?\d+rem\]/.test(t), file);
+}
+check("light and dark tokens follow macOS", /@media \(prefers-color-scheme: dark\)/.test(stylesCss) && /--c-accent: #2459c3/.test(stylesCss) && /--c-accent: #3a73e0/.test(stylesCss));
+check("keyboard focus is visible", /:focus-visible\s*\{\s*outline: 2px solid var\(--c-accent\)/.test(stylesCss));
+const railTsx = read("src/renderer/Rail.tsx");
+check("collapsed rail buttons keep their names in aria-label", /aria-label=\{props\.collapsed \? name : undefined\}/.test(railTsx) && /aria-label=\{stopped \? "Resume Chief" : "Stop Chief"\}/.test(railTsx));
+check("Today paints from the cache first, then refreshes", /loadHome\(true\)\.then\(\(\) => loadHome\(false\)\)/.test(read("src/renderer/App.tsx")));
+check("buildArgs has home (--cached only on request)", /case "home":[\s\S]*?params\.cached === true \? \["home", "--json", "--cached"\] : \["home", "--json"\]/.test(read("src/main/args.ts")));
+check("config set accepts only the settable keys", /return \["config", "set", "--json", "--", checkConfigKey\(params\.key\), configValue\(params\.value\)\];/.test(read("src/main/args.ts")) &&
+  /export const SETTABLE_KEYS = \["places", "auto_search", "model", "model_keep_alive"\] as const;/.test(read("src/shared/settings.ts")));
+check("preload configSet passes the key as a string", /configSet: \(key, value\) => electron\.ipcRenderer\.invoke\("chief:config-set", String\(key\), value\)/.test(preload));
+check("start at login is display-only in Settings (no bridge)", !/startAtLogin|setLoginItem/.test(preload) && !/setLoginItemSettings/.test(read("src/renderer/Settings.tsx")));
+check("a need's command action is only copied, never run", /else copyText\(action\.command\);/.test(read("src/renderer/App.tsx")));
 
 // 7. Dev script: no package-internal paths (TypeScript 7 stopped exporting typescript/bin/tsc,
 // which broke `npm run dev` with ERR_PACKAGE_PATH_NOT_EXPORTED). Compile through build:main.

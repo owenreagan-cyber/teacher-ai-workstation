@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import json
 import tempfile
+import time
 import unittest
 from pathlib import Path
 from unittest import mock
@@ -68,6 +69,16 @@ class AiApprovalTest(unittest.TestCase):
         result = ai_review.unavailable(2, 3, reason="No eligible model entitlement")
         self.assertEqual(result["state"], "UNAVAILABLE")
         self.assertTrue(all(c["state"] == "UNAVAILABLE" for c in result["checks"]))
+
+    def test_automatic_review_settles_to_explicit_unavailable(self) -> None:
+        ai_review.schedule_automatic(2, 3, reason="edit settled", delay_seconds=0)
+        for _ in range(20):
+            result = ai_review.load(2, 3)
+            if result and result.get("state") == "UNAVAILABLE":
+                break
+            time.sleep(0.01)
+        self.assertEqual(result["state"], "UNAVAILABLE")
+        self.assertIn("No eligible AI reviewer", result["reason"])
 
     def test_atomic_hash_approval_and_reapproval_diff(self) -> None:
         current = approval_bundle.current_bundle(2, 3, "math")

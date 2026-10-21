@@ -8,7 +8,7 @@ from pathlib import Path
 from unittest import mock
 
 from scripts.canvas_llm_intake import intake, manifest, owner_overrides
-from scripts.canvas_planner import source_sync
+from scripts.canvas_planner import ai_review, source_sync
 from scripts.canvas_planner.events import read_events
 
 
@@ -35,6 +35,14 @@ class SourceSyncTest(unittest.TestCase):
         self.root = Path(self.tmp.name)
         self.patch = mock.patch.object(manifest, "staging_dir", side_effect=lambda q, w: self.root / f"q{q}w{w}")
         self.patch.start()
+        self.config_patch = mock.patch.object(
+            source_sync, "source_config_path", return_value=self.root / "planner/pacing-source.json"
+        )
+        self.config_patch.start()
+        self.planner_root_patch = mock.patch.object(source_sync, "planner_root", return_value=self.root / "planner")
+        self.planner_root_patch.start()
+        self.ai_patch = mock.patch.object(ai_review, "schedule_automatic", return_value={"state": "PENDING"})
+        self.ai_patch.start()
         base = self.root / "q2w3"
         original = _week("L40")
         m = manifest.new_manifest(
@@ -55,6 +63,9 @@ class SourceSyncTest(unittest.TestCase):
         )
 
     def tearDown(self) -> None:
+        self.ai_patch.stop()
+        self.planner_root_patch.stop()
+        self.config_patch.stop()
         self.patch.stop()
         self.tmp.cleanup()
 
@@ -90,6 +101,37 @@ class SourceSyncTest(unittest.TestCase):
         self.assertEqual(kwargs["normalized_override"]["days"]["Tuesday"]["subjects"]["math"]["raw"], "L41")
         self.assertFalse(kwargs["fresh"])
         self.assertEqual(owner_overrides.day_override(2, 3, "math", "Wednesday")["at_home"], "Study")
+
+    def test_change_sheet_previews_before_server_authoritative_save(self) -> None:
+        metadata = {"status": "FRESH_READ_OK", "sheet": "New Tab", "workbook": "New Pacing"}
+        with mock.patch.object(source_sync.pacing_extractor, "fetch_pacing", return_value=([["fixture"]], metadata)), \
+             mock.patch.object(source_sync.pacing_extractor, "extract_week", return_value=_week("L41")):
+            preview = source_sync.preview_sheet(
+                2, 3, spreadsheet_id="sheet-123", tab="New Tab", name="New Pacing"
+            )
+        self.assertEqual(preview["name"], "New Pacing")
+        self.assertEqual(preview["tab"], "New Tab")
+        self.assertEqual(preview["week_columns"], [
+            "2026-10-26", "2026-10-27", "2026-10-28", "2026-10-29", "2026-10-30"
+        ])
+        self.assertIn("math", preview["subjects"])
+        self.assertFalse(source_sync.source_config_path().exists())
+        with self.assertRaises(ValueError):
+            source_sync.save_sheet(2, 3, expected_preview_hash="client-is-not-authority")
+        saved = source_sync.save_sheet(2, 3, expected_preview_hash=preview["preview_hash"])
+        self.assertEqual(saved["source"]["spreadsheet_id"], "sheet-123")
+        self.assertEqual(source_sync.load_source_config()["tab"], "New Tab")
+        self.assertEqual(saved["proposal"]["status"], "PENDING_DECISION")
+
+    def test_daily_check_runs_once_and_never_applies(self) -> None:
+        with mock.patch.object(source_sync, "resync", return_value={
+            "status": "PENDING_DECISION", "delta": {"delta": "CHANGED"}
+        }) as resync:
+            first = source_sync.daily_check(2, 3, today="2026-10-21")
+            second = source_sync.daily_check(2, 3, today="2026-10-21")
+        self.assertTrue(first["checked"])
+        self.assertFalse(second["checked"])
+        resync.assert_called_once_with(2, 3, fresh=True)
 
 
 if __name__ == "__main__":

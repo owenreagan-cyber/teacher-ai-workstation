@@ -278,6 +278,21 @@ class Handler(BaseHTTPRequestHandler):
                 elif len(parts) == 5 and parts[4] == "resync-source":
                     from scripts.canvas_planner import source_sync
                     self._send_json(200, source_sync.resync(quarter, week, fresh=True))
+                elif len(parts) == 5 and parts[4] == "daily-source-check":
+                    from scripts.canvas_planner import source_sync
+                    self._send_json(200, source_sync.daily_check(quarter, week))
+                elif len(parts) == 5 and parts[4] == "change-sheet-preview":
+                    from scripts.canvas_planner import source_sync
+                    self._send_json(200, source_sync.preview_sheet(
+                        quarter, week, spreadsheet_id=body.get("spreadsheet_id") or "",
+                        tab=body.get("tab") or "", name=body.get("name") or "",
+                    ))
+                elif len(parts) == 5 and parts[4] == "change-sheet-save":
+                    from scripts.canvas_planner import source_sync
+                    self._send_json(200, source_sync.save_sheet(
+                        quarter, week,
+                        expected_preview_hash=body.get("expected_preview_hash") or "",
+                    ))
                 elif len(parts) == 5 and parts[4] == "apply-source":
                     from scripts.canvas_planner import source_sync
                     self._send_json(200, source_sync.decide(quarter, week, decision="APPLY"))

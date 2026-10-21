@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import threading
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any, Protocol
@@ -59,6 +60,51 @@ def schedule(quarter: int, week: int, *, reason: str, delay_seconds: int = 2) ->
     return record
 
 
+def schedule_automatic(
+    quarter: int,
+    week: int,
+    *,
+    reason: str,
+    delay_seconds: int = 2,
+    runner=None,
+) -> dict[str, Any]:
+    """Debounce an automatic review and record an explicit fallback.
+
+    ``runner`` is an injectable eligible-review provider for tests/future
+    D-026 integration. It returns ``(reviewer, packet)``. With no configured
+    provider, the automatic attempt becomes UNAVAILABLE instead of silently
+    passing or remaining pending forever.
+    """
+    record = schedule(quarter, week, reason=reason, delay_seconds=delay_seconds)
+    scheduled_at = record["scheduled_at"]
+    target_path = review_path(quarter, week)
+    week_dir = manifest.staging_dir(quarter, week)
+
+    def finish() -> None:
+        try:
+            current = json.loads(target_path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError):
+            current = None
+        if not current or current.get("state") != "PENDING" or current.get("scheduled_at") != scheduled_at:
+            return
+        if runner is None:
+            _write_unavailable(
+                target_path, week_dir, quarter,
+                "No eligible AI reviewer is configured for this local planner.",
+            )
+            return
+        try:
+            reviewer, packet = runner()
+            run(quarter, week, reviewer=reviewer, packet=packet)
+        except Exception as exc:  # noqa: BLE001
+            unavailable(quarter, week, reason=f"AI reviewer could not run: {type(exc).__name__}")
+
+    timer = threading.Timer(max(0, delay_seconds), finish)
+    timer.daemon = True
+    timer.start()
+    return record
+
+
 def run(quarter: int, week: int, *, reviewer: Reviewer, packet: dict[str, Any]) -> dict[str, Any]:
     """Run a supplied eligible reviewer and persist only structured findings.
 
@@ -99,6 +145,12 @@ def run(quarter: int, week: int, *, reviewer: Reviewer, packet: dict[str, Any]) 
 
 def unavailable(quarter: int, week: int, *, reason: str) -> dict[str, Any]:
     """Record an explicit unavailable state; never converts it to PASS."""
+    return _write_unavailable(
+        review_path(quarter, week), manifest.staging_dir(quarter, week), quarter, reason
+    )
+
+
+def _write_unavailable(path: Path, week_dir: Path, quarter: int, reason: str) -> dict[str, Any]:
     now = _now().isoformat()
     record = {
         "schemaVersion": 1,
@@ -113,9 +165,10 @@ def unavailable(quarter: int, week: int, *, reason: str) -> dict[str, Any]:
             for course in (*constants.active_subject_keys_for_quarter(quarter), "homeroom")
         },
     }
-    _save(quarter, week, record)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(record, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
     append_event(
-        manifest.staging_dir(quarter, week), action="ai_review_unavailable", actor="system",
+        week_dir, action="ai_review_unavailable", actor="system",
         reason=reason, after={"state": "UNAVAILABLE"},
     )
     return record

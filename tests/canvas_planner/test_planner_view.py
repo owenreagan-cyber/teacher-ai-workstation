@@ -9,6 +9,7 @@ from pathlib import Path
 from unittest import mock
 
 from scripts.canvas_llm_intake import manifest
+from scripts.canvas_llm_rollover import manifest as rollover_manifest
 from scripts.canvas_planner.service import CanvasPlannerService
 
 
@@ -76,6 +77,9 @@ class PlannerViewTest(unittest.TestCase):
         self.assertIn(math["page_html"], math["announcement"]["exact_html"])
         self.assertEqual(math["days"][0]["assignments"][0]["title"], "Lesson 39")
         self.assertEqual(data["settings"]["state_root"], str(self.root))
+        package = rollover_manifest.build_rollover_manifest(2, 2, 2, 3)
+        math_update = next(item for item in package["weekly_announcements"] if item["subject"] == "math")
+        self.assertEqual(math["announcement"]["exact_html"], math_update["message"])
 
     def test_static_ui_has_only_stage_destinations_and_sandboxed_previews(self) -> None:
         app = Path("apps/teacher-workstation/app.js").read_text(encoding="utf-8")

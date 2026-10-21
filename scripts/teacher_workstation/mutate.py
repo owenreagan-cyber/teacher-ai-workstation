@@ -89,7 +89,7 @@ def apply_day_edit(
         reason=note or f"Owen edited {subject} {day}.", before=before, after=rec,
         undo={"action": "restore_day_override", "subject": subject, "day": day, "value": before},
     )
-    ai_review.schedule(quarter, week, reason=f"Plan changed for {subject} {day}")
+    ai_review.schedule_automatic(quarter, week, reason=f"Plan changed for {subject} {day}")
     return {"override": rec, "summary": summary, "affected": _affected(subject)}
 
 
@@ -332,7 +332,7 @@ def undo_last_plan_edit(*, quarter: int, week: int, source_hash: str | None = No
         reason=f"Owen undid the last edit to {subject} {day}.",
         before=target.get("after"), after={"undo_of": target["event_id"], "value": before},
     )
-    ai_review.schedule(quarter, week, reason=f"Plan edit undone for {subject} {day}")
+    ai_review.schedule_automatic(quarter, week, reason=f"Plan edit undone for {subject} {day}")
     return {"undone_event_id": target["event_id"], "subject": subject, "day": day, "summary": summary}
 
 

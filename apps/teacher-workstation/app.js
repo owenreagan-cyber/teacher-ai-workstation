@@ -4,7 +4,7 @@ const esc = (value) => String(value ?? '').replace(/[&<>"']/g, (c) => ({
   '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
 }[c]));
 const REQUEST_TOKEN = document.querySelector('meta[name="teacher-workstation-token"]')?.content || '';
-const APP = { data: null, route: null, phone: false, saveTimer: null };
+const APP = { data: null, route: null, phone: false, saveTimer: null, dailyChecks: new Set() };
 
 async function api(path, options = {}) {
   const method = options.method || 'GET';
@@ -125,6 +125,7 @@ function viewWeek(data) {
 
 function viewSource(data) {
   const proposal = data.source.proposal || {};
+  const sheetPreview = data.source.sheet_preview || {};
   const changes = proposal.changed_cells || [];
   const proposalCard = proposal.status === 'PENDING_DECISION' ? `<section class="section change-card"><h2>The sheet changed</h2>
     <p>Nothing has been applied. Review each source change first.</p>
@@ -137,11 +138,19 @@ function viewSource(data) {
   const rows = data.courses.filter((course) => course.id !== 'homeroom').map((course) => `<tr><td><strong>${esc(course.name)}</strong></td>
     ${course.days.map((day) => `<td>${esc(day.sheet_says || '—')}${day.edited ? '<span class="edited-badge">Edited</span>' : ''}</td>`).join('')}</tr>`).join('');
   const sheetUrl = data.source.spreadsheet_id ? `https://docs.google.com/spreadsheets/d/${encodeURIComponent(data.source.spreadsheet_id)}` : null;
+  const sheetPreviewCard = sheetPreview.status === 'PREVIEWED' ? `<section class="section change-card"><h2>Preview this source</h2>
+    <div class="kv"><span class="k">Spreadsheet</span><span class="v">${esc(sheetPreview.name)}</span></div>
+    <div class="kv"><span class="k">Tab</span><span class="v">${esc(sheetPreview.tab)}</span></div>
+    <p><strong>Detected week columns:</strong> ${esc((sheetPreview.week_columns || []).join(', '))}</p>
+    <p><strong>Subjects:</strong> ${esc((sheetPreview.subjects || []).join(', '))}</p>
+    <div class="sample-grid">${(sheetPreview.sample_values || []).map((sample) => `<div><strong>${esc(sample.day)} · ${esc(sample.subject)}</strong><br>${esc(sample.value)}</div>`).join('')}</div>
+    <p>Saving changes the configured source and stages a review card; it does not apply any pacing change.</p>
+    <button class="btn" data-action="save-sheet" data-preview-hash="${esc(sheetPreview.preview_hash)}">Save this source</button></section>` : '';
   return `${header(data,'1 · Source','Review the pacing sheet before anything changes in your plan.')}
     <section class="section source-panel"><div><h2>${esc(data.source.name)}</h2><p>${esc(data.source.tab)} · ${data.source.connected ? 'Connected' : 'Not connected'} · Last synced ${esc(formatDate(data.source.synced_at))}</p></div>
     <div class="btn-row"><button class="btn" data-action="resync-source">Resync</button><button class="btn neutral" data-action="change-sheet">Change sheet</button>
     ${sheetUrl ? `<a class="btn neutral" target="_blank" rel="noreferrer" href="${sheetUrl}">Open in Google Sheets</a>` : ''}</div></section>
-    ${proposalCard}<section class="section"><h2>Pacing grid</h2><div class="table-wrap"><table><thead><tr><th>Subject</th><th>Mon</th><th>Tue</th><th>Wed</th><th>Thu</th><th>Fri</th></tr></thead><tbody>${rows}</tbody></table></div></section>
+    ${sheetPreviewCard}${proposalCard}<section class="section"><h2>Pacing grid</h2><div class="table-wrap"><table><thead><tr><th>Subject</th><th>Mon</th><th>Tue</th><th>Wed</th><th>Thu</th><th>Fri</th></tr></thead><tbody>${rows}</tbody></table></div></section>
     <div class="sticky-actions"><a class="btn neutral" href="${routeFor(data.week.code,activeCourse(data).id,'plan')}">Edit this week</a>
     <a class="btn" href="${routeFor(data.week.code,activeCourse(data).id,'plan')}">Looks right · Continue to Plan</a></div>`;
 }
@@ -260,6 +269,12 @@ async function render() {
     APP.data = data;
   }
   APP.route = route;
+  if (route.stage === 'source' && !APP.dailyChecks.has(data.week.code)) {
+    APP.dailyChecks.add(data.week.code);
+    api(`/api/weeks/${data.week.quarter}/${data.week.number}/daily-source-check`,{method:'POST',body:requestBody()})
+      .then((result) => { if (result.checked) { APP.data = null; render().catch(showError); } })
+      .catch(() => {});
+  }
   $('nav').innerHTML = navigation(data,route);
   let html;
   if (route.special === 'completed') html = viewCompleted(data);
@@ -293,7 +308,14 @@ async function act(button) {
     const course = activeCourse(APP.data,button.dataset.course);
     const transition = window.prompt('Announcement transition',course.announcement.transition || '');
     if (transition !== null) await api(`/api/weeks/${quarter}/${week}/announcements/edit`,{method:'POST',body:requestBody({subject:course.id,transition})});
-  } else if (action === 'change-sheet') { window.alert('No source was changed. A new sheet must first preview its name, tab, week columns, subjects, and sample values.'); return; }
+  } else if (action === 'change-sheet') {
+    const name = window.prompt('Spreadsheet name',APP.data.source.name || ''); if (name === null) return;
+    const tab = window.prompt('Tab name',APP.data.source.tab || ''); if (tab === null) return;
+    const spreadsheetId = window.prompt('Google Sheets spreadsheet ID',APP.data.source.spreadsheet_id || ''); if (spreadsheetId === null) return;
+    await api(`/api/weeks/${quarter}/${week}/change-sheet-preview`,{method:'POST',body:requestBody({name,tab,spreadsheet_id:spreadsheetId})});
+  } else if (action === 'save-sheet') {
+    await api(`/api/weeks/${quarter}/${week}/change-sheet-save`,{method:'POST',body:requestBody({expected_preview_hash:button.dataset.previewHash})});
+  }
   else if (action === 'add-assignment' || action === 'individual-items') { window.alert('Use the course plan and artifact list to review the individual item.'); return; }
   else if (action === 'dry-run') {
     const result = await api(`/api/weeks/${quarter}/${week}/rollover-dry-run`,{method:'POST',body:requestBody({production:true})});

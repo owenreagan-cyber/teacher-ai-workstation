@@ -291,6 +291,9 @@ class CanvasPlannerService:
         changes = _read_json(week_dir / "changes.json", {})
         source_snapshot = _read_json(week_dir / "source" / "pacing-snapshot.json", {})
         proposal = _read_json(week_dir / "planner" / "source-proposal.json", {})
+        sheet_preview = _read_json(week_dir / "planner" / "source-change-preview.json", {})
+        sheet_preview.pop("normalized", None)
+        source_config = _read_json(self.root / "canvas-planner" / "pacing-source.json", {})
         courses: list[dict[str, Any]] = []
         projected = {course["id"]: course for course in status["courses"]}
         for course in _active_courses(quarter):
@@ -344,13 +347,14 @@ class CanvasPlannerService:
                 "next": self._week_ref(following),
             },
             "source": {
-                "name": manifest.get("pacing_source", "2026-2027 FPK Pacing Guides"),
-                "tab": manifest.get("pacing_tab", "4A - Reagan"),
+                "name": source_config.get("name") or manifest.get("pacing_source", "2026-2027 FPK Pacing Guides"),
+                "tab": source_config.get("tab") or manifest.get("pacing_tab", "4A - Reagan"),
                 "synced_at": manifest.get("source_retrieved_at"),
                 "connected": bool(source_snapshot),
-                "spreadsheet_id": source_snapshot.get("spreadsheet_id"),
+                "spreadsheet_id": source_config.get("spreadsheet_id") or source_snapshot.get("spreadsheet_id"),
                 "proposal": proposal,
                 "changes": changes,
+                "sheet_preview": sheet_preview,
             },
             "courses": courses,
             "ai_review": ai,

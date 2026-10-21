@@ -164,13 +164,29 @@ def prepare_week(
             "canvas_writes": 0,
         }
 
-    # Fetch fresh normalized week for delta detection (build_intake re-fetches,
-    # but we want the delta against the EXISTING packet before regenerating).
+    # Fetch fresh normalized week for delta detection. Existing packets never
+    # auto-apply a changed source: the fresh data becomes a review proposal.
     rows, meta = pe.fetch_pacing(fresh=fresh)
     fresh_norm = pe.extract_week(rows, week_code, meta)
 
     delta = detect_delta(quarter, week, fresh_norm)
     conflicts = detect_owner_override_conflict(quarter, week, fresh_norm)
+
+    if existing is not None and delta["delta"] == "CHANGED":
+        from scripts.canvas_planner import source_sync
+        proposal = source_sync.propose_from_normalized(
+            quarter, week, normalized=fresh_norm, source_metadata=meta
+        )
+        return {
+            "week_code": week_code,
+            "quarter": quarter,
+            "week": week,
+            "source_delta": delta,
+            "owner_override_conflicts": conflicts,
+            "proposal": proposal,
+            "applied": False,
+            "canvas_writes": 0,
+        }
 
     summary = intake.build_intake(
         quarter=quarter,
@@ -178,6 +194,8 @@ def prepare_week(
         fresh=fresh,
         canvas=canvas,
         include_canvas_context=include_canvas_context,
+        normalized_override=fresh_norm,
+        source_meta_override=meta,
     )
 
     # Record delta + conflicts into the manifest + a local changes file.

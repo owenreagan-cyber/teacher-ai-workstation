@@ -273,6 +273,15 @@ class Handler(BaseHTTPRequestHandler):
                         quarter=quarter, week=week, source_hash=source_hash,
                         subject=body.get("subject"), artifact_type=body.get("artifact_type"))
                     self._send_json(200, result)
+                elif len(parts) == 5 and parts[4] == "resync-source":
+                    from scripts.canvas_planner import source_sync
+                    self._send_json(200, source_sync.resync(quarter, week, fresh=True))
+                elif len(parts) == 5 and parts[4] == "apply-source":
+                    from scripts.canvas_planner import source_sync
+                    self._send_json(200, source_sync.decide(quarter, week, decision="APPLY"))
+                elif len(parts) == 5 and parts[4] == "keep-source":
+                    from scripts.canvas_planner import source_sync
+                    self._send_json(200, source_sync.decide(quarter, week, decision="KEEP"))
                 elif len(parts) == 5 and parts[4] == "preflight":
                     # POST /api/weeks/{q}/{w}/preflight — GET-only deployment preflight
                     from . import deploy

@@ -94,17 +94,25 @@ Outside products were studied for logic and features to rebuild, not to adopt.
 - **Request sorting (P1a.5):** every message gets one label (time, weather, calendar,
   reminders, brief, Mac status, capabilities, web lookup, local files, mail, social, general):
   patterns first, the local model only as a fallback (`cos/intent.py`). Code, not the model,
-  answers the brief, capabilities ("what can you do?", including that settings live in
+  answers the brief, capabilities ("what can you do?", including the Settings screen and
   `config.json`), social replies, greetings, weather, the reminders list, unload and loaded
   models, the next action, and the not-built-yet answers for files and mail.
 - **Sessions:** conversations are saved and can be resumed (`cos history`); short follow-ups
   ("and tomorrow?", "and the Islanders?") continue the previous topic.
-- **Daily brief** ("brief", `cos brief`) and the **home card** in the desktop window (see
-  "Home card").
-- **Desktop window:** Chief.app (Electron + React) with a menu bar icon and the
-  Control+Option+C hotkey, plus the Raycast launcher. Both call the same `cos` core. Answers are
-  rich: weather cards, hourly and daily charts, collapsed sources that open by link id, the
-  "Searched:" line, and follow-up buttons (`docs/response-blocks.md`).
+- **Daily brief** ("brief", `cos brief`, and **Today's brief** in the window).
+- **Desktop window (UI-1):** Chief.app (Electron + React) is a full window with a menu bar icon
+  and the Control+Option+C hotkey, plus the Raycast launcher. Both call the same `cos` core. A
+  left rail (Today, Chat, Agents & builds, Mac; Files later; Settings; Stop Chief) collapses to
+  icons below about 1100 px. The **Today page** comes from `cos home --json` (see "Today page"),
+  and the chat panel switches between Split, Focus, and Hide (remembered; ⌘\ toggles Hide, ⌘K
+  jumps to the input, ⌘1–⌘4 switch pages). Answers are rich: weather cards, hourly and daily
+  charts, collapsed sources that open by link id, the "Searched:" line, and follow-up buttons
+  (`docs/response-blocks.md`). IBM Plex is bundled; light and dark follow macOS.
+- **Needs (`cos needs`):** decisions and suggestions from fixed providers, never the model:
+  Chief's own setup problems, Owen's `needs.json`, the Canvas planner status (once
+  `bin/canvas-weekly-status` exists), and a failed real-model certification.
+- **Settings screen:** weather places (edit, add), auto web search, the local model and how long
+  it stays loaded, through `cos config get|set` (validated, atomic, 0600, audited).
 - **Tools:** time and date, weather for named places (Sims, NC home and Clayton, NC work; see
   "Weather places"), today's calendar (EventKit), reminders due, Mac status, and **web search**
   (Brave; automatic for questions that need the web, plus the typed "search …" command; daily
@@ -129,9 +137,13 @@ Outside products were studied for logic and features to rebuild, not to adopt.
   needs Owen's go-ahead and install. Limits: `tools/dev_safety/README.md`.
 
 ### Missing
-Local file search (D-021; Chief says it is coming), email (D-013; Chief says it isn't
-connected), a settings screen (settings are `config.json`), a forecast beyond 7 days or for
-places other than the saved ones (no geocoding), notifications, voice, conversational memory writing,
+Local file search (D-021; Chief says it is coming; the rail's Files page is disabled), email
+(D-013; Chief says it isn't connected), the menu bar launcher and command palette (UI-2), Dev
+Mode (waits for the Mac helper), real agent activity (the Agents card is a placeholder), the
+Canvas planner status command (`bin/canvas-weekly-status`, another team), removing a place in
+Settings (edit `config.json`), changing start at login or the hotkey from Settings (menu bar
+icon and `desktop.json`), a forecast beyond 7 days or geocoding of typed place names,
+notifications, voice, conversational memory writing,
 project awareness from real repos, proactive monitoring, routing between local and cloud
 workers (M2 router, D-020, D-026), delegation to cloud agents, the multi-agent orchestrator and
 MCP adapters (D-023, D-024, D-025), and the iPhone app (D-007).
@@ -145,7 +157,7 @@ MCP adapters (D-023, D-024, D-025), and the iPhone app (D-007).
 
 ## Daily use (P1a messenger)
 
-The compact window (Chief.app), Raycast, and `bin/cos ask` all reach the same `cos` core.
+The Chief window (Chief.app), Raycast, and `bin/cos ask` all reach the same `cos` core.
 
 ### Web search
 
@@ -216,11 +228,13 @@ step 2. Until a key is stored, a search answers "web search not set up" and poin
 Weather answers are written by code from the forecast, with no model, and always start with the
 place: `Sims, NC — 61°F, overcast. High 61° · Low 47° · Rain 10%.` Chief knows the places in
 `config.json` in the state folder (`~/Library/Application Support/ChiefOfStaff/`) under
-`"places"`. It never uses the Mac's location and never invents a city name. There is no settings
-screen; this file is the setting.
+`"places"`. It never uses the Mac's location and never invents a city name. Since UI-1 the
+easiest way to change them is **Settings → Weather places** in the window (edit a place, or
+**Add a place** with its name, latitude, and longitude; there is no geocoding). The same change
+from the terminal: `bin/cos config set places '<JSON object>'`.
 
-Owen's config today has the Sims coordinates and no name (`"latitude": 35.76, "longitude":
--78.06`), so Chief calls that place "Home". To name it and add work, add these exact lines to
+By hand: if the config has the Sims coordinates and no name (`"latitude": 35.76, "longitude":
+-78.06`), Chief calls that place "Home". To name it and add work, add these exact lines to
 `config.json`, inside the outer braces (put a comma at the end of the line before them):
 
 ```json
@@ -251,19 +265,53 @@ Ask for: "weather", "weather at work", "tomorrow", "this weekend", "5 day foreca
 "tonight", "what city is that", "use my location". A place Chief doesn't know gets "I only know
 Sims (home) and Clayton (work) so far."
 
-### Home card
+### Today page
 
-The compact window opens with a card instead of an empty chat: a greeting, the date, the next
-event and today's event count, reminders due (and how many are overdue), and a one-line weather
-summary.
+The window opens on **Today** (UI-1; it replaces P1a's compact home card). Top to bottom: the
+greeting and date with the home place, **Today's brief** and **Dev Mode** (disabled until the
+Mac helper); **Needs your decision** and **Suggested next steps**; weather with a 7-day strip;
+today's calendar (course codes as chips) with the reminders line, next to the Mac (memory and
+CPU with 30-minute trend lines, disk, battery, loaded model, healthy or attention); agent
+activity (none yet) and the last five merges on `main`.
 
-- It is built by `cos brief --json` (the `card` field), deterministically, with no model.
-- Tap it to see the full brief. After your first question it shrinks to a one-line header; tap
-  that to open it again. It rebuilds itself when a new day starts.
-- Missing data shows plainly: "Nothing scheduled", "Calendar unavailable" (EventKit not
-  granted), "Weather unavailable". It never shows an error trace.
+- It is built by `cos home --json`, deterministically, with no model. Each section (weather,
+  calendar, reminders, mac, needs, builds, agents) carries `status` (current, updating, stale,
+  unavailable), `generated_at`, `interval_s`, and a plain `reason` when it isn't current.
+- **Cache first:** the window paints from `cache/home.json` in the state folder
+  (`cos home --json --cached`, which runs nothing), then asks cos to refresh what is due:
+  weather every 15 minutes, calendar and reminders every 5, the Mac every 30 seconds while the
+  window is visible, builds every 10, needs every minute. A source that fails keeps its last
+  data; the others are untouched.
+- A card past its interval says **Stale · last checked <time>** and fades its numbers. The
+  greeting ("Good morning / afternoon / evening", "Working late" before 5 AM) always comes from
+  the current time, never from the cache.
+- Mac trend samples are kept in the app's memory for 30 minutes and never written to disk.
+- Polling is quiet in the audit log: one `home_refresh` record per refresh that touched more
+  than the Mac.
+- While the kill switch is set nothing refreshes, and Today says so.
 - It appears only inside the window, which is hidden from screenshots and screen sharing by
-  default. The menu bar icon, window title, and notifications never show card content.
+  default. The menu bar icon, window title, and notifications never show its content.
+
+### Needs
+
+`cos needs --json` (also the `needs` section of `cos home`) gathers items with `id`, `kind`
+(`decision`, `suggestion`, `info`), `title`, `reason`, `source`, `created_at`, and an optional
+`action` (an https link opened by id, a page of the window, or a command Owen can copy; the
+window never runs it). Providers, in order: `config` (Chief's own setup problems), `owner_list`
+(`needs.json` in the state folder; format in `docs/ui-1-owen-steps.md`), `canvas`
+(`bin/canvas-weekly-status --json` when it exists; until then one info item, "Canvas planner
+status isn't connected yet."), and `harness` (a decision when the latest real-model eval failed
+certification). Items are deduplicated by id; `"resolved": true` in `needs.json` hides an id from
+every provider. The model never creates, edits, or ranks them.
+
+### Settings
+
+**Settings** in the rail reads and writes `config.json` through `cos config get --json` and
+`cos config set <key> <json-value>`: weather places, auto web search, the model name, and how
+long it stays loaded. Every write is checked against the config schema (unknown and other keys
+are refused), replaces the file atomically at 0600, and adds a `config_change` audit record
+(places by name key only, never coordinates). Start at login and the hotkey are shown there but
+change from the menu bar icon and `desktop.json`.
 
 ### Personality
 

@@ -26,7 +26,7 @@ export function sky(conditions: string): Sky {
   return "cloud";
 }
 
-function WeatherIcon({ conditions, isDay, size = 40 }: { conditions: string; isDay: boolean | null; size?: number }) {
+export function WeatherIcon({ conditions, isDay, size = 40 }: { conditions: string; isDay: boolean | null; size?: number }) {
   const kind = sky(conditions);
   const night = isDay === false;
   const sun = night ? (
@@ -84,11 +84,11 @@ function WeatherNow({ b }: { b: WeatherNowBlock }) {
       <div className="flex items-center gap-2">
         <WeatherIcon conditions={b.conditions} isDay={b.is_day} />
         <div className="min-w-0 flex-1">
-          <div className="truncate text-[11px] opacity-80">{b.place}</div>
+          <div className="truncate text-[12px] opacity-80">{b.place}</div>
           <div className="text-[22px] font-semibold leading-6">{deg(b.temp_f)}</div>
-          <div className="text-[11.5px] capitalize opacity-90">{b.conditions}</div>
+          <div className="text-[12px] capitalize opacity-90">{b.conditions}</div>
         </div>
-        <div className="text-right text-[11px] leading-4 opacity-90">
+        <div className="text-right text-[12px] leading-4 opacity-90">
           <div>H {deg(b.high_f)} · L {deg(b.low_f)}</div>
           <div>Rain {b.rain_chance_pct ?? "–"}%</div>
           {b.feels_like_f !== null && <div>Feels {deg(b.feels_like_f)}</div>}
@@ -109,8 +109,8 @@ function HourlyChart({ place, points }: { place: string; points: HourlyPoint[] }
     .join(" ");
   const label = `Next ${points.length} hours in ${place}: ` + points.map((p) => `${p.time} ${deg(p.temp_f)}, rain ${p.rain_chance_pct ?? "–"}%`).join("; ");
   return (
-    <figure className="rounded-xl border border-neutral-300/60 px-2 py-1 dark:border-neutral-700">
-      <figcaption className="text-[10.5px] text-neutral-500">Next {points.length} hours · temperature and rain chance</figcaption>
+    <figure className="rounded-xl border border-line px-2 py-1">
+      <figcaption className="text-[12px] text-muted">Next {points.length} hours · temperature and rain chance</figcaption>
       <svg viewBox={`0 0 ${w} ${h}`} className="block w-full" role="img" aria-label={label}>
         {points.map((p, i) => (
           <rect key={`r${i}`} x={i * step + step * 0.2} width={step * 0.6} y={h - bottom - ((p.rain_chance_pct ?? 0) / 100) * 30}
@@ -119,14 +119,14 @@ function HourlyChart({ place, points }: { place: string; points: HourlyPoint[] }
         <path d={line} fill="none" strokeWidth="2" strokeLinejoin="round" className="stroke-amber-500" />
         {points.map((p, i) =>
           p.temp_f === null || i % 3 !== 0 ? null : (
-            <text key={`t${i}`} x={(i + 0.5) * step} y={y(p.temp_f) - 4} textAnchor="middle" className="fill-neutral-600 text-[9px] dark:fill-neutral-300">
+            <text key={`t${i}`} x={(i + 0.5) * step} y={y(p.temp_f) - 4} textAnchor="middle" className="fill-ink text-[12px]">
               {deg(p.temp_f)}
             </text>
           ),
         )}
         {points.map((p, i) =>
           i % 3 !== 0 ? null : (
-            <text key={`h${i}`} x={(i + 0.5) * step} y={h - 4} textAnchor="middle" className="fill-neutral-500 text-[9px]">
+            <text key={`h${i}`} x={(i + 0.5) * step} y={h - 4} textAnchor="middle" className="fill-muted text-[12px]">
               {p.time}
             </text>
           ),
@@ -141,20 +141,20 @@ function DailyForecast({ place, days }: { place: string; days: DailyPoint[] }) {
   const highs = days.map((d) => d.high_f).filter((t): t is number => t !== null);
   const lo = Math.min(...lows), hi = Math.max(...highs), span = Math.max(1, hi - lo);
   return (
-    <div className="rounded-xl border border-neutral-300/60 px-2 py-1 dark:border-neutral-700" aria-label={`Forecast for ${place}`}>
+    <div className="rounded-xl border border-line px-2 py-1" aria-label={`Forecast for ${place}`}>
       {days.map((d) => (
-        <div key={d.date} className="flex items-center gap-2 py-0.5 text-[11.5px]">
+        <div key={d.date} className="flex items-center gap-2 py-0.5 text-[12px]">
           <span className="w-[68px] truncate capitalize">{d.label}</span>
           <WeatherIcon conditions={d.conditions} isDay={true} size={18} />
-          <span className="w-7 text-right text-neutral-500">{deg(d.low_f)}</span>
-          <span className="relative h-1.5 flex-1 rounded-full bg-neutral-300/60 dark:bg-neutral-700">
+          <span className="w-7 text-right text-muted">{deg(d.low_f)}</span>
+          <span className="relative h-1.5 flex-1 rounded-full bg-line">
             {d.low_f !== null && d.high_f !== null && (
               <span className="absolute h-1.5 rounded-full bg-gradient-to-r from-sky-400 to-amber-400"
                 style={{ left: `${((d.low_f - lo) / span) * 100}%`, width: `${Math.max(4, ((d.high_f - d.low_f) / span) * 100)}%` }} />
             )}
           </span>
           <span className="w-7">{deg(d.high_f)}</span>
-          <span className="w-8 text-right text-[10.5px] text-sky-700 dark:text-sky-400">{d.rain_chance_pct ?? "–"}%</span>
+          <span className="w-8 text-right text-[12px] text-accent">{d.rain_chance_pct ?? "–"}%</span>
         </div>
       ))}
     </div>
@@ -164,24 +164,24 @@ function DailyForecast({ place, days }: { place: string; days: DailyPoint[] }) {
 function Sources({ items }: { items: Extract<Block, { type: "sources" }>["items"] }) {
   const [failed, setFailed] = useState(false);
   return (
-    <details className="text-[11.5px]">
-      <summary className="cursor-pointer text-neutral-500">Sources ({items.length})</summary>
+    <details className="text-[12px]">
+      <summary className="cursor-pointer text-muted">Sources ({items.length})</summary>
       <ol className="mt-1 space-y-0.5 pl-4">
         {items.map((it, i) => (
           <li key={i} className="list-decimal">
             {it.link_id ? (
-              <button type="button" className="text-left text-sky-700 underline-offset-2 hover:underline dark:text-sky-400"
+              <button type="button" className="text-left text-accent underline-offset-2 hover:underline"
                 onClick={() => void window.chief.openLink(it.link_id as string).then((r) => setFailed(!r.ok))}>
                 {it.title}
               </button>
             ) : (
               <span>{it.title}</span>
             )}{" "}
-            <span className="text-neutral-500">· {it.site}</span>
+            <span className="text-muted">· {it.site}</span>
           </li>
         ))}
       </ol>
-      {failed && <div className="text-amber-700 dark:text-amber-400">That link couldn't be opened.</div>}
+      {failed && <div className="text-warn">That link couldn't be opened.</div>}
     </details>
   );
 }
@@ -202,10 +202,10 @@ export function BlockList({ blocks, busy, onSend }: Props) {
           case "sources":
             return <Sources key={i} items={b.items} />;
           case "searched":
-            return <div key={i} className="selectable text-[10.5px] text-neutral-500">Searched: {b.query}</div>;
+            return <div key={i} className="selectable text-[12px] text-muted">Searched: {b.query}</div>;
           case "notice":
             return (
-              <div key={i} className={`selectable text-[12px] ${b.level === "warning" ? "text-amber-700 dark:text-amber-400" : "text-neutral-600 dark:text-neutral-400"}`}>
+              <div key={i} className={`selectable text-[12px] ${b.level === "warning" ? "text-warn" : "text-muted"}`}>
                 Note: {b.text}
               </div>
             );
@@ -215,7 +215,7 @@ export function BlockList({ blocks, busy, onSend }: Props) {
                 {b.items.map((it, j) => (
                   <button key={j} type="button" disabled={busy}
                     onClick={() => { const m = suggestionMessage(b, j); if (m !== null) onSend(m); }}
-                    className="rounded-full border border-sky-600/40 px-2.5 py-0.5 text-[11.5px] text-sky-700 hover:bg-sky-500/10 disabled:opacity-40 dark:text-sky-300">
+                    className="rounded-full border border-accent/40 px-2.5 py-0.5 text-[12px] text-accent hover:bg-accent-soft disabled:opacity-40">
                     {it.label}
                   </button>
                 ))}

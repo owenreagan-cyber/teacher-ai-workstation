@@ -1,0 +1,70 @@
+{
+  "ok": true,
+  "generated_at": "2026-10-01T14:30:00-04:00",
+  "greeting": "Good afternoon, Owen",
+  "date": "Thursday, October 1",
+  "place": "Sims, NC",
+  "stopped": false,
+  "weather": {
+    "status": "current", "generated_at": "2026-10-01T14:30:00-04:00", "interval_s": 900, "reason": null,
+    "data": {
+      "place": "Sims, NC", "temp_f": 68, "feels_like_f": 67, "conditions": "partly cloudy", "is_day": true,
+      "high_f": 74, "low_f": 55, "rain_chance_pct": 20, "wind_mph": 7,
+      "days": [
+        {"date": "2026-10-01", "label": "today", "high_f": 74, "low_f": 55, "rain_chance_pct": 20, "conditions": "overcast"},
+        {"date": "2026-10-02", "label": "tomorrow", "high_f": 66, "low_f": 48, "rain_chance_pct": 60, "conditions": "light rain"},
+        {"date": "2026-10-03", "label": "Saturday", "high_f": 70, "low_f": 50, "rain_chance_pct": 30, "conditions": "partly cloudy"},
+        {"date": "2026-10-04", "label": "Sunday", "high_f": 72, "low_f": 53, "rain_chance_pct": 10, "conditions": "mostly clear"},
+        {"date": "2026-10-05", "label": "Monday", "high_f": 75, "low_f": 54, "rain_chance_pct": 0, "conditions": "clear"},
+        {"date": "2026-10-06", "label": "Tuesday", "high_f": 73, "low_f": 53, "rain_chance_pct": 10, "conditions": "partly cloudy"},
+        {"date": "2026-10-07", "label": "Wednesday", "high_f": 70, "low_f": 51, "rain_chance_pct": 20, "conditions": "overcast"}
+      ]
+    }
+  },
+  "calendar": {
+    "status": "current", "generated_at": "2026-10-01T14:30:00-04:00", "interval_s": 300, "reason": null,
+    "data": {"count": 3, "events": [
+      {"title": "Lesson 42", "course": "SM5", "all_day": false, "start": "9:00 AM", "end": "9:45 AM", "start_iso": "2026-10-01T09:00:00-04:00"},
+      {"title": "Test Event B", "course": null, "all_day": false, "start": "3:30 PM", "end": "4:15 PM", "start_iso": "2026-10-01T15:30:00-04:00"},
+      {"title": "Test All-Day Event C", "course": null, "all_day": true, "start": null, "end": null, "start_iso": "2026-10-01T00:00:00-04:00"}
+    ]}
+  },
+  "reminders": {
+    "status": "current", "generated_at": "2026-10-01T14:30:00-04:00", "interval_s": 300, "reason": null,
+    "data": {"count": 3, "overdue": 1, "line": "3 reminders due (1 overdue)", "items": [
+      {"title": "Test Reminder Overdue", "due": "Mon Sep 28", "overdue": true},
+      {"title": "Test Reminder One", "due": "today", "overdue": false},
+      {"title": "Test Reminder Two", "due": "5:00 PM", "overdue": false}
+    ]}
+  },
+  "mac": {
+    "status": "current", "generated_at": "2026-10-01T14:30:00-04:00", "interval_s": 30, "reason": null,
+    "data": {"memory_free_pct": 61, "cpu_load_pct": 18, "disk_free_gb": 214, "disk_total_gb": 994, "battery_pct": 82,
+             "battery_state": "discharging", "power_source": "battery power", "uptime": "3d 4h",
+             "loaded_models": ["test-model-a:latest"], "health": "healthy", "attention": []}
+  },
+  "needs": {
+    "status": "current", "generated_at": "2026-10-01T14:30:00-04:00", "interval_s": 60, "reason": null,
+    "data": {"items": [
+      {"id": "owner:d1", "kind": "decision", "title": "Test decision one", "reason": "Synthetic reason one", "source": "owner_list", "created_at": "2026-10-01T09:00:00-04:00", "action": null},
+      {"id": "owner:d2", "kind": "decision", "title": "Test decision two", "reason": "Synthetic reason two", "source": "owner_list", "created_at": "2026-10-01T09:00:00-04:00", "action": {"type": "page", "label": "Open Settings", "page": "settings"}},
+      {"id": "owner:d3", "kind": "decision", "title": "Test decision three", "reason": "Synthetic", "source": "owner_list", "created_at": "2026-10-01T09:00:00-04:00", "action": null},
+      {"id": "owner:d4", "kind": "decision", "title": "Test decision four", "reason": "Synthetic", "source": "owner_list", "created_at": "2026-10-01T09:00:00-04:00", "action": null},
+      {"id": "owner:d5", "kind": "decision", "title": "Test decision five", "reason": "Synthetic", "source": "owner_list", "created_at": "2026-10-01T09:00:00-04:00", "action": null},
+      {"id": "harness:certification", "kind": "decision", "title": "Latest real-model eval didn't certify", "reason": "CERT-001 failed", "source": "harness", "created_at": "2026-10-01T09:00:00-04:00", "action": {"type": "command", "label": "Copy command", "command": "python3.12 evals/harness/run.py --model real"}},
+      {"id": "config:search-key", "kind": "suggestion", "title": "Store the web search key", "reason": "Web search needs its Brave API key in the Keychain.", "source": "config", "created_at": "2026-10-01T09:00:00-04:00", "action": {"type": "command", "label": "Copy command", "command": "security add-generic-password -a \"$USER\" -s chief-search-brave -w"}},
+      {"id": "canvas:not-connected", "kind": "info", "title": "Canvas planner status isn't connected yet.", "reason": "bin/canvas-weekly-status is not in the repo yet.", "source": "canvas", "created_at": "2026-10-01T09:00:00-04:00", "action": null}
+    ]}
+  },
+  "builds": {
+    "status": "current", "generated_at": "2026-10-01T14:30:00-04:00", "interval_s": 600, "reason": null,
+    "data": {"branch": "main", "items": [
+      {"title": "Test build five", "ref": "aaaa005", "pr": 105, "merged_at": "2026-10-01T12:00:00-04:00"},
+      {"title": "Test build four", "ref": "aaaa004", "pr": 104, "merged_at": "2026-09-30T12:00:00-04:00"}
+    ]}
+  },
+  "agents": {
+    "status": "current", "generated_at": "2026-10-01T14:30:00-04:00", "interval_s": 60, "reason": null,
+    "data": {"available": false, "items": []}
+  }
+}

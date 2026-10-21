@@ -10,7 +10,7 @@ weather answer starts with the place name, for example:
     Sims, NC — 61°F, overcast. High 61° · Low 47° · Rain 10%.
 
 "what city is that" adds which saved place it is; "use my location" says Chief uses saved places,
-not the Mac's location, and that they live in config.json (there is no settings screen). The
+not the Mac's location, and that they are changed in Settings (saved in config.json). The
 jacket and umbrella notes are fixed thresholds, not judgment calls.
 """
 from __future__ import annotations
@@ -240,5 +240,6 @@ def render(req: Request, r: dict, places: dict[str, Place]) -> tuple[str, dict]:
         text += f" That's {req.place.name}, your saved {req.place.key} place."
     if req.location_note:
         text += (f" I use your saved places, not your Mac's location: {_short_list(places)}. "
-                 "They're set in \"places\" in config.json in the Chief state folder.")
+                 "Change them under Weather places in Settings; they're saved in config.json in the "
+                 "Chief state folder.")
     return text, shown

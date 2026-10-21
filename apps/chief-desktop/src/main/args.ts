@@ -5,9 +5,14 @@ export const SESSION_ID_RE = /^[a-z0-9-]{1,40}$/; // must match cos/sessions.py
 export const MAX_QUESTION_CHARS = 4000;
 export const STOP_REASON = "chief-desktop";
 
-export type Action = "ask" | "history" | "brief" | "status" | "stop" | "resume" | "warm" | "auto-search";
+import { SETTABLE_KEYS } from "../shared/settings.js";
 
-export type Params = { question?: unknown; sessionId?: unknown; enabled?: unknown };
+export type Action =
+  | "ask" | "history" | "brief" | "status" | "stop" | "resume" | "warm" | "auto-search" | "home"
+  | "config-get" | "config-set";
+
+export type Params = { question?: unknown; sessionId?: unknown; enabled?: unknown; cached?: unknown; key?: unknown; value?: unknown };
+export const MAX_CONFIG_VALUE_CHARS = 4000;
 
 export class ArgsError extends Error {}
 
@@ -29,6 +34,25 @@ export function checkQuestion(question: unknown): string {
   return trimmed;
 }
 
+export function checkConfigKey(key: unknown): string {
+  if (typeof key !== "string" || !(SETTABLE_KEYS as readonly string[]).includes(key)) {
+    throw new ArgsError(`setting ${String(key)} can't be changed from the window`);
+  }
+  return key;
+}
+
+function configValue(value: unknown): string {
+  let text: string | undefined;
+  try {
+    text = JSON.stringify(value);
+  } catch {
+    text = undefined;
+  }
+  if (text === undefined) throw new ArgsError("setting value must be JSON");
+  if (text.length > MAX_CONFIG_VALUE_CHARS) throw new ArgsError("setting value is too long");
+  return text;
+}
+
 export function buildArgs(action: Action, params: Params = {}): string[] {
   switch (action) {
     case "ask":
@@ -38,6 +62,9 @@ export function buildArgs(action: Action, params: Params = {}): string[] {
       return ["history", "--session", checkSessionId(params.sessionId), "--json"];
     case "brief":
       return ["brief", "--json"];
+    case "home":
+      // --cached reads cos's cache only (the window paints at once); otherwise due sections refresh.
+      return params.cached === true ? ["home", "--json", "--cached"] : ["home", "--json"];
     case "status":
       return ["status", "--json"];
     case "stop":
@@ -49,6 +76,11 @@ export function buildArgs(action: Action, params: Params = {}): string[] {
     case "auto-search":
       // Main process only (the tray toggle). Only a real boolean turns it on.
       return ["auto-search", params.enabled === true ? "on" : "off", "--json"];
+    case "config-get":
+      return ["config", "get", "--json"];
+    case "config-set":
+      // Only the keys the Settings screen may change; the value travels as one JSON argv element.
+      return ["config", "set", "--json", "--", checkConfigKey(params.key), configValue(params.value)];
     default:
       throw new ArgsError(`unknown action: ${String(action)}`);
   }

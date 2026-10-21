@@ -5,8 +5,8 @@ here and from config, never from the model.
       the not-built-yet answers (no tool, no model, no web search)
   capabilities_answer(registry, config)
       "what can you do?": what works (only tools that are registered), what is connected, what
-      is not built yet, and where settings live (config.json in the state folder: there is no
-      settings screen, so Chief never names one or a menu path)
+      is not built yet, and where settings live (the window's Settings screen, saved in
+      config.json in the state folder; Chief names no other menu path)
 """
 from __future__ import annotations
 
@@ -58,7 +58,7 @@ def answer_for(label: str) -> str:
     return NOT_BUILT[label]
 
 
-def _home_relative(path: Path) -> str:
+def home_relative(path: Path) -> str:
     home = Path.home()
     try:
         return "~/" + str(Path(path).relative_to(home))
@@ -74,6 +74,7 @@ def capabilities_answer(registry, config) -> str:
     lines = [f"I can {can}.",
              "Connected: " + ", ".join(connected) + ".",
              NOT_YET,
-             "Settings: there's no settings screen yet. Settings live in config.json in the Chief state "
-             f"folder ({_home_relative(config.state_dir)})."]
+             "Settings: the Chief window has a Settings screen (in the rail, bottom left) for weather "
+             "places, auto web search, and the local model. They're saved in config.json in the Chief "
+             f"state folder ({home_relative(config.state_dir)})."]
     return "\n".join(lines)

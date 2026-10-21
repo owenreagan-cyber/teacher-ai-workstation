@@ -1,6 +1,8 @@
 // Shapes of what cos prints (cos ask/history/status/brief --json) plus the few envelopes the
 // main process adds. The renderer displays these; it never invents their values.
 import type { Block } from "./blocks.js";
+import type { HomeSnapshot } from "./home.js";
+import type { ConfigReport } from "./settings.js";
 
 export type CosErrorKind = "usage" | "stopped" | "model_unavailable" | "internal";
 // Kinds the desktop shell itself can report before or around a cos call.
@@ -73,6 +75,12 @@ export type StatusResult =
     }
   | Failure;
 
+// cos home --json (src/shared/home.ts), plus the main process's in-memory Mac samples.
+export type HomeResult = ({ ok: true } & HomeSnapshot) | Failure;
+
+// cos config get|set --json (src/shared/settings.ts): what the Settings screen reads and writes.
+export type ConfigResult = ({ ok: true } & ConfigReport) | Failure;
+
 // cos auto-search on|off --json. Main process only (the tray toggle); no bridge.
 export type AutoSearchResult = { ok: true; auto_search: boolean } | Failure;
 
@@ -83,7 +91,9 @@ export type WarmResult = { ok: true; model: string; loaded: boolean; keep_alive:
 export type ControlResult = { ok: true } | Failure;
 
 // Window state owned by the Electron main process (not cos state).
-export type WindowState = { pinned: boolean; protected: boolean };
+// startAtLogin and hotkey are shown in Settings for reading only: start at login changes from the menu
+// bar icon (main process only), the hotkey in desktop.json.
+export type WindowState = { pinned: boolean; protected: boolean; startAtLogin: boolean | null; hotkey: string };
 
 // One-way notices from the main process (tray menu actions). Fixed set; no payload from cos.
 export type ShellEvent =
@@ -96,6 +106,9 @@ export interface ChiefBridge {
   history(sessionId: string): Promise<HistoryResult>;
   openLink(linkId: string): Promise<OpenLinkResult>;
   brief(): Promise<BriefResult>;
+  home(cached: boolean): Promise<HomeResult>;
+  configGet(): Promise<ConfigResult>;
+  configSet(key: string, value: unknown): Promise<ConfigResult>;
   status(): Promise<StatusResult>;
   stop(): Promise<ControlResult>;
   resume(): Promise<ControlResult>;

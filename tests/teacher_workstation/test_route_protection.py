@@ -186,6 +186,18 @@ class RouteProtectionTest(unittest.TestCase):
         finally:
             other.server_close()
 
+    def test_planner_status_route_uses_local_projection(self) -> None:
+        with mock.patch(
+            "scripts.canvas_planner.service.CanvasPlannerService.weekly_status",
+            return_value={"domain": "canvas_weekly_planning", "contract_version": 1},
+        ) as projected:
+            status, raw = self.request(
+                "GET", "/api/planner-status/2/3", headers={"Host": f"127.0.0.1:{self.port}"}
+            )
+        self.assertEqual(status, 200)
+        self.assertEqual(json.loads(raw)["domain"], "canvas_weekly_planning")
+        projected.assert_called_once_with(2, 3)
+
     # --- Host ------------------------------------------------------------------
     def test_wrong_host_rejected_on_get_and_mutations(self) -> None:
         for host in (f"evil.example:{self.port}", "127.0.0.1:1", f"127.0.0.1.nip.io:{self.port}", ""):

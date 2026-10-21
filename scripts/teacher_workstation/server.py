@@ -134,6 +134,10 @@ class Handler(BaseHTTPRequestHandler):
                 self._send_json(200, adapter.list_weeks())
             elif resource == "completed":
                 self._send_json(200, {"latest": adapter.latest_completed()})
+            elif resource == "planner-status" and len(parts) == 4:
+                from scripts.canvas_planner.service import CanvasPlannerService
+                quarter, week = int(parts[2]), int(parts[3])
+                self._send_json(200, CanvasPlannerService().weekly_status(quarter, week))
             elif resource == "week" and len(parts) == 4:
                 quarter, week = int(parts[2]), int(parts[3])
                 detail = adapter.week_detail(quarter, week)

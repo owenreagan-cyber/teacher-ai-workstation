@@ -219,12 +219,14 @@ function viewFriday(data) {
   const blocked = data.week.rollover_state === 'BLOCKED';
   const rows = data.courses.map((course) => `<li><strong>${esc(course.name)}</strong><span>${course.stages.preview === 'approved' ? 'Approved and ready' : 'Still needs your approval'}</span></li>`).join('');
   return `${header(data,'5 · Friday',`${formatDate(data.week.rollover_at)} · ${relativeDays(data.week.rollover_at)}`)}
-    <section class="section friday-head"><label class="switch-line"><span><strong>Automatic rollover</strong><small>Runs only when all five courses are approved.</small></span><input type="checkbox" ${data.settings.automatic_rollover ? 'checked' : ''} data-action="automatic-toggle"></label></section>
-    ${blocked ? '<div class="banner fail"><strong>Friday rollover is blocked.</strong> Nothing publishes until all 5 are approved.</div>' : '<div class="banner pass"><strong>Ready.</strong> The package will publish Friday at 4:00 PM.</div>'}
+    <section class="section friday-head"><label class="switch-line"><span><strong>Automatic rollover</strong><small>Publishes the full week only when every course is approved.</small></span><input type="checkbox" ${data.settings.automatic_rollover ? 'checked' : ''} data-action="automatic-toggle"></label></section>
+    ${blocked ? '<div class="banner fail"><strong>Friday rollover is blocked.</strong> The full week needs approval before it can publish.</div>' : '<div class="banner pass"><strong>Ready.</strong> The full package will publish Friday at 4:00 PM.</div>'}
     <section class="section"><h2>Readiness</h2><ul class="readiness-list">${rows}</ul></section>
     <section class="section"><h2>At 4:00 PM, the planner will</h2><ol><li>Make each course's page its home page.</li><li>Post the weekly updates.</li>
     <li>Create the approved assignments and reminders.</li><li>Carry the Homeroom newsletter forward.</li><li>Read everything back from Canvas and confirm it matches what was approved.</li></ol>
-    <div class="btn-row"><button class="btn neutral" data-action="dry-run">Dry run now</button><button class="btn reject" data-action="partial-publish">Publish approved courses only…</button></div></section>
+    <div class="btn-row"><button class="btn neutral" data-action="dry-run">Dry run now</button>
+    <button class="btn" data-action="publish-now">Publish now…</button>
+    <button class="btn reject" data-action="partial-publish">Publish approved courses only…</button></div></section>
     <section class="section"><h2>Last week</h2>${data.status.completed.length ? `<p>${esc(data.status.completed[0].week)} · ${esc(data.status.completed[0].result)} · ${esc(formatDate(data.status.completed[0].verified_at))}</p>` : '<p class="empty">No verified prior week found.</p>'}</section>`;
 }
 
@@ -339,6 +341,19 @@ async function act(button) {
   else if (action === 'dry-run') {
     const result = await api(`/api/weeks/${quarter}/${week}/rollover-dry-run`,{method:'POST',body:requestBody({production:true})});
     window.alert(result.summary || 'Dry run finished. Nothing was changed.');
+  } else if (action === 'publish-now') {
+    const choices = APP.data.courses.map((course) => `${course.id} (${course.name})`).join(', ');
+    const courseChoice = window.prompt(`Publish which approved package now? Enter ALL or one course id: ${choices}`, 'ALL');
+    if (courseChoice === null) return;
+    const selected = courseChoice.trim().toLowerCase() === 'all' ? ['all'] : [courseChoice.trim().toLowerCase()];
+    const courseText = selected[0] === 'all' ? 'ALL' : selected[0].toUpperCase();
+    const phrase = `PUBLISH NOW ${APP.data.week.code} ${courseText}`;
+    const confirmation = window.prompt(`Type exactly: ${phrase}`, '');
+    if (confirmation !== phrase) return;
+    const result = await api(`/api/weeks/${quarter}/${week}/publish-now`,{method:'POST',body:requestBody({
+      courses:selected,owner_confirmation:confirmation,production:true,
+    })});
+    window.alert(`${result.publish_now_mode || 'Publish now'} completed.${result.warning ? `\n${result.warning}` : ''}`);
   } else if (action === 'partial-publish') {
     const phrase = window.prompt('Families may see mixed weeks. Type PUBLISH APPROVED COURSES to continue.');
     if (phrase !== 'PUBLISH APPROVED COURSES') return;

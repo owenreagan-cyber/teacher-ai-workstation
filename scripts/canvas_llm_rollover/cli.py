@@ -14,6 +14,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import sys
 from typing import Any
 
 from scripts.canvas_llm_rollover import manifest as rollover_manifest
@@ -139,6 +140,8 @@ def main(argv: list[str] | None = None) -> int:
 
 def _dry_run_view(plan: dict[str, Any]) -> dict[str, Any]:
     return {
+        "PYTHON_EXECUTABLE": sys.executable,
+        "PYTHON_VERSION": sys.version.split()[0],
         "FROM": plan.get("from_week"),
         "TO": plan.get("to_week"),
         "SCHEDULED": plan.get("scheduled_at"),

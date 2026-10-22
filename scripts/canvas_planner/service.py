@@ -243,6 +243,8 @@ class CanvasPlannerService:
             changes=changes,
             ai_review=ai_review,
             now=now,
+            rollover_ledger=rollover_ledger,
+            verified=verified,
         )
         rollover_at = _rollover_at(manifest.get("date_range") or {})
         rollover_state = self._rollover_state(
@@ -406,6 +408,8 @@ class CanvasPlannerService:
         changes: dict[str, Any],
         ai_review: dict[str, Any],
         now: datetime,
+        rollover_ledger: dict[str, Any],
+        verified: dict[str, Any],
     ) -> list[dict[str, Any]]:
         items: list[dict[str, Any]] = []
         changed = ((changes.get("delta") or {}).get("changes") or changes.get("changes") or [])
@@ -445,8 +449,8 @@ class CanvasPlannerService:
                 items.append(self._item(
                     id_value=str(finding.get("id") or f"ai-{_stable_id(week_code, course, str(finding.get('title')))}"),
                     kind="decision", priority="high", course=course,
-                    title=str(finding.get("title") or f"Review {COURSE_LABELS.get(course, course)}"),
-                    reason=str(finding.get("reason") or "AI review needs your decision."),
+                    title=f"{COURSE_LABELS.get(course, course)} review needs your attention",
+                    reason="Review this AI finding and choose how to resolve it.",
                     evidence=str(finding.get("evidence") or "Evidence unavailable"),
                     link=deep_link(week_code, course, "ai"), stamp=stamp,
                 ))
@@ -458,25 +462,29 @@ class CanvasPlannerService:
             items.append(self._item(
                 id_value=f"approval:{week_code.lower()}:{cid}",
                 kind="decision", priority="normal", course=cid,
-                title=f"Review {course['name']}",
-                reason="Approve the exact page, announcement, assignments, and reminders for this course.",
+                title=f"{course['name']} page needs your approval",
+                reason=f"Review the exact {course['name']} page and related weekly materials before Friday publishing.",
                 evidence="local draft hashes and approval history",
                 link=deep_link(week_code, cid, "preview"), stamp=stamp,
             ))
 
         rollover_at = _rollover_at(manifest.get("date_range") or {})
-        if rollover_at and any(c["stages"]["preview"] != "approved" for c in courses):
+        if rollover_at:
             rollover_local = datetime.fromisoformat(
                 rollover_at.replace("Z", "+00:00")
             ).astimezone(EASTERN)
             now_local = now.astimezone(EASTERN)
-            if now_local.date() == rollover_local.date() and now_local.time() >= time(13, 0):
+            published = (
+                verified.get("status") == "PUBLISHED_VERIFIED"
+                or rollover_ledger.get("lifecycle") == "PUBLISHED_VERIFIED"
+            )
+            if now_local >= rollover_local and not published:
                 items.append(self._item(
                     id_value=f"friday-readiness:{week_code.lower()}",
                     kind="decision", priority="high", course=None,
-                    title=f"Friday rollover for {week_code} still needs approval",
-                    reason="At least one course or the Homeroom newsletter is not approved.",
-                    evidence="Friday 1:00 PM readiness gate",
+                    title="Friday rollover didn't run — Publish now when ready",
+                    reason="The Friday 4:00 PM rollover did not publish this week. Review approvals, then publish when ready.",
+                    evidence="Friday 4:00 PM America/New_York deadline passed without a verified rollover",
                     link=deep_link(week_code, "friday"), stamp=rollover_at,
                 ))
         course_order = {course["id"]: index for index, course in enumerate(courses)}

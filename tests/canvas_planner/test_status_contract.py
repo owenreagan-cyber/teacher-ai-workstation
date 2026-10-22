@@ -81,13 +81,15 @@ class StatusContractTest(unittest.TestCase):
         status = self.service.weekly_status(2, 3)
         self.assertFalse(any(a["id"].startswith("source-") for a in status["action_items"]))
 
-    def test_friday_one_pm_exposes_stable_decision_item(self) -> None:
-        now = datetime(2026, 10, 23, 17, 0, tzinfo=timezone.utc)
+    def test_missed_friday_deadline_exposes_publish_now_action(self) -> None:
+        now = datetime(2026, 10, 23, 20, 0, tzinfo=timezone.utc)
         first = self.service.weekly_status(2, 3, now=now)
         second = self.service.weekly_status(2, 3, now=now)
         items = [a for a in first["action_items"] if a["id"] == "friday-readiness:q2w3"]
         self.assertEqual(len(items), 1)
         self.assertEqual(items[0]["kind"], "decision")
+        self.assertEqual(items[0]["title"], "Friday rollover didn't run — Publish now when ready")
+        self.assertNotIn("math:page not approved", " ".join(item["title"] for item in first["action_items"]))
         self.assertTrue(items[0]["deep_link"].endswith("/friday"))
         self.assertEqual(items[0]["id"], next(
             a["id"] for a in second["action_items"] if a["id"].startswith("friday-readiness:")

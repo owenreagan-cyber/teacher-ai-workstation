@@ -69,3 +69,19 @@ def run_rollover_partial(
         fq, fw, tq, tw, client=LiveDeployClient(),
         owner_confirmation=owner_confirmation,
     )
+
+
+def run_publish_now(
+    quarter: int, week: int, *, courses: list[str], owner_confirmation: str,
+    production: bool,
+) -> dict[str, Any]:
+    if not production:
+        raise ValueError("Publish now requires the explicit production confirmation")
+    from scripts.canvas_llm_deploy.client import LiveDeployClient
+    from scripts.canvas_llm_rollover import cli, rollover
+
+    fq, fw, tq, tw = cli._resolve(None, None, f"q{quarter}w{week}")
+    return rollover.publish_now(
+        fq, fw, tq, tw, client=LiveDeployClient(), courses=courses,
+        owner_confirmation=owner_confirmation,
+    )

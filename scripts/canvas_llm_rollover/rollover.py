@@ -15,6 +15,7 @@ owner confirmation passes. The engine is idempotent and stops on first failure
 from __future__ import annotations
 
 import copy
+import hashlib
 from datetime import date, datetime, timezone
 from typing import Any
 
@@ -69,11 +70,10 @@ def build_readiness(
 
     m = imf.load_manifest(to_quarter, to_week)
     if m is None:
-        blockers.append("upcoming week intake packet missing (run prepare-next)")
+        blockers.append("The upcoming week plan is not available yet.")
     else:
         if not m.get("ready_to_publish"):
-            blockers.append("upcoming week is not READY_TO_PUBLISH")
-            blockers.extend(m.get("publish_blockers", []))
+            blockers.append("The upcoming week's approved course packages are not ready yet.")
         if m.get("status") == "NEEDS_INPUT":
             needs_owen = True
         # Open (unanswered) questions require Owen — not the full question list.
@@ -89,14 +89,14 @@ def build_readiness(
 
     for course in plan.get("academic_courses", []):
         if not course.get("approved"):
-            blockers.append(f"{course['label']}: exact weekly package is not approved")
+            blockers.append(f"{course['label']} page needs your approval")
 
     # Homeroom content freshness.
     h = plan.get("homeroom", {})
     if not h.get("source_content_hash"):
-        blockers.append("homeroom: approved content source missing")
+        blockers.append("Homeroom newsletter source is not available yet.")
     if not h.get("approved"):
-        blockers.append("Homeroom newsletter: exact carried-forward version is not approved")
+        blockers.append("Homeroom newsletter needs your approval")
 
     return {
         "manifest": plan,
@@ -118,9 +118,14 @@ def run_preflight(
     client: DeployClient | None = None,
     *,
     today: date | None = None,
+    manifest_override: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """GET-only rollover preflight: readiness gate + live object resolution."""
-    readiness = build_readiness(from_quarter, from_week, to_quarter, to_week, today=today)
+    readiness = (
+        {"manifest": manifest_override, "ready": True, "blockers": [], "needs_owen": False}
+        if manifest_override is not None
+        else build_readiness(from_quarter, from_week, to_quarter, to_week, today=today)
+    )
     plan = readiness["manifest"]
     blockers = list(readiness["blockers"])
     warnings: list[str] = []
@@ -164,22 +169,25 @@ def run_preflight(
                 blockers.append(f"{course['subject']}: page body lookup failed: {type(exc).__name__}")
 
     # Homeroom target.
-    h = plan["homeroom"]
-    hres = _resolve_target(client, h["course_id"], h["to_page_slug"], "Homeroom", plan["to_week"])
-    live["homeroom"] = hres
-    blockers.extend(hres["blockers"])
-    h["page_id"] = hres["page_id"]
-    h["already_front_page"] = hres["front_page"]
-    h["front_page_action"] = "SKIP" if hres["front_page"] else "SET_FRONT_PAGE"
-    if hres["page_id"] is not None:
-        try:
-            from . import homeroom as homeroom_mod
-            current = client.get_page(h["course_id"], h["to_page_slug"])
-            matches = homeroom_mod._body_hash(current.get("body") or "") == h.get("proposed_content_hash")
-            h["page_body_action"] = "SKIP" if matches else "UPDATE"
-            hres["page_body_action"] = h["page_body_action"]
-        except Exception as exc:  # noqa: BLE001
-            blockers.append(f"homeroom: page body lookup failed: {type(exc).__name__}")
+    h = plan.get("homeroom")
+    if h:
+        hres = _resolve_target(client, h["course_id"], h["to_page_slug"], "Homeroom", plan["to_week"])
+        live["homeroom"] = hres
+        blockers.extend(hres["blockers"])
+        h["page_id"] = hres["page_id"]
+        h["already_front_page"] = hres["front_page"]
+        h["front_page_action"] = "SKIP" if hres["front_page"] else "SET_FRONT_PAGE"
+        if hres["page_id"] is not None:
+            try:
+                from . import homeroom as homeroom_mod
+                current = client.get_page(h["course_id"], h["to_page_slug"])
+                matches = homeroom_mod._body_hash(current.get("body") or "") == h.get("proposed_content_hash")
+                h["page_body_action"] = "SKIP" if matches else "UPDATE"
+                hres["page_body_action"] = h["page_body_action"]
+            except Exception as exc:  # noqa: BLE001
+                blockers.append(f"homeroom: page body lookup failed: {type(exc).__name__}")
+    else:
+        live["homeroom"] = {"action": "SKIP", "blockers": []}
 
     # Approved assignment routes and exact duplicate dispositions.
     assignments_by_course: dict[int, list[dict[str, Any]]] = {}
@@ -205,6 +213,8 @@ def run_preflight(
             "classification": assignment["classification"], "action": assignment["action"]}
 
     # Announcement duplicate classification (week-aware).
+    target_ledger = ledger.load_rollover_ledger(to_quarter, to_week) or {}
+    prior_announcements = target_ledger.get("weekly_announcements") or []
     for a in plan.get("weekly_announcements", []):
         cid = a["course_id"]
         if cid is None:
@@ -215,6 +225,17 @@ def run_preflight(
             blockers.append(f"{a['subject']}: weekly announcement lookup failed: {type(exc).__name__}")
             existing = []
         a["classification"] = deploy_preflight.classify_weekly_announcement(a, existing)
+        message_hash = hashlib.sha256(str(a.get("message", "")).encode("utf-8")).hexdigest()
+        if a["classification"] == "PRIOR_WEEK_SAME_TITLE" and any(
+            item.get("subject") == a.get("subject")
+            and item.get("title") == a.get("title")
+            and item.get("message_hash") == message_hash
+            and item.get("verified") is True
+            for item in prior_announcements
+        ):
+            # An immediate Publish-now post has no delayed_post_at. Only the
+            # verified ledger for this target week can prove it was ours.
+            a["classification"] = "EXACT_MATCH"
         a["action"] = "SKIP" if a["classification"] == "EXACT_MATCH" else "CREATE"
         live["weekly_announcements"][a["title"]] = {
             "classification": a["classification"], "action": a["action"]}
@@ -294,6 +315,7 @@ def execute(
     today: date | None = None,
     manifest: dict[str, Any] | None = None,
     partial: bool = False,
+    early_content_only: bool = False,
 ) -> dict[str, Any]:
     """Execute the approved rollover (ordered, stop-on-failure, idempotent)."""
     to_code = plan_code = (manifest or {}).get("to_week") or ""
@@ -329,7 +351,8 @@ def execute(
         "weekly_announcements": [],
         "assessment_reminders": [],
         "failures": [],
-        "notes": [],
+        "notes": (["Early publish: page bodies, approved assignments, and reminders only; front pages and weekly updates remain for Friday 4 PM."]
+                  if early_content_only else []),
     }
     ledger.write_rollover_ledger(to_quarter, to_week, report)
 
@@ -373,6 +396,12 @@ def execute(
         if not page_ok:
             report["failures"].append(f"{subject}: page body readback mismatch")
             return _finish(to_quarter, to_week, report, schedule.BLOCKED, counts)
+        if early_content_only:
+            report["academic_front_pages"].append({
+                "subject": subject, "course_id": cid, "page_id": pid,
+                "disposition": "HELD_UNTIL_4PM", "verified": True,
+            })
+            continue
         if res["front_page"]:
             report["academic_front_pages"].append(
                 {"subject": subject, "course_id": cid, "page_id": pid, "disposition": "ALREADY_FRONT_PAGE"}
@@ -401,6 +430,7 @@ def execute(
         homeroom_result = _execute_homeroom(
             client, h, to_code=to_code, counts=counts, report=report,
             to_quarter=to_quarter, to_week=to_week,
+            early_content_only=early_content_only,
         )
         if homeroom_result is not None:
             return homeroom_result
@@ -445,11 +475,13 @@ def execute(
             return _finish(to_quarter, to_week, report, schedule.BLOCKED, counts)
 
     # ---- E. Weekly updates and approved reminders -----------------------
-    for a in manifest.get("weekly_announcements", []):
+    for a in ([] if early_content_only else manifest.get("weekly_announcements", [])):
         cid = a["course_id"]
         if a.get("classification") == "EXACT_MATCH":
             report["weekly_announcements"].append(
-                {"subject": a["subject"], "disposition": "ALREADY_EXISTS", "verified": True})
+                {"subject": a["subject"], "title": a["title"],
+                 "message_hash": hashlib.sha256(str(a.get("message", "")).encode("utf-8")).hexdigest(),
+                 "disposition": "ALREADY_EXISTS", "verified": True})
             continue
         try:
             created = client.create_announcement(
@@ -480,6 +512,7 @@ def execute(
         ok = content_ok and state in (sched.HELD_SCHEDULED, sched.POSTED)
         report["weekly_announcements"].append({
             "subject": a["subject"], "title": a["title"], "announcement_id": tid,
+            "message_hash": hashlib.sha256(str(a.get("message", "")).encode("utf-8")).hexdigest(),
             "delayed_post_at": a.get("delayed_post_at"), "state": state,
             "disposition": "PUBLISHED_VERIFIED" if ok else "FAILED", "verified": ok,
         })
@@ -521,6 +554,12 @@ def execute(
     # ---- F. Finalize ------------------------------------------------------
     report["finished_at"] = _now()
     report["communication"] = {"email_sends": 0, "canvas_inbox_sends": 0}
+    if early_content_only:
+        report["lifecycle"] = "EARLY_CONTENT_PUBLISHED_VERIFIED"
+        report["warning"] = "Weekly updates and front-page switches remain held until Friday at 4:00 PM America/New_York."
+        ledger.write_rollover_ledger(to_quarter, to_week, report)
+        _record_publish_event(to_quarter, to_week, report, partial=True)
+        return report
     if partial:
         report["lifecycle"] = "PARTIAL_PUBLISHED_VERIFIED"
         report["warning"] = "Families may see mixed weeks; only explicitly approved courses were published."
@@ -545,7 +584,8 @@ def execute(
     return report
 
 
-def _execute_homeroom(client, h, *, to_code, counts, report, to_quarter, to_week):
+def _execute_homeroom(client, h, *, to_code, counts, report, to_quarter, to_week,
+                      early_content_only=False):
     """Publish and verify Homeroom; return a blocking report on failure."""
     try:
         hres = _resolve_target(client, h["course_id"], h["to_page_slug"], "Homeroom", to_code)
@@ -581,13 +621,18 @@ def _execute_homeroom(client, h, *, to_code, counts, report, to_quarter, to_week
         except Exception as exc:  # noqa: BLE001
             report["failures"].append(f"homeroom: copy-forward write failed: {type(exc).__name__}")
             return _finish(to_quarter, to_week, report, schedule.BLOCKED, counts)
-    if not hres["front_page"]:
+    if early_content_only:
+        front_page_disposition = "HELD_UNTIL_4PM"
+    elif not hres["front_page"]:
         try:
             client.set_front_page(h["course_id"], hres["page_id"])
             counts["PUT"] += 1
+            front_page_disposition = "SET_FRONT_PAGE"
         except Exception as exc:  # noqa: BLE001
             report["failures"].append(f"homeroom: front-page write failed: {type(exc).__name__}")
             return _finish(to_quarter, to_week, report, schedule.BLOCKED, counts)
+    else:
+        front_page_disposition = "ALREADY_FRONT_PAGE"
     try:
         hread = client.get_page(h["course_id"], h["to_page_slug"])
         counts["GET"] += 1
@@ -596,12 +641,13 @@ def _execute_homeroom(client, h, *, to_code, counts, report, to_quarter, to_week
         return _finish(to_quarter, to_week, report, schedule.BLOCKED, counts)
     h_ok = (
         str(hread.get("page_id")) == str(hres["page_id"])
-        and bool(hread.get("front_page"))
+        and (early_content_only or bool(hread.get("front_page")))
         and homeroom_mod._body_hash(hread.get("body") or "") == proposed_hash
     )
     report["homeroom"] = {
         "course_id": h["course_id"], "page_id": hres["page_id"],
         "disposition": "PUBLISHED_VERIFIED" if h_ok else "FAILED", "verified": h_ok,
+        "front_page_disposition": front_page_disposition,
     }
     if not h_ok:
         report["failures"].append("homeroom: front-page readback mismatch")
@@ -670,6 +716,90 @@ def publish_approved_courses_only(
         manifest=plan, partial=True,
     )
     report["published_courses"] = sorted(approved | ({"homeroom"} if include_homeroom else set()))
+    return report
+
+
+def publish_now(
+    from_quarter: int, from_week: int, to_quarter: int, to_week: int, *,
+    client: DeployClient, courses: list[str], owner_confirmation: str,
+    now: datetime | None = None, today: date | None = None,
+) -> dict[str, Any]:
+    """Publish a selected approved course package using the rollover executor."""
+    from zoneinfo import ZoneInfo
+
+    from scripts.instructional_weeks import week_range
+    from scripts.canvas_llm_intake import week_resolution as wr
+
+    plan = rollover_manifest.build_rollover_manifest(
+        from_quarter, from_week, to_quarter, to_week, today=today,
+    )
+    target = wr.find_week(to_quarter, to_week) or {}
+    bounds = week_range(target)
+    if bounds is None:
+        raise RolloverBlocked("target week dates are unavailable")
+    start_day = bounds[0]
+    local_now = (now or datetime.now(ZoneInfo(schedule.NEW_YORK))).astimezone(ZoneInfo(schedule.NEW_YORK))
+    deadline = datetime.fromisoformat(
+        schedule.friday_rollover_scheduled_at(start_day.isoformat()).replace("Z", "+00:00")
+    ).astimezone(ZoneInfo(schedule.NEW_YORK))
+    early = local_now < deadline
+    after_start = local_now.date() >= start_day
+    selected = {str(course).strip().lower() for course in courses}
+    allowed = {item["subject"] for item in plan["academic_courses"]} | {"homeroom"}
+    if selected == {"all"}:
+        selected = set(allowed)
+    if not selected or not selected <= allowed:
+        raise RolloverBlocked("select one or more active courses, or ALL")
+    phrase_courses = "ALL" if selected == allowed else ",".join(sorted(selected))
+    expected = f"PUBLISH NOW {plan['to_week']} {phrase_courses}".upper()
+    if (owner_confirmation or "").strip().upper() != expected:
+        raise RolloverBlocked(f"type exactly: {expected}")
+
+    selected_academic = [c for c in plan["academic_courses"] if c["subject"] in selected]
+    unapproved = [c["label"] for c in selected_academic if not c["approved"]]
+    if "homeroom" in selected and not plan["homeroom"].get("approved"):
+        unapproved.append("Homeroom newsletter")
+    if unapproved:
+        raise RolloverBlocked("these selected packages still need approval: " + ", ".join(unapproved))
+
+    scoped = copy.deepcopy(plan)
+    scoped["academic_courses"] = selected_academic
+    scoped["assignments"] = [a for a in plan["assignments"] if a.get("course") in selected]
+    scoped["assessment_reminders"] = [a for a in plan["assessment_reminders"] if a.get("subject") in selected]
+    scoped["weekly_announcements"] = [a for a in plan["weekly_announcements"] if a.get("subject") in selected]
+    if early:
+        scoped["weekly_announcements"] = []
+        scoped["homeroom"] = plan["homeroom"] if "homeroom" in selected else None
+    else:
+        scoped["homeroom"] = plan["homeroom"] if "homeroom" in selected else None
+        for announcement in scoped["weekly_announcements"]:
+            announcement["delayed_post_at"] = None
+
+    readiness = run_preflight(
+        from_quarter, from_week, to_quarter, to_week, client=client, today=today,
+        manifest_override=scoped,
+    )
+    if readiness["blockers"]:
+        raise RolloverBlocked("publish now preflight blocked: " + "; ".join(readiness["blockers"]))
+    if early:
+        report = execute(
+            from_quarter, from_week, to_quarter, to_week, client=client,
+            owner_confirmation=f"ROLLOVER {plan['to_week']}", today=today,
+            manifest=scoped, partial=True, early_content_only=True,
+        )
+    else:
+        is_all = selected == allowed
+        report = execute(
+            from_quarter, from_week, to_quarter, to_week, client=client,
+            owner_confirmation=f"ROLLOVER {plan['to_week']}", today=today,
+            manifest=scoped, partial=not is_all,
+        )
+    report["publish_now_mode"] = "EARLY" if early else ("AFTER_MONDAY_START" if after_start else "LATE")
+    report["warning"] = (
+        "The instructional week has already started; families may already have seen other materials."
+        if after_start else report.get("warning")
+    )
+    report["published_courses"] = sorted(selected)
     return report
 
 

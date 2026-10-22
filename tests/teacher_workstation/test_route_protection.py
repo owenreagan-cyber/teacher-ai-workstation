@@ -59,6 +59,7 @@ MUTATING_ROUTES = [
     ("POST", "/api/weeks/2/3/deploy", {"preflight_id": "p", "owner_confirmation": "DEPLOY Q2W3", "production": True}, deploy, "run_deploy"),
     ("POST", "/api/weeks/2/3/rollover-dry-run", {"production": False}, deploy, "run_rollover_dry_run"),
     ("POST", "/api/weeks/2/3/rollover-partial", {"owner_confirmation": "PUBLISH APPROVED COURSES", "production": True}, deploy, "run_rollover_partial"),
+    ("POST", "/api/weeks/2/3/publish-now", {"courses": ["math"], "owner_confirmation": "PUBLISH NOW Q2W3 MATH", "production": True}, deploy, "run_publish_now"),
     ("POST", "/api/weeks/2/3/automatic-rollover", {"enabled": True}, friday, "set_automatic_rollover"),
     ("DELETE", "/api/weeks/2/3/overrides/math:Monday", None, mutate, "restore_source"),
 ]

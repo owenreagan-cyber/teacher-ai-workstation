@@ -351,6 +351,14 @@ class Handler(BaseHTTPRequestHandler):
                         production=bool(body.get("production")),
                     )
                     self._send_json(200, result)
+                elif len(parts) == 5 and parts[4] == "publish-now":
+                    from . import deploy
+                    result = deploy.run_publish_now(
+                        quarter, week, courses=body.get("courses") or [],
+                        owner_confirmation=body.get("owner_confirmation") or "",
+                        production=bool(body.get("production")),
+                    )
+                    self._send_json(200, result)
                 elif len(parts) == 5 and parts[4] == "automatic-rollover":
                     from scripts.canvas_planner.friday import set_automatic_rollover
                     result = set_automatic_rollover(bool(body.get("enabled")))

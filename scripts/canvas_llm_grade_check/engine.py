@@ -61,6 +61,9 @@ class Flag:
     average: float | None = None
     behavior: str = PERSISTENT
     classification: str | None = None
+    # Where a LOW_COURSE_AVERAGE came from (e.g. "Canvas grading period Q2",
+    # "computed"). None on flags written before GC-1.
+    average_source: str | None = None
 
 
 @dataclass(frozen=True)
@@ -342,6 +345,7 @@ def scan_subject(
     *,
     now: dt.datetime | None = None,
     eligibility_overrides: dict[int, str] | None = None,
+    average_source: str | None = None,
 ) -> ScanResult:
     """Compute current flags for one subject. Pure; no state mutation.
 
@@ -488,6 +492,7 @@ def scan_subject(
                         first_name=student.first_name,
                         average=average,
                         behavior=PERSISTENT,
+                        average_source=average_source,
                     )
                 )
         else:
@@ -500,6 +505,115 @@ def scan_subject(
     return result
 
 
+# ---------------------------------------------------------------------------
+# Quarter scope (GC-1): pure helpers over injected data
+# ---------------------------------------------------------------------------
+
+@dataclass
+class QuarterPartition:
+    """How one course's assignments split against a quarter window."""
+
+    in_window: list[Assignment] = field(default_factory=list)  # due inside the quarter
+    flaggable: list[Assignment] = field(default_factory=list)  # in window and already due
+    no_due_date: list[Assignment] = field(default_factory=list)
+    out_of_window: list[Assignment] = field(default_factory=list)
+
+
+def partition_assignments(
+    assignments: list[Assignment],
+    window: Any,
+    *,
+    now: dt.datetime | None = None,
+) -> QuarterPartition:
+    """Split assignments by due date against ``window`` (a config.QuarterWindow).
+
+    Only ``flaggable`` assignments (due inside the quarter and already past) can
+    produce missing or low-score flags. Assignments with no due date are kept
+    apart so the report can count them.
+    """
+    part = QuarterPartition()
+    for a in assignments:
+        due = parse_due_at(a.due_at)
+        if due is None:
+            part.no_due_date.append(a)
+        elif window.contains(due):
+            part.in_window.append(a)
+            if due_at_has_passed(a.due_at, now):
+                part.flaggable.append(a)
+        else:
+            part.out_of_window.append(a)
+    return part
+
+
+def match_grading_period(periods: list[Any], window: Any) -> Any | None:
+    """The Canvas grading period whose local dates equal the quarter's.
+
+    Canvas stores period bounds as UTC instants (e.g. Q2 ends
+    ``2026-12-19T04:59:59Z``, which is 11:59:59 PM on December 18 in New York).
+    A period matches when its local start day is the quarter's first day and its
+    local end day is the quarter's last day.
+    """
+    from scripts.canvas_llm_grade_check.config import SCHOOL_TZ
+
+    for period in periods:
+        start = parse_due_at(getattr(period, "start_date", None))
+        end = parse_due_at(getattr(period, "end_date", None))
+        if start is None or end is None:
+            continue
+        if (
+            start.astimezone(SCHOOL_TZ).date() == window.first_day
+            and end.astimezone(SCHOOL_TZ).date() == window.last_day
+        ):
+            return period
+    return None
+
+
+def computed_average(
+    student_id: int,
+    assignments: list[Assignment],
+    groups: list[AssignmentGroup],
+    submissions: list[Submission],
+    *,
+    weighted: bool,
+) -> float | None:
+    """Average of a student's graded scores on ``assignments``, Canvas-style.
+
+    Counts only real numeric scores on assignments worth points (excused,
+    ungraded, and omitted-from-final-grade work is left out, as in Canvas's
+    current score). With ``weighted``, each assignment group's percentage is
+    weighted by its group weight, renormalized over the groups that have graded
+    work. Group drop rules are not applied. Returns None with no graded work.
+    """
+    by_id = {a.id: a for a in assignments}
+    earned: dict[int | None, float] = {}
+    possible: dict[int | None, float] = {}
+    for s in submissions:
+        a = by_id.get(s.assignment_id)
+        if s.user_id != student_id or a is None or s.excused or s.score is None:
+            continue
+        if a.omit_from_final_grade or not a.points_possible:
+            continue
+        gid = a.assignment_group_id
+        earned[gid] = earned.get(gid, 0.0) + s.score
+        possible[gid] = possible.get(gid, 0.0) + a.points_possible
+    if not possible:
+        return None
+    if not weighted:
+        return round(sum(earned.values()) / sum(possible.values()) * 100, 2)
+    weight_by_id = {g.id: (g.group_weight or 0.0) for g in groups}
+    total_weight = 0.0
+    total = 0.0
+    for gid, pts in possible.items():
+        weight = weight_by_id.get(gid, 0.0)
+        if weight <= 0:
+            continue
+        total += weight * (earned[gid] / pts)
+        total_weight += weight
+    if total_weight <= 0:
+        return None
+    return round(total / total_weight * 100, 2)
+
+
 def reconcile(
     previous_active: dict[str, Flag],
     current_persistent: dict[str, Flag],
@@ -507,6 +621,7 @@ def reconcile(
     issued_one_time: set[str],
     active_course_ids: set[int] | None = None,
     ineligible_keys: set[str] | None = None,
+    out_of_scope_keys: set[str] | None = None,
 ) -> ReconcileResult:
     """Reconcile a scan against prior state.
 
@@ -521,9 +636,12 @@ def reconcile(
     One-time low-assessment flags only surface when their identity key has not
     already been issued. ``active_course_ids`` defaults to "everything in scope"
     (backward-compatible; production passes the real quarter-scoped set).
+    ``out_of_scope_keys`` names flags on assignments that fall outside the
+    report's quarter: they are suspended as OUT_OF_SCOPE, never RESOLVED.
     """
     active = set(active_course_ids) if active_course_ids is not None else None
     ineligible = set(ineligible_keys) if ineligible_keys is not None else set()
+    oos_keys = set(out_of_scope_keys) if out_of_scope_keys is not None else set()
     prev_keys = set(previous_active)
     now_keys = set(current_persistent)
 
@@ -535,7 +653,7 @@ def reconcile(
     for k in sorted(prev_keys - now_keys):
         f = previous_active[k]
         # A flag whose course is no longer in scope is suspended, not resolved.
-        if active is not None and f.course_id not in active:
+        if (active is not None and f.course_id not in active) or f.key in oos_keys:
             out_of_scope.append(f)
         elif f.key in ineligible:
             not_eligible.append(f)
@@ -570,6 +688,7 @@ def flag_to_dict(flag: Flag) -> dict[str, Any]:
         "average": flag.average,
         "behavior": flag.behavior,
         "classification": flag.classification,
+        "average_source": flag.average_source,
     }
 
 
@@ -590,6 +709,7 @@ def flag_from_dict(data: dict[str, Any]) -> Flag:
         average=data.get("average"),
         behavior=data.get("behavior", PERSISTENT),
         classification=data.get("classification"),
+        average_source=data.get("average_source"),
     )
 
 

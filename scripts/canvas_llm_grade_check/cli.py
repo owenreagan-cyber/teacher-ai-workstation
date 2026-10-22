@@ -13,8 +13,10 @@ assignments, submissions, or student records, and NEVER emails parents.
 from __future__ import annotations
 
 import argparse
+import datetime as dt
 import json
 import sys
+from dataclasses import replace
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -63,18 +65,70 @@ def _load_eligibility_overrides(
     return eo.eligible_from_map_for_course(cfg, course_id)
 
 
+def _quarter_students(
+    grade_reader: reader.GradeReader,
+    subject: config.SubjectConfig,
+    window: config.QuarterWindow,
+    in_window: list[reader.Assignment],
+    groups: list[reader.AssignmentGroup],
+    submissions: list[reader.Submission],
+) -> tuple[list[reader.Student], str]:
+    """Students carrying quarter averages, plus where those averages came from.
+
+    Preferred: Canvas's own score for the grading period that matches the
+    quarter. Otherwise the average is computed from in-quarter graded scores.
+    """
+    list_periods = getattr(grade_reader, "list_grading_periods", None)
+    periods = list_periods(subject.course_id) if list_periods is not None else []
+    period = engine.match_grading_period(periods, window)
+    if period is not None:
+        students = grade_reader.list_students(subject.course_id, grading_period_id=period.id)
+        return students, f"Canvas grading period {period.title or period.id}"
+
+    students = grade_reader.list_students(subject.course_id)
+    uses_weights = getattr(grade_reader, "course_applies_group_weights", None)
+    weighted = bool(uses_weights(subject.course_id)) if uses_weights is not None else False
+    computed = [
+        replace(
+            s,
+            current_score=engine.computed_average(
+                s.user_id, in_window, groups, submissions, weighted=weighted
+            ),
+            final_score=None,
+        )
+        for s in students
+    ]
+    return computed, "computed (weighted groups)" if weighted else "computed"
+
+
 def run_scan(
     grade_reader: reader.GradeReader,
     cfg: config.GradeCheckConfig,
     quarter: int,
     store: StateStore,
+    *,
+    scope: str | None = None,
+    now: dt.datetime | None = None,
 ) -> ScanReport:
-    """Scan all active subjects for the quarter and reconcile against state.
+    """Scan subjects and reconcile against state.
+
+    ``scope`` (GC-1):
+    - ``"quarter"``: only the quarter's active subjects; missing and low-score
+      flags only on assignments due inside the quarter and already past; course
+      averages for the quarter (Canvas grading period, else computed).
+    - ``"year"``: every configured subject, every assignment, Canvas's
+      full-year current score.
+    - ``None``: the pre-GC-1 library behavior (quarter's active subjects, every
+      assignment, full-year score), kept for older callers. The CLI always
+      passes an explicit scope.
 
     This function is side-effect free: it never persists state. Persistence is
     the caller's decision — preview never persists, and send persists only after
     a confirmed successful email.
     """
+    if scope is not None and scope not in config.SCOPES:
+        raise ConfigError(f"invalid scope {scope!r}")
+    window = config.quarter_window(quarter) if scope == config.SCOPE_QUARTER else None
     state = store.load()
     prev_active = {k: engine.flag_from_dict(v) for k, v in state["active_flags"].items()}
     prev_out_of_scope = {
@@ -89,26 +143,54 @@ def run_scan(
     # A course returning to scope must re-evaluate its out-of-scope flags, so
     # previous persistent = active ∪ out_of_scope for reconciliation.
     previous_persistent = {**prev_out_of_scope, **prev_active}
-    active_ids = config.active_course_ids(cfg, quarter)
+    if scope == config.SCOPE_YEAR:
+        subjects = config.all_subjects(cfg)
+    else:
+        subjects = config.active_subjects(cfg, quarter)
+    active_ids = {s.course_id for s in subjects}
 
     course_summaries: list[report.CourseScanSummary] = []
     current_persistent: dict[str, engine.Flag] = {}
     current_one_time: list[engine.Flag] = []
     unresolved_all: list[engine.UnresolvedItem] = []
     ineligible_keys: set[str] = set()
+    # Quarter scope bookkeeping: assignments left out, by (course, assignment).
+    out_of_window: set[tuple[int, int]] = set()
+    no_due_date_count = 0
 
-    for subject in config.active_subjects(cfg, quarter):
-        students = grade_reader.list_students(subject.course_id)
+    for subject in subjects:
         assignments = grade_reader.list_assignments(subject.course_id)
         groups = grade_reader.list_assignment_groups(subject.course_id)
         submissions = grade_reader.list_submissions(subject.course_id)
+        average_source: str | None = None
+        if window is not None:
+            part = engine.partition_assignments(assignments, window, now=now)
+            no_due_date_count += len(part.no_due_date)
+            out_of_window |= {
+                (subject.course_id, a.id) for a in (*part.out_of_window, *part.no_due_date)
+            }
+            in_window_ids = {a.id for a in part.in_window}
+            submissions = [s for s in submissions if s.assignment_id in in_window_ids]
+            students, average_source = _quarter_students(
+                grade_reader, subject, window, part.in_window, groups, submissions
+            )
+            assignments = part.flaggable
+        else:
+            students = grade_reader.list_students(subject.course_id)
+            if scope == config.SCOPE_YEAR:
+                average_source = "Canvas current score (full year)"
         eligibility = _load_eligibility_overrides(cfg, subject.course_id)
         res = engine.scan_subject(
             subject, students, assignments, groups, submissions, cfg,
+            now=now,
             eligibility_overrides=eligibility,
+            average_source=average_source,
         )
         course_summaries.append(
-            report.CourseScanSummary(subject.display_name, subject.course_id, res.students_scanned)
+            report.CourseScanSummary(
+                subject.display_name, subject.course_id, res.students_scanned,
+                average_source=average_source,
+            )
         )
         for f in res.missing_flags:
             current_persistent[f.key] = f
@@ -119,9 +201,15 @@ def run_scan(
         ineligible_keys |= res.ineligible_missing_keys
         ineligible_keys |= res.ineligible_average_keys
 
+    # Earlier-quarter flags on assignments outside this quarter are held as
+    # out of scope, never resolved, so a later year view still sees them.
+    out_of_scope_keys = {
+        k for k, f in previous_persistent.items()
+        if f.assignment_id is not None and (f.course_id, f.assignment_id) in out_of_window
+    }
     rec = engine.reconcile(
         previous_persistent, current_persistent, current_one_time, issued,
-        active_ids, ineligible_keys,
+        active_ids, ineligible_keys, out_of_scope_keys,
     )
 
     new_keys = {f.key for f in rec.new}
@@ -157,6 +245,16 @@ def run_scan(
         out_of_scope=rec.out_of_scope,
         not_eligible=rec.not_eligible,
         unresolved=unresolved_all,
+        scope=scope or config.SCOPE_YEAR,
+        scope_label=(
+            config.scope_label(scope, window) if scope is not None else None
+        ),
+        skipped_assignments=len(out_of_window) - no_due_date_count,
+        no_due_date=no_due_date_count,
+        inactive_courses=(
+            len(config.all_subject_course_ids(cfg) - active_ids)
+            if scope == config.SCOPE_QUARTER else 0
+        ),
     )
 
     active_persistent = {f.key: f for f in rec.active_persistent}
@@ -189,12 +287,13 @@ def command_preview(
     *,
     details: bool = False,
     parent_templates: bool = False,
+    scope: str | None = None,
 ) -> int:
     grade_reader = _build_reader()
     store = StateStore(cfg.state_directory, cfg.state_file)
     # Review-only: never persists state, so a later --send still surfaces
     # every one-time low-assessment flag as NEW.
-    scan = run_scan(grade_reader, cfg, quarter, store)
+    scan = run_scan(grade_reader, cfg, quarter, store, scope=scope)
     if parent_templates:
         print(report.render_parent_templates(scan.outcome, writes=0, emails=0))
     else:
@@ -230,6 +329,7 @@ def _log_run_summary(
         record = {
             "timestamp": state_mod.utc_now(),
             "quarter": f"Q{quarter}",
+            "scope": outcome.scope,
             "courses_scanned": [c.name for c in outcome.courses],
             "students_scanned": outcome.total_students,
             "counts": {
@@ -266,6 +366,7 @@ def command_send(
     quarter: int,
     *,
     baseline: bool = False,
+    scope: str | None = None,
 ) -> int:
     """Fresh scan -> attempt email -> persist state ONLY on confirmed send.
 
@@ -277,7 +378,7 @@ def command_send(
     store = StateStore(cfg.state_directory, cfg.state_file)
 
     # 1. Fresh live GET-only scan (no persistence yet).
-    scan = run_scan(grade_reader, cfg, quarter, store)
+    scan = run_scan(grade_reader, cfg, quarter, store, scope=scope)
     outcome = scan.outcome
 
     if not outcome.has_any_flag and cfg.suppress_empty_report:
@@ -333,6 +434,7 @@ def command_send(
     #     last-send metadata, atomically.
     last_send = {
         "sent_at": state_mod.utc_now(),
+        "scope": outcome.scope,
         "subject": subject,
         "recipient": result.recipients,
         "missing_flags": len(outcome.missing),
@@ -443,6 +545,8 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--oauth-setup", action="store_true",
                         help="one-time OAuth authorization (no email sent)")
     parser.add_argument("--quarter", type=int, help="explicit quarter (1-4); auto-detected otherwise")
+    parser.add_argument("--scope", choices=config.SCOPES, default=None,
+                        help="quarter (default, from config) or year (full-year view)")
     parser.add_argument("--self-test", action="store_true", help="run deterministic self-tests")
     args = parser.parse_args(argv)
 
@@ -455,6 +559,7 @@ def main(argv: list[str] | None = None) -> int:
     try:
         cfg = config.load_config()
         quarter = config.resolve_quarter(explicit_quarter=args.quarter)
+        scope = args.scope or cfg.scope
     except ConfigError as exc:
         print(f"BLOCKER: {exc}")
         return 1
@@ -467,10 +572,10 @@ def main(argv: list[str] | None = None) -> int:
         if args.transport_check:
             return command_transport_check(cfg)
         if args.send:
-            return command_send(cfg, quarter, baseline=args.baseline)
+            return command_send(cfg, quarter, baseline=args.baseline, scope=scope)
         return command_preview(cfg, quarter, details=args.details,
-                               parent_templates=args.parent_templates)
-    except ReaderError as exc:
+                               parent_templates=args.parent_templates, scope=scope)
+    except (ReaderError, ConfigError) as exc:
         print(f"BLOCKER: {exc}")
         print("CANVAS WRITES PERFORMED: 0")
         print("EMAILS SENT: 0")

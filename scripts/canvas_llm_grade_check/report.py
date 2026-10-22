@@ -24,6 +24,11 @@ class CourseScanSummary:
     name: str
     course_id: int
     students_scanned: int
+    average_source: str | None = None
+
+
+QUARTER_SCOPE = "quarter"
+YEAR_SCOPE = "year"
 
 
 @dataclass
@@ -37,6 +42,23 @@ class ScanOutcome:
     out_of_scope: list[Flag] = field(default_factory=list)
     not_eligible: list[Flag] = field(default_factory=list)
     unresolved: list[UnresolvedItem] = field(default_factory=list)
+    # GC-1 report scope. ``scope_label`` is the header text ("Quarter 2 ·
+    # October 12 – December 18, 2026" or "Full year"); None omits the line.
+    scope: str = YEAR_SCOPE
+    scope_label: str | None = None
+    skipped_assignments: int = 0  # due outside the quarter (quarter scope)
+    no_due_date: int = 0  # no due date, left out of quarter scope
+    inactive_courses: int = 0  # configured courses not active this quarter
+
+    @property
+    def is_quarter_scope(self) -> bool:
+        return self.scope == QUARTER_SCOPE
+
+    @property
+    def skipped_out_of_scope(self) -> int:
+        """Items skipped as out of scope: assignments outside the quarter plus
+        earlier flags held (not resolved) because they fall outside it."""
+        return self.skipped_assignments + len(self.out_of_scope)
 
     @property
     def total_students(self) -> int:
@@ -178,10 +200,47 @@ def _compact_assessment_line(entry: ReportEntry) -> str:
 
 def _compact_average_line(entry: ReportEntry) -> str:
     f = entry.flag
-    return (
+    line = (
         f"[{entry.status}] {f.student_name} | {f.course_name} | "
         f"{templates.format_score(f.average) or ''}"
     )
+    if f.average_source:
+        line += f" | {f.average_source}"
+    return line
+
+
+def _header_lines(outcome: ScanOutcome) -> list[str]:
+    """Scope, quarter, courses, and (when known) each course's average source."""
+    lines: list[str] = []
+    if outcome.scope_label:
+        lines.append(f"Scope: {outcome.scope_label}")
+    lines.append(f"Quarter: Q{outcome.quarter}")
+    if outcome.courses:
+        lines.append("Courses scanned: " + ", ".join(c.name for c in outcome.courses))
+    else:
+        lines.append("Courses scanned: None")
+    sources = [c for c in outcome.courses if c.average_source]
+    if sources:
+        lines.append(
+            "Course averages: "
+            + "; ".join(f"{c.name} — {c.average_source}" for c in sources)
+        )
+    lines.append(f"Students scanned: {outcome.total_students}")
+    return lines
+
+
+def _scope_footer_lines(outcome: ScanOutcome) -> list[str]:
+    """Quarter scope only: the no-due-date note and the one out-of-scope line."""
+    if not outcome.is_quarter_scope:
+        return []
+    lines = [
+        f"No due date: {outcome.no_due_date} assignments left out of quarter scope.",
+        f"Skipped as out of scope: {outcome.skipped_out_of_scope} items "
+        f"({outcome.skipped_assignments} assignments due outside the quarter, "
+        f"{len(outcome.out_of_scope)} earlier flags held — not resolved; "
+        f"{outcome.inactive_courses} courses not active this quarter).",
+    ]
+    return lines
 
 
 def _resolved_line(f: Flag) -> str:
@@ -192,7 +251,7 @@ def _resolved_line(f: Flag) -> str:
 
 
 def _summary_count_lines(outcome: ScanOutcome) -> list[str]:
-    return [
+    lines = [
         "Summary counts",
         f"NEW missing: {_count_status(outcome.missing, NEW)}",
         f"STILL ACTIVE missing: {_count_status(outcome.missing, STILL_ACTIVE)}",
@@ -200,10 +259,15 @@ def _summary_count_lines(outcome: ScanOutcome) -> list[str]:
         f"NEW assessment <=85: {len(outcome.low_assessment)}",
         f"STILL ACTIVE low averages: {_count_status(outcome.low_average, STILL_ACTIVE)}",
         f"RESOLVED low averages: {len(_resolved_of_type(outcome, engine.LOW_COURSE_AVERAGE))}",
-        f"OUT OF SCOPE (quarter rotation): {len(outcome.out_of_scope)}",
+    ]
+    # Quarter scope reports out-of-scope items once, in the footer line.
+    if not outcome.is_quarter_scope:
+        lines.append(f"OUT OF SCOPE (quarter rotation): {len(outcome.out_of_scope)}")
+    lines += [
         f"NOT ELIGIBLE (late enrollment / no grades): {len(outcome.not_eligible)}",
         f"Unresolved low-score items: {len(outcome.unresolved)}",
     ]
+    return lines
 
 
 def _compact_flag_lines(entries: list[ReportEntry], render_line) -> str:
@@ -289,12 +353,7 @@ def render_preview_compact(outcome: ScanOutcome, *, writes: int = 0, emails: int
     """Concise routine preview for daily teacher review."""
     lines: list[str] = []
     lines.append("=== 4A GRADE CHECK — TEACHER REVIEW ===")
-    lines.append(f"Quarter: Q{outcome.quarter}")
-    if outcome.courses:
-        lines.append("Courses scanned: " + ", ".join(c.name for c in outcome.courses))
-    else:
-        lines.append("Courses scanned: None")
-    lines.append(f"Students scanned: {outcome.total_students}")
+    lines.extend(_header_lines(outcome))
     lines.append("")
     lines.extend(_summary_count_lines(outcome))
 
@@ -313,14 +372,19 @@ def render_preview_compact(outcome: ScanOutcome, *, writes: int = 0, emails: int
     lines.append("")
     lines.extend(_resolved_section_lines(outcome))
 
-    lines.append("")
-    lines.extend(_out_of_scope_section_lines(outcome))
+    if not outcome.is_quarter_scope:
+        lines.append("")
+        lines.extend(_out_of_scope_section_lines(outcome))
 
     lines.append("")
     lines.extend(_not_eligible_section_lines(outcome))
 
     lines.append("")
     lines.extend(_grouped_unresolved_lines(outcome))
+
+    if outcome.is_quarter_scope:
+        lines.append("")
+        lines.extend(_scope_footer_lines(outcome))
 
     lines.append("")
     lines.append(f"CANVAS WRITES PERFORMED: {writes}")
@@ -332,12 +396,7 @@ def render_preview_detailed(outcome: ScanOutcome, *, writes: int = 0, emails: in
     """Expanded preview: full flag metadata, parent templates, per-student detail."""
     lines: list[str] = []
     lines.append("=== 4A GRADE CHECK — TEACHER REVIEW (DETAILED) ===")
-    lines.append(f"Quarter: Q{outcome.quarter}")
-    if outcome.courses:
-        lines.append("Courses scanned: " + ", ".join(c.name for c in outcome.courses))
-    else:
-        lines.append("Courses scanned: None")
-    lines.append(f"Students scanned: {outcome.total_students}")
+    lines.extend(_header_lines(outcome))
     lines.append("")
     lines.extend(_summary_count_lines(outcome))
 
@@ -365,8 +424,9 @@ def render_preview_detailed(outcome: ScanOutcome, *, writes: int = 0, emails: in
     lines.append("")
     lines.extend(_resolved_section_lines(outcome))
 
-    lines.append("")
-    lines.extend(_out_of_scope_section_lines(outcome))
+    if not outcome.is_quarter_scope:
+        lines.append("")
+        lines.extend(_out_of_scope_section_lines(outcome))
 
     lines.append("")
     lines.extend(_not_eligible_section_lines(outcome))
@@ -384,6 +444,10 @@ def render_preview_detailed(outcome: ScanOutcome, *, writes: int = 0, emails: in
             )
     else:
         lines.append("None")
+
+    if outcome.is_quarter_scope:
+        lines.append("")
+        lines.extend(_scope_footer_lines(outcome))
 
     lines.append("")
     lines.append(f"CANVAS WRITES PERFORMED: {writes}")
@@ -440,6 +504,8 @@ def render_parent_templates(
     """Copy/paste parent drafts only, grouped by student. Sends nothing."""
     lines: list[str] = []
     lines.append("=== 4A GRADE CHECK — PARENT MESSAGE DRAFTS (COPY/PASTE ONLY) ===")
+    if outcome.scope_label:
+        lines.append(f"Scope: {outcome.scope_label}")
     lines.append(f"Quarter: Q{outcome.quarter}")
     lines.append("No message is sent automatically. Copy and send manually as needed.")
 
@@ -465,6 +531,14 @@ def render_parent_templates(
 def render_email_body(outcome: ScanOutcome) -> str:
     lines: list[str] = []
     lines.append("4A Grade Check - Student Flags")
+    if outcome.scope_label:
+        lines.append(f"Scope: {outcome.scope_label}")
+    sources = [c for c in outcome.courses if c.average_source]
+    if sources:
+        lines.append(
+            "Course averages: "
+            + "; ".join(f"{c.name} — {c.average_source}" for c in sources)
+        )
     lines.append("")
     lines.append(
         f"Summary: missing={len(outcome.missing)}, "
@@ -509,17 +583,18 @@ def render_email_body(outcome: ScanOutcome) -> str:
     else:
         lines.append("- None")
 
-    lines.append("")
-    lines.append("OUT OF SCOPE (QUARTER ROTATION — NOT RESOLVED)")
-    lines.append("----------------------------------------------")
-    if outcome.out_of_scope:
-        for f in outcome.out_of_scope:
-            lines.append(
-                f"- {f.student_name} | {f.course_name} | {f.flag_type} | "
-                f"{f.assignment_title or 'course average'}"
-            )
-    else:
-        lines.append("- None")
+    if not outcome.is_quarter_scope:
+        lines.append("")
+        lines.append("OUT OF SCOPE (QUARTER ROTATION — NOT RESOLVED)")
+        lines.append("----------------------------------------------")
+        if outcome.out_of_scope:
+            for f in outcome.out_of_scope:
+                lines.append(
+                    f"- {f.student_name} | {f.course_name} | {f.flag_type} | "
+                    f"{f.assignment_title or 'course average'}"
+                )
+        else:
+            lines.append("- None")
 
     lines.append("")
     lines.append("NOT ELIGIBLE (LATE ENROLLMENT / NO GRADES — NOT RESOLVED)")
@@ -532,6 +607,11 @@ def render_email_body(outcome: ScanOutcome) -> str:
             )
     else:
         lines.append("- None")
+
+    footer = _scope_footer_lines(outcome)
+    if footer:
+        lines.append("")
+        lines.extend(footer)
     return "\n".join(lines)
 
 
@@ -554,6 +634,8 @@ def render_baseline_email_body(outcome: ScanOutcome) -> str:
     """
     lines: list[str] = []
     lines.append(BASELINE_SUBJECT)
+    if outcome.scope_label:
+        lines.append(f"Scope: {outcome.scope_label}")
     lines.append("")
     lines.append(BASELINE_INTRO)
     lines.append("")

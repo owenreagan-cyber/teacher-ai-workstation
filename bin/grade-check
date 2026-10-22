@@ -10,6 +10,8 @@
 #   bin/grade-check --preview --details              expanded detail + parent templates
 #   bin/grade-check --preview --parent-templates     copy/paste parent drafts only
 #   bin/grade-check --send [--baseline]
+#   add --scope year to any report for the full-year view (default: --scope quarter)
+#   add --quarter N to pick the quarter explicitly (default: today's quarter)
 #   bin/grade-check --oauth-setup
 #   bin/grade-check --oauth-status
 #   bin/grade-check --transport-check

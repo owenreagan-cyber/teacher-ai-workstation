@@ -51,6 +51,9 @@ WEEKDAY_NUMBERS = (1, 2, 3, 4, 5)
 # dir by the workflow itself, never from this plist).
 SCHEDULE_ENV = {
     "CANVAS_LLM_GRADE_CHECK_SEND_APPROVED": "1",
+    # SMTP fallback, enabled by Owen on 2026-10-21 in the installed agent;
+    # kept here so a reinstall does not drop it.
+    "CANVAS_LLM_GRADE_CHECK_SMTP_ENABLED": "1",
 }
 
 # The scheduled command never uses --baseline.
@@ -535,6 +538,8 @@ def command_self_test() -> int:
     # Approval flag present; no secrets anywhere in the plist.
     env = plist["EnvironmentVariables"]
     assert env["CANVAS_LLM_GRADE_CHECK_SEND_APPROVED"] == "1"
+    # SMTP fallback enabled 2026-10-21; a reinstall must keep it.
+    assert env["CANVAS_LLM_GRADE_CHECK_SMTP_ENABLED"] == "1"
     xml = render_plist_xml(cfg)
     lowered = xml.lower()
     for forbidden in (

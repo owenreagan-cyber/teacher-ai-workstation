@@ -11,6 +11,8 @@
     "sendRequiresApproval": true,
     "suppressEmptyReport": true,
     "suppressUnchangedReport": true,
+    "scope": "quarter",
+    "scopeNote": "quarter (default): missing work, low scores, and course averages come from the current quarter only. year: the full-year view, only when Owen asks for it (bin/grade-check --scope year).",
     "scheduling": {
       "weekdaysOnly": true,
       "hourLocal": 16,

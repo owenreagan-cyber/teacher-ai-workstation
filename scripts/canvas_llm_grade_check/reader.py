@@ -65,12 +65,25 @@ class Assignment:
     due_at: str | None = None
     assignment_group_id: int | None = None
     grading_type: str | None = None
+    points_possible: float | None = None
+    omit_from_final_grade: bool = False
 
 
 @dataclass(frozen=True)
 class AssignmentGroup:
     id: int
     name: str
+    group_weight: float | None = None
+
+
+@dataclass(frozen=True)
+class GradingPeriod:
+    """A Canvas grading period (ISO-8601 UTC bounds, as Canvas returns them)."""
+
+    id: int
+    title: str
+    start_date: str | None = None
+    end_date: str | None = None
 
 
 @dataclass(frozen=True)
@@ -87,6 +100,14 @@ class Submission:
 
 
 class GradeReader(Protocol):
+    """Required reader surface.
+
+    Quarter scope also uses three optional methods when a reader has them:
+    ``list_grading_periods(course_id)``, ``course_applies_group_weights(course_id)``,
+    and ``list_students(course_id, grading_period_id=...)``. A reader without
+    them gets computed quarter averages over unweighted groups.
+    """
+
     def list_students(self, course_id: int) -> list[Student]: ...
 
     def list_assignments(self, course_id: int) -> list[Assignment]: ...
@@ -182,16 +203,19 @@ class LiveGradeReader:
             url = nxt
         return items
 
-    def list_students(self, course_id: int) -> list[Student]:
+    def list_students(
+        self, course_id: int, grading_period_id: int | None = None
+    ) -> list[Student]:
         # Enrollments with computed grades: the source of student names + averages.
-        enrollments = self._paginate(
-            f"/api/v1/courses/{course_id}/enrollments",
-            {
-                "type[]": "StudentEnrollment",
-                "state[]": "active",
-                "include[]": "grades",
-            },
-        )
+        # With grading_period_id, Canvas scores each enrollment for that period only.
+        params: dict[str, Any] = {
+            "type[]": "StudentEnrollment",
+            "state[]": "active",
+            "include[]": "grades",
+        }
+        if grading_period_id is not None:
+            params["grading_period_id"] = grading_period_id
+        enrollments = self._paginate(f"/api/v1/courses/{course_id}/enrollments", params)
         students: list[Student] = []
         for e in enrollments:
             user = e.get("user") or {}
@@ -224,6 +248,8 @@ class LiveGradeReader:
                 if a.get("assignment_group_id") is not None
                 else None,
                 grading_type=a.get("grading_type"),
+                points_possible=_as_float(a.get("points_possible")),
+                omit_from_final_grade=bool(a.get("omit_from_final_grade")),
             )
             for a in rows
             if a.get("id") is not None
@@ -232,10 +258,32 @@ class LiveGradeReader:
     def list_assignment_groups(self, course_id: int) -> list[AssignmentGroup]:
         rows = self._paginate(f"/api/v1/courses/{course_id}/assignment_groups", {})
         return [
-            AssignmentGroup(id=int(g["id"]), name=g.get("name") or "")
+            AssignmentGroup(
+                id=int(g["id"]),
+                name=g.get("name") or "",
+                group_weight=_as_float(g.get("group_weight")),
+            )
             for g in rows
             if g.get("id") is not None
         ]
+
+    def list_grading_periods(self, course_id: int) -> list[GradingPeriod]:
+        data = self._get(f"/api/v1/courses/{course_id}/grading_periods") or {}
+        rows = data.get("grading_periods", []) if isinstance(data, dict) else []
+        return [
+            GradingPeriod(
+                id=int(p["id"]),
+                title=p.get("title") or "",
+                start_date=p.get("start_date"),
+                end_date=p.get("end_date"),
+            )
+            for p in rows
+            if p.get("id") is not None
+        ]
+
+    def course_applies_group_weights(self, course_id: int) -> bool:
+        data = self._get(f"/api/v1/courses/{course_id}") or {}
+        return bool(data.get("apply_assignment_group_weights"))
 
     def list_submissions(self, course_id: int) -> list[Submission]:
         # One call per course: all students' submissions in a single paginated GET.

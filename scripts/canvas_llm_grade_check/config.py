@@ -13,12 +13,23 @@ import os
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
+from zoneinfo import ZoneInfo
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 CONFIG_PATH = REPO_ROOT / "config" / "canvas-llm" / "grade-check-config.json"
 INSTRUCTIONAL_WEEKS_PATH = (
     REPO_ROOT / "config" / "curriculum" / "canvas" / "instructional-weeks-2026-2027.json"
 )
+
+
+# Report scope (GC-1). Quarter is the default: flags and averages come from the
+# current quarter only. Year is the explicit opt-in full-year view.
+SCOPE_QUARTER = "quarter"
+SCOPE_YEAR = "year"
+SCOPES = (SCOPE_QUARTER, SCOPE_YEAR)
+
+# Quarter boundaries are school-local days.
+SCHOOL_TZ = ZoneInfo("America/New_York")
 
 
 class ConfigError(RuntimeError):
@@ -61,6 +72,7 @@ class GradeCheckConfig:
     state_file: str
     enrollment_overrides_file: str
     schedule: ScheduleConfig
+    scope: str = SCOPE_QUARTER
     raw: dict[str, Any] = field(default_factory=dict, repr=False)
 
 
@@ -93,6 +105,9 @@ def load_config(path: Path | None = None) -> GradeCheckConfig:
     recipient = raw.get("recipient", {})
     state = raw.get("state", {})
     sched_raw = raw.get("scheduling", {})
+    scope = str(recipient.get("scope", SCOPE_QUARTER)).strip().lower()
+    if scope not in SCOPES:
+        raise ConfigError(f"invalid scope {scope!r}; expected one of {', '.join(SCOPES)}")
     return GradeCheckConfig(
         recipient_email=recipient.get("email", "owen.reagan@thalesacademy.org"),
         recipient_name=recipient.get("displayName", "Owen Reagan — Teacher"),
@@ -118,6 +133,7 @@ def load_config(path: Path | None = None) -> GradeCheckConfig:
             minute_local=int(sched_raw.get("minuteLocal", 15)),
             timezone=str(sched_raw.get("timezone", "America/New_York")),
         ),
+        scope=scope,
         raw=raw,
     )
 
@@ -131,6 +147,11 @@ def active_subjects(cfg: GradeCheckConfig, quarter: int) -> list[SubjectConfig]:
 def active_course_ids(cfg: GradeCheckConfig, quarter: int) -> set[int]:
     """Course IDs currently in scope for grade-check scanning this quarter."""
     return {s.course_id for s in active_subjects(cfg, quarter)}
+
+
+def all_subjects(cfg: GradeCheckConfig) -> list[SubjectConfig]:
+    """Every configured grade-check subject (the year-scope course list)."""
+    return list(cfg.subjects.values())
 
 
 def all_subject_course_ids(cfg: GradeCheckConfig) -> set[int]:
@@ -169,6 +190,60 @@ def quarter_date_ranges(
         ends = [e for _s, e in spans]
         ranges[quarter] = (min(starts), max(ends))
     return ranges
+
+
+@dataclass(frozen=True)
+class QuarterWindow:
+    """One quarter as a half-open instant range in America/New_York.
+
+    ``start`` is local midnight on the first day of the quarter's first week;
+    ``end`` is local midnight on the day after the last day of its last week.
+    Each bound gets its own UTC offset, so a quarter that spans the November
+    DST change still ends exactly at local midnight.
+    """
+
+    quarter: int
+    first_day: dt.date
+    last_day: dt.date
+
+    @property
+    def start(self) -> dt.datetime:
+        return dt.datetime.combine(self.first_day, dt.time(0), tzinfo=SCHOOL_TZ)
+
+    @property
+    def end(self) -> dt.datetime:
+        next_day = self.last_day + dt.timedelta(days=1)
+        return dt.datetime.combine(next_day, dt.time(0), tzinfo=SCHOOL_TZ)
+
+    def contains(self, instant: dt.datetime) -> bool:
+        if instant.tzinfo is None:
+            instant = instant.replace(tzinfo=dt.timezone.utc)
+        return self.start <= instant < self.end
+
+    @property
+    def label(self) -> str:
+        """e.g. "Quarter 2 · October 12 – December 18, 2026"."""
+        first, last = self.first_day, self.last_day
+        if first.year == last.year:
+            span = f"{first:%B} {first.day} – {last:%B} {last.day}, {last.year}"
+        else:
+            span = f"{first:%B} {first.day}, {first.year} – {last:%B} {last.day}, {last.year}"
+        return f"Quarter {self.quarter} · {span}"
+
+
+def quarter_window(quarter: int, *, weeks_path: Path | None = None) -> QuarterWindow:
+    """The quarter's local-day window from the shared instructional-weeks parser."""
+    ranges = quarter_date_ranges(path=weeks_path)
+    if quarter not in ranges:
+        raise ConfigError(f"no instructional weeks found for quarter {quarter}")
+    first_day, last_day = ranges[quarter]
+    return QuarterWindow(quarter, first_day, last_day)
+
+
+def scope_label(scope: str, window: QuarterWindow | None) -> str:
+    if scope == SCOPE_QUARTER and window is not None:
+        return window.label
+    return "Full year"
 
 
 def resolve_quarter(
@@ -249,6 +324,15 @@ def command_self_test() -> int:
     assert resolve_quarter(dt.date(2027, 5, 1)) == 4  # Q4W4
     assert resolve_quarter(dt.date(2026, 9, 8), explicit_quarter=4) == 4
     assert resolve_quarter(dt.date(2026, 9, 29)) == 2  # fall break -> next quarter
+
+    # Scope defaults to quarter; quarter windows come from instructional weeks.
+    assert cfg.scope == SCOPE_QUARTER
+    q2 = quarter_window(2)
+    assert (q2.first_day, q2.last_day) == (dt.date(2026, 10, 12), dt.date(2026, 12, 18))
+    assert q2.label == "Quarter 2 · October 12 – December 18, 2026"
+    assert q2.start.utcoffset() == dt.timedelta(hours=-4)  # EDT
+    assert q2.end.utcoffset() == dt.timedelta(hours=-5)  # EST, after Nov 1
+    assert scope_label(SCOPE_YEAR, q2) == "Full year"
 
     active = active_subjects(cfg, 1)
     assert [s.key for s in active] == ["reading-spelling", "math", "language-arts", "history"]

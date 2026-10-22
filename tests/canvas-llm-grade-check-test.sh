@@ -479,12 +479,21 @@ n, _ = missing_count(elig_reader(FUTURE_DUE, [
 ]))
 assert n == 0
 
-# Past-due + blank student -> flagged (no peer grading needed).
+# Past-due + every student blank -> NOT graded yet, no flags
+# (owner rule missing_requires_graded).
 n, o = missing_count(elig_reader(PAST_DUE, [
     Submission(id=1, user_id=1, assignment_id=20, score=None, grade=None),
     Submission(id=2, user_id=2, assignment_id=20, score=None, grade=None),
 ]))
-assert n == 2, f"past-due blanks must all flag: {n}"
+assert n == 0, f"past-due with no entered grades must not flag: {n}"
+assert o.not_graded_skipped == 1, o.not_graded_skipped
+
+# Past-due + one student graded -> the blank student is flagged.
+n, o = missing_count(elig_reader(PAST_DUE, [
+    Submission(id=1, user_id=1, assignment_id=20, score=9.0, grade="9"),
+    Submission(id=2, user_id=2, assignment_id=20, score=None, grade=None),
+]))
+assert n == 1, f"past-due blank must flag once grading started: {n}"
 
 # Past-due + MI -> flagged.
 n, o = missing_count(elig_reader(PAST_DUE, [
@@ -1406,7 +1415,9 @@ def _late_reader(eligible_from, assignments, submissions, current_score=None, fi
 # D. Pre-eligibility blank assignment -> NO missing flag.
 _d_assignments = [Assignment(id=100, name="HIST 4B: Ch. 1 Assessment",
                              assignment_group_id=None, due_at=_pre_due)]
-_d_subs = [Submission(id=1, user_id=1, assignment_id=100, score=None, grade=None)]
+# "MI" is an entered grade, so the assignment counts as graded
+# (missing_requires_graded) and only the enrollment rule decides.
+_d_subs = [Submission(id=1, user_id=1, assignment_id=100, score=None, grade="MI")]
 with tempfile.TemporaryDirectory() as tmp:
     _oD = cli.run_scan(
         _late_reader("2026-09-12T00:00:00Z", _d_assignments, _d_subs),
@@ -1464,7 +1475,7 @@ with tempfile.TemporaryDirectory() as tmp:
         _cfg_o, 1, StateStore(Path(tmp), "state.json"),
     )
     # With override eligible_from=2026-08-01, the 2026-09-01 assignment is now eligible
-    # and the blank becomes a real missing flag.
+    # and the MI becomes a real missing flag.
     assert len(_oOv.outcome.missing) == 1, f"override must supersede Canvas date: {_oOv.outcome.missing}"
 print("PASS local enrollment override supersedes ambiguous Canvas metadata")
 

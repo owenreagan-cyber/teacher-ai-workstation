@@ -90,7 +90,38 @@ SUBMISSIONS = [
     Submission(id=5, user_id=1, assignment_id=203, score=10.0, grade="10"),
     Submission(id=6, user_id=1, assignment_id=301, grade=None),
     Submission(id=7, user_id=1, assignment_id=401, grade=None),
+    # A classmate's entered grades (not on the roster below), so the past-due
+    # assignments count as graded under missing_requires_graded.
+    Submission(id=8, user_id=2, assignment_id=101, score=10.0, grade="10"),
+    Submission(id=9, user_id=2, assignment_id=201, score=10.0, grade="10"),
 ]
+
+
+class RosterCanvas:
+    """GET-shaped fake reader with a small class roster (missing-rule tests)."""
+
+    def __init__(self, assignments, submissions):
+        self.assignments = assignments
+        self.submissions = submissions
+
+    def list_students(self, course_id, grading_period_id=None):
+        return [Student(user_id=uid, name=f"Student {n}", current_score=95.0)
+                for uid, n in ((1, "Alpha"), (2, "Bravo"), (3, "Charlie"))]
+
+    def list_assignments(self, course_id):
+        return list(self.assignments)
+
+    def list_assignment_groups(self, course_id):
+        return list(GROUPS)
+
+    def list_submissions(self, course_id):
+        return list(self.submissions)
+
+    def list_grading_periods(self, course_id):
+        return list(PERIODS)
+
+    def course_applies_group_weights(self, course_id):
+        return False
 
 
 class FakeCanvas:
@@ -403,6 +434,100 @@ def main() -> int:
         check("loaded flags round-trip",
               StateStore(Path(tmp), "state.json").out_of_scope_flags()[q1_missing_key].key
               == q1_missing_key)
+
+    # --- Missing requires an entered grade (missing_requires_graded) --------
+    def hw(aid, due):
+        return Assignment(id=aid, name=f"SM5: Lesson {aid} Homework", due_at=due,
+                          assignment_group_id=2, points_possible=10)
+
+    def sub(sid, uid, aid, score=None, grade=None, excused=False):
+        return Submission(id=sid, user_id=uid, assignment_id=aid, score=score,
+                          grade=grade, excused=excused)
+
+    def missing_pairs(outcome):
+        return sorted((e.flag.student_name, e.flag.assignment_id) for e in outcome.missing)
+
+    rule_assignments = [hw(501, Q2_DUE), hw(502, Q2_DUE), hw(503, Q2_DUE),
+                        hw(504, Q2_FUTURE), hw(505, Q1_DUE)]
+    rule_submissions = [
+        # 501: nothing entered for anyone -> not graded yet.
+        sub(10, 1, 501), sub(11, 2, 501), sub(12, 3, 501),
+        # 502: one graded, two blank -> both blanks missing.
+        sub(13, 1, 502, score=9.0, grade="9"), sub(14, 2, 502), sub(15, 3, 502),
+        # 503: "MI" and "mi" missing, "EX" excused never missing.
+        sub(16, 1, 503, grade="MI"), sub(17, 2, 503, grade="mi"),
+        sub(18, 3, 503, grade="EX", excused=True),
+        # 504: future, one graded early, two blank -> nothing flags.
+        sub(19, 1, 504, score=10.0, grade="10"), sub(20, 2, 504), sub(21, 3, 504),
+        # 505: Q1, one graded, two blank -> not flagged in Q2 scope.
+        sub(22, 1, 505, score=10.0, grade="10"), sub(23, 2, 505), sub(24, 3, 505),
+    ]
+    with tempfile.TemporaryDirectory() as tmp:
+        cfg = make_cfg(tmp)
+        rule_canvas = RosterCanvas(rule_assignments, rule_submissions)
+        out_r = scan(rule_canvas, cfg, 2, config.SCOPE_QUARTER, tmp).outcome
+        pairs = missing_pairs(out_r)
+        check("no grades entered -> no missing flags",
+              all(aid != 501 for _, aid in pairs), pairs)
+        check("one graded + others blank -> blanks flagged",
+              [p for p in pairs if p[1] == 502]
+              == [("Student Bravo", 502), ("Student Charlie", 502)], pairs)
+        check('"MI" and "mi" flagged',
+              [p for p in pairs if p[1] == 503]
+              == [("Student Alpha", 503), ("Student Bravo", 503)], pairs)
+        check('"EX" not flagged', ("Student Charlie", 503) not in pairs, pairs)
+        check("future due date not flagged", all(aid != 504 for _, aid in pairs), pairs)
+        check("Q1 assignment not flagged in Q2 scope",
+              all(aid != 505 for _, aid in pairs), pairs)
+        check("not-graded count is 1", out_r.not_graded_skipped == 1, out_r.not_graded_skipped)
+        preview_r = report.render_preview(out_r)
+        check("preview has the not-graded line",
+              "Not graded yet: 1 assignments skipped." in preview_r)
+        check("not-graded line names no assignment", "Lesson 501" not in preview_r)
+        check("preview has NEW low averages count", "NEW low averages: 0" in preview_r)
+        check("email has the not-graded line",
+              "Not graded yet: 1 assignments skipped." in report.render_email_body(out_r))
+        # Year scope: the Q1 assignment (graded by one student) now flags.
+        out_ry = scan(rule_canvas, cfg, 2, config.SCOPE_YEAR, tmp).outcome
+        check("year scope flags Q1 blanks once graded",
+              [p for p in missing_pairs(out_ry) if p[1] == 505]
+              == [("Student Bravo", 505), ("Student Charlie", 505)])
+
+        # A stored flag on an assignment with no grades is held, not resolved,
+        # and returns STILL ACTIVE once grading starts.
+        stale = engine.missing_key(MATH, 2, 501)
+        flag = engine.Flag(key=stale, flag_type=engine.MISSING_ASSIGNMENT,
+                           course_id=MATH, course_name="Math", student_id=2,
+                           student_name="Student Bravo", first_name="Student",
+                           assignment_id=501, assignment_title="SM5: Lesson 501 Homework",
+                           assignment_due_at=Q2_DUE)
+        state_mod.write_state(StateStore(Path(tmp), "state.json"),
+                              active_persistent={stale: flag}, resolved_flags={},
+                              one_time_issued={}, out_of_scope_flags={},
+                              not_eligible_flags={})
+        held = scan(rule_canvas, cfg, 2, config.SCOPE_QUARTER, tmp)
+        check("stale flag on not-graded work is not RESOLVED",
+              stale not in {f.key for f in held.outcome.resolved})
+        check("stale flag on not-graded work is not reported",
+              stale not in {e.flag.key for e in held.outcome.missing})
+        check("stale flag kept in state", stale in held.out_of_scope_persistent)
+        persist(held, tmp)
+        graded_now = list(rule_submissions) + [sub(25, 1, 501, score=10.0, grade="10")]
+        later = scan(RosterCanvas(rule_assignments, graded_now), cfg, 2,
+                     config.SCOPE_QUARTER, tmp).outcome
+        check("held flag returns STILL ACTIVE once graded",
+              {e.flag.key: e.status for e in later.missing}.get(stale)
+              == report.STILL_ACTIVE)
+
+        # Rule off: the ungraded assignment flags everyone, no count line.
+        cfg.missing_requires_graded = False
+        off = scan(rule_canvas, cfg, 2, config.SCOPE_QUARTER, tmp).outcome
+        check("rule off: ungraded blanks flagged",
+              len([p for p in missing_pairs(off) if p[1] == 501]) == 3)
+        check("rule off: no not-graded line",
+              "Not graded yet" not in report.render_preview(off))
+    check("config default missing_requires_graded is true",
+          config.load_config().missing_requires_graded is True)
 
     # --- CLI ----------------------------------------------------------------
     seen: list[str | None] = []

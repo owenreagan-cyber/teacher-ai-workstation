@@ -126,6 +126,25 @@ So in practice every course takes the preferred path: Canvas's own Q2 score.
 - **Year scope:** every configured course (History and Science both), every
   assignment, Canvas's full-year score (labeled "Canvas current score (full
   year)").
+- **Missing needs an entered grade (owner rule).** An assignment counts toward
+  missing only if at least one student has an entered grade on it: any score
+  (including 0), any letter or grade string, or "MI". If no student has anything
+  entered, Owen hasn't graded it yet and it is skipped entirely: no missing
+  flags, no names. Once one grade is entered, each eligible student whose grade
+  is blank or "MI" (any case) is flagged. The existing rules still apply: the
+  due date must be past, quarter scope by default, "EX"/excused is never
+  missing, and work due before a student's enrollment is never flagged.
+  - "EX"/excused does **not** count as an entered grade. Teachers often excuse
+    an absent student before grading, and that alone should not flag the class.
+  - Config key `missing.missing_requires_graded` in
+    `grade-check-config.json` (default `true`). `false` restores the
+    due-date-only rule.
+  - One count line in the preview summary and the email: "Not graded yet: N
+    assignments skipped." It counts past-due, in-scope assignments with no
+    entered grade and never names them. The line is left out when the rule is
+    off.
+- **"NEW low averages: N"** now appears in the summary counts, next to STILL
+  ACTIVE and RESOLVED low averages.
 - **Report header:** "Scope: Quarter 2 · October 12 – December 18, 2026" or
   "Scope: Full year", in the preview, the detailed preview, parent drafts, and the
   email bodies. The run log and `last_send` also record the scope.
@@ -146,6 +165,12 @@ So in practice every course takes the preferred path: Canvas's own Q2 score.
   Q2, or from year scope into quarter scope, is STILL ACTIVE, not NEW. Note: if
   Owen switches scope and the average under the new scope is above 85, that flag
   shows as RESOLVED for that run, which is accurate for the scope being viewed.
+- **Stored flags on not-graded-yet assignments are held silently.** A missing
+  flag already in `state.json` for an assignment that now has no entered grades
+  is not reported and not RESOLVED. It is kept in the `out_of_scope_flags`
+  bucket, so when grading starts it comes back as STILL ACTIVE, not NEW. It is
+  not counted in "earlier flags held" and not listed in the year-scope OUT OF
+  SCOPE section.
 - The first quarter-scope `--send` will move today's Q1-era missing flags from
   `active_flags` to `out_of_scope_flags`. That is not a "change" for the
   email-suppression gate, so it alone does not trigger an email.
@@ -173,8 +198,6 @@ So in practice every course takes the preferred path: Canvas's own Q2 score.
   sandbox is the live check.
 - Pre-existing, not changed: an `IncompleteRead` is not wrapped as a
   `ReaderError`, so it prints a Python traceback instead of a `BLOCKER:` line.
-- Pre-existing, not changed: the summary counts have no "NEW low averages" line
-  (only STILL ACTIVE and RESOLVED).
 - Pre-existing, not changed: `config.py` reads `scheduling` at the top level of the
   JSON, but the file nests it under `recipient`, so the code defaults are used.
   They are the same values (weekdays, 4:15 PM, America/New_York).
@@ -184,10 +207,28 @@ So in practice every course takes the preferred path: Canvas's own Q2 score.
 
 ## 7. Tests
 
-- New: `tests/canvas-llm-grade-check-scope-test.py` (fake Canvas reader only, 78
+- New: `tests/canvas-llm-grade-check-scope-test.py` (fake Canvas reader only, 97
   checks): quarter filter, boundaries (including Nov 1 DST), both average paths
   and their labels, inactive courses, state across quarters and scope switches,
-  and the CLI default.
+  and the CLI default. The not-graded rule has its own cases: no grades
+  entered gives no flags; one graded with the others blank flags the blanks;
+  "MI" and "mi" are flagged; "EX" is not; a future due date is not flagged; a Q1
+  assignment is not flagged in Q2 scope. They also cover the count line, the
+  "NEW low averages" line, a held stored flag returning as STILL ACTIVE, and
+  the rule switched off.
+- Changed fixtures to fit the new rule. The scope test's lone-student fixture
+  gets a classmate's grades. In `tests/canvas-llm-grade-check-test.sh`, the
+  "past-due blanks must all flag" case now expects no flags when nobody is
+  graded, and a new case checks that one graded peer makes the blank flag. The
+  late-enrollment D/override fixture uses "MI" instead of a blank, so it still
+  tests the enrollment rule and not the new gate.
+- `tests/canvas-llm-grade-check-test.sh` in the agent sandbox: the hook blocks
+  `bash <file>`, so its Python body was pulled into a scratch file and run from
+  the repo root. Every section passes except the end-to-end health block
+  ("healthy-but-stale -> WARN"). That block reads the real machine's state and
+  OAuth (STATE=FAIL, OAUTH=FAIL in the sandbox), fails the same way on clean
+  HEAD, and is listed as FAIL in the earlier baseline docs. It is not related to
+  this change. Owen's run outside the sandbox is the real check.
 - `bin/grade-check --self-test` (all module self-tests, now with quarter-window
   and SMTP-env assertions).
 - `tests/canvas-llm-grade-check-test.sh`, `tests/canvas-llm-mastery-fixtures-test.py`,

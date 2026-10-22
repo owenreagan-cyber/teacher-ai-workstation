@@ -157,6 +157,8 @@ def run_scan(
     # Quarter scope bookkeeping: assignments left out, by (course, assignment).
     out_of_window: set[tuple[int, int]] = set()
     no_due_date_count = 0
+    # Past-due assignments with no entered grade yet, by (course, assignment).
+    not_graded: set[tuple[int, int]] = set()
 
     for subject in subjects:
         assignments = grade_reader.list_assignments(subject.course_id)
@@ -200,6 +202,18 @@ def run_scan(
         unresolved_all.extend(res.unresolved)
         ineligible_keys |= res.ineligible_missing_keys
         ineligible_keys |= res.ineligible_average_keys
+        not_graded |= {(subject.course_id, aid) for aid in res.not_graded_assignment_ids}
+
+    # A stored flag on an assignment that is not graded yet is held silently:
+    # not reported, not resolved, kept in state so it returns as STILL ACTIVE
+    # (not NEW) once grading starts.
+    held_not_graded = {
+        k: f for k, f in previous_persistent.items()
+        if f.assignment_id is not None and (f.course_id, f.assignment_id) in not_graded
+    }
+    previous_persistent = {
+        k: f for k, f in previous_persistent.items() if k not in held_not_graded
+    }
 
     # Earlier-quarter flags on assignments outside this quarter are held as
     # out of scope, never resolved, so a later year view still sees them.
@@ -251,6 +265,9 @@ def run_scan(
         ),
         skipped_assignments=len(out_of_window) - no_due_date_count,
         no_due_date=no_due_date_count,
+        not_graded_skipped=(
+            len(not_graded) if getattr(cfg, "missing_requires_graded", True) else None
+        ),
         inactive_courses=(
             len(config.all_subject_course_ids(cfg) - active_ids)
             if scope == config.SCOPE_QUARTER else 0
@@ -259,6 +276,7 @@ def run_scan(
 
     active_persistent = {f.key: f for f in rec.active_persistent}
     out_of_scope_persistent = {f.key: f for f in rec.out_of_scope}
+    out_of_scope_persistent.update(held_not_graded)
     merged_resolved = dict(prev_resolved)
     for f in rec.resolved:
         merged_resolved[f.key] = f

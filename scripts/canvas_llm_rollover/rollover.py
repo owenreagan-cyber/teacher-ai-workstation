@@ -16,6 +16,7 @@ from __future__ import annotations
 
 import copy
 import hashlib
+import re
 from datetime import date, datetime, timezone
 from typing import Any
 
@@ -44,6 +45,34 @@ def _now() -> str:
 def _confirm_ok(confirmation: str, to_week_code: str) -> bool:
     text = (confirmation or "").strip().upper()
     return bool(text) and text == f"ROLLOVER {to_week_code.upper()}"
+
+
+_CANVAS_GLOBAL_CSS_RE = re.compile(
+    r'<link\b[^>]*\bhref=["\'][^"\']*canvas_global_app\.css[^"\']*["\'][^>]*>\s*',
+    re.IGNORECASE,
+)
+_CANVAS_GLOBAL_JS_RE = re.compile(
+    r'\s*<script\b[^>]*\bsrc=["\'][^"\']*canvas_global_app\.js[^"\']*["\'][^>]*>\s*</script>',
+    re.IGNORECASE,
+)
+
+
+def _canvas_owned_body(body: str) -> str:
+    """Remove only Canvas-injected global app assets from page GET readback.
+
+    Canvas may prepend its account-level canvas_global_app.css <link> and append
+    canvas_global_app.js <script> to wiki-page bodies. Those tags are not part
+    of the teacher-approved artifact and must not invalidate exact content
+    verification. No other HTML is normalized or stripped.
+    """
+    text = body or ""
+    text = _CANVAS_GLOBAL_CSS_RE.sub("", text)
+    text = _CANVAS_GLOBAL_JS_RE.sub("", text)
+    return text
+
+
+def _canvas_body_hash(body: str) -> str:
+    return deploy_plan._sha(_canvas_owned_body(body))
 
 
 # --------------------------------------------------------------------------- #
@@ -162,7 +191,7 @@ def run_preflight(
         if res["page_id"] is not None:
             try:
                 current = client.get_page(cid, slug)
-                matches = deploy_plan._sha(current.get("body") or "") == course.get("to_page_hash")
+                matches = _canvas_body_hash(current.get("body") or "") == course.get("to_page_hash")
                 course["page_body_action"] = "SKIP" if matches else "UPDATE"
                 res["page_body_action"] = course["page_body_action"]
             except Exception as exc:  # noqa: BLE001
@@ -187,7 +216,7 @@ def run_preflight(
             try:
                 from . import homeroom as homeroom_mod
                 current = client.get_page(h["course_id"], h["to_page_slug"])
-                matches = homeroom_mod._body_hash(current.get("body") or "") == h.get("proposed_content_hash")
+                matches = _canvas_body_hash(current.get("body") or "") == h.get("proposed_content_hash")
                 h["page_body_action"] = "SKIP" if matches else "UPDATE"
                 hres["page_body_action"] = h["page_body_action"]
             except Exception as exc:  # noqa: BLE001
@@ -387,7 +416,7 @@ def execute(
         try:
             current = client.get_page(cid, course["to_page_slug"])
             counts["GET"] += 1
-            if deploy_plan._sha(current.get("body") or "") != course.get("to_page_hash"):
+            if _canvas_body_hash(current.get("body") or "") != course.get("to_page_hash"):
                 client.update_page(
                     cid, course["to_page_slug"], body=body,
                     published=True, front_page=bool(current.get("front_page")),
@@ -398,7 +427,7 @@ def execute(
         except Exception as exc:  # noqa: BLE001
             report["failures"].append(f"{subject}: page update failed: {type(exc).__name__}")
             return _finish(to_quarter, to_week, report, schedule.BLOCKED, counts)
-        page_ok = deploy_plan._sha(page_readback.get("body") or "") == course.get("to_page_hash")
+        page_ok = _canvas_body_hash(page_readback.get("body") or "") == course.get("to_page_hash")
         report["pages"].append({
             "subject": subject, "course_id": cid, "page_id": pid,
             "disposition": "PUBLISHED_VERIFIED" if page_ok else "FAILED", "verified": page_ok,
@@ -636,7 +665,7 @@ def _execute_homeroom(client, h, *, to_code, counts, report, to_quarter, to_week
     try:
         cur = client.get_page(h["course_id"], h["to_page_slug"])
         counts["GET"] += 1
-        cur_hash = homeroom_mod._body_hash(cur.get("body") or "")
+        cur_hash = _canvas_body_hash(cur.get("body") or "")
     except Exception:  # noqa: BLE001
         cur_hash = ""
     if cur_hash != proposed_hash:
@@ -670,7 +699,7 @@ def _execute_homeroom(client, h, *, to_code, counts, report, to_quarter, to_week
     h_ok = (
         str(hread.get("page_id")) == str(hres["page_id"])
         and (early_content_only or bool(hread.get("front_page")))
-        and homeroom_mod._body_hash(hread.get("body") or "") == proposed_hash
+        and _canvas_body_hash(hread.get("body") or "") == proposed_hash
     )
     report["homeroom"] = {
         "course_id": h["course_id"], "page_id": hres["page_id"],

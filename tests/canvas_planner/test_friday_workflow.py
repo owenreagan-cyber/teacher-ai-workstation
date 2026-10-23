@@ -14,13 +14,60 @@ from zoneinfo import ZoneInfo
 from scripts.canvas_llm_rollover import rollover
 from scripts.canvas_llm_rollover import cli as rollover_cli
 from scripts.canvas_llm_rollover import homeroom as homeroom_module
-from scripts.canvas_llm_deploy.client import FakeDeployClient
+from scripts.canvas_llm_deploy.client import FakeDeployClient, LiveDeployClient
 from scripts.canvas_llm_deploy import cli as deploy_cli
 from scripts.canvas_planner import friday
 from scripts.teacher_workstation import deploy
 
 
 class FridayWorkflowTest(unittest.TestCase):
+    def test_live_page_update_does_not_forward_front_page_to_phase22_writer(self) -> None:
+        class Writer:
+            def __init__(self) -> None:
+                self.calls = []
+
+            def update_page(
+                self,
+                course_id: int,
+                page_ref: str,
+                *,
+                body: str,
+                published: bool = True,
+            ):
+                self.calls.append({
+                    "course_id": course_id,
+                    "page_ref": page_ref,
+                    "body": body,
+                    "published": published,
+                })
+                return {
+                    "page_id": 123,
+                    "url": page_ref,
+                    "title": "Q2W3 Math",
+                    "body": body,
+                    "published": published,
+                    "front_page": False,
+                }
+
+        client = LiveDeployClient.__new__(LiveDeployClient)
+        writer = Writer()
+        client._write = writer
+
+        result = client.update_page(
+            26404,
+            "q2w3-october-26-30-2026",
+            body="<div>Approved math page</div>",
+            published=True,
+            front_page=True,
+        )
+
+        self.assertEqual(len(writer.calls), 1)
+        self.assertEqual(writer.calls[0]["course_id"], 26404)
+        self.assertEqual(writer.calls[0]["page_ref"], "q2w3-october-26-30-2026")
+        self.assertEqual(writer.calls[0]["body"], "<div>Approved math page</div>")
+        self.assertTrue(writer.calls[0]["published"])
+        self.assertEqual(result["body"], "<div>Approved math page</div>")
+
     def _publish_fixture(self):
         body = "<div>Approved math page</div>"
         proposed_home = {"week_label": "Q2W3", "items": ["fixture newsletter"]}

@@ -165,8 +165,11 @@ class LiveDeployClient(DeployClient):
 
     def update_page(self, course_id: int, page_ref: str, *, body: str,
                     published: bool = True, front_page: bool = False) -> dict[str, Any]:
+        # The canonical Phase22 page PUT does not accept a front_page keyword.
+        # Front-page selection is a separate Canvas operation handled by
+        # set_front_page(); keep page-body updates independent from that action.
         return self._norm_page(self._write.update_page(
-            course_id, page_ref, body=body, published=published, front_page=front_page))
+            course_id, page_ref, body=body, published=published))
 
     def set_front_page(self, course_id: int, page_id: Any) -> dict[str, Any]:
         # Canonical Canvas endpoint: PUT /courses/:id/front_page {wiki_page_id}.

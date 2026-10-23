@@ -49,6 +49,9 @@ class ScanOutcome:
     skipped_assignments: int = 0  # due outside the quarter (quarter scope)
     no_due_date: int = 0  # no due date, left out of quarter scope
     inactive_courses: int = 0  # configured courses not active this quarter
+    # Past-due assignments skipped because nothing is graded yet
+    # (missing_requires_graded). None when the rule is off; omits the line.
+    not_graded_skipped: int | None = None
 
     @property
     def is_quarter_scope(self) -> bool:
@@ -250,6 +253,13 @@ def _resolved_line(f: Flag) -> str:
     )
 
 
+def _not_graded_line(outcome: ScanOutcome) -> str | None:
+    """The one count line for not-graded-yet assignments (no names)."""
+    if outcome.not_graded_skipped is None:
+        return None
+    return f"Not graded yet: {outcome.not_graded_skipped} assignments skipped."
+
+
 def _summary_count_lines(outcome: ScanOutcome) -> list[str]:
     lines = [
         "Summary counts",
@@ -257,12 +267,16 @@ def _summary_count_lines(outcome: ScanOutcome) -> list[str]:
         f"STILL ACTIVE missing: {_count_status(outcome.missing, STILL_ACTIVE)}",
         f"RESOLVED missing: {len(_resolved_of_type(outcome, engine.MISSING_ASSIGNMENT))}",
         f"NEW assessment <=85: {len(outcome.low_assessment)}",
+        f"NEW low averages: {_count_status(outcome.low_average, NEW)}",
         f"STILL ACTIVE low averages: {_count_status(outcome.low_average, STILL_ACTIVE)}",
         f"RESOLVED low averages: {len(_resolved_of_type(outcome, engine.LOW_COURSE_AVERAGE))}",
     ]
     # Quarter scope reports out-of-scope items once, in the footer line.
     if not outcome.is_quarter_scope:
         lines.append(f"OUT OF SCOPE (quarter rotation): {len(outcome.out_of_scope)}")
+    not_graded = _not_graded_line(outcome)
+    if not_graded:
+        lines.append(not_graded)
     lines += [
         f"NOT ELIGIBLE (late enrollment / no grades): {len(outcome.not_eligible)}",
         f"Unresolved low-score items: {len(outcome.unresolved)}",
@@ -546,6 +560,9 @@ def render_email_body(outcome: ScanOutcome) -> str:
         f"average<=85={len(outcome.low_average)}, "
         f"resolved={len(outcome.resolved)}"
     )
+    not_graded = _not_graded_line(outcome)
+    if not_graded:
+        lines.append(not_graded)
     lines.append("")
     lines.append("MISSING ASSIGNMENTS")
     lines.append("-------------------")

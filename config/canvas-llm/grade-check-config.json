@@ -78,7 +78,9 @@
   },
   "missing": {
     "gradeMarkers": ["MI", "MISSING"],
-    "note": "A submission is treated as missing when Canvas reports missing=true or the grade string matches a marker (case-insensitive)."
+    "missing_requires_graded": true,
+    "note": "A submission is treated as missing when Canvas reports missing=true or the grade string matches a marker (case-insensitive).",
+    "missingRequiresGradedNote": "true (default): an assignment counts toward missing only when at least one student has an entered grade (any score, letter, or MI). An assignment with no entered grades is not graded yet and is skipped entirely: no flags, no names, only a count. EX/excused is never missing and does not count as an entered grade."
   },
   "state": {
     "directory": ".local/canvas-llm/grade-check",

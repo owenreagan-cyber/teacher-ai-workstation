@@ -93,6 +93,9 @@ class ScanResult:
     # NOT_ELIGIBLE rather than RESOLVED.
     ineligible_missing_keys: set[str] = field(default_factory=set)
     ineligible_average_keys: set[str] = field(default_factory=set)
+    # Past-due assignments skipped because no student has an entered grade yet
+    # (owner rule ``missing_requires_graded``). Count only; never named.
+    not_graded_assignment_ids: set[int] = field(default_factory=set)
 
 
 @dataclass
@@ -233,6 +236,29 @@ def grading_has_started(submissions_for_assignment: list[Submission]) -> bool:
     return any(has_real_grade(s) for s in submissions_for_assignment)
 
 
+def has_entered_grade(submission: Submission) -> bool:
+    """True when Owen has entered something in the gradebook for this student.
+
+    Any score (including ``0``), any letter or grade string, or an ``MI`` marker
+    counts. Blank work does not, and neither does excused (``EX``) work: an
+    excusal is often entered before an assignment is graded.
+    """
+    if submission.excused:
+        return False
+    if submission.score is not None:
+        return True
+    return bool((submission.grade or "").strip())
+
+
+def assignment_has_entered_grade(submissions_for_assignment: list[Submission]) -> bool:
+    """True when at least one student has an entered grade on the assignment.
+
+    Owner rule (``missing_requires_graded``): an assignment with no entered
+    grades has not been graded yet and never counts toward missing work.
+    """
+    return any(has_entered_grade(s) for s in submissions_for_assignment)
+
+
 def assignment_eligible_for_missing(
     assignment: Assignment,
     submissions_for_assignment: list[Submission] | None = None,
@@ -350,8 +376,9 @@ def scan_subject(
     """Compute current flags for one subject. Pure; no state mutation.
 
     MISSING_ASSIGNMENT flags are only produced for assignments that are
-    eligible for missing-work evaluation (due date passed) AND for which the
-    student was enrolled at the time (late-enrollment eligibility).
+    eligible for missing-work evaluation (due date passed), that have at least
+    one entered grade (``missing_requires_graded``), AND for which the student
+    was enrolled at the time (late-enrollment eligibility).
     """
     group_name_by_id = {g.id: g.name for g in groups}
     assignment_by_id = {a.id: a for a in assignments}
@@ -377,11 +404,22 @@ def scan_subject(
         students_scanned=len(students),
     )
 
+    # Owner rule: a past-due assignment with no entered grade for any student
+    # has not been graded yet. Skip it entirely for missing work.
+    if getattr(cfg, "missing_requires_graded", True):
+        result.not_graded_assignment_ids = {
+            a.id for a in assignments
+            if assignment_eligible_for_missing(a, now=now)
+            and not assignment_has_entered_grade(submissions_by_assignment.get(a.id, []))
+        }
+
     for submission in submissions:
         student = student_by_id.get(submission.user_id)
         assignment = assignment_by_id.get(submission.assignment_id)
         if student is None or assignment is None:
             continue
+        if assignment.id in result.not_graded_assignment_ids:
+            continue  # not graded yet: no missing flags, no names
         group_name = (
             group_name_by_id.get(assignment.assignment_group_id)
             if assignment.assignment_group_id is not None
@@ -804,6 +842,18 @@ def command_self_test() -> int:
     # Canvas missing=true on its own is still not accepted as a marker.
     assert student_is_missing(_s(1, missing=True), None, ("MI", "MISSING")) is True  # via blank grade
     assert student_is_missing(_s(1, score=95, missing=True), None, ("MI", "MISSING")) is False
+
+    # Entered grade (owner rule missing_requires_graded): score, letter, or MI.
+    assert has_entered_grade(_s(1, score=0)) is True
+    assert has_entered_grade(_s(1, grade="B+")) is True
+    assert has_entered_grade(_s(1, grade="MI")) is True
+    assert has_entered_grade(_s(1, grade="mi")) is True
+    assert has_entered_grade(_s(1)) is False
+    assert has_entered_grade(_s(1, grade="  ")) is False
+    assert has_entered_grade(excused) is False, "EX is not an entered grade"
+    assert assignment_has_entered_grade([_s(1), _s(2)]) is False
+    assert assignment_has_entered_grade([_s(1), _s(2, grade="MI")]) is True
+    assert assignment_has_entered_grade([]) is False
 
     # --- Late-enrollment eligibility (assignment due before enrollment) ---
     late = Student(user_id=9, name="Student Delta", eligible_from="2026-09-12T00:00:00Z")

@@ -73,6 +73,9 @@ class GradeCheckConfig:
     enrollment_overrides_file: str
     schedule: ScheduleConfig
     scope: str = SCOPE_QUARTER
+    # Owner rule: an assignment counts toward missing only once at least one
+    # student has an entered grade (score, letter, or MI) on it.
+    missing_requires_graded: bool = True
     raw: dict[str, Any] = field(default_factory=dict, repr=False)
 
 
@@ -134,6 +137,9 @@ def load_config(path: Path | None = None) -> GradeCheckConfig:
             timezone=str(sched_raw.get("timezone", "America/New_York")),
         ),
         scope=scope,
+        missing_requires_graded=bool(
+            raw.get("missing", {}).get("missing_requires_graded", True)
+        ),
         raw=raw,
     )
 
@@ -327,6 +333,7 @@ def command_self_test() -> int:
 
     # Scope defaults to quarter; quarter windows come from instructional weeks.
     assert cfg.scope == SCOPE_QUARTER
+    assert cfg.missing_requires_graded is True
     q2 = quarter_window(2)
     assert (q2.first_day, q2.last_day) == (dt.date(2026, 10, 12), dt.date(2026, 12, 18))
     assert q2.label == "Quarter 2 · October 12 – December 18, 2026"

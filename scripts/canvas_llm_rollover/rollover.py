@@ -243,6 +243,8 @@ def run_preflight(
             blockers.append(f"{a['subject']}: weekly update body changed within the same week (owner review required)")
 
     # Approved assessment reminders are Canvas announcements without delay.
+    # Reconcile by assessment identity so separately scheduled, verified
+    # assessment topics are NOT duplicated by the Friday rollover.
     announcement_cache: dict[int, list[dict[str, Any]]] = {}
     for reminder in plan.get("assessment_reminders", []):
         cid = int(reminder["course_id"])
@@ -252,13 +254,15 @@ def run_preflight(
             except Exception as exc:  # noqa: BLE001
                 blockers.append(f"course {cid}: reminder lookup failed: {type(exc).__name__}")
                 announcement_cache[cid] = []
-        exact = next((item for item in announcement_cache[cid]
-                      if item.get("title") == reminder.get("title")
-                      and item.get("message", "") == reminder.get("message", "")), None)
-        reminder["classification"] = "EXACT_MATCH" if exact else "NEW"
-        reminder["action"] = "SKIP" if exact else "CREATE"
+        classification = deploy_preflight.classify_assessment_reminder(
+            reminder, announcement_cache[cid]
+        )
+        reminder["classification"] = classification
+        reminder["action"] = "SKIP" if classification in (
+            "EXACT_MATCH", deploy_preflight.REMINDER_ALREADY_SCHEDULED,
+        ) else "CREATE"
         live["assessment_reminders"][reminder.get("title")] = {
-            "classification": reminder["classification"], "action": reminder["action"]}
+            "classification": classification, "action": reminder["action"]}
 
     return {
         **readiness,
@@ -522,6 +526,15 @@ def execute(
 
     for a in manifest.get("assessment_reminders", []):
         title = a["title"]
+        if a.get("classification") == deploy_preflight.REMINDER_ALREADY_SCHEDULED:
+            # Already satisfied by a separately scheduled, verified Canvas
+            # assessment topic (reconciled during preflight); never duplicate.
+            report["assessment_reminders"].append({
+                "subject": a.get("subject"), "course_id": a["course_id"], "title": title,
+                "announcement_id": None, "disposition": "ALREADY_SCHEDULED_VERIFIED",
+                "verified": True,
+            })
+            continue
         try:
             exact = next((item for item in client.list_announcements(a["course_id"])
                           if item.get("title") == title and item.get("message") == a.get("message", "")), None)

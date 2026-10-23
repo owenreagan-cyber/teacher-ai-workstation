@@ -87,7 +87,48 @@ def test_reading_review_reading_only():
 
 def test_science_overview_science_only():
     ov = narrative.next_week_overview("science", UPCOMING)
-    assert "Unit 1" in ov and "Electricity" in ov
+    assert "Force and Motion" in ov, ov
+    assert "Chapters 4-5" in ov, ov
+    assert "Electricity" not in ov, ov  # no raw activity-name leakage
+
+
+def test_science_q2w3_chapter_level_no_leak():
+    # The real Q2W3 Science cells (Unit 1, Force and Motion) must render
+    # chapter-level only, with no Reading/Slides/Notes/Finish/Quiz leakage.
+    week = {
+        "week": {"code": "Q2W3", "startDate": "2026-10-26", "endDate": "2026-10-30"},
+        "unitContext": {"science": "Force and Motion"},
+        "days": {
+            "Monday": {"date": "2026-10-26", "subjects": {"science": {"raw": "U1 Ch5 Reading / Slides / Notes"}}},
+            "Tuesday": {"date": "2026-10-27", "subjects": {"science": {"raw": "U1 Ch5 Finish + Quiz"}}},
+            "Wednesday": {"date": "2026-10-28", "subjects": {"science": {"raw": "U1 Ch6 Reading / Notes / Quiz"}}},
+            "Thursday": {"date": "2026-10-29", "subjects": {"science": {"raw": "U1 Ch7 Edison / Latimer Day 1"}}},
+            "Friday": {"date": "2026-10-30", "subjects": {"science": {"raw": "U1 Ch7 Finish + Quiz"}}},
+        },
+    }
+    ov = narrative.next_week_overview("science", week)
+    assert "Force and Motion" in ov, ov
+    assert "Chapters 5-7" in ov, ov
+    for bad in ("Reading", "Slides", "Notes", "Finish", "Quiz", "Edison", "Latimer",
+                "Test", "Assessment", "Check"):
+        assert bad not in ov, (bad, ov)
+
+
+def test_science_week_in_review_no_leak():
+    week = {
+        "unitContext": {"science": "Force and Motion"},
+        "days": {
+            "Monday": {"date": "2026-10-19", "subjects": {"science": {"raw": "Ch. 3"}}},
+            "Tuesday": {"date": "2026-10-20", "subjects": {"science": {"raw": "Ramp Lab"}}},
+            "Wednesday": {"date": "2026-10-21", "subjects": {"science": {"raw": "Ramp Lab"}}},
+            "Thursday": {"date": "2026-10-22", "subjects": {"science": {"raw": "Ch. 3"}}},
+            "Friday": {"date": "2026-10-23", "subjects": {"science": {"raw": "Ch. 3 Check"}}},
+        },
+    }
+    rv = narrative.week_in_review("science", week)
+    assert "Force and Motion" in rv, rv
+    for bad in ("Ramp Lab", "Check", "Quiz", "Test"):
+        assert bad not in rv, (bad, rv)
 
 
 def test_no_cross_subject_leakage():

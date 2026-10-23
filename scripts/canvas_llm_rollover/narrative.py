@@ -32,6 +32,7 @@ import re
 from typing import Iterable
 
 from scripts.canvas_llm_phase3 import pacing_extractor as _pe
+from scripts.canvas_llm_phase3 import pacing_translation as _pt
 
 WEEKDAYS = ("Monday", "Tuesday", "Wednesday", "Thursday", "Friday")
 
@@ -271,24 +272,39 @@ def _la_parts(cells: list[str]) -> dict:
 # --------------------------------------------------------------------------- #
 
 def _science_parts(cells: list[str]) -> dict:
+    """Extract only Science unit number(s) and chapter number(s).
+
+    Named activities (Reading / Slides / Notes / Finish / Quiz / Labs / Checks)
+    are deliberately NOT extracted here: the family-facing narrative must stay
+    chapter-level and never leak raw pacing activity names. Raw pacing cells are
+    preserved verbatim upstream in the normalized week (source of truth).
+    """
     units = _ints(cells, r"\bU\s*(\d+)")
     chapters = _ints(cells, r"\bCh\.?\s*(\d+)")
-    # Named activities (skip pure chapter/unit refs and "Check" segments).
-    activities: list[str] = []
-    for c in cells:
-        for seg in re.split(r"[/,]", c):
-            seg = seg.strip()
-            seg = re.sub(r"^U\s*\d+\s*", "", seg, flags=re.IGNORECASE)
-            seg = re.sub(r"^Ch\.?\s*\d+\s*", "", seg, flags=re.IGNORECASE)
-            seg = seg.strip()
-            low = seg.lower()
-            if seg and "check" not in low and not re.fullmatch(r"\d+", seg):
-                if seg not in activities:
-                    activities.append(seg)
-    check = any(re.search(r"check", c, re.IGNORECASE) for c in cells)
-    lab = any(re.search(r"\blab\b", c, re.IGNORECASE) for c in cells)
-    return {"units": units, "chapters": chapters, "activities": activities,
-            "check": check, "lab": lab}
+    return {"units": units, "chapters": chapters}
+
+
+def _science_unit_name(week_norm: dict | None) -> str | None:
+    """Resolve the Science unit display name (e.g. 'Force and Motion').
+
+    Authority order: normalized-week ``unitContext``, then the canonical
+    pacing-translation config. The config name is only authoritative for the
+    configured unit (Unit 1), so it is not applied to weeks that reference a
+    different unit number. Never models general knowledge.
+    """
+    ctx = (week_norm or {}).get("unitContext") or {}
+    if isinstance(ctx, dict):
+        name = (ctx.get("science") or "").strip()
+        if name:
+            return name
+    cells = _cells(week_norm or {}, "science")
+    units = _ints(cells, r"\bU\s*(\d+)")
+    if units and units != [1]:
+        return None
+    try:
+        return _pt.resolve_science_unit_name(_pt.load_config(), None)
+    except Exception:  # noqa: BLE001 - unit name is advisory
+        return None
 
 
 # --------------------------------------------------------------------------- #
@@ -337,15 +353,14 @@ def week_in_review(subject: str, prior_norm: dict | None) -> str:
         return f"We had another great week in Language Arts! Students {body}."
     if subject == "science":
         parts = _science_parts(cells)
+        unit_name = _science_unit_name(prior_norm)
         seg = []
-        if parts["units"]:
+        if unit_name:
+            seg.append(f"continued our {unit_name} unit")
+        elif parts["units"]:
             seg.append(f"continued Unit {', '.join(str(n) for n in parts['units'])}")
         if parts["chapters"]:
             seg.append(f"worked through {_lesson_range(parts['chapters'], 'Chapter')}")
-        if parts["activities"]:
-            seg.append(f"completed the {_join_and(parts['activities'][:4])}")
-        if parts["check"]:
-            seg.append("completed the chapter Check")
         body = _join_and(seg) or "continued their science investigations"
         return f"We had another great week in Science! Students {body}."
     # history is inactive during the Science rotation; no narrative.
@@ -417,19 +432,18 @@ def next_week_overview(subject: str, next_norm: dict | None) -> str:
         return f"Next week, students will {body}."
     if subject == "science":
         parts = _science_parts(cells)
-        seg = []
-        if parts["units"]:
-            seg.append(f"continue Unit {', '.join(str(n) for n in parts['units'])}")
+        unit_name = _science_unit_name(next_norm)
+        if unit_name and parts["chapters"]:
+            return (f"Next week, students will continue our {unit_name} unit "
+                    f"as we work through {_lesson_range(parts['chapters'], 'Chapter')}.")
+        if unit_name:
+            return f"Next week, students will continue our {unit_name} unit."
         if parts["chapters"]:
-            seg.append(f"work through {_lesson_range(parts['chapters'], 'Chapter')}")
-        if parts["activities"]:
-            seg.append(f"complete the {_join_and(parts['activities'][:4])}")
-        if parts["check"]:
-            seg.append("take the chapter Check")
+            return (f"Next week, students will work through "
+                    f"{_lesson_range(parts['chapters'], 'Chapter')}.")
         # Science has no auto major assessment (Check (MC) / lab are not
         # tests/quizzes), so no assessment date is ever injected here.
-        body = _join_and(seg) or "continue their science investigations"
-        return f"Next week, students will {body}."
+        return "Next week, students will continue their science investigations."
     return ""
 
 
@@ -509,10 +523,13 @@ def command_self_test() -> int:
     assert "Chapter 5 Test on Tuesday, October 27" in la_overview, la_overview
 
     sci_overview = next_week_overview("science", upcoming)
-    assert "Unit 1" in sci_overview and "Electricity" in sci_overview, sci_overview
+    assert "Force and Motion" in sci_overview, sci_overview
+    assert "Chapters 4-5" in sci_overview, sci_overview
+    # No raw activity-name leakage (Reading / Slides / Notes / Finish / Lab).
+    assert "Electricity" not in sci_overview, sci_overview
     # CASE D — Science non-assessment items never get a fake assessment date.
     assert "on Thursday" not in sci_overview and "on Friday" not in sci_overview, sci_overview
-    for bad in ("Test", "Quiz", "Assessment"):
+    for bad in ("Test", "Quiz", "Assessment", "Reading", "Slides", "Notes", "Finish", "Lab"):
         assert bad not in sci_overview, (bad, sci_overview)
 
     # Course isolation: each subject's narrative must never leak another

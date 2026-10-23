@@ -524,7 +524,10 @@ def _fallback_subject_reminder(week_norm: dict[str, Any], subject: str) -> str:
     but no explicit assessment (e.g. Science "Check (MC)" weeks).
 
     Derived strictly from the normalized raw cells; never invents homework or
-    grading language, never labels a Check as Test/Quiz/Assessment.
+    grading language, never labels a Check as Test/Quiz/Assessment. Per the
+    Science/History agenda-display rule, the visible reminder must not expose
+    detailed pacing activity names (Reading / Slides / Notes / Finish / Quiz /
+    Labs / Checks), so only the unit name and chapter numbers are surfaced.
     """
     if subject != "science":
         return ""
@@ -540,7 +543,6 @@ def _fallback_subject_reminder(week_norm: dict[str, Any], subject: str) -> str:
 
     unit = ""
     chapters: list[int] = []
-    activities: list[str] = []
     for raw in cells:
         for seg in _re.split(r"/", raw):
             seg = seg.strip()
@@ -551,12 +553,6 @@ def _fallback_subject_reminder(week_norm: dict[str, Any], subject: str) -> str:
                 n = int(cm.group(1))
                 if n not in chapters:
                     chapters.append(n)
-            # Named activities (skip "Check" segments and pure chapter refs).
-            rest = _re.sub(r"^U\s*\d+\s*Ch\.?\s*\d+\s*", "", seg, flags=_re.IGNORECASE)
-            rest = _re.sub(r"^Ch\.?\s*\d+\s*", "", rest, flags=_re.IGNORECASE)
-            rest = rest.strip()
-            if rest and "check" not in rest.lower():
-                activities.append(rest)
 
     chapters.sort()
     unit_part = f"we will continue {unit}" if unit else "we will continue our current unit"
@@ -564,18 +560,10 @@ def _fallback_subject_reminder(week_norm: dict[str, Any], subject: str) -> str:
     if len(chapters) == 1:
         chapter_part = f" as we work through Chapter {chapters[0]}"
     elif len(chapters) >= 2:
-        chapter_part = f" as we work through Chapters {chapters[0]} and {chapters[-1]}"
+        listed = ", ".join(str(n) for n in chapters[:-1])
+        chapter_part = f" as we work through Chapters {listed}, and {chapters[-1]}"
 
-    activity_part = ""
-    # Keep the distinct named activities (deterministic, source-derived; bounded).
-    distinct = []
-    for a in activities:
-        if a not in distinct:
-            distinct.append(a)
-    if distinct:
-        activity_part = " with " + ", ".join(distinct[:4])
-
-    return f"This week {unit_part}{activity_part}{chapter_part}."
+    return f"This week {unit_part}{chapter_part}."
 
 
 

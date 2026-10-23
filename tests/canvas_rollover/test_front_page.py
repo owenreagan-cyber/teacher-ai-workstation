@@ -69,6 +69,38 @@ def test_case_f_page_id_change_fails_readback():
     assert ok is False
 
 
+# ---- Fake-client front-page semantics (§6) ---------------------------------
+
+def test_set_front_page_preserves_body_and_title_and_unsets_prior():
+    c = _client()
+    prior = c.seed_page(COURSE, "q2w2", title="Q2W2 - October 19-23, 2026", body="<div>Q2W2</div>", front_page=True)
+    target = c.seed_page(COURSE, SLUG, title="Q2W3 - October 26-30, 2026", body="<div>Q2W3</div>", front_page=False)
+
+    result = c.set_front_page(COURSE, target["page_id"])
+
+    # F: target becomes front_page=true.
+    assert result["front_page"] is True
+    assert c.get_page(COURSE, SLUG)["front_page"] is True
+    # G: prior page becomes front_page=false.
+    assert c.get_page(COURSE, "q2w2")["front_page"] is False
+    # D: body unchanged.
+    assert c.get_page(COURSE, SLUG)["body"] == "<div>Q2W3</div>"
+    assert c.get_page(COURSE, "q2w2")["body"] == "<div>Q2W2</div>"
+    # E: title unchanged.
+    assert c.get_page(COURSE, SLUG)["title"] == "Q2W3 - October 26-30, 2026"
+    assert c.get_page(COURSE, "q2w2")["title"] == "Q2W2 - October 19-23, 2026"
+
+
+def test_set_front_page_missing_target_raises():
+    c = _client()
+    c.seed_page(COURSE, "q2w2", title="Q2W2", body="", front_page=True)
+    try:
+        c.set_front_page(COURSE, "page-UNKNOWN")
+        raise AssertionError("expected DeployClientError")
+    except Exception as e:  # noqa: BLE001
+        assert type(e).__name__ == "DeployClientError"
+
+
 def _run():
     import sys
     fns = [(n, f) for n, f in sorted(globals().items()) if n.startswith("test_") and callable(f)]

@@ -113,6 +113,41 @@ class FridayWorkflowTest(unittest.TestCase):
         self.assertTrue(writer.calls[0]["published"])
         self.assertEqual(result["body"], "<div>Approved math page</div>")
 
+    def test_set_front_page_uses_page_put_with_page_id_and_front_page_flag(self) -> None:
+        # Regression: set_front_page must PUT the page itself
+        # (/courses/:id/pages/page_id:<id>) with wiki_page[front_page]=true, NOT
+        # the incorrect /courses/:id/front_page {wiki_page_id} operation.
+        class Writer:
+            def __init__(self) -> None:
+                self.calls = []
+
+            def request(self, method: str, path: str, data=None):
+                self.calls.append({"method": method, "path": path, "data": dict(data or {})})
+                return {
+                    "page_id": 798071,
+                    "url": "q2w3-october-26-30-2026",
+                    "title": "Q2W3 - October 26–30, 2026",
+                    "body": "<div>body</div>",
+                    "published": True,
+                    "front_page": True,
+                }
+
+        client = LiveDeployClient.__new__(LiveDeployClient)
+        writer = Writer()
+        client._write = writer
+
+        result = client.set_front_page(26404, 798071)
+
+        self.assertEqual(len(writer.calls), 1)
+        call = writer.calls[0]
+        self.assertEqual(call["method"], "PUT")
+        self.assertEqual(call["path"], "/api/v1/courses/26404/pages/page_id:798071")
+        self.assertEqual(call["data"], {"wiki_page[front_page]": "true"})
+        # Never the incorrect /front_page endpoint.
+        self.assertNotIn("/front_page", call["path"])
+        self.assertEqual(result["page_id"], 798071)
+        self.assertTrue(result["front_page"])
+
     def _publish_fixture(self):
         body = "<div>Approved math page</div>"
         proposed_home = {"week_label": "Q2W3", "items": ["fixture newsletter"]}

@@ -172,13 +172,16 @@ class LiveDeployClient(DeployClient):
             course_id, page_ref, body=body, published=published))
 
     def set_front_page(self, course_id: int, page_id: Any) -> dict[str, Any]:
-        # Canonical Canvas endpoint: PUT /courses/:id/front_page {wiki_page_id}.
-        # This unsets the prior front page and marks the target page as front.
-        self._write.request(
-            "PUT", f"/api/v1/courses/{course_id}/front_page",
-            data={"wiki_page_id": str(page_id)},
+        # Canonical Canvas contract: to make an EXISTING wiki page the course
+        # front page, PUT the page itself with wiki_page[front_page]=true.
+        # Numeric Canvas page IDs use the explicit "page_id:<id>" URL form.
+        page_ref = f"page_id:{page_id}"
+        result = self._write.request(
+            "PUT",
+            f"/api/v1/courses/{course_id}/pages/{page_ref}",
+            data={"wiki_page[front_page]": "true"},
         )
-        return {"course_id": course_id, "page_id": str(page_id), "front_page": True}
+        return self._norm_page(result)
 
     def get_assignment(self, course_id: int, assignment_id: str) -> dict[str, Any]:
         return self._norm_assignment(self._write.get_assignment(course_id, assignment_id))

@@ -76,7 +76,12 @@ def classify_weekly_announcement(proposed: dict[str, Any], live: list[dict[str, 
     title = _norm_name(proposed.get("title", ""))
     proposed_week = proposed.get("week_code") or ""
     proposed_delayed = proposed.get("delayed_post_at")
-    proposed_agenda = proposed.get("agenda_hash") or proposed.get("page_agenda_hash") or ""
+    # Compare embedded agenda fragments apples-to-apples: the proposed message's
+    # kl_wrapper_3-onward fragment vs the live message's same fragment (both
+    # Canvas-normalized). The page agenda hash is a different fragment (the page
+    # body alone), so only use it as a fallback when no message is present.
+    proposed_agenda = (_embedded_agenda_hash(proposed.get("message") or "")
+                       or proposed.get("agenda_hash") or proposed.get("page_agenda_hash") or "")
 
     for a in live:
         if _norm_name(a.get("title") or "") != title:
@@ -166,6 +171,17 @@ def _embedded_agenda_hash(message: str) -> str:
     import re as _re
     if not message:
         return ""
+    # Canvas prepends canvas_global_app.css and appends canvas_global_app.js to
+    # announcement messages on write; strip them so the embedded fragment hashes
+    # identically to the authored message.
+    message = _re.sub(
+        r'<link\b[^>]*\bhref=["\'][^"\']*canvas_global_app\.css[^"\']*["\'][^>]*>\s*',
+        '', message, flags=_re.IGNORECASE,
+    )
+    message = _re.sub(
+        r'\s*<script\b[^>]*\bsrc=["\'][^"\']*canvas_global_app\.js[^"\']*["\'][^>]*>\s*</script>',
+        '', message, flags=_re.IGNORECASE,
+    )
     m = _re.search(r'id="kl_wrapper_3"', message)
     if not m:
         return ""
@@ -366,6 +382,22 @@ def command_self_test() -> int:
     assert classify_assignment("SM5: Lesson 39 Homework", ["SM5: Lesson 39 Homework"]) == "EXACT_MATCH"
     assert classify_assignment("SM5: Lesson 39 Homework", ["SM5: Lesson 39 Homework (Retake)"]) == "AMBIGUOUS"
     assert classify_assignment("SM5: Lesson 39 Homework", ["SM5: Lesson 40 Homework"]) == "NEW"
+
+    # Weekly-announcement same-week identity must tolerate Canvas global assets.
+    css = '<link rel="stylesheet" href="https://instructure-uploads/canvas_global_app.css">'
+    js = '<script src="https://instructure-uploads/canvas_global_app.js"></script>'
+    agenda = '<div id="kl_wrapper_3" class="kl_wrapper">agenda</div>'
+    proposed_msg = f"<p>Good afternoon,</p>{agenda}<p>Have a great weekend!</p>"
+    live_msg = f"{css}{proposed_msg}{js}"
+    proposed = {"title": "Math Canvas Weekly Update", "week_code": "Q2W3",
+                "delayed_post_at": "2026-10-23T20:00:00Z", "message": proposed_msg}
+    live = [{"title": "Math Canvas Weekly Update", "delayed_post_at": "2026-10-23T20:00:00Z",
+             "message": live_msg}]
+    assert classify_weekly_announcement(proposed, live) == "EXACT_MATCH"
+    # A genuinely different same-week agenda is BODY_CHANGED_SAME_WEEK.
+    live_diff = [{"title": "Math Canvas Weekly Update", "delayed_post_at": "2026-10-23T20:00:00Z",
+                  "message": f"{css}<p>Good afternoon,</p><div id=\"kl_wrapper_3\" class=\"kl_wrapper\">CHANGED</div><p>Have a great weekend!</p>{js}"}]
+    assert classify_weekly_announcement(proposed, live_diff) == "BODY_CHANGED_SAME_WEEK"
 
     # Assessment-reminder reconciliation (identity, not topic IDs/exact titles).
     math_reminder = {"type": "math_assessment",

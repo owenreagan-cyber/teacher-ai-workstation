@@ -3,11 +3,19 @@
 #
 # Same engine as scheduled execution; no second code path.
 #   bin/canvas-weekly-rollover --week q2w3 --dry-run
+#   bin/canvas-weekly-rollover --dry-run --live-readonly  # Canvas GETs only
 #   bin/canvas-weekly-rollover --week q2w3 --preflight
 #   bin/canvas-weekly-rollover --week q2w3 --execute --production --confirm "ROLLOVER Q2W3"
+#   bin/canvas-weekly-rollover --scheduled  # LaunchAgent entrypoint
 set -euo pipefail
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "${REPO_ROOT}"
 
-exec python3 -m scripts.canvas_llm_rollover.cli "$@"
+PYTHON_BIN="/opt/homebrew/bin/python3.12"
+if [[ ! -x "${PYTHON_BIN}" ]]; then
+  echo "Required Python interpreter not found: ${PYTHON_BIN}" >&2
+  exit 127
+fi
+
+exec "${PYTHON_BIN}" -m scripts.canvas_llm_rollover.cli "$@"

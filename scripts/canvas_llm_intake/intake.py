@@ -122,6 +122,8 @@ def build_intake(
     fresh: bool = True,
     canvas: CanvasReadOnly | None = None,
     include_canvas_context: bool = True,
+    normalized_override: dict[str, Any] | None = None,
+    source_meta_override: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Run the full intake for one week and persist the staging packet.
 
@@ -136,8 +138,12 @@ def build_intake(
     )
 
     # ---- 1. Source fetch + normalize (reuse Phase 3) ---------------------
-    rows, meta = pe.fetch_pacing(fresh=fresh)
-    week_norm = pe.extract_week(rows, week_code, meta)
+    if normalized_override is None:
+        rows, meta = pe.fetch_pacing(fresh=fresh)
+        week_norm = pe.extract_week(rows, week_code, meta)
+    else:
+        week_norm = normalized_override
+        meta = source_meta_override or (week_norm.get("source") or {})
     m["source_retrieved_at"] = meta.get("readTimestampUtc") or _now()
     # Content-only hash (excludes the timestamp-bearing ``source`` metadata) so
     # the source hash is STABLE across regenerations of identical pacing. This

@@ -21,32 +21,44 @@ from pathlib import Path
 from typing import Any
 
 from scripts.instructional_weeks import parse_week_range
+from scripts.canvas_planner.state_root import state_root
 
 from . import constants as C
 
 REPO_ROOT = C.REPO_ROOT
 
 
-def _pacing_url() -> str:
+def _pacing_url(spreadsheet_id: str | None = None, sheet_name: str | None = None) -> str:
     return (
         "https://docs.google.com/spreadsheets/d/"
-        f"{C.SPREADSHEET_ID}/gviz/tq?tqx=out:csv&sheet={urllib.parse.quote(C.SHEET_NAME)}"
+        f"{spreadsheet_id or C.SPREADSHEET_ID}/gviz/tq?tqx=out:csv&sheet="
+        f"{urllib.parse.quote(sheet_name or C.SHEET_NAME)}"
     )
 
 
-def fetch_pacing(fresh: bool = True, raw_csv_path: Path | None = None) -> tuple[list[list[str]], dict[str, Any]]:
+def fetch_pacing(
+    fresh: bool = True,
+    raw_csv_path: Path | None = None,
+    *,
+    spreadsheet_id: str | None = None,
+    sheet_name: str | None = None,
+    workbook_name: str | None = None,
+) -> tuple[list[list[str]], dict[str, Any]]:
     """Return (rows, source_meta). Fresh-reads the live sheet or falls back to the
     latest local snapshot when ``fresh`` is False or the network is unavailable."""
-    raw_csv_path = raw_csv_path or (C.PACING_DIR / "raw" / "pacing-4A-reagan-fresh.csv")
+    raw_csv_path = raw_csv_path or (state_root() / "pacing" / "raw" / "pacing-4A-reagan-fresh.csv")
     raw_csv_path.parent.mkdir(parents=True, exist_ok=True)
     meta: dict[str, Any] = {
-        "workbook": "2026-2027 FPK Pacing Guides",
-        "sheet": C.SHEET_NAME,
+        "workbook": workbook_name or "2026-2027 FPK Pacing Guides",
+        "sheet": sheet_name or C.SHEET_NAME,
+        "spreadsheet_id": spreadsheet_id or C.SPREADSHEET_ID,
         "readTimestampUtc": datetime.now(timezone.utc).isoformat(),
     }
     if fresh:
         try:
-            req = urllib.request.Request(_pacing_url(), headers={"Accept": "text/csv"})
+            req = urllib.request.Request(
+                _pacing_url(spreadsheet_id, sheet_name), headers={"Accept": "text/csv"}
+            )
             with urllib.request.urlopen(req, timeout=60) as response:
                 text = response.read().decode("utf-8")
             raw_csv_path.write_text(text, encoding="utf-8")

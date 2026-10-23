@@ -10,10 +10,11 @@ import datetime as dt
 import json
 import os
 from typing import Any
+from zoneinfo import ZoneInfo
 
 from scripts.canvas_llm_phase3 import constants as P3
 
-_TZ = dt.timezone(dt.timedelta(hours=-4))  # America/New_York (EDT)
+_TZ = ZoneInfo("America/New_York")
 
 
 def _now_local() -> dt.datetime:

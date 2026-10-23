@@ -1,16 +1,17 @@
 # Canvas Deployment Workflow (Phase 4)
 
 ```text
-Status: guarded Canvas deployment + post-write verification (local-first)
+Status: legacy guarded-deploy design; direct deploy disabled by D-028
 Package: scripts/canvas_llm_deploy/
-CLI:     bin/canvas-intake preflight | deploy | verify
-UI:      Teacher Workstation → Deploy
+Publisher: bin/canvas-weekly-rollover only
 ```
 
 ## Scope
 
-This is the **first** component that can reach Canvas mutation code. It follows a
-strict, explicit lifecycle:
+This document records the older Phase 4 design. The reusable plan, preflight,
+transport, and verification primitives remain, but the direct deploy CLI and
+Teacher Workstation deploy route are disabled. Per D-028, the Friday rollover
+engine is the only weekly-package publisher.
 
 ```text
 READY_TO_PUBLISH → preflight → owner confirmation → ordered writes
@@ -22,18 +23,15 @@ It does **not** do broad writes, generic proxies, or automatic rollback.
 ## Architecture
 
 ```text
-UI (Deploy screen)
-  └─ POST /api/weeks/{q}/{w}/preflight  (GET-only or dry-run)
-  └─ POST /api/weeks/{q}/{w}/deploy     (production-gated)
-       └─ scripts/teacher_workstation/deploy.py (thin route handler)
-            └─ scripts/canvas_llm_deploy/  (the deployment coordinator)
-                 ├─ plan.build_plan          (deterministic write plan, pure)
-                 ├─ preflight.run_preflight  (GET-only live resolution + gate)
-                 ├─ coordinator.deploy       (ordered writes + readback)
-                 └─ client.LiveDeployClient  (delegates to canonical write helpers)
+bin/canvas-weekly-rollover
+  └─ scripts/canvas_llm_rollover/rollover.py  (only weekly publisher)
+       └─ scripts/canvas_llm_deploy/
+            ├─ plan.build_plan          (deterministic package primitives)
+            ├─ preflight helpers        (GET-only classification)
+            └─ client.LiveDeployClient  (canonical transport adapter)
 ```
 
-The coordinator **reuses** the canonical Canvas write helpers in
+The rollover engine **reuses** the canonical Canvas write helpers in
 `scripts/canvas_llm_phase22/` (`Phase22LiveCanvasClient` for writes/readback,
 `CanvasReadOnly` for GET-only listings). It never forks assignment routing, page
 discovery, announcement behavior, duplicate detection, scheduling semantics,
@@ -74,26 +72,12 @@ bin/canvas-intake preflight --quarter 2 --week 3 --production
 A preflight record is invalidated immediately if the source, approvals, or live
 duplicate state changes.
 
-## Dry run
+## Direct deploy is disabled
 
-```bash
-bin/canvas-intake deploy --quarter 2 --week 3 --dry-run
-```
-
-Prints the exact write plan (deterministic, no Canvas GET, no writes).
-
-## Deploy
-
-```bash
-bin/canvas-intake preflight --quarter 2 --week 3 --production   # -> preflight id
-bin/canvas-intake deploy --quarter 2 --week 3 --production --preflight-id <id> --confirm "DEPLOY Q2W3"
-```
-
-- Requires explicit `--production` mode and an explicit owner confirmation
-  containing `DEPLOY`.
-- Deletion count > 0 requires the confirmation to be exactly `DEPLOY {WEEK_CODE}`.
-- Deployment is **idempotent** after partial failure (skips already-correct
-  objects).
+The `canvas-intake` deploy subcommand returns `BLOCKED` for every non-dry-run
+request and is not invoked by any LaunchAgent, script, or maintained runbook.
+Use `bin/canvas-weekly-rollover`; Owen's current commands are in
+`docs/canvas-planner-1-steps.md`.
 
 ## Write ordering (stop-on-failure)
 

@@ -59,11 +59,17 @@ Validation command:
 bin/chief-of-staff --canvas-llm-canonical-context-pack-status
 ```
 
+The validation gate records the historical Phase 22–27 contract. D-027
+supersedes its SQLite authority statements for Canvas Planner 1: JSON
+intake/deployment packets under `TAW_STATE_ROOT` are authoritative for this
+mission, and SQLite migration is deferred.
+
 The validation gate confirms:
 
 - all 20 required Markdown contracts are present and non-empty;
 - the manifest is valid and marked `validated`;
-- the editable SQLite weekly model is the production source of truth;
+- the editable SQLite weekly model was the Phase 22–27 production-source design
+  and is legacy/stale for Canvas Planner 1 under D-027;
 - synthetic fixtures remain test-only;
 - standalone Reading and standalone Spelling announcements are allowed;
 - Reading and Spelling announcements combine only when both assessments occur in the same canonical instructional week;

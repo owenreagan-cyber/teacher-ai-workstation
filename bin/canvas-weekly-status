@@ -1,0 +1,14 @@
+#!/usr/bin/env python3
+"""Return the Canvas Planner local status contract without network access."""
+from __future__ import annotations
+
+import sys
+from pathlib import Path
+
+REPO = Path(__file__).resolve().parents[1]
+if str(REPO) not in sys.path:
+    sys.path.insert(0, str(REPO))
+
+from scripts.canvas_planner.cli import main  # noqa: E402
+
+raise SystemExit(main())

@@ -14,11 +14,15 @@ owner confirmation passes. The engine is idempotent and stops on first failure
 """
 from __future__ import annotations
 
+import copy
+import hashlib
 from datetime import date, datetime, timezone
 from typing import Any
 
 from scripts.canvas_llm_intake import manifest as imf
 from scripts.canvas_llm_deploy import preflight as deploy_preflight
+from scripts.canvas_llm_deploy import ledger as deploy_ledger
+from scripts.canvas_llm_deploy import plan as deploy_plan
 from scripts.canvas_llm_deploy.client import DeployClient, DeployClientError
 
 from . import ledger
@@ -66,11 +70,10 @@ def build_readiness(
 
     m = imf.load_manifest(to_quarter, to_week)
     if m is None:
-        blockers.append("upcoming week intake packet missing (run prepare-next)")
+        blockers.append("The upcoming week plan is not available yet.")
     else:
         if not m.get("ready_to_publish"):
-            blockers.append("upcoming week is not READY_TO_PUBLISH")
-            blockers.extend(m.get("publish_blockers", []))
+            blockers.append("The upcoming week's approved course packages are not ready yet.")
         if m.get("status") == "NEEDS_INPUT":
             needs_owen = True
         # Open (unanswered) questions require Owen — not the full question list.
@@ -84,10 +87,16 @@ def build_readiness(
         if not a.get("hash_consistent"):
             blockers.append(f"{a['subject']}: weekly agenda hash mismatch")
 
+    for course in plan.get("academic_courses", []):
+        if not course.get("approved"):
+            blockers.append(f"{course['label']} page needs your approval")
+
     # Homeroom content freshness.
     h = plan.get("homeroom", {})
     if not h.get("source_content_hash"):
-        blockers.append("homeroom: approved content source missing")
+        blockers.append("Homeroom newsletter source is not available yet.")
+    if not h.get("approved"):
+        blockers.append("Homeroom newsletter needs your approval")
 
     return {
         "manifest": plan,
@@ -109,13 +118,21 @@ def run_preflight(
     client: DeployClient | None = None,
     *,
     today: date | None = None,
+    manifest_override: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """GET-only rollover preflight: readiness gate + live object resolution."""
-    readiness = build_readiness(from_quarter, from_week, to_quarter, to_week, today=today)
+    readiness = (
+        {"manifest": manifest_override, "ready": True, "blockers": [], "needs_owen": False}
+        if manifest_override is not None
+        else build_readiness(from_quarter, from_week, to_quarter, to_week, today=today)
+    )
     plan = readiness["manifest"]
     blockers = list(readiness["blockers"])
     warnings: list[str] = []
-    live: dict[str, Any] = {"academic": {}, "homeroom": {}}
+    live: dict[str, Any] = {
+        "academic": {}, "homeroom": {}, "assignments": {},
+        "weekly_announcements": {}, "assessment_reminders": {},
+    }
 
     if client is None:
         warnings.append("LIVE CANVAS CONTEXT UNAVAILABLE — dry-run (no Canvas GET performed)")
@@ -142,28 +159,106 @@ def run_preflight(
         course["page_id"] = res["page_id"]
         course["already_front_page"] = res["front_page"]
         course["front_page_action"] = "SKIP" if res["front_page"] else "SET_FRONT_PAGE"
+        if res["page_id"] is not None:
+            try:
+                current = client.get_page(cid, slug)
+                matches = deploy_plan._sha(current.get("body") or "") == course.get("to_page_hash")
+                course["page_body_action"] = "SKIP" if matches else "UPDATE"
+                res["page_body_action"] = course["page_body_action"]
+            except Exception as exc:  # noqa: BLE001
+                blockers.append(f"{course['subject']}: page body lookup failed: {type(exc).__name__}")
 
     # Homeroom target.
-    h = plan["homeroom"]
-    hres = _resolve_target(client, h["course_id"], h["to_page_slug"], "Homeroom", plan["to_week"])
-    live["homeroom"] = hres
-    blockers.extend(hres["blockers"])
-    h["page_id"] = hres["page_id"]
-    h["already_front_page"] = hres["front_page"]
-    h["front_page_action"] = "SKIP" if hres["front_page"] else "SET_FRONT_PAGE"
+    h = plan.get("homeroom")
+    if h:
+        hres = _resolve_target(client, h["course_id"], h["to_page_slug"], "Homeroom", plan["to_week"])
+        live["homeroom"] = hres
+        blockers.extend(hres["blockers"])
+        h["page_id"] = hres["page_id"]
+        h["already_front_page"] = hres["front_page"]
+        h["front_page_action"] = "SKIP" if hres["front_page"] else "SET_FRONT_PAGE"
+        if hres["page_id"] is not None:
+            try:
+                from . import homeroom as homeroom_mod
+                current = client.get_page(h["course_id"], h["to_page_slug"])
+                matches = homeroom_mod._body_hash(current.get("body") or "") == h.get("proposed_content_hash")
+                h["page_body_action"] = "SKIP" if matches else "UPDATE"
+                hres["page_body_action"] = h["page_body_action"]
+            except Exception as exc:  # noqa: BLE001
+                blockers.append(f"homeroom: page body lookup failed: {type(exc).__name__}")
+    else:
+        live["homeroom"] = {"action": "SKIP", "blockers": []}
+
+    # Approved assignment routes and exact duplicate dispositions.
+    assignments_by_course: dict[int, list[dict[str, Any]]] = {}
+    groups_by_course: dict[int, set[str]] = {}
+    for assignment in plan.get("assignments", []):
+        cid = int(assignment["course_id"])
+        if cid not in groups_by_course:
+            try:
+                groups_by_course[cid] = {str(g.get("name") or "") for g in client.list_assignment_groups(cid)}
+                assignments_by_course[cid] = client.list_assignments(cid)
+            except Exception as exc:  # noqa: BLE001
+                blockers.append(f"course {cid}: assignment lookup failed: {type(exc).__name__}")
+                groups_by_course[cid], assignments_by_course[cid] = set(), []
+        group = str(assignment.get("assignment_group") or "")
+        if group not in groups_by_course[cid]:
+            blockers.append(f"assignment {assignment.get('title')!r}: group {group!r} missing")
+        exact = next((item for item in assignments_by_course[cid]
+                      if (item.get("name") or item.get("title")) == assignment.get("title")
+                      and str(item.get("due_at") or "")[:10] == str(assignment.get("due_utc") or "")[:10]), None)
+        assignment["classification"] = "EXACT_MATCH" if exact else "NEW"
+        assignment["action"] = "SKIP" if exact else "CREATE"
+        live["assignments"][assignment.get("title")] = {
+            "classification": assignment["classification"], "action": assignment["action"]}
 
     # Announcement duplicate classification (week-aware).
+    target_ledger = ledger.load_rollover_ledger(to_quarter, to_week) or {}
+    prior_announcements = target_ledger.get("weekly_announcements") or []
     for a in plan.get("weekly_announcements", []):
         cid = a["course_id"]
         if cid is None:
             continue
         try:
             existing = client.list_announcements(int(cid))
-        except Exception:  # noqa: BLE001
+        except Exception as exc:  # noqa: BLE001
+            blockers.append(f"{a['subject']}: weekly announcement lookup failed: {type(exc).__name__}")
             existing = []
         a["classification"] = deploy_preflight.classify_weekly_announcement(a, existing)
+        message_hash = hashlib.sha256(str(a.get("message", "")).encode("utf-8")).hexdigest()
+        if a["classification"] == "PRIOR_WEEK_SAME_TITLE" and any(
+            item.get("subject") == a.get("subject")
+            and item.get("title") == a.get("title")
+            and item.get("message_hash") == message_hash
+            and item.get("verified") is True
+            for item in prior_announcements
+        ):
+            # An immediate Publish-now post has no delayed_post_at. Only the
+            # verified ledger for this target week can prove it was ours.
+            a["classification"] = "EXACT_MATCH"
+        a["action"] = "SKIP" if a["classification"] == "EXACT_MATCH" else "CREATE"
+        live["weekly_announcements"][a["title"]] = {
+            "classification": a["classification"], "action": a["action"]}
         if a["classification"] == "BODY_CHANGED_SAME_WEEK":
             blockers.append(f"{a['subject']}: weekly update body changed within the same week (owner review required)")
+
+    # Approved assessment reminders are Canvas announcements without delay.
+    announcement_cache: dict[int, list[dict[str, Any]]] = {}
+    for reminder in plan.get("assessment_reminders", []):
+        cid = int(reminder["course_id"])
+        if cid not in announcement_cache:
+            try:
+                announcement_cache[cid] = client.list_announcements(cid)
+            except Exception as exc:  # noqa: BLE001
+                blockers.append(f"course {cid}: reminder lookup failed: {type(exc).__name__}")
+                announcement_cache[cid] = []
+        exact = next((item for item in announcement_cache[cid]
+                      if item.get("title") == reminder.get("title")
+                      and item.get("message", "") == reminder.get("message", "")), None)
+        reminder["classification"] = "EXACT_MATCH" if exact else "NEW"
+        reminder["action"] = "SKIP" if exact else "CREATE"
+        live["assessment_reminders"][reminder.get("title")] = {
+            "classification": reminder["classification"], "action": reminder["action"]}
 
     return {
         **readiness,
@@ -219,6 +314,8 @@ def execute(
     owner_confirmation: str,
     today: date | None = None,
     manifest: dict[str, Any] | None = None,
+    partial: bool = False,
+    early_content_only: bool = False,
 ) -> dict[str, Any]:
     """Execute the approved rollover (ordered, stop-on-failure, idempotent)."""
     to_code = plan_code = (manifest or {}).get("to_week") or ""
@@ -248,10 +345,14 @@ def execute(
         "started_at": _now(),
         "verb_totals": counts,
         "academic_front_pages": [],
+        "pages": [],
+        "assignments": [],
         "homeroom": {},
         "weekly_announcements": [],
+        "assessment_reminders": [],
         "failures": [],
-        "notes": [],
+        "notes": (["Early publish: page bodies, approved assignments, and reminders only; front pages and weekly updates remain for Friday 4 PM."]
+                  if early_content_only else []),
     }
     ledger.write_rollover_ledger(to_quarter, to_week, report)
 
@@ -269,6 +370,38 @@ def execute(
             report["failures"].append(f"{subject}: {res['blockers'][0]}")
             return _finish(to_quarter, to_week, report, schedule.BLOCKED, counts)
         pid = res["page_id"]
+        body = course.get("page_body") or ""
+        if not body:
+            report["failures"].append(f"{subject}: approved page body missing")
+            return _finish(to_quarter, to_week, report, schedule.BLOCKED, counts)
+        try:
+            current = client.get_page(cid, course["to_page_slug"])
+            counts["GET"] += 1
+            if deploy_plan._sha(current.get("body") or "") != course.get("to_page_hash"):
+                client.update_page(
+                    cid, course["to_page_slug"], body=body,
+                    published=True, front_page=bool(current.get("front_page")),
+                )
+                counts["PUT"] += 1
+            page_readback = client.get_page(cid, course["to_page_slug"])
+            counts["GET"] += 1
+        except Exception as exc:  # noqa: BLE001
+            report["failures"].append(f"{subject}: page update failed: {type(exc).__name__}")
+            return _finish(to_quarter, to_week, report, schedule.BLOCKED, counts)
+        page_ok = deploy_plan._sha(page_readback.get("body") or "") == course.get("to_page_hash")
+        report["pages"].append({
+            "subject": subject, "course_id": cid, "page_id": pid,
+            "disposition": "PUBLISHED_VERIFIED" if page_ok else "FAILED", "verified": page_ok,
+        })
+        if not page_ok:
+            report["failures"].append(f"{subject}: page body readback mismatch")
+            return _finish(to_quarter, to_week, report, schedule.BLOCKED, counts)
+        if early_content_only:
+            report["academic_front_pages"].append({
+                "subject": subject, "course_id": cid, "page_id": pid,
+                "disposition": "HELD_UNTIL_4PM", "verified": True,
+            })
+            continue
         if res["front_page"]:
             report["academic_front_pages"].append(
                 {"subject": subject, "course_id": cid, "page_id": pid, "disposition": "ALREADY_FRONT_PAGE"}
@@ -289,9 +422,171 @@ def execute(
         })
         if not ok:
             report["failures"].append(f"{subject}: front-page readback mismatch")
+            return _finish(to_quarter, to_week, report, schedule.BLOCKED, counts)
 
     # ---- C. Homeroom rollover --------------------------------------------
-    h = manifest["homeroom"]
+    h = manifest.get("homeroom")
+    if h:
+        homeroom_result = _execute_homeroom(
+            client, h, to_code=to_code, counts=counts, report=report,
+            to_quarter=to_quarter, to_week=to_week,
+            early_content_only=early_content_only,
+        )
+        if homeroom_result is not None:
+            return homeroom_result
+
+    # ---- D. Approved assignments ----------------------------------------
+    for a in manifest.get("assignments", []):
+        title = a["title"]
+        try:
+            exact = next((item for item in client.list_assignments(a["course_id"])
+                          if (item.get("name") or item.get("title")) == title
+                          and str(item.get("due_at") or "")[:10] == str(a.get("due_utc") or "")[:10]), None)
+            counts["GET"] += 1
+            if exact:
+                created = exact
+                disposition = "ALREADY_EXISTS"
+            else:
+                created = client.create_assignment(
+                    a["course_id"], title=title, description="",
+                    assignment_group=a["assignment_group"], points=a["points_possible"],
+                    grading_type=a["grading_type"],
+                    submission_type=(a.get("submission_types") or ["on_paper"])[0],
+                    due_at=a.get("due_utc") or "",
+                    counts_toward_final_grade=not a.get("omit_from_final_grade", False),
+                    published=True,
+                )
+                counts["POST"] += 1
+                disposition = "PUBLISHED_VERIFIED"
+            readback = client.get_assignment(a["course_id"], str(created.get("id")))
+            counts["GET"] += 1
+            ok = ((readback.get("name") or "") == title
+                  and str(readback.get("due_at") or "")[:10] == str(a.get("due_utc") or "")[:10])
+        except Exception as exc:  # noqa: BLE001
+            report["failures"].append(f"assignment {title!r}: write failed: {type(exc).__name__}")
+            return _finish(to_quarter, to_week, report, schedule.BLOCKED, counts)
+        report["assignments"].append({
+            "subject": a.get("course"), "course_id": a["course_id"], "title": title,
+            "assignment_id": created.get("id"), "disposition": disposition if ok else "FAILED",
+            "verified": ok,
+        })
+        if not ok:
+            report["failures"].append(f"assignment {title!r}: readback mismatch")
+            return _finish(to_quarter, to_week, report, schedule.BLOCKED, counts)
+
+    # ---- E. Weekly updates and approved reminders -----------------------
+    for a in ([] if early_content_only else manifest.get("weekly_announcements", [])):
+        cid = a["course_id"]
+        if a.get("classification") == "EXACT_MATCH":
+            report["weekly_announcements"].append(
+                {"subject": a["subject"], "title": a["title"],
+                 "message_hash": hashlib.sha256(str(a.get("message", "")).encode("utf-8")).hexdigest(),
+                 "disposition": "ALREADY_EXISTS", "verified": True})
+            continue
+        try:
+            created = client.create_announcement(
+                cid, title=a["title"], message=a["message"], published=True,
+                delayed_post_at=a.get("delayed_post_at"))
+            counts["POST"] += 1
+            tid = created.get("id")
+            announcement_readback = client.get_announcement(cid, str(tid))
+            counts["GET"] += 1
+        except Exception as exc:  # noqa: BLE001
+            report["failures"].append(f"{a['subject']}: announcement write failed: {type(exc).__name__}")
+            return _finish(to_quarter, to_week, report, schedule.BLOCKED, counts)
+        # A run before 4 PM is held; a due/manual run may already be posted.
+        in_feed = False
+        try:
+            in_feed = any((x.get("title") or "") == a["title"] for x in client.list_active_announcements())
+            counts["GET"] += 1
+        except Exception:  # noqa: BLE001
+            in_feed = False
+        from scripts.canvas_llm_intake import scheduling as sched
+        state = sched.classify_announcement(
+            delayed_post_at=a.get("delayed_post_at"), posted_at=created.get("posted_at"),
+            published=created.get("published"), in_active_feed=in_feed)
+        content_ok = (
+            announcement_readback.get("title") == a["title"]
+            and announcement_readback.get("message", "") == a["message"]
+        )
+        ok = content_ok and state in (sched.HELD_SCHEDULED, sched.POSTED)
+        report["weekly_announcements"].append({
+            "subject": a["subject"], "title": a["title"], "announcement_id": tid,
+            "message_hash": hashlib.sha256(str(a.get("message", "")).encode("utf-8")).hexdigest(),
+            "delayed_post_at": a.get("delayed_post_at"), "state": state,
+            "disposition": "PUBLISHED_VERIFIED" if ok else "FAILED", "verified": ok,
+        })
+        if not ok:
+            report["failures"].append(f"{a['subject']}: announcement visibility mismatch ({state})")
+            return _finish(to_quarter, to_week, report, schedule.BLOCKED, counts)
+
+    for a in manifest.get("assessment_reminders", []):
+        title = a["title"]
+        try:
+            exact = next((item for item in client.list_announcements(a["course_id"])
+                          if item.get("title") == title and item.get("message") == a.get("message", "")), None)
+            counts["GET"] += 1
+            if exact:
+                created = exact
+                disposition = "ALREADY_EXISTS"
+            else:
+                created = client.create_announcement(
+                    a["course_id"], title=title, message=a.get("message", ""),
+                    published=True, delayed_post_at=None,
+                )
+                counts["POST"] += 1
+                disposition = "PUBLISHED_VERIFIED"
+            readback = client.get_announcement(a["course_id"], str(created.get("id")))
+            counts["GET"] += 1
+            ok = readback.get("title") == title and readback.get("message", "") == a.get("message", "")
+        except Exception as exc:  # noqa: BLE001
+            report["failures"].append(f"reminder {title!r}: write failed: {type(exc).__name__}")
+            return _finish(to_quarter, to_week, report, schedule.BLOCKED, counts)
+        report["assessment_reminders"].append({
+            "subject": a.get("subject"), "course_id": a["course_id"], "title": title,
+            "announcement_id": created.get("id"), "disposition": disposition if ok else "FAILED",
+            "verified": ok,
+        })
+        if not ok:
+            report["failures"].append(f"reminder {title!r}: readback mismatch")
+            return _finish(to_quarter, to_week, report, schedule.BLOCKED, counts)
+
+    # ---- F. Finalize ------------------------------------------------------
+    report["finished_at"] = _now()
+    report["communication"] = {"email_sends": 0, "canvas_inbox_sends": 0}
+    if early_content_only:
+        report["lifecycle"] = "EARLY_CONTENT_PUBLISHED_VERIFIED"
+        report["warning"] = "Weekly updates and front-page switches remain held until Friday at 4:00 PM America/New_York."
+        ledger.write_rollover_ledger(to_quarter, to_week, report)
+        _record_publish_event(to_quarter, to_week, report, partial=True)
+        return report
+    if partial:
+        report["lifecycle"] = "PARTIAL_PUBLISHED_VERIFIED"
+        report["warning"] = "Families may see mixed weeks; only explicitly approved courses were published."
+        ledger.write_rollover_ledger(to_quarter, to_week, report)
+        _record_publish_event(to_quarter, to_week, report, partial=True)
+        return report
+    report["lifecycle"] = schedule.PUBLISHED_VERIFIED
+    ledger.write_rollover_ledger(to_quarter, to_week, report)
+    deploy_ledger.finalize_published_verified(
+        to_quarter, to_week,
+        {
+            "school_year": report["school_year"], "quarter": to_quarter, "week": to_week,
+            "week_code": report["to_week"], "verified_at": report["finished_at"],
+            "status": "PUBLISHED_VERIFIED", "publisher": "FRIDAY_ROLLOVER",
+            "pages": report["pages"], "assignments": report["assignments"],
+            "weekly_announcements": report["weekly_announcements"],
+            "assessment_reminders": report["assessment_reminders"],
+            "homeroom": report["homeroom"], "communication": report["communication"],
+        },
+    )
+    _record_publish_event(to_quarter, to_week, report, partial=False)
+    return report
+
+
+def _execute_homeroom(client, h, *, to_code, counts, report, to_quarter, to_week,
+                      early_content_only=False):
+    """Publish and verify Homeroom; return a blocking report on failure."""
     try:
         hres = _resolve_target(client, h["course_id"], h["to_page_slug"], "Homeroom", to_code)
         counts["GET"] += 1
@@ -326,70 +621,185 @@ def execute(
         except Exception as exc:  # noqa: BLE001
             report["failures"].append(f"homeroom: copy-forward write failed: {type(exc).__name__}")
             return _finish(to_quarter, to_week, report, schedule.BLOCKED, counts)
-    if not hres["front_page"]:
+    if early_content_only:
+        front_page_disposition = "HELD_UNTIL_4PM"
+    elif not hres["front_page"]:
         try:
             client.set_front_page(h["course_id"], hres["page_id"])
             counts["PUT"] += 1
+            front_page_disposition = "SET_FRONT_PAGE"
         except Exception as exc:  # noqa: BLE001
             report["failures"].append(f"homeroom: front-page write failed: {type(exc).__name__}")
             return _finish(to_quarter, to_week, report, schedule.BLOCKED, counts)
+    else:
+        front_page_disposition = "ALREADY_FRONT_PAGE"
     try:
         hread = client.get_page(h["course_id"], h["to_page_slug"])
         counts["GET"] += 1
     except Exception as exc:  # noqa: BLE001
         report["failures"].append(f"homeroom: readback failed: {type(exc).__name__}")
         return _finish(to_quarter, to_week, report, schedule.BLOCKED, counts)
-    h_ok = str(hread.get("page_id")) == str(hres["page_id"]) and bool(hread.get("front_page"))
+    h_ok = (
+        str(hread.get("page_id")) == str(hres["page_id"])
+        and (early_content_only or bool(hread.get("front_page")))
+        and homeroom_mod._body_hash(hread.get("body") or "") == proposed_hash
+    )
     report["homeroom"] = {
         "course_id": h["course_id"], "page_id": hres["page_id"],
         "disposition": "PUBLISHED_VERIFIED" if h_ok else "FAILED", "verified": h_ok,
+        "front_page_disposition": front_page_disposition,
     }
     if not h_ok:
         report["failures"].append("homeroom: front-page readback mismatch")
-
-    # ---- D. Weekly update announcements ----------------------------------
-    for a in manifest.get("weekly_announcements", []):
-        cid = a["course_id"]
-        if a.get("classification") == "EXACT_MATCH":
-            report["weekly_announcements"].append(
-                {"subject": a["subject"], "disposition": "ALREADY_EXISTS", "verified": True})
-            continue
-        try:
-            created = client.create_announcement(
-                cid, title=a["title"], message=a["message"], published=True,
-                delayed_post_at=a.get("delayed_post_at"))
-            counts["POST"] += 1
-            tid = created.get("id")
-        except Exception as exc:  # noqa: BLE001
-            report["failures"].append(f"{a['subject']}: announcement write failed: {type(exc).__name__}")
-            return _finish(to_quarter, to_week, report, schedule.BLOCKED, counts)
-        # Verify scheduling/visibility (HELD_SCHEDULED when future + not active).
-        in_feed = False
-        try:
-            in_feed = any((x.get("title") or "") == a["title"] for x in client.list_active_announcements())
-            counts["GET"] += 1
-        except Exception:  # noqa: BLE001
-            in_feed = False
-        from scripts.canvas_llm_intake import scheduling as sched
-        state = sched.classify_announcement(
-            delayed_post_at=a.get("delayed_post_at"), posted_at=created.get("posted_at"),
-            published=created.get("published"), in_active_feed=in_feed)
-        ok = state == sched.HELD_SCHEDULED
-        report["weekly_announcements"].append({
-            "subject": a["subject"], "title": a["title"], "announcement_id": tid,
-            "delayed_post_at": a.get("delayed_post_at"), "state": state,
-            "disposition": "PUBLISHED_VERIFIED" if ok else "FAILED", "verified": ok,
-        })
-        if not ok:
-            report["failures"].append(f"{a['subject']}: announcement visibility mismatch ({state})")
-
-    # ---- E. Finalize ------------------------------------------------------
-    report["finished_at"] = _now()
-    if report["failures"]:
         return _finish(to_quarter, to_week, report, schedule.BLOCKED, counts)
-    report["lifecycle"] = schedule.PUBLISHED_VERIFIED
-    report["communication"] = {"email_sends": 0, "canvas_inbox_sends": 0}
-    ledger.write_rollover_ledger(to_quarter, to_week, report)
+
+    return None
+
+
+def _record_publish_event(to_quarter, to_week, report, *, partial):
+    try:
+        from scripts.canvas_planner.events import append_event
+        append_event(
+            imf.staging_dir(to_quarter, to_week),
+            action="partial_package_published" if partial else "weekly_package_published",
+            actor="friday_rollover",
+            reason=("Owner explicitly published approved courses only."
+                    if partial else "Friday rollover published and verified the canonical package."),
+            after={"week": report["to_week"], "publisher": "FRIDAY_ROLLOVER", "partial": partial},
+        )
+    except OSError:
+        pass
+
+
+def publish_weekly_package(
+    from_quarter: int, from_week: int, to_quarter: int, to_week: int, *,
+    client: DeployClient, owner_confirmation: str, today: date | None = None,
+) -> dict[str, Any]:
+    """Publish the all-or-nothing canonical package through the rollover engine."""
+    readiness = run_preflight(
+        from_quarter, from_week, to_quarter, to_week, client=client, today=today,
+    )
+    if not readiness["ready"]:
+        raise RolloverBlocked("Friday rollover is blocked: " + "; ".join(readiness["blockers"]))
+    return execute(
+        from_quarter, from_week, to_quarter, to_week, client=client,
+        owner_confirmation=owner_confirmation, today=today,
+        manifest=readiness["manifest"], partial=False,
+    )
+
+
+def publish_approved_courses_only(
+    from_quarter: int, from_week: int, to_quarter: int, to_week: int, *,
+    client: DeployClient, owner_confirmation: str, today: date | None = None,
+) -> dict[str, Any]:
+    """Use the same engine for the explicit mixed-week exception."""
+    if (owner_confirmation or "").strip().upper() != "PUBLISH APPROVED COURSES":
+        raise RolloverBlocked(
+            "partial publish confirmation missing (must be exactly 'PUBLISH APPROVED COURSES')"
+        )
+    source = rollover_manifest.build_rollover_manifest(
+        from_quarter, from_week, to_quarter, to_week, today=today,
+    )
+    approved = {c["subject"] for c in source.get("academic_courses", []) if c.get("approved")}
+    include_homeroom = bool((source.get("homeroom") or {}).get("approved"))
+    if not approved and not include_homeroom:
+        raise RolloverBlocked("no approved course package is available")
+    plan = copy.deepcopy(source)
+    plan["academic_courses"] = [c for c in plan.get("academic_courses", []) if c["subject"] in approved]
+    plan["weekly_announcements"] = [a for a in plan.get("weekly_announcements", []) if a["subject"] in approved]
+    plan["assignments"] = [a for a in plan.get("assignments", []) if a.get("course") in approved]
+    plan["assessment_reminders"] = [a for a in plan.get("assessment_reminders", []) if a.get("subject") in approved]
+    plan["homeroom"] = plan.get("homeroom") if include_homeroom else None
+    report = execute(
+        from_quarter, from_week, to_quarter, to_week, client=client,
+        owner_confirmation=f"ROLLOVER {plan['to_week']}", today=today,
+        manifest=plan, partial=True,
+    )
+    report["published_courses"] = sorted(approved | ({"homeroom"} if include_homeroom else set()))
+    return report
+
+
+def publish_now(
+    from_quarter: int, from_week: int, to_quarter: int, to_week: int, *,
+    client: DeployClient, courses: list[str], owner_confirmation: str,
+    now: datetime | None = None, today: date | None = None,
+) -> dict[str, Any]:
+    """Publish a selected approved course package using the rollover executor."""
+    from zoneinfo import ZoneInfo
+
+    from scripts.instructional_weeks import week_range
+    from scripts.canvas_llm_intake import week_resolution as wr
+
+    plan = rollover_manifest.build_rollover_manifest(
+        from_quarter, from_week, to_quarter, to_week, today=today,
+    )
+    target = wr.find_week(to_quarter, to_week) or {}
+    bounds = week_range(target)
+    if bounds is None:
+        raise RolloverBlocked("target week dates are unavailable")
+    start_day = bounds[0]
+    local_now = (now or datetime.now(ZoneInfo(schedule.NEW_YORK))).astimezone(ZoneInfo(schedule.NEW_YORK))
+    deadline = datetime.fromisoformat(
+        schedule.friday_rollover_scheduled_at(start_day.isoformat()).replace("Z", "+00:00")
+    ).astimezone(ZoneInfo(schedule.NEW_YORK))
+    early = local_now < deadline
+    after_start = local_now.date() >= start_day
+    selected = {str(course).strip().lower() for course in courses}
+    allowed = {item["subject"] for item in plan["academic_courses"]} | {"homeroom"}
+    if selected == {"all"}:
+        selected = set(allowed)
+    if not selected or not selected <= allowed:
+        raise RolloverBlocked("select one or more active courses, or ALL")
+    phrase_courses = "ALL" if selected == allowed else ",".join(sorted(selected))
+    expected = f"PUBLISH NOW {plan['to_week']} {phrase_courses}".upper()
+    if (owner_confirmation or "").strip().upper() != expected:
+        raise RolloverBlocked(f"type exactly: {expected}")
+
+    selected_academic = [c for c in plan["academic_courses"] if c["subject"] in selected]
+    unapproved = [c["label"] for c in selected_academic if not c["approved"]]
+    if "homeroom" in selected and not plan["homeroom"].get("approved"):
+        unapproved.append("Homeroom newsletter")
+    if unapproved:
+        raise RolloverBlocked("these selected packages still need approval: " + ", ".join(unapproved))
+
+    scoped = copy.deepcopy(plan)
+    scoped["academic_courses"] = selected_academic
+    scoped["assignments"] = [a for a in plan["assignments"] if a.get("course") in selected]
+    scoped["assessment_reminders"] = [a for a in plan["assessment_reminders"] if a.get("subject") in selected]
+    scoped["weekly_announcements"] = [a for a in plan["weekly_announcements"] if a.get("subject") in selected]
+    if early:
+        scoped["weekly_announcements"] = []
+        scoped["homeroom"] = plan["homeroom"] if "homeroom" in selected else None
+    else:
+        scoped["homeroom"] = plan["homeroom"] if "homeroom" in selected else None
+        for announcement in scoped["weekly_announcements"]:
+            announcement["delayed_post_at"] = None
+
+    readiness = run_preflight(
+        from_quarter, from_week, to_quarter, to_week, client=client, today=today,
+        manifest_override=scoped,
+    )
+    if readiness["blockers"]:
+        raise RolloverBlocked("publish now preflight blocked: " + "; ".join(readiness["blockers"]))
+    if early:
+        report = execute(
+            from_quarter, from_week, to_quarter, to_week, client=client,
+            owner_confirmation=f"ROLLOVER {plan['to_week']}", today=today,
+            manifest=scoped, partial=True, early_content_only=True,
+        )
+    else:
+        is_all = selected == allowed
+        report = execute(
+            from_quarter, from_week, to_quarter, to_week, client=client,
+            owner_confirmation=f"ROLLOVER {plan['to_week']}", today=today,
+            manifest=scoped, partial=not is_all,
+        )
+    report["publish_now_mode"] = "EARLY" if early else ("AFTER_MONDAY_START" if after_start else "LATE")
+    report["warning"] = (
+        "The instructional week has already started; families may already have seen other materials."
+        if after_start else report.get("warning")
+    )
+    report["published_courses"] = sorted(selected)
     return report
 
 

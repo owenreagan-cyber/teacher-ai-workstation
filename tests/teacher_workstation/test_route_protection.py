@@ -30,6 +30,8 @@ if str(REPO) not in sys.path:
     sys.path.insert(0, str(REPO))
 
 from scripts.teacher_workstation import adapter, deploy, mutate, server  # noqa: E402
+from scripts.canvas_planner import ai_review, approval_bundle, source_sync  # noqa: E402
+from scripts.canvas_planner import friday  # noqa: E402
 
 MB = 1024 * 1024
 
@@ -44,8 +46,21 @@ MUTATING_ROUTES = [
     ("POST", "/api/weeks/2/3/announcements/x", {"source_hash": "h", "subject": "math", "transition": "x"}, mutate, "edit_announcement"),
     ("POST", "/api/weeks/2/3/approve", {"source_hash": "h", "subject": "math", "artifact_type": "page", "expected_artifact_hash": "a"}, mutate, "approve_artifact"),
     ("POST", "/api/weeks/2/3/revoke-approval", {"source_hash": "h", "subject": "math", "artifact_type": "page"}, mutate, "revoke_artifact"),
+    ("POST", "/api/weeks/2/3/resync-source", {"source_hash": "h"}, source_sync, "resync"),
+    ("POST", "/api/weeks/2/3/daily-source-check", {}, source_sync, "daily_check"),
+    ("POST", "/api/weeks/2/3/change-sheet-preview", {"spreadsheet_id": "x", "tab": "T", "name": "N"}, source_sync, "preview_sheet"),
+    ("POST", "/api/weeks/2/3/change-sheet-save", {"expected_preview_hash": "x"}, source_sync, "save_sheet"),
+    ("POST", "/api/weeks/2/3/apply-source", {"source_hash": "h"}, source_sync, "decide"),
+    ("POST", "/api/weeks/2/3/keep-source", {"source_hash": "h"}, source_sync, "decide"),
+    ("POST", "/api/weeks/2/3/undo-plan", {"source_hash": "h"}, mutate, "undo_last_plan_edit"),
+    ("POST", "/api/weeks/2/3/approve-course", {"source_hash": "h", "course": "math", "expected_hashes": {}}, approval_bundle, "approve_course"),
+    ("POST", "/api/weeks/2/3/ai-findings/f1", {"source_hash": "h", "answer": "DECLINE"}, ai_review, "answer_finding"),
     ("POST", "/api/weeks/2/3/preflight", {"production": False}, deploy, "run_preflight"),
     ("POST", "/api/weeks/2/3/deploy", {"preflight_id": "p", "owner_confirmation": "DEPLOY Q2W3", "production": True}, deploy, "run_deploy"),
+    ("POST", "/api/weeks/2/3/rollover-dry-run", {"production": False}, deploy, "run_rollover_dry_run"),
+    ("POST", "/api/weeks/2/3/rollover-partial", {"owner_confirmation": "PUBLISH APPROVED COURSES", "production": True}, deploy, "run_rollover_partial"),
+    ("POST", "/api/weeks/2/3/publish-now", {"courses": ["math"], "owner_confirmation": "PUBLISH NOW Q2W3 MATH", "production": True}, deploy, "run_publish_now"),
+    ("POST", "/api/weeks/2/3/automatic-rollover", {"enabled": True}, friday, "set_automatic_rollover"),
     ("DELETE", "/api/weeks/2/3/overrides/math:Monday", None, mutate, "restore_source"),
 ]
 
@@ -185,6 +200,18 @@ class RouteProtectionTest(unittest.TestCase):
             self.assertGreaterEqual(len(self.token), 32)
         finally:
             other.server_close()
+
+    def test_planner_status_route_uses_local_projection(self) -> None:
+        with mock.patch(
+            "scripts.canvas_planner.service.CanvasPlannerService.weekly_status",
+            return_value={"domain": "canvas_weekly_planning", "contract_version": 1},
+        ) as projected:
+            status, raw = self.request(
+                "GET", "/api/planner-status/2/3", headers={"Host": f"127.0.0.1:{self.port}"}
+            )
+        self.assertEqual(status, 200)
+        self.assertEqual(json.loads(raw)["domain"], "canvas_weekly_planning")
+        projected.assert_called_once_with(2, 3)
 
     # --- Host ------------------------------------------------------------------
     def test_wrong_host_rejected_on_get_and_mutations(self) -> None:

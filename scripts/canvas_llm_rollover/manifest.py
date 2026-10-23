@@ -4,7 +4,8 @@ Produces the exact rollover plan the owner reviews before any write:
 
     academic_courses   : front-page actions for each active subject.
     homeroom           : newsletter copy-forward + front-page action.
-    weekly_announcements: subject-isolated weekly updates (with narrative),
+    weekly_announcements: exact subject-isolated weekly updates from the
+                          same page + announcement projection shown in Preview,
                           agenda-hash bound and scheduled Friday 4 PM.
 
 Reuses the existing intake staging packet (page bodies + approvals + drafted
@@ -24,7 +25,6 @@ from scripts.canvas_llm_intake import week_resolution as wr
 from scripts.canvas_llm_deploy import plan as plan_mod
 
 from . import homeroom
-from . import narrative
 from . import schedule
 
 SUBJECT_LABELS = {
@@ -121,22 +121,36 @@ def build_rollover_manifest(
 
     active = IC.active_subject_keys_for_quarter(to_quarter)
     pkt = plan_mod.load_packet(to_quarter, to_week)
+    deploy_plan = plan_mod.build_plan(to_quarter, to_week)
     approvals = pkt.get("approvals", {})
     slug = plan_mod._slug_for(to_code)
     agenda_html = pkt.get("page_bodies", {})
 
-    prior_norm = load_normalized_week(from_quarter, from_week)
-    next_norm = load_normalized_week(to_quarter, to_week)
-
     academic_courses: list[dict[str, Any]] = []
     for subject in active:
         html = agenda_html.get(subject, "")
+        subject_approvals = (approvals.get("subjects") or {}).get(subject, {})
+        required = ["page", "announcement", "assignments"]
+        if any(r.get("course") == SUBJECT_LABELS.get(subject, subject)
+               for r in pkt.get("reminders", [])):
+            required.append("assessment_reminder")
+        from scripts.canvas_planner.approval_bundle import current_bundle
+        current_hashes = current_bundle(to_quarter, to_week, subject)["hashes"]
+        approved_now = all(
+            (subject_approvals.get(kind) or {}).get("state") == "APPROVED"
+            and (subject_approvals.get(kind) or {}).get("draft_hash") == current_hashes.get(kind)
+            for kind in required
+        )
         academic_courses.append({
             "subject": subject,
             "label": SUBJECT_LABELS.get(subject, subject),
             "course_id": _course_id(subject),
             "to_page_slug": slug,
             "to_page_hash": _sha(html),
+            "page_body": html,
+            "approved": approved_now,
+            "current_hashes": current_hashes,
+            "required_approvals": required,
             "front_page_action": "SET_FRONT_PAGE",
         })
 
@@ -151,27 +165,38 @@ def build_rollover_manifest(
         "to_page_id": None,
         "to_page_slug": slug,
         "source_content_hash": homeroom.content_hash(approved),
-        "proposed_content_hash": homeroom.content_hash(proposed),
+        "proposed_content_hash": _sha(homeroom.render_proposed(proposed)),
         "proposed_content": proposed,
+        "approved": False,
         "front_page_action": "SET_FRONT_PAGE",
     }
+    homeroom_approval_path = (
+        imf.staging_dir(to_quarter, to_week) / "planner" / "homeroom-approval.json"
+    )
+    try:
+        homeroom_approval = json.loads(homeroom_approval_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        homeroom_approval = {}
+    try:
+        from scripts.canvas_planner.approval_bundle import current_bundle
+        current_homeroom_hash = current_bundle(to_quarter, to_week, "homeroom")["hashes"]["page"]
+    except (KeyError, OSError, ValueError):
+        current_homeroom_hash = ""
+    homeroom_block["approval_hash"] = (homeroom_approval.get("hashes") or {}).get("page")
+    homeroom_block["approved"] = bool(
+        homeroom_approval.get("state") == "APPROVED"
+        and homeroom_block["approval_hash"]
+        and homeroom_block["approval_hash"] == current_homeroom_hash
+    )
 
-    # Weekly update announcements (subject-isolated narrative).
+    # Weekly updates use the exact same canonical projection as UI Preview.
     weekly_announcements: list[dict[str, Any]] = []
     drafted = pkt.get("announcements", [])
     for subject in active:
         label = SUBJECT_LABELS.get(subject, subject)
         ann = next((x for x in drafted if x.get("course") == label), None) or {}
         html = agenda_html.get(subject, "")
-        body = compose_weekly_update_body(
-            subject=subject,
-            title=ann.get("title", f"{label} Canvas Weekly Update"),
-            week_in_review=narrative.week_in_review(subject, prior_norm),
-            next_week_overview=narrative.next_week_overview(subject, next_norm),
-            transition=ann.get("transition", f"The Canvas {label} page has been updated. Please see the upcoming week ahead."),
-            agenda_html=html,
-            closing=ann.get("closing", "Have a great weekend!\n\nMr. Reagan"),
-        )
+        body = plan_mod.compose_announcement_body(ann, html)
         weekly_announcements.append({
             "subject": subject,
             "label": label,
@@ -202,6 +227,8 @@ def build_rollover_manifest(
         "academic_courses": academic_courses,
         "homeroom": homeroom_block,
         "weekly_announcements": weekly_announcements,
+        "assignments": deploy_plan.get("assignments", []),
+        "assessment_reminders": deploy_plan.get("assessment_reminders", []),
         "approvals": plan_mod.approval_snapshot_hash(approvals),
         "approval_snapshot_hash": plan_mod.approval_snapshot_hash(approvals),
         "source_hash": source_hash,

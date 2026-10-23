@@ -21,6 +21,51 @@ from scripts.teacher_workstation import deploy
 
 
 class FridayWorkflowTest(unittest.TestCase):
+    def test_canvas_readback_strips_only_known_global_assets(self) -> None:
+        approved = '<div id="kl_wrapper_3"><p>Approved agenda</p></div>'
+        live = (
+            '<link rel="stylesheet" '
+            'href="https://instructure-uploads.s3.amazonaws.com/account_1/'
+            'attachments/219636/canvas_global_app.css">'
+            + approved
+            + '<script src="https://instructure-uploads.s3.amazonaws.com/account_1/'
+            'attachments/219635/canvas_global_app.js"></script>'
+        )
+
+        self.assertEqual(rollover._canvas_owned_body(live), approved)
+        self.assertEqual(
+            rollover._canvas_body_hash(live),
+            hashlib.sha256(approved.encode("utf-8")).hexdigest(),
+        )
+
+    def test_canvas_readback_still_rejects_teacher_content_change(self) -> None:
+        approved = '<div id="kl_wrapper_3"><p>Approved agenda</p></div>'
+        changed = '<div id="kl_wrapper_3"><p>Changed agenda</p></div>'
+        live = (
+            '<link rel="stylesheet" href="https://example.instructure.com/canvas_global_app.css">'
+            + changed
+            + '<script src="https://example.instructure.com/canvas_global_app.js"></script>'
+        )
+
+        self.assertNotEqual(
+            rollover._canvas_body_hash(live),
+            hashlib.sha256(approved.encode("utf-8")).hexdigest(),
+        )
+
+    def test_canvas_readback_does_not_strip_unrelated_assets(self) -> None:
+        approved = '<div id="kl_wrapper_3"><p>Approved agenda</p></div>'
+        live = (
+            '<link rel="stylesheet" href="https://example.com/custom.css">'
+            + approved
+            + '<script src="https://example.com/custom.js"></script>'
+        )
+
+        self.assertEqual(rollover._canvas_owned_body(live), live)
+        self.assertNotEqual(
+            rollover._canvas_body_hash(live),
+            hashlib.sha256(approved.encode("utf-8")).hexdigest(),
+        )
+
     def test_live_page_update_does_not_forward_front_page_to_phase22_writer(self) -> None:
         class Writer:
             def __init__(self) -> None:

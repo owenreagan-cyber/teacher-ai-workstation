@@ -57,6 +57,20 @@ _CANVAS_GLOBAL_JS_RE = re.compile(
 )
 
 
+def _submission_type(value: Any) -> str:
+    """Return a single Canvas submission type from either a list or a string.
+
+    The intake can carry ``submission_types`` as a list (``["on_paper"]``) or,
+    historically, a bare string (``"on_paper"``). Indexing ``[0]`` on the bare
+    string would yield ``"o"`` and be rejected by Canvas; normalize here so the
+    canonical "on_paper" value is always sent.
+    """
+    sts = value or ["on_paper"]
+    if isinstance(sts, str):
+        return sts
+    return sts[0] if sts else "on_paper"
+
+
 def _canvas_owned_body(body: str) -> str:
     """Remove only Canvas-injected global app assets from page GET readback.
 
@@ -490,7 +504,7 @@ def execute(
                     a["course_id"], title=title, description="",
                     assignment_group=a["assignment_group"], points=a["points_possible"],
                     grading_type=a["grading_type"],
-                    submission_type=(a.get("submission_types") or ["on_paper"])[0],
+                    submission_type=_submission_type(a.get("submission_types")),
                     due_at=a.get("due_utc") or "",
                     counts_toward_final_grade=not a.get("omit_from_final_grade", False),
                     published=True,

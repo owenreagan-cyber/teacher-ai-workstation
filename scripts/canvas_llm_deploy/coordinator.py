@@ -32,6 +32,19 @@ def _now() -> str:
     return datetime.now(timezone.utc).isoformat()
 
 
+def _submission_type(value: Any) -> str:
+    """Return a single Canvas submission type from either a list or a string.
+
+    ``submission_types`` may be a list (``["on_paper"]``) or a bare string
+    (``"on_paper"``). Indexing ``[0]`` on the bare string yields ``"o"`` and is
+    rejected by Canvas; normalize so "on_paper" is always sent.
+    """
+    sts = value or ["on_paper"]
+    if isinstance(sts, str):
+        return sts
+    return sts[0] if sts else "on_paper"
+
+
 def _confirm_ok(confirmation: str, week_code: str, *, deletes: int) -> bool:
     text = (confirmation or "").strip()
     if not text:
@@ -246,7 +259,7 @@ def deploy(
             created = client.create_assignment(
                 a["course_id"], title=title, description="", assignment_group=a["assignment_group"],
                 points=a["points_possible"], grading_type=a["grading_type"],
-                submission_type=(a["submission_types"] or ["on_paper"])[0],
+                submission_type=_submission_type(a.get("submission_types")),
                 due_at=a["due_utc"], counts_toward_final_grade=not a["omit_from_final_grade"],
                 published=True)
             counts["POST"] += 1

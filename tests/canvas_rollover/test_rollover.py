@@ -114,10 +114,12 @@ def test_happy_path_published_verified():
         assert c.get_page(26429, SLUG)["front_page"] is True
         old = c.get_page(26429, "q2w2-old")
         assert old["body"] == "<p>old</p>" and old["front_page"] is False
-        # Announcements created + held scheduled.
+        # Announcements created + correctly classified. Before the Friday 4 PM
+        # schedule they are HELD_SCHEDULED; a late/manual run may already be
+        # POSTED. Both are valid per the rollover's own visibility gate.
         assert len(r["weekly_announcements"]) == 4
         for rec in r["weekly_announcements"]:
-            assert rec["state"] == "HELD_SCHEDULED"
+            assert rec["state"] in ("HELD_SCHEDULED", "POSTED"), rec
         assert r["pages"] and all(item["verified"] for item in r["pages"])
         assert r["assignments"][0]["verified"] is True
         assert r["assessment_reminders"][0]["verified"] is True
@@ -193,6 +195,32 @@ def test_confirmation_gate_blocks():
             raise AssertionError("expected RolloverBlocked")
         except rollover.RolloverBlocked:
             pass
+    finally:
+        tmp.cleanup()
+        deploy_ledger.DEPLOY_ROOT = orig
+        intake_manifest.staging_dir = orig_staging
+
+
+def test_submission_type_string_or_list_normalized():
+    # Regression: the intake can carry submission_types as a bare string
+    # "on_paper"; the old "on_paper"[0] == "o" bug would send an invalid type.
+    assert rollover._submission_type("on_paper") == "on_paper"
+    assert rollover._submission_type(["on_paper"]) == "on_paper"
+    assert rollover._submission_type(None) == "on_paper"
+    assert rollover._submission_type("") == "on_paper"
+
+    # End-to-end: a bare-string submission_types still writes "on_paper".
+    orig, orig_staging, tmp = _tmp_ledger()
+    try:
+        c = _client()
+        m = _manifest()
+        m["assignments"][0]["submission_types"] = "on_paper"  # bare string form
+        r = rollover.execute(2, 2, 2, 3, client=c, owner_confirmation="ROLLOVER Q2W3", manifest=m)
+        assert r["lifecycle"] == schedule.PUBLISHED_VERIFIED, r.get("failures")
+        a = r["assignments"][0]
+        assert a["verified"] is True, a
+        stored = c.get_assignment(COURSES["math"], a["assignment_id"])
+        assert "on_paper" in stored.get("submission_types", []), stored
     finally:
         tmp.cleanup()
         deploy_ledger.DEPLOY_ROOT = orig

@@ -129,9 +129,8 @@ def record_approval(
     return record
 
 
-def verify(
-    quarter: int,
-    week: int,
+def verify_at(
+    week_dir: Path,
     *,
     course_id: int,
     page_id: int,
@@ -139,13 +138,17 @@ def verify(
 ) -> tuple[bool, list[str]]:
     """Verify the rolling-newsletter HTML approval binds to the current artifact.
 
-    Returns ``(valid, problems)``. Invalid if the record is missing/not approved,
-    the body changed, the target page changed, the course changed, or the week
-    changed.
+    Reads the record + HTML body from the given staging week directory (so
+    callers can verify against a test/fixture root, not only the global staging
+    root). Returns ``(valid, problems)``. Invalid if the record is
+    missing/not approved, the body changed, the target page changed, the course
+    changed, or the week changed.
     """
+    week_dir = Path(week_dir)
     problems: list[str] = []
-    rec = load_approval(quarter, week)
-    if rec is None:
+    try:
+        rec = json.loads((week_dir / "planner" / "homeroom-html-approval.json").read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
         return False, ["homeroom HTML approval record missing"]
     if rec.get("kind") != KIND:
         return False, ["homeroom approval is not a rolling_newsletter_html record"]
@@ -157,12 +160,30 @@ def verify(
         problems.append("homeroom rolling page id changed")
     if (rec.get("week") or "") != week_code:
         problems.append("homeroom week changed")
-    body = load_html(quarter, week)
+    try:
+        body = (week_dir / "drafts" / "homeroom-page.html").read_text(encoding="utf-8")
+    except OSError:
+        body = None
     if body is None:
         problems.append("homeroom approved HTML body missing")
     elif _sha(body) != rec.get("approved_body_hash"):
         problems.append("homeroom approved HTML body changed")
     return (len(problems) == 0), problems
+
+
+def verify(
+    quarter: int,
+    week: int,
+    *,
+    course_id: int,
+    page_id: int,
+    week_code: str,
+) -> tuple[bool, list[str]]:
+    """Verify against the global staging root (see ``verify_at`` for details)."""
+    return verify_at(
+        imf.staging_dir(quarter, week),
+        course_id=course_id, page_id=page_id, week_code=week_code,
+    )
 
 
 def command_self_test() -> int:

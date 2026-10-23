@@ -95,6 +95,24 @@ class StatusContractTest(unittest.TestCase):
             a["id"] for a in second["action_items"] if a["id"].startswith("friday-readiness:")
         ))
 
+    def test_homeroom_html_approval_marks_preview_approved(self) -> None:
+        week = self.root / "canvas-llm/intake/2026-2027/q2/w3"
+        import hashlib
+        body = "<div>4th Grade Happenings</div><h2>Book Character Day</h2>"
+        _write(week / "planner/homeroom-html-approval.json", {
+            "kind": "rolling_newsletter_html",
+            "course_id": 26429, "page_id": 798072,
+            "page_slug": "class-4a-newsletter-x",
+            "source_body_hash": "src",
+            "approved_body_hash": hashlib.sha256(body.encode()).hexdigest(),
+            "week": "Q2W3", "approved": True,
+        })
+        (week / "drafts/homeroom-page.html").write_text(body, encoding="utf-8")
+        status = self.service.weekly_status(2, 3)
+        homeroom = next(c for c in status["courses"] if c["id"] == "homeroom")
+        self.assertEqual(homeroom["stages"]["preview"], "approved")
+        self.assertFalse(any(a["course"] == "homeroom" for a in status["action_items"]))
+
     def test_deep_link_validation(self) -> None:
         self.assertEqual(normalize_route("#week/Q2W3/math/preview"), "week/q2w3/math/preview")
         self.assertEqual(deep_link("Q2W3", "source"), "http://127.0.0.1:4310/#week/q2w3/source")

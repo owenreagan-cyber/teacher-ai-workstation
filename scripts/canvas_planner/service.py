@@ -220,9 +220,24 @@ class CanvasPlannerService:
         homeroom_approval = _read_json(week_dir / "planner" / "homeroom-approval.json", {})
         manifest = dict(manifest)
         manifest["homeroom_approved"] = homeroom_approval.get("state") == "APPROVED"
+        week_code = str(manifest.get("week_code") or f"Q{quarter}W{week}")
+        # A hash-bound rolling-newsletter HTML approval also satisfies the
+        # Homeroom gate (exact body hash + rolling page id + week). This keeps
+        # the planner status consistent with the Friday rollover readiness gate.
+        if not manifest["homeroom_approved"]:
+            try:
+                from scripts.canvas_llm_rollover import homeroom_html as _hhtml
+                html_ok, _html_problems = _hhtml.verify_at(
+                    week_dir,
+                    course_id=_hhtml.HOMEROOM_COURSE_ID,
+                    page_id=_hhtml.HOMEROOM_ROLLING_PAGE_ID,
+                    week_code=week_code,
+                )
+                manifest["homeroom_approved"] = html_ok
+            except Exception:  # noqa: BLE001 - status is best-effort
+                pass
         rollover_ledger = _read_json(deploy_dir / "rollover-ledger.json", {})
         verified = _read_json(deploy_dir / "published-verified-ledger.json", {})
-        week_code = str(manifest.get("week_code") or f"Q{quarter}W{week}")
         courses = [
             _course_projection(
                 course,

@@ -201,6 +201,36 @@ def test_confirmation_gate_blocks():
         intake_manifest.staging_dir = orig_staging
 
 
+def test_announcement_readback_css_injection_normalized():
+    # Canvas prepends account-level canvas_global_app.css to announcement
+    # messages on write (same as wiki-page bodies). Verification must strip it
+    # before comparing to the authored message, or every weekly update would
+    # fail with a false content mismatch.
+    orig, orig_staging, tmp = _tmp_ledger()
+    try:
+        c = _client()
+        m = _manifest()
+        css = '<link rel="stylesheet" href="https://instructure-uploads.s3.amazonaws.com/account_1/attachments/1/canvas_global_app.css">'
+        real_get = c.get_announcement
+
+        def injected_get(course_id, topic_id):
+            a = dict(real_get(course_id, topic_id))
+            # Canvas injects the global CSS into weekly-update messages on write.
+            if "Weekly Update" in (a.get("title") or ""):
+                a["message"] = css + (a.get("message") or "")
+            return a
+
+        c.get_announcement = injected_get
+        r = rollover.execute(2, 2, 2, 3, client=c, owner_confirmation="ROLLOVER Q2W3", manifest=m)
+        assert r["lifecycle"] == schedule.PUBLISHED_VERIFIED, r.get("failures")
+        for rec in r["weekly_announcements"]:
+            assert rec["verified"] is True, rec
+    finally:
+        tmp.cleanup()
+        deploy_ledger.DEPLOY_ROOT = orig
+        intake_manifest.staging_dir = orig_staging
+
+
 def test_submission_type_string_or_list_normalized():
     # Regression: the intake can carry submission_types as a bare string
     # "on_paper"; the old "on_paper"[0] == "o" bug would send an invalid type.

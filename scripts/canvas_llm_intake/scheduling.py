@@ -69,6 +69,14 @@ def classify_announcement(
         return POSTED
     if published is False:
         return DRAFT_UNPUBLISHED
+    # A published announcement with no future schedule and a real posted_at
+    # timestamp is visible. posted_at is reliable here: there is no future
+    # delayed_post_at to "hold" it behind (unlike the HELD_SCHEDULED case above,
+    # where posted_at == created_at is a transient artifact). This also covers a
+    # late/manual run that posts an already-past-scheduled announcement
+    # immediately, even when the active_only feed cannot be read.
+    if posted_at is not None:
+        return POSTED
     return UNVERIFIED
 
 
@@ -109,6 +117,15 @@ def command_self_test() -> int:
     # D. published=false, not active, no future schedule -> DRAFT_UNPUBLISHED
     assert classify_announcement(delayed_post_at=None, posted_at=None,
                                  published=False, in_active_feed=False, now=now) == DRAFT_UNPUBLISHED
+
+    # E. past delayed + not active + real posted_at -> POSTED (late/manual run;
+    #    active_only feed unavailable). posted_at is reliable with no future hold.
+    assert classify_announcement(delayed_post_at=past, posted_at="2026-10-23T22:10:57Z",
+                                 published=True, in_active_feed=False, now=now) == POSTED
+
+    # F. past delayed + not active + published + no posted_at -> UNVERIFIED
+    assert classify_announcement(delayed_post_at=past, posted_at=None,
+                                 published=True, in_active_feed=False, now=now) == UNVERIFIED
 
     print("PASS intake scheduling-semantics self-test")
     return 0

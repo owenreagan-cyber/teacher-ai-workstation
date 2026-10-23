@@ -558,9 +558,14 @@ def execute(
         state = sched.classify_announcement(
             delayed_post_at=a.get("delayed_post_at"), posted_at=created.get("posted_at"),
             published=created.get("published"), in_active_feed=in_feed)
+        # Canvas prepends its account-level canvas_global_app.css <link> to
+        # announcement messages on write (same injection as wiki-page bodies).
+        # Normalize it off before comparing, so verification binds to our
+        # authored message rather than Canvas-owned global assets.
+        live_message = _canvas_owned_body(announcement_readback.get("message") or "")
         content_ok = (
             announcement_readback.get("title") == a["title"]
-            and announcement_readback.get("message", "") == a["message"]
+            and live_message == a["message"]
         )
         ok = content_ok and state in (sched.HELD_SCHEDULED, sched.POSTED)
         report["weekly_announcements"].append({

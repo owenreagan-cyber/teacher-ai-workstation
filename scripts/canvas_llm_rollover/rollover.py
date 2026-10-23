@@ -177,6 +177,12 @@ def run_preflight(
         h["page_id"] = hres["page_id"]
         h["already_front_page"] = hres["front_page"]
         h["front_page_action"] = "SKIP" if hres["front_page"] else "SET_FRONT_PAGE"
+        # Rolling-newsletter HTML approval binds to the exact page id: fail if
+        # the live-resolved target no longer matches the approved page id.
+        if (h.get("mode") == "rolling_newsletter_html"
+                and h.get("to_page_id") is not None
+                and str(hres["page_id"]) != str(h.get("to_page_id"))):
+            blockers.append("homeroom: rolling page id changed (approved target mismatch)")
         if hres["page_id"] is not None:
             try:
                 from . import homeroom as homeroom_mod
@@ -611,9 +617,18 @@ def _execute_homeroom(client, h, *, to_code, counts, report, to_quarter, to_week
         return _finish(to_quarter, to_week, report, schedule.BLOCKED, counts)
 
     from . import homeroom as homeroom_mod
-    proposed = h.get("proposed_content")
     proposed_hash = h.get("proposed_content_hash")
-    if not proposed:
+    # Production body: the exact approved rolling-newsletter HTML when an HTML
+    # approval exists; otherwise the JSON proposal renderer (planning fallback).
+    if h.get("mode") == "rolling_newsletter_html":
+        body = h.get("body") or ""
+        if str(hres["page_id"]) != str(h.get("to_page_id")):
+            report["failures"].append("homeroom: rolling page id changed (approved target mismatch)")
+            return _finish(to_quarter, to_week, report, schedule.BLOCKED, counts)
+    else:
+        proposed = h.get("proposed_content")
+        body = homeroom_mod.render_proposed(proposed) if proposed else ""
+    if not body:
         report["failures"].append("homeroom: proposed content missing")
         return _finish(to_quarter, to_week, report, schedule.BLOCKED, counts)
 
@@ -628,7 +643,7 @@ def _execute_homeroom(client, h, *, to_code, counts, report, to_quarter, to_week
         try:
             client.update_page(
                 h["course_id"], h["to_page_slug"],
-                body=homeroom_mod.render_proposed(proposed), published=True, front_page=False,
+                body=body, published=True, front_page=bool(hres["front_page"]),
             )
             counts["PUT"] += 1
         except Exception as exc:  # noqa: BLE001

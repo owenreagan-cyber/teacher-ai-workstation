@@ -154,40 +154,65 @@ def build_rollover_manifest(
             "front_page_action": "SET_FRONT_PAGE",
         })
 
-    # Homeroom copy-forward.
-    approved = homeroom.load_approved_content()
-    proposed = homeroom.copy_forward(
-        approved, today=today or date.today(), to_date_range=to_date_range
+    # Homeroom: a valid rolling-newsletter HTML approval takes precedence over
+    # the JSON proposal renderer. The HTML path binds to the exact approved body
+    # hash + rolling page id + week; the JSON copy-forward remains the fallback
+    # for preview/source comparison when no HTML approval exists yet.
+    from scripts.canvas_llm_rollover import homeroom_html as hhtml
+
+    html_valid, _html_problems = hhtml.verify(
+        to_quarter, to_week, course_id=HOMEROOM_COURSE_ID,
+        page_id=hhtml.HOMEROOM_ROLLING_PAGE_ID, week_code=to_code,
     )
-    homeroom_block = {
-        "course_id": HOMEROOM_COURSE_ID,
-        "from_page_id": None,
-        "to_page_id": None,
-        "to_page_slug": slug,
-        "source_content_hash": homeroom.content_hash(approved),
-        "proposed_content_hash": _sha(homeroom.render_proposed(proposed)),
-        "proposed_content": proposed,
-        "approved": False,
-        "front_page_action": "SET_FRONT_PAGE",
-    }
-    homeroom_approval_path = (
-        imf.staging_dir(to_quarter, to_week) / "planner" / "homeroom-approval.json"
-    )
-    try:
-        homeroom_approval = json.loads(homeroom_approval_path.read_text(encoding="utf-8"))
-    except (OSError, json.JSONDecodeError):
-        homeroom_approval = {}
-    try:
-        from scripts.canvas_planner.approval_bundle import current_bundle
-        current_homeroom_hash = current_bundle(to_quarter, to_week, "homeroom")["hashes"]["page"]
-    except (KeyError, OSError, ValueError):
-        current_homeroom_hash = ""
-    homeroom_block["approval_hash"] = (homeroom_approval.get("hashes") or {}).get("page")
-    homeroom_block["approved"] = bool(
-        homeroom_approval.get("state") == "APPROVED"
-        and homeroom_block["approval_hash"]
-        and homeroom_block["approval_hash"] == current_homeroom_hash
-    )
+    if html_valid:
+        rec = hhtml.load_approval(to_quarter, to_week)
+        homeroom_block = {
+            "course_id": HOMEROOM_COURSE_ID,
+            "from_page_id": None,
+            "to_page_id": rec.get("page_id"),
+            "to_page_slug": rec.get("page_slug"),
+            "source_content_hash": rec.get("source_body_hash"),
+            "proposed_content_hash": rec.get("approved_body_hash"),
+            "proposed_content": None,
+            "body": hhtml.load_html(to_quarter, to_week) or "",
+            "mode": hhtml.KIND,
+            "approved": True,
+            "front_page_action": "SET_FRONT_PAGE",
+        }
+    else:
+        approved = homeroom.load_approved_content()
+        proposed = homeroom.copy_forward(
+            approved, today=today or date.today(), to_date_range=to_date_range
+        )
+        homeroom_block = {
+            "course_id": HOMEROOM_COURSE_ID,
+            "from_page_id": None,
+            "to_page_id": None,
+            "to_page_slug": slug,
+            "source_content_hash": homeroom.content_hash(approved),
+            "proposed_content_hash": _sha(homeroom.render_proposed(proposed)),
+            "proposed_content": proposed,
+            "approved": False,
+            "front_page_action": "SET_FRONT_PAGE",
+        }
+        homeroom_approval_path = (
+            imf.staging_dir(to_quarter, to_week) / "planner" / "homeroom-approval.json"
+        )
+        try:
+            homeroom_approval = json.loads(homeroom_approval_path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError):
+            homeroom_approval = {}
+        try:
+            from scripts.canvas_planner.approval_bundle import current_bundle
+            current_homeroom_hash = current_bundle(to_quarter, to_week, "homeroom")["hashes"]["page"]
+        except (KeyError, OSError, ValueError):
+            current_homeroom_hash = ""
+        homeroom_block["approval_hash"] = (homeroom_approval.get("hashes") or {}).get("page")
+        homeroom_block["approved"] = bool(
+            homeroom_approval.get("state") == "APPROVED"
+            and homeroom_block["approval_hash"]
+            and homeroom_block["approval_hash"] == current_homeroom_hash
+        )
 
     # Weekly updates use the exact same canonical projection as UI Preview.
     weekly_announcements: list[dict[str, Any]] = []

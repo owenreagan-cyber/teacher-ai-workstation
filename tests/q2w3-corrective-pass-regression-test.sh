@@ -19,16 +19,17 @@ from scripts.canvas_llm_deploy import preflight as pf
 from scripts.canvas_llm_intake import intake
 from scripts.canvas_llm_phase3 import pacing_extractor as pe
 
-# ---- Science reminder: active + content + no Test/Quiz -> non-empty ----
+# ---- Science reminder: active + content + no Test/Quiz + no activity leak ----
 rows, meta = pe.fetch_pacing(fresh=False)
 week = pe.extract_week(rows, "Q2W3", meta)
 reminders = intake._reminders_for(week, "science")
 assert len(reminders) > 0, "Science reminder must be non-empty"
-assert any("electricity" in r.lower() or "Collisions" in r or "Crash Lab" in r for r in reminders), reminders
+assert any("Chapters" in r for r in reminders), reminders
 for r in reminders:
-    for bad in ("Test", "Quiz", "Assessment"):
-        assert bad not in r, f"Science reminder must not contain {bad!r}: {r}"
-print("PASS Science reminder non-empty + no Test/Quiz/Assessment")
+    for bad in ("Test", "Quiz", "Assessment", "Reading", "Slides", "Notes",
+                "Finish", "Electricity", "Collisions", "Crash Lab", "Edison", "Latimer"):
+        assert bad not in r, f"Science reminder must not leak {bad!r}: {r}"
+print("PASS Science reminder non-empty + chapter-level + no activity leak")
 
 # ---- Weekly announcement identity (cases A-F) ----
 proposed_q2w3 = {"title": "Math Canvas Weekly Update", "week_code": "Q2W3",

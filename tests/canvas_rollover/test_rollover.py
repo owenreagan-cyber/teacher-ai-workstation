@@ -158,6 +158,31 @@ def test_partial_failure_blocks():
         intake_manifest.staging_dir = orig_staging
 
 
+def test_reminder_already_scheduled_skips():
+    orig, orig_staging, tmp = _tmp_ledger()
+    try:
+        c = _client()
+        m = _manifest()
+        m["assessment_reminders"] = [{
+            "subject": "math", "course_id": COURSES["math"],
+            "title": "Math Assessment Reminder — Thursday, October 29",
+            "message": "<p>Written Assessment 7 and Fact Assessment 7.</p>",
+            "classification": "ALREADY_SCHEDULED_VERIFIED",
+        }]
+        r = rollover.execute(2, 2, 2, 3, client=c, owner_confirmation="ROLLOVER Q2W3", manifest=m)
+        assert r["lifecycle"] == schedule.PUBLISHED_VERIFIED, r.get("failures")
+        rec = r["assessment_reminders"][0]
+        assert rec["disposition"] == "ALREADY_SCHEDULED_VERIFIED", rec
+        assert rec["verified"] is True and rec["announcement_id"] is None
+        # No reminder POST occurred (the only writes are the seeded assignment
+        # and the 4 weekly announcements, not the reminder).
+        assert not any(x.get("disposition") == "PUBLISHED_VERIFIED" for x in r["assessment_reminders"])
+    finally:
+        tmp.cleanup()
+        deploy_ledger.DEPLOY_ROOT = orig
+        intake_manifest.staging_dir = orig_staging
+
+
 def test_confirmation_gate_blocks():
     orig, orig_staging, tmp = _tmp_ledger()
     try:

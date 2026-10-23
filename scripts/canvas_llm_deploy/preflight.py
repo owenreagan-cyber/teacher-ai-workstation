@@ -8,6 +8,7 @@ preflight record.
 from __future__ import annotations
 
 import hashlib
+import re
 from datetime import datetime, timedelta, timezone
 from typing import Any
 
@@ -55,6 +56,11 @@ def classify_assignment(proposed_title: str, existing_names: list[str]) -> str:
 # title equality alone must NEVER be treated as a duplicate across weeks.
 WEEKLY_ANNOUNCE_STATES = ("EXACT_MATCH", "PRIOR_WEEK_SAME_TITLE", "BODY_CHANGED_SAME_WEEK", "AMBIGUOUS", "NEW")
 
+# Assessment-reminder reconciliation state: a separately scheduled, verified
+# Canvas assessment topic already satisfies the reminder, so the rollover must
+# not create a duplicate.
+REMINDER_ALREADY_SCHEDULED = "ALREADY_SCHEDULED_VERIFIED"
+
 
 def classify_weekly_announcement(proposed: dict[str, Any], live: list[dict[str, Any]]) -> str:
     """Classify a proposed weekly update against live same-title announcements.
@@ -95,6 +101,57 @@ def classify_weekly_announcement(proposed: dict[str, Any], live: list[dict[str, 
         # otherwise) -> prior-week generic title, NOT a current duplicate.
         return "PRIOR_WEEK_SAME_TITLE"
 
+    return "NEW"
+
+
+def _reminder_identity_tokens(reminder: dict[str, Any]) -> list[str]:
+    """Derive assessment-identity tokens from a drafted reminder.
+
+    Reconciliation is by course + assessment type + assessment number(s), which
+    are week-scoped. Canvas topic IDs and exact reminder titles are never
+    required, so separately scheduled assessment topics are recognized without
+    hardcoding.
+    """
+    rtype = reminder.get("type", "")
+    title = reminder.get("title") or ""
+    message = reminder.get("message") or reminder.get("body") or ""
+    haystack = f"{title} {message}"
+    tokens: list[str] = []
+    if rtype == "math_assessment":
+        for m in re.finditer(r"(Written|Fact)\s+Assessment\s*(\d+)", haystack, re.IGNORECASE):
+            tokens.append(f"{m.group(1).title()} Assessment {m.group(2)}")
+    elif rtype == "spelling":
+        m = re.search(r"Spelling\s+Test\s*(\d+)", haystack, re.IGNORECASE)
+        if m:
+            tokens.append(f"Spelling Test {m.group(1)}")
+    seen: list[str] = []
+    for t in tokens:
+        if t not in seen:
+            seen.append(t)
+    return seen
+
+
+def classify_assessment_reminder(reminder: dict[str, Any], live: list[dict[str, Any]]) -> str:
+    """Reconcile a drafted assessment reminder against live announcements.
+
+    Returns:
+      EXACT_MATCH              — a live announcement has the identical title+message.
+      ALREADY_SCHEDULED_VERIFIED — a live announcement already covers the same
+                                   assessment identity (type + numbers), even when
+                                   the reminder's own title/body differ.
+      NEW                      — no existing announcement satisfies the reminder.
+    """
+    title = reminder.get("title") or ""
+    message = reminder.get("message") or reminder.get("body") or ""
+    for a in live:
+        if (a.get("title") or "") == title and (a.get("message") or "") == message:
+            return "EXACT_MATCH"
+    tokens = _reminder_identity_tokens(reminder)
+    if tokens:
+        for a in live:
+            live_title = _norm_name(a.get("title") or "")
+            if all(tok.lower() in live_title for tok in tokens):
+                return REMINDER_ALREADY_SCHEDULED
     return "NEW"
 
 
@@ -309,6 +366,27 @@ def command_self_test() -> int:
     assert classify_assignment("SM5: Lesson 39 Homework", ["SM5: Lesson 39 Homework"]) == "EXACT_MATCH"
     assert classify_assignment("SM5: Lesson 39 Homework", ["SM5: Lesson 39 Homework (Retake)"]) == "AMBIGUOUS"
     assert classify_assignment("SM5: Lesson 39 Homework", ["SM5: Lesson 40 Homework"]) == "NEW"
+
+    # Assessment-reminder reconciliation (identity, not topic IDs/exact titles).
+    math_reminder = {"type": "math_assessment",
+                     "title": "Math Assessment Reminder — Thursday, October 29",
+                     "message": "Written Assessment 7 and Fact Assessment 7 on Thursday, October 29."}
+    spelling_reminder = {"type": "spelling",
+                         "title": "Spelling Test 45 Reminder",
+                         "message": "Spelling Test 45 this Friday, October 30."}
+    live_scheduled = [
+        {"title": "Written Assessment 7 and Fact Assessment 7 - Thursday, October 29", "message": "…"},
+        {"title": "Spelling Test 45 - Friday, October 30", "message": "…"},
+    ]
+    assert classify_assessment_reminder(math_reminder, live_scheduled) == REMINDER_ALREADY_SCHEDULED
+    assert classify_assessment_reminder(spelling_reminder, live_scheduled) == REMINDER_ALREADY_SCHEDULED
+    # Different week's assessment must NOT satisfy (assessment number is week-scoped).
+    assert classify_assessment_reminder(math_reminder,
+        [{"title": "Written Assessment 6 and Fact Assessment 6 - Thursday, October 22", "message": "…"}]) == "NEW"
+    assert classify_assessment_reminder(math_reminder, []) == "NEW"
+    # Exact title+message still matches.
+    assert classify_assessment_reminder(math_reminder,
+        [{"title": math_reminder["title"], "message": math_reminder["message"]}]) == "EXACT_MATCH"
 
     # preflight against a fake client (course + page seeded).
     client = FakeDeployClient(courses={26404: {"id": 26404, "name": "Math", "workflow_state": "available"}})

@@ -39,6 +39,9 @@ HOLD_REMINDER = "HOLD_REMINDER"
 REMOVE_ASSIGNMENT_KEEP = "REMOVE_ASSIGNMENT_KEEP"
 KEEP_SUBJECT_CHAPTER = "KEEP_SUBJECT_CHAPTER"
 KEEP_OVERRIDE = "KEEP_OVERRIDE"
+KEEP_ASSESSMENT_DATE = "KEEP_ASSESSMENT_DATE"
+UPDATE_WITHOUT_REMINDER = "UPDATE_WITHOUT_REMINDER"
+SHOW_ANNOUNCEMENT = "SHOW_ANNOUNCEMENT"
 CONFIRM = "CONFIRM"
 
 SUBJECT_ALIASES = {
@@ -76,6 +79,7 @@ class InstructionOp:
     days: list[str] = field(default_factory=list)
     keep_lesson: bool = False
     confirm: bool = False
+    hold_reminder: bool = False
     raw: str = ""
 
     def to_dict(self) -> dict[str, Any]:
@@ -89,6 +93,7 @@ class InstructionOp:
             "days": list(self.days),
             "keep_lesson": self.keep_lesson,
             "confirm": self.confirm,
+            "hold_reminder": self.hold_reminder,
         }
 
 
@@ -175,6 +180,28 @@ def parse(text: str) -> ParseResult:
             [InstructionOp(intent=WHAT_CHANGED, raw=raw)],
             True,
             "Let me show you what changed since your last review.",
+        )
+
+    # UPDATE_WITHOUT_REMINDER ("Update the Math items but don't reschedule the reminder yet."
+    #                         / "Yes, but leave the reminder scheduled for now.")
+    if ("update" in norm or norm.startswith("yes") or norm.startswith("ok")
+            or norm.startswith("sure") or norm.startswith("yeah")) \
+            and "reminder" in norm \
+            and re.search(r"\bdon'?t\b|\bleave\b|\bhold\b|\bnot yet\b|\bkeep\b", norm):
+        subject = _subject(norm)
+        return ParseResult(
+            [InstructionOp(intent=UPDATE_WITHOUT_REMINDER, subject=subject, hold_reminder=True, raw=raw)],
+            True,
+            f"Done — I've prepared the revised {subject.title() if subject else 'plan'} and marked the reminder for your review. Nothing live has changed.",
+        )
+
+    # SHOW_ANNOUNCEMENT ("Show me the exact announcement parents would receive.")
+    if re.search(r"\bshow me\b|\bshow the\b", norm) and "announcement" in norm:
+        subject = _subject(norm)
+        return ParseResult(
+            [InstructionOp(intent=SHOW_ANNOUNCEMENT, subject=subject, raw=raw)],
+            True,
+            "Here is the exact announcement parents would receive.",
         )
 
     # HOLD_REMINDER ("Don't send the reminder yet.")
@@ -285,6 +312,16 @@ def parse(text: str) -> ParseResult:
             [InstructionOp(intent=KEEP_OVERRIDE, subject=subject, day=day, raw=raw)],
             True,
             f"Done — I recorded your {subject.title()} override for {day}.",
+        )
+
+    # KEEP_ASSESSMENT_DATE ("The pacing sheet is wrong. Keep Thursday." / "Keep Thursday.")
+    if ("keep" in norm or "pacing sheet" in norm) and _day(norm) and not _subject(norm):
+        day = _day(norm)
+        subject = _subject(norm)  # may be None; caller binds to focus context
+        return ParseResult(
+            [InstructionOp(intent=KEEP_ASSESSMENT_DATE, subject=subject, day=day, raw=raw)],
+            True,
+            f"Recorded — keeping {day} as a teacher override (the pacing change will remain visible but won't override you).",
         )
 
     # MAKE_REVIEW_DAY ("Make Wednesday a review day.")

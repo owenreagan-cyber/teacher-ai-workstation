@@ -248,3 +248,13 @@ textarea:focus, select:focus, input:focus { outline: none; border-color: var(--a
 .agent-advanced summary { cursor: pointer; font-size: 13px; color: var(--muted); }
 .agent-advanced pre { background: var(--brand-soft); padding: 12px; border-radius: 8px; overflow-x: auto; font-size: 12px; }
 .change-card-item { padding: 6px 0; border-bottom: 1px solid var(--line); font-size: 13.5px; }
+
+/* ---- Change cards ---- */
+.change-cards { display: flex; flex-direction: column; gap: 12px; margin-top: 12px; }
+.change-card { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 14px; }
+.change-card-head { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: 14px; }
+.change-card-values { margin: 8px 0; font-size: 14px; }
+.change-card-values .old { color: var(--fail); }
+.change-card-values .new { color: var(--pass); font-weight: 600; }
+.change-card-affected { font-size: 13px; color: var(--muted); }
+.change-card-affected ul { margin: 4px 0 0; padding-left: 20px; }

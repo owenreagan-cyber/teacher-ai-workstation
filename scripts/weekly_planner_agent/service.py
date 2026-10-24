@@ -15,7 +15,11 @@ from typing import Any
 from scripts.canvas_planner.state_root import planner_root
 
 from . import teacher_instructions as ti
+from . import reconciliation
+from . import snapshot as snapmod
+from . import freshness
 from .change_engine import apply_instruction
+from .event_store import EventStore
 from .models import Assessment, Authority, Confidence, DayPlan, PlanStatus, WeeklyPlan
 from .review_state import build_review, approval_by_exception
 
@@ -191,7 +195,77 @@ def instruct(quarter: int, week: int, text: str) -> dict[str, Any]:
         _append_conversation(d, "teacher", text, parsed.to_dict(), None)
         return {"matched": False, "reply": parsed.reply, "plan": plan.to_dict()}
 
-    result = apply_instruction(plan, parsed.ops[0]) if parsed.ops else None
+    op = parsed.ops[0]
+
+    # Subject-less assessment-date keep binds to the focus subject (conversational).
+    if op.intent == ti.KEEP_ASSESSMENT_DATE and op.subject is None:
+        focus = _get_focus(quarter, week)
+        op.subject = focus.get("focus_subject")
+
+    # Conversation-level actions against the detected change events.
+    if op.intent == ti.CONFIRM:
+        focus = _get_focus(quarter, week)
+        event_id = focus.get("focus_event_id")
+        if event_id:
+            resolved = resolve_event(quarter, week, event_id, action="prepare_plan")
+            _append_conversation(d, "teacher", text, parsed.to_dict(), resolved)
+            return {
+                "matched": True,
+                "reply": "Done. I've prepared the revised plan. Nothing live has changed.",
+                "changes": [{"type": "confirm_prepare_plan", "event_id": event_id}],
+                "affected_artifacts": [],
+                "events": [],
+                "plan": resolved.get("plan", plan.to_dict()),
+            }
+        _append_conversation(d, "teacher", text, parsed.to_dict(), None)
+        return {"matched": True, "reply": "Got it. I'll apply the proposed changes.", "plan": plan.to_dict()}
+
+    if op.intent == ti.UPDATE_WITHOUT_REMINDER:
+        focus = _get_focus(quarter, week)
+        event_id = focus.get("focus_event_id")
+        if event_id:
+            resolved = resolve_event(quarter, week, event_id, action="prepare_plan")
+        else:
+            resolved = {}
+        _append_conversation(d, "teacher", text, parsed.to_dict(), resolved)
+        return {
+            "matched": True,
+            "reply": "Done. I've prepared the revised plan and marked the reminder for your review. Nothing live has changed.",
+            "changes": [{"type": "update_without_reminder", "event_id": event_id, "hold_reminder": True}],
+            "affected_artifacts": [],
+            "events": [],
+            "plan": resolved.get("plan", plan.to_dict()),
+        }
+
+    if op.intent == ti.SHOW_ANNOUNCEMENT:
+        _append_conversation(d, "teacher", text, parsed.to_dict(), None)
+        return {
+            "matched": True,
+            "reply": "Here is the exact announcement parents would receive.",
+            "announcement_preview": _latest_announcement_draft(quarter, week),
+            "plan": plan.to_dict(),
+        }
+
+    if op.intent == ti.KEEP_ASSESSMENT_DATE:
+        focus = _get_focus(quarter, week)
+        event_id = focus.get("focus_event_id")
+        if event_id:
+            resolved = resolve_event(quarter, week, event_id, action="override_keep_current")
+        else:
+            resolved = {}
+        _append_conversation(d, "teacher", text, parsed.to_dict(), resolved)
+        return {
+            "matched": True,
+            "reply": (f"Recorded — I kept {op.day} as your override for "
+                      f"{op.subject.title() if op.subject else 'the subject'}. "
+                      f"The pacing change remains visible but won't override you."),
+            "changes": [{"type": "override_keep_current", "event_id": event_id, "day": op.day}],
+            "affected_artifacts": [],
+            "events": [],
+            "plan": resolved.get("plan", plan.to_dict()),
+        }
+
+    result = apply_instruction(plan, op) if op else None
     if result is None or not result.applied:
         _append_conversation(d, "teacher", text, parsed.to_dict(), None)
         return {"matched": False, "reply": parsed.reply, "plan": plan.to_dict()}
@@ -206,6 +280,26 @@ def instruct(quarter: int, week: int, text: str) -> dict[str, Any]:
         "events": [e.to_dict() for e in result.events],
         "plan": plan.to_dict(),
     }
+
+
+def _latest_announcement_draft(quarter: int, week: int) -> dict[str, Any] | None:
+    from . import notification_model as nm
+    store = EventStore(quarter, week)
+    attention = [e for e in store.all() if e.get("family_comms_affected")]
+    if not attention:
+        return None
+    event = attention[0]
+    from .models import SourceChangeEvent
+    source_event = SourceChangeEvent(
+        source=event.get("source", ""), subject=event.get("subject", ""),
+        object_type=event.get("object_type", ""),
+        old_value=event.get("old_value"), new_value=event.get("new_value"),
+        classification=event.get("classification", ""),
+        affected_artifacts=event.get("affected_artifacts") or [],
+        family_comms_affected=True, week_id=event.get("week_id", ""),
+    )
+    notification = nm.draft_for_event(source_event, review_link="#agent")
+    return notification.to_dict() if notification else None
 
 
 def _append_conversation(d: Path, role: str, text: str, parsed: Any, result: Any) -> None:
@@ -265,7 +359,145 @@ def agent_view(quarter: int, week: int) -> dict[str, Any]:
         "week_id": f"Q{quarter}W{week}",
         "conversation": conversation(quarter, week),
         "plan": (plan or WeeklyPlan(week_id=f"Q{quarter}W{week}", quarter=quarter, week=week)).to_dict(),
+        "changes": changes(quarter, week),
     }
+
+
+# --------------------------------------------------------------------------- #
+# Persistent change detection + reconciliation
+# --------------------------------------------------------------------------- #
+def _context_path(quarter: int, week: int) -> Path:
+    return _agent_dir(quarter, week) / "context.json"
+
+
+def _get_focus(quarter: int, week: int) -> dict[str, Any]:
+    return _read_json(_context_path(quarter, week), {})
+
+
+def _set_focus(quarter: int, week: int, *, event_id: str | None = None, subject: str | None = None) -> None:
+    data = _get_focus(quarter, week)
+    if event_id is not None:
+        data["focus_event_id"] = event_id
+    if subject is not None:
+        data["focus_subject"] = subject
+    _write_json(_context_path(quarter, week), data)
+
+
+def sync(quarter: int, week: int, *, pacing: dict[str, Any] | None = None,
+         canvas: dict[str, Any] | None = None) -> dict[str, Any]:
+    """Run one observe→detect cycle. Persists the snapshot + events + plan."""
+    plan = load_plan(quarter, week) or WeeklyPlan(
+        week_id=f"Q{quarter}W{week}", quarter=quarter, week=week
+    )
+    report = reconciliation.sync_and_detect(
+        quarter, week, week_id=plan.week_id, pacing=pacing, canvas=canvas, plan=plan
+    )
+    if plan is not None and report["invalidated_approvals"]:
+        save_plan(quarter, week, plan)
+    # Set focus to the top unresolved attention event (for conversational binding).
+    attention = report.get("attention") or []
+    if attention:
+        top = attention[0]
+        _set_focus(quarter, week, event_id=top.get("event_id"), subject=top.get("subject"))
+    return report
+
+
+def sync_from_plan(quarter: int, week: int) -> dict[str, Any]:
+    """Convenience: sync pacing from the current agent plan (canvas unavailable)."""
+    plan = load_plan(quarter, week)
+    if plan is None:
+        return {"baseline": True, "week_id": f"Q{quarter}W{week}", "changes": [], "events": [],
+                "attention": [], "notifications": [], "affected_subjects": [],
+                "invalidated_approvals": [], "freshness": {},
+                "canvas_writes": 0, "notifications_delivered": 0}
+    identity = {
+        "name": plan.source_provenance.get("name"),
+        "tab": plan.source_provenance.get("tab"),
+        "spreadsheet_id": plan.source_provenance.get("spreadsheet_id"),
+    }
+    pacing = {"identity": identity, "cells": reconciliation.pacing_cells_from_plan(plan)}
+    return sync(quarter, week, pacing=pacing, canvas=None)
+
+
+def changes(quarter: int, week: int) -> dict[str, Any]:
+    """Return the durable change/event history + freshness for the UI."""
+    store = EventStore(quarter, week)
+    events = store.all()
+    unresolved = store.unresolved()
+    try:
+        snap_data = snapmod.load(quarter, week)
+    except Exception:  # noqa: BLE001
+        snap_data = None
+    return {
+        "week_id": f"Q{quarter}W{week}",
+        "events": events,
+        "unresolved": unresolved,
+        "attention": [e for e in events if e.get("family_comms_affected") or e.get("requires_teacher_approval")],
+        "freshness": {
+            "pacing": freshness.freshness_state((snap_data or {}).get("pacing", {}).get("observed_at")),
+            "canvas": freshness.freshness_state((snap_data or {}).get("canvas", {}).get("observed_at")),
+        },
+        "focus": _get_focus(quarter, week),
+    }
+
+
+def resolve_event(quarter: int, week: int, event_id: str, action: str) -> dict[str, Any]:
+    """Resolve an event (durable) and apply the resulting plan change."""
+    store = EventStore(quarter, week)
+    event = next((e for e in store.all() if e.get("event_id") == event_id), None)
+    if event is None:
+        return {"error": "event not found", "event_id": event_id}
+    resolved = store.resolve(event_id, action=action)
+    plan = load_plan(quarter, week) or WeeklyPlan(
+        week_id=f"Q{quarter}W{week}", quarter=quarter, week=week
+    )
+    _apply_event_to_plan(plan, event, action)
+    save_plan(quarter, week, plan)
+    return {"resolved": resolved, "plan": plan.to_dict()}
+
+
+def _apply_event_to_plan(plan: WeeklyPlan, event: dict[str, Any], action: str) -> None:
+    cls = event.get("classification")
+    subject = event.get("subject")
+    if cls == "assessment_date_changed" and subject:
+        dp = _find_assessment_day(plan, subject)
+        if dp is not None and dp.assessment is not None:
+            if action in ("approve_updates", "prepare_plan"):
+                dp.assessment.previous_date = dp.assessment.date
+                dp.assessment.date = event.get("new_value")
+                dp.assessment.authority = Authority.VERIFIED_PACING
+                dp.authority = Authority.VERIFIED_PACING
+            elif action == "override_keep_current":
+                dp.assessment.date = event.get("old_value")
+                dp.assessment.authority = Authority.OWNER_INSTRUCTION
+                dp.teacher_override = {
+                    "assessment_date": event.get("old_value"),
+                    "kind": "override_keep_current",
+                }
+                dp.authority = Authority.OWNER_INSTRUCTION
+    elif cls in ("lesson_changed", "homework_changed", "classwork_changed", "chapter_changed") and subject:
+        dp = _find_day_by_identity(plan, subject, event.get("object_identity"))
+        if dp is not None:
+            if action == "override_keep_current":
+                dp.teacher_override = {"kind": "override_keep_current", "keep": event.get("old_value")}
+                dp.authority = Authority.OWNER_INSTRUCTION
+            elif action in ("approve_updates", "prepare_plan"):
+                dp.lesson = event.get("new_value") if cls == "lesson_changed" else dp.lesson
+                dp.authority = Authority.VERIFIED_PACING
+
+
+def _find_assessment_day(plan: WeeklyPlan, subject: str) -> DayPlan | None:
+    for day in plan.subjects.get(subject, []):
+        if day.assessment is not None:
+            return day
+    return None
+
+
+def _find_day_by_identity(plan: WeeklyPlan, subject: str, identity: str | None) -> DayPlan | None:
+    if identity and "|" in (identity or ""):
+        day = identity.split("|", 1)[1].split("|", 1)[0]
+        return plan.day(subject, day)
+    return None
 
 
 def command_self_test() -> int:

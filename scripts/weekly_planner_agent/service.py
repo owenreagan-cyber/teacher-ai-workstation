@@ -334,7 +334,30 @@ def friday_review(quarter: int, week: int) -> dict[str, Any]:
         plan = WeeklyPlan(week_id=f"Q{quarter}W{week}", quarter=quarter, week=week)
     prior = None  # prior-snapshot diffing is wired to the planner in a later phase
     review = build_review(plan, prior=prior)
-    return review.to_dict()
+    payload = review.to_dict()
+    # Layer on the publish gate + schedule + delivery config (concise, no hashes).
+    from . import publish as pub
+    from . import schedule_config
+    gate = pub.build_publish_gate(quarter, week, plan=plan)
+    last = pub.last_publish(quarter, week)
+    payload["gate"] = {"ready": gate["ready"], "blockers": gate["blockers"]}
+    payload["approval"] = (pub.load_approval(quarter, week).to_dict()
+                           if pub.load_approval(quarter, week) else None)
+    payload["last_publish"] = last
+    payload["schedule"] = schedule_config.schedule()
+    payload["delivery"] = schedule_config.delivery_config()
+    # Derive a single honest review state (no false "APPROVED" when blocked).
+    from .models import FRIDAY_APPROVED, FRIDAY_BLOCKED, FRIDAY_READY_FOR_REVIEW, FRIDAY_PUBLISHED_VERIFIED
+    if last and last.get("review_state") == FRIDAY_PUBLISHED_VERIFIED:
+        payload["state"] = FRIDAY_PUBLISHED_VERIFIED
+    elif gate["ready"]:
+        payload["state"] = FRIDAY_APPROVED
+    else:
+        needs_review = any(
+            ("approv" in b) or ("changed after approval" in b) for b in gate["blockers"]
+        )
+        payload["state"] = FRIDAY_READY_FOR_REVIEW if needs_review else FRIDAY_BLOCKED
+    return payload
 
 
 def today(quarter: int, week: int) -> dict[str, Any]:
@@ -498,6 +521,75 @@ def _find_day_by_identity(plan: WeeklyPlan, subject: str, identity: str | None) 
         day = identity.split("|", 1)[1].split("|", 1)[0]
         return plan.day(subject, day)
     return None
+
+
+# --------------------------------------------------------------------------- #
+# Approval -> guarded publish + notification delivery
+# --------------------------------------------------------------------------- #
+def approve_plan(quarter: int, week: int) -> dict[str, Any]:
+    """Record a plan-version-bound approval (reuses canonical per-course approval)."""
+    from . import publish as pub
+    return pub.approve_plan(quarter, week)
+
+
+def publish_gate(quarter: int, week: int) -> dict[str, Any]:
+    """Return the agent-level publish gate (readiness + blockers)."""
+    from . import publish as pub
+    return pub.build_publish_gate(quarter, week)
+
+
+def publish_now(quarter: int, week: int, *, client: Any,
+                owner_confirmation: str | None = None) -> dict[str, Any]:
+    """Delegate publication to the existing guarded rollover (agent gate first)."""
+    from . import publish as pub
+    return pub.publish(quarter, week, client=client, owner_confirmation=owner_confirmation)
+
+
+def notifications(quarter: int, week: int) -> list[dict[str, Any]]:
+    """Return the local notification outbox (delivered/queued records)."""
+    from . import delivery
+    return delivery.read_outbox()
+
+
+def deliver_notification(quarter: int, week: int, *, event_id: str, mode: str | None = None) -> dict[str, Any]:
+    """Draft + deliver a notification for one event through the chosen sink.
+
+    ``preview`` sends nothing; ``local`` writes the outbox; ``email`` is
+    disabled by default. Returns the notification record (status + error).
+    """
+    from . import delivery
+    from . import notification_model as nm
+    from .models import SourceChangeEvent
+
+    store = EventStore(quarter, week)
+    event = next((e for e in store.all() if e.get("event_id") == event_id), None)
+    if event is None:
+        return {"error": "event not found", "event_id": event_id}
+
+    source_event = SourceChangeEvent(
+        source=event.get("source", ""), subject=event.get("subject", ""),
+        object_type=event.get("object_type", ""),
+        old_value=event.get("old_value"), new_value=event.get("new_value"),
+        classification=event.get("classification", ""),
+        object_identity=event.get("object_identity"),
+        affected_artifacts=event.get("affected_artifacts") or [],
+        family_comms_affected=bool(event.get("family_comms_affected")),
+        week_id=event.get("week_id", ""),
+    )
+    draft = nm.draft_for_event(source_event, review_link="#agent")
+    if draft is None:
+        return {"error": "no notification draft for this event", "event_id": event_id}
+
+    record = delivery.make_record(
+        notification_type=draft.notification_type,
+        subject=draft.subject_line,
+        body=draft.body,
+        actions=list(draft.actions),
+        review_link="#agent",
+        related_event_ids=[event_id],
+        plan_version=event.get("plan_version") or "",
+    )
+    return delivery.deliver(record, mode=mode)
 
 
 def command_self_test() -> int:

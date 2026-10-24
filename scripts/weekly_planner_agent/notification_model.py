@@ -29,14 +29,22 @@ def assessment_date_changed_notification(
     previous_date: str,
     new_date: str,
     affected: list[str],
+    source: str = "the pacing guide",
+    already_posted: str | None = None,
+    review_link: str | None = None,
 ) -> Notification:
     """Draft the Assessment Date Watch email (subject + body + actions)."""
     affected_lines = "\n".join(f"- {item}" for item in affected)
+    posted_line = ""
+    if already_posted:
+        posted_line = f"\nNote: {already_posted}\n"
+    review_line = f"\nReview here: {review_link}" if review_link else ""
     body = (
         f"I noticed that {assessment_name} moved from {previous_date} to "
-        f"{new_date} in the pacing guide.\n\n"
-        f"This affects:\n{affected_lines}\n\n"
+        f"{new_date} in {source}.\n\n"
+        f"This affects:\n{affected_lines}{posted_line}\n"
         f"Would you like me to update the live Canvas items and parent communications?"
+        f"{review_line}"
     )
     return Notification(
         notification_type="assessment_date_changed",
@@ -67,14 +75,44 @@ def friday_review_ready_notification(week_id: str, change_count: int) -> Notific
     )
 
 
-def draft_for_event(event: SourceChangeEvent) -> Notification | None:
+def draft_for_event(
+    event: SourceChangeEvent,
+    *,
+    already_posted: str | None = None,
+    review_link: str | None = None,
+) -> Notification | None:
     """Route a SourceChangeEvent to the right notification type."""
-    if event.object_type == "assessment_date" and event.family_comms_affected:
+    if event.classification == "assessment_date_changed" or event.object_type == "assessment_date":
         return assessment_date_changed_notification(
             subject=event.subject,
-            assessment_name=f"{event.subject.title()} assessment",
+            assessment_name=_assessment_label(event),
             previous_date=event.old_value or "",
             new_date=event.new_value or "",
             affected=event.affected_artifacts,
+            source="the pacing guide" if event.source == "pacing" else "Canvas",
+            already_posted=already_posted,
+            review_link=review_link,
+        )
+    if event.classification == "assessment_identity_changed":
+        return assessment_date_changed_notification(
+            subject=event.subject,
+            assessment_name=event.old_value or event.subject,
+            previous_date=event.old_value or "",
+            new_date=event.new_value or "",
+            affected=event.affected_artifacts,
+            source="the pacing guide",
+            already_posted=already_posted,
+            review_link=review_link,
         )
     return change_event_notification(event)
+
+
+def _assessment_label(event: SourceChangeEvent) -> str:
+    identity = event.object_identity or ""
+    parts = identity.split("|") if "|" in identity else []
+    # Format: subject|day|name (or subject|day).
+    if len(parts) >= 3 and parts[2]:
+        return parts[2]
+    if len(parts) >= 2:
+        return f"{parts[0].title()} assessment on {parts[1]}"
+    return f"{event.subject.title()} assessment"

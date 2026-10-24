@@ -137,6 +137,8 @@ class Handler(BaseHTTPRequestHandler):
                     self._send_json(200, agent_service.friday_review(quarter, week))
                 elif sub == "view":
                     self._send_json(200, agent_service.agent_view(quarter, week))
+                elif sub == "changes":
+                    self._send_json(200, agent_service.changes(quarter, week))
                 else:
                     self._send_json(404, {"error": "not found"})
             elif resource == "home":
@@ -227,6 +229,36 @@ class Handler(BaseHTTPRequestHandler):
             text = body.get("text") if isinstance(body, dict) else ""
             try:
                 self._send_json(200, agent_service.instruct(quarter, week, text))
+            except Exception as exc:  # noqa: BLE001
+                self._send_json(500, {"error": type(exc).__name__})
+            return
+
+        # /api/agent/sync/{q}/{w} — run a local source-sync + change-detection cycle.
+        if len(parts) == 5 and parts[0] == "api" and parts[1] == "agent" and parts[2] == "sync":
+            from scripts.weekly_planner_agent import service as agent_service
+            try:
+                quarter, week = int(parts[3]), int(parts[4])
+            except (ValueError, TypeError):
+                self._send_json(400, {"error": "bad request"})
+                return
+            try:
+                self._send_json(200, agent_service.sync_from_plan(quarter, week))
+            except Exception as exc:  # noqa: BLE001
+                self._send_json(500, {"error": type(exc).__name__})
+            return
+
+        # /api/agent/resolve/{q}/{w} — resolve a detected change event (local only).
+        if len(parts) == 5 and parts[0] == "api" and parts[1] == "agent" and parts[2] == "resolve":
+            from scripts.weekly_planner_agent import service as agent_service
+            try:
+                quarter, week = int(parts[3]), int(parts[4])
+            except (ValueError, TypeError):
+                self._send_json(400, {"error": "bad request"})
+                return
+            event_id = body.get("event_id") if isinstance(body, dict) else ""
+            action = body.get("action") if isinstance(body, dict) else ""
+            try:
+                self._send_json(200, agent_service.resolve_event(quarter, week, event_id, action))
             except Exception as exc:  # noqa: BLE001
                 self._send_json(500, {"error": type(exc).__name__})
             return

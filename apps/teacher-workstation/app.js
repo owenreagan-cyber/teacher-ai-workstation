@@ -391,6 +391,7 @@ function viewAgent(data) {
   return `${header(data, 'Weekly Planner Agent', 'Plain language → proposed plan → review → approve')}
   <div class="agent-tabs" id="agent-tabs">
     <button class="agent-tab active" data-agent-tab="today">Today</button>
+    <button class="agent-tab" data-agent-tab="changes">Changes</button>
     <button class="agent-tab" data-agent-tab="week-plan">Week plan</button>
     <button class="agent-tab" data-agent-tab="friday-review">Friday review</button>
     <button class="agent-tab" data-agent-tab="agent">Agent</button>
@@ -399,7 +400,7 @@ function viewAgent(data) {
 }
 
 function agentTabLabel(tab) {
-  return {today:'Today', 'week-plan':'Week plan', 'friday-review':'Friday review', agent:'Agent'}[tab] || 'Today';
+  return {today:'Today', changes:'Changes', 'week-plan':'Week plan', 'friday-review':'Friday review', agent:'Agent'}[tab] || 'Today';
 }
 
 async function renderAgentTab(tab) {
@@ -410,6 +411,10 @@ async function renderAgentTab(tab) {
   body.innerHTML = '<div class="loading">Loading…</div>';
   try {
     if (tab === 'agent') return renderAgentChat(body, quarter, week);
+    if (tab === 'changes') {
+      const payload = await api(`/api/agent/changes/${quarter}/${week}`);
+      return body.innerHTML = renderAgentChanges(payload);
+    }
     const view = {today:'today', 'week-plan':'week-plan', 'friday-review':'friday-review'}[tab];
     const payload = await api(`/api/agent/${view}/${quarter}/${week}`);
     if (tab === 'today') body.innerHTML = renderAgentToday(payload);
@@ -481,6 +486,78 @@ function freshnessLabel(value) {
   } catch (_) { return 'stale'; }
 }
 
+function renderAgentChanges(p) {
+  const events = p.events || [];
+  const freshness = [
+    `<div class="kv"><span class="k">Pacing</span><span class="v">${esc(p.freshness?.pacing?.label || 'not checked yet')}</span></div>`,
+    `<div class="kv"><span class="k">Canvas</span><span class="v">${esc(p.freshness?.canvas?.label || 'not checked yet')}</span></div>`,
+  ].join('');
+  const cards = events.length
+    ? events.map(renderChangeCard).join('')
+    : '<p class="empty">No changes detected yet. Run a sync to establish a baseline, then the agent will surface differences here.</p>';
+  return `<section class="section"><h2>What changed</h2>
+    <div class="btn-row"><button class="btn" data-agent-sync>Sync now</button></div>
+    <h3>Source freshness</h3><div class="agent-counts">${freshness}</div>
+    <div class="change-cards">${cards}</div></section>`;
+}
+
+function changeTitle(classification) {
+  const labels = {
+    assessment_date_changed: 'Assessment date changed',
+    assessment_identity_changed: 'Assessment changed',
+    lesson_changed: 'Lesson changed',
+    chapter_changed: 'Chapter changed',
+    homework_changed: 'Homework changed',
+    classwork_changed: 'Classwork changed',
+    assignment_due_changed: 'Assignment due date changed',
+    assignment_missing: 'Assignment missing',
+    assignment_present_unexpectedly: 'Unexpected assignment',
+    announcement_changed: 'Announcement changed',
+    reminder_missing: 'Reminder missing',
+    reminder_duplicated: 'Reminder duplicated',
+    reminder_obsolete: 'Reminder scheduled for an old date',
+    page_body_changed: 'Canvas page edited directly',
+    front_page_changed: 'Front page changed',
+    canvas_conflict: 'Canvas conflicts with plan',
+    source_identity_changed: 'Pacing source changed',
+    source_stale: 'Source unavailable',
+    assessment_added: 'Assessment added',
+    assessment_removed: 'Assessment removed',
+  };
+  return labels[classification] || String(classification || '').replaceAll('_', ' ');
+}
+
+function renderChangeCard(e) {
+  const affected = (e.affected_artifacts || []).map((a) => `<li>${esc(a)}</li>`).join('');
+  const status = e.resolution_status || 'DETECTED';
+  const resolved = ['RESOLVED', 'APPROVED', 'IGNORED'].includes(status);
+  const actions = resolved
+    ? `<span class="pill neutral">${esc(status)}</span>`
+    : `<div class="btn-row">
+        <button class="btn small" data-agent-resolve="approve_updates" data-event-id="${esc(e.event_id)}">Approve updates</button>
+        <button class="btn small neutral" data-agent-resolve="keep_current" data-event-id="${esc(e.event_id)}">Keep current plan</button>
+        <button class="btn small neutral" data-agent-resolve="ignore" data-event-id="${esc(e.event_id)}">Ignore for now</button>
+      </div>`;
+  return `<div class="change-card">
+    <div class="change-card-head"><strong>${esc(e.subject || '')}</strong> · <span>${esc(changeTitle(e.classification))}</span>${resolved ? '' : `<span class="pill warn">${esc(status)}</span>`}</div>
+    <div class="change-card-values"><span class="old">${esc(e.old_value ?? '—')}</span> → <span class="new">${esc(e.new_value ?? '—')}</span></div>
+    ${affected ? `<div class="change-card-affected"><strong>Affected</strong><ul>${affected}</ul></div>` : ''}
+    ${actions}
+  </div>`;
+}
+
+async function runAgentSync() {
+  const {quarter, week} = agentWeek();
+  await api(`/api/agent/sync/${quarter}/${week}`, {method: 'POST', body: {}});
+  await renderAgentTab('changes');
+}
+
+async function resolveAgentEvent(eventId, action) {
+  const {quarter, week} = agentWeek();
+  await api(`/api/agent/resolve/${quarter}/${week}`, {method: 'POST', body: {event_id: eventId, action}});
+  await renderAgentTab('changes');
+}
+
 async function renderAgentChat(body, quarter, week) {
   const view = await api(`/api/agent/view/${quarter}/${week}`);
   const conversation = (view.conversation || []).map((entry) => {
@@ -518,6 +595,8 @@ async function submitAgentInstruction(form) {
 document.addEventListener('click',(event) => { const button = event.target.closest('[data-action]'); if (!button) return; event.preventDefault(); act(button).catch((error) => window.alert(error.message)); });
 document.addEventListener('input',(event) => { const row = event.target.closest('[data-plan-row]'); if (!row) return; clearTimeout(APP.saveTimer); APP.saveTimer = setTimeout(() => savePlanRow(row),700); });
 document.addEventListener('click',(event) => { const tab = event.target.closest('[data-agent-tab]'); if (!tab) return; event.preventDefault(); renderAgentTab(tab.dataset.agentTab).catch(showError); });
+document.addEventListener('click',(event) => { const sync = event.target.closest('[data-agent-sync]'); if (!sync) return; event.preventDefault(); runAgentSync().catch((error) => window.alert(error.message)); });
+document.addEventListener('click',(event) => { const btn = event.target.closest('[data-agent-resolve]'); if (!btn) return; event.preventDefault(); resolveAgentEvent(btn.dataset.eventId, btn.dataset.agentResolve).catch((error) => window.alert(error.message)); });
 document.addEventListener('submit',(event) => { if (event.target.id !== 'agent-form') return; event.preventDefault(); submitAgentInstruction(event.target).catch((error) => window.alert(error.message)); });
 window.addEventListener('hashchange',() => render().catch(showError));
 function showError(error) { $('main').innerHTML = `<div class="banner fail"><strong>Planner could not load.</strong> ${esc(error.message)}</div>`; }

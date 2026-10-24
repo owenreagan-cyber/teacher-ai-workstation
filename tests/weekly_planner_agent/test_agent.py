@@ -353,5 +353,30 @@ class ActiveAnnouncementFeedFixTest(unittest.TestCase):
         self.assertEqual(len(fake.list_active_announcements()), 2)
 
 
+class NewIntentParseTest(unittest.TestCase):
+    def test_update_without_reminder(self) -> None:
+        r = ti.parse("Update the Math items but don't reschedule the reminder yet.")
+        self.assertTrue(r.matched)
+        self.assertEqual(r.ops[0].intent, ti.UPDATE_WITHOUT_REMINDER)
+        self.assertEqual(r.ops[0].subject, "math")
+        self.assertTrue(r.ops[0].hold_reminder)
+
+    def test_keep_assessment_date_day_only(self) -> None:
+        r = ti.parse("The pacing sheet is wrong. Keep Thursday.")
+        self.assertTrue(r.matched)
+        self.assertEqual(r.ops[0].intent, ti.KEEP_ASSESSMENT_DATE)
+        self.assertEqual(r.ops[0].day, "Thursday")
+
+    def test_keep_assessment_date_bare(self) -> None:
+        r = ti.parse("Keep Thursday.")
+        self.assertTrue(r.matched)
+        self.assertEqual(r.ops[0].intent, ti.KEEP_ASSESSMENT_DATE)
+
+    def test_show_announcement(self) -> None:
+        r = ti.parse("Show me the exact announcement parents would receive.")
+        self.assertTrue(r.matched)
+        self.assertEqual(r.ops[0].intent, ti.SHOW_ANNOUNCEMENT)
+
+
 if __name__ == "__main__":
     unittest.main()

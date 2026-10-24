@@ -67,6 +67,34 @@ def _now() -> str:
     return datetime.now(timezone.utc).isoformat()
 
 
+# SourceChangeEvent lifecycle states (durable, persisted).
+EVENT_DETECTED = "DETECTED"
+EVENT_ANALYZING = "ANALYZING"
+EVENT_NEEDS_OWEN = "NEEDS_OWEN"
+EVENT_PLAN_UPDATED = "PLAN_UPDATED"
+EVENT_APPROVED = "APPROVED"
+EVENT_IGNORED = "IGNORED"
+EVENT_RESOLVED = "RESOLVED"
+EVENT_BLOCKED = "BLOCKED"
+EVENT_LIFECYCLE_STATES = (
+    EVENT_DETECTED,
+    EVENT_ANALYZING,
+    EVENT_NEEDS_OWEN,
+    EVENT_PLAN_UPDATED,
+    EVENT_APPROVED,
+    EVENT_IGNORED,
+    EVENT_RESOLVED,
+    EVENT_BLOCKED,
+)
+
+# Notification status (delivery is not enabled this phase; drafts are validated
+# against fake/local sinks only).
+NOTIFICATION_PENDING = "pending"
+NOTIFICATION_DRAFTED = "drafted"
+NOTIFICATION_DELIVERED = "delivered"
+NOTIFICATION_SUPPRESSED = "suppressed"
+
+
 @dataclass
 class Assessment:
     """A planned assessment/test."""
@@ -188,7 +216,13 @@ class WeeklyPlan:
 
 @dataclass
 class SourceChangeEvent:
-    """A structured, auditable source/plan change (powers later notifications)."""
+    """A structured, auditable source/plan change (powers later notifications).
+
+    ``event_id`` is a stable, dedup-able identity (hash of the underlying
+    identity + old/new values). ``resolution_status`` tracks the durable
+    lifecycle; ``notification_status`` tracks draft/delivery (delivery is not
+    enabled this phase).
+    """
 
     source: str
     subject: str
@@ -203,6 +237,13 @@ class SourceChangeEvent:
     live_canvas_stale: bool = False
     family_comms_affected: bool = False
     approved: bool = False
+    event_id: str = ""
+    week_id: str = ""
+    object_identity: str | None = None
+    classification: str = ""
+    source_identity: str = ""
+    notification_status: str = NOTIFICATION_PENDING
+    resolution_status: str = EVENT_DETECTED
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)

@@ -20,9 +20,10 @@ require_file() {
 
 PKG="scripts/weekly_planner_agent"
 DOC="docs/programs/canvas-llm/weekly-planner-agent-foundation.md"
-TESTS="tests/weekly_planner_agent/test_agent.py"
+CHANGE_DOC="docs/programs/canvas-llm/weekly-planner-change-detection.md"
+TESTS="tests/weekly_planner_agent"
 
-echo "Weekly Planner Agent Foundation"
+echo "Weekly Planner Agent Foundation + Change Detection"
 echo "------------------------------------------------------------------------"
 
 require_file "$PKG/__init__.py"
@@ -35,8 +36,21 @@ require_file "$PKG/communication_rules.py"
 require_file "$PKG/notification_model.py"
 require_file "$PKG/review_state.py"
 require_file "$PKG/service.py"
+require_file "$PKG/snapshot.py"
+require_file "$PKG/change_detection.py"
+require_file "$PKG/event_store.py"
+require_file "$PKG/impact.py"
+require_file "$PKG/canvas_observation.py"
+require_file "$PKG/freshness.py"
+require_file "$PKG/reconciliation.py"
 require_file "$DOC"
-require_file "$TESTS"
+require_file "$CHANGE_DOC"
+require_file "$TESTS/test_agent.py"
+require_file "$TESTS/test_snapshot.py"
+require_file "$TESTS/test_change_detection.py"
+require_file "$TESTS/test_event_store.py"
+require_file "$TESTS/test_canvas_observation.py"
+require_file "$TESTS/test_reconciliation.py"
 
 echo
 echo "Module Compilation"
@@ -55,6 +69,13 @@ if python3 -m scripts.weekly_planner_agent.service; then
 else
   fail "agent service self-test failed"
 fi
+for mod in snapshot change_detection event_store impact freshness canvas_observation reconciliation; do
+  if python3 -m "scripts.weekly_planner_agent.$mod" >/dev/null 2>&1; then
+    pass "agent $mod self-test passed"
+  else
+    fail "agent $mod self-test failed"
+  fi
+done
 
 echo
 echo "Unit Tests"

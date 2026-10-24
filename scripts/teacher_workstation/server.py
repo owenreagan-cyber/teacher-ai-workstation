@@ -139,6 +139,8 @@ class Handler(BaseHTTPRequestHandler):
                     self._send_json(200, agent_service.agent_view(quarter, week))
                 elif sub == "changes":
                     self._send_json(200, agent_service.changes(quarter, week))
+                elif sub == "notifications":
+                    self._send_json(200, agent_service.notifications(quarter, week))
                 else:
                     self._send_json(404, {"error": "not found"})
             elif resource == "home":
@@ -261,6 +263,60 @@ class Handler(BaseHTTPRequestHandler):
                 self._send_json(200, agent_service.resolve_event(quarter, week, event_id, action))
             except Exception as exc:  # noqa: BLE001
                 self._send_json(500, {"error": type(exc).__name__})
+            return
+
+        # /api/agent/approve/{q}/{w} — record a plan-version-bound approval (local only).
+        if len(parts) == 5 and parts[0] == "api" and parts[1] == "agent" and parts[2] == "approve":
+            from scripts.weekly_planner_agent import service as agent_service
+            try:
+                quarter, week = int(parts[3]), int(parts[4])
+            except (ValueError, TypeError):
+                self._send_json(400, {"error": "bad request"})
+                return
+            try:
+                self._send_json(200, agent_service.approve_plan(quarter, week))
+            except Exception as exc:  # noqa: BLE001
+                self._send_json(500, {"error": type(exc).__name__})
+            return
+
+        # /api/agent/notify/{q}/{w} — draft + deliver a notification (preview/local only).
+        if len(parts) == 5 and parts[0] == "api" and parts[1] == "agent" and parts[2] == "notify":
+            from scripts.weekly_planner_agent import service as agent_service
+            try:
+                quarter, week = int(parts[3]), int(parts[4])
+            except (ValueError, TypeError):
+                self._send_json(400, {"error": "bad request"})
+                return
+            event_id = body.get("event_id") if isinstance(body, dict) else ""
+            mode = body.get("mode") if isinstance(body, dict) else None
+            try:
+                self._send_json(200, agent_service.deliver_notification(
+                    quarter, week, event_id=event_id, mode=mode))
+            except Exception as exc:  # noqa: BLE001
+                self._send_json(500, {"error": type(exc).__name__})
+            return
+
+        # /api/agent/publish/{q}/{w} — guarded publish (production only; sole publisher).
+        if len(parts) == 5 and parts[0] == "api" and parts[1] == "agent" and parts[2] == "publish":
+            from scripts.weekly_planner_agent import service as agent_service
+            try:
+                quarter, week = int(parts[3]), int(parts[4])
+            except (ValueError, TypeError):
+                self._send_json(400, {"error": "bad request"})
+                return
+            production = bool(body.get("production")) if isinstance(body, dict) else False
+            owner_confirmation = body.get("owner_confirmation") if isinstance(body, dict) else None
+            if not production:
+                self._send_json(400, {"error": "publish requires production=true"})
+                return
+            try:
+                from scripts.canvas_llm_deploy.client import LiveDeployClient
+                result = agent_service.publish_now(
+                    quarter, week, client=LiveDeployClient(),
+                    owner_confirmation=owner_confirmation)
+                self._send_json(200, result)
+            except Exception as exc:  # noqa: BLE001
+                self._send_json(409, {"error": type(exc).__name__, "detail": str(exc)})
             return
 
         # Expected: /api/weeks/{q}/{w}/<action>...

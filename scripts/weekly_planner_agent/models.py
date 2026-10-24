@@ -46,6 +46,7 @@ class PlanStatus(str):
 
 # Friday Review lifecycle (mirrors the contract language without the scheduler).
 FRIDAY_BUILDING = "BUILDING"
+FRIDAY_NEEDS_OWEN = "NEEDS_OWEN"
 FRIDAY_READY_FOR_REVIEW = "READY_FOR_REVIEW"
 FRIDAY_CHANGES_DETECTED = "CHANGES_DETECTED"
 FRIDAY_APPROVED = "APPROVED"
@@ -54,6 +55,7 @@ FRIDAY_PUBLISHED_VERIFIED = "PUBLISHED_VERIFIED"
 FRIDAY_BLOCKED = "BLOCKED"
 FRIDAY_STATES = (
     FRIDAY_BUILDING,
+    FRIDAY_NEEDS_OWEN,
     FRIDAY_READY_FOR_REVIEW,
     FRIDAY_CHANGES_DETECTED,
     FRIDAY_APPROVED,
@@ -91,8 +93,18 @@ EVENT_LIFECYCLE_STATES = (
 # against fake/local sinks only).
 NOTIFICATION_PENDING = "pending"
 NOTIFICATION_DRAFTED = "drafted"
+NOTIFICATION_QUEUED = "queued"
 NOTIFICATION_DELIVERED = "delivered"
+NOTIFICATION_FAILED = "failed"
 NOTIFICATION_SUPPRESSED = "suppressed"
+NOTIFICATION_STATUSES = (
+    NOTIFICATION_PENDING,
+    NOTIFICATION_DRAFTED,
+    NOTIFICATION_QUEUED,
+    NOTIFICATION_DELIVERED,
+    NOTIFICATION_FAILED,
+    NOTIFICATION_SUPPRESSED,
+)
 
 
 @dataclass
@@ -279,6 +291,23 @@ class FridayReview:
     source_freshness: dict[str, Any] = field(default_factory=dict)
     changed_subjects: list[str] = field(default_factory=list)
     blocking: list[str] = field(default_factory=list)
+
+    def to_dict(self) -> dict[str, Any]:
+        return asdict(self)
+
+
+@dataclass
+class PlanApproval:
+    """A plan-version-bound approval record (thin; not a duplicate of the
+    canonical per-artifact approval store — it binds one teacher approval to
+    the exact plan/source versions that were reviewed)."""
+
+    week_id: str
+    plan_version: str
+    source_fingerprint: str
+    canvas_fingerprint: str = ""
+    approved_at: str = field(default_factory=_now)
+    approved_by: str = "OWNER_UI"
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)

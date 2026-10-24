@@ -462,6 +462,25 @@ function renderAgentFridayReview(r) {
   const changes = (r.changes_since_last_review || []).map((c) =>
     `<div class="change-card-item">${esc(c.subject)} · ${esc(c.day)} · ${esc(c.type)}</div>`).join('') || '<span class="empty">No changes since last review.</span>';
   const changed = (r.changed_subjects || []).map((s) => `<span class="pill warn">${esc(s)}</span>`).join(' ') || '<span class="empty">All subjects unchanged.</span>';
+  const gate = r.gate || {};
+  const blockers = (gate.blockers || []).map((b) => `<li>${esc(b)}</li>`).join('');
+  const approval = r.approval;
+  const lastPublish = r.last_publish;
+  const schedule = r.schedule || {};
+  const delivery = r.delivery || {};
+  const approvalRow = approval
+    ? `<div class="kv"><span class="k">Approved</span><span class="v">${pill('approved')}</span></div>`
+    : `<div class="kv"><span class="k">Approval</span><span class="v">${pill('to_review')}</span></div>`;
+  const publishRow = lastPublish
+    ? `<div class="kv"><span class="k">Last publish</span><span class="v">${esc(lastPublish.lifecycle || '')}</span></div>`
+    : '';
+  const scheduleRow = `<div class="kv"><span class="k">Publishes (Friday)</span><span class="v">${esc(schedule.publish || '16:00')} ${esc(schedule.timezone || '')}</span></div>`;
+  const deliveryRow = `<div class="kv"><span class="k">Email delivery</span><span class="v">${delivery.email_enabled ? 'enabled' : 'disabled (preview/local only)'}</span></div>`;
+  const action = gate.ready
+    ? `<div class="btn-row"><button class="btn primary" data-agent-approve>Approve Plan</button></div>`
+    : (blockers ? `<div class="impact"><div class="impact-title">Blocked</div><ul>${blockers}</ul></div>` : '');
+  const publishAction = approval && !gate.ready && !blockers
+    ? `<p class="empty">Plan changed after approval — review again before publishing.</p>` : '';
   return `<section class="section"><h2>Friday review — ${esc(r.week_id || '')}</h2>
     <div class="summary-banner">${pill(r.state)}</div>
     <div class="agent-counts">
@@ -469,10 +488,12 @@ function renderAgentFridayReview(r) {
       <div class="kv"><span class="k">Assignments</span><span class="v">${r.assignments_count}</span></div>
       <div class="kv"><span class="k">Announcements</span><span class="v">${r.announcements_count}</span></div>
       <div class="kv"><span class="k">Reminders</span><span class="v">${r.reminders_count}</span></div>
+      ${approvalRow}${publishRow}${scheduleRow}${deliveryRow}
     </div>
     <h3>Changed subjects</h3><div>${changed}</div>
     <h3>Changes since last review</h3><div>${changes}</div>
-    <p class="empty">Approval and publishing stay in the existing Planner &amp; Friday flow.</p></section>`;
+    ${action}${publishAction}
+    <p class="empty">Approval and publishing stay in the guarded Friday rollover. Nothing goes live without all gates passing.</p></section>`;
 }
 
 function freshnessLabel(value) {
@@ -558,6 +579,12 @@ async function resolveAgentEvent(eventId, action) {
   await renderAgentTab('changes');
 }
 
+async function approveAgentPlan() {
+  const {quarter, week} = agentWeek();
+  await api(`/api/agent/approve/${quarter}/${week}`, {method: 'POST', body: {}});
+  await renderAgentTab('friday-review');
+}
+
 async function renderAgentChat(body, quarter, week) {
   const view = await api(`/api/agent/view/${quarter}/${week}`);
   const conversation = (view.conversation || []).map((entry) => {
@@ -597,6 +624,7 @@ document.addEventListener('input',(event) => { const row = event.target.closest(
 document.addEventListener('click',(event) => { const tab = event.target.closest('[data-agent-tab]'); if (!tab) return; event.preventDefault(); renderAgentTab(tab.dataset.agentTab).catch(showError); });
 document.addEventListener('click',(event) => { const sync = event.target.closest('[data-agent-sync]'); if (!sync) return; event.preventDefault(); runAgentSync().catch((error) => window.alert(error.message)); });
 document.addEventListener('click',(event) => { const btn = event.target.closest('[data-agent-resolve]'); if (!btn) return; event.preventDefault(); resolveAgentEvent(btn.dataset.eventId, btn.dataset.agentResolve).catch((error) => window.alert(error.message)); });
+document.addEventListener('click',(event) => { const btn = event.target.closest('[data-agent-approve]'); if (!btn) return; event.preventDefault(); approveAgentPlan().catch((error) => window.alert(error.message)); });
 document.addEventListener('submit',(event) => { if (event.target.id !== 'agent-form') return; event.preventDefault(); submitAgentInstruction(event.target).catch((error) => window.alert(error.message)); });
 window.addEventListener('hashchange',() => render().catch(showError));
 function showError(error) { $('main').innerHTML = `<div class="banner fail"><strong>Planner could not load.</strong> ${esc(error.message)}</div>`; }

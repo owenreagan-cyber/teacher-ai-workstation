@@ -34,7 +34,8 @@
         {"flag": "--chief-of-staff-v1-status", "status": "implemented", "purpose": "Chief of Staff v1 Agent Core foundation status"},
         {"flag": "--chief-of-staff-command-index-v1-status", "status": "implemented", "purpose": "Command index v1 status proof"},
         {"flag": "--teacher-workstation-foundation-status", "status": "implemented", "purpose": "Phase 3 foundation orchestration status"},
-        {"flag": "--commands", "status": "implemented", "purpose": "Deterministic command surface index"},
+        {"flag": "--friday-rollover-status", "status": "implemented", "purpose": "Friday 4 PM Canvas weekly rollover status (read-only; sole publisher engine)"},
+        {"flag": "--weekly-planner-agent-status", "status": "implemented", "purpose": "Weekly Planner Agent foundation, persistent change detection, guarded-publish gate, and notification delivery status (read-only)"},
         {"flag": "--capability-map-status", "status": "planned", "purpose": "Capability map status summary"},
         {"flag": "--roadmap-status", "status": "planned", "purpose": "Master build roadmap status summary"}
       ]

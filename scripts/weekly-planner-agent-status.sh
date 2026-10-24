@@ -21,9 +21,10 @@ require_file() {
 PKG="scripts/weekly_planner_agent"
 DOC="docs/programs/canvas-llm/weekly-planner-agent-foundation.md"
 CHANGE_DOC="docs/programs/canvas-llm/weekly-planner-change-detection.md"
+PUBLISH_DOC="docs/programs/canvas-llm/weekly-planner-guarded-publish.md"
 TESTS="tests/weekly_planner_agent"
 
-echo "Weekly Planner Agent Foundation + Change Detection"
+echo "Weekly Planner Agent — Foundation + Change Detection + Guarded Publish"
 echo "------------------------------------------------------------------------"
 
 require_file "$PKG/__init__.py"
@@ -43,14 +44,20 @@ require_file "$PKG/impact.py"
 require_file "$PKG/canvas_observation.py"
 require_file "$PKG/freshness.py"
 require_file "$PKG/reconciliation.py"
+require_file "$PKG/delivery.py"
+require_file "$PKG/publish.py"
+require_file "$PKG/schedule_config.py"
 require_file "$DOC"
 require_file "$CHANGE_DOC"
+require_file "$PUBLISH_DOC"
 require_file "$TESTS/test_agent.py"
 require_file "$TESTS/test_snapshot.py"
 require_file "$TESTS/test_change_detection.py"
 require_file "$TESTS/test_event_store.py"
 require_file "$TESTS/test_canvas_observation.py"
 require_file "$TESTS/test_reconciliation.py"
+require_file "$TESTS/test_delivery.py"
+require_file "$TESTS/test_publish.py"
 
 echo
 echo "Module Compilation"
@@ -69,7 +76,7 @@ if python3 -m scripts.weekly_planner_agent.service; then
 else
   fail "agent service self-test failed"
 fi
-for mod in snapshot change_detection event_store impact freshness canvas_observation reconciliation; do
+for mod in snapshot change_detection event_store impact freshness canvas_observation reconciliation delivery publish schedule_config; do
   if python3 -m "scripts.weekly_planner_agent.$mod" >/dev/null 2>&1; then
     pass "agent $mod self-test passed"
   else
@@ -98,6 +105,42 @@ else
   pass "no Canvas write/mutation/network path in agent package"
 fi
 rm -f /tmp/wpa_write_scan.txt /tmp/wpa_test_out.txt
+
+echo
+echo "Notification Delivery Gate (email disabled by default)"
+echo "----------------------------------------"
+if python3 - <<'PY' >/dev/null 2>&1
+import os, tempfile
+os.environ["TAW_STATE_ROOT"] = tempfile.mkdtemp()
+from scripts.weekly_planner_agent import schedule_config
+cfg = schedule_config.delivery_config()
+assert cfg["mode"] == "preview"
+assert cfg["email_enabled"] is False
+print("OK")
+PY
+then
+  pass "email delivery disabled by default (mode=preview)"
+else
+  fail "email delivery is not disabled by default"
+fi
+
+echo
+echo "Scheduler Not Installed"
+echo "----------------------------------------"
+if launchctl print "gui/$(id -u)/com.teacher-ai-workstation.canvas-friday" >/dev/null 2>&1; then
+  warn "Friday LaunchAgent appears installed/loaded (not installed by this phase)"
+else
+  pass "Friday LaunchAgent is not installed or loaded"
+fi
+
+echo
+echo "Chief of Staff Wiring"
+echo "----------------------------------------"
+if grep -Fq -- '--weekly-planner-agent-status' bin/chief-of-staff; then
+  pass "chief-of-staff exposes --weekly-planner-agent-status"
+else
+  fail "chief-of-staff missing --weekly-planner-agent-status"
+fi
 
 echo
 echo "Active Announcement Feed Fix (context_codes[])"

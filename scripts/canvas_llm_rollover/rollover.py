@@ -550,7 +550,10 @@ def execute(
         # A run before 4 PM is held; a due/manual run may already be posted.
         in_feed = False
         try:
-            in_feed = any((x.get("title") or "") == a["title"] for x in client.list_active_announcements())
+            in_feed = any(
+                (x.get("title") or "") == a["title"]
+                for x in client.list_active_announcements(context_codes=[f"course_{cid}"])
+            )
             counts["GET"] += 1
         except Exception:  # noqa: BLE001
             in_feed = False

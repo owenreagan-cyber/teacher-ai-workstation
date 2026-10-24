@@ -53,7 +53,7 @@ class DeployClient:
     def list_announcements(self, course_id: int) -> list[dict[str, Any]]:
         raise NotImplementedError
 
-    def list_active_announcements(self) -> list[dict[str, Any]]:
+    def list_active_announcements(self, context_codes: list[str] | None = None) -> list[dict[str, Any]]:
         raise NotImplementedError
 
     # ---- readback + writes ----
@@ -124,8 +124,8 @@ class LiveDeployClient(DeployClient):
     def list_announcements(self, course_id: int) -> list[dict[str, Any]]:
         return self._read.list_announcements(course_id)
 
-    def list_active_announcements(self) -> list[dict[str, Any]]:
-        return self._read.list_active_announcements()
+    def list_active_announcements(self, context_codes: list[str] | None = None) -> list[dict[str, Any]]:
+        return self._read.list_active_announcements(context_codes)
 
     # ---- readback + writes ----
     def _norm_page(self, page: dict[str, Any]) -> dict[str, Any]:
@@ -244,12 +244,16 @@ class FakeDeployClient(DeployClient):
     def list_announcements(self, course_id: int) -> list[dict[str, Any]]:
         return [a for a in self.announcements.values() if a.get("course_id") == course_id]
 
-    def list_active_announcements(self) -> list[dict[str, Any]]:
+    def list_active_announcements(self, context_codes: list[str] | None = None) -> list[dict[str, Any]]:
         # Active = not future-scheduled (delayed_post_at None or in the past).
+        # Mirrors the live contract: results are scoped to context_codes when given.
         from datetime import datetime, timezone
         now = datetime.now(timezone.utc)
+        wanted = {str(code) for code in (context_codes or [])}
         out = []
         for a in self.announcements.values():
+            if wanted and f"course_{a.get('course_id')}" not in wanted:
+                continue
             dp = a.get("delayed_post_at")
             if not dp:
                 out.append(a)

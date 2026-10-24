@@ -1,6 +1,6 @@
 # Build Queue
 
-Last updated: 2026-07-10
+Last updated: 2026-10-24
 
 Agent quick-start: `AGENTS.md`
 
@@ -20,6 +20,7 @@ Handoff and status clarity. Start from `docs/phase-1-chief-of-staff-status-audit
 
 ## Recently Completed
 
+- Weekly Planner Agent Foundation (2026-10-24): `scripts/weekly_planner_agent/` (WeeklyPlan, SourceChangeEvent, teacher-instruction parser, Assessment Date Watch, communication rules, notification model, Friday Review state machine, agent service); `apps/teacher-workstation/` Weekly Planner Agent view (Today / Week plan / Friday review / Agent); `scripts/teacher_workstation/server.py` `/api/agent/*` routes; active-announcement `context_codes[]` HTTP 400 fix; `scripts/weekly-planner-agent-status.sh`; `docs/programs/canvas-llm/weekly-planner-agent-foundation.md`; `tests/weekly_planner_agent/`. Planning/review foundation only — no LaunchAgent install, no autonomous Canvas writes, no notification delivery.
 - Manual Curriculum Intake & Lesson Package Workflow (2026-07-28): `scripts/curriculum_production/curriculum_intake.py`, `approval_workflow.py`, `workflow.py`, `lesson_package.py`, `intake_validation.py`; manual priority workflow; teacher approval states; Lesson Package Plan output; `--lesson-package-status`; fictional fixtures; no generation, scanning, OCR, or network.
 - Lesson Specification & Blueprint System (2026-07-28): `scripts/lesson_blueprint/`; review packet, consistency engine, shared registries, artifact blueprints, content budgets, approval workflow; `--lesson-blueprint-status`; `docs/lesson-blueprint-system.md`; fictional fixtures; no artifact generation, scanning, OCR, or network; Artifact Quality and CPE Phases 4–5 preserved.
 - Curriculum Production Engine foundation (2026-07-28): `scripts/curriculum_production/`; lesson model, content prioritization placeholders, instructional sequences, artifact planning, relationship graph, production registry, validators; `--curriculum-production-status`; `docs/curriculum-production-engine-foundation.md`; no lesson generation, curriculum scanning, Canvas, network, or real curriculum ingestion; Artifact Quality Phases 1–3 unchanged.

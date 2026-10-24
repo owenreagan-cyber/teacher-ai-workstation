@@ -126,6 +126,19 @@ class Handler(BaseHTTPRequestHandler):
                 self._send_json(200, adapter.system_status())
             elif resource == "friday-rollover":
                 self._send_json(200, adapter.friday_rollover())
+            elif resource == "agent" and len(parts) == 5:
+                from scripts.weekly_planner_agent import service as agent_service
+                sub, quarter, week = parts[2], int(parts[3]), int(parts[4])
+                if sub == "today":
+                    self._send_json(200, agent_service.today(quarter, week))
+                elif sub == "week-plan":
+                    self._send_json(200, agent_service.week_plan(quarter, week))
+                elif sub == "friday-review":
+                    self._send_json(200, agent_service.friday_review(quarter, week))
+                elif sub == "view":
+                    self._send_json(200, agent_service.agent_view(quarter, week))
+                else:
+                    self._send_json(404, {"error": "not found"})
             elif resource == "home":
                 self._send_json(200, adapter.home())
             elif resource == "weeks":
@@ -202,6 +215,21 @@ class Handler(BaseHTTPRequestHandler):
 
         # Validate payload shape early.
         body = self._read_body()
+
+        # /api/agent/instruct/{q}/{w} — plain-language teacher instruction (local only).
+        if len(parts) == 5 and parts[0] == "api" and parts[1] == "agent" and parts[2] == "instruct":
+            from scripts.weekly_planner_agent import service as agent_service
+            try:
+                quarter, week = int(parts[3]), int(parts[4])
+            except (ValueError, TypeError):
+                self._send_json(400, {"error": "bad request"})
+                return
+            text = body.get("text") if isinstance(body, dict) else ""
+            try:
+                self._send_json(200, agent_service.instruct(quarter, week, text))
+            except Exception as exc:  # noqa: BLE001
+                self._send_json(500, {"error": type(exc).__name__})
+            return
 
         # Expected: /api/weeks/{q}/{w}/<action>...
         if len(parts) < 4 or parts[0] != "api" or parts[1] != "weeks":

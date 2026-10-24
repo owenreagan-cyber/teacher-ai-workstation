@@ -215,3 +215,36 @@ textarea:focus, select:focus, input:focus { outline: none; border-color: var(--a
 
 .answer-row { display: flex; gap: 8px; align-items: center; }
 .answer-row input { flex: 1; }
+
+/* ---- Weekly Planner Agent ---- */
+.agent-tabs { display: flex; gap: 6px; border-bottom: 1px solid var(--line); margin-bottom: 16px; }
+.agent-tab {
+  background: none; border: none; padding: 10px 14px; font-size: 14px; font-weight: 600;
+  color: var(--muted); cursor: pointer; border-bottom: 2px solid transparent;
+}
+.agent-tab:hover { color: var(--ink); }
+.agent-tab.active { color: var(--brand); border-bottom-color: var(--accent); }
+
+.agent-body { min-height: 320px; }
+.agent-subject-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 14px; }
+.agent-subject-card { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 14px; }
+.agent-subject-card h3 { margin: 0 0 10px; font-size: 15px; text-transform: capitalize; }
+.agent-days { display: flex; flex-direction: column; gap: 10px; }
+.agent-day { border-top: 1px solid var(--line); padding-top: 8px; font-size: 13.5px; }
+.agent-day-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.agent-assessment { color: var(--warn); font-weight: 600; margin-top: 2px; }
+.agent-homework { color: var(--muted); margin-top: 2px; }
+.agent-counts { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 10px; margin: 12px 0; }
+
+.agent-chat { display: flex; flex-direction: column; }
+.agent-conversation { display: flex; flex-direction: column; gap: 10px; margin-bottom: 14px; max-height: 420px; overflow-y: auto; }
+.chat-line { padding: 10px 12px; border-radius: 10px; font-size: 14px; max-width: 85%; }
+.chat-line.teacher { background: var(--brand); color: #fff; align-self: flex-end; }
+.chat-line.agent { background: var(--brand-soft); align-self: flex-start; }
+.chat-line strong { display: block; font-size: 12px; opacity: .7; margin-bottom: 2px; }
+.agent-form { display: flex; gap: 8px; }
+.agent-input { flex: 1; padding: 10px 12px; border: 1px solid var(--line); border-radius: 8px; font-size: 14px; }
+.agent-advanced { margin-top: 16px; }
+.agent-advanced summary { cursor: pointer; font-size: 13px; color: var(--muted); }
+.agent-advanced pre { background: var(--brand-soft); padding: 12px; border-radius: 8px; overflow-x: auto; font-size: 12px; }
+.change-card-item { padding: 6px 0; border-bottom: 1px solid var(--line); font-size: 13.5px; }

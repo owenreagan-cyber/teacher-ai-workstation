@@ -21,7 +21,7 @@ async function api(path, options = {}) {
 
 function parseRoute() {
   const raw = location.hash.replace(/^#\/?/, '');
-  if (raw === 'completed' || raw === 'settings') return { special: raw };
+  if (raw === 'completed' || raw === 'settings' || raw === 'agent') return { special: raw };
   const match = raw.match(/^week\/q([1-4])w(\d+)(?:\/(source|friday|([a-z_]+)\/(plan|ai|preview)))?$/i);
   if (!match) return null;
   return {quarter: Number(match[1]), week: Number(match[2]), code: `Q${match[1]}W${match[2]}`,
@@ -68,7 +68,8 @@ function navigation(data, route) {
     ['ai','3 · AI review',openAi],['preview','4 · Preview & approve',approvals],['friday','5 · Friday',null]];
   return items.map(([id,label,badge]) => `<a class="${selected === id ? 'active' : ''}" href="${stageLink(data,id,route.course)}">
     <span>${label}</span>${badge ? `<span class="nav-badge">${badge}</span>` : ''}</a>`).join('')
-    + `<div class="nav-separator"></div><a class="${route.special === 'completed' ? 'active' : ''}" href="#completed">Completed weeks</a>
+    + `<div class="nav-separator"></div><a class="${route.special === 'agent' ? 'active' : ''}" href="#agent">Weekly Planner Agent</a>
+       <div class="nav-separator"></div><a class="${route.special === 'completed' ? 'active' : ''}" href="#completed">Completed weeks</a>
        <a class="${route.special === 'settings' ? 'active' : ''}" href="#settings">Settings</a>`;
 }
 
@@ -292,6 +293,7 @@ async function render() {
   let html;
   if (route.special === 'completed') html = viewCompleted(data);
   else if (route.special === 'settings') html = viewSettings(data);
+  else if (route.special === 'agent') html = viewAgent(data);
   else if (route.stage === 'week') html = viewWeek(data);
   else if (route.stage === 'source') html = viewSource(data);
   else if (route.stage === 'friday') html = viewFriday(data);
@@ -300,6 +302,7 @@ async function render() {
   else html = viewPreview(data,route.course);
   $('main').innerHTML = html;
   renderPreviewFrames(data,route);
+  if (route.special === 'agent') renderAgentTab('today');
 }
 
 async function refresh() { APP.data = null; await render(); }
@@ -377,8 +380,145 @@ async function savePlanRow(row) {
   } catch (error) { status.textContent = error.message; }
 }
 
+// ---------------------------------------------------------------------------
+// Weekly Planner Agent — teacher-facing conversational surface
+// ---------------------------------------------------------------------------
+function agentWeek() {
+  return {quarter: APP.data.week.quarter, week: APP.data.week.number};
+}
+
+function viewAgent(data) {
+  return `${header(data, 'Weekly Planner Agent', 'Plain language → proposed plan → review → approve')}
+  <div class="agent-tabs" id="agent-tabs">
+    <button class="agent-tab active" data-agent-tab="today">Today</button>
+    <button class="agent-tab" data-agent-tab="week-plan">Week plan</button>
+    <button class="agent-tab" data-agent-tab="friday-review">Friday review</button>
+    <button class="agent-tab" data-agent-tab="agent">Agent</button>
+  </div>
+  <div id="agent-body" class="agent-body"><div class="loading">Loading…</div></div>`;
+}
+
+function agentTabLabel(tab) {
+  return {today:'Today', 'week-plan':'Week plan', 'friday-review':'Friday review', agent:'Agent'}[tab] || 'Today';
+}
+
+async function renderAgentTab(tab) {
+  const {quarter, week} = agentWeek();
+  document.querySelectorAll('.agent-tab').forEach((el) => el.classList.toggle('active', el.dataset.agentTab === tab));
+  const body = document.getElementById('agent-body');
+  if (!body) return;
+  body.innerHTML = '<div class="loading">Loading…</div>';
+  try {
+    if (tab === 'agent') return renderAgentChat(body, quarter, week);
+    const view = {today:'today', 'week-plan':'week-plan', 'friday-review':'friday-review'}[tab];
+    const payload = await api(`/api/agent/${view}/${quarter}/${week}`);
+    if (tab === 'today') body.innerHTML = renderAgentToday(payload);
+    else if (tab === 'week-plan') body.innerHTML = renderAgentWeekPlan(payload);
+    else body.innerHTML = renderAgentFridayReview(payload);
+  } catch (error) {
+    body.innerHTML = `<div class="banner fail">Agent view unavailable: ${esc(error.message)}</div>`;
+  }
+}
+
+function renderAgentToday(p) {
+  const attention = (p.needs_attention || []).map((s) => `<span class="pill warn">${esc(s)}</span>`).join(' ') || '<span class="empty">Nothing needs attention.</span>';
+  const freshness = [
+    `<div class="kv"><span class="k">Pacing</span><span class="v">${esc(freshnessLabel(p.source_freshness?.pacing))}</span></div>`,
+    `<div class="kv"><span class="k">Canvas</span><span class="v">${esc(freshnessLabel(p.source_freshness?.canvas))}</span></div>`,
+  ].join('');
+  return `<section class="section"><h2>Today</h2>
+    <div class="summary-banner">${esc(p.message || 'No changes detected.')}</div>
+    <div class="kv"><span class="k">Changes detected</span><span class="v">${p.changes_detected ?? 0}</span></div>
+    <div class="kv"><span class="k">Friday review</span><span class="v">${pill(p.friday_review_state)}</span></div>
+    <div class="kv"><span class="k">Needs attention</span><span class="v">${attention}</span></div>
+    <h3>Source freshness</h3>${freshness}</section>`;
+}
+
+function renderAgentWeekPlan(p) {
+  const subjects = Object.keys(p.subjects || {});
+  if (!subjects.length) return '<section class="section"><h2>Week plan</h2><p class="empty">No plan is available yet.</p></section>';
+  const cards = subjects.map((subject) => {
+    const days = (p.subjects[subject] || []).map(renderAgentDay).join('');
+    return `<div class="agent-subject-card"><h3>${esc(subject)}</h3><div class="agent-days">${days}</div></div>`;
+  }).join('');
+  return `<section class="section"><h2>Week plan — ${esc(p.week_id || '')}</h2><div class="agent-subject-grid">${cards}</div></section>`;
+}
+
+function renderAgentDay(d) {
+  const assessment = d.assessment ? `<div class="agent-assessment">${esc(d.assessment.name || 'Assessment')}${d.assessment.day ? ` · ${esc(d.assessment.day)}` : ''}</div>` : '';
+  const homework = (d.homework || []).filter(Boolean).map((h) => `<div class="agent-homework">At home: ${esc(h)}</div>`).join('');
+  const confidence = d.confidence === 'predicted' ? '<span class="pill warn">Suggested — not confirmed</span>' : '';
+  return `<div class="agent-day">
+    <div class="agent-day-head"><strong>${esc(d.day)}</strong>${confidence}</div>
+    <div>${esc(d.lesson || '')}</div>${assessment}${homework}</div>`;
+}
+
+function renderAgentFridayReview(r) {
+  const changes = (r.changes_since_last_review || []).map((c) =>
+    `<div class="change-card-item">${esc(c.subject)} · ${esc(c.day)} · ${esc(c.type)}</div>`).join('') || '<span class="empty">No changes since last review.</span>';
+  const changed = (r.changed_subjects || []).map((s) => `<span class="pill warn">${esc(s)}</span>`).join(' ') || '<span class="empty">All subjects unchanged.</span>';
+  return `<section class="section"><h2>Friday review — ${esc(r.week_id || '')}</h2>
+    <div class="summary-banner">${pill(r.state)}</div>
+    <div class="agent-counts">
+      <div class="kv"><span class="k">Pages</span><span class="v">${r.pages_count}</span></div>
+      <div class="kv"><span class="k">Assignments</span><span class="v">${r.assignments_count}</span></div>
+      <div class="kv"><span class="k">Announcements</span><span class="v">${r.announcements_count}</span></div>
+      <div class="kv"><span class="k">Reminders</span><span class="v">${r.reminders_count}</span></div>
+    </div>
+    <h3>Changed subjects</h3><div>${changed}</div>
+    <h3>Changes since last review</h3><div>${changes}</div>
+    <p class="empty">Approval and publishing stay in the existing Planner &amp; Friday flow.</p></section>`;
+}
+
+function freshnessLabel(value) {
+  if (!value) return 'not checked yet';
+  try {
+    const then = new Date(value).getTime();
+    const mins = Math.max(0, Math.round((Date.now() - then) / 60000));
+    if (mins < 60) return `Checked ${mins} minute${mins === 1 ? '' : 's'} ago`;
+    const hours = Math.round(mins / 60);
+    return `Checked ${hours} hour${hours === 1 ? '' : 's'} ago`;
+  } catch (_) { return 'stale'; }
+}
+
+async function renderAgentChat(body, quarter, week) {
+  const view = await api(`/api/agent/view/${quarter}/${week}`);
+  const conversation = (view.conversation || []).map((entry) => {
+    if (entry.role === 'teacher') return `<div class="chat-line teacher"><strong>You</strong><div>${esc(entry.text)}</div></div>`;
+    const reply = entry.result?.reply || '';
+    return `<div class="chat-line agent"><strong>Agent</strong><div>${esc(reply)}</div></div>`;
+  }).join('') || '<p class="empty">Ask me something, e.g. “Move the Math test to Thursday.”</p>';
+  body.innerHTML = `<section class="section agent-chat">
+    <h2>Agent</h2>
+    <p class="page-sub">Tell me what to change in plain language. No JSON, no hashes, no page IDs.</p>
+    <div class="agent-conversation" id="agent-conversation">${conversation}</div>
+    <form id="agent-form" class="agent-form">
+      <input id="agent-input" class="agent-input" type="text" autocomplete="off" placeholder="What do you want to change?" />
+      <button class="btn primary" type="submit">Send</button>
+    </form>
+    <details class="agent-advanced"><summary>Advanced (debug)</summary>
+      <pre>${esc(JSON.stringify(view.plan, null, 2))}</pre></details>
+  </section>`;
+}
+
+async function submitAgentInstruction(form) {
+  const input = document.getElementById('agent-input');
+  const text = (input?.value || '').trim();
+  if (!text) return;
+  const {quarter, week} = agentWeek();
+  input.value = '';
+  const result = await api(`/api/agent/instruct/${quarter}/${week}`, {method: 'POST', body: {text}});
+  await renderAgentTab('agent');
+  const convo = document.getElementById('agent-conversation');
+  if (convo && result.reply) {
+    convo.insertAdjacentHTML('beforeend', `<div class="chat-line teacher"><strong>You</strong><div>${esc(text)}</div></div><div class="chat-line agent"><strong>Agent</strong><div>${esc(result.reply)}</div></div>`);
+  }
+}
+
 document.addEventListener('click',(event) => { const button = event.target.closest('[data-action]'); if (!button) return; event.preventDefault(); act(button).catch((error) => window.alert(error.message)); });
 document.addEventListener('input',(event) => { const row = event.target.closest('[data-plan-row]'); if (!row) return; clearTimeout(APP.saveTimer); APP.saveTimer = setTimeout(() => savePlanRow(row),700); });
+document.addEventListener('click',(event) => { const tab = event.target.closest('[data-agent-tab]'); if (!tab) return; event.preventDefault(); renderAgentTab(tab.dataset.agentTab).catch(showError); });
+document.addEventListener('submit',(event) => { if (event.target.id !== 'agent-form') return; event.preventDefault(); submitAgentInstruction(event.target).catch((error) => window.alert(error.message)); });
 window.addEventListener('hashchange',() => render().catch(showError));
 function showError(error) { $('main').innerHTML = `<div class="banner fail"><strong>Planner could not load.</strong> ${esc(error.message)}</div>`; }
 render().catch(showError);

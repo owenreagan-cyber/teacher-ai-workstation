@@ -72,9 +72,17 @@ class CanvasReadOnly:
         data = self._get(f"/api/v1/courses/{course_id}/discussion_topics?only_announcements=true&per_page=100")
         return data if isinstance(data, list) else []
 
-    def list_active_announcements(self) -> list[dict[str, Any]]:
-        """Account-wide active-only announcement feed (the canonical student-visibility signal)."""
-        data = self._get("/api/v1/announcements?active_only=true&per_page=100")
+    def list_active_announcements(self, context_codes: list[str] | None = None) -> list[dict[str, Any]]:
+        """Account-wide active-only announcement feed, scoped to context codes.
+
+        The Canvas Announcements API requires ``context_codes[]`` (e.g.
+        ``course_<id>``); requesting ``/api/v1/announcements`` without it returns
+        HTTP 400. This is the canonical student-visibility signal.
+        """
+        params = ["active_only=true", "per_page=100"]
+        for code in context_codes or []:
+            params.append(f"context_codes[]={urllib.parse.quote(code)}")
+        data = self._get(f"/api/v1/announcements?{'&'.join(params)}")
         return data if isinstance(data, list) else []
 
 

@@ -142,7 +142,10 @@ def _verify_announcement(client: DeployClient, course_id: int, topic_id: Any,
         content_ok = content_ok and "kl_wrapper_3" in msg and "Reminders" in msg
 
     from scripts.canvas_llm_intake import scheduling as sched
-    in_feed = any((x.get("title") or "") == title for x in client.list_active_announcements())
+    in_feed = any(
+        (x.get("title") or "") == title
+        for x in client.list_active_announcements(context_codes=[f"course_{course_id}"])
+    )
     counts["GET"] = counts.get("GET", 0) + 1
     state = sched.classify_announcement(
         delayed_post_at=a.get("delayed_post_at"),

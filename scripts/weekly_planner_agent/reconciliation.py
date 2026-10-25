@@ -86,6 +86,20 @@ def sync_and_detect(
                           pacing=pacing, canvas=canvas)
     prev = snap.load(quarter, week)
 
+    # Source outages are NEVER treated as an empty source. When a live read
+    # fails, carry the last successful cells/objects forward and only flip the
+    # status to STALE/UNAVAILABLE, so detection reports an outage instead of a
+    # phantom deletion or an all-cells-cleared diff.
+    if prev is not None:
+        if (curr.get("pacing") or {}).get("status") in (snap.SNAPSHOT_STALE, snap.SNAPSHOT_UNAVAILABLE):
+            prev_pacing = prev.get("pacing") or {}
+            curr["pacing"]["cells"] = prev_pacing.get("cells") or {}
+            curr["pacing"]["fingerprint"] = prev_pacing.get("fingerprint") or ""
+            curr["pacing"]["identity"] = prev_pacing.get("identity") or {}
+        if (curr.get("canvas") or {}).get("status") in (snap.SNAPSHOT_STALE, snap.SNAPSHOT_UNAVAILABLE):
+            prev_canvas = prev.get("canvas") or {}
+            curr["canvas"]["courses"] = prev_canvas.get("courses") or {}
+
     # First observation establishes a baseline — no false change alerts.
     if prev is None:
         snap.save(quarter, week, curr)

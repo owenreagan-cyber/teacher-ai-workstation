@@ -427,6 +427,7 @@ async function renderAgentTab(tab) {
 
 function renderAgentToday(p) {
   const attention = (p.needs_attention || []).map((s) => `<span class="pill warn">${esc(s)}</span>`).join(' ') || '<span class="empty">Nothing needs attention.</span>';
+  const watch = (p.assessment_watch || []).map(renderWatchCard).join('') || '<span class="empty">No assessment-date changes.</span>';
   const freshness = [
     `<div class="kv"><span class="k">Pacing</span><span class="v">${esc(freshnessLabel(p.source_freshness?.pacing))}</span></div>`,
     `<div class="kv"><span class="k">Canvas</span><span class="v">${esc(freshnessLabel(p.source_freshness?.canvas))}</span></div>`,
@@ -436,6 +437,7 @@ function renderAgentToday(p) {
     <div class="kv"><span class="k">Changes detected</span><span class="v">${p.changes_detected ?? 0}</span></div>
     <div class="kv"><span class="k">Friday review</span><span class="v">${pill(p.friday_review_state)}</span></div>
     <div class="kv"><span class="k">Needs attention</span><span class="v">${attention}</span></div>
+    <h3>Assessment date watch</h3><div class="change-cards">${watch}</div>
     <h3>Source freshness</h3>${freshness}</section>`;
 }
 
@@ -446,16 +448,34 @@ function renderAgentWeekPlan(p) {
     const days = (p.subjects[subject] || []).map(renderAgentDay).join('');
     return `<div class="agent-subject-card"><h3>${esc(subject)}</h3><div class="agent-days">${days}</div></div>`;
   }).join('');
-  return `<section class="section"><h2>Week plan — ${esc(p.week_id || '')}</h2><div class="agent-subject-grid">${cards}</div></section>`;
+  const assignments = (p.assignment_candidates || []).map((a) => `<li>${esc(a.subject || '')} · ${esc(a.title || a.name || '')}</li>`).join('');
+  const announcements = (p.announcement_candidates || []).map((a) => `<li>${esc(a.subject || '')} · ${esc(a.title || '')}</li>`).join('');
+  const reminders = (p.reminder_candidates || []).map((r) => `<li>${esc(r.subject || '')} · ${esc(r.title || '')}</li>`).join('');
+  const planned = (assignments || announcements || reminders)
+    ? `<div class="panel-grid">
+        <section class="section"><h2>Planned assignments</h2>${assignments ? `<ul>${assignments}</ul>` : '<p class="empty">None yet.</p>'}</section>
+        <section class="section"><h2>Announcements & reminders</h2>${announcements ? `<ul>${announcements}</ul>` : ''}${reminders ? `<ul>${reminders}</ul>` : ''}${(!announcements && !reminders) ? '<p class="empty">None yet.</p>' : ''}</section>
+      </div>` : '';
+  return `<section class="section"><h2>Week plan — ${esc(p.week_id || '')}</h2><div class="agent-subject-grid">${cards}</div>${planned}</section>`;
+}
+
+function authorityLabel(a) {
+  return {1:'Your instruction', 2:'Verified pacing', 3:'Verified Canvas', 4:'Subject rules', 5:'Inference'}[a] || 'Unknown source';
+}
+function confidencePill(c) {
+  if (c === 'predicted') return '<span class="pill warn">Predicted — suggested</span>';
+  if (c === 'inferred') return '<span class="pill warn">Inferred</span>';
+  return '<span class="pill pass">Confirmed</span>';
 }
 
 function renderAgentDay(d) {
-  const assessment = d.assessment ? `<div class="agent-assessment">${esc(d.assessment.name || 'Assessment')}${d.assessment.day ? ` · ${esc(d.assessment.day)}` : ''}</div>` : '';
+  const assessment = d.assessment ? `<div class="agent-assessment">${esc(d.assessment.name || 'Assessment')}${d.assessment.date ? ` · ${esc(d.assessment.date)}` : ''}</div>` : '';
   const homework = (d.homework || []).filter(Boolean).map((h) => `<div class="agent-homework">At home: ${esc(h)}</div>`).join('');
-  const confidence = d.confidence === 'predicted' ? '<span class="pill warn">Suggested — not confirmed</span>' : '';
+  const override = d.teacher_override ? '<span class="pill warn">Your override</span>' : '';
   return `<div class="agent-day">
-    <div class="agent-day-head"><strong>${esc(d.day)}</strong>${confidence}</div>
-    <div>${esc(d.lesson || '')}</div>${assessment}${homework}</div>`;
+    <div class="agent-day-head"><strong>${esc(d.day)}</strong>${confidencePill(d.confidence)}${override}</div>
+    <div>${esc(d.lesson || '')}</div>${assessment}${homework}
+    <div class="muted">${esc(authorityLabel(d.authority))}</div></div>`;
 }
 
 function renderAgentFridayReview(r) {
@@ -476,6 +496,10 @@ function renderAgentFridayReview(r) {
     : '';
   const scheduleRow = `<div class="kv"><span class="k">Publishes (Friday)</span><span class="v">${esc(schedule.publish || '16:00')} ${esc(schedule.timezone || '')}</span></div>`;
   const deliveryRow = `<div class="kv"><span class="k">Email delivery</span><span class="v">${delivery.email_enabled ? 'enabled' : 'disabled (preview/local only)'}</span></div>`;
+  const freshnessRow = `<div class="kv"><span class="k">Pacing freshness</span><span class="v">${esc(freshnessLabel(r.source_freshness?.pacing))}</span></div>
+    <div class="kv"><span class="k">Canvas freshness</span><span class="v">${esc(freshnessLabel(r.source_freshness?.canvas))}</span></div>`;
+  const homeroom = r.homeroom || {};
+  const homeroomRow = `<div class="kv"><span class="k">Homeroom items</span><span class="v">${homeroom.count ?? 0}</span></div>`;
   const action = gate.ready
     ? `<div class="btn-row"><button class="btn primary" data-agent-approve>Approve Plan</button></div>`
     : (blockers ? `<div class="impact"><div class="impact-title">Blocked</div><ul>${blockers}</ul></div>` : '');
@@ -488,7 +512,7 @@ function renderAgentFridayReview(r) {
       <div class="kv"><span class="k">Assignments</span><span class="v">${r.assignments_count}</span></div>
       <div class="kv"><span class="k">Announcements</span><span class="v">${r.announcements_count}</span></div>
       <div class="kv"><span class="k">Reminders</span><span class="v">${r.reminders_count}</span></div>
-      ${approvalRow}${publishRow}${scheduleRow}${deliveryRow}
+      ${approvalRow}${publishRow}${homeroomRow}${scheduleRow}${deliveryRow}${freshnessRow}
     </div>
     <h3>Changed subjects</h3><div>${changed}</div>
     <h3>Changes since last review</h3><div>${changes}</div>
@@ -498,6 +522,7 @@ function renderAgentFridayReview(r) {
 
 function freshnessLabel(value) {
   if (!value) return 'not checked yet';
+  if (typeof value === 'object' && value.label) return value.label;
   try {
     const then = new Date(value).getTime();
     const mins = Math.max(0, Math.round((Date.now() - then) / 60000));
@@ -505,6 +530,27 @@ function freshnessLabel(value) {
     const hours = Math.round(mins / 60);
     return `Checked ${hours} hour${hours === 1 ? '' : 's'} ago`;
   } catch (_) { return 'stale'; }
+}
+
+function renderWatchCard(w) {
+  const cs = w.canvas_state || {};
+  const posted = w.already_posted || {};
+  const rec = w.recommended_action || {};
+  const assignment = cs.assignment ? `<div class="kv"><span class="k">Canvas assignment</span><span class="v">${esc(cs.assignment.name || '—')}${cs.assignment.due_at ? ' · due ' + esc(cs.assignment.due_at) : ''}</span></div>` : '';
+  const first = cs.first_announcement ? `<div class="kv"><span class="k">First announcement</span><span class="v">${esc(cs.first_announcement.title || '—')} · ${cs.first_announcement.posted ? 'posted' : 'not posted'}</span></div>` : '';
+  const reminder = cs.day_before_reminder ? `<div class="kv"><span class="k">Day-before reminder</span><span class="v">${esc(cs.day_before_reminder.title || '—')} · ${cs.day_before_reminder.posted ? 'posted' : 'not posted'}</span></div>` : '';
+  return `<article class="change-card watch-card">
+    <div class="change-card-head"><strong>${esc(w.subject || '')}</strong> · <span>Assessment date changed</span></div>
+    <div class="change-card-values"><span class="old">${esc(w.old_date ?? '—')}</span> → <span class="new">${esc(w.new_date ?? '—')}</span></div>
+    <div class="watch-detail">
+      <div class="kv"><span class="k">Source</span><span class="v">${esc(w.source_changed || '')}</span></div>
+      <div class="kv"><span class="k">Assessment</span><span class="v">${esc(w.assessment_name || '')}</span></div>
+      <div class="kv"><span class="k">Recommended</span><span class="v">${esc(rec.action || '')}${rec.requires_approval ? ' · needs your approval' : ''}</span></div>
+      ${assignment}${first}${reminder}
+      <div class="watch-affected"><strong>Affected</strong><ul>${(w.affected || []).map((a) => `<li>${esc(a)}</li>`).join('')}</ul></div>
+    </div>
+    <p class="watch-ask"><strong>${esc(w.ask || '')}</strong></p>
+  </article>`;
 }
 
 function renderAgentChanges(p) {
@@ -516,9 +562,11 @@ function renderAgentChanges(p) {
   const cards = events.length
     ? events.map(renderChangeCard).join('')
     : '<p class="empty">No changes detected yet. Run a sync to establish a baseline, then the agent will surface differences here.</p>';
+  const watch = (p.assessment_watch || []).map(renderWatchCard).join('') || '<span class="empty">No assessment-date changes.</span>';
   return `<section class="section"><h2>What changed</h2>
-    <div class="btn-row"><button class="btn" data-agent-sync>Sync now</button></div>
+    <div class="btn-row"><button class="btn" data-agent-sync>Live sync now</button></div>
     <h3>Source freshness</h3><div class="agent-counts">${freshness}</div>
+    <h3>Assessment date watch</h3><div class="change-cards">${watch}</div>
     <div class="change-cards">${cards}</div></section>`;
 }
 
@@ -561,15 +609,16 @@ function renderChangeCard(e) {
       </div>`;
   return `<div class="change-card">
     <div class="change-card-head"><strong>${esc(e.subject || '')}</strong> · <span>${esc(changeTitle(e.classification))}</span>${resolved ? '' : `<span class="pill warn">${esc(status)}</span>`}</div>
+    <div class="kv"><span class="k">Source</span><span class="v">${esc(e.source || '')}</span></div>
     <div class="change-card-values"><span class="old">${esc(e.old_value ?? '—')}</span> → <span class="new">${esc(e.new_value ?? '—')}</span></div>
-    ${affected ? `<div class="change-card-affected"><strong>Affected</strong><ul>${affected}</ul></div>` : ''}
+    ${affected ? `<div class="change-card-affected"><strong>Impact</strong><ul>${affected}</ul></div>` : ''}
     ${actions}
   </div>`;
 }
 
 async function runAgentSync() {
   const {quarter, week} = agentWeek();
-  await api(`/api/agent/sync/${quarter}/${week}`, {method: 'POST', body: {}});
+  await api(`/api/agent/live-sync/${quarter}/${week}`, {method: 'POST', body: {}});
   await renderAgentTab('changes');
 }
 

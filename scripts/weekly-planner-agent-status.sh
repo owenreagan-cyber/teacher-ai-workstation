@@ -22,6 +22,7 @@ PKG="scripts/weekly_planner_agent"
 DOC="docs/programs/canvas-llm/weekly-planner-agent-foundation.md"
 CHANGE_DOC="docs/programs/canvas-llm/weekly-planner-change-detection.md"
 PUBLISH_DOC="docs/programs/canvas-llm/weekly-planner-guarded-publish.md"
+LIVE_DOC="docs/programs/canvas-llm/weekly-planner-live-reconciliation.md"
 TESTS="tests/weekly_planner_agent"
 
 echo "Weekly Planner Agent — Foundation + Change Detection + Guarded Publish"
@@ -44,12 +45,14 @@ require_file "$PKG/impact.py"
 require_file "$PKG/canvas_observation.py"
 require_file "$PKG/freshness.py"
 require_file "$PKG/reconciliation.py"
+require_file "$PKG/live_sources.py"
 require_file "$PKG/delivery.py"
 require_file "$PKG/publish.py"
 require_file "$PKG/schedule_config.py"
 require_file "$DOC"
 require_file "$CHANGE_DOC"
 require_file "$PUBLISH_DOC"
+require_file "$LIVE_DOC"
 require_file "$TESTS/test_agent.py"
 require_file "$TESTS/test_snapshot.py"
 require_file "$TESTS/test_change_detection.py"
@@ -76,7 +79,7 @@ if python3 -m scripts.weekly_planner_agent.service; then
 else
   fail "agent service self-test failed"
 fi
-for mod in snapshot change_detection event_store impact freshness canvas_observation reconciliation delivery publish schedule_config; do
+for mod in snapshot change_detection event_store impact freshness canvas_observation reconciliation live_sources delivery publish schedule_config; do
   if python3 -m "scripts.weekly_planner_agent.$mod" >/dev/null 2>&1; then
     pass "agent $mod self-test passed"
   else
@@ -95,14 +98,14 @@ else
 fi
 
 echo
-echo "No Canvas Write / Network Path"
+echo "No Canvas Write Path (read-only GET is authorized this phase)"
 echo "----------------------------------------"
-if grep -RInE 'requests\.(post|put|patch|delete)|canvas_writer|canvas_connector|http\.client|urllib\.request|gspread|service_account|Phase22LiveCanvasClient' \
+if grep -RInE 'requests\.(post|put|patch|delete)|http\.client|canvas_writer|canvas_connector|Phase22LiveCanvasClient|method="(POST|PUT|PATCH|DELETE)"' \
   "$PKG"/*.py >/tmp/wpa_write_scan.txt 2>/dev/null; then
   cat /tmp/wpa_write_scan.txt
-  fail "Canvas write/mutation/network path found in agent package"
+  fail "Canvas write/mutation path found in agent package"
 else
-  pass "no Canvas write/mutation/network path in agent package"
+  pass "no Canvas write/mutation path in agent package"
 fi
 rm -f /tmp/wpa_write_scan.txt /tmp/wpa_test_out.txt
 
@@ -149,6 +152,70 @@ if grep -q 'context_codes' scripts/canvas_llm_intake/canvas_readonly.py; then
   pass "list_active_announcements includes context_codes[] (HTTP 400 fix)"
 else
   fail "list_active_announcements still missing context_codes[]"
+fi
+
+echo
+echo "Live Read-Only Reconciliation (real GET-only probe)"
+echo "----------------------------------------"
+PROBE_JSON="$(python3 - <<'PY' 2>/dev/null
+import json
+try:
+    from scripts.weekly_planner_agent import service
+    q, w = service.resolve_target_week()
+    probe = service.live_probe(q, w)
+    probe["probe_error"] = None
+except Exception as exc:  # noqa: BLE001
+    probe = {"probe_error": f"{type(exc).__name__}: {exc}", "pacing_read_ok": False, "canvas_read_ok": False}
+print(json.dumps(probe))
+PY
+)"
+if [[ -z "$PROBE_JSON" ]]; then
+  warn "live probe could not run (python error)"
+else
+  PROBE_ERR="$(python3 -c "import json,sys; print(json.loads(sys.stdin.read()).get('probe_error') or '')" <<<"$PROBE_JSON")"
+  PACING_OK="$(python3 -c "import json,sys; print('yes' if json.loads(sys.stdin.read()).get('pacing_read_ok') else 'no')" <<<"$PROBE_JSON")"
+  CANVAS_OK="$(python3 -c "import json,sys; print('yes' if json.loads(sys.stdin.read()).get('canvas_read_ok') else 'no')" <<<"$PROBE_JSON")"
+  if [[ -n "$PROBE_ERR" ]]; then
+    warn "live read-only probe blocked: $PROBE_ERR"
+  else
+    if [[ "$PACING_OK" == "yes" ]]; then
+      pass "live Google pacing GET-only read succeeded"
+    else
+      warn "live Google pacing GET-only read did not succeed"
+    fi
+    if [[ "$CANVAS_OK" == "yes" ]]; then
+      pass "live Canvas GET-only read succeeded (token never printed)"
+    else
+      warn "live Canvas GET-only read did not succeed (credentials unavailable or network)"
+    fi
+  fi
+fi
+
+echo
+echo "Agent Reconciliation State (persisted, read-only)"
+echo "----------------------------------------"
+STATUS_JSON="$(python3 - <<'PY' 2>/dev/null
+import json
+from scripts.weekly_planner_agent import service
+print(json.dumps(service.agent_status(), default=str))
+PY
+)"
+if [[ -z "$STATUS_JSON" ]]; then
+  warn "agent status could not be computed"
+else
+  read_field() { python3 -c "import json,sys; d=json.loads(sys.stdin.read()); print(d.get('$1'))" <<<"$STATUS_JSON"; }
+  echo "  current week: $(read_field current_week)"
+  echo "  pacing freshness: $(read_field pacing_freshness)"
+  echo "  canvas freshness: $(read_field canvas_freshness)"
+  echo "  last live GET-only sync: $(read_field last_live_sync_at)"
+  echo "  unresolved changes: $(read_field unresolved_changes)"
+  echo "  assessment date watch alerts: $(read_field assessment_watch)"
+  echo "  Friday review state: $(read_field friday_review_state)"
+  echo "  approval readiness: $(read_field approval_readiness)"
+  echo "  notification mode: $(read_field notification_mode)"
+  echo "  email enabled: $(read_field email_enabled)"
+  echo "  scheduler active: $(read_field scheduler_active)"
+  echo "  last publication: $(read_field last_publication)"
 fi
 
 echo

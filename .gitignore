@@ -76,3 +76,8 @@ evals/reports/
 # Claude Code: share the project profile, never personal/local files
 .claude/*
 !.claude/settings.json
+
+# Isolated headless UI test fixtures and Playwright artifacts
+tests/ui/.fixture-state/
+tests/ui/test-results/
+tests/ui/playwright-report/

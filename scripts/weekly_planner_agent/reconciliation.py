@@ -100,31 +100,31 @@ def sync_and_detect(
             prev_canvas = prev.get("canvas") or {}
             curr["canvas"]["courses"] = prev_canvas.get("courses") or {}
 
-    # First observation establishes a baseline — no false change alerts.
-    if prev is None:
-        snap.save(quarter, week, curr)
-        return {
-            "baseline": True,
-            "week_id": week_id,
-            "changes": [],
-            "events": [],
-            "attention": [],
-            "notifications": [],
-            "affected_subjects": [],
-            "invalidated_approvals": [],
-            "freshness": _freshness_report(curr),
-            "canvas_writes": 0,
-            "notifications_delivered": 0,
-        }
+    # Temporal change detection (previous ↔ current). Only when a prior
+    # snapshot exists; a first observation produces NO false historical change.
+    temporal_events: list[SourceChangeEvent] = []
+    if prev is not None:
+        temporal_events = cd.detect_changes(prev, curr)
+        # Outage handling: never treat a missing source as deletion/conflict.
+        if (curr.get("pacing") or {}).get("status") in (snap.SNAPSHOT_UNAVAILABLE, snap.SNAPSHOT_STALE):
+            temporal_events = freshness.suppress_destructive(temporal_events, source="pacing")
+        if (curr.get("canvas") or {}).get("status") in (snap.SNAPSHOT_UNAVAILABLE, snap.SNAPSHOT_STALE):
+            temporal_events = freshness.suppress_destructive(temporal_events, source="canvas")
 
-    events = cd.detect_changes(prev, curr)
+    # Baseline cross-source consistency (current pacing ↔ current Canvas).
+    # Runs on EVERY observation — including the first — so a disagreement that
+    # exists right now is surfaced even with no prior history. An outage
+    # (either source unavailable) yields no conflicts.
+    from . import cross_source
+    cross_events: list[SourceChangeEvent] = cross_source.scan(curr, plan=plan)
+    if cross_events:
+        store.supersede(
+            classification=cd.CROSS_SOURCE_CONFLICT,
+            object_identities={e.object_identity for e in cross_events},
+            except_ids={e.event_id for e in cross_events},
+        )
 
-    # Outage handling: never treat a missing source as deletion/conflict.
-    if (curr.get("pacing") or {}).get("status") in (snap.SNAPSHOT_UNAVAILABLE, snap.SNAPSHOT_STALE):
-        events = freshness.suppress_destructive(events, source="pacing")
-    if (curr.get("canvas") or {}).get("status") in (snap.SNAPSHOT_UNAVAILABLE, snap.SNAPSHOT_STALE):
-        events = freshness.suppress_destructive(events, source="canvas")
-
+    events = list(temporal_events) + list(cross_events)
     recorded = store.record(events)
     snap.save(quarter, week, curr)
 
@@ -142,11 +142,14 @@ def sync_and_detect(
     notifications = [_draft_notification(e) for e in attention if _needs_notification(e)]
 
     return {
-        "baseline": False,
+        "baseline": prev is None,
         "week_id": week_id,
         "changes": [e for e in store.all() if e["event_id"] in {x.event_id for x in events}],
         "new_events_added": recorded["added"],
         "events": store.all(),
+        "cross_source_conflicts": [
+            e for e in store.all() if e.get("classification") == cd.CROSS_SOURCE_CONFLICT
+        ],
         "attention": attention,
         "notifications": notifications,
         "affected_subjects": affected_subjects,

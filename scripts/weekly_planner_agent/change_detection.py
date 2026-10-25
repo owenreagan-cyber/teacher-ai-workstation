@@ -40,6 +40,11 @@ CHANGE_PAGE_BODY = "page_body_changed"
 CHANGE_FRONT_PAGE = "front_page_changed"
 CHANGE_CANVAS_CONFLICT = "canvas_conflict"
 
+# Cross-source (baseline) classification — current pacing vs current Canvas,
+# independent of any temporal before→after change. Never mislabel a baseline
+# disagreement as assessment_date_changed.
+CROSS_SOURCE_CONFLICT = "cross_source_conflict"
+
 REMINDER_TITLE_HINTS = ("reminder", "assessment", "test")
 
 

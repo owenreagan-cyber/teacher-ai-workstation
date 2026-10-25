@@ -114,6 +114,35 @@ class EventStore:
     def all(self) -> list[dict[str, Any]]:
         return self.load()
 
+    def supersede(
+        self, *, classification: str, object_identities: set[str], except_ids: set[str]
+    ) -> int:
+        """Mark prior unresolved events of a classification+identity as superseded.
+
+        Used for cross-source conflicts so that a *materially changed* version of
+        the same disagreement supersedes the older version (one active conflict
+        per identity), while an identical re-observation simply dedups.
+        """
+        records = self.load()
+        changed = 0
+        for r in records:
+            if r.get("classification") != classification:
+                continue
+            if r.get("object_identity") not in object_identities:
+                continue
+            if r.get("event_id") in except_ids:
+                continue
+            if r.get("resolution_status") not in (EVENT_DETECTED, None):
+                continue
+            r["resolution_status"] = EVENT_RESOLVED
+            r["resolution_action"] = "superseded"
+            r["resolved_by"] = "system"
+            r["resolved_at"] = _now()
+            changed += 1
+        if changed:
+            self.save(records)
+        return changed
+
 
 def _stable_id(event: SourceChangeEvent) -> str:
     import hashlib

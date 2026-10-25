@@ -256,6 +256,15 @@ class SourceChangeEvent:
     source_identity: str = ""
     notification_status: str = NOTIFICATION_PENDING
     resolution_status: str = EVENT_DETECTED
+    # Cross-source conflict fields (empty for temporal events). ``authority_winner``
+    # is the higher-authority source name; ``pacing_value``/``canvas_value`` carry
+    # the explicit normalized values so the UI never guesses which side disagreed.
+    authority_winner: str = ""
+    teacher_override: dict[str, Any] | None = None
+    pacing_value: str | None = None
+    canvas_value: str | None = None
+    source_timestamps: dict[str, Any] = field(default_factory=dict)
+    source_freshness: dict[str, Any] = field(default_factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)

@@ -65,6 +65,30 @@ def change_event_notification(event: SourceChangeEvent) -> Notification:
     )
 
 
+def cross_source_conflict_notification(event: SourceChangeEvent) -> Notification:
+    """Draft a conflict notification (delivery remains disabled)."""
+    subject = event.subject.title() if event.subject else "A subject"
+    observed = event.new_value or "something different"
+    if event.teacher_override:
+        body = (
+            f"{subject}: your current plan says {event.old_value or 'as planned'}, "
+            f"but Canvas currently shows {observed}. Your explicit instruction still "
+            f"has higher authority. This is a read-only alert; nothing has been changed."
+        )
+    else:
+        body = (
+            f"{subject}: the current plan says {event.old_value or 'as planned'}, but "
+            f"Canvas currently shows {observed}. Nothing has been changed — please review."
+        )
+    return Notification(
+        notification_type="conflict_detected",
+        subject_line=f"{subject} cross-source conflict — review",
+        body=body,
+        actions=["Review Changes", "Keep My Plan", "Ignore for Now"],
+        requires_send=False,
+    )
+
+
 def friday_review_ready_notification(week_id: str, change_count: int) -> Notification:
     return Notification(
         notification_type="friday_review_ready",
@@ -82,6 +106,8 @@ def draft_for_event(
     review_link: str | None = None,
 ) -> Notification | None:
     """Route a SourceChangeEvent to the right notification type."""
+    if event.classification == "cross_source_conflict":
+        return cross_source_conflict_notification(event)
     if event.classification == "assessment_date_changed" or event.object_type == "assessment_date":
         return assessment_date_changed_notification(
             subject=event.subject,

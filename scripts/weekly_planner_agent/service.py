@@ -122,17 +122,28 @@ def _assessment_for(course: dict[str, Any], day: dict[str, Any]) -> Assessment |
 
 
 def load_plan(quarter: int, week: int) -> WeeklyPlan | None:
-    """Load the persisted agent plan, else build from the canonical projection."""
+    """Load the persisted agent plan, else build from the canonical projection.
+
+    Explicit owner instructions (auditable ``OWNER_INSTRUCTION`` overrides) are
+    applied on load so an owner decision survives local-state rebuild and always
+    outranks pacing/Canvas in the effective plan.
+    """
+    from . import owner_instructions
     d = _agent_dir(quarter, week)
     data = _read_json(d / "plan.json", None)
+    plan: WeeklyPlan | None
     if isinstance(data, dict) and data.get("week_id"):
-        return _from_dict(data)
-    try:
-        from scripts.canvas_planner.service import CanvasPlannerService
-        payload = CanvasPlannerService().planner_week(quarter, week)
-    except Exception:  # noqa: BLE001 — no packet yet -> empty plan
-        return None
-    return build_plan_from_planner(payload)
+        plan = _from_dict(data)
+    else:
+        try:
+            from scripts.canvas_planner.service import CanvasPlannerService
+            payload = CanvasPlannerService().planner_week(quarter, week)
+        except Exception:  # noqa: BLE001 — no packet yet -> empty plan
+            return None
+        plan = build_plan_from_planner(payload)
+    if plan is not None:
+        owner_instructions.apply_owner_instructions(plan)
+    return plan
 
 
 def save_plan(quarter: int, week: int, plan: WeeklyPlan) -> None:
@@ -201,6 +212,47 @@ def instruct(quarter: int, week: int, text: str) -> dict[str, Any]:
     if op.intent == ti.KEEP_ASSESSMENT_DATE and op.subject is None:
         focus = _get_focus(quarter, week)
         op.subject = focus.get("focus_subject")
+
+    # Subject-less move/change binds to the focus subject too.
+    if op.intent == ti.MOVE_ASSESSMENT and op.subject is None:
+        focus = _get_focus(quarter, week)
+        op.subject = focus.get("focus_subject") or "math"
+
+    # Conflict-introspection intents (read-only; explain, never mutate).
+    if op.intent == ti.WHY_CONFLICT:
+        conflict = _focus_conflict(quarter, week, op.subject)
+        _append_conversation(d, "teacher", text, parsed.to_dict(), None)
+        return {
+            "matched": True,
+            "reply": _explain_conflict(conflict, op.subject),
+            "conflict": conflict,
+            "plan": plan.to_dict(),
+        }
+
+    if op.intent == ti.SHOW_CANVAS:
+        conflict = _focus_conflict(quarter, week, op.subject)
+        _append_conversation(d, "teacher", text, parsed.to_dict(), None)
+        return {
+            "matched": True,
+            "reply": _canvas_state_reply(conflict, op.subject),
+            "canvas_state": _canvas_state_for(quarter, week, op.subject),
+            "plan": plan.to_dict(),
+        }
+
+    if op.intent == ti.IGNORE_CONFLICT:
+        focus = _get_focus(quarter, week)
+        event_id = focus.get("focus_event_id")
+        if event_id:
+            resolved = resolve_event(quarter, week, event_id, action="ignore")
+        else:
+            resolved = {"error": "no focused conflict"}
+        _append_conversation(d, "teacher", text, parsed.to_dict(), resolved)
+        return {
+            "matched": True,
+            "reply": "Understood — I set this conflict aside. It stays visible in Changes but won't block other subjects.",
+            "changes": [{"type": "ignore_conflict", "event_id": event_id}],
+            "plan": plan.to_dict(),
+        }
 
     # Conversation-level actions against the detected change events.
     if op.intent == ti.CONFIRM:
@@ -282,6 +334,60 @@ def instruct(quarter: int, week: int, text: str) -> dict[str, Any]:
     }
 
 
+def _focus_conflict(quarter: int, week: int, subject: str | None) -> dict[str, Any] | None:
+    """Return the top unresolved cross-source conflict (optionally subject-scoped)."""
+    store = EventStore(quarter, week)
+    conflicts = [
+        e for e in store.unresolved()
+        if e.get("classification") == "cross_source_conflict"
+    ]
+    if subject:
+        conflicts = [e for e in conflicts if e.get("subject") == subject]
+    if not conflicts:
+        focus = _get_focus(quarter, week)
+        event_id = focus.get("focus_event_id")
+        if event_id:
+            conflicts = [e for e in store.unresolved() if e.get("event_id") == event_id]
+    return conflicts[0] if conflicts else None
+
+
+def _explain_conflict(conflict: dict[str, Any] | None, subject: str | None) -> str:
+    if not conflict:
+        return "I don't see an unresolved cross-source conflict right now."
+    name = (subject or conflict.get("subject") or "the subject").title()
+    old = conflict.get("old_value") or "as planned"
+    new = conflict.get("new_value") or "something different"
+    winner = conflict.get("authority_winner") or ""
+    obj = str(conflict.get("object_type") or "").replace("_", " ")
+    if winner == "OWNER_INSTRUCTION":
+        return (
+            f"{name}: your explicit instruction keeps this on {old}, but the "
+            f"other source currently shows {new} ({obj}). Your instruction still "
+            f"has higher authority — nothing has been changed."
+        )
+    return (
+        f"{name}: the current plan says {old}, but Canvas currently shows {new} "
+        f"({obj}). Nothing has been changed."
+    )
+
+
+def _canvas_state_reply(conflict: dict[str, Any] | None, subject: str | None) -> str:
+    observed = (conflict or {}).get("new_value")
+    if observed:
+        return f"Canvas currently shows: {observed}."
+    return "Canvas currently agrees with your plan for this item."
+
+
+def _canvas_state_for(quarter: int, week: int, subject: str | None) -> dict[str, Any] | None:
+    try:
+        snapshot = snapmod.load(quarter, week)
+    except Exception:  # noqa: BLE001
+        return None
+    if not snapshot or not subject:
+        return None
+    return (snapshot.get("canvas") or {}).get("courses", {}).get(subject)
+
+
 def _latest_announcement_draft(quarter: int, week: int) -> dict[str, Any] | None:
     from . import notification_model as nm
     store = EventStore(quarter, week)
@@ -356,6 +462,11 @@ def friday_review(quarter: int, week: int) -> dict[str, Any]:
         "canvas": freshness.freshness_state((snapshot or {}).get("canvas", {}).get("observed_at") if snapshot else None),
     }
     payload["homeroom"] = {"count": len(plan.homeroom_items), "items": plan.homeroom_items}
+    store = EventStore(quarter, week)
+    payload["cross_source_conflicts"] = [
+        e for e in store.all() if e.get("classification") == "cross_source_conflict"
+        and e.get("resolution_status") in ("DETECTED", None)
+    ]
     # Derive a single honest review state (no false "APPROVED" when blocked).
     from .models import FRIDAY_APPROVED, FRIDAY_BLOCKED, FRIDAY_READY_FOR_REVIEW, FRIDAY_PUBLISHED_VERIFIED
     if last and last.get("review_state") == FRIDAY_PUBLISHED_VERIFIED:
@@ -390,6 +501,10 @@ def today(quarter: int, week: int) -> dict[str, Any]:
         "pacing": freshness.freshness_state((snapshot or {}).get("pacing", {}).get("observed_at") if snapshot else None),
         "canvas": freshness.freshness_state((snapshot or {}).get("canvas", {}).get("observed_at") if snapshot else None),
     }
+    cross_conflicts = [
+        e for e in store.all() if e.get("classification") == "cross_source_conflict"
+        and e.get("resolution_status") in ("DETECTED", None)
+    ]
     return {
         "week_id": plan.week_id,
         "changes_detected": len(review.changes_since_last_review),
@@ -397,6 +512,7 @@ def today(quarter: int, week: int) -> dict[str, Any]:
         "source_freshness": source_freshness,
         "friday_review_state": review.state,
         "assessment_watch": watch,
+        "cross_source_conflicts": cross_conflicts,
         "message": changed["message"],
     }
 
@@ -490,6 +606,30 @@ def live_sync(quarter: int, week: int) -> dict[str, Any]:
     return report
 
 
+def cross_source_scan_live(quarter: int, week: int) -> dict[str, Any]:
+    """Real GET-only baseline cross-source scan (no persistence, no writes).
+
+    Fresh-reads Google pacing and Canvas, then runs only the cross-source
+    consistency engine and returns its breakdown. Used for the honest real-world
+    scan report; never mutates anything.
+    """
+    from . import live_sources, cross_source
+    pacing = live_sources.read_live_pacing(quarter, week)
+    canvas = live_sources.read_live_canvas(quarter)
+    plan = load_plan(quarter, week)
+    snapshot = reconciliation.build_snapshot(
+        quarter=quarter, week=week, week_id=f"Q{quarter}W{week}",
+        pacing=pacing, canvas=canvas,
+    )
+    summary = cross_source.scan_summary(snapshot, plan=plan)
+    summary["pacing_status"] = pacing.get("status")
+    summary["canvas_status"] = canvas.get("status")
+    summary["canvas_read_only"] = True
+    summary["canvas_writes"] = 0
+    summary["notifications_delivered"] = 0
+    return summary
+
+
 def sync_from_plan(quarter: int, week: int) -> dict[str, Any]:
     """Convenience: sync pacing from the current agent plan (canvas unavailable)."""
     plan = load_plan(quarter, week)
@@ -520,10 +660,14 @@ def changes(quarter: int, week: int) -> dict[str, Any]:
     watch = assessment_watch.build_watch(
         unresolved, (snap_data or {}).get("canvas"), plan=None
     )
+    cross_conflicts = [
+        e for e in events if e.get("classification") == "cross_source_conflict"
+    ]
     return {
         "week_id": f"Q{quarter}W{week}",
         "events": events,
         "unresolved": unresolved,
+        "cross_source_conflicts": cross_conflicts,
         "attention": [e for e in events if e.get("family_comms_affected") or e.get("requires_teacher_approval")],
         "assessment_watch": watch,
         "freshness": {
@@ -552,6 +696,17 @@ def resolve_event(quarter: int, week: int, event_id: str, action: str) -> dict[s
 def _apply_event_to_plan(plan: WeeklyPlan, event: dict[str, Any], action: str) -> None:
     cls = event.get("classification")
     subject = event.get("subject")
+    if cls == "cross_source_conflict" and subject:
+        # Adopting the observed value (approve_updates) changes the plan to match
+        # the conflicting source; keep_current / ignore retain the authoritative
+        # plan (owner override or pacing). Never silently revoke an owner override.
+        if action == "approve_updates" and event.get("object_type") == "assessment_date":
+            dp = _find_assessment_day(plan, subject)
+            if dp is not None and dp.assessment is not None:
+                dp.assessment.date = event.get("new_value")
+                dp.assessment.authority = Authority.VERIFIED_CANVAS
+                dp.authority = Authority.VERIFIED_CANVAS
+        return
     if cls == "assessment_date_changed" and subject:
         dp = _find_assessment_day(plan, subject)
         if dp is not None and dp.assessment is not None:
@@ -731,6 +886,38 @@ def agent_status() -> dict[str, Any]:
     gate = pub.build_publish_gate(quarter, week, plan=plan, snapshot=snapshot)
     last_publish = pub.last_publish(quarter, week)
 
+    cross_conflicts = [
+        e for e in unresolved if e.get("classification") == "cross_source_conflict"
+    ]
+    assessment_conflicts = [
+        e for e in cross_conflicts
+        if e.get("object_type") in (
+            "assessment_date", "assessment_identity", "assessment_assignment_missing",
+        )
+    ]
+    override_conflicts = [
+        e for e in cross_conflicts
+        if e.get("authority_winner") == "OWNER_INSTRUCTION"
+    ]
+
+    # Baseline consistency status: PASS (agree/resolved) / WARN (override-backed
+    # non-blocking) / FAIL (material unresolved conflict blocks approval).
+    if not cross_conflicts:
+        consistency = "PASS"
+    elif override_conflicts and not [
+        e for e in cross_conflicts if pub._conflict_blocks_publish(e)
+    ]:
+        consistency = "WARN"
+    else:
+        consistency = "FAIL"
+
+    from . import cross_source as cs
+    scan_state = cs.scan_summary(snapshot, plan=plan) if snapshot else {
+        "status": "NO_SNAPSHOT", "unknown_stale": True, "conflict_count": 0,
+        "assessment_conflicts": [], "front_page_conflicts": [],
+        "assignment_conflicts": [], "announcement_reminder_conflicts": [],
+    }
+
     return {
         "current_week": week_id,
         "quarter": quarter,
@@ -742,7 +929,13 @@ def agent_status() -> dict[str, Any]:
         "last_live_sync_at": (snapshot or {}).get("canvas", {}).get("observed_at") if snapshot else None,
         "unresolved_changes": unresolved,
         "assessment_watch": assessment_watch,
+        "baseline_consistency": consistency,
+        "baseline_consistency_scan": scan_state,
+        "cross_source_conflicts": cross_conflicts,
+        "assessment_conflicts": assessment_conflicts,
+        "override_backed_conflicts": override_conflicts,
         "friday_review_state": friday_review(quarter, week).get("state"),
+        "friday_review_blocked": not gate["ready"],
         "approval_readiness": {"ready": gate["ready"], "blockers": gate["blockers"]},
         "notification_mode": schedule_config.delivery_config()["mode"],
         "email_enabled": schedule_config.delivery_config()["email_enabled"],

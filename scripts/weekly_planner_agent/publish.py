@@ -188,6 +188,30 @@ def _unresolved_assessment_events(quarter: int, week: int) -> list[dict[str, Any
     ]
 
 
+def _conflict_blocks_publish(event: dict[str, Any]) -> bool:
+    """A cross-source conflict blocks publication when a live correction is needed.
+
+    "Missing" states (assessment assignment, first announcement, day-before
+    reminder) are often simply "not yet created by the Friday rollover" — they
+    are review-needed but NOT publish-blocking; the canonical rollover readiness
+    gate already blocks on genuinely missing approved content at publish time.
+    A *value disagreement* (date, identity, front page, obsolete reminder) is a
+    material live correction and blocks unless an explicit owner override makes
+    the plan authoritative AND Canvas already agrees with that override.
+    """
+    object_type = event.get("object_type") or ""
+    if object_type in ("assessment_assignment_missing", "first_announcement", "day_before_reminder"):
+        return False
+    winner = event.get("authority_winner") or ""
+    canvas_value = event.get("canvas_value")
+    authoritative = event.get("old_value")
+    if winner == "OWNER_INSTRUCTION":
+        # Only pacing disagrees (Canvas already agrees with the override) -> non-blocking.
+        return canvas_value is not None and canvas_value != authoritative
+    # No override: any canvas-side value disagreement blocks.
+    return True
+
+
 def build_publish_gate(
     quarter: int,
     week: int,
@@ -230,6 +254,22 @@ def build_publish_gate(
     unresolved = _unresolved_assessment_events(quarter, week)
     if unresolved:
         blockers.append("An assessment-date change is unresolved — review it before publishing.")
+
+    # 2b. No material unresolved cross-source conflicts. An explicit owner
+    # override may resolve the *plan*, but a Canvas-side disagreement still
+    # needs a correction decision before publication.
+    cross_conflicts = [
+        e for e in EventStore(quarter, week).unresolved()
+        if e.get("classification") == "cross_source_conflict"
+    ]
+    blocking_conflicts = [
+        e for e in cross_conflicts
+        if _conflict_blocks_publish(e)
+    ]
+    if blocking_conflicts:
+        blockers.append(
+            "A cross-source conflict with Canvas is unresolved — review it before publishing."
+        )
 
     # 3. Approval present and still bound to the current plan + source versions.
     approval = load_approval(quarter, week)

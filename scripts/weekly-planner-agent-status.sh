@@ -23,6 +23,7 @@ DOC="docs/programs/canvas-llm/weekly-planner-agent-foundation.md"
 CHANGE_DOC="docs/programs/canvas-llm/weekly-planner-change-detection.md"
 PUBLISH_DOC="docs/programs/canvas-llm/weekly-planner-guarded-publish.md"
 LIVE_DOC="docs/programs/canvas-llm/weekly-planner-live-reconciliation.md"
+BASELINE_DOC="docs/programs/canvas-llm/weekly-planner-baseline-consistency.md"
 TESTS="tests/weekly_planner_agent"
 
 echo "Weekly Planner Agent — Foundation + Change Detection + Guarded Publish"
@@ -46,6 +47,8 @@ require_file "$PKG/canvas_observation.py"
 require_file "$PKG/freshness.py"
 require_file "$PKG/reconciliation.py"
 require_file "$PKG/live_sources.py"
+require_file "$PKG/cross_source.py"
+require_file "$PKG/owner_instructions.py"
 require_file "$PKG/delivery.py"
 require_file "$PKG/publish.py"
 require_file "$PKG/schedule_config.py"
@@ -53,6 +56,7 @@ require_file "$DOC"
 require_file "$CHANGE_DOC"
 require_file "$PUBLISH_DOC"
 require_file "$LIVE_DOC"
+require_file "$BASELINE_DOC"
 require_file "$TESTS/test_agent.py"
 require_file "$TESTS/test_snapshot.py"
 require_file "$TESTS/test_change_detection.py"
@@ -79,7 +83,7 @@ if python3 -m scripts.weekly_planner_agent.service; then
 else
   fail "agent service self-test failed"
 fi
-for mod in snapshot change_detection event_store impact freshness canvas_observation reconciliation live_sources delivery publish schedule_config; do
+for mod in snapshot change_detection event_store impact freshness canvas_observation reconciliation live_sources cross_source owner_instructions delivery publish schedule_config; do
   if python3 -m "scripts.weekly_planner_agent.$mod" >/dev/null 2>&1; then
     pass "agent $mod self-test passed"
   else
@@ -208,14 +212,27 @@ else
   echo "  pacing freshness: $(read_field pacing_freshness)"
   echo "  canvas freshness: $(read_field canvas_freshness)"
   echo "  last live GET-only sync: $(read_field last_live_sync_at)"
+  echo "  baseline consistency: $(read_field baseline_consistency)"
+  echo "  unresolved cross-source conflicts: $(read_field cross_source_conflicts)"
+  echo "  assessment conflicts: $(read_field assessment_conflicts)"
+  echo "  override-backed conflicts: $(read_field override_backed_conflicts)"
   echo "  unresolved changes: $(read_field unresolved_changes)"
   echo "  assessment date watch alerts: $(read_field assessment_watch)"
   echo "  Friday review state: $(read_field friday_review_state)"
+  echo "  Friday review blocked: $(read_field friday_review_blocked)"
   echo "  approval readiness: $(read_field approval_readiness)"
   echo "  notification mode: $(read_field notification_mode)"
   echo "  email enabled: $(read_field email_enabled)"
   echo "  scheduler active: $(read_field scheduler_active)"
   echo "  last publication: $(read_field last_publication)"
+
+  CONSISTENCY="$(read_field baseline_consistency)"
+  case "$CONSISTENCY" in
+    PASS) pass "baseline consistency: sources agree or all material conflicts resolved" ;;
+    WARN) warn "baseline consistency: non-blocking conflict or owner override with lower-authority disagreement" ;;
+    FAIL) fail "baseline consistency: material unresolved conflict makes approval unsafe" ;;
+    *)    warn "baseline consistency: unknown state ($CONSISTENCY)" ;;
+  esac
 fi
 
 echo

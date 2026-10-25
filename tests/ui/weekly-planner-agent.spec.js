@@ -25,13 +25,25 @@ test.describe('Weekly Planner Agent UI', () => {
 
   test('Assessment Date Watch renders old/new dates and affected artifacts', async ({ page }) => {
     await openAgent(page);
-    await expect(page.locator('.watch-card')).toBeVisible();
-    await expect(page.locator('.watch-card .old')).toContainText('2026-11-05');
-    await expect(page.locator('.watch-card .new')).toContainText('2026-11-06');
-    await expect(page.locator('.watch-card')).toContainText('Written Assessment 8');
-    await expect(page.locator('.watch-card')).toContainText('weekly page');
-    await expect(page.locator('.watch-card')).toContainText('assignment');
-    await expect(page.locator('.watch-card')).toContainText('Would you like me to prepare the updated Canvas items');
+    await expect(page.locator('.watch-card').first()).toBeVisible();
+    // Temporal watch card shows the move (Thursday -> Friday).
+    await expect(page.locator('.watch-card').filter({ hasText: 'Written Assessment 8' }).first())
+      .toContainText('2026-11-05');
+    await expect(page.locator('.watch-card').filter({ hasText: 'Written Assessment 8' }).first())
+      .toContainText('2026-11-06');
+    await expect(page.locator('.watch-card').first()).toContainText('weekly page');
+    await expect(page.locator('.watch-card').first()).toContainText('assignment');
+    await expect(page.locator('.watch-card').first()).toContainText('Would you like me to prepare the updated Canvas items');
+  });
+
+  test('Cross-source conflict card renders plan vs Canvas', async ({ page }) => {
+    await openAgent(page);
+    await openTab(page, 'changes');
+    await expect(page.locator('#agent-body')).toContainText('Cross-source conflicts');
+    await expect(page.locator('.conflict-card').first()).toBeVisible();
+    await expect(page.locator('.conflict-card').first()).toContainText('Your plan');
+    await expect(page.locator('.conflict-card').first()).toContainText('Canvas');
+    await expect(page.locator('.conflict-card').filter({ hasText: 'disagrees' }).first()).toBeVisible();
   });
 
   test('Week Plan loads and distinguishes predicted items', async ({ page }) => {
@@ -48,8 +60,9 @@ test.describe('Weekly Planner Agent UI', () => {
     await openAgent(page);
     await openTab(page, 'changes');
     await expect(page.locator('#agent-body')).toContainText('What changed');
-    await expect(page.locator('.change-card:not(.watch-card)')).toBeVisible();
-    await expect(page.locator('.change-card:not(.watch-card)')).toContainText('Source');
+    const changeCard = page.locator('.change-card:not(.watch-card):not(.conflict-card)').first();
+    await expect(changeCard).toBeVisible();
+    await expect(changeCard).toContainText('Source');
   });
 
   test('Friday Review renders with blockers and approval disabled', async ({ page }) => {

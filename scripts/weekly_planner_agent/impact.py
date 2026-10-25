@@ -40,7 +40,24 @@ def affected_artifacts(event: SourceChangeEvent) -> list[str]:
         return [f"{subject} day-before reminder"]
     if event.classification in (cd.CHANGE_PAGE_BODY, cd.CHANGE_CANVAS_CONFLICT, cd.CHANGE_FRONT_PAGE):
         return [f"{subject} weekly page"]
+    if event.classification == cd.CROSS_SOURCE_CONFLICT:
+        return _cross_source_artifacts(event.object_type, subject)
     return [f"{subject} weekly page"]
+
+
+def _cross_source_artifacts(object_type: str, subject: str) -> list[str]:
+    s = subject.title()
+    if object_type in ("assessment_date", "assessment_identity", "assessment_assignment_missing",
+                       "pacing_vs_override"):
+        return [f"{s} weekly page", f"{s} assessment assignment",
+                f"{s} first parent announcement", f"{s} day-before reminder"]
+    if object_type == "front_page":
+        return [f"{s} weekly page"]
+    if object_type == "first_announcement":
+        return [f"{s} first parent announcement"]
+    if object_type in ("day_before_reminder", "reminder_duplicate", "reminder_obsolete"):
+        return [f"{s} day-before reminder"]
+    return [f"{s} weekly page"]
 
 
 def affected_subjects(events: list[SourceChangeEvent]) -> set[str]:
@@ -69,6 +86,10 @@ def invalidate_affected_approvals(plan: WeeklyPlan, events: list[SourceChangeEve
 
 
 def _artifacts_for_classification(classification: str) -> list[str]:
+    if classification == cd.CROSS_SOURCE_CONFLICT:
+        # A material cross-source conflict touches all family-facing artifacts
+        # for the subject until resolved.
+        return ["page", "assignments", "announcement", "assessment_reminder"]
     if classification in (cd.CHANGE_ASSESSMENT_DATE, cd.CHANGE_ASSESSMENT_IDENTITY):
         return ["page", "assignments", "announcement", "assessment_reminder"]
     if classification in (cd.CHANGE_LESSON, cd.CHANGE_CHAPTER, cd.CHANGE_HOMEWORK, cd.CHANGE_CLASSWORK):

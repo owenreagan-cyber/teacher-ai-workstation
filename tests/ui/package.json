@@ -1,0 +1,11 @@
+{
+  "name": "teacher-ai-workstation-ui-tests",
+  "private": true,
+  "description": "Isolated headless Playwright UI tests for the Teacher Workstation (Weekly Planner Agent).",
+  "scripts": {
+    "test": "playwright test"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.48.0"
+  }
+}

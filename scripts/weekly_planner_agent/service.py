@@ -346,6 +346,16 @@ def friday_review(quarter: int, week: int) -> dict[str, Any]:
     payload["last_publish"] = last
     payload["schedule"] = schedule_config.schedule()
     payload["delivery"] = schedule_config.delivery_config()
+    snapshot = None
+    try:
+        snapshot = snapmod.load(quarter, week)
+    except Exception:  # noqa: BLE001
+        snapshot = None
+    payload["source_freshness"] = {
+        "pacing": freshness.freshness_state((snapshot or {}).get("pacing", {}).get("observed_at") if snapshot else None),
+        "canvas": freshness.freshness_state((snapshot or {}).get("canvas", {}).get("observed_at") if snapshot else None),
+    }
+    payload["homeroom"] = {"count": len(plan.homeroom_items), "items": plan.homeroom_items}
     # Derive a single honest review state (no false "APPROVED" when blocked).
     from .models import FRIDAY_APPROVED, FRIDAY_BLOCKED, FRIDAY_READY_FOR_REVIEW, FRIDAY_PUBLISHED_VERIFIED
     if last and last.get("review_state") == FRIDAY_PUBLISHED_VERIFIED:
@@ -366,12 +376,27 @@ def today(quarter: int, week: int) -> dict[str, Any]:
         plan = WeeklyPlan(week_id=f"Q{quarter}W{week}", quarter=quarter, week=week)
     review = build_review(plan, prior=None)
     changed = approval_by_exception(plan, None, review.changed_subjects)
+    snapshot = None
+    try:
+        snapshot = snapmod.load(quarter, week)
+    except Exception:  # noqa: BLE001
+        snapshot = None
+    store = EventStore(quarter, week)
+    from . import assessment_watch
+    watch = assessment_watch.build_watch(
+        store.unresolved(), (snapshot or {}).get("canvas"), plan=plan
+    )
+    source_freshness = {
+        "pacing": freshness.freshness_state((snapshot or {}).get("pacing", {}).get("observed_at") if snapshot else None),
+        "canvas": freshness.freshness_state((snapshot or {}).get("canvas", {}).get("observed_at") if snapshot else None),
+    }
     return {
         "week_id": plan.week_id,
         "changes_detected": len(review.changes_since_last_review),
         "needs_attention": review.changed_subjects,
-        "source_freshness": plan.freshness,
+        "source_freshness": source_freshness,
         "friday_review_state": review.state,
+        "assessment_watch": watch,
         "message": changed["message"],
     }
 
@@ -425,6 +450,46 @@ def sync(quarter: int, week: int, *, pacing: dict[str, Any] | None = None,
     return report
 
 
+def live_sync(quarter: int, week: int) -> dict[str, Any]:
+    """Live read-only reconciliation: real Google pacing + real Canvas (GET-only).
+
+    This is the credential-gated, GET-only observation path. It fresh-reads the
+    authoritative pacing sheet and the real Canvas courses, then runs the same
+    observe→detect→impact→events pipeline. It performs NO Canvas writes, sends
+    no notifications, and never prints the Canvas token. On a source outage the
+    last successful state is preserved (stale/unknown), never emptied.
+    """
+    from . import live_sources
+    from . import assessment_watch
+
+    sources = live_sources.live_sync_sources(quarter, week)
+    plan = load_plan(quarter, week) or WeeklyPlan(
+        week_id=f"Q{quarter}W{week}", quarter=quarter, week=week
+    )
+    report = reconciliation.sync_and_detect(
+        quarter, week, week_id=plan.week_id,
+        pacing=sources["pacing"], canvas=sources["canvas"], plan=plan,
+    )
+    if plan is not None and report["invalidated_approvals"]:
+        save_plan(quarter, week, plan)
+
+    report["assessment_watch"] = assessment_watch.build_watch(
+        report["events"], sources["canvas"], plan=plan
+    )
+    report["live"] = {
+        "canvas_read_only": True,
+        "canvas_writes": 0,
+        "notifications_delivered": 0,
+        "pacing_status": sources["pacing"]["status"],
+        "canvas_status": sources["canvas"]["status"],
+        "source_timestamps": {
+            "pacing": sources["pacing"].get("source_timestamp"),
+            "canvas": (sources["canvas"] or {}).get("observed_at"),
+        },
+    }
+    return report
+
+
 def sync_from_plan(quarter: int, week: int) -> dict[str, Any]:
     """Convenience: sync pacing from the current agent plan (canvas unavailable)."""
     plan = load_plan(quarter, week)
@@ -451,11 +516,16 @@ def changes(quarter: int, week: int) -> dict[str, Any]:
         snap_data = snapmod.load(quarter, week)
     except Exception:  # noqa: BLE001
         snap_data = None
+    from . import assessment_watch
+    watch = assessment_watch.build_watch(
+        unresolved, (snap_data or {}).get("canvas"), plan=None
+    )
     return {
         "week_id": f"Q{quarter}W{week}",
         "events": events,
         "unresolved": unresolved,
         "attention": [e for e in events if e.get("family_comms_affected") or e.get("requires_teacher_approval")],
+        "assessment_watch": watch,
         "freshness": {
             "pacing": freshness.freshness_state((snap_data or {}).get("pacing", {}).get("observed_at")),
             "canvas": freshness.freshness_state((snap_data or {}).get("canvas", {}).get("observed_at")),
@@ -590,6 +660,95 @@ def deliver_notification(quarter: int, week: int, *, event_id: str, mode: str | 
         plan_version=event.get("plan_version") or "",
     )
     return delivery.deliver(record, mode=mode)
+
+
+def resolve_target_week() -> tuple[int, int]:
+    """Resolve the planner's target week (the week being prepared for Friday).
+
+    On a weekday inside an instructional week, that week; on a weekend, the next
+    instructional week (the one the Friday review will publish).
+    """
+    from scripts.canvas_llm_intake import week_resolution as wr
+    try:
+        return wr.current_week()
+    except RuntimeError:
+        return wr.next_week()
+
+
+def live_probe(quarter: int, week: int) -> dict[str, Any]:
+    """Real read-only probe — verifies live access without persisting anything.
+
+    Reports the honest result of a fresh Google-pacing GET and a credential-gated
+    Canvas GET. Never writes, never sends, never prints the Canvas token.
+    """
+    from . import live_sources
+
+    pacing = live_sources.read_live_pacing(quarter, week)
+    canvas = live_sources.read_live_canvas(quarter)
+    return {
+        "quarter": quarter,
+        "week": week,
+        "pacing_read_ok": pacing["status"] == snapmod.SNAPSHOT_OK,
+        "pacing_status": pacing["status"],
+        "pacing_source": (pacing.get("identity") or {}).get("name"),
+        "pacing_observed_at": pacing.get("source_timestamp"),
+        "canvas_read_ok": canvas["status"] == snapmod.SNAPSHOT_OK,
+        "canvas_status": canvas["status"],
+        "canvas_observed_at": canvas.get("observed_at"),
+        "canvas_read_only": True,
+        "canvas_writes": 0,
+        "canvas_courses": sorted((canvas.get("courses") or {}).keys()),
+    }
+
+
+def agent_status() -> dict[str, Any]:
+    """Read-only persisted agent status for the Chief of Staff command.
+
+    No network, no writes. Reports current week, source freshness, last live
+    GET-only sync, unresolved changes, assessment-date watch alerts, Friday
+    review state, approval readiness, notification mode, scheduler state, and
+    last publication result.
+    """
+    quarter, week = resolve_target_week()
+    week_id = f"Q{quarter}W{week}"
+    plan = load_plan(quarter, week)
+    snapshot = None
+    try:
+        snapshot = snapmod.load(quarter, week)
+    except Exception:  # noqa: BLE001
+        snapshot = None
+
+    store = EventStore(quarter, week)
+    unresolved = store.unresolved()
+
+    canvas_obs = (snapshot or {}).get("canvas") if snapshot else None
+    assessment_watch = []
+    from . import assessment_watch
+    assessment_watch = assessment_watch.build_watch(unresolved, canvas_obs, plan=plan)
+
+    from . import publish as pub
+    from . import schedule_config
+    gate = pub.build_publish_gate(quarter, week, plan=plan, snapshot=snapshot)
+    last_publish = pub.last_publish(quarter, week)
+
+    return {
+        "current_week": week_id,
+        "quarter": quarter,
+        "week": week,
+        "pacing_freshness": freshness.freshness_state(
+            (snapshot or {}).get("pacing", {}).get("observed_at") if snapshot else None),
+        "canvas_freshness": freshness.freshness_state(
+            (snapshot or {}).get("canvas", {}).get("observed_at") if snapshot else None),
+        "last_live_sync_at": (snapshot or {}).get("canvas", {}).get("observed_at") if snapshot else None,
+        "unresolved_changes": unresolved,
+        "assessment_watch": assessment_watch,
+        "friday_review_state": friday_review(quarter, week).get("state"),
+        "approval_readiness": {"ready": gate["ready"], "blockers": gate["blockers"]},
+        "notification_mode": schedule_config.delivery_config()["mode"],
+        "email_enabled": schedule_config.delivery_config()["email_enabled"],
+        "scheduler_active": False,
+        "last_publication": last_publish,
+    }
 
 
 def command_self_test() -> int:

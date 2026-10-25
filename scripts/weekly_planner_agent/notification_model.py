@@ -99,6 +99,69 @@ def friday_review_ready_notification(week_id: str, change_count: int) -> Notific
     )
 
 
+def friday_review_notification(
+    *,
+    week_id: str,
+    date_range: str,
+    state: str,
+    change_count: int,
+    conflict_count: int,
+    assessment_alerts: int,
+    subjects_ready: list[str],
+    approved: bool,
+    publish_eligible: bool,
+    review_link: str,
+) -> Notification:
+    """The Friday approval-review email (configurable recipient, no secrets).
+
+    Body carries only teacher-relevant fields — never Canvas tokens, raw hashes,
+    credential paths, student data, or JSON payloads.
+    """
+    if state == "PUBLISHED_VERIFIED":
+        # Suppressed by the caller; never built for an already-published week.
+        return Notification(
+            notification_type="friday_review_ready",
+            subject_line=f"{week_id} — already published (no action needed)",
+            body="Already published and verified. No approval email needed.",
+            actions=[],
+            requires_send=False,
+        )
+
+    if state == "BLOCKED":
+        subject = "Weekly Canvas publication is blocked"
+        body = (
+            f"{week_id} ({date_range}) publication is blocked and will be held.\n"
+            f"Reason: unresolved conflicts or source issues require your review.\n"
+            f"Conflicts: {conflict_count}. Changes since last review: {change_count}.\n"
+            f"Review here: {review_link}"
+        )
+        actions = ["Review Changes", "Keep Current Plan", "Ignore for Now"]
+    else:
+        # READY_FOR_REVIEW or CHANGES_AFTER_APPROVAL.
+        if approved and not publish_eligible:
+            subject = "Canvas plan changed after approval — review required"
+        else:
+            subject = "Next week's Canvas plan is ready for review"
+        ready = ", ".join(subjects_ready) if subjects_ready else "none"
+        body = (
+            f"{week_id} ({date_range}) is ready for your Friday review.\n"
+            f"Subjects ready: {ready}.\n"
+            f"Changes detected: {change_count}. Unresolved conflicts: {conflict_count}.\n"
+            f"Assessment-date alerts: {assessment_alerts}.\n"
+            f"Publication eligible at 4:00 PM: {'yes' if publish_eligible else 'no'}.\n"
+            f"Review here: {review_link}"
+        )
+        actions = ["Open Review", "Approve Proposed Updates", "Ignore for Now"]
+
+    return Notification(
+        notification_type="friday_review_ready",
+        subject_line=subject,
+        body=body,
+        actions=actions,
+        requires_send=True,
+    )
+
+
 def draft_for_event(
     event: SourceChangeEvent,
     *,

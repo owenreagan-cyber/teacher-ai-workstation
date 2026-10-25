@@ -26,6 +26,7 @@ from .models import (
     NOTIFICATION_DRAFTED,
     NOTIFICATION_FAILED,
     NOTIFICATION_QUEUED,
+    NOTIFICATION_SENT,
     NOTIFICATION_SUPPRESSED,
 )
 
@@ -98,10 +99,15 @@ def read_outbox() -> list[dict[str, Any]]:
 
 
 def already_delivered(key: str) -> bool:
-    """True when a record with this idempotency key is QUEUED/DELIVERED."""
+    """True when a record with this idempotency key is QUEUED/SENT/DELIVERED.
+
+    ``sent`` (accepted by the transport) counts as delivered for idempotency so
+    a repeated scheduler invocation cannot send the same message twice. A
+    ``failed`` record does NOT suppress a retry.
+    """
     for record in read_outbox():
         if record.get("idempotency_key") == key and record.get("status") in (
-            NOTIFICATION_QUEUED, NOTIFICATION_DELIVERED,
+            NOTIFICATION_QUEUED, NOTIFICATION_SENT, NOTIFICATION_DELIVERED,
         ):
             return True
     return False
@@ -129,7 +135,12 @@ class LocalSink:
 
 
 class EmailSink:
-    """Real email delivery adapter. DISABLED by default and fail-closed."""
+    """Real email delivery adapter (reuses the repo's Gmail/SMTP transport).
+
+    ``deliver`` sends through the real transport and records the honest outcome:
+    ``sent`` (accepted by the transport) vs ``failed``. It is NEVER marked
+    ``delivered`` automatically — only Owen's confirmation does that.
+    """
 
     mode = "email"
 
@@ -139,22 +150,33 @@ class EmailSink:
         self.from_address = from_address
 
     def deliver(self, record: dict[str, Any]) -> dict[str, Any]:
+        from . import mail_transport
+
         if not self.enabled:
             record["status"] = NOTIFICATION_FAILED
             record["error"] = "EMAIL_DISABLED"
             return record
-        if not record.get("recipient") and not self.recipient:
+        recipient = record.get("recipient") or self.recipient
+        if not recipient:
             record["status"] = NOTIFICATION_FAILED
             record["error"] = "RECIPIENT_MISSING"
             return record
-        if not self.from_address:
+
+        result = mail_transport.send(
+            subject=record.get("subject") or "",
+            body=record.get("body") or "",
+            recipient=recipient,
+        )
+        record["transport"] = result.get("transport")
+        record["transport_message_id"] = result.get("message_id")
+        record["delivered_at"] = _now()
+        if result.get("accepted"):
+            record["status"] = NOTIFICATION_SENT  # accepted, not confirmed delivered
+            record["error"] = None
+        else:
             record["status"] = NOTIFICATION_FAILED
-            record["error"] = "FROM_MISSING"
-            return record
-        # No real SMTP in this phase; a real adapter would be wired here behind
-        # an explicit config gate. Until then, real delivery is never attempted.
-        record["status"] = NOTIFICATION_FAILED
-        record["error"] = "EMAIL_TRANSPORT_NOT_WIRED"
+            record["error"] = result.get("error") or "EMAIL_TRANSPORT_FAILED"
+        _append_outbox(record)
         return record
 
 

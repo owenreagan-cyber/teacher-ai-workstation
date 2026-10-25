@@ -18,6 +18,7 @@ from . import teacher_instructions as ti
 from . import reconciliation
 from . import snapshot as snapmod
 from . import freshness
+from . import schedule_config
 from .change_engine import apply_instruction
 from .event_store import EventStore
 from .models import Assessment, Authority, Confidence, DayPlan, PlanStatus, WeeklyPlan
@@ -254,6 +255,23 @@ def instruct(quarter: int, week: int, text: str) -> dict[str, Any]:
             "plan": plan.to_dict(),
         }
 
+    # Scheduler/email informational intents (read-only; no mutation).
+    if op.intent == ti.SCHEDULER_STATUS:
+        _append_conversation(d, "teacher", text, parsed.to_dict(), None)
+        return {"matched": True, "reply": _scheduler_reply(), "scheduler": scheduler_health()}
+    if op.intent == ti.FRIDAY_EMAIL_TIME:
+        _append_conversation(d, "teacher", text, parsed.to_dict(), None)
+        return {"matched": True, "reply": _email_time_reply(), "schedule": schedule_config.schedule()}
+    if op.intent == ti.NEXT_WEEK_APPROVED:
+        _append_conversation(d, "teacher", text, parsed.to_dict(), None)
+        return {"matched": True, "reply": _approval_reply(quarter, week), "plan": plan.to_dict()}
+    if op.intent == ti.WILL_PUBLISH_AT_4:
+        _append_conversation(d, "teacher", text, parsed.to_dict(), None)
+        return {"matched": True, "reply": _publish_eligibility_reply(quarter, week)}
+    if op.intent == ti.WHY_BLOCKED:
+        _append_conversation(d, "teacher", text, parsed.to_dict(), None)
+        return {"matched": True, "reply": _blocked_reply(quarter, week)}
+
     # Conversation-level actions against the detected change events.
     if op.intent == ti.CONFIRM:
         focus = _get_focus(quarter, week)
@@ -332,6 +350,48 @@ def instruct(quarter: int, week: int, text: str) -> dict[str, Any]:
         "events": [e.to_dict() for e in result.events],
         "plan": plan.to_dict(),
     }
+
+
+def _scheduler_reply() -> str:
+    from . import activation
+    s = activation.scheduler_status()
+    if s.get("loaded"):
+        return f"The Friday scheduler is installed and loaded. Next milestone: {s.get('next_milestone')}."
+    if s.get("installed"):
+        return "The Friday scheduler is installed but not currently loaded."
+    return "The Friday scheduler is not installed yet."
+
+
+def _email_time_reply() -> str:
+    sched = schedule_config.schedule()
+    return (
+        f"The Friday review email is scheduled for {sched['approval_ready_email']} "
+        f"({sched['timezone']}), if there's something meaningful to review."
+    )
+
+
+def _approval_reply(quarter: int, week: int) -> str:
+    from . import publish as pub
+    approval = pub.load_approval(quarter, week)
+    if approval is None:
+        return f"Q{quarter}W{week} is not approved yet."
+    return f"Q{quarter}W{week} has a recorded approval (bound to the exact plan and source reviewed)."
+
+
+def _publish_eligibility_reply(quarter: int, week: int) -> str:
+    from . import publish as pub
+    gate = pub.build_publish_gate(quarter, week)
+    if gate["ready"]:
+        return "Yes — everything is approved and current, so the 4:00 PM guarded publish is eligible."
+    return "No — publication is not eligible at 4:00 PM. It will be held until the blockers are cleared."
+
+
+def _blocked_reply(quarter: int, week: int) -> str:
+    from . import publish as pub
+    gate = pub.build_publish_gate(quarter, week)
+    if gate["ready"]:
+        return "Nothing is blocking publication right now."
+    return "Publication is blocked: " + "; ".join(gate["blockers"]) + "."
 
 
 def _focus_conflict(quarter: int, week: int, subject: str | None) -> dict[str, Any] | None:
@@ -467,6 +527,8 @@ def friday_review(quarter: int, week: int) -> dict[str, Any]:
         e for e in store.all() if e.get("classification") == "cross_source_conflict"
         and e.get("resolution_status") in ("DETECTED", None)
     ]
+    payload["email_health"] = email_transport_health()
+    payload["scheduler"] = scheduler_health()["scheduler"]
     # Derive a single honest review state (no false "APPROVED" when blocked).
     from .models import FRIDAY_APPROVED, FRIDAY_BLOCKED, FRIDAY_READY_FOR_REVIEW, FRIDAY_PUBLISHED_VERIFIED
     if last and last.get("review_state") == FRIDAY_PUBLISHED_VERIFIED:
@@ -513,6 +575,8 @@ def today(quarter: int, week: int) -> dict[str, Any]:
         "friday_review_state": review.state,
         "assessment_watch": watch,
         "cross_source_conflicts": cross_conflicts,
+        "scheduler": scheduler_health()["scheduler"],
+        "email_health": email_transport_health(),
         "message": changed["message"],
     }
 
@@ -776,6 +840,109 @@ def notifications(quarter: int, week: int) -> list[dict[str, Any]]:
     return delivery.read_outbox()
 
 
+def friday_notify(quarter: int, week: int) -> dict[str, Any]:
+    """Friday 3:30 PM approval-ready email (idempotent, never publishes).
+
+    Sends only when there is a meaningful review state. Suppresses duplicate
+    emails for the same plan/event state, and never emails an already-published
+    week. No Canvas writes.
+    """
+    from . import delivery
+    from . import notification_model as nm
+    from . import schedule_config
+
+    plan = load_plan(quarter, week)
+    week_id = f"Q{quarter}W{week}"
+    if plan is None:
+        return {"action": "NOTIFY", "week": week_id, "sent": False,
+                "status": "NO_PLAN", "canvas_writes": 0}
+
+    review = friday_review(quarter, week)
+    state = review.get("state")
+    if state == "PUBLISHED_VERIFIED":
+        return {"action": "NOTIFY", "week": week_id, "sent": False,
+                "status": "SUPPRESSED_PUBLISHED", "canvas_writes": 0}
+
+    conflicts = review.get("cross_source_conflicts") or []
+    changes = review.get("changes_since_last_review") or []
+    watch = today(quarter, week).get("assessment_watch") or []
+    plan_version = ""
+    try:
+        from . import publish as pub
+        plan_version = pub.plan_version(plan) if plan is not None else ""
+    except Exception:  # noqa: BLE001
+        pass
+
+    approved = bool(review.get("approval"))
+    publish_eligible = bool((review.get("gate") or {}).get("ready"))
+
+    draft = nm.friday_review_notification(
+        week_id=week_id,
+        date_range=_date_range_label(plan.date_range),
+        state=state,
+        change_count=len(changes),
+        conflict_count=len(conflicts),
+        assessment_alerts=len(watch),
+        subjects_ready=sorted(plan.subjects.keys()) or [],
+        approved=approved,
+        publish_eligible=publish_eligible,
+        review_link="http://127.0.0.1:4310/#agent",
+    )
+    if not draft.requires_send:
+        return {"action": "NOTIFY", "week": week_id, "sent": False,
+                "status": "SUPPRESSED_PUBLISHED", "canvas_writes": 0}
+
+    record = delivery.make_record(
+        notification_type=draft.notification_type,
+        subject=draft.subject_line,
+        body=draft.body,
+        actions=list(draft.actions),
+        review_link="http://127.0.0.1:4310/#agent",
+        related_event_ids=[f"friday-review:{week_id}"],
+        plan_version=plan_version,
+    )
+    result = delivery.deliver(record, mode="email")
+    return {
+        "action": "NOTIFY", "week": week_id, "sent": result.get("status") == "sent",
+        "status": result.get("status"), "error": result.get("error"),
+        "canvas_writes": 0,
+    }
+
+
+def _date_range_label(date_range: dict[str, Any]) -> str:
+    if not date_range:
+        return "this week"
+    start = date_range.get("start", "")
+    end = date_range.get("end", "")
+    if start and end:
+        return f"{start} through {end}"
+    return start or end or "this week"
+
+
+def email_transport_health() -> dict[str, Any]:
+    """Read-only real email transport readiness (no send, no secrets)."""
+    from . import mail_transport
+    return mail_transport.transport_status()
+
+
+def scheduler_health() -> dict[str, Any]:
+    """Read-only scheduler + email health for the UI/status surfaces."""
+    from . import activation
+    from . import schedule_config
+    return {
+        "scheduler": activation.scheduler_status(),
+        "email": email_transport_health(),
+        "notification_mode": schedule_config.delivery_config()["mode"],
+        "last_notification": _last_notification(),
+    }
+
+
+def _last_notification() -> dict[str, Any] | None:
+    from . import delivery
+    records = delivery.read_outbox()
+    return records[-1] if records else None
+
+
 def deliver_notification(quarter: int, week: int, *, event_id: str, mode: str | None = None) -> dict[str, Any]:
     """Draft + deliver a notification for one event through the chosen sink.
 
@@ -939,7 +1106,10 @@ def agent_status() -> dict[str, Any]:
         "approval_readiness": {"ready": gate["ready"], "blockers": gate["blockers"]},
         "notification_mode": schedule_config.delivery_config()["mode"],
         "email_enabled": schedule_config.delivery_config()["email_enabled"],
-        "scheduler_active": False,
+        "email_transport_health": email_transport_health(),
+        "scheduler": scheduler_health()["scheduler"],
+        "scheduler_active": scheduler_health()["scheduler"].get("loaded", False),
+        "last_notification": scheduler_health()["last_notification"],
         "last_publication": last_publish,
     }
 

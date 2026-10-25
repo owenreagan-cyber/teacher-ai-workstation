@@ -19,6 +19,10 @@ DEFAULT_SCHEDULE = {
     "final_refresh": "15:00",       # 3:00 PM Friday
     "approval_ready_email": "15:30",  # 3:30 PM Friday
     "publish": "16:00",             # 4:00 PM Friday
+    # Low-frequency background GET-only reconciliation (weekdays).
+    "periodic_check_hours": ["07:00", "13:00"],
+    # Period background reconciliation enabled (default off until activated).
+    "periodic_reconciliation_enabled": False,
 }
 
 # Notification delivery gate. ``mode`` is one of preview/local/email. Email is
@@ -28,6 +32,7 @@ DEFAULT_DELIVERY = {
     "email_enabled": False,
     "email_recipient": "",
     "email_from": "",
+    "email_transport": "auto",  # auto | gmail | smtp
 }
 
 

@@ -52,6 +52,10 @@ require_file "$PKG/owner_instructions.py"
 require_file "$PKG/delivery.py"
 require_file "$PKG/publish.py"
 require_file "$PKG/schedule_config.py"
+require_file "$PKG/mail_transport.py"
+require_file "$PKG/activation.py"
+require_file "bin/weekly-planner-friday"
+require_file "launchd/com.teacher-ai-workstation.canvas-friday.plist"
 require_file "$DOC"
 require_file "$CHANGE_DOC"
 require_file "$PUBLISH_DOC"
@@ -83,7 +87,7 @@ if python3 -m scripts.weekly_planner_agent.service; then
 else
   fail "agent service self-test failed"
 fi
-for mod in snapshot change_detection event_store impact freshness canvas_observation reconciliation live_sources cross_source owner_instructions delivery publish schedule_config; do
+for mod in snapshot change_detection event_store impact freshness canvas_observation reconciliation live_sources cross_source owner_instructions delivery publish schedule_config mail_transport activation; do
   if python3 -m "scripts.weekly_planner_agent.$mod" >/dev/null 2>&1; then
     pass "agent $mod self-test passed"
   else
@@ -132,12 +136,19 @@ else
 fi
 
 echo
-echo "Scheduler Not Installed"
+echo "Scheduler / LaunchAgent"
 echo "----------------------------------------"
-if launchctl print "gui/$(id -u)/com.teacher-ai-workstation.canvas-friday" >/dev/null 2>&1; then
-  warn "Friday LaunchAgent appears installed/loaded (not installed by this phase)"
+SCHED_JSON="$(bin/weekly-planner-friday status 2>/dev/null || echo '{}')"
+SCHED_INSTALLED="$(python3 -c "import json,sys; print(json.loads(sys.stdin.read()).get('installed'))" <<<"$SCHED_JSON" 2>/dev/null)"
+SCHED_LOADED="$(python3 -c "import json,sys; print(json.loads(sys.stdin.read()).get('loaded'))" <<<"$SCHED_JSON" 2>/dev/null)"
+echo "  scheduler installed: ${SCHED_INSTALLED:-unknown}"
+echo "  scheduler loaded: ${SCHED_LOADED:-unknown}"
+if [[ "$SCHED_INSTALLED" == "True" && "$SCHED_LOADED" == "True" ]]; then
+  pass "Friday scheduler installed and loaded"
+elif [[ "$SCHED_INSTALLED" == "True" ]]; then
+  warn "Friday scheduler installed but not loaded"
 else
-  pass "Friday LaunchAgent is not installed or loaded"
+  pass "Friday scheduler not installed (activation gated on verified email)"
 fi
 
 echo
@@ -223,6 +234,8 @@ else
   echo "  approval readiness: $(read_field approval_readiness)"
   echo "  notification mode: $(read_field notification_mode)"
   echo "  email enabled: $(read_field email_enabled)"
+  echo "  email transport health: $(read_field email_transport_health)"
+  echo "  last notification: $(read_field last_notification)"
   echo "  scheduler active: $(read_field scheduler_active)"
   echo "  last publication: $(read_field last_publication)"
 

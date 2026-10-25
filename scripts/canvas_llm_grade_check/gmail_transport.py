@@ -312,11 +312,21 @@ class _CallbackHandler(http.server.BaseHTTPRequestHandler):
     def do_GET(self):  # noqa: N802
         query = urllib.parse.urlparse(self.path).query
         params = urllib.parse.parse_qs(query)
-        self.server.received = {
-            "code": (params.get("code") or [None])[0],
-            "state": (params.get("state") or [None])[0],
-            "error": (params.get("error") or [None])[0],
-        }
+        code = (params.get("code") or [None])[0]
+        state = (params.get("state") or [None])[0]
+        error = (params.get("error") or [None])[0]
+
+        # Browsers may make follow-up requests such as /favicon.ico after the
+        # OAuth redirect. Never let those requests overwrite the first real
+        # authorization callback.
+        is_oauth_callback = state is not None and (code is not None or error is not None)
+        if self.server.received is None and is_oauth_callback:
+            self.server.received = {
+                "code": code,
+                "state": state,
+                "error": error,
+            }
+
         body = (
             b"<html><body><h2>Authorization received.</h2>"
             b"<p>You can close this window and return to the terminal.</p>"
@@ -847,6 +857,36 @@ def command_self_test() -> int:
         for secret in ["SECRET_AUTHCODE", "SECRET_REFRESH_TOKEN", "SECRET_ACCESS_TOKEN",
                        "refresh_token", "access_token", "client_secret"]:
             assert secret not in joined, f"secret leaked: {secret}"
+
+    # Regression: unrelated browser requests must never overwrite a valid
+    # localhost OAuth callback.
+    server, port = start_callback_listener()
+    try:
+        from urllib import request as urllib_request
+
+        # A browser may ask for favicon before OAuth completes. Ignore it.
+        urllib_request.urlopen(f"http://127.0.0.1:{port}/favicon.ico").read()
+        assert server.received is None
+
+        expected_state = "expected-state"
+        urllib_request.urlopen(
+            f"http://127.0.0.1:{port}/?code=AUTHCODE&state={expected_state}"
+        ).read()
+        assert server.received == {
+            "code": "AUTHCODE",
+            "state": expected_state,
+            "error": None,
+        }
+
+        # Follow-up browser requests must not overwrite the captured callback.
+        urllib_request.urlopen(f"http://127.0.0.1:{port}/favicon.ico").read()
+        assert server.received == {
+            "code": "AUTHCODE",
+            "state": expected_state,
+            "error": None,
+        }
+    finally:
+        stop_callback_listener(server)
 
     set_config_dir(CONFIG_DIR)
     print("PASS grade-check gmail transport self-test")

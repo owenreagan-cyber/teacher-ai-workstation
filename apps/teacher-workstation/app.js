@@ -428,6 +428,7 @@ async function renderAgentTab(tab) {
 function renderAgentToday(p) {
   const attention = (p.needs_attention || []).map((s) => `<span class="pill warn">${esc(s)}</span>`).join(' ') || '<span class="empty">Nothing needs attention.</span>';
   const watch = (p.assessment_watch || []).map(renderWatchCard).join('') || '<span class="empty">No assessment-date changes.</span>';
+  const conflicts = (p.cross_source_conflicts || []).map(renderConflictCard).join('') || '<span class="empty">No cross-source conflicts.</span>';
   const freshness = [
     `<div class="kv"><span class="k">Pacing</span><span class="v">${esc(freshnessLabel(p.source_freshness?.pacing))}</span></div>`,
     `<div class="kv"><span class="k">Canvas</span><span class="v">${esc(freshnessLabel(p.source_freshness?.canvas))}</span></div>`,
@@ -437,6 +438,7 @@ function renderAgentToday(p) {
     <div class="kv"><span class="k">Changes detected</span><span class="v">${p.changes_detected ?? 0}</span></div>
     <div class="kv"><span class="k">Friday review</span><span class="v">${pill(p.friday_review_state)}</span></div>
     <div class="kv"><span class="k">Needs attention</span><span class="v">${attention}</span></div>
+    <h3>Cross-source conflicts</h3><div class="change-cards">${conflicts}</div>
     <h3>Assessment date watch</h3><div class="change-cards">${watch}</div>
     <h3>Source freshness</h3>${freshness}</section>`;
 }
@@ -505,6 +507,8 @@ function renderAgentFridayReview(r) {
     : (blockers ? `<div class="impact"><div class="impact-title">Blocked</div><ul>${blockers}</ul></div>` : '');
   const publishAction = approval && !gate.ready && !blockers
     ? `<p class="empty">Plan changed after approval — review again before publishing.</p>` : '';
+  const conflicts = (r.cross_source_conflicts || []).map(renderConflictCard).join('')
+    || '<span class="empty">No cross-source conflicts.</span>';
   return `<section class="section"><h2>Friday review — ${esc(r.week_id || '')}</h2>
     <div class="summary-banner">${pill(r.state)}</div>
     <div class="agent-counts">
@@ -515,6 +519,7 @@ function renderAgentFridayReview(r) {
       ${approvalRow}${publishRow}${homeroomRow}${scheduleRow}${deliveryRow}${freshnessRow}
     </div>
     <h3>Changed subjects</h3><div>${changed}</div>
+    <h3>Cross-source conflicts</h3><div class="change-cards">${conflicts}</div>
     <h3>Changes since last review</h3><div>${changes}</div>
     ${action}${publishAction}
     <p class="empty">Approval and publishing stay in the guarded Friday rollover. Nothing goes live without all gates passing.</p></section>`;
@@ -559,15 +564,21 @@ function renderAgentChanges(p) {
     `<div class="kv"><span class="k">Pacing</span><span class="v">${esc(p.freshness?.pacing?.label || 'not checked yet')}</span></div>`,
     `<div class="kv"><span class="k">Canvas</span><span class="v">${esc(p.freshness?.canvas?.label || 'not checked yet')}</span></div>`,
   ].join('');
-  const cards = events.length
-    ? events.map(renderChangeCard).join('')
-    : '<p class="empty">No changes detected yet. Run a sync to establish a baseline, then the agent will surface differences here.</p>';
+  const conflicts = (p.cross_source_conflicts || []);
+  const otherEvents = events.filter((e) => e.classification !== 'cross_source_conflict');
+  const cards = otherEvents.length
+    ? otherEvents.map(renderChangeCard).join('')
+    : '<p class="empty">No source changes detected yet. Run a sync to establish a baseline.</p>';
+  const conflictCards = conflicts.length
+    ? conflicts.map(renderConflictCard).join('')
+    : '<p class="empty">No cross-source conflicts. Google pacing and Canvas currently agree.</p>';
   const watch = (p.assessment_watch || []).map(renderWatchCard).join('') || '<span class="empty">No assessment-date changes.</span>';
   return `<section class="section"><h2>What changed</h2>
     <div class="btn-row"><button class="btn" data-agent-sync>Live sync now</button></div>
     <h3>Source freshness</h3><div class="agent-counts">${freshness}</div>
+    <h3>Cross-source conflicts</h3><div class="change-cards">${conflictCards}</div>
     <h3>Assessment date watch</h3><div class="change-cards">${watch}</div>
-    <div class="change-cards">${cards}</div></section>`;
+    <h3>Source changes</h3><div class="change-cards">${cards}</div></section>`;
 }
 
 function changeTitle(classification) {
@@ -592,11 +603,51 @@ function changeTitle(classification) {
     source_stale: 'Source unavailable',
     assessment_added: 'Assessment added',
     assessment_removed: 'Assessment removed',
+    cross_source_conflict: 'Cross-source conflict',
   };
   return labels[classification] || String(classification || '').replaceAll('_', ' ');
 }
 
+function conflictTypeLabel(objectType) {
+  return {
+    assessment_date: 'Assessment date disagrees',
+    assessment_identity: 'Assessment identity disagrees',
+    assessment_assignment_missing: 'Assessment assignment missing',
+    pacing_vs_override: 'Pacing disagrees with your instruction',
+    front_page: 'Wrong front page',
+    first_announcement: 'First announcement missing',
+    day_before_reminder: 'Day-before reminder missing',
+    reminder_duplicate: 'Reminder duplicated',
+    reminder_obsolete: 'Reminder scheduled for an old date',
+  }[objectType] || String(objectType || '').replaceAll('_', ' ');
+}
+
+function renderConflictCard(e) {
+  const affected = (e.affected_artifacts || []).map((a) => `<li>${esc(a)}</li>`).join('');
+  const status = e.resolution_status || 'DETECTED';
+  const resolved = ['RESOLVED', 'APPROVED', 'IGNORED'].includes(status);
+  const overrideActive = e.teacher_override && e.authority_winner === 'OWNER_INSTRUCTION';
+  const authorityLine = overrideActive
+    ? `<div class="kv"><span class="k">Authority</span><span class="v">Your explicit instruction still wins</span></div>`
+    : `<div class="kv"><span class="k">Authority</span><span class="v">${esc(e.authority_winner === 'OWNER_INSTRUCTION' ? 'Your instruction' : 'Verified pacing')}</span></div>`;
+  const actions = resolved
+    ? `<span class="pill neutral">${esc(status)}</span>`
+    : `<div class="btn-row">
+        <button class="btn small" data-agent-resolve="keep_current" data-event-id="${esc(e.event_id)}">Keep My Plan</button>
+        <button class="btn small" data-agent-resolve="approve_updates" data-event-id="${esc(e.event_id)}">Change My Plan</button>
+        <button class="btn small neutral" data-agent-resolve="ignore" data-event-id="${esc(e.event_id)}">Ignore for Now</button>
+      </div>`;
+  return `<div class="change-card conflict-card">
+    <div class="change-card-head"><strong>${esc(e.subject || '')}</strong> · <span>${esc(conflictTypeLabel(e.object_type))}</span>${resolved ? '' : `<span class="pill warn">${esc(status)}</span>`}</div>
+    <div class="change-card-values"><span class="old">Your plan: ${esc(e.old_value ?? '—')}</span> → <span class="new">Canvas: ${esc(e.new_value ?? '—')}</span></div>
+    ${authorityLine}
+    ${affected ? `<div class="change-card-affected"><strong>Affected</strong><ul>${affected}</ul></div>` : ''}
+    ${actions}
+  </div>`;
+}
+
 function renderChangeCard(e) {
+  if (e.classification === 'cross_source_conflict') return renderConflictCard(e);
   const affected = (e.affected_artifacts || []).map((a) => `<li>${esc(a)}</li>`).join('');
   const status = e.resolution_status || 'DETECTED';
   const resolved = ['RESOLVED', 'APPROVED', 'IGNORED'].includes(status);

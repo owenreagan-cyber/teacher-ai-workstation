@@ -79,12 +79,27 @@ class LiveReconciliationTest(unittest.TestCase):
         self.assertEqual(events[0]["old_value"], "2026-11-05")
         self.assertEqual(events[0]["new_value"], "2026-11-06")
 
+        # Both systems run: one temporal change AND one baseline cross-source
+        # conflict (plan now says Friday, Canvas still says Thursday).
+        cross = [e for e in report["events"] if e["classification"] == "cross_source_conflict"]
+        date_cross = [e for e in cross if e["object_type"] == "assessment_date"]
+        self.assertEqual(len(date_cross), 1)
+        self.assertEqual(date_cross[0]["old_value"], "2026-11-06")  # authoritative (pacing)
+        self.assertEqual(date_cross[0]["new_value"], "2026-11-05")  # observed (Canvas)
+
         watch = report["assessment_watch"]
-        self.assertEqual(len(watch), 1)
-        self.assertEqual(watch[0]["old_date"], "2026-11-05")
-        self.assertEqual(watch[0]["new_date"], "2026-11-06")
-        self.assertEqual(watch[0]["canvas_state"]["assignment"]["due_at"], "2026-11-05T23:59:00Z")
-        self.assertIn("Would you like me to prepare", watch[0]["ask"])
+        temporal_watch = [w for w in watch if w["kind"] == "temporal"]
+        baseline_watch = [w for w in watch if w["kind"] == "baseline_conflict"]
+        self.assertEqual(len(temporal_watch), 1)
+        self.assertEqual(len(baseline_watch), 1)
+        self.assertEqual(temporal_watch[0]["old_date"], "2026-11-05")
+        self.assertEqual(temporal_watch[0]["new_date"], "2026-11-06")
+        self.assertEqual(temporal_watch[0]["canvas_state"]["assignment"]["due_at"], "2026-11-05T23:59:00Z")
+        self.assertIn("Would you like me to prepare", temporal_watch[0]["ask"])
+        # Baseline wording never claims a move.
+        self.assertIn("currently says", baseline_watch[0]["message"])
+        self.assertEqual(baseline_watch[0]["old_date"], "2026-11-06")
+        self.assertEqual(baseline_watch[0]["new_date"], "2026-11-05")
 
         # Hard read-only + non-live guarantees.
         self.assertEqual(report["live"]["canvas_read_only"], True)

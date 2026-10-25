@@ -43,6 +43,9 @@ KEEP_ASSESSMENT_DATE = "KEEP_ASSESSMENT_DATE"
 UPDATE_WITHOUT_REMINDER = "UPDATE_WITHOUT_REMINDER"
 SHOW_ANNOUNCEMENT = "SHOW_ANNOUNCEMENT"
 CONFIRM = "CONFIRM"
+WHY_CONFLICT = "WHY_CONFLICT"
+SHOW_CANVAS = "SHOW_CANVAS"
+IGNORE_CONFLICT = "IGNORE_CONFLICT"
 
 SUBJECT_ALIASES = {
     "math": "math",
@@ -221,15 +224,43 @@ def parse(text: str) -> ParseResult:
             f"On it — I'll approve everything except {subject.title() if subject else 'that'}.",
         )
 
-    # MOVE_ASSESSMENT ("Move the Math test to Thursday.")
-    if "move" in norm and _subject(norm) and _day(norm) and re.search(r"\btest\b|\bassessment\b|\bquiz\b", norm):
+    # WHY_CONFLICT ("Why is Math showing a conflict?")
+    if re.search(r"\bwhy\b", norm) and "conflict" in norm:
+        subject = _subject(norm)
+        return ParseResult(
+            [InstructionOp(intent=WHY_CONFLICT, subject=subject, raw=raw)],
+            True,
+            f"Here is why {subject.title() if subject else 'the subject'} shows a conflict.",
+        )
+
+    # SHOW_CANVAS ("What does Canvas currently say?")
+    if re.search(r"\bwhat\b", norm) and ("canvas" in norm) and re.search(r"\bsay\b|\bshow\b|\bhave\b", norm):
+        subject = _subject(norm)
+        return ParseResult(
+            [InstructionOp(intent=SHOW_CANVAS, subject=subject, raw=raw)],
+            True,
+            "Here is what Canvas currently shows.",
+        )
+
+    # IGNORE_CONFLICT ("Ignore this conflict for now.")
+    if "ignore" in norm and "conflict" in norm:
+        return ParseResult(
+            [InstructionOp(intent=IGNORE_CONFLICT, raw=raw)],
+            True,
+            "Understood — I'll set this conflict aside for now. It won't affect other subjects.",
+        )
+
+    # MOVE_ASSESSMENT ("Move the Math test to Thursday." / "Change the test back to Friday.")
+    # Subject may be omitted; the caller binds to the focused subject.
+    if ("move" in norm or ("change" in norm and re.search(r"\bto\b", norm))) \
+            and _day(norm) and re.search(r"\btest\b|\bassessment\b|\bquiz\b", norm):
         subject = _subject(norm)
         day = _day(norm)
         return ParseResult(
             [InstructionOp(intent=MOVE_ASSESSMENT, subject=subject, day=day,
                            assessment=_assessment_name(norm, subject), raw=raw)],
             True,
-            f"Okay — I'll move the {subject.title()} assessment to {day} and recompute the affected drafts.",
+            f"Okay — I'll move the {subject.title() if subject else 'focused'} assessment to {day} and recompute the affected drafts.",
         )
 
     # NO_HOMEWORK ("No Science homework this week.")

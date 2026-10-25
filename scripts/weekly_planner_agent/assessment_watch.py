@@ -138,7 +138,7 @@ def conflict_to_watch(conflict: Conflict, assessment_name: str) -> WatchResult:
 # Cross-source Assessment Date Watch (live pacing vs verified Canvas)
 # --------------------------------------------------------------------------- #
 
-_ANNOUNCEMENT_HINTS = ("reminder", "assessment", "test")
+_ANNOUNCEMENT_HINTS = ("reminder", "tomorrow")
 _CORRECTION_SOURCES = ("canvas", "pacing")
 
 
@@ -201,17 +201,17 @@ def build_watch(
     *,
     plan: WeeklyPlan | None = None,
 ) -> list[dict[str, Any]]:
-    """Enrich assessment-date change events into exactly ONE watch entry each.
+    """Enrich assessment-date events into exactly ONE watch entry each.
 
-    For every ``assessment_date_changed`` / ``assessment_identity_changed``
-    event, produce a single teacher-attention record carrying the full detail
-    Owen needs to decide: old/new dates, the source that changed, the current
-    Canvas state (assignment, first announcement, day-before reminder), whether
-    anything already posted, the recommended communication action, and the ask.
+    Consumes BOTH temporal ``assessment_date_changed`` / ``assessment_identity_changed``
+    events and baseline ``cross_source_conflict`` assessment events. Wording stays
+    honest: a temporal change says "moved from X to Y"; a baseline disagreement
+    says "your plan says X, but Canvas currently says Y" (never claims a move).
 
     No live Canvas write happens here; this is read-only enrichment.
     """
     from . import communication_rules as cr
+    from . import change_detection as cd
 
     courses = (canvas_observation or {}).get("courses") or {}
     watch: list[dict[str, Any]] = []
@@ -223,15 +223,26 @@ def build_watch(
 
     for event in events:
         classification = _val(event, "classification")
-        if classification not in ("assessment_date_changed", "assessment_identity_changed"):
+        is_temporal = classification in ("assessment_date_changed", "assessment_identity_changed")
+        is_baseline = (
+            classification == cd.CROSS_SOURCE_CONFLICT
+            and _val(event, "object_type") in (
+                "assessment_date", "assessment_identity",
+                "assessment_assignment_missing", "pacing_vs_override",
+            )
+        )
+        if not (is_temporal or is_baseline):
             continue
 
         subject = _val(event, "subject")
-        old_value = _val(event, "old_value")
-        new_value = _val(event, "new_value")
         event_id = _val(event, "event_id")
         affected = list(_val(event, "affected_artifacts") or [])
         object_identity = _val(event, "object_identity") or ""
+
+        old_value = _val(event, "old_value")
+        new_value = _val(event, "new_value")
+        authority_winner = _val(event, "authority_winner") or ""
+        teacher_override = _val(event, "teacher_override")
 
         # Assessment label from the event identity (subject|day|name).
         parts = object_identity.split("|") if "|" in object_identity else []
@@ -270,19 +281,75 @@ def build_watch(
             or (course.get("front_page") or {}).get("page_id"),
         }
 
+        if is_baseline:
+            source = "the pacing guide" if _val(event, "object_type") == "pacing_vs_override" else "Canvas"
+            message = baseline_conflict_message(
+                subject=subject, assessment_name=assessment_name,
+                authoritative=old_value, observed=new_value, source=source,
+                override_active=bool(teacher_override),
+            )
+            ask = baseline_conflict_ask(
+                subject=subject, source=source, override_active=bool(teacher_override),
+            )
+        else:
+            source = "the pacing guide" if _val(event, "source") == "pacing" else "Canvas"
+            message = (
+                f"I noticed {assessment_name} moved from {old_value or '—'} to "
+                f"{new_value or '—'}."
+            )
+            ask = "Would you like me to prepare the updated Canvas items and parent communications?"
+
         watch.append({
+            "kind": "baseline_conflict" if is_baseline else "temporal",
             "assessment_name": assessment_name,
             "subject": subject,
             "old_date": old_value,
             "new_date": new_value,
-            "source_changed": "the pacing guide" if _val(event, "source") == "pacing" else "Canvas",
+            "source_changed": source,
+            "authority_winner": authority_winner,
+            "teacher_override_active": bool(teacher_override),
             "affected": affected,
             "canvas_state": canvas_state,
             "already_posted": {"first_announcement": first_posted, "reminder": reminder_posted},
             "recommended_action": action.to_dict(),
-            "ask": "Would you like me to prepare the updated Canvas items and parent communications?",
+            "message": message,
+            "ask": ask,
             "event_id": event_id,
             "requires_teacher_approval": bool(_val(event, "requires_teacher_approval", True)),
         })
 
     return watch
+
+
+def baseline_conflict_message(
+    *, subject: str, assessment_name: str, authoritative: str | None,
+    observed: str | None, source: str, override_active: bool,
+) -> str:
+    """Honest baseline-conflict wording (never claims a temporal move)."""
+    subject_label = subject.title() if subject else "the subject"
+    if override_active and source == "the pacing guide":
+        return (
+            f"Your explicit instruction keeps {assessment_name} on "
+            f"{authoritative or 'your chosen date'}, but Google pacing currently "
+            f"says {observed or 'something different'}."
+        )
+    if override_active:
+        return (
+            f"Your current plan says {assessment_name} is {authoritative or 'as planned'}, "
+            f"but Canvas currently says {observed or 'something different'}."
+        )
+    return (
+        f"Your current plan says {assessment_name} is {authoritative or 'as planned'}, "
+        f"but Canvas currently says {observed or 'something different'}."
+    )
+
+
+def baseline_conflict_ask(
+    *, subject: str, source: str, override_active: bool,
+) -> str:
+    if source == "the pacing guide":
+        return (
+            "Your explicit instruction still has higher authority. "
+            "Would you like me to keep your instruction and review whether it should remain?"
+        )
+    return "Would you like me to prepare a Canvas correction (with your approval)?"

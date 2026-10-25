@@ -1,13 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<!-- Prepared in-repo only. Do not load from a feature checkout. -->
+<!--
+  Weekly Planner Agent — Friday scheduler (reference template).
+
+  Prepared in-repo only. Do NOT load from a feature checkout. The authoritative
+  install writes a fresh plist to ~/Library/LaunchAgents via:
+      bin/weekly-planner-friday install
+
+  The plist carries NO business logic and NO secrets. It calls one stable
+  entrypoint (bin/weekly-planner-friday --scheduled), which dispatches by time
+  and weekday. Every milestone is fail-closed; the 4:00 PM publish re-runs the
+  full guarded gate (approval + source freshness + cross-source consistency +
+  rollover preflight) before the existing rollover publisher is invoked.
+-->
 <plist version="1.0">
 <dict>
   <key>Label</key>
   <string>com.teacher-ai-workstation.canvas-friday</string>
   <key>ProgramArguments</key>
   <array>
-    <string>/Users/owen/Projects/teacher-ai-workstation/bin/canvas-weekly-rollover</string>
+    <string>/bin/bash</string>
+    <string>/Users/owen/Projects/teacher-ai-workstation/bin/weekly-planner-friday</string>
     <string>--scheduled</string>
   </array>
   <key>WorkingDirectory</key>
@@ -16,27 +29,36 @@
   <dict>
     <key>PATH</key>
     <string>/opt/homebrew/bin:/usr/bin:/bin:/usr/sbin:/sbin</string>
+    <key>HOME</key>
+    <string>/Users/owen</string>
     <key>TAW_STATE_ROOT</key>
     <string>/Users/owen/Projects/teacher-ai-workstation/.local</string>
   </dict>
   <key>StartCalendarInterval</key>
   <array>
-    <dict>
-      <key>Weekday</key><integer>5</integer>
-      <key>Hour</key><integer>13</integer>
-      <key>Minute</key><integer>0</integer>
-    </dict>
-    <dict>
-      <key>Weekday</key><integer>5</integer>
-      <key>Hour</key><integer>16</integer>
-      <key>Minute</key><integer>0</integer>
-    </dict>
+    <!-- Periodic GET-only background reconciliation (weekdays 07:00 + 13:00). -->
+    <dict><key>Weekday</key><integer>1</integer><key>Hour</key><integer>7</integer><key>Minute</key><integer>0</integer></dict>
+    <dict><key>Weekday</key><integer>2</integer><key>Hour</key><integer>7</integer><key>Minute</key><integer>0</integer></dict>
+    <dict><key>Weekday</key><integer>3</integer><key>Hour</key><integer>7</integer><key>Minute</key><integer>0</integer></dict>
+    <dict><key>Weekday</key><integer>4</integer><key>Hour</key><integer>7</integer><key>Minute</key><integer>0</integer></dict>
+    <dict><key>Weekday</key><integer>5</integer><key>Hour</key><integer>7</integer><key>Minute</key><integer>0</integer></dict>
+    <dict><key>Weekday</key><integer>1</integer><key>Hour</key><integer>13</integer><key>Minute</key><integer>0</integer></dict>
+    <dict><key>Weekday</key><integer>2</integer><key>Hour</key><integer>13</integer><key>Minute</key><integer>0</integer></dict>
+    <dict><key>Weekday</key><integer>3</integer><key>Hour</key><integer>13</integer><key>Minute</key><integer>0</integer></dict>
+    <dict><key>Weekday</key><integer>4</integer><key>Hour</key><integer>13</integer><key>Minute</key><integer>0</integer></dict>
+    <dict><key>Weekday</key><integer>5</integer><key>Hour</key><integer>13</integer><key>Minute</key><integer>0</integer></dict>
+    <!-- Friday 3:00 PM final refresh -->
+    <dict><key>Weekday</key><integer>5</integer><key>Hour</key><integer>15</integer><key>Minute</key><integer>0</integer></dict>
+    <!-- Friday 3:30 PM approval-ready email -->
+    <dict><key>Weekday</key><integer>5</integer><key>Hour</key><integer>15</integer><key>Minute</key><integer>30</integer></dict>
+    <!-- Friday 4:00 PM guarded publish -->
+    <dict><key>Weekday</key><integer>5</integer><key>Hour</key><integer>16</integer><key>Minute</key><integer>0</integer></dict>
   </array>
   <key>StandardOutPath</key>
-  <string>/Users/owen/Projects/teacher-ai-workstation/.local/canvas-planner/logs/friday-rollover.log</string>
+  <string>/Users/owen/Projects/teacher-ai-workstation/.local/canvas-planner/logs/friday-scheduler.log</string>
   <key>StandardErrorPath</key>
-  <string>/Users/owen/Projects/teacher-ai-workstation/.local/canvas-planner/logs/friday-rollover.log</string>
-  <key>RunAtLoad</key>
-  <false/>
+  <string>/Users/owen/Projects/teacher-ai-workstation/.local/canvas-planner/logs/friday-scheduler.err.log</string>
+  <key>ProcessType</key>
+  <string>Background</string>
 </dict>
 </plist>

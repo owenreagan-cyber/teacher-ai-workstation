@@ -89,11 +89,16 @@ EVENT_LIFECYCLE_STATES = (
     EVENT_BLOCKED,
 )
 
-# Notification status (delivery is not enabled this phase; drafts are validated
-# against fake/local sinks only).
+# Notification status.
+#
+# ``sent`` means the message was ACCEPTED by the real transport (Gmail API
+# returned a message id, or SMTP accepted it). It is NOT the same as ``delivered``:
+# final inbox receipt is only confirmable by the recipient, so the transport is
+# never allowed to fabricate DELIVERED on its own.
 NOTIFICATION_PENDING = "pending"
 NOTIFICATION_DRAFTED = "drafted"
 NOTIFICATION_QUEUED = "queued"
+NOTIFICATION_SENT = "sent"
 NOTIFICATION_DELIVERED = "delivered"
 NOTIFICATION_FAILED = "failed"
 NOTIFICATION_SUPPRESSED = "suppressed"
@@ -101,6 +106,7 @@ NOTIFICATION_STATUSES = (
     NOTIFICATION_PENDING,
     NOTIFICATION_DRAFTED,
     NOTIFICATION_QUEUED,
+    NOTIFICATION_SENT,
     NOTIFICATION_DELIVERED,
     NOTIFICATION_FAILED,
     NOTIFICATION_SUPPRESSED,

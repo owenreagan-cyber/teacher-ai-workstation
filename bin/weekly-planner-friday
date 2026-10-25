@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+# Weekly Planner Agent — Friday scheduler entrypoint.
+#
+#   bin/weekly-planner-friday --scheduled   # LaunchAgent dispatch (time-driven)
+#   bin/weekly-planner-friday check         # periodic GET-only reconciliation
+#   bin/weekly-planner-friday refresh       # Friday 3:00 PM final refresh
+#   bin/weekly-planner-friday notify        # Friday 3:30 PM approval email
+#   bin/weekly-planner-friday publish       # Friday 4:00 PM guarded publish
+#   bin/weekly-planner-friday install|status|uninstall|preview|self-test
+#
+# The plist calls only this wrapper; business logic lives in
+# scripts/weekly_planner_agent/activation.py.
+set -euo pipefail
+
+REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+cd "${REPO_ROOT}"
+
+PYTHON_BIN="${TAW_PYTHON:-/opt/homebrew/bin/python3.12}"
+if [[ ! -x "${PYTHON_BIN}" ]]; then
+  PYTHON_BIN="$(command -v python3 || true)"
+fi
+if [[ -z "${PYTHON_BIN}" ]]; then
+  echo "no python interpreter available" >&2
+  exit 127
+fi
+
+exec "${PYTHON_BIN}" -m scripts.weekly_planner_agent.activation "$@"

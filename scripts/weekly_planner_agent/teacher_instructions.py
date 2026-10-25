@@ -46,6 +46,11 @@ CONFIRM = "CONFIRM"
 WHY_CONFLICT = "WHY_CONFLICT"
 SHOW_CANVAS = "SHOW_CANVAS"
 IGNORE_CONFLICT = "IGNORE_CONFLICT"
+SCHEDULER_STATUS = "SCHEDULER_STATUS"
+FRIDAY_EMAIL_TIME = "FRIDAY_EMAIL_TIME"
+NEXT_WEEK_APPROVED = "NEXT_WEEK_APPROVED"
+WILL_PUBLISH_AT_4 = "WILL_PUBLISH_AT_4"
+WHY_BLOCKED = "WHY_BLOCKED"
 
 SUBJECT_ALIASES = {
     "math": "math",
@@ -248,6 +253,46 @@ def parse(text: str) -> ParseResult:
             [InstructionOp(intent=IGNORE_CONFLICT, raw=raw)],
             True,
             "Understood — I'll set this conflict aside for now. It won't affect other subjects.",
+        )
+
+    # SCHEDULER_STATUS ("Is the scheduler running?")
+    if re.search(r"\bscheduler\b|\blaunchagent\b", norm) and re.search(r"\brunning\b|\bactive\b|\binstalled\b|\bon\b", norm):
+        return ParseResult(
+            [InstructionOp(intent=SCHEDULER_STATUS, raw=raw)],
+            True,
+            "Here is the scheduler status.",
+        )
+
+    # FRIDAY_EMAIL_TIME ("When will I get the Friday email?")
+    if re.search(r"\bwhen\b", norm) and ("email" in norm or "notify" in norm or "notification" in norm):
+        return ParseResult(
+            [InstructionOp(intent=FRIDAY_EMAIL_TIME, raw=raw)],
+            True,
+            "Here is when the Friday review email is scheduled.",
+        )
+
+    # NEXT_WEEK_APPROVED ("Is next week approved?")
+    if ("approve" in norm or "approved" in norm) and re.search(r"\bnext week\b|\bthis week\b", norm):
+        return ParseResult(
+            [InstructionOp(intent=NEXT_WEEK_APPROVED, raw=raw)],
+            True,
+            "Here is the current approval state.",
+        )
+
+    # WILL_PUBLISH_AT_4 ("Will this publish at 4?")
+    if "publish" in norm and re.search(r"\b4\b|\bfour\b|\b16:00\b", norm):
+        return ParseResult(
+            [InstructionOp(intent=WILL_PUBLISH_AT_4, raw=raw)],
+            True,
+            "Here is whether publication is currently eligible at 4:00 PM.",
+        )
+
+    # WHY_BLOCKED ("Why is publishing blocked?")
+    if "publish" in norm and ("block" in norm or "blocked" in norm or "why" in norm):
+        return ParseResult(
+            [InstructionOp(intent=WHY_BLOCKED, raw=raw)],
+            True,
+            "Here is why publication is currently blocked.",
         )
 
     # MOVE_ASSESSMENT ("Move the Math test to Thursday." / "Change the test back to Friday.")

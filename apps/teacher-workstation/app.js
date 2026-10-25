@@ -433,11 +433,17 @@ function renderAgentToday(p) {
     `<div class="kv"><span class="k">Pacing</span><span class="v">${esc(freshnessLabel(p.source_freshness?.pacing))}</span></div>`,
     `<div class="kv"><span class="k">Canvas</span><span class="v">${esc(freshnessLabel(p.source_freshness?.canvas))}</span></div>`,
   ].join('');
+  const scheduler = p.scheduler || {};
+  const email = p.email_health || {};
+  const schedulerRow = `<div class="kv"><span class="k">Scheduler</span><span class="v">${scheduler.loaded ? 'Active' : 'Inactive'}</span></div>
+    <div class="kv"><span class="k">Next milestone</span><span class="v">${esc(scheduler.next_milestone || '—')}</span></div>
+    <div class="kv"><span class="k">Email delivery</span><span class="v">${email.enabled ? (email.gmail_ready || email.smtp_ready ? 'Enabled' : 'Enabled (no transport)') : 'Disabled'}</span></div>`;
   return `<section class="section"><h2>Today</h2>
     <div class="summary-banner">${esc(p.message || 'No changes detected.')}</div>
     <div class="kv"><span class="k">Changes detected</span><span class="v">${p.changes_detected ?? 0}</span></div>
     <div class="kv"><span class="k">Friday review</span><span class="v">${pill(p.friday_review_state)}</span></div>
     <div class="kv"><span class="k">Needs attention</span><span class="v">${attention}</span></div>
+    <h3>Automation</h3><div class="agent-counts">${schedulerRow}</div>
     <h3>Cross-source conflicts</h3><div class="change-cards">${conflicts}</div>
     <h3>Assessment date watch</h3><div class="change-cards">${watch}</div>
     <h3>Source freshness</h3>${freshness}</section>`;
@@ -496,7 +502,8 @@ function renderAgentFridayReview(r) {
   const publishRow = lastPublish
     ? `<div class="kv"><span class="k">Last publish</span><span class="v">${esc(lastPublish.lifecycle || '')}</span></div>`
     : '';
-  const scheduleRow = `<div class="kv"><span class="k">Publishes (Friday)</span><span class="v">${esc(schedule.publish || '16:00')} ${esc(schedule.timezone || '')}</span></div>`;
+  const scheduleRow = `<div class="kv"><span class="k">3:30 notification</span><span class="v">${esc(schedule.approval_ready_email || '15:30')} ${esc(schedule.timezone || '')}</span></div>
+    <div class="kv"><span class="k">4:00 eligibility</span><span class="v">${gate.ready ? 'Eligible' : 'Held'}</span></div>`;
   const deliveryRow = `<div class="kv"><span class="k">Email delivery</span><span class="v">${delivery.email_enabled ? 'enabled' : 'disabled (preview/local only)'}</span></div>`;
   const freshnessRow = `<div class="kv"><span class="k">Pacing freshness</span><span class="v">${esc(freshnessLabel(r.source_freshness?.pacing))}</span></div>
     <div class="kv"><span class="k">Canvas freshness</span><span class="v">${esc(freshnessLabel(r.source_freshness?.canvas))}</span></div>`;

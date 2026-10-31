@@ -58,7 +58,12 @@ def render_status() -> dict[str, Any]:
 
 
 def _text(s: dict[str, Any]) -> str:
-    schedule_label = "Canonical window" if s.get("publication_time_required") else "Scheduled"
+    if s.get("status") == schedule.PUBLISHED_VERIFIED:
+        schedule_label = "Completed rollover window"
+    elif s.get("publication_time_required"):
+        schedule_label = "Canonical window"
+    else:
+        schedule_label = "Scheduled"
     lines = [
         "Friday Rollover",
         f"{s['from_week']} → {s['to_week']}",

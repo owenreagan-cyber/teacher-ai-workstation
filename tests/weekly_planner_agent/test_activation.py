@@ -74,24 +74,62 @@ class PlistTest(unittest.TestCase):
 
 
 class DispatchTest(unittest.TestCase):
-    def test_dispatch_routes_by_time(self):
-        fri_16 = datetime(2026, 10, 30, 16, 0, tzinfo=EASTERN)
-        fri_1530 = datetime(2026, 10, 30, 15, 30, tzinfo=EASTERN)
-        fri_15 = datetime(2026, 10, 30, 15, 0, tzinfo=EASTERN)
-        tue = datetime(2026, 10, 27, 10, 0, tzinfo=EASTERN)
+    def test_friday_milestones_target_upcoming_instructional_week(self):
+        cases = [
+            (datetime(2026, 10, 30, 14, 0, tzinfo=EASTERN),
+             "CHECK", (2, 3)),
+            (datetime(2026, 10, 30, 15, 0, tzinfo=EASTERN),
+             "REFRESH", (2, 4)),
+            (datetime(2026, 10, 30, 15, 30, tzinfo=EASTERN),
+             "NOTIFY", (2, 4)),
+            (datetime(2026, 10, 30, 16, 0, tzinfo=EASTERN),
+             "PUBLISH", (2, 4)),
+            (datetime(2026, 11, 6, 15, 0, tzinfo=EASTERN),
+             "REFRESH", (2, 5)),
+            (datetime(2026, 11, 6, 16, 0, tzinfo=EASTERN),
+             "PUBLISH", (2, 5)),
+            (datetime(2026, 10, 27, 10, 0, tzinfo=EASTERN),
+             "CHECK", (2, 3)),
+        ]
 
-        with mock.patch.object(activation, "publish_scheduled", return_value={"action": "PUBLISH"}) as mp:
-            self.assertEqual(activation.dispatch(fri_16)["action"], "PUBLISH")
-            mp.assert_called_once()
-        with mock.patch.object(activation, "notify_scheduled", return_value={"action": "NOTIFY"}) as mn:
-            self.assertEqual(activation.dispatch(fri_1530)["action"], "NOTIFY")
-            mn.assert_called_once()
-        with mock.patch.object(activation, "refresh_scheduled", return_value={"action": "REFRESH"}) as mr:
-            self.assertEqual(activation.dispatch(fri_15)["action"], "REFRESH")
-            mr.assert_called_once()
-        with mock.patch.object(activation, "check_scheduled", return_value={"action": "CHECK"}) as mc:
-            self.assertEqual(activation.dispatch(tue)["action"], "CHECK")
-            mc.assert_called_once()
+        for now, expected_action, expected_week in cases:
+            with self.subTest(now=now, action=expected_action):
+                with (
+                    mock.patch.object(
+                        activation, "check_scheduled",
+                        return_value={"action": "CHECK"}
+                    ) as check,
+                    mock.patch.object(
+                        activation, "refresh_scheduled",
+                        return_value={"action": "REFRESH"}
+                    ) as refresh,
+                    mock.patch.object(
+                        activation, "notify_scheduled",
+                        return_value={"action": "NOTIFY"}
+                    ) as notify,
+                    mock.patch.object(
+                        activation, "publish_scheduled",
+                        return_value={"action": "PUBLISH"}
+                    ) as publish,
+                ):
+                    result = activation.dispatch(now)
+
+                self.assertEqual(result["action"], expected_action)
+
+                routes = {
+                    "CHECK": check,
+                    "REFRESH": refresh,
+                    "NOTIFY": notify,
+                    "PUBLISH": publish,
+                }
+
+                called = [name for name, route in routes.items()
+                          if route.called]
+
+                self.assertEqual(called, [expected_action])
+
+                actual_week = routes[expected_action].call_args.args[:2]
+                self.assertEqual(actual_week, expected_week)
 
 
 class GuardedPublishTest(unittest.TestCase):

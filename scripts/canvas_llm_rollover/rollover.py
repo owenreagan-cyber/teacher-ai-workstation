@@ -1173,28 +1173,34 @@ def status(
     plan = readiness["manifest"]
     blockers = list(readiness["blockers"])
 
-    # Publication-time gate: a missed Friday 4 PM window must be surfaced, never
-    # silently reused. The canonical instant stays in the payload for provenance.
-    publication_required = False
-    canonical_scheduled_at = plan.get("scheduled_at", "")
-    try:
-        from scripts.instructional_weeks import week_range
-        from scripts.canvas_llm_intake import week_resolution as _wr
-        bounds = week_range(_wr.find_week(to_quarter, to_week) or {})
-        if bounds is not None:
-            resolved = schedule.resolve_publication_time(bounds[0].isoformat(), now=now)
-            publication_required = bool(resolved["requires_owner_time"])
-            canonical_scheduled_at = resolved["canonical_scheduled_at"]
-            if publication_required:
-                blockers.append(
-                    "Owner-selected publication time required: the canonical Friday 4:00 PM "
-                    "America/New_York window has passed."
-                )
-    except (ValueError, RuntimeError):
-        publication_required = False
-
+    # A verified publication is terminal: an expired historical window must
+    # not create a new owner-selection blocker for work already completed.
     existing = ledger.load_rollover_ledger(to_quarter, to_week)
     ledger_state = existing.get("lifecycle") if existing else None
+    already_published = ledger_state == schedule.PUBLISHED_VERIFIED
+
+    # For unpublished work, a missed Friday 4 PM window still requires an
+    # explicit future owner-selected timestamp.
+    publication_required = False
+    canonical_scheduled_at = plan.get("scheduled_at", "")
+    if not already_published:
+        try:
+            from scripts.instructional_weeks import week_range
+            from scripts.canvas_llm_intake import week_resolution as _wr
+            bounds = week_range(_wr.find_week(to_quarter, to_week) or {})
+            if bounds is not None:
+                resolved = schedule.resolve_publication_time(
+                    bounds[0].isoformat(), now=now
+                )
+                publication_required = bool(resolved["requires_owner_time"])
+                canonical_scheduled_at = resolved["canonical_scheduled_at"]
+                if publication_required:
+                    blockers.append(
+                        "Owner-selected publication time required: the canonical Friday 4:00 PM "
+                        "America/New_York window has passed."
+                    )
+        except (ValueError, RuntimeError):
+            publication_required = False
     state = schedule.classify_state(
         scheduled_at=plan["scheduled_at"],
         now=now,

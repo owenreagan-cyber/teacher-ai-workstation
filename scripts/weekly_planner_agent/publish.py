@@ -350,7 +350,7 @@ def publish(
     try:
         report = rollover.publish_weekly_package(
             from_quarter, from_week, quarter, week,
-            client=client, owner_confirmation=confirmation,
+            client=client, owner_confirmation=confirmation, now=now,
         )
     except rollover.RolloverBlocked as exc:
         state = _read_state(quarter, week)

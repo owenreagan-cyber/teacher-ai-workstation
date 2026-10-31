@@ -1,0 +1,47 @@
+{
+  "schemaVersion": 1,
+  "status": "DRAFT_FOR_OWNER_REVIEW",
+  "authority": "DERIVED_FROM_APPROVED_CONTENT",
+  "source": "config/curriculum/canvas/homeroom-newsletter-content-2026-2027.json",
+  "schoolYear": "2026-2027",
+  "subject": "homeroom-newsletter-monthly-plan",
+  "month": "November 2026",
+  "week": {
+    "code": "Q2W4",
+    "startDate": "2026-11-02",
+    "endDate": "2026-11-06",
+    "badge": "Track 2, Week 4 \u00b7 November 2\u20136, 2026",
+    "intro": "We are looking forward to another great week in fourth grade! Please take a look at the reminders and important dates below as we head into November."
+  },
+  "importantDates": [
+    { "date_label": "FRIDAY, NOVEMBER 6", "event": "Progress Reports", "highlight": true },
+    { "date_label": "FRIDAY, NOVEMBER 6", "event": "Movie Night", "time": "6:00\u20138:00 PM" },
+    { "date_label": "WEDNESDAY, NOVEMBER 11", "event": "Veterans Day Performance, Grades 2\u20135", "time": "9:00\u201310:00 AM", "highlight": true },
+    { "date_label": "NOVEMBER 20", "event": "Spirit Shirt with uniform bottoms" },
+    { "date_label": "NOVEMBER 23\u201327", "event": "Thanksgiving Break" },
+    { "date_label": "DECEMBER 10", "event": "5th Grade Winter Performance", "time": "6:00\u20137:00 PM" },
+    { "date_label": "DECEMBER 18", "event": "Spirit Shirt with uniform bottoms" },
+    { "date_label": "DECEMBER 22", "event": "Report Cards" },
+    { "date_label": "DECEMBER 21\u2013JANUARY 8", "event": "Track Out" }
+  ],
+  "removeSections": [
+    "\ud83d\udcda Book Character Day"
+  ],
+  "replacements": {
+    "Beginning Monday, October 12, we are adding a new behavior tracker": "Earlier this quarter, we added a new behavior tracker",
+    "Thursday, November 6": "Friday, November 6"
+  },
+  "monthlyBirthdays": {
+    "month": "November",
+    "status": "OWNER_APPROVED_PRIVATE_ROSTER",
+    "authorization": "config/curriculum/canvas/homeroom-birthday-authorization-2026-2027.json",
+    "privateRosterPath": ".local/canvas-llm/homeroom/class-4a-birthday-roster-2026-2027.json",
+    "entries": [],
+    "note": "Birthday values are loaded at generation time from the owner-approved private Class 4-A roster. They are intentionally absent from this committed plan.",
+    "ownerAction": "None; roster authorized 2026-10-30."
+  },
+  "provenance": {
+    "authority": "OWNER_APPROVED_CONTENT + EXPLICIT MISSION INSTRUCTION",
+    "note": "Dates, events, links, and evergreen sections derive from the approved canonical newsletter content. Only expired October items are omitted and November priorities are highlighted."
+  }
+}

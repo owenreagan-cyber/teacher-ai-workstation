@@ -20,6 +20,28 @@
     "newsletter_update",
     "custom"
   ],
+  "studyGuidePolicy": {
+    "authority": "OWNER_POLICY",
+    "school": "Thales Academy",
+    "rule": "Thales Academy does not provide study guides for any class.",
+    "appliesToSubjects": [
+      "math",
+      "reading",
+      "spelling",
+      "language_arts",
+      "science",
+      "history"
+    ],
+    "forbiddenStudentFacingTerms": [
+      "study guide",
+      "study guides",
+      "review guide",
+      "review guides"
+    ],
+    "behavior": "Never promise, reference, or imply that students will receive a study guide. Do not use the phrase as a negative disclaimer either. State only the actual preparation instructions.",
+    "approvedBy": "Owen Reagan",
+    "approvedAt": "2026-10-30"
+  },
   "twoNoticePolicy": {
     "authority": "OWNER_POLICY",
     "rule": "When an approved pacing interpretation contains a test/assessment that requires communication, Chief generates an announcement plan for teacher review.",

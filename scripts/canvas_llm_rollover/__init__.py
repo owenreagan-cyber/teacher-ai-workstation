@@ -10,7 +10,9 @@ Modules:
 
 - ``schedule``   : Friday 4:00 PM America/New_York scheduling + lifecycle.
 - ``narrative``  : subject-isolated Week-in-Review / Next-Week-Overview.
-- ``homeroom``   : newsletter copy-forward (date pruning, evergreen preserve).
+- ``homeroom``   : legacy newsletter copy-forward (retained, not published).
+- ``homeroom_weekly`` : weekly Homeroom page architecture (current).
+- ``birthdays``  : private Class 4-A birthday service.
 - ``manifest``   : deterministic rollover plan builder.
 - ``ledger``     : untracked rollover deployment ledger.
 - ``rollover``   : readiness gate, GET-only preflight, guarded execution.
@@ -18,17 +20,20 @@ Modules:
 """
 from __future__ import annotations
 
-from . import homeroom, ledger, manifest, narrative, rollover, schedule
+from . import birthdays, homeroom, homeroom_weekly, ledger, manifest, narrative, rollover, schedule
 
 __all__ = [
-    "homeroom", "ledger", "manifest", "narrative", "rollover", "schedule",
+    "birthdays", "homeroom", "homeroom_weekly", "ledger", "manifest",
+    "narrative", "rollover", "schedule",
 ]
 
 
 def command_self_test() -> int:
+    birthdays.command_self_test()
     schedule.command_self_test()
     narrative.command_self_test()
     homeroom.command_self_test()
+    homeroom_weekly.command_self_test()
     manifest.command_self_test()
     ledger.command_self_test()
     rollover.command_self_test()

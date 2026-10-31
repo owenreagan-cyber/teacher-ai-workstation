@@ -247,6 +247,7 @@ class FridayWorkflowTest(unittest.TestCase):
             again = rollover.publish_weekly_package(
                 2, 2, 2, 3, client=fake, owner_confirmation="ROLLOVER Q2W3",
                 today=date(2026, 10, 23),
+                now=datetime(2026, 10, 23, 16, 15, tzinfo=ZoneInfo("America/New_York")),
             )
         self.assertTrue(again.get("already_complete"))
         self.assertEqual(fake._write_counts["PUT"], puts)

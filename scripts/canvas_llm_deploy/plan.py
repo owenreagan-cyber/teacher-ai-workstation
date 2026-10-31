@@ -230,6 +230,7 @@ def build_plan(quarter: int, week: int) -> dict[str, Any]:
                 "grading_type": a.get("grading_type", "percent"),
                 "submission_types": a.get("submission_types", ["on_paper"]),
                 "omit_from_final_grade": a.get("omit_from_final_grade", False),
+                "description": a.get("description", ""),
                 "action": "CREATE",
             })
 

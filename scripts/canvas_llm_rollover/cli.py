@@ -124,8 +124,11 @@ def main(argv: list[str] | None = None) -> int:
             print(f"BLOCKED: Canvas transport unavailable: {type(exc).__name__}")
             return 2
         try:
+            from datetime import datetime, timezone
             report = rollover.publish_weekly_package(
-                fq, fw, tq, tw, client=client, owner_confirmation=args.confirm or "")
+                fq, fw, tq, tw, client=client, owner_confirmation=args.confirm or "",
+                now=datetime.now(timezone.utc),
+            )
         except rollover.RolloverBlocked as exc:
             print(f"BLOCKED: {exc}")
             return 2

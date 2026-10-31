@@ -58,12 +58,18 @@ def render_status() -> dict[str, Any]:
 
 
 def _text(s: dict[str, Any]) -> str:
+    schedule_label = "Canonical window" if s.get("publication_time_required") else "Scheduled"
     lines = [
         "Friday Rollover",
         f"{s['from_week']} → {s['to_week']}",
-        f"Scheduled: {_friendly_schedule(s['scheduled_at'])}",
+        f"{schedule_label}: {_friendly_schedule(s['scheduled_at'])}",
         f"Status: {s['status']}",
     ]
+    if s.get("publication_time_required"):
+        lines.append(
+            "Publication time: OWNER SELECTION REQUIRED "
+            f"(canonical window {_friendly_schedule(s.get('canonical_scheduled_at') or '')} has passed)"
+        )
     if s["needs_owen"]:
         lines.append("Reason: owner input required")
     for b in s["blockers"]:

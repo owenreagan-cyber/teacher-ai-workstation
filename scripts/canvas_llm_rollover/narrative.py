@@ -127,11 +127,14 @@ def _major_assessments(subject: str, week_norm: dict) -> list[tuple[str, str]]:
                 labels.append(f"Fact Assessment {' and '.join(str(n) for n in fa)}")
         elif subject == "reading_spelling":
             st = _ints([day.get("spelling", "")], r"\bTest\s*(\d+)")
-            rt = _ints([day.get("reading", "")], r"\b(?:RMT|Mastery Test|Checkout|MT)\s*(\d+)")
+            rmt = _ints([day.get("reading", "")], r"\b(?:RMT|Mastery Test)\s*(\d+)")
+            co = _ints([day.get("reading", "")], r"\b(?:CO|Checkout)\s*(\d+)")
             if st:
                 labels.append(f"Spelling Test {' and '.join(str(n) for n in st)}")
-            if rt:
-                labels.append(f"Reading Test {' and '.join(str(n) for n in rt)}")
+            if rmt:
+                labels.append(f"Reading Mastery Test {' and '.join(str(n) for n in rmt)}")
+            if co:
+                labels.append(f"Fluency Checkout {' and '.join(str(n) for n in co)}")
         elif subject == "language_arts":
             m = re.search(r"\b(?:CH|Ch|Chapter)\.?\s*(\d+)\s*Test\b",
                           day.get("language_arts", ""), re.IGNORECASE)
@@ -139,7 +142,13 @@ def _major_assessments(subject: str, week_norm: dict) -> list[tuple[str, str]]:
                 labels.append(f"Chapter {m.group(1)} Test")
         # science / history: no automatic major assessment
         if labels:
-            out.append((wd, _join_and(labels)))
+            if subject == "reading_spelling":
+                # Reading Mastery Test and Fluency Checkout are separate
+                # gradebook items; keep each dated phrase separate.
+                for label in labels:
+                    out.append((wd, label))
+            else:
+                out.append((wd, _join_and(labels)))
     return out
 
 
@@ -194,12 +203,38 @@ def _join_and(parts: Iterable[str]) -> str:
 # --------------------------------------------------------------------------- #
 
 def _math_parts(cells: list[str]) -> dict:
-    lessons = _ints(cells, r"\bL\s*(\d+)")
-    wa = _ints(cells, r"\bWA\s*(\d+)")
-    fa = _ints(cells, r"\bFA\s*(\d+)")
-    inv = _ints(cells, r"\bINV\s*(\d+)")
-    review = any(re.search(r"\breview\b", c, re.IGNORECASE) for c in cells)
-    return {"lessons": lessons, "wa": wa, "fa": fa, "inv": inv, "review": review}
+    # Reuse the canonical Math token parser so bare pacing numbers ("41") are
+    # lessons exactly like "L41" (OWNER_POLICY, Q2W4). This keeps the weekly
+    # narrative consistent with the agenda/assignment engines.
+    from scripts.canvas_llm_phase3 import pacing_math as _pm
+
+    lessons: list[int] = []
+    wa: list[int] = []
+    fa: list[int] = []
+    inv: list[int] = []
+    review = False
+    for cell in cells:
+        parsed = _pm.parse_math_tokens(cell)
+        for token in parsed["tokens"]:
+            kind = token.get("kind")
+            number = token.get("number")
+            if kind == "lesson" and number:
+                lessons.append(int(number))
+            elif kind == "written_assessment" and number:
+                wa.append(int(number))
+            elif kind == "fact_assessment" and number:
+                fa.append(int(number))
+            elif kind == "investigation" and number:
+                inv.append(int(number))
+            elif kind == "review":
+                review = True
+    return {
+        "lessons": sorted(set(lessons)),
+        "wa": sorted(set(wa)),
+        "fa": sorted(set(fa)),
+        "inv": sorted(set(inv)),
+        "review": review,
+    }
 
 
 def _math_summary(parts: dict, *, future: bool) -> str:
@@ -239,7 +274,7 @@ def _rs_parts(cells_by_key: dict) -> dict:
     # Spelling tests appear as "Test <n>" under the spelling key.
     spell_tests = _ints(spelling_cells, r"\bTest\s*(\d+)")
     # Reading test/checkout tokens.
-    reading_tests = _ints(reading_cells, r"\b(?:RMT|Test|Checkout)\s*(\d+)")
+    reading_tests = _ints(reading_cells, r"\b(?:RMT|Test|CO|Checkout)\s*(\d+)")
     # Lesson numbers exclude test numbers.
     reading = [n for n in _ints(reading_cells, r"\b(\d{1,2})\b") if n not in reading_tests]
     spelling = [n for n in _ints(spelling_cells, r"\b(\d{1,2})\b") if n not in spell_tests]
@@ -516,6 +551,34 @@ def command_self_test() -> int:
     rs_overview = next_week_overview("reading_spelling", upcoming)
     # CASE B — Spelling Test 45 carries its date.
     assert "Spelling Test 45 on Friday, October 30" in rs_overview, rs_overview
+
+    # Q2W4 Reading Mastery Test + Fluency Checkout are separate, dated phrases.
+    q2w4 = {
+        "days": {
+            "Monday": {"date": "2026-11-02", "subjects": {"reading": {"raw": "L50"}, "spelling": {"raw": "46"}}},
+            "Tuesday": {"date": "2026-11-03", "subjects": {"reading": {"raw": "RMT 5+ CO 5"}, "spelling": {"raw": "47"}}},
+            "Wednesday": {"date": "2026-11-04", "subjects": {"reading": {"raw": "L51"}, "spelling": {"raw": "48"}}},
+            "Thursday": {"date": "2026-11-05", "subjects": {"reading": {"raw": "L52"}, "spelling": {"raw": "49"}}},
+            "Friday": {"date": "2026-11-06", "subjects": {"reading": {"raw": "L53"}, "spelling": {"raw": "test 50"}}},
+        }
+    }
+    q2w4_rs = next_week_overview("reading_spelling", q2w4)
+    assert "Reading Mastery Test 5 on Tuesday, November 3" in q2w4_rs, q2w4_rs
+    assert "Fluency Checkout 5 on Tuesday, November 3" in q2w4_rs, q2w4_rs
+    assert "Spelling Test 50 on Friday, November 6" in q2w4_rs, q2w4_rs
+
+    # Q2W4 Math uses bare pacing numbers as lessons (no "upcoming lessons").
+    q2w4_math = next_week_overview("math", {
+        "days": {
+            "Monday": {"date": "2026-11-02", "subjects": {"math": {"raw": "41"}}},
+            "Tuesday": {"date": "2026-11-03", "subjects": {"math": {"raw": "42"}}},
+            "Wednesday": {"date": "2026-11-04", "subjects": {"math": {"raw": "43"}}},
+            "Thursday": {"date": "2026-11-05", "subjects": {"math": {"raw": "44"}}},
+            "Friday": {"date": "2026-11-06", "subjects": {"math": {"raw": "45"}}},
+        }
+    })
+    assert "Lessons 41-45" in q2w4_math, q2w4_math
+    assert "upcoming lessons" not in q2w4_math, q2w4_math
 
     la_overview = next_week_overview("language_arts", upcoming)
     assert "checkup" in la_overview, la_overview

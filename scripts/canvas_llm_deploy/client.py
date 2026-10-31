@@ -321,6 +321,7 @@ class FakeDeployClient(DeployClient):
         aid = f"asn-{len(self.assignments) + 1}"
         a = {
             "id": aid, "course_id": course_id, "name": title,
+            "description": description,
             "assignment_group_id": gid, "assignment_group": assignment_group,
             "points_possible": points, "grading_type": grading_type,
             "submission_types": [submission_type], "due_at": due_at,

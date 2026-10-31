@@ -153,7 +153,9 @@
   },
   "privacy": {
     "noStudentNames": true,
-    "noBirthdays": true,
+    "noBirthdays": false,
+    "birthdayAuthorization": "config/curriculum/canvas/homeroom-birthday-authorization-2026-2027.json",
+    "birthdaySourcePolicy": "Owner-approved private Class 4-A roster only; never commit, test, log, or send birthday values to external services.",
     "noStaffFavorites": true,
     "noCanvasIds": true,
     "noTokensOrSecrets": true,

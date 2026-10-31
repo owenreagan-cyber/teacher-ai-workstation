@@ -232,35 +232,64 @@ def reading_day_plan(raw: str, weekday: str, day_date: str, config: dict[str, An
     hw = config["reading"]["homeworkSchedule"].get(weekday, {})
 
     in_class: list[str] = []
-    at_home: str | None = None
+    at_home: list[str] | None = None
     at_home_status = "no_homework"
     assignments: list[dict[str, Any]] = []
     token_kind = parsed["kind"]
 
     if token_kind == "lesson":
         n = parsed["number"]
-        in_class = [f"Lesson {n}", cw_goal]
-        if hw.get("kind") == "homework":
-            at_home = hw["value"]
+        agenda = config["reading"]["agendaWorkPattern"]
+
+        # Monday and Wednesday: workbook classwork.
+        # Unfinished workbook pages must be completed at home.
+        if weekday in agenda["classworkDays"]:
+            in_class = [f"Lesson {n}", agenda["classworkLabel"]]
+            at_home = [
+                agenda["unfinishedClassworkAtHomeWording"]
+            ]
+            at_home_status = "unfinished_classwork"
+
+        # Tuesday and Thursday: actual homework.
+        # Include both workbook and comprehension requirements.
+        elif hw.get("kind") == "homework":
+            in_class = [f"Lesson {n}"]
+            at_home = [
+                item.format(n=n)
+                for item in agenda["homeworkItems"]
+            ]
             at_home_status = "homework"
+
+        # Friday and other no-homework days.
         else:
+            in_class = [f"Lesson {n}"]
             at_home = None
             at_home_status = "no_homework"
-        # Accuracy grades: Tue/Thu comprehension homework (always).
-        # The single workbook-classwork grade (Monday default) is assigned at
-        # week level to honor the "displace to Wednesday if Monday has an
-        # assessment" rule without double-counting.
+
+        # Preserve the existing Tuesday/Thursday comprehension
+        # assignment logic.
         if weekday in ("Tuesday", "Thursday"):
-            assignments.append(_reading_accuracy_assignment("homework", weekday, n, day_date))
+            assignments.append(
+                _reading_accuracy_assignment(
+                    "homework", weekday, n, day_date
+                )
+            )
+
     elif token_kind == "rmt_fco":
         in_class = [parsed["translation"]]
         at_home = None
         at_home_status = "no_homework"
-        # Assessment pairing resolved by caller (needs latest lesson context).
+
     else:
-        in_class = [parsed["translation"]] if parsed["translation"] else []
+        in_class = (
+            [parsed["translation"]]
+            if parsed["translation"] else []
+        )
         at_home = None
-        at_home_status = "unresolved" if parsed["kind"] == "unknown" else "no_homework"
+        at_home_status = (
+            "unresolved" if parsed["kind"] == "unknown"
+            else "no_homework"
+        )
 
     return {
         "source": parsed["source"],
@@ -435,6 +464,53 @@ def format_reading_spelling_preview(report: dict[str, Any]) -> str:
 
 def command_self_test() -> int:
     config = load_config()
+
+    # Owner-approved Reading agenda patterns.
+    agenda = config["reading"]["agendaWorkPattern"]
+
+    mon = reading_day_plan(
+        "L50", "Monday", "2026-11-02", config
+    )
+    assert mon["in_class"] == ["Lesson 50", "Workbook"]
+    assert mon["at_home"] == [
+        agenda["unfinishedClassworkAtHomeWording"]
+    ]
+
+    tue = reading_day_plan(
+        "L51", "Tuesday", "2026-11-03", config
+    )
+    assert tue["in_class"] == ["Lesson 51"]
+    assert tue["at_home"] == [
+        item.format(n=51)
+        for item in agenda["homeworkItems"]
+    ]
+
+    wed = reading_day_plan(
+        "L52", "Wednesday", "2026-11-04", config
+    )
+    assert wed["in_class"] == ["Lesson 52", "Workbook"]
+    assert wed["at_home"] == [
+        agenda["unfinishedClassworkAtHomeWording"]
+    ]
+
+    thu = reading_day_plan(
+        "L52", "Thursday", "2026-11-05", config
+    )
+    assert thu["at_home"] == [
+        item.format(n=52)
+        for item in agenda["homeworkItems"]
+    ]
+
+    fri = reading_day_plan(
+        "L53", "Friday", "2026-11-06", config
+    )
+    assert fri["in_class"] == ["Lesson 53"]
+    assert fri["at_home"] is None
+
+    test_day = reading_day_plan(
+        "RMT+FCO", "Tuesday", "2026-11-03", config
+    )
+    assert test_day["at_home"] is None
 
     # Reading lesson translation.
     assert parse_reading_token("L37")["translation"] == "Lesson 37"

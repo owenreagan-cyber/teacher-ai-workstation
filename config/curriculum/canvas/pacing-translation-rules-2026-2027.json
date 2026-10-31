@@ -13,7 +13,10 @@
       "subjectKey": "language_arts",
       "displayName": "Language Arts",
       "canonicalPrefix": "ELA4",
-      "assignmentGroups": ["Classwork", "Assessments"],
+      "assignmentGroups": [
+        "Classwork",
+        "Assessments"
+      ],
       "shurleyLesson": {
         "sourcePattern": "N.M",
         "template": "Chapter {N}, Lesson {M}",
@@ -24,38 +27,76 @@
         "sourcePattern": "CP<number>",
         "template": "Classroom Practice {number}",
         "multiTokenSeparator": ",",
-        "note": "When a cell contains both a lesson and a CP token (e.g. '5.2, CP19'), render both lines and preserve both source tokens in provenance.",
+        "note": "Lesson and CP tokens render as separate In Class bullets. Space-separated forms such as '7.4 CP 27' are valid.",
         "assignment": {
           "titleTemplate": "Classroom Practice {number}",
           "pointsPossible": 100,
           "gradingType": "percent",
           "submissionTypes": "on_paper",
           "countsTowardFinalGrade": true,
-          "dueDate": "same calendar day as pacing",
+          "dueDate": "first Wednesday occurrence when a CP recurs across multiple days; otherwise the scheduled day",
+          "dueDatePolicy": {
+            "multiDayPreferredWeekday": "Wednesday",
+            "fallback": "last scheduled occurrence",
+            "note": "OWNER_POLICY. CP27 recurs Tue/Wed/Fri and is due Wednesday, November 4. CP26 occurs Monday and is due Monday, November 2."
+          },
           "dueTime": "23:59",
           "dueTimeDisplay": "11:59 PM",
           "timezone": "America/New_York",
           "assignmentGroup": "Classwork",
           "assignmentGroupSource": "config/curriculum/canvas-course-mappings.json assignmentRouting['Classroom Practices']",
           "createOnlyWhenTokenPresent": true,
-          "previewOnly": true
+          "previewOnly": true,
+          "deduplication": "one assignment per unique CP number per instructional week",
+          "metadataOwner": "language_arts.classroomPractice.assignment"
         }
       },
       "tokenVocabulary": {
-        "chapterLesson": {"sourcePattern": "N.M", "render": "Chapter {N}, Lesson {M}"},
-        "chapterLessonAlt": {"sourcePattern": "Ch N L M", "render": "Chapter {N}, Lesson {M}"},
-        "classroomPractice": {"sourcePattern": "CP<number>", "render": "Classroom Practice {number}"},
-        "chapterCheckup": {"sourcePattern": "Ch N Checkup", "render": "Chapter {N} Checkup"},
-        "chapterTest": {"sourcePattern": "Ch N Test", "render": "Chapter {N} Test"},
-        "chapterReview": {"sourcePattern": "Ch N Review", "render": "Chapter {N} Review"},
-        "bareCheckup": {"render": "Checkup"},
-        "bareReview": {"render": "Review"}
+        "chapterLesson": {
+          "sourcePattern": "N.M",
+          "render": "Chapter {N}, Lesson {M}"
+        },
+        "chapterLessonAlt": {
+          "sourcePattern": "Ch N L M",
+          "render": "Chapter {N}, Lesson {M}"
+        },
+        "classroomPractice": {
+          "sourcePattern": "CP<number>",
+          "render": "Classroom Practice {number}"
+        },
+        "chapterCheckup": {
+          "sourcePattern": "Ch N Checkup",
+          "render": "Chapter {N} Checkup"
+        },
+        "chapterTest": {
+          "sourcePattern": "Ch N Test",
+          "render": "Chapter {N} Test"
+        },
+        "chapterReview": {
+          "sourcePattern": "Ch N Review",
+          "render": "Chapter {N} Review"
+        },
+        "bareCheckup": {
+          "render": "Checkup"
+        },
+        "bareReview": {
+          "render": "Review"
+        }
       },
       "assignmentPolicy": {
         "authority": "OWNER_POLICY",
         "rule": "Automatically create Canvas assignments ONLY for Chapter Tests and Classroom Practices. Spelling Tests are handled by the Reading/Spelling engine. All other Shurley work is teacher-managed manually.",
-        "autoCreateOnlyFor": ["chapterTest", "classroomPractice"],
-        "neverAutoCreate": ["checkup", "review", "lesson", "practice", "otherShurleyWork"],
+        "autoCreateOnlyFor": [
+          "chapterTest",
+          "classroomPractice"
+        ],
+        "neverAutoCreate": [
+          "checkup",
+          "review",
+          "lesson",
+          "practice",
+          "otherShurleyWork"
+        ],
         "chapterTest": {
           "title": "ELA4: Chapter {N} Test",
           "group": "Assessments",
@@ -75,10 +116,21 @@
       },
       "announcementPolicy": {
         "authority": "OWNER_POLICY",
-        "chapterTestTriggers": ["FIRST_NOTICE", "REMINDER"],
+        "chapterTestTriggers": [
+          "FIRST_NOTICE",
+          "REMINDER"
+        ],
         "checkupTriggersAnnouncement": false,
         "reviewTriggersAnnouncement": false,
         "note": "Only a Shurley Chapter Test triggers the assessment announcement plan. Checkups and Reviews do not."
+      },
+      "atHomePolicy": {
+        "authority": "OWNER_POLICY",
+        "approvedBy": "Owen Reagan",
+        "approvedAt": "2026-10-30",
+        "rule": "Never create At Home for ordinary Shurley lessons, Classroom Practice, Checkups, or Reviews. At Home may contain only explicit, teacher-approved preparation for an upcoming Chapter Test.",
+        "requiresExplicitStudyContent": true,
+        "default": "omit At Home"
       }
     },
     "science": {
@@ -105,8 +157,20 @@
       },
       "assignmentPolicy": {
         "authority": "OWNER_POLICY",
-        "autoCreateOnlyFor": ["chapterTest", "quiz"],
-        "neverAutoCreate": ["chapter", "lab", "check", "review", "worksheet", "activity", "lesson", "chapterRange"],
+        "autoCreateOnlyFor": [
+          "chapterTest",
+          "quiz"
+        ],
+        "neverAutoCreate": [
+          "chapter",
+          "lab",
+          "check",
+          "review",
+          "worksheet",
+          "activity",
+          "lesson",
+          "chapterRange"
+        ],
         "checkIsNotQuiz": true,
         "rule": "Automatically create Canvas assignments ONLY for Chapter Tests and Quizzes explicitly classified by authoritative curriculum/source rules. A token containing 'Check' is NOT automatically a quiz."
       },
@@ -135,8 +199,19 @@
       },
       "assignmentPolicy": {
         "authority": "OWNER_POLICY",
-        "autoCreateOnlyFor": ["chapterTest", "quiz"],
-        "neverAutoCreate": ["chapter", "lab", "review", "worksheet", "activity", "lesson", "check"],
+        "autoCreateOnlyFor": [
+          "chapterTest",
+          "quiz"
+        ],
+        "neverAutoCreate": [
+          "chapter",
+          "lab",
+          "review",
+          "worksheet",
+          "activity",
+          "lesson",
+          "check"
+        ],
         "rule": "Automatically create Canvas assignments ONLY for Chapter Tests and Quizzes. History assignment auto-creation has historically been disabled; do not infer."
       },
       "q2Status": "inactive",

@@ -16,12 +16,20 @@
     "lesson": {
       "sourcePattern": "L{n}",
       "render": "Lesson {n}",
-      "variants": ["L31", "L 31", "Lesson 31"]
+      "variants": [
+        "L31",
+        "L 31",
+        "Lesson 31"
+      ]
     },
     "investigation": {
       "sourcePattern": "INV {n}",
       "render": "Investigation {n}",
-      "variants": ["INV 3", "Inv 3", "Investigation 3"]
+      "variants": [
+        "INV 3",
+        "Inv 3",
+        "Investigation 3"
+      ]
     },
     "writtenAssessment": {
       "sourcePattern": "WA{n}",
@@ -38,11 +46,23 @@
     "note": "Operating contract §4 daily classwork goal, Monday-Friday."
   },
   "homeworkSchedule": {
-    "Monday": {"kind": "homework", "value": "#12-30 evens"},
-    "Tuesday": {"kind": "no_homework"},
-    "Wednesday": {"kind": "homework", "value": "#11-29 odds"},
-    "Thursday": {"kind": "no_homework"},
-    "Friday": {"kind": "no_homework"}
+    "Monday": {
+      "kind": "homework",
+      "value": "#12-30 evens"
+    },
+    "Tuesday": {
+      "kind": "no_homework"
+    },
+    "Wednesday": {
+      "kind": "homework",
+      "value": "#11-29 odds"
+    },
+    "Thursday": {
+      "kind": "no_homework"
+    },
+    "Friday": {
+      "kind": "no_homework"
+    }
   },
   "noHomeworkWording": "No Homework",
   "weeklyAccuracyGrades": {
@@ -54,14 +74,20 @@
       "trigger": "Tuesday contains a Math assessment",
       "then": "Thursday"
     },
-    "doNotGrade": ["fact classwork", "fact homework"],
+    "doNotGrade": [
+      "fact classwork",
+      "fact homework"
+    ],
     "assessmentsExcludedFromAccuracyGrades": true,
     "teacherMayOverrideClassworkDay": true
   },
   "assessmentSchedule": {
     "writtenAssessmentDay": "Tuesday",
     "factAssessmentDay": "Tuesday",
-    "outputOnly": ["Written Assessment", "Fact Assessment"],
+    "outputOnly": [
+      "Written Assessment",
+      "Fact Assessment"
+    ],
     "mondayTestProhibited": true
   },
   "investigation": {
@@ -133,14 +159,6 @@
   },
   "notPromoted": [
     {
-      "rule": "unfinished-classwork wording",
-      "wording": "If you do not finish Problems 1-10 in class, complete them at home. These problems will be checked and graded.",
-      "authority": "LIVE_CANVAS_PRECEDENT",
-      "source": "config/curriculum/canvas/templates/samples/math-weekly-agenda-q1w7.spec.json",
-      "requiresTeacherApproval": true,
-      "note": "Not present in the operating contract. Not encoded as OWNER_POLICY."
-    },
-    {
       "rule": "classwork accuracy-grade title",
       "authority": "OWNER_POLICY",
       "note": "Resolved Phase 3.4: 'SM5: Lesson {n} Classwork' (approved by Owen Reagan)."
@@ -151,5 +169,13 @@
     "approvedBy": "Owen Reagan",
     "source": "explicit teacher instruction + operating contract",
     "approvedAt": "2026-07-25"
+  },
+  "unfinishedClassworkAtHome": {
+    "authority": "OWNER_POLICY",
+    "approvedBy": "Owen Reagan",
+    "approvedAt": "2026-10-30",
+    "trigger": "Designated weekly classwork accuracy-grade day",
+    "wording": "If you do not finish Problems 1-10 in class, complete them at home. These problems will be checked and graded.",
+    "note": "Show At Home on the designated classwork day only. Omit it on assessment days and other no-homework days."
   }
 }

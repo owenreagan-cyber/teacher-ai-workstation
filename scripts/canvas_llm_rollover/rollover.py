@@ -56,6 +56,7 @@ _CANVAS_GLOBAL_JS_RE = re.compile(
     r'\s*<script\b[^>]*\bsrc=["\'][^"\']*canvas_global_app\.js[^"\']*["\'][^>]*>\s*</script>',
     re.IGNORECASE,
 )
+_CANVAS_HTML_COMMENT_RE = re.compile(r"<!--.*?-->", re.DOTALL)
 
 
 def _submission_type(value: Any) -> str:
@@ -70,6 +71,51 @@ def _submission_type(value: Any) -> str:
     if isinstance(sts, str):
         return sts
     return sts[0] if sts else "on_paper"
+
+
+def _assignment_title(item: dict[str, Any]) -> str:
+    return str(item.get("name") or item.get("title") or "")
+
+
+def _due_minute(value: Any) -> datetime | None:
+    """Parse a Canvas/ISO due timestamp to an exact UTC minute (or None)."""
+    if not value:
+        return None
+    try:
+        parsed = datetime.fromisoformat(str(value).replace("Z", "+00:00"))
+    except (TypeError, ValueError):
+        return None
+    if parsed.tzinfo is None:
+        parsed = parsed.replace(tzinfo=timezone.utc)
+    return parsed.astimezone(timezone.utc).replace(second=0, microsecond=0)
+
+
+def _assignment_matches(items: list[dict[str, Any]], title: str) -> list[dict[str, Any]]:
+    return [item for item in items if _assignment_title(item) == title]
+
+
+def _assignment_readback_ok(
+    readback: dict[str, Any], assignment: dict[str, Any], *,
+    expected_group_id: Any = None,
+) -> bool:
+    """Verify every required assignment field after a create or update."""
+    expected_due = _due_minute(assignment.get("due_utc"))
+    submission = _submission_type(assignment.get("submission_types"))
+    live_types = readback.get("submission_types") or []
+    if isinstance(live_types, str):
+        live_types = [live_types]
+    ok = (
+        _assignment_title(readback) == str(assignment.get("title") or "")
+        and _due_minute(readback.get("due_at")) == expected_due
+        and float(readback.get("points_possible") or 0) == float(assignment.get("points_possible") or 0)
+        and str(readback.get("grading_type") or "") == str(assignment.get("grading_type") or "percent")
+        and submission in live_types
+        and bool(readback.get("omit_from_final_grade")) == bool(assignment.get("omit_from_final_grade", False))
+        and readback.get("published") is not False
+    )
+    if expected_group_id is not None:
+        ok = ok and str(readback.get("assignment_group_id")) == str(expected_group_id)
+    return ok
 
 
 def _canvas_owned_body(body: str) -> str:
@@ -87,7 +133,23 @@ def _canvas_owned_body(body: str) -> str:
 
 
 def _canvas_body_hash(body: str) -> str:
-    return deploy_plan._sha(_canvas_owned_body(body))
+    # Canvas strips HTML comments and trailing newlines on write. Neither is
+    # visible content, so bind verification to the Canvas-comparable body.
+    text = _CANVAS_HTML_COMMENT_RE.sub("", _canvas_owned_body(body)).rstrip("\n")
+    return deploy_plan._sha(text)
+
+
+def _manifest_body_hash(block: dict[str, Any]) -> str:
+    """Canvas-comparable hash for an approved body block.
+
+    Canvas strips HTML comments and injects account-level global assets on
+    write. The visible authored content is unchanged, so verification compares
+    the Canvas-normalized body rather than the raw authoring hash.
+    """
+    body = block.get("body") or ""
+    if body:
+        return _canvas_body_hash(body)
+    return str(block.get("proposed_content_hash") or "")
 
 
 # --------------------------------------------------------------------------- #
@@ -231,7 +293,7 @@ def run_preflight(
             try:
                 from . import homeroom as homeroom_mod
                 current = client.get_page(h["course_id"], h["to_page_slug"])
-                matches = _canvas_body_hash(current.get("body") or "") == h.get("proposed_content_hash")
+                matches = _canvas_body_hash(current.get("body") or "") == _manifest_body_hash(h)
                 h["page_body_action"] = "SKIP" if matches else "UPDATE"
                 hres["page_body_action"] = h["page_body_action"]
             except Exception as exc:  # noqa: BLE001
@@ -254,11 +316,70 @@ def run_preflight(
         group = str(assignment.get("assignment_group") or "")
         if group not in groups_by_course[cid]:
             blockers.append(f"assignment {assignment.get('title')!r}: group {group!r} missing")
-        exact = next((item for item in assignments_by_course[cid]
-                      if (item.get("name") or item.get("title")) == assignment.get("title")
-                      and str(item.get("due_at") or "")[:10] == str(assignment.get("due_utc") or "")[:10]), None)
-        assignment["classification"] = "EXACT_MATCH" if exact else "NEW"
-        assignment["action"] = "SKIP" if exact else "CREATE"
+        title = str(assignment.get("title") or "")
+        matches = _assignment_matches(assignments_by_course[cid], title)
+        action = str(assignment.get("action") or "CREATE")
+        if action == "BLOCKED":
+            blockers.append(
+                f"assignment {title!r}: {assignment.get('block_reason') or 'reconciliation blocked'}"
+            )
+            assignment["classification"] = "BLOCKED"
+        elif len(matches) > 1:
+            # Never guess which existing assignment is the target.
+            blockers.append(
+                f"assignment {title!r}: {len(matches)} live assignments share this exact title"
+            )
+            assignment["classification"] = "DUPLICATE"
+            assignment["action"] = "BLOCKED"
+        elif action == "UPDATE":
+            approved_id = str(assignment.get("assignment_id") or "")
+            if not approved_id:
+                blockers.append(f"assignment {title!r}: approved update is missing its Canvas ID")
+                assignment["classification"] = "UNVERIFIED"
+                assignment["action"] = "BLOCKED"
+            elif len(matches) != 1:
+                blockers.append(f"assignment {title!r}: approved update target not found")
+                assignment["classification"] = "UNVERIFIED"
+                assignment["action"] = "BLOCKED"
+            elif str(matches[0].get("id")) != approved_id:
+                blockers.append(
+                    f"assignment {title!r}: live ID {matches[0].get('id')} does not match "
+                    f"approved update ID {approved_id}"
+                )
+                assignment["classification"] = "UNVERIFIED"
+                assignment["action"] = "BLOCKED"
+            else:
+                corrected = (
+                    _due_minute(matches[0].get("due_at"))
+                    == _due_minute(assignment.get("due_utc"))
+                )
+                assignment["classification"] = "EXACT_MATCH" if corrected else "UPDATE_REQUIRED"
+                assignment["action"] = "SKIP" if corrected else "UPDATE"
+        elif action == "SKIP":
+            if (len(matches) == 1
+                    and _due_minute(matches[0].get("due_at"))
+                    == _due_minute(assignment.get("due_utc"))):
+                assignment["classification"] = "EXACT_MATCH"
+                assignment["action"] = "SKIP"
+            else:
+                blockers.append(f"assignment {title!r}: expected existing assignment is not exact")
+                assignment["classification"] = "UNVERIFIED"
+                assignment["action"] = "BLOCKED"
+        elif matches:
+            if _due_minute(matches[0].get("due_at")) == _due_minute(assignment.get("due_utc")):
+                assignment["classification"] = "EXACT_MATCH"
+                assignment["action"] = "SKIP"
+            else:
+                # An existing title with a different due date must be updated
+                # through reconciliation, never duplicated by a CREATE.
+                blockers.append(
+                    f"assignment {title!r}: existing assignment differs; update reconciliation required"
+                )
+                assignment["classification"] = "UNVERIFIED"
+                assignment["action"] = "BLOCKED"
+        else:
+            assignment["classification"] = "NEW"
+            assignment["action"] = "CREATE"
         live["assignments"][assignment.get("title")] = {
             "classification": assignment["classification"], "action": assignment["action"]}
 
@@ -529,37 +650,97 @@ def execute(
     # ---- D. Approved assignments ----------------------------------------
     for a in manifest.get("assignments", []):
         title = a["title"]
+        cid = a["course_id"]
+        action = str(a.get("action") or "CREATE")
         try:
-            exact = next((item for item in client.list_assignments(a["course_id"])
-                          if (item.get("name") or item.get("title")) == title
-                          and str(item.get("due_at") or "")[:10] == str(a.get("due_utc") or "")[:10]), None)
+            live_assignments = client.list_assignments(cid)
             counts["GET"] += 1
-            if exact:
-                created = exact
-                disposition = "ALREADY_EXISTS"
-            else:
-                created = client.create_assignment(
-                    a["course_id"], title=title, description=a.get("description", ""),
-                    assignment_group=a["assignment_group"], points=a["points_possible"],
-                    grading_type=a["grading_type"],
-                    submission_type=_submission_type(a.get("submission_types")),
-                    due_at=a.get("due_utc") or "",
-                    counts_toward_final_grade=not a.get("omit_from_final_grade", False),
-                    published=True,
-                )
-                counts["POST"] += 1
-                disposition = "PUBLISHED_VERIFIED"
-            readback = client.get_assignment(a["course_id"], str(created.get("id")))
-            counts["GET"] += 1
-            ok = ((readback.get("name") or "") == title
-                  and str(readback.get("due_at") or "")[:10] == str(a.get("due_utc") or "")[:10])
         except Exception as exc:  # noqa: BLE001
+            report["failures"].append(f"assignment {title!r}: lookup failed: {type(exc).__name__}")
+            return _finish(to_quarter, to_week, report, schedule.BLOCKED, counts)
+        matches = _assignment_matches(live_assignments, title)
+        if len(matches) > 1:
+            report["failures"].append(
+                f"assignment {title!r}: {len(matches)} live assignments share this exact title")
+            return _finish(to_quarter, to_week, report, schedule.BLOCKED, counts)
+
+        try:
+            if action == "UPDATE":
+                approved_id = str(a.get("assignment_id") or "")
+                if not approved_id:
+                    report["failures"].append(f"assignment {title!r}: missing approved Canvas ID")
+                    return _finish(to_quarter, to_week, report, schedule.BLOCKED, counts)
+                if len(matches) != 1:
+                    report["failures"].append(f"assignment {title!r}: update target not found")
+                    return _finish(to_quarter, to_week, report, schedule.BLOCKED, counts)
+                live = matches[0]
+                if str(live.get("id")) != approved_id:
+                    report["failures"].append(
+                        f"assignment {title!r}: live ID {live.get('id')} != approved ID {approved_id}")
+                    return _finish(to_quarter, to_week, report, schedule.BLOCKED, counts)
+                group_id = live.get("assignment_group_id")
+                if _due_minute(live.get("due_at")) == _due_minute(a.get("due_utc")):
+                    created = live
+                    disposition = "ALREADY_EXISTS"
+                else:
+                    corrections = a.get("corrections") or {}
+                    unsupported = sorted(set(corrections) - {"due_at"})
+                    if unsupported:
+                        report["failures"].append(
+                            f"assignment {title!r}: unsupported correction fields {unsupported}")
+                        return _finish(to_quarter, to_week, report, schedule.BLOCKED, counts)
+                    required_due = (corrections.get("due_at") or {}).get("required") or a.get("due_utc")
+                    # UPDATE only the fields the approved reconciliation named.
+                    client.update_assignment(cid, approved_id, due_at=required_due)
+                    counts["PUT"] += 1
+                    created = client.get_assignment(cid, approved_id)
+                    counts["GET"] += 1
+                    disposition = "UPDATED_VERIFIED"
+                ok = _assignment_readback_ok(created, a, expected_group_id=group_id)
+            elif action == "SKIP":
+                if len(matches) != 1:
+                    report["failures"].append(f"assignment {title!r}: expected assignment missing")
+                    return _finish(to_quarter, to_week, report, schedule.BLOCKED, counts)
+                created = matches[0]
+                disposition = "ALREADY_EXISTS"
+                ok = _assignment_readback_ok(created, a)
+            else:
+                exact = [item for item in matches
+                         if _due_minute(item.get("due_at")) == _due_minute(a.get("due_utc"))]
+                if exact:
+                    created = exact[0]
+                    disposition = "ALREADY_EXISTS"
+                    ok = _assignment_readback_ok(created, a)
+                elif matches:
+                    # Never create a replacement for an existing assignment.
+                    report["failures"].append(
+                        f"assignment {title!r}: existing assignment differs; refusing to duplicate")
+                    return _finish(to_quarter, to_week, report, schedule.BLOCKED, counts)
+                else:
+                    created = client.create_assignment(
+                        cid, title=title, description=a.get("description", ""),
+                        assignment_group=a["assignment_group"], points=a["points_possible"],
+                        grading_type=a["grading_type"],
+                        submission_type=_submission_type(a.get("submission_types")),
+                        due_at=a.get("due_utc") or "",
+                        counts_toward_final_grade=not a.get("omit_from_final_grade", False),
+                        published=True,
+                    )
+                    counts["POST"] += 1
+                    readback = client.get_assignment(cid, str(created.get("id")))
+                    counts["GET"] += 1
+                    created = readback
+                    disposition = "PUBLISHED_VERIFIED"
+                    ok = _assignment_readback_ok(created, a)
+        except Exception as exc:  # noqa: BLE001
+            # An uncertain write is never retried automatically.
             report["failures"].append(f"assignment {title!r}: write failed: {type(exc).__name__}")
             return _finish(to_quarter, to_week, report, schedule.BLOCKED, counts)
         report["assignments"].append({
-            "subject": a.get("course"), "course_id": a["course_id"], "title": title,
+            "subject": a.get("course"), "course_id": cid, "title": title,
+            "action": action,
             "assignment_id": created.get("id"), "disposition": disposition if ok else "FAILED",
-            "verified": ok,
+            "due_at": created.get("due_at"), "verified": ok,
         })
         if not ok:
             report["failures"].append(f"assignment {title!r}: readback mismatch")
@@ -632,7 +813,8 @@ def execute(
             continue
         try:
             exact = next((item for item in client.list_announcements(a["course_id"])
-                          if item.get("title") == title and item.get("message") == a.get("message", "")), None)
+                          if item.get("title") == title
+                          and _canvas_owned_body(item.get("message") or "") == a.get("message", "")), None)
             counts["GET"] += 1
             if exact:
                 created = exact
@@ -646,7 +828,8 @@ def execute(
                 disposition = "PUBLISHED_VERIFIED"
             readback = client.get_announcement(a["course_id"], str(created.get("id")))
             counts["GET"] += 1
-            ok = readback.get("title") == title and readback.get("message", "") == a.get("message", "")
+            ok = (readback.get("title") == title
+                  and _canvas_owned_body(readback.get("message") or "") == a.get("message", ""))
         except Exception as exc:  # noqa: BLE001
             report["failures"].append(f"reminder {title!r}: write failed: {type(exc).__name__}")
             return _finish(to_quarter, to_week, report, schedule.BLOCKED, counts)
@@ -706,7 +889,7 @@ def _execute_homeroom(client, h, *, to_code, counts, report, to_quarter, to_week
         return _finish(to_quarter, to_week, report, schedule.BLOCKED, counts)
 
     from . import homeroom as homeroom_mod
-    proposed_hash = h.get("proposed_content_hash")
+    proposed_hash = _manifest_body_hash(h)
     # Production body: the exact approved weekly-newsletter HTML. The retired
     # rolling-page mode remains readable for legacy ledgers only.
     if h.get("mode") in ("rolling_newsletter_html", "homeroom_weekly_newsletter_html"):

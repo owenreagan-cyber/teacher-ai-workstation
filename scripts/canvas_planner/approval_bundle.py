@@ -43,17 +43,22 @@ def _hash(value: Any) -> str:
 def current_bundle(quarter: int, week: int, course: str) -> dict[str, Any]:
     d = manifest.staging_dir(quarter, week)
     if course == "homeroom":
-        from scripts.canvas_llm_rollover import homeroom
-        m = manifest.load_manifest(quarter, week) or {}
-        date_range = m.get("date_range") or {}
+        from scripts.canvas_llm_rollover import homeroom, homeroom_weekly
         try:
-            rollover_day = date.fromisoformat(date_range["start"]) - timedelta(days=3)
-        except (KeyError, TypeError, ValueError):
-            rollover_day = date.today()
-        proposed = homeroom.copy_forward(
-            homeroom.load_approved_content(), today=rollover_day, to_date_range=date_range
-        )
-        body = homeroom.render_proposed(proposed)
+            body = homeroom_weekly.html_path(quarter, week).read_text(encoding="utf-8")
+        except OSError:
+            body = ""
+        if not body:
+            m = manifest.load_manifest(quarter, week) or {}
+            date_range = m.get("date_range") or {}
+            try:
+                rollover_day = date.fromisoformat(date_range["start"]) - timedelta(days=3)
+            except (KeyError, TypeError, ValueError):
+                rollover_day = date.today()
+            proposed = homeroom.copy_forward(
+                homeroom.load_approved_content(), today=rollover_day, to_date_range=date_range
+            )
+            body = homeroom.render_proposed(proposed)
         return {
             "course": course,
             "artifacts": {"page": body, "announcement": {}, "assignments": [], "assessment_reminder": []},

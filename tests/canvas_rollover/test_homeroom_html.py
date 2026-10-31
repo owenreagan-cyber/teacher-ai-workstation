@@ -123,6 +123,50 @@ def test_manifest_unapproved_without_weekly_approval():
         intake_manifest.staging_dir = orig_staging
 
 
+def test_canvas_body_hash_ignores_html_comments():
+    assert rollover._canvas_body_hash("<!-- start --><div>a</div><!-- end -->") == _sha("<div>a</div>")
+
+
+def test_execute_verifies_after_canvas_strips_html_comments():
+    orig_deploy, orig_staging, tmp = _tmp()
+    try:
+        import re
+
+        class CommentStrippingClient(FakeDeployClient):
+            def update_page(self, course_id, page_ref, *, body, published=True, front_page=False):
+                clean = re.sub(r"<!--.*?-->", "", body, flags=re.S)
+                return super().update_page(
+                    course_id, page_ref, body=clean, published=published, front_page=front_page,
+                )
+
+        body = f"<!-- BIRTHDAY_SECTION_START -->{HTML}<!-- BIRTHDAY_SECTION_END -->"
+        c = CommentStrippingClient(courses={COURSE_ID: {"id": COURSE_ID, "name": "Homeroom"}})
+        weekly = c.seed_page(COURSE_ID, SLUG, title="Q2W4 - November 2–6, 2026",
+                             body="<p>old</p>", front_page=False)
+        weekly["page_id"] = PAGE_ID
+        m = {
+            "from_week": "Q2W3", "to_week": "Q2W4",
+            "scheduled_at": "2026-10-30T20:00:00Z", "timezone": "America/New_York",
+            "academic_courses": [],
+            "homeroom": {
+                "course_id": COURSE_ID, "to_page_id": PAGE_ID,
+                "to_page_slug": SLUG, "front_page_action": "SET_FRONT_PAGE",
+                "source_content_hash": "src",
+                "proposed_content_hash": _sha(body),
+                "body": body, "mode": homeroom_weekly.KIND, "approved": True,
+            },
+            "weekly_announcements": [], "assignments": [], "assessment_reminders": [],
+        }
+        r = rollover.execute(2, 3, 2, 4, client=c, owner_confirmation="ROLLOVER Q2W4", manifest=m)
+        assert r["lifecycle"] == schedule.PUBLISHED_VERIFIED, r.get("failures")
+        assert r["homeroom"]["verified"] is True
+        assert "<!--" not in c.get_page(COURSE_ID, SLUG)["body"]
+    finally:
+        tmp.cleanup()
+        deploy_ledger.DEPLOY_ROOT = orig_deploy
+        intake_manifest.staging_dir = orig_staging
+
+
 def test_execute_updates_existing_weekly_page_not_rolling_page():
     orig_deploy, orig_staging, tmp = _tmp()
     try:

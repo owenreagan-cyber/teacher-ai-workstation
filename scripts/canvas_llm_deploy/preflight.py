@@ -32,6 +32,19 @@ def _strip_retake_marker(name: str) -> str:
     return re.sub(r"\s*\((retake|copy|revised|v\d+|redo)\)\s*$", "", name)
 
 
+def _canvas_owned_message(message: str) -> str:
+    """Remove Canvas-injected global assets from an announcement readback."""
+    text = re.sub(
+        r'<link\b[^>]*\bhref=["\'][^"\']*canvas_global_app\.css[^"\']*["\'][^>]*>\s*',
+        "", message or "", flags=re.IGNORECASE,
+    )
+    text = re.sub(
+        r'\s*<script\b[^>]*\bsrc=["\'][^"\']*canvas_global_app\.js[^"\']*["\'][^>]*>\s*</script>',
+        "", text, flags=re.IGNORECASE,
+    )
+    return text
+
+
 def classify_assignment(proposed_title: str, existing_names: list[str]) -> str:
     """Classify a proposed assignment against existing live assignment names.
 
@@ -147,9 +160,10 @@ def classify_assessment_reminder(reminder: dict[str, Any], live: list[dict[str, 
       NEW                      — no existing announcement satisfies the reminder.
     """
     title = reminder.get("title") or ""
-    message = reminder.get("message") or reminder.get("body") or ""
+    message = _canvas_owned_message(reminder.get("message") or reminder.get("body") or "")
     for a in live:
-        if (a.get("title") or "") == title and (a.get("message") or "") == message:
+        if ((a.get("title") or "") == title
+                and _canvas_owned_message(a.get("message") or "") == message):
             return "EXACT_MATCH"
     tokens = _reminder_identity_tokens(reminder)
     if tokens:
@@ -416,9 +430,12 @@ def command_self_test() -> int:
     assert classify_assessment_reminder(math_reminder,
         [{"title": "Written Assessment 6 and Fact Assessment 6 - Thursday, October 22", "message": "…"}]) == "NEW"
     assert classify_assessment_reminder(math_reminder, []) == "NEW"
-    # Exact title+message still matches.
+    # Exact title+message still matches, even with Canvas global assets.
     assert classify_assessment_reminder(math_reminder,
         [{"title": math_reminder["title"], "message": math_reminder["message"]}]) == "EXACT_MATCH"
+    assert classify_assessment_reminder(math_reminder,
+        [{"title": math_reminder["title"],
+          "message": f"{css}{math_reminder['message']}{js}"}]) == "EXACT_MATCH"
 
     # preflight against a fake client (course + page seeded).
     client = FakeDeployClient(courses={26404: {"id": 26404, "name": "Math", "workflow_state": "available"}})

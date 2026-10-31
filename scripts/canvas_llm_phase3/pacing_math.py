@@ -45,7 +45,7 @@ def load_config() -> dict[str, Any]:
 # Token translation
 # --------------------------------------------------------------------------- #
 
-_LESSON_RE = re.compile(r"^(?:L|Lesson)\s*(\d+)\s*$", re.IGNORECASE)
+_LESSON_RE = re.compile(r"^(?:(?:L|Lesson)\s*)?(\d+)\s*$", re.IGNORECASE)
 _INV_RE = re.compile(r"^(?:INV|Investigation)\s*(\d+)\s*$", re.IGNORECASE)
 _WA_RE = re.compile(r"^(?:WA|Written\s+Assessment)\s*(\d+)\s*$", re.IGNORECASE)
 _FA_RE = re.compile(r"^(?:FA|Fact\s+Assessment)\s*(\d+)\s*$", re.IGNORECASE)
@@ -207,9 +207,18 @@ def math_day_plan(
         n = tokens[0]["number"]
         in_class = [f"Lesson {n}", cw_goal]
         hw, hw_kind = homework_for_weekday(weekday, config)
+
+        classwork_day = (
+            (weekday == "Tuesday" and not week_has_tuesday_assessment)
+            or (weekday == "Thursday" and week_has_tuesday_assessment)
+        )
+
         if hw_kind == "homework":
             at_home = hw
             at_home_status = "homework"
+        elif classwork_day:
+            at_home = config["unfinishedClassworkAtHome"]["wording"]
+            at_home_status = "unfinished_classwork"
         else:
             at_home = None
             at_home_status = "no_homework"
@@ -218,9 +227,7 @@ def math_day_plan(
             assignments.append(_homework_assignment(n, day_date, config))
         elif weekday == "Wednesday":
             assignments.append(_homework_assignment(n, day_date, config))
-        elif weekday == "Tuesday" and not week_has_tuesday_assessment:
-            assignments.append(_classwork_assignment(n, day_date, weekday, config))
-        elif weekday == "Thursday" and week_has_tuesday_assessment:
+        elif classwork_day:
             assignments.append(_classwork_assignment(n, day_date, weekday, config))
     elif token_kind == "investigation":
         n = tokens[0]["number"]
@@ -376,6 +383,10 @@ def command_self_test() -> int:
     assert parse_math_tokens("L 31")["tokens"][0]["translation"] == "Lesson 31"
     assert parse_math_tokens("Lesson 31")["tokens"][0]["translation"] == "Lesson 31"
     assert parse_math_tokens("L34")["tokens"][0]["translation"] == "Lesson 34"
+    for n in range(41, 46):
+        parsed = parse_math_tokens(str(n))
+        assert parsed["resolved"] is True, parsed
+        assert parsed["tokens"][0]["translation"] == f"Lesson {n}", parsed
     assert parse_math_tokens("INV 3")["tokens"][0]["translation"] == "Investigation 3"
     assert parse_math_tokens("Inv 3")["tokens"][0]["translation"] == "Investigation 3"
     assert parse_math_tokens("Investigation 3")["tokens"][0]["translation"] == "Investigation 3"
@@ -422,7 +433,8 @@ def command_self_test() -> int:
 
     # Tuesday (no assessment) -> classwork accuracy grade (title resolved).
     tue = math_day_plan("L32", "Tuesday", "2026-10-13", False, config)
-    assert tue["at_home_status"] == "no_homework" and tue["at_home"] is None
+    assert tue["at_home_status"] == "unfinished_classwork"
+    assert tue["at_home"] == config["unfinishedClassworkAtHome"]["wording"]
     assert len(tue["assignments"]) == 1
     assert tue["assignments"][0]["kind"] == "classwork_accuracy_grade"
     assert tue["assignments"][0]["title"] == "SM5: Lesson 32 Classwork"
@@ -462,6 +474,8 @@ def command_self_test() -> int:
     assert tue2["assignments"] == [] or all(a["kind"] != "classwork_accuracy_grade" for a in tue2["assignments"])
     thu2 = math_day_plan("L34", "Thursday", "2026-10-15", True, config)
     assert any(a["kind"] == "classwork_accuracy_grade" for a in thu2["assignments"]), thu2
+    assert thu2["at_home_status"] == "unfinished_classwork"
+    assert thu2["at_home"] == config["unfinishedClassworkAtHome"]["wording"]
 
     # Whole-week translation (synthetic Q2W1-like).
     week = {

@@ -97,7 +97,7 @@ def dispatch(now: datetime | None = None) -> dict[str, Any]:
         refresh_hm = _to_minutes(sched["final_refresh"])
         now_hm = local.hour * 60 + local.minute
         if now_hm >= publish_hm:
-            return publish_scheduled(quarter, week)
+            return publish_scheduled(quarter, week, now=local)
         if now_hm >= notify_hm:
             return notify_scheduled(quarter, week)
         if now_hm >= refresh_hm:
@@ -156,6 +156,7 @@ def notify_scheduled(quarter: int, week: int) -> dict[str, Any]:
 
 def publish_scheduled(
     quarter: int, week: int, *, client_factory: Callable[[], Any] | None = None,
+    now: datetime | None = None,
 ) -> dict[str, Any]:
     """Friday 4:00 PM guarded publication. Reuses the sole rollover publisher."""
     from scripts.weekly_planner_agent import service
@@ -178,7 +179,7 @@ def publish_scheduled(
             "published": False, "state": "HELD — LIVE CLIENT REQUIRED",
             "canvas_writes": 0,
         }
-    result = pub.publish(quarter, week, client=client)
+    result = pub.publish(quarter, week, client=client, now=now)
     return {
         "action": "PUBLISH", "week": f"Q{quarter}W{week}",
         "published": bool(result.get("published")),

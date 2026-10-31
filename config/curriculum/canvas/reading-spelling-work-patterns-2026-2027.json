@@ -13,42 +13,99 @@
     "courseId": 26442,
     "canonicalPrefix": "RM4",
     "curriculum": "Reading Mastery 4-5",
-    "assignmentGroups": ["Check Out", "Assessments", "Homework"],
+    "assignmentGroups": [
+      "Check Out",
+      "Assessments",
+      "Homework"
+    ],
     "tokenTranslation": {
-      "lesson": {"sourcePattern": "L{n}", "render": "Lesson {n}"},
-      "masteryTestPlusCheckout": {"sourcePattern": "RMT+FCO", "render": "Reading Mastery Test {n} + Fluency Checkout {n}"}
+      "lesson": {
+        "sourcePattern": "L{n}",
+        "render": "Lesson {n}"
+      },
+      "masteryTestPlusCheckout": {
+        "sourcePattern": "RMT+FCO",
+        "render": "Reading Mastery Test {n} + Fluency Checkout {n}"
+      }
     },
     "dailyClassworkGoal": "Workbook",
     "homeworkSchedule": {
-      "Monday": {"kind": "no_homework"},
-      "Tuesday": {"kind": "homework", "value": "Comprehension Questions"},
-      "Wednesday": {"kind": "no_homework"},
-      "Thursday": {"kind": "homework", "value": "Comprehension Questions"},
-      "Friday": {"kind": "no_homework"}
+      "Monday": {
+        "kind": "no_homework"
+      },
+      "Tuesday": {
+        "kind": "homework",
+        "value": "Comprehension Questions"
+      },
+      "Wednesday": {
+        "kind": "no_homework"
+      },
+      "Thursday": {
+        "kind": "homework",
+        "value": "Comprehension Questions"
+      },
+      "Friday": {
+        "kind": "no_homework"
+      }
     },
     "weeklyAccuracyGrades": {
       "count": 3,
       "tuesdayComprehensionHomework": true,
       "thursdayComprehensionHomework": true,
       "classworkDayDefault": "Monday",
-      "classworkDayDisplacement": {"trigger": "Monday contains a Reading assessment", "then": "Wednesday"},
+      "classworkDayDisplacement": {
+        "trigger": "Monday contains a Reading assessment",
+        "then": "Wednesday"
+      },
       "assessmentsExcluded": true,
       "teacherMayOverrideClassworkDay": true
     },
     "testToCheckout": {
       "rule": "Reading Test N -> Checkout N for N in 1-13",
-      "test14Exception": {"authority": "OWNER_POLICY", "rule": "Reading Test 14 has no Checkout"},
+      "test14Exception": {
+        "authority": "OWNER_POLICY",
+        "rule": "Reading Test 14 has no Checkout"
+      },
       "fluency": {
-        "checkouts1to7": {"wpm": 100, "maxErrors": 2, "authority": "OWNER_POLICY"},
-        "checkouts8to13": {"wpm": null, "maxErrors": null, "authority": "UNRESOLVED"}
+        "checkouts1to7": {
+          "wpm": 100,
+          "maxErrors": 2,
+          "authority": "OWNER_POLICY"
+        },
+        "checkouts8to13": {
+          "wpm": null,
+          "maxErrors": null,
+          "authority": "UNRESOLVED"
+        }
       },
       "source": "config/curriculum/reading/reading-mastery-4/checkout-passage-map.json"
     },
     "assessmentAssignments": {
-      "masteryTest": {"group": "Assessments", "title": "RM4: Mastery Test {n}"},
-      "fluencyCheckout": {"group": "Check Out", "title": "RM4: Fluency Checkout {n}"},
+      "masteryTest": {
+        "group": "Assessments",
+        "title": "RM4: Mastery Test {n}"
+      },
+      "fluencyCheckout": {
+        "group": "Check Out",
+        "title": "RM4: Fluency Checkout {n}"
+      },
       "separateGradebookItems": true,
       "neverMerge": true
+    },
+    "agendaWorkPattern": {
+      "authority": "OWNER_POLICY",
+      "approvedBy": "Owen Reagan",
+      "approvedAt": "2026-10-30",
+      "classworkDays": [
+        "Monday",
+        "Wednesday"
+      ],
+      "classworkLabel": "Workbook",
+      "unfinishedClassworkAtHomeWording": "If you do not finish the workbook pages in class, complete the front and back at home. The workbook will be checked and graded.",
+      "homeworkItems": [
+        "Reading Workbook - front and back",
+        "Lesson {n} comprehension questions - Complete, restated sentences on lined paper"
+      ]
     }
   },
   "spelling": {
@@ -56,7 +113,9 @@
     "displayName": "Spelling",
     "canonicalPrefix": "RM4",
     "curriculum": "Spelling 4",
-    "assignmentGroups": ["Assessments"],
+    "assignmentGroups": [
+      "Assessments"
+    ],
     "testNumbering": {
       "authority": "OWNER_POLICY",
       "rule": "Spelling tests occur every fifth lesson. The test following lesson L is Spelling Test ceil(L/5)*5.",
@@ -66,9 +125,18 @@
       "test25Gated": true
     },
     "tokenTranslation": {
-      "numberedLesson": {"sourcePattern": "{n}", "render": "Spelling Lesson {n}"},
-      "test": {"sourcePattern": "Test", "render": "Spelling Test {n}"},
-      "review": {"sourcePattern": "review", "render": "Spelling Review"}
+      "numberedLesson": {
+        "sourcePattern": "{n}",
+        "render": "Spelling Lesson {n}"
+      },
+      "test": {
+        "sourcePattern": "Test",
+        "render": "Spelling Test {n}"
+      },
+      "review": {
+        "sourcePattern": "review",
+        "render": "Spelling Review"
+      }
     },
     "assignment": {
       "title": "RM4: Spelling Test {n}",
@@ -127,7 +195,11 @@
     "blockedInPhase33": true
   },
   "notPromoted": [
-    {"rule": "Checkout 8-13 WPM/error targets", "authority": "UNRESOLVED", "note": "Existence of Checkout resolves; detailed WPM/error preparation remains unresolved."}
+    {
+      "rule": "Checkout 8-13 WPM/error targets",
+      "authority": "UNRESOLVED",
+      "note": "Existence of Checkout resolves; detailed WPM/error preparation remains unresolved."
+    }
   ],
   "provenance": {
     "authority": "OWNER_POLICY",

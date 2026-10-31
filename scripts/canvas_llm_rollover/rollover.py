@@ -16,6 +16,7 @@ from __future__ import annotations
 
 import copy
 import hashlib
+import json
 import re
 from datetime import date, datetime, timezone
 from typing import Any
@@ -220,12 +221,12 @@ def run_preflight(
         h["page_id"] = hres["page_id"]
         h["already_front_page"] = hres["front_page"]
         h["front_page_action"] = "SKIP" if hres["front_page"] else "SET_FRONT_PAGE"
-        # Rolling-newsletter HTML approval binds to the exact page id: fail if
-        # the live-resolved target no longer matches the approved page id.
-        if (h.get("mode") == "rolling_newsletter_html"
+        # Homeroom HTML approval binds to the exact weekly page id: fail if the
+        # live-resolved target no longer matches the approved page id.
+        if (h.get("mode") in ("rolling_newsletter_html", "homeroom_weekly_newsletter_html")
                 and h.get("to_page_id") is not None
                 and str(hres["page_id"]) != str(h.get("to_page_id"))):
-            blockers.append("homeroom: rolling page id changed (approved target mismatch)")
+            blockers.append("homeroom: weekly page id changed (approved target mismatch)")
         if hres["page_id"] is not None:
             try:
                 from . import homeroom as homeroom_mod
@@ -366,6 +367,7 @@ def execute(
     client: DeployClient,
     owner_confirmation: str,
     today: date | None = None,
+    now: datetime | None = None,
     manifest: dict[str, Any] | None = None,
     partial: bool = False,
     early_content_only: bool = False,
@@ -382,6 +384,42 @@ def execute(
         raise RolloverBlocked(
             f"owner confirmation missing (must be exactly 'ROLLOVER {to_code.upper()}')"
         )
+
+    # Publication-time gate. A caller that knows "now" (the scheduler or a
+    # release-plan execution) must never reuse an expired delayed-post instant.
+    # A release-plan manifest that explicitly requires owner time cannot bypass
+    # the gate merely by omitting ``now``.
+    if now is None and manifest.get("publication_time_required"):
+        raise RolloverBlocked(
+            "publication time required: now must be supplied for a release plan "
+            "that requires an owner-selected timestamp"
+        )
+    if now is not None:
+        from scripts.instructional_weeks import week_range
+        from scripts.canvas_llm_intake import week_resolution as _wr
+        bounds = week_range(_wr.find_week(to_quarter, to_week) or {})
+        if bounds is None:
+            raise RolloverBlocked("target week dates are unavailable")
+        try:
+            resolved = schedule.resolve_publication_time(
+                bounds[0].isoformat(),
+                now=now,
+                owner_selected_at=manifest.get("owner_publication_time"),
+            )
+        except ValueError as exc:
+            raise RolloverBlocked(f"invalid publication time: {exc}") from exc
+        if resolved["requires_owner_time"]:
+            raise RolloverBlocked(
+                "publication time required: the canonical Friday 4:00 PM window has passed; "
+                "supply an explicit future owner_publication_time"
+            )
+        manifest = dict(manifest)
+        manifest["scheduled_at"] = resolved["scheduled_at"]
+        manifest["publication_time_source"] = resolved["source"]
+        manifest["canonical_scheduled_at"] = resolved["canonical_scheduled_at"]
+        if not early_content_only:
+            for announcement in manifest.get("weekly_announcements", []):
+                announcement["delayed_post_at"] = resolved["scheduled_at"]
 
     existing = ledger.load_rollover_ledger(to_quarter, to_week)
     if existing and existing.get("lifecycle") == schedule.PUBLISHED_VERIFIED:
@@ -501,7 +539,7 @@ def execute(
                 disposition = "ALREADY_EXISTS"
             else:
                 created = client.create_assignment(
-                    a["course_id"], title=title, description="",
+                    a["course_id"], title=title, description=a.get("description", ""),
                     assignment_group=a["assignment_group"], points=a["points_possible"],
                     grading_type=a["grading_type"],
                     submission_type=_submission_type(a.get("submission_types")),
@@ -669,12 +707,12 @@ def _execute_homeroom(client, h, *, to_code, counts, report, to_quarter, to_week
 
     from . import homeroom as homeroom_mod
     proposed_hash = h.get("proposed_content_hash")
-    # Production body: the exact approved rolling-newsletter HTML when an HTML
-    # approval exists; otherwise the JSON proposal renderer (planning fallback).
-    if h.get("mode") == "rolling_newsletter_html":
+    # Production body: the exact approved weekly-newsletter HTML. The retired
+    # rolling-page mode remains readable for legacy ledgers only.
+    if h.get("mode") in ("rolling_newsletter_html", "homeroom_weekly_newsletter_html"):
         body = h.get("body") or ""
         if str(hres["page_id"]) != str(h.get("to_page_id")):
-            report["failures"].append("homeroom: rolling page id changed (approved target mismatch)")
+            report["failures"].append("homeroom: weekly page id changed (approved target mismatch)")
             return _finish(to_quarter, to_week, report, schedule.BLOCKED, counts)
     else:
         proposed = h.get("proposed_content")
@@ -750,28 +788,66 @@ def _record_publish_event(to_quarter, to_week, report, *, partial):
         pass
 
 
+def _release_plan_record(to_quarter: int, to_week: int) -> dict[str, Any]:
+    """Read the staged owner release plan (local, read-only)."""
+    path = (
+        imf.staging_dir(to_quarter, to_week)
+        / "planner" / "rollover-release-plan.json"
+    )
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return {}
+
+
+def _attach_release_publication(
+    manifest: dict[str, Any], to_quarter: int, to_week: int,
+) -> dict[str, Any]:
+    """Wire the owner-selected release timestamp into the execution manifest."""
+    release = _release_plan_record(to_quarter, to_week)
+    if not release:
+        return manifest
+    manifest = dict(manifest)
+    manifest["canonical_scheduled_at"] = release.get("canonical_scheduled_at")
+    manifest["publication_time_required"] = bool(release.get("publication_time_required"))
+    if release.get("owner_publication_time"):
+        manifest["owner_publication_time"] = release["owner_publication_time"]
+    manifest["release_plan_status"] = release.get("status")
+    return manifest
+
+
 def publish_weekly_package(
     from_quarter: int, from_week: int, to_quarter: int, to_week: int, *,
     client: DeployClient, owner_confirmation: str, today: date | None = None,
+    now: datetime | None = None,
 ) -> dict[str, Any]:
-    """Publish the all-or-nothing canonical package through the rollover engine."""
+    """Publish the all-or-nothing canonical package through the rollover engine.
+
+    The publication-time gate is ALWAYS evaluated. A missing ``now`` is replaced
+    with the current timezone-aware time; it never disables the gate. An
+    owner-selected timestamp is wired from the staged release plan.
+    """
+    now = now or datetime.now(timezone.utc)
     readiness = run_preflight(
         from_quarter, from_week, to_quarter, to_week, client=client, today=today,
     )
     if not readiness["ready"]:
         raise RolloverBlocked("Friday rollover is blocked: " + "; ".join(readiness["blockers"]))
+    manifest = _attach_release_publication(readiness["manifest"], to_quarter, to_week)
     return execute(
         from_quarter, from_week, to_quarter, to_week, client=client,
-        owner_confirmation=owner_confirmation, today=today,
-        manifest=readiness["manifest"], partial=False,
+        owner_confirmation=owner_confirmation, today=today, now=now,
+        manifest=manifest, partial=False,
     )
 
 
 def publish_approved_courses_only(
     from_quarter: int, from_week: int, to_quarter: int, to_week: int, *,
     client: DeployClient, owner_confirmation: str, today: date | None = None,
+    now: datetime | None = None,
 ) -> dict[str, Any]:
     """Use the same engine for the explicit mixed-week exception."""
+    now = now or datetime.now(timezone.utc)
     if (owner_confirmation or "").strip().upper() != "PUBLISH APPROVED COURSES":
         raise RolloverBlocked(
             "partial publish confirmation missing (must be exactly 'PUBLISH APPROVED COURSES')"
@@ -779,6 +855,7 @@ def publish_approved_courses_only(
     source = rollover_manifest.build_rollover_manifest(
         from_quarter, from_week, to_quarter, to_week, today=today,
     )
+    source = _attach_release_publication(source, to_quarter, to_week)
     approved = {c["subject"] for c in source.get("academic_courses", []) if c.get("approved")}
     include_homeroom = bool((source.get("homeroom") or {}).get("approved"))
     if not approved and not include_homeroom:
@@ -791,7 +868,7 @@ def publish_approved_courses_only(
     plan["homeroom"] = plan.get("homeroom") if include_homeroom else None
     report = execute(
         from_quarter, from_week, to_quarter, to_week, client=client,
-        owner_confirmation=f"ROLLOVER {plan['to_week']}", today=today,
+        owner_confirmation=f"ROLLOVER {plan['to_week']}", today=today, now=now,
         manifest=plan, partial=True,
     )
     report["published_courses"] = sorted(approved | ({"homeroom"} if include_homeroom else set()))
@@ -908,8 +985,31 @@ def status(
     now: datetime | None = None,
 ) -> dict[str, Any]:
     """Deterministic FRIDAY ROLLOVER status for Chief of Staff / UI."""
+    now = now or datetime.now(timezone.utc)
     readiness = build_readiness(from_quarter, from_week, to_quarter, to_week, today=today)
     plan = readiness["manifest"]
+    blockers = list(readiness["blockers"])
+
+    # Publication-time gate: a missed Friday 4 PM window must be surfaced, never
+    # silently reused. The canonical instant stays in the payload for provenance.
+    publication_required = False
+    canonical_scheduled_at = plan.get("scheduled_at", "")
+    try:
+        from scripts.instructional_weeks import week_range
+        from scripts.canvas_llm_intake import week_resolution as _wr
+        bounds = week_range(_wr.find_week(to_quarter, to_week) or {})
+        if bounds is not None:
+            resolved = schedule.resolve_publication_time(bounds[0].isoformat(), now=now)
+            publication_required = bool(resolved["requires_owner_time"])
+            canonical_scheduled_at = resolved["canonical_scheduled_at"]
+            if publication_required:
+                blockers.append(
+                    "Owner-selected publication time required: the canonical Friday 4:00 PM "
+                    "America/New_York window has passed."
+                )
+    except (ValueError, RuntimeError):
+        publication_required = False
+
     existing = ledger.load_rollover_ledger(to_quarter, to_week)
     ledger_state = existing.get("lifecycle") if existing else None
     state = schedule.classify_state(
@@ -917,19 +1017,21 @@ def status(
         now=now,
         ready=readiness["ready"],
         needs_owen=readiness["needs_owen"],
-        blockers=readiness["blockers"],
+        blockers=blockers,
         ledger_state=ledger_state,
-        preparing=(not readiness["ready"] and not readiness["needs_owen"] and not readiness["blockers"]),
+        preparing=(not readiness["ready"] and not readiness["needs_owen"] and not blockers),
     )
     return {
         "from_week": plan["from_week"],
         "to_week": plan["to_week"],
         "scheduled_at": plan["scheduled_at"],
+        "canonical_scheduled_at": canonical_scheduled_at,
+        "publication_time_required": publication_required,
         "timezone": plan["timezone"],
         "status": state,
         "ready": readiness["ready"],
-        "needs_owen": readiness["needs_owen"],
-        "blockers": readiness["blockers"],
+        "needs_owen": readiness["needs_owen"] or publication_required,
+        "blockers": blockers,
         "academic_courses": [
             {"subject": c["subject"], "course_id": c["course_id"]}
             for c in plan["academic_courses"]

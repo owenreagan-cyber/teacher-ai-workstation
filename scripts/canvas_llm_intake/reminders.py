@@ -16,10 +16,15 @@ from . import constants as C
 from scripts.canvas_llm_phase3 import constants as P3
 
 FACT_TEST_MAP = P3.REPO_ROOT / "config" / "curriculum" / "math" / "saxon-math-5" / "fact-test-practice-map.json"
+SPELLING_MAP = P3.REPO_ROOT / "config" / "curriculum" / "spelling" / "cumulative-test-word-lists.json"
 
 
 def load_fact_test_map() -> dict[str, Any]:
     return json.loads(FACT_TEST_MAP.read_text(encoding="utf-8")).get("tests", {})
+
+
+def load_spelling_map() -> dict[str, Any]:
+    return json.loads(SPELLING_MAP.read_text(encoding="utf-8"))
 
 
 def resolve_fact_test(n: int) -> dict[str, Any] | None:
@@ -92,8 +97,11 @@ def draft_spelling_reminders(week: dict[str, Any]) -> list[dict[str, Any]]:
     """Draft Spelling test reminder from normalized pacing.
 
     Detects a Spelling Test token and resolves the exact test number/date.
-    The list range is authoritative (Lists 1-N) only for cumulative tests;
-    do NOT generalize to other test numbers without an authoritative mapping.
+    Owen's standing instruction is to study the spelling word lists through the
+    tested lesson (not only the current list). The verified cumulative map is
+    referenced only when its ``lessonsCovered`` range matches the test number;
+    otherwise the announcement preserves the study instruction and records the
+    missing list instead of inventing words.
     """
     test_number = None
     test_date = None
@@ -114,14 +122,16 @@ def draft_spelling_reminders(week: dict[str, Any]) -> list[dict[str, Any]]:
     date_display = _display_date(test_date)
     num_txt = f" {test_number}" if test_number is not None else ""
     title = f"Spelling Test{num_txt} Reminder"
+    verified, list_meta = _verified_word_list(test_number)
     body = (
         "Good afternoon,\n\n"
-        f"I wanted to send a quick reminder that students will be taking Spelling Test{num_txt} this {date_display}.\n\n"
+        f"I wanted to send a quick reminder that students will be taking Spelling Test{num_txt} on {date_display}.\n\n"
         "We have covered a lot of spelling material so far this year, and this is a good "
         "opportunity for students to show how much they have learned. Spending a few minutes "
         "reviewing at home can make a big difference and help students feel confident going "
         "into the test.\n\n"
         + (_list_range(test_number) if test_number is not None else "")
+        + (_verified_list_text(test_number, list_meta) if verified else "")
         + "\nThank you for your continued support at home!\n\nOwen Reagan"
     )
     return [{
@@ -132,15 +142,244 @@ def draft_spelling_reminders(week: dict[str, Any]) -> list[dict[str, Any]]:
         "assessment_date": test_date,
         "test_number": test_number,
         "body": body,
+        "word_list_status": "VERIFIED" if verified else "UNVERIFIED",
+        "word_list_lessons_covered": list_meta.get("lessonsCovered", "") if verified else "",
+        "word_list": list_meta.get("words", []) if verified else [],
+        "focus_words": list_meta.get("focusWords", []) if verified else [],
         "requires_teacher_approval": True,
     }]
 
 
+def _verified_word_list(test_number: int | None) -> tuple[bool, dict[str, Any]]:
+    """Resolve the verified cumulative list for a lesson-numbered spelling test.
+
+    The canonical map is keyed by cumulative-test ordinal (1..24), and each
+    ordinal covers lessons 1 through 5*N. Spelling Test 50 therefore maps to
+    ordinal 10 (lessons 1-50). Only an exact ``lessonsCovered`` match counts.
+    """
+    if test_number is None or test_number <= 0 or test_number % 5 != 0:
+        return False, {}
+    ordinal = test_number // 5
+    try:
+        entry = load_spelling_map().get("tests", {}).get(str(ordinal), {})
+    except (OSError, json.JSONDecodeError):
+        return False, {}
+    if not entry:
+        return False, {}
+    if str(entry.get("lessonsCovered", "")) != f"1-{test_number}":
+        return False, {}
+    if not entry.get("words"):
+        return False, {}
+    return True, entry
+
+
+def _verified_list_text(test_number: int, entry: dict[str, Any]) -> str:
+    words = [str(w) for w in entry.get("words", []) if str(w).strip()]
+    focus = [str(w) for w in entry.get("focusWords", []) if str(w).strip()]
+    lines = [
+        f"Verified word list for Spelling Test {test_number} (Lessons 1\u2013{test_number}):",
+        ", ".join(words),
+        "",
+    ]
+    if focus:
+        lines.append("Focus words: " + ", ".join(focus))
+    return "\n".join(lines) + "\n"
+
+
 def _list_range(test_number: int) -> str:
-    """Cumulative list range. Only authoritative for cumulative spelling tests."""
-    if test_number == 40:
-        return "Students should review Spelling Lists 1\u201340, paying special attention to words or patterns that have been challenging for them along the way.\n"
-    return f"Students should review the current spelling list, paying special attention to words or patterns that have been challenging for them.\n"
+    """Cumulative study instruction; never claims an unverified word list."""
+    return (
+        f"Students should study the spelling word lists through Lesson {test_number} "
+        f"(Lists 1\u2013{test_number}). This is a cumulative review, so please look back over "
+        "the full list rather than only the most recent lesson.\n"
+    )
+
+
+def _join_and(parts: list[str]) -> str:
+    parts = [p for p in parts if p]
+    if not parts:
+        return ""
+    if len(parts) == 1:
+        return parts[0]
+    if len(parts) == 2:
+        return f"{parts[0]} and {parts[1]}"
+    return ", ".join(parts[:-1]) + ", and " + parts[-1]
+
+
+def _lesson_span(lessons: list[int]) -> str:
+    unique = sorted({n for n in lessons if n})
+    if not unique:
+        return ""
+    if len(unique) == 1:
+        return f"Lesson {unique[0]}"
+    return f"Lessons {unique[0]}\u2013{unique[-1]}"
+
+
+def _chapter_span(chapters: list[int]) -> str:
+    """List distinct chapters without implying a continuous range."""
+    unique = sorted({n for n in chapters if n})
+    if not unique:
+        return ""
+    if len(unique) == 1:
+        return f"Chapter {unique[0]}"
+    return "Chapters " + _join_and([str(n) for n in unique])
+
+
+def instructional_focus_reminder(week: dict[str, Any], subject: str) -> str:
+    """A short, deterministic, source-derived instructional reminder.
+
+    Used only when the week has no assessment reminder for that subject, so a
+    Reminders section is never an empty placeholder. Nothing is invented: the
+    sentence is derived from the week's own pacing cells.
+    """
+    if subject == "math":
+        from scripts.canvas_llm_phase3 import pacing_math as pm
+
+        lessons: list[int] = []
+        for wd in C.WEEKDAYS:
+            raw = ((week.get("days") or {}).get(wd, {}).get("subjects", {}).get("math", {}) or {}).get("raw", "")
+            if not raw:
+                continue
+            for token in pm.parse_math_tokens(raw)["tokens"]:
+                if token.get("kind") == "lesson" and token.get("number"):
+                    lessons.append(int(token["number"]))
+        phrase = _lesson_span(lessons)
+        if phrase:
+            return f"This week we will continue working through {phrase}."
+        return "This week we will continue working through this week's Math lessons."
+
+    if subject == "language_arts":
+        from scripts.canvas_llm_phase3 import pacing_translation as pt
+
+        chapters: list[int] = []
+        for wd in C.WEEKDAYS:
+            raw = ((week.get("days") or {}).get(wd, {}).get("subjects", {}).get("language_arts", {}) or {}).get("raw", "")
+            if not raw:
+                continue
+            for item in pt.translate_shurley_cell(raw)["items"]:
+                chapter = item.get("chapter")
+                if chapter and int(chapter) not in chapters:
+                    chapters.append(int(chapter))
+        if chapters:
+            if len(chapters) == 1:
+                return f"This week we will continue working in Chapter {chapters[0]}."
+            return f"This week we will continue working in Chapters {_join_and([str(c) for c in chapters])}."
+        return "This week we will continue our Shurley grammar work."
+
+    if subject == "reading_spelling":
+        from scripts.canvas_llm_phase3 import pacing_reading as prd
+
+        reading: list[int] = []
+        spelling: list[int] = []
+        for wd in C.WEEKDAYS:
+            day = (week.get("days") or {}).get(wd, {})
+            subs = day.get("subjects", {})
+            rtok = prd.parse_reading_token(((subs.get("reading") or {}).get("raw") or ""))
+            if rtok.get("kind") == "lesson" and rtok.get("number"):
+                reading.append(int(rtok["number"]))
+            stok = prd.parse_spelling_token(((subs.get("spelling") or {}).get("raw") or ""))
+            if stok.get("kind") == "lesson" and stok.get("number"):
+                spelling.append(int(stok["number"]))
+        parts = []
+        if reading:
+            parts.append(f"Reading {_lesson_span(reading)}")
+        if spelling:
+            parts.append(f"Spelling {_lesson_span(spelling)}")
+        if parts:
+            return "This week we will continue working through " + _join_and(parts) + "."
+        return "This week we will continue our reading and spelling work."
+
+    if subject == "science":
+        from scripts.canvas_llm_phase3 import pacing_translation as pt
+
+        units: list[int] = []
+        chapters: list[int] = []
+        for wd in C.WEEKDAYS:
+            raw = ((week.get("days") or {}).get(wd, {}).get("subjects", {}).get("science", {}) or {}).get("raw", "")
+            if not raw:
+                continue
+            import re
+
+            for match in re.finditer(r"\bU\s*(\d+)", raw, re.IGNORECASE):
+                if int(match.group(1)) not in units:
+                    units.append(int(match.group(1)))
+            for match in re.finditer(r"\bCh\.?\s*(\d+)", raw, re.IGNORECASE):
+                if int(match.group(1)) not in chapters:
+                    chapters.append(int(match.group(1)))
+        unit_name = ""
+        try:
+            unit_name = pt.resolve_science_unit_name(pt.load_config(), (week.get("unitContext") or {}).get("science")) or ""
+        except Exception:  # noqa: BLE001 - reminder is advisory
+            unit_name = ""
+        # Never apply the canonical Unit 1 name to a different unit number.
+        if units and units != [1]:
+            unit_name = ""
+        head = f"our {unit_name} unit" if unit_name else (f"Unit {units[0]}" if units else "our current unit")
+        if chapters:
+            return f"This week we will continue {head} as we work through {_chapter_span(chapters)}."
+        return f"This week we will continue {head}."
+
+    return ""
+
+
+def weekly_reminders(
+    week: dict[str, Any], subject: str, *, science_override: dict[str, Any] | None = None,
+) -> list[str]:
+    """Compose the Reminders block for one subject.
+
+    Assessment facts come first (source-derived). A Science owner override
+    replaces a stale canonical test label and adds the approved test format.
+    When no assessment exists, a source-derived instructional-focus sentence is
+    used so the block is never an empty placeholder.
+    """
+    from scripts.canvas_llm_phase3 import pacing_announcement as pa
+
+    labels = {
+        "math": "Math",
+        "reading_spelling": "Reading/Spelling",
+        "language_arts": "Language Arts",
+        "science": "Science",
+        "history": "History",
+    }
+    label = labels.get(subject, subject)
+    reminders: list[str] = []
+    try:
+        facts = pa.resolve_assessment_facts(week)
+    except Exception:  # noqa: BLE001 - reminders are best-effort
+        facts = []
+
+    for event in facts:
+        if event.get("course") != label:
+            continue
+        date_display = _display_date(event.get("assessmentDate", ""))
+        names = [a for a in (event.get("assessments") or []) if a]
+        if subject == "science" and science_override is not None:
+            names = [science_override.get("owner_value") or "Science Unit Test"]
+        for name in names:
+            reminders.append(f"{name} — {date_display}")
+
+    if subject == "science" and science_override is not None:
+        parts = []
+        if science_override.get("open_book", True):
+            parts.append("Open Book")
+        if science_override.get("open_notes", True):
+            parts.append("Open Notes")
+        if parts:
+            reminders.append(" / ".join(parts) + ".")
+
+    if not reminders:
+        focus = instructional_focus_reminder(week, subject)
+        if focus:
+            reminders.append(focus)
+
+    # Never duplicate the same line.
+    seen: set[str] = set()
+    unique: list[str] = []
+    for line in reminders:
+        if line and line not in seen:
+            seen.add(line)
+            unique.append(line)
+    return unique
 
 
 def _display_date(iso_date: str) -> str:
@@ -235,6 +474,38 @@ def command_self_test() -> int:
     assert len(s) == 1 and s[0]["test_number"] == 40
     assert "Lists 1\u201340" in s[0]["body"]
     assert s[0]["course_id"] == 26442
+    assert s[0]["word_list_status"] == "VERIFIED"
+    assert len(s[0]["word_list"]) == 25
+
+    # Q2W4 Spelling Test 50: cumulatively through Lesson 50, never "current list".
+    week_50 = {
+        "week": {"code": "Q2W4"},
+        "days": {"Friday": {"date": "2026-11-06", "subjects": {"spelling": {"raw": "test 50"}}}},
+    }
+    s50 = draft_spelling_reminders(week_50)
+    assert len(s50) == 1 and s50[0]["test_number"] == 50
+    assert "through Lesson 50" in s50[0]["body"]
+    assert "current spelling list" not in s50[0]["body"]
+    assert "Planner" in s50[0]["body"]
+
+    # Instructional focus reminders are source-derived and deterministic.
+    q2w4_days = {
+        "Monday": {"date": "2026-11-02", "subjects": {"math": {"raw": "41"}, "reading": {"raw": "L50"}, "spelling": {"raw": "46"}, "language_arts": {"raw": "Ch 7 L2 + CP26"}, "science": {"raw": "F&M Ch. 7"}}},
+        "Tuesday": {"date": "2026-11-03", "subjects": {"math": {"raw": "42"}, "reading": {"raw": "RMT 5+ CO 5"}, "spelling": {"raw": "47"}, "language_arts": {"raw": "Ch.7 L3 CP27"}, "science": {"raw": "F&M Ch. 7"}}},
+        "Wednesday": {"date": "2026-11-04", "subjects": {"math": {"raw": "43"}, "reading": {"raw": "L51"}, "spelling": {"raw": "48"}, "language_arts": {"raw": "Ch.7 L3 CP27"}, "science": {"raw": "Review"}}},
+        "Thursday": {"date": "2026-11-05", "subjects": {"math": {"raw": "44"}, "reading": {"raw": "L52"}, "spelling": {"raw": "49"}, "language_arts": {"raw": "7.4"}, "science": {"raw": "Test"}}},
+        "Friday": {"date": "2026-11-06", "subjects": {"math": {"raw": "45"}, "reading": {"raw": "L53"}, "spelling": {"raw": "test 50"}, "language_arts": {"raw": "7.4 CP 27"}, "science": {"raw": "U2 Ch1 Renewable / Nonrenewable"}}},
+    }
+    q2w4 = {"week": {"code": "Q2W4"}, "days": q2w4_days}
+    assert instructional_focus_reminder(q2w4, "math") == "This week we will continue working through Lessons 41\u201345."
+    assert instructional_focus_reminder(q2w4, "language_arts") == "This week we will continue working in Chapter 7."
+    assert instructional_focus_reminder(q2w4, "reading_spelling").startswith("This week we will continue working through Reading Lessons 50\u201353")
+    assert weekly_reminders(q2w4, "math") == ["This week we will continue working through Lessons 41\u201345."]
+    assert weekly_reminders(q2w4, "language_arts") == ["This week we will continue working in Chapter 7."]
+    science_override = {"owner_value": "Energy Transformations Unit Test", "open_book": True, "open_notes": True}
+    sci = weekly_reminders(q2w4, "science", science_override=science_override)
+    assert "Energy Transformations Unit Test \u2014 Thursday, November 5" in sci, sci
+    assert "Open Book / Open Notes." in sci, sci
 
     # Math reminder review day: derives from the explicit "Review" token day,
     # never a hardcoded weekday, and never claims an unverified Canvas resource.

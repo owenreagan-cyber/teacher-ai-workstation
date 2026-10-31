@@ -13,6 +13,7 @@ Safety:
 """
 from __future__ import annotations
 
+from datetime import datetime, timezone
 from typing import Any
 
 
@@ -68,6 +69,7 @@ def run_rollover_partial(
     return rollover.publish_approved_courses_only(
         fq, fw, tq, tw, client=LiveDeployClient(),
         owner_confirmation=owner_confirmation,
+        now=datetime.now(timezone.utc),
     )
 
 

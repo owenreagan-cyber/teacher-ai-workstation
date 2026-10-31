@@ -1,4 +1,4 @@
-"""Rolling-newsletter HTML approval bridge regression tests (plain-python).
+"""Weekly Homeroom newsletter page regression tests (plain python).
 
 Hermetic: redirects the intake staging + deployment ledger roots to temporary
 directories; never touches real .local state or Canvas.
@@ -15,18 +15,13 @@ import tempfile
 from scripts.canvas_llm_deploy import ledger as deploy_ledger
 from scripts.canvas_llm_deploy.client import FakeDeployClient
 from scripts.canvas_llm_intake import manifest as intake_manifest
-from scripts.canvas_llm_rollover import homeroom_html, rollover, schedule
+from scripts.canvas_llm_rollover import homeroom_weekly, rollover, schedule
 
-ROLLING_SLUG = "class-4a-newsletter-october-19-23-2026"
-PAGE_ID = 798072
 COURSE_ID = 26429
-HTML = (
-    '<div style="max-width: 900px;">'
-    '<h1>4th Grade Happenings</h1>'
-    '<h2>📚 Book Character Day — Friday, October 30</h2>'
-    '<p>Book Character Day is Friday, October 30!</p>'
-    '</div>'
-)
+PAGE_ID = 798094
+SLUG = "q2w4-november-2-6-2026"
+WEEK = "Q2W4"
+HTML = '<div style="max-width: 900px;"><h1>4th Grade Happenings</h1><h2>🍂 November Birthdays 🎉</h2></div>'
 
 
 def _sha(text: str) -> str:
@@ -42,58 +37,70 @@ def _tmp():
     return orig_deploy, orig_staging, tmp
 
 
+def _page_record():
+    return {
+        "schemaVersion": 1, "week": WEEK, "course_id": COURSE_ID,
+        "slug": SLUG, "page_id": PAGE_ID, "title": "Q2W4 - November 2–6, 2026",
+        "front_page": False, "published": True, "status": "FOUND",
+        "method": "LIVE_GET",
+    }
+
+
 def _record(*, body=HTML):
-    homeroom_html.record_approval(
-        2, 3, course_id=COURSE_ID, page_id=PAGE_ID, page_slug=ROLLING_SLUG,
-        source_body_hash="src", approved_body_hash=_sha(body),
-        week_code="Q2W3", body=body,
+    homeroom_weekly.write_page_resolution(2, 4, _page_record())
+    return homeroom_weekly.record_approval(
+        2, 4, page_id=PAGE_ID, page_slug=SLUG, week_code_value=WEEK,
+        source_body_hash="src", approved_body_hash=_sha(body), body=body,
     )
 
 
 def test_hash_binding():
-    _record()
-    ok, _ = homeroom_html.verify(2, 3, course_id=COURSE_ID, page_id=PAGE_ID, week_code="Q2W3")
-    assert ok
-    # B: one-byte body change invalidates.
-    p = homeroom_html.html_path(2, 3)
-    p.write_text(HTML + "x", encoding="utf-8")
-    ok2, _ = homeroom_html.verify(2, 3, course_id=COURSE_ID, page_id=PAGE_ID, week_code="Q2W3")
-    assert not ok2
-    p.write_text(HTML, encoding="utf-8")
-    ok3, _ = homeroom_html.verify(2, 3, course_id=COURSE_ID, page_id=PAGE_ID, week_code="Q2W3")
-    assert ok3
+    orig_deploy, orig_staging, tmp = _tmp()
+    try:
+        _record()
+        ok, _ = homeroom_weekly.verify(2, 4)
+        assert ok
+        homeroom_weekly.html_path(2, 4).write_text(HTML + "x", encoding="utf-8")
+        ok2, _ = homeroom_weekly.verify(2, 4)
+        assert not ok2
+    finally:
+        tmp.cleanup()
+        deploy_ledger.DEPLOY_ROOT = orig_deploy
+        intake_manifest.staging_dir = orig_staging
 
 
 def test_page_id_and_week_binding():
-    _record()
-    # C: page id change invalidates.
-    ok, _ = homeroom_html.verify(2, 3, course_id=COURSE_ID, page_id=999999, week_code="Q2W3")
-    assert not ok
-    # week change invalidates.
-    ok2, _ = homeroom_html.verify(2, 3, course_id=COURSE_ID, page_id=PAGE_ID, week_code="Q2W4")
-    assert not ok2
-    # course change invalidates.
-    ok3, _ = homeroom_html.verify(2, 3, course_id=28171, page_id=PAGE_ID, week_code="Q2W3")
-    assert not ok3
+    orig_deploy, orig_staging, tmp = _tmp()
+    try:
+        _record()
+        # Wrong week cannot verify.
+        ok, _ = homeroom_weekly.verify_at(
+            intake_manifest.staging_dir(2, 4), course_id=COURSE_ID, week_code_value="Q2W5",
+        )
+        assert not ok
+        # Wrong course cannot verify.
+        ok2, _ = homeroom_weekly.verify_at(
+            intake_manifest.staging_dir(2, 4), course_id=28171, week_code_value=WEEK,
+        )
+        assert not ok2
+    finally:
+        tmp.cleanup()
+        deploy_ledger.DEPLOY_ROOT = orig_deploy
+        intake_manifest.staging_dir = orig_staging
 
 
-def test_manifest_routes_to_html_approval():
+def test_manifest_routes_to_weekly_approval():
     orig_deploy, orig_staging, tmp = _tmp()
     try:
         _record()
         from scripts.canvas_llm_rollover import manifest as rm
-        m = rm.build_rollover_manifest(2, 2, 2, 3)
+        m = rm.build_rollover_manifest(2, 3, 2, 4)
         h = m["homeroom"]
-        # D: rolling target is page 798072, not the weekly page slug.
-        assert h["mode"] == "rolling_newsletter_html"
+        assert h["mode"] == homeroom_weekly.KIND
         assert h["to_page_id"] == PAGE_ID
-        assert h["to_page_slug"] == ROLLING_SLUG
+        assert h["to_page_slug"] == SLUG
         assert h["approved"] is True
-        # E: production body is HTML, not JSON.
-        body = h["body"]
-        assert body.strip().startswith("<div"), body[:40]
-        assert "Book Character Day" in body
-        assert h["proposed_content"] is None
+        assert h["body"] == HTML
         assert h["proposed_content_hash"] == _sha(HTML)
     finally:
         tmp.cleanup()
@@ -101,61 +108,55 @@ def test_manifest_routes_to_html_approval():
         intake_manifest.staging_dir = orig_staging
 
 
-def test_manifest_falls_back_when_no_html_approval():
+def test_manifest_unapproved_without_weekly_approval():
     orig_deploy, orig_staging, tmp = _tmp()
     try:
         from scripts.canvas_llm_rollover import manifest as rm
-        m = rm.build_rollover_manifest(2, 2, 2, 3)
+        m = rm.build_rollover_manifest(2, 3, 2, 4)
         h = m["homeroom"]
-        # No HTML approval -> JSON proposal fallback (not approved).
-        assert h.get("mode") != "rolling_newsletter_html"
+        assert h["mode"] == homeroom_weekly.KIND
         assert h["approved"] is False
+        assert h["to_page_id"] is None
     finally:
         tmp.cleanup()
         deploy_ledger.DEPLOY_ROOT = orig_deploy
         intake_manifest.staging_dir = orig_staging
 
 
-def test_execute_writes_html_preserves_front_page_no_new_page():
+def test_execute_updates_existing_weekly_page_not_rolling_page():
     orig_deploy, orig_staging, tmp = _tmp()
     try:
-        _record()
         c = FakeDeployClient(courses={COURSE_ID: {"id": COURSE_ID, "name": "Homeroom"}})
-        c.seed_page(COURSE_ID, ROLLING_SLUG, title="Class 4A Newsletter",
-                    body="<p>old</p>", front_page=True)
-        # Make the seeded page id match the approved rolling page id.
-        c.pages[(COURSE_ID, ROLLING_SLUG)]["page_id"] = PAGE_ID
-        # A weekly agenda page that must NOT receive the newsletter.
-        c.seed_page(COURSE_ID, "q2w3-october-26-30-2026", title="Q2W3", body="", front_page=False)
-
+        weekly = c.seed_page(COURSE_ID, SLUG, title="Q2W4 - November 2–6, 2026",
+                             body="<p>old</p>", front_page=False)
+        weekly["page_id"] = PAGE_ID
+        rolling = c.seed_page(COURSE_ID, "class-4a-newsletter-october-19-23-2026",
+                              title="Class 4A Newsletter", body="<p>rolling</p>", front_page=True)
         m = {
-            "from_week": "Q2W2", "to_week": "Q2W3",
-            "scheduled_at": "2026-10-23T20:00:00Z", "timezone": "America/New_York",
+            "from_week": "Q2W3", "to_week": "Q2W4",
+            "scheduled_at": "2026-10-30T20:00:00Z", "timezone": "America/New_York",
             "academic_courses": [],
             "homeroom": {
                 "course_id": COURSE_ID, "to_page_id": PAGE_ID,
-                "to_page_slug": ROLLING_SLUG, "front_page_action": "SET_FRONT_PAGE",
+                "to_page_slug": SLUG, "front_page_action": "SET_FRONT_PAGE",
                 "source_content_hash": "src",
                 "proposed_content_hash": _sha(HTML),
-                "proposed_content": None,
                 "body": HTML,
-                "mode": "rolling_newsletter_html",
+                "mode": homeroom_weekly.KIND,
                 "approved": True,
             },
             "weekly_announcements": [], "assignments": [], "assessment_reminders": [],
         }
-        r = rollover.execute(2, 2, 2, 3, client=c, owner_confirmation="ROLLOVER Q2W3", manifest=m)
+        r = rollover.execute(2, 3, 2, 4, client=c, owner_confirmation="ROLLOVER Q2W4", manifest=m)
         assert r["lifecycle"] == schedule.PUBLISHED_VERIFIED, r.get("failures")
         assert r["homeroom"]["verified"] is True
-        # F: body written to the rolling page is the HTML, not JSON.
-        page = c.get_page(COURSE_ID, ROLLING_SLUG)
+        page = c.get_page(COURSE_ID, SLUG)
         assert page["body"].strip().startswith("<div")
-        assert "Book Character Day" in page["body"]
-        # G: rolling page remains front page; weekly page untouched.
         assert page["front_page"] is True
-        weekly = c.get_page(COURSE_ID, "q2w3-october-26-30-2026")
-        assert weekly["body"] == "" and weekly["front_page"] is False
-        # No new page was created (still exactly the two seeded pages).
+        # Retired rolling page is untouched and no new page created.
+        rolling_now = c.get_page(COURSE_ID, "class-4a-newsletter-october-19-23-2026")
+        assert rolling_now["body"] == "<p>rolling</p>"
+        assert rolling_now["front_page"] is False
         assert len(c.pages) == 2
     finally:
         tmp.cleanup()

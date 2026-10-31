@@ -34,6 +34,9 @@ from . import teacher_input as ti
 from . import approval as ap
 from . import reminders as rem
 from . import owner_overrides as oo
+from . import owner_decisions as od
+from . import assessment_announcements as aa
+from . import policies as pol
 from .canvas_readonly import CanvasReadOnly
 
 
@@ -78,7 +81,11 @@ def _coerce_days(report: dict[str, Any]) -> dict[str, dict[str, Any]]:
         at_home = day.get("at_home")
         days[wd] = {
             "in_class": in_class if in_class else ["(no source)"],
-            "at_home": [at_home] if at_home else None,
+            "at_home": (
+                [item for item in at_home if item]
+                if isinstance(at_home, list)
+                else [at_home] if at_home else None
+            ),
         }
     return days
 
@@ -124,10 +131,19 @@ def build_intake(
     include_canvas_context: bool = True,
     normalized_override: dict[str, Any] | None = None,
     source_meta_override: dict[str, Any] | None = None,
+    page_lookup_override: dict[str, Any] | None = None,
+    assignment_classifications: dict[str, str] | None = None,
+    decisions_override: list[dict[str, Any]] | None = None,
 ) -> dict[str, Any]:
     """Run the full intake for one week and persist the staging packet.
 
     Returns a summary dict. No Canvas writes occur.
+
+    ``normalized_override`` + ``page_lookup_override`` +
+    ``assignment_classifications`` allow faithful offline regeneration from an
+    already-staged source snapshot (the source snapshot itself is never
+    modified). ``decisions_override`` allows deterministic tests without local
+    state.
     """
     week_code = wr.week_code_for(quarter, week)
     m = mf.new_manifest(
@@ -185,6 +201,15 @@ def build_intake(
             active.append(key)
     m["subjects"] = {s: {"state": "PENDING"} for s in active}
 
+    # Auditable owner decisions (e.g. a stale Science unit-test rename). Loaded
+    # before drafting so the page, reminders, announcement, and assignment all
+    # consume the same record. Source snapshots are never modified.
+    decisions = (
+        decisions_override if decisions_override is not None
+        else od.load_decisions(quarter, week)
+    )
+    science_override = od.science_assessment_override(decisions)
+
     # ---- 3. Translate + draft per subject --------------------------------
     subject_reports: dict[str, dict[str, Any]] = {}
     assignments: list[dict[str, Any]] = []
@@ -203,7 +228,26 @@ def build_intake(
             sub_assignments = list((report.get("reading") or {}).get("assignments") or [])
             sub_assignments += list((report.get("spelling") or {}).get("assignments") or [])
         for a in sub_assignments:
-            assignments.append(_normalize_assignment(subject, a))
+            norm = _normalize_assignment(subject, a)
+            if assignment_classifications is not None:
+                norm["duplicate_classification"] = assignment_classifications.get(
+                    norm["title"], "UNVERIFIED"
+                )
+            assignments.append(norm)
+
+    # Owner-directed Science assessment assignment (manual-only course). It is
+    # only created when an auditable owner decision exists; there is never a
+    # second speculative Science assignment.
+    science_proposal = aa.science_assignment_proposal(week_norm, science_override)
+    if science_proposal is not None:
+        norm = _normalize_assignment("science", science_proposal)
+        if assignment_classifications is not None:
+            norm["duplicate_classification"] = assignment_classifications.get(
+                norm["title"], "UNVERIFIED"
+            )
+        else:
+            norm["duplicate_classification"] = "UNVERIFIED"
+        assignments.append(norm)
 
     # Page HTML + assignments files. Capture the agenda HTML per subject so the
     # announcement's agenda_hash binds to the exact page HTML (§26 invariant).
@@ -214,7 +258,8 @@ def build_intake(
         report = subject_reports[subject]
         days = _coerce_days(report)
         days = _apply_day_overrides(quarter, week, subject, days)
-        reminders = _reminders_for(week_norm, subject)
+        reminders = _reminders_for(week_norm, subject, quarter=quarter, week=week,
+                                   science_override=science_override)
         if subject == "reading_spelling":
             html = cp.build_combined_reading_spelling_html(
                 week_code,
@@ -245,18 +290,55 @@ def build_intake(
         json.dumps(announcements, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
     )
 
-    # ---- 4b. Assessment reminders (drafts only; no POST) ------------------
+    # ---- 4b. Assessment announcements (drafts only; no POST) --------------
+    # One deterministic engine for Reading Mastery, Fluency Checkout, Spelling,
+    # and owner-directed Science assessments. Math keeps its dedicated reminder
+    # (Power Up mapping) and is not duplicated here.
     assessment_reminders: list[dict[str, Any]] = []
     assessment_reminders += rem.draft_math_assessment_reminders(week_norm)
-    assessment_reminders += rem.draft_spelling_reminders(week_norm)
+    assessment_reminders += aa.draft_assessment_announcements(
+        week_norm, source_hash=m["source_hash"], decisions=decisions,
+    )
     (drafts_dir / "assessment-reminders.json").write_text(
         json.dumps(assessment_reminders, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
     )
 
+    # ---- 4c. Student-facing policy audit (fail closed) --------------------
+    # Thales Academy does not provide study guides for any class. Reject both
+    # promises/references and negative disclaimers before anything can be
+    # approved or published.
+    policy_texts: dict[str, str] = {}
+    for subject_name, html in page_html.items():
+        policy_texts[f"{subject_name}:page"] = html
+    for assignment in assignments:
+        policy_texts[f"assignment:{assignment.get('title', '')}"] = " ".join(
+            str(assignment.get(key, ""))
+            for key in ("title", "description", "student_instructions")
+        )
+    for announcement in announcements:
+        policy_texts[f"weekly_announcement:{announcement.get('course', '')}"] = " ".join(
+            str(announcement.get(key, ""))
+            for key in (
+                "title", "greeting", "week_in_review", "next_week_overview",
+                "transition", "closing",
+            )
+        ) + page_html.get(_subject_key(announcement.get("course", "")), "")
+    for reminder in assessment_reminders:
+        policy_texts[f"assessment_announcement:{reminder.get('title', '')}"] = " ".join(
+            str(reminder.get(key, ""))
+            for key in ("title", "body", "preparation", "assessment_title")
+        )
+    pol.assert_clean_student_facing_texts(policy_texts)
+
     # ---- 5. Canvas GET-only context (page lookup + duplicate prevention) --
     page_lookup: dict[str, Any] = {}
     dup_check: dict[str, Any] = {}
-    if canvas is not None and include_canvas_context:
+    if page_lookup_override is not None:
+        # Offline regeneration: reuse the previously resolved page ids. No
+        # Canvas GET occurs and no id is invented.
+        page_lookup = dict(page_lookup_override)
+        pages["page_lookup"] = page_lookup
+    elif canvas is not None and include_canvas_context:
         slug = _slug_for(week_code)
         for subject in active:
             cid = _course_id(subject)
@@ -400,6 +482,13 @@ def _subject_label(subject: str) -> str:
     return _SUBJECT_LABELS.get(subject, subject)
 
 
+def _subject_key(label: str) -> str:
+    for key, value in _SUBJECT_LABELS.items():
+        if value == label:
+            return key
+    return label.lower().replace("/", "_").replace(" ", "_")
+
+
 def _draft_hashes(
     active: list[str],
     subject_reports: dict[str, dict[str, Any]],
@@ -470,7 +559,7 @@ def _normalize_assignment(subject: str, a: dict[str, Any]) -> dict[str, Any]:
     """Normalize a proposed assignment to the canonical intake schema."""
     cid = _course_id(subject)
     due = a.get("due_date", "")
-    return {
+    item = {
         "course": subject,
         "course_id": cid,
         "title": a.get("title", ""),
@@ -482,89 +571,33 @@ def _normalize_assignment(subject: str, a: dict[str, Any]) -> dict[str, Any]:
         "omit_from_final_grade": C.ASSIGNMENT_DEFAULTS["omit_from_final_grade"],
         "due_time": C.ASSIGNMENT_DEFAULTS["due_time"],
         "timezone": C.ASSIGNMENT_DEFAULTS["timezone"],
-        "source_reason": a.get("authority", "OWNER_POLICY"),
+        "description": a.get("description", ""),
+        "student_instructions": a.get("student_instructions", ""),
+        "source_reason": a.get("source_reason") or a.get("authority", "OWNER_POLICY"),
         "confidence": "high" if a.get("authority") == "OWNER_POLICY" else "medium",
         "requires_teacher_approval": True,
+        "preview_only": True,
     }
+    if a.get("owner_decision_id"):
+        item["owner_decision_id"] = a["owner_decision_id"]
+    if a.get("provenance"):
+        item["provenance"] = a["provenance"]
+    item["draft_hash"] = _hash(json.dumps(item, sort_keys=True, ensure_ascii=False))
+    return item
 
 
-def _reminders_for(week_norm: dict[str, Any], subject: str) -> list[str]:
-    """Propose reminders from canonical assessment facts (deterministic only)."""
-    try:
-        facts = pa.resolve_assessment_facts(week_norm)
-    except Exception:  # noqa: BLE001 - reminders are best-effort
-        facts = []
-    subject_map = {
-        "math": "Math",
-        "reading_spelling": "Reading/Spelling",
-        "language_arts": "Language Arts",
-        "science": "Science",
-        "history": "History",
-    }
-    label = subject_map.get(subject)
-    reminders: list[str] = []
-    for ev in facts:
-        if ev.get("course") != label:
-            continue
-        date_display = pe.format_weekday_date_iso(ev.get("assessmentDate", ""))
-        for a in (ev.get("assessments") or []):
-            if a:
-                reminders.append(f"{a} — {date_display}")
-    # Active course with instructional content but no explicit assessment still
-    # needs a meaningful, source-derived reminder (never an empty Reminders box).
-    if not reminders and subject in ("science", "language_arts"):
-        fallback = _fallback_subject_reminder(week_norm, subject)
-        if fallback:
-            reminders.append(fallback)
-    return reminders
-
-
-def _fallback_subject_reminder(week_norm: dict[str, Any], subject: str) -> str:
-    """Deterministic, source-derived reminder for an active course with content
-    but no explicit assessment (e.g. Science "Check (MC)" weeks).
-
-    Derived strictly from the normalized raw cells; never invents homework or
-    grading language, never labels a Check as Test/Quiz/Assessment. Per the
-    Science/History agenda-display rule, the visible reminder must not expose
-    detailed pacing activity names (Reading / Slides / Notes / Finish / Quiz /
-    Labs / Checks), so only the unit name and chapter numbers are surfaced.
-    """
-    if subject != "science":
-        return ""
-    import re as _re
-    cells: list[str] = []
-    for wd in C.WEEKDAYS:
-        day = (week_norm.get("days") or {}).get(wd, {})
-        raw = (day.get("subjects", {}).get("science", {}).get("raw") or "").strip()
-        if raw:
-            cells.append(raw)
-    if not cells:
-        return ""
-
-    unit = ""
-    chapters: list[int] = []
-    for raw in cells:
-        for seg in _re.split(r"/", raw):
-            seg = seg.strip()
-            m = _re.match(r"^U\s*(\d+)", seg, _re.IGNORECASE)
-            if m and not unit:
-                unit = f"Unit {int(m.group(1))}"
-            for cm in _re.finditer(r"Ch\.?\s*(\d+)", seg, _re.IGNORECASE):
-                n = int(cm.group(1))
-                if n not in chapters:
-                    chapters.append(n)
-
-    chapters.sort()
-    unit_part = f"we will continue {unit}" if unit else "we will continue our current unit"
-    chapter_part = ""
-    if len(chapters) == 1:
-        chapter_part = f" as we work through Chapter {chapters[0]}"
-    elif len(chapters) >= 2:
-        listed = ", ".join(str(n) for n in chapters[:-1])
-        chapter_part = f" as we work through Chapters {listed}, and {chapters[-1]}"
-
-    return f"This week {unit_part}{chapter_part}."
-
+def _reminders_for(
+    week_norm: dict[str, Any],
+    subject: str,
+    *,
+    quarter: int | None = None,
+    week: int | None = None,
+    science_override: dict[str, Any] | None = None,
+) -> list[str]:
+    """Source-derived Reminders block for one subject (never an empty box)."""
+    if science_override is None and quarter is not None and week is not None:
+        science_override = od.science_assessment_override(od.load_decisions(quarter, week))
+    return rem.weekly_reminders(week_norm, subject, science_override=science_override)
 
 
 def _draft_weekly_announcements(
@@ -593,7 +626,7 @@ def _draft_weekly_announcements(
     for subject in subject_reports:
         label = labels.get(subject, subject)
         agenda_hash = _hash(page_html.get(subject, ""))
-        out.append({
+        item = {
             "course": label,
             "title": f"{label} Canvas Weekly Update",
             "greeting": "Good afternoon,",
@@ -605,7 +638,13 @@ def _draft_weekly_announcements(
             "page_agenda_hash": pages.get(subject, {}).get("agenda_hash", ""),
             "hash_consistent": agenda_hash == pages.get(subject, {}).get("agenda_hash", ""),
             "preview_only": True,
-        })
+        }
+        # Bind the full composed message (greeting + narratives + transition +
+        # exact agenda HTML + closing) so the staged artifact carries the same
+        # content hash the deployment/rollover layer will verify.
+        from scripts.canvas_llm_deploy.plan import compose_announcement_body
+        item["message_hash"] = _hash(compose_announcement_body(item, page_html.get(subject, "")))
+        out.append(item)
     return out
 
 
@@ -718,11 +757,15 @@ def _write_review(
 
     if assessment_reminders:
         lines.append("")
-        lines.append("## ASSESSMENT REMINDERS")
+        lines.append("## ASSESSMENT ANNOUNCEMENTS")
         for r in assessment_reminders:
             lines.append(f"- {r['title']} ({r['course']}, due {r.get('assessment_date', '')})")
             if r.get("power_up"):
                 lines.append(f"  - Power Up {r['power_up']}")
+            if r.get("content_status") and r.get("content_status") != "READY":
+                lines.append(f"  - Content status: {r['content_status']}")
+            for gap in r.get("blocked_sections") or []:
+                lines.append(f"  - BLOCKED SOURCE: {gap}")
 
     lines.append("")
     lines.append("## READY_TO_PUBLISH GATE")
@@ -743,6 +786,8 @@ def _write_review(
 def command_self_test() -> int:
     from . import week_resolution, canvas_readonly, questions, constants
     from . import teacher_input, approval, reminders, scheduling
+    from . import owner_decisions, assessment_announcements, policies
+    from . import assignment_reconciliation
 
     week_resolution.command_self_test()
     canvas_readonly.command_self_test()
@@ -751,6 +796,10 @@ def command_self_test() -> int:
     approval.command_self_test()
     reminders.command_self_test()
     scheduling.command_self_test()
+    owner_decisions.command_self_test()
+    assessment_announcements.command_self_test()
+    policies.command_self_test()
+    assignment_reconciliation.command_self_test()
     constants.course_id_for_subject  # import smoke
     # Synthetic end-to-end via fixture (exercised in tests/).
     print("PASS intake orchestrator self-test")

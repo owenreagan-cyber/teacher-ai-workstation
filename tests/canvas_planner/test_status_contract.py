@@ -98,14 +98,15 @@ class StatusContractTest(unittest.TestCase):
     def test_homeroom_html_approval_marks_preview_approved(self) -> None:
         week = self.root / "canvas-llm/intake/2026-2027/q2/w3"
         import hashlib
-        body = "<div>4th Grade Happenings</div><h2>Book Character Day</h2>"
-        _write(week / "planner/homeroom-html-approval.json", {
-            "kind": "rolling_newsletter_html",
-            "course_id": 26429, "page_id": 798072,
-            "page_slug": "class-4a-newsletter-x",
+        body = "<div>4th Grade Happenings</div><h2>🍂 November Birthdays 🎉</h2>"
+        _write(week / "planner/homeroom-weekly-approval.json", {
+            "kind": "homeroom_weekly_newsletter_html",
+            "course_id": 26429, "page_id": 798094,
+            "page_slug": "q2w3-october-26-30-2026",
+            "week": "Q2W3",
             "source_body_hash": "src",
             "approved_body_hash": hashlib.sha256(body.encode()).hexdigest(),
-            "week": "Q2W3", "approved": True,
+            "approved": True,
         })
         (week / "drafts/homeroom-page.html").write_text(body, encoding="utf-8")
         status = self.service.weekly_status(2, 3)

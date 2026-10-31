@@ -19,6 +19,9 @@ DEFAULT_SCHEDULE = {
     "final_refresh": "15:00",       # 3:00 PM Friday
     "approval_ready_email": "15:30",  # 3:30 PM Friday
     "publish": "16:00",             # 4:00 PM Friday
+    # A missed Friday window must never reuse its expired delayed-post instant.
+    # The publisher requires an explicit owner-selected future publication time.
+    "publication_time_gate": "OWNER_SELECTED_REQUIRED_IF_WINDOW_MISSED",
     # Low-frequency background GET-only reconciliation (weekdays).
     "periodic_check_hours": ["07:00", "13:00"],
     # Period background reconciliation enabled (default off until activated).
@@ -89,6 +92,7 @@ def command_self_test() -> int:
     try:
         s = schedule()
         assert s["publish"] == "16:00" and s["timezone"] == "America/New_York"
+        assert s["publication_time_gate"] == "OWNER_SELECTED_REQUIRED_IF_WINDOW_MISSED"
         d = delivery_config()
         assert d["mode"] == "preview" and d["email_enabled"] is False
     finally:

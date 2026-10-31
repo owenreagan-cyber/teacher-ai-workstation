@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "classLabel": "4-A",
+  "schoolYear": "2026-2027",
+  "status": "OWNER_APPROVED",
+  "authorizedBy": "Owen Reagan",
+  "authorizedAt": "2026-10-30",
+  "scope": "Class 4-A weekly Homeroom newsletter and monthly birthday list",
+  "privateRosterPath": ".local/canvas-llm/homeroom/class-4a-birthday-roster-2026-2027.json",
+  "privacy": {
+    "noStudentNamesInGit": true,
+    "noBirthdaysInTests": true,
+    "noBirthdaysInLogs": true,
+    "noExternalAIService": true,
+    "privateStagingOnly": true
+  },
+  "supersedes": "homeroom-newsletter-content-2026-2027.json#privacy.noBirthdays",
+  "rule": "The owner-approved private Class 4-A roster is the only authorized birthday source. Birthday values must never enter Git, tests, logs, committed plans, or external AI services.",
+  "provenance": {
+    "authority": "OWNER_INSTRUCTION",
+    "source": "explicit owner-provided current Class 4-A roster",
+    "approvedAt": "2026-10-30"
+  }
+}

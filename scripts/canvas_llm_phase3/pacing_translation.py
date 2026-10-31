@@ -74,17 +74,45 @@ _SHURLEY_CP_NAMED_RE = re.compile(r"^CP\s*(\d+)\s+(.+)$", re.IGNORECASE)
 
 
 def _shurley_assignment(kind: str, number: Any, day_date: str, config: dict[str, Any]) -> dict[str, Any]:
-    """Build a Shurley assignment preview (Chapter Test or Classroom Practice)."""
-    policy = config["subjects"]["language_arts"]["assignmentPolicy"]
-    spec = policy[kind]
-    return {
+    """Build a Shurley assignment preview (Chapter Test or Classroom Practice).
+
+    Classroom Practice assignment metadata is owned exclusively by
+    ``language_arts.classroomPractice.assignment`` (title/points/grading/
+    submission/group/dedup/due-date policy). Chapter Test metadata remains under
+    ``language_arts.assignmentPolicy.chapterTest``.
+    """
+    la = config["subjects"]["language_arts"]
+    policy = la["assignmentPolicy"]
+    if kind == "classroomPractice":
+        spec = la["classroomPractice"]["assignment"]
+        title = spec["titleTemplate"].format(number=number)
+        group = spec["assignmentGroup"]
+        points = spec["pointsPossible"]
+        grading = spec["gradingType"]
+        submission = spec["submissionTypes"]
+        counts = spec.get("countsTowardFinalGrade", True)
+        extra = {
+            "deduplication": spec.get("deduplication"),
+            "due_date_policy": spec.get("dueDatePolicy"),
+            "metadata_owner": spec.get("metadataOwner"),
+        }
+    else:
+        spec = policy[kind]
+        title = spec["title"].format(N=number, number=number)
+        group = spec["group"]
+        points = spec["points"]
+        grading = spec["gradingType"]
+        submission = spec["submissionType"]
+        counts = spec.get("countsTowardFinalGrade", True)
+        extra = {}
+    result = {
         "kind": kind,
-        "title": spec["title"].format(N=number, number=number),
-        "assignment_group": spec["group"],
-        "points_possible": spec["points"],
-        "grading_type": spec["gradingType"],
-        "submission_types": spec["submissionType"],
-        "counts_toward_final_grade": spec.get("countsTowardFinalGrade", True),
+        "title": title,
+        "assignment_group": group,
+        "points_possible": points,
+        "grading_type": grading,
+        "submission_types": submission,
+        "counts_toward_final_grade": counts,
         "due_date": day_date,
         "due_date_display": format_due_date(day_date),
         "due_time": "11:59 PM",
@@ -92,6 +120,8 @@ def _shurley_assignment(kind: str, number: Any, day_date: str, config: dict[str,
         "authority": "OWNER_POLICY",
         "preview_only": True,
     }
+    result.update(extra)
+    return result
 
 
 def translate_shurley_cell(raw: str) -> dict[str, Any]:
@@ -107,7 +137,17 @@ def translate_shurley_cell(raw: str) -> dict[str, Any]:
         return {"source": "", "lines": [], "items": [], "cp_numbers": [], "test_numbers": [],
                 "assignments": [], "resolved": True, "unresolved": []}
 
-    tokens = [t.strip() for t in re.split(r"[,/+]", source) if t.strip()]
+    split_source = re.sub(
+        r"(?<=\d)\s+(?=CP\s*\d+\b)",
+        ", ",
+        source,
+        flags=re.IGNORECASE,
+    )
+    tokens = [
+        t.strip()
+        for t in re.split(r"[,/+]", split_source)
+        if t.strip()
+    ]
     lines: list[str] = []
     items: list[dict[str, Any]] = []
     cp_numbers: list[int] = []
@@ -204,6 +244,35 @@ def classroom_practice_assignment(cp_number: int, day_date: str, config: dict[st
     return _shurley_assignment("classroomPractice", cp_number, day_date, config)
 
 
+def classroom_practice_due_date(dates: list[str], config: dict[str, Any]) -> str:
+    """Resolve the CP due date from the owner-approved due-date policy.
+
+    Single-day CPs are due on their scheduled day. For a CP that recurs across
+    multiple days, the configured preferred weekday (Wednesday) wins; otherwise
+    the last occurrence is used. Q2W4: CP26 (Monday only) -> Nov 2; CP27
+    (Tue/Wed/Fri) -> Wed Nov 4.
+    """
+    clean = [d for d in dates if d]
+    if not clean:
+        return ""
+    if len(clean) == 1:
+        return clean[0]
+    policy = (
+        config["subjects"]["language_arts"]["classroomPractice"]["assignment"]
+        .get("dueDatePolicy", {})
+    )
+    preferred = policy.get("multiDayPreferredWeekday")
+    if preferred:
+        for date_str in clean:
+            try:
+                weekday = datetime.strptime(date_str, "%Y-%m-%d").strftime("%A")
+            except ValueError:
+                continue
+            if weekday == preferred:
+                return date_str
+    return clean[-1]
+
+
 def chapter_test_assignment(chapter: int, day_date: str, config: dict[str, Any]) -> dict[str, Any]:
     """Build the Chapter Test graded-assignment preview."""
     return _shurley_assignment("chapterTest", chapter, day_date, config)
@@ -220,7 +289,7 @@ _SCIENCE_SINGLE_RE = re.compile(
     r"^(?:Ch\.?|CH)\s*(\d+)\s*(Review|Check|Test|Quiz)?\s*$", re.IGNORECASE
 )
 _SCIENCE_FM_RE = re.compile(
-    r"^F&M\s*:\s*CH\s*(\d+)\s*(Review|Check|Test|Quiz)?\s*$", re.IGNORECASE
+    r"^F&M\s*:?\s*Ch\.?\s*(\d+)\s*(Review|Check|Test|Quiz)?\s*$", re.IGNORECASE
 )
 # Self-qualified cells already carry their unit + chapter, e.g.
 # "U1 Ch4 Electricity Transfer" or "U1 Ch5 Collisions / Crash Lab". Preserve
@@ -429,6 +498,7 @@ def translate_subject_week(
     assignments: list[dict[str, Any]] = []
     unresolved: list[dict[str, str]] = []
     chapter_context: int | None = None
+    classroom_practice_dates: dict[int, list[str]] = {}
 
     for wd in C.WEEKDAYS:
         day = (week.get("days") or {}).get(wd, {})
@@ -450,7 +520,9 @@ def translate_subject_week(
                     item["chapter"] = chapter_context
             # Assignments: only Classroom Practice and Chapter Test.
             for cp in res["cp_numbers"]:
-                assignments.append(classroom_practice_assignment(cp, date, config))
+                dates = classroom_practice_dates.setdefault(cp, [])
+                if date and date not in dates:
+                    dates.append(date)
             for n in res["test_numbers"]:
                 assignments.append(chapter_test_assignment(n, date, config))
             # Rebuild lines from items (to reflect context resolution).
@@ -474,6 +546,15 @@ def translate_subject_week(
         for token in res["unresolved"]:
             if token:
                 unresolved.append({"weekday": wd, "token": token, "subject": subject})
+
+    # One assignment per unique Classroom Practice number. The due date comes
+    # from the CP metadata owner's due-date policy (not from an ad-hoc last-day
+    # rule, and never from Chapter Test metadata).
+    for cp, dates in sorted(classroom_practice_dates.items()):
+        due_date = classroom_practice_due_date(dates, config)
+        assignments.append(
+            classroom_practice_assignment(cp, due_date, config)
+        )
 
     return {
         "subject": subject,
@@ -543,6 +624,101 @@ def command_self_test() -> int:
     assert a["title"] == "Classroom Practice 19", a
     assert a["assignment_group"] == "Classwork"
 
+    # Q2W4 CP27: separate In Class bullets and one final-due-date assignment.
+    assert translate_shurley_cell("7.4 CP 27")["lines"] == [
+        "Chapter 7, Lesson 4",
+        "Classroom Practice 27",
+    ]
+
+    cp_week = {
+        "week": {
+            "code": "Q2W4",
+            "startDate": "2026-11-02",
+            "endDate": "2026-11-06",
+        },
+        "days": {
+            "Monday": {
+                "date": "2026-11-02",
+                "subjects": {"language_arts": {"raw": ""}},
+            },
+            "Tuesday": {
+                "date": "2026-11-03",
+                "subjects": {"language_arts": {"raw": "Ch.7 L3 CP27"}},
+            },
+            "Wednesday": {
+                "date": "2026-11-04",
+                "subjects": {"language_arts": {"raw": "Ch.7 L3 CP27"}},
+            },
+            "Thursday": {
+                "date": "2026-11-05",
+                "subjects": {"language_arts": {"raw": ""}},
+            },
+            "Friday": {
+                "date": "2026-11-06",
+                "subjects": {"language_arts": {"raw": "7.4 CP 27"}},
+            },
+        },
+    }
+
+    cp_report = translate_subject_week(
+        cp_week, "language_arts", config
+    )
+
+    for day in ("Tuesday", "Wednesday"):
+        assert cp_report["days"][day]["lines"] == [
+            "Chapter 7, Lesson 3",
+            "Classroom Practice 27",
+        ]
+
+    assert cp_report["days"]["Friday"]["lines"] == [
+        "Chapter 7, Lesson 4",
+        "Classroom Practice 27",
+    ]
+
+    cp27 = [
+        a for a in cp_report["assignments"]
+        if a["title"] == "Classroom Practice 27"
+    ]
+
+    assert len(cp27) == 1, cp27
+    assert cp27[0]["due_date"] == "2026-11-04", cp27
+    assert cp27[0]["points_possible"] == 100
+    assert cp27[0]["grading_type"] == "percent"
+    assert cp27[0]["submission_types"] == "on_paper"
+    assert cp27[0]["counts_toward_final_grade"] is True
+    assert cp27[0]["assignment_group"] == "Classwork"
+    assert cp27[0]["metadata_owner"] == "language_arts.classroomPractice.assignment"
+
+    # CP26 (Monday only) is due Monday, November 2.
+    cp26_week = {
+        "week": {"code": "Q2W4", "startDate": "2026-11-02", "endDate": "2026-11-06"},
+        "days": {
+            "Monday": {"date": "2026-11-02",
+                       "subjects": {"language_arts": {"raw": "Ch 7 L2 + CP26"}}},
+        },
+    }
+    cp26_report = translate_subject_week(cp26_week, "language_arts", config)
+    cp26 = [a for a in cp26_report["assignments"] if a["title"] == "Classroom Practice 26"]
+    assert len(cp26) == 1 and cp26[0]["due_date"] == "2026-11-02", cp26
+
+    # Configuration ownership: CP metadata lives only under
+    # language_arts.classroomPractice.assignment; Chapter Test has none of it.
+    la_cfg = config["subjects"]["language_arts"]
+    cp_meta = la_cfg["classroomPractice"]["assignment"]
+    assert cp_meta["deduplication"] == "one assignment per unique CP number per instructional week"
+    assert cp_meta["dueDatePolicy"]["multiDayPreferredWeekday"] == "Wednesday"
+    policy_cp = la_cfg["assignmentPolicy"]["classroomPractice"]
+    assert "dueDate" not in policy_cp and "deduplication" not in policy_cp, policy_cp
+    assert "metadataOwner" not in policy_cp, policy_cp
+    chapter_test = la_cfg["assignmentPolicy"]["chapterTest"]
+    assert "dueDate" not in chapter_test and "deduplication" not in chapter_test, chapter_test
+
+    # Ordinary Shurley lessons and CP never generate At Home.
+    assert all(
+        day.get("at_home") is None
+        for day in cp_report["days"].values()
+    )
+
     # Science translation with canonical unit name.
     unit = resolve_science_unit_name(config, None)
     assert unit == "Force and Motion", unit
@@ -551,6 +727,8 @@ def command_self_test() -> int:
     assert translate_science_cell("Ch. 1-2 Review", unit)["lines"] == ["Force and Motion Chapters 1-2 Review"]
     assert translate_science_cell("Ramp Lab", unit)["lines"] == ["Force and Motion Ramp Lab"]
     assert translate_science_cell("F&M: CH1", unit)["lines"] == ["Force and Motion Chapter 1"]
+    assert translate_science_cell("F&M Ch. 7", unit)["lines"] == ["Force and Motion Chapter 7"]
+    assert translate_science_cell("F&M Ch. 7 Test", unit)["assessment"] is True
 
     # Science unknown component ("/30cm") preserved + unresolved.
     s = translate_science_cell("Ch. 3 / 30cm", unit)

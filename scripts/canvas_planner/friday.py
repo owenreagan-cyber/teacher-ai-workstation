@@ -89,6 +89,6 @@ def scheduled_run(
         client_factory = LiveDeployClient
     report = rollover.publish_weekly_package(
         fq, fw, tq, tw, client=client_factory(),
-        owner_confirmation=f"ROLLOVER {code}", today=local.date(),
+        owner_confirmation=f"ROLLOVER {code}", today=local.date(), now=local,
     )
     return {"action": "ROLLOVER", "week": code, "report": report}

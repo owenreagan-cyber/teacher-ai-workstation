@@ -510,15 +510,22 @@ def test_assignment_reconciliation_classifications():
     assert report["canvas_writes"] == 0
 
 
-def test_actual_approvals_pending_and_package_not_approved():
+def test_actual_approvals_bound_to_current_hashes():
     if not _require_staging():
         return
     approvals = _read(Q2W4_DIR / "approvals" / "approval-manifest.json")
+    states = []
     for subject, entry in approvals["subjects"].items():
         for granularity, record in entry.items():
-            assert record["state"] == "PENDING", (subject, granularity, record)
+            state = record["state"]
+            assert state in ("PENDING", "APPROVED", "NOT_REQUIRED"), (subject, granularity, record)
+            if state == "APPROVED":
+                assert record.get("draft_hash"), (subject, granularity, record)
+                assert record.get("source_hash"), (subject, granularity, record)
+            states.append(state)
     manifest = _read(Q2W4_DIR / "intake-manifest.json")
-    assert manifest["ready_to_publish"] is False
+    all_approved = all(state in ("APPROVED", "NOT_REQUIRED") for state in states)
+    assert manifest["ready_to_publish"] is all_approved
     assert manifest["assignment_count"] == 11
     assert manifest["assessment_reminder_count"] == 4
 

@@ -81,6 +81,19 @@ class DeployClient:
                           published: bool = True) -> dict[str, Any]:
         raise NotImplementedError
 
+    def update_assignment(
+        self,
+        course_id: int,
+        assignment_id: str,
+        *,
+        title: str | None = None,
+        due_at: str | None = None,
+        omit_from_final_grade: bool | None = None,
+        published: bool | None = None,
+    ) -> dict[str, Any]:
+        """Update only explicitly supplied fields on an existing assignment."""
+        raise NotImplementedError
+
     def get_announcement(self, course_id: int, topic_id: str) -> dict[str, Any]:
         raise NotImplementedError
 
@@ -197,6 +210,21 @@ class LiveDeployClient(DeployClient):
             due_at=due_at, counts_toward_final_grade=counts_toward_final_grade,
             published=published)
         return self._norm_assignment(created)
+
+    def update_assignment(
+        self,
+        course_id: int,
+        assignment_id: str,
+        *,
+        title: str | None = None,
+        due_at: str | None = None,
+        omit_from_final_grade: bool | None = None,
+        published: bool | None = None,
+    ) -> dict[str, Any]:
+        updated = self._write.update_assignment(
+            course_id, assignment_id, title=title, due_at=due_at,
+            omit_from_final_grade=omit_from_final_grade, published=published)
+        return self._norm_assignment(updated)
 
     def get_announcement(self, course_id: int, topic_id: str) -> dict[str, Any]:
         return self._norm_announcement(self._write.get_announcement(course_id, topic_id))
@@ -329,6 +357,29 @@ class FakeDeployClient(DeployClient):
             "published": published,
         }
         self.assignments[aid] = a
+        return a
+
+    def update_assignment(
+        self,
+        course_id: int,
+        assignment_id: str,
+        *,
+        title: str | None = None,
+        due_at: str | None = None,
+        omit_from_final_grade: bool | None = None,
+        published: bool | None = None,
+    ) -> dict[str, Any]:
+        a = self.get_assignment(course_id, assignment_id)
+        self._write_counts["PUT"] += 1
+        if title is not None:
+            a["name"] = title
+            a["title"] = title
+        if due_at is not None:
+            a["due_at"] = due_at
+        if omit_from_final_grade is not None:
+            a["omit_from_final_grade"] = omit_from_final_grade
+        if published is not None:
+            a["published"] = published
         return a
 
     def get_announcement(self, course_id: int, topic_id: str) -> dict[str, Any]:

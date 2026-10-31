@@ -174,6 +174,19 @@ def load_packet(quarter: int, week: int) -> dict[str, Any]:
     }
 
 
+def _load_assignment_reconciliation(quarter: int, week: int) -> dict[str, Any]:
+    """Read the staged GET-only assignment reconciliation (local, read-only).
+
+    Absent or unreadable reconciliation data leaves every proposal on the
+    historical CREATE path; it never fabricates an UPDATE identity.
+    """
+    path = imf.staging_dir(quarter, week) / "planner" / "assignment-reconciliation.json"
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return {}
+
+
 def _slug_for(week_code: str) -> str:
     return intake._slug_for(week_code)
 
@@ -211,7 +224,14 @@ def build_plan(quarter: int, week: int) -> dict[str, Any]:
             "body_sha256": _sha(pkt["page_bodies"].get(subject, "")),
         })
 
-    # Assignments: CREATE only for approved assignment bundle.
+    # Assignments: approved bundle only. The staged GET-only reconciliation
+    # binds each proposal to its live identity and the exact correction, so an
+    # existing assignment is updated in place instead of duplicated.
+    reconciliation = _load_assignment_reconciliation(quarter, week)
+    reconciled = {
+        (str(rec.get("course")), str(rec.get("title"))): rec
+        for rec in reconciliation.get("results", [])
+    }
     assignments: list[dict[str, Any]] = []
     for subject in active:
         if subjects.get(subject, {}).get("assignments", {}).get("state") != "APPROVED":
@@ -219,7 +239,7 @@ def build_plan(quarter: int, week: int) -> dict[str, Any]:
         for a in pkt["assignments"]:
             if a.get("course") != subject:
                 continue
-            assignments.append({
+            entry = {
                 "course": subject,
                 "course_id": a.get("course_id"),
                 "title": a.get("title"),
@@ -232,7 +252,25 @@ def build_plan(quarter: int, week: int) -> dict[str, Any]:
                 "omit_from_final_grade": a.get("omit_from_final_grade", False),
                 "description": a.get("description", ""),
                 "action": "CREATE",
-            })
+            }
+            rec = reconciled.get((subject, str(a.get("title"))))
+            if rec:
+                classification = rec.get("classification")
+                live = rec.get("live") or {}
+                if classification == "UPDATE_REQUIRED":
+                    entry["action"] = "UPDATE"
+                    entry["assignment_id"] = live.get("assignment_id")
+                    entry["corrections"] = rec.get("corrections") or {}
+                    entry["live_due_at"] = live.get("due_at")
+                elif classification == "MATCH":
+                    entry["action"] = "SKIP"
+                    entry["assignment_id"] = live.get("assignment_id")
+                elif classification == "CREATE_REQUIRED":
+                    entry["action"] = "CREATE"
+                else:
+                    entry["action"] = "BLOCKED"
+                    entry["block_reason"] = rec.get("reason") or str(classification)
+            assignments.append(entry)
 
     # Weekly announcements: CREATE only for approved announcement artifact.
     announcements_plan: list[dict[str, Any]] = []

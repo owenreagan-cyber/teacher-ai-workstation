@@ -82,20 +82,29 @@ def resolve_target_week(now: datetime | None = None) -> tuple[int, int]:
 # Scheduled dispatch (what runs at each Friday milestone)
 # --------------------------------------------------------------------------- #
 def dispatch(now: datetime | None = None) -> dict[str, Any]:
-    """Route a scheduled invocation to the right milestone by ET time + weekday.
+    """Route scheduled work to the correct instructional week.
 
-    Returns ``{action, ...}``. Never improvises: every action is bounded and the
-    publish path re-runs the full guarded gate.
+    Friday 3 PM refresh, 3:30 PM notification, and 4 PM publication
+    prepare the UPCOMING instructional week. Earlier Friday checks
+    and weekday checks continue targeting the current instructional week.
     """
     local = _now_et(now)
     sched = schedule_config.schedule()
-    quarter, week = resolve_target_week(local)
 
     if local.weekday() == 4:  # Friday
         publish_hm = _to_minutes(sched["publish"])
         notify_hm = _to_minutes(sched["approval_ready_email"])
         refresh_hm = _to_minutes(sched["final_refresh"])
         now_hm = local.hour * 60 + local.minute
+
+        if now_hm >= refresh_hm:
+            # Friday's release milestones belong to the upcoming week.
+            # If no upcoming instructional week exists, fail closed.
+            from scripts.canvas_llm_intake import week_resolution
+            quarter, week = week_resolution.next_week(today=local.date())
+        else:
+            quarter, week = resolve_target_week(local)
+
         if now_hm >= publish_hm:
             return publish_scheduled(quarter, week, now=local)
         if now_hm >= notify_hm:
@@ -103,8 +112,10 @@ def dispatch(now: datetime | None = None) -> dict[str, Any]:
         if now_hm >= refresh_hm:
             return refresh_scheduled(quarter, week)
 
-    return check_scheduled(quarter, week)
+        return check_scheduled(quarter, week)
 
+    quarter, week = resolve_target_week(local)
+    return check_scheduled(quarter, week)
 
 def _to_minutes(hhmm: str) -> int:
     h, _, m = hhmm.partition(":")

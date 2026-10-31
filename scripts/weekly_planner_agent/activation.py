@@ -181,13 +181,18 @@ def publish_scheduled(
             "published": False, "state": "BLOCKED", "blockers": gate["blockers"],
             "canvas_writes": 0,
         }
-    client = client_factory() if client_factory is not None else None
+    if client_factory is None:
+        # Construct the production client only after the complete publish gate
+        # passes. The canonical publisher independently re-runs that gate
+        # immediately before performing any Canvas writes.
+        from scripts.canvas_llm_deploy.client import LiveDeployClient
+        client_factory = LiveDeployClient
+
+    client = client_factory()
     if client is None:
-        # Never construct a live client implicitly inside a scheduled path that
-        # could publish unattended; production requires an explicit client.
         return {
             "action": "PUBLISH", "week": f"Q{quarter}W{week}",
-            "published": False, "state": "HELD — LIVE CLIENT REQUIRED",
+            "published": False, "state": "BLOCKED — LIVE CLIENT UNAVAILABLE",
             "canvas_writes": 0,
         }
     result = pub.publish(quarter, week, client=client, now=now)

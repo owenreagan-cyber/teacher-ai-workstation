@@ -863,6 +863,13 @@ def friday_notify(quarter: int, week: int) -> dict[str, Any]:
         return {"action": "NOTIFY", "week": week_id, "sent": False,
                 "status": "SUPPRESSED_PUBLISHED", "canvas_writes": 0}
 
+    # Email remains disabled unless Owen explicitly enables it in local
+    # delivery configuration. Do not record an expected disabled state as
+    # a failed delivery attempt.
+    if not schedule_config.delivery_config().get("email_enabled"):
+        return {"action": "NOTIFY", "week": week_id, "sent": False,
+                "status": "EMAIL_DISABLED", "canvas_writes": 0}
+
     conflicts = review.get("cross_source_conflicts") or []
     changes = review.get("changes_since_last_review") or []
     watch = today(quarter, week).get("assessment_watch") or []

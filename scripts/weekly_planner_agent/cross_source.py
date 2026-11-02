@@ -236,6 +236,72 @@ def _assessment_artifacts(subject: str) -> list[str]:
 # Scan
 # --------------------------------------------------------------------------- #
 
+def front_page_transition_state(snapshot: dict[str, Any]) -> tuple[bool, set[str]]:
+    """Return (release_due, subjects in a verified expected transition).
+
+    Before the target instructional week begins, its already-staged page
+    need not be the current front page. Only the immediately preceding
+    instructional week's front page qualifies as an expected transition.
+    A verified rollover makes the new front page due immediately.
+    Unknown calendar or ledger state is never silently classified as safe.
+    """
+    from scripts.canvas_llm_intake import week_resolution as wr
+    from scripts.canvas_llm_rollover import ledger as rollover_ledger
+
+    pacing = snapshot.get("pacing") or {}
+    canvas = snapshot.get("canvas") or {}
+    if pacing.get("status") != snap.SNAPSHOT_OK or canvas.get("status") != snap.SNAPSHOT_OK:
+        return True, set()
+
+    week_id = str(snapshot.get("week_id") or "")
+    match = re.fullmatch(r"Q([0-9]+)W([0-9]+)", week_id)
+    if match is None:
+        return True, set()
+
+    quarter, week = map(int, match.groups())
+    weeks = sorted(
+        (w for w in wr.load_weeks() if wr._week_start(w) is not None),
+        key=wr._week_start,
+    )
+    index = next(
+        (i for i, w in enumerate(weeks) if w.get("code") == week_id),
+        None,
+    )
+    if index is None or index == 0:
+        return True, set()
+
+    start = wr._week_start(weeks[index])
+    if start is None:
+        return True, set()
+
+    record = rollover_ledger.load_rollover_ledger(quarter, week)
+    if record and record.get("lifecycle") == "PUBLISHED_VERIFIED":
+        return True, set()
+
+    if wr._now_local().date() >= start:
+        return True, set()
+
+    previous_code = str(weeks[index - 1].get("code") or "")
+    expected = set()
+
+    for subject, course in (canvas.get("courses") or {}).items():
+        if subject == "homeroom":
+            continue
+        title = str((course.get("front_page") or {}).get("title") or "")
+        candidates = [
+            page for page in (course.get("pages") or [])
+            if str(page.get("title") or "").startswith(week_id)
+        ]
+        if (
+            previous_code
+            and re.match(rf"^{re.escape(previous_code)}(?![A-Za-z0-9])", title)
+            and len(candidates) == 1
+        ):
+            expected.add(subject)
+
+    return False, expected
+
+
 def scan(snapshot: dict[str, Any], plan: WeeklyPlan | None = None) -> list[SourceChangeEvent]:
     """Compare current pacing to current Canvas; return cross-source conflicts.
 
@@ -251,6 +317,7 @@ def scan(snapshot: dict[str, Any], plan: WeeklyPlan | None = None) -> list[Sourc
         return []
 
     week_id = snapshot.get("week_id") or ""
+    release_due, expected_transitions = front_page_transition_state(snapshot)
     cells = pacing.get("cells") or {}
     courses = canvas.get("courses") or {}
     source_timestamps = {
@@ -283,8 +350,11 @@ def scan(snapshot: dict[str, Any], plan: WeeklyPlan | None = None) -> list[Sourc
         # Homeroom front page is a monthly newsletter carried forward by the
         # Friday rollover; it has no "current week" page identity, so it is never
         # flagged as a wrong front page.
-        if subject != "homeroom":
-            events.extend(_scan_front_page(week_id, subject, course, week_dates.get(subject) or set()))
+        if subject != "homeroom" and subject not in expected_transitions:
+            events.extend(_scan_front_page(
+                week_id, subject, course, week_dates.get(subject) or set(),
+                post_release=release_due,
+            ))
         events.extend(_scan_announcements_reminders(
             week_id=week_id, subject=subject, course=course, cells=cells, plan=plan,
             source_timestamps=source_timestamps, source_freshness=source_freshness,
@@ -387,7 +457,8 @@ def _scan_assessment(
 
 
 def _scan_front_page(
-    week_id: str, subject: str, course: dict[str, Any], week_dates: set[str]
+    week_id: str, subject: str, course: dict[str, Any], week_dates: set[str],
+    *, post_release: bool = False,
 ) -> list[SourceChangeEvent]:
     events: list[SourceChangeEvent] = []
     pages = course.get("pages") or []
@@ -403,7 +474,12 @@ def _scan_front_page(
         observed = str(front.get("title") or front.get("page_id") or "")
         events.append(_conflict(
             week_id=week_id, subject=subject, object_type=FRONT_PAGE,
-            object_identity=f"{subject}:front_page",
+            # Post-release drift uses a distinct identity so an earlier
+            # automatically superseded transition cannot hide a real failure.
+            object_identity=(
+                f"{subject}:front_page:post_release"
+                if post_release else f"{subject}:front_page"
+            ),
             authoritative=week_id, observed=observed,
             authority_winner="VERIFIED_PACING",
             affected=[f"{subject.title()} weekly page"],

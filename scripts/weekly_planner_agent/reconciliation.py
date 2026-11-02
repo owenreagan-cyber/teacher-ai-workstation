@@ -117,6 +117,21 @@ def sync_and_detect(
     # (either source unavailable) yields no conflicts.
     from . import cross_source
     cross_events: list[SourceChangeEvent] = cross_source.scan(curr, plan=plan)
+
+    # Preserve historical false-positive records but close them as system-
+    # superseded ONLY when the fresh sources confirm the preceding week's
+    # front page and exactly one staged upcoming-week page.
+    _, expected_transitions = cross_source.front_page_transition_state(curr)
+    if expected_transitions:
+        store.supersede(
+            classification=cd.CROSS_SOURCE_CONFLICT,
+            object_identities={
+                f"{subject}:front_page"
+                for subject in expected_transitions
+            },
+            except_ids=set(),
+        )
+
     if cross_events:
         store.supersede(
             classification=cd.CROSS_SOURCE_CONFLICT,
@@ -136,7 +151,7 @@ def sync_and_detect(
 
     # Attention events (teacher decision) + notification drafts.
     attention = [
-        e for e in store.all()
+        e for e in store.unresolved()
         if e.get("family_comms_affected") or e.get("requires_teacher_approval")
     ]
     notifications = [_draft_notification(e) for e in attention if _needs_notification(e)]
@@ -148,7 +163,8 @@ def sync_and_detect(
         "new_events_added": recorded["added"],
         "events": store.all(),
         "cross_source_conflicts": [
-            e for e in store.all() if e.get("classification") == cd.CROSS_SOURCE_CONFLICT
+            e for e in store.unresolved()
+            if e.get("classification") == cd.CROSS_SOURCE_CONFLICT
         ],
         "attention": attention,
         "notifications": notifications,

@@ -202,6 +202,7 @@ def test_release_plan_owner_time_is_wired_into_execution_manifest():
             ):
                 report = rollover.publish_weekly_package(
                     2, 3, 2, 4, client=client, owner_confirmation="ROLLOVER Q2W4",
+                    now=datetime(2026, 10, 30, 21, 0, tzinfo=timezone.utc),
                 )
             assert report["scheduled_at"] == "2026-11-01T14:00:00Z", report
         finally:

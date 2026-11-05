@@ -11,6 +11,9 @@ Change classifications (a superset of the required minimum).
 from __future__ import annotations
 
 import hashlib
+import re
+from datetime import date, datetime, timedelta
+from zoneinfo import ZoneInfo
 from typing import Any
 
 from .models import Confidence, SourceChangeEvent
@@ -350,6 +353,115 @@ def _reminder_hint(title: str) -> bool:
     return any(hint in low for hint in REMINDER_TITLE_HINTS)
 
 
+def _reminder_obsolete_events(curr: dict[str, Any]) -> list[SourceChangeEvent]:
+    """Detect misdated target-week reminders without scanning historical posts.
+
+    A subject reminder must have a parseable scheduled timestamp within the
+    instructional-week reminder window and a verified subject assessment.
+    Missing or ambiguous evidence is not fabricated into an obsolete alert.
+    """
+    from scripts.canvas_llm_intake import week_resolution
+    from scripts.instructional_weeks import week_range
+
+    pacing = curr.get("pacing") or {}
+    canvas = curr.get("canvas") or {}
+    if pacing.get("status") != snap.SNAPSHOT_OK:
+        return []
+    if canvas.get("status") != snap.SNAPSHOT_OK:
+        return []
+
+    week_id = str(curr.get("week_id") or "")
+    match = re.fullmatch(r"Q([0-9]+)W([0-9]+)", week_id)
+    if match is None:
+        return []
+
+    quarter, week = map(int, match.groups())
+    metadata = week_resolution.find_week(quarter, week)
+    bounds = week_range(metadata) if metadata else None
+    if bounds is None:
+        return []
+
+    start, end = bounds
+    first_reminder_day = start - timedelta(days=1)
+
+    assessments: dict[str, set[date]] = {}
+    for key, cell in (pacing.get("cells") or {}).items():
+        subject = key.partition("|")[0]
+        raw = ((cell or {}).get("assessment") or {}).get("date")
+        if not raw:
+            continue
+        try:
+            day = date.fromisoformat(str(raw)[:10])
+        except ValueError:
+            continue
+        if start <= day <= end:
+            assessments.setdefault(subject, set()).add(day)
+
+    events: list[SourceChangeEvent] = []
+    eastern = ZoneInfo("America/New_York")
+
+    for subject, course in (canvas.get("courses") or {}).items():
+        if subject == "homeroom" or course.get("read_error"):
+            continue
+
+        subject_dates = assessments.get(subject) or set()
+        if not subject_dates:
+            continue
+
+        for announcement in course.get("announcements") or []:
+            title = str(announcement.get("title") or "")
+            low = title.lower()
+
+            # A first assessment announcement is not a reminder.
+            if "reminder" not in low and "tomorrow" not in low:
+                continue
+
+            raw = str(announcement.get("delayed_post_at") or "").strip()
+            if not raw:
+                continue
+
+            try:
+                scheduled = datetime.fromisoformat(
+                    raw.replace("Z", "+00:00")
+                )
+                if scheduled.tzinfo is None:
+                    continue
+                local_day = scheduled.astimezone(eastern).date()
+            except ValueError:
+                continue
+
+            # Do not compare historical or unrelated future announcements
+            # with this week's assessments.
+            if not first_reminder_day <= local_day <= end:
+                continue
+
+            # Correct day-before reminders are expected, not obsolete.
+            if any(
+                (assessment_day - local_day).days == 1
+                for assessment_day in subject_dates
+            ):
+                continue
+
+            events.append(_ev(
+                week_id=week_id,
+                source="canvas",
+                subject=subject,
+                classification=CHANGE_REMINDER_OBSOLETE,
+                object_type="reminder",
+                object_identity=f"{subject}:reminder:{title}",
+                old_value=raw,
+                new_value="; ".join(
+                    day.isoformat() for day in sorted(subject_dates)
+                ),
+                severity="high",
+                affected=[f"{subject.title()} day-before reminder"],
+                requires_approval=True,
+                live_stale=True,
+            ))
+
+    return events
+
+
 def detect_changes(prev: dict[str, Any], curr: dict[str, Any]) -> list[SourceChangeEvent]:
     """Compare two snapshots and return classified SourceChangeEvents."""
     events: list[SourceChangeEvent] = []
@@ -433,28 +545,8 @@ def detect_changes(prev: dict[str, Any], curr: dict[str, Any]) -> list[SourceCha
                     affected=[f"{subject.title()} day-before reminder"], requires_approval=True,
                 ))
 
-    # Reminder scheduled for an obsolete date (cross-reference current pacing assessments).
-    assessment_dates = set()
-    for cell in curr_cells.values():
-        ass = cell.get("assessment")
-        if ass and ass.get("date"):
-            assessment_dates.add(str(ass.get("date")))
-    for subject, course in curr_courses.items():
-        for a in (course.get("announcements") or []):
-            if not _reminder_hint(a.get("title") or ""):
-                continue
-            scheduled = str(a.get("delayed_post_at") or "")
-            if scheduled and assessment_dates and scheduled[:10] not in assessment_dates and \
-               not any(d.startswith(scheduled[:10]) for d in assessment_dates):
-                events.append(_ev(
-                    week_id=week_id, source="canvas", subject=subject,
-                    classification=CHANGE_REMINDER_OBSOLETE, object_type="reminder",
-                    object_identity=f"{subject}:reminder:{a.get('title')}",
-                    old_value=scheduled, new_value=sorted(assessment_dates) or None,
-                    severity="high",
-                    affected=[f"{subject.title()} day-before reminder"], requires_approval=True,
-                    live_stale=True,
-                ))
+    # Scoped, timezone-aware assessment reminder validation.
+    events.extend(_reminder_obsolete_events(curr))
 
     return events
 

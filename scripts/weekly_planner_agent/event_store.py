@@ -144,6 +144,39 @@ class EventStore:
         return changed
 
 
+
+    def supersede_exact(
+        self, event_ids: set[str], *,
+        classification: str, reason: str,
+    ) -> int:
+        """Supersede verified event IDs without deleting history."""
+        if not event_ids:
+            return 0
+
+        records = self.load()
+        changed = 0
+
+        for record in records:
+            if record.get("event_id") not in event_ids:
+                continue
+            if record.get("classification") != classification:
+                continue
+            if record.get("resolution_status") not in (EVENT_DETECTED, None):
+                continue
+
+            record["resolution_status"] = EVENT_RESOLVED
+            record["resolution_action"] = "superseded"
+            record["resolution_reason"] = reason
+            record["resolved_by"] = "system"
+            record["resolved_at"] = _now()
+            changed += 1
+
+        if changed:
+            self.save(records)
+
+        return changed
+
+
 def _stable_id(event: SourceChangeEvent) -> str:
     import hashlib
     body = "|".join([

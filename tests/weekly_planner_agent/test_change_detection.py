@@ -137,10 +137,10 @@ class ChangeDetectionTest(unittest.TestCase):
             "announcements": [{"id": "r1", "title": "Math Assessment Reminder",
                                "delayed_post_at": "2026-11-04T20:00:00Z"}],
         }}}
-        prev = _snap(cells=cells, canvas=canvas)
+        prev = _snap(week_id="Q2W4", cells=cells, canvas=canvas)
         # Assessment moves to Friday; reminder still scheduled for Wednesday.
         cells_new = _math_cell("Friday", "2026-11-06")
-        curr = _snap(cells=cells_new, canvas=canvas)
+        curr = _snap(week_id="Q2W4", cells=cells_new, canvas=canvas)
         kinds = {e.classification for e in cd.detect_changes(prev, curr)}
         self.assertIn(cd.CHANGE_REMINDER_OBSOLETE, kinds)
 

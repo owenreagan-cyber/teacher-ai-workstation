@@ -26,6 +26,7 @@ KIND = "homeroom_weekly_newsletter_html"
 RESOLUTION_FILE = "homeroom-page-resolution.json"
 APPROVAL_FILE = "homeroom-weekly-approval.json"
 HTML_FILE = "drafts/homeroom-page.html"
+ANNOUNCEMENT_FILE = "drafts/homeroom-announcement.json"
 
 
 class HomeroomWeeklyError(RuntimeError):
@@ -309,6 +310,73 @@ def build_rollover_block(quarter: int, week: int) -> dict[str, Any]:
         "page_resolution": resolution,
         "front_page_action": "SET_FRONT_PAGE",
     }
+
+
+def draft_family_announcement(
+    quarter: int,
+    week: int,
+    *,
+    now: datetime | None = None,
+    owner_selected_at: str | None = None,
+) -> dict[str, Any] | None:
+    """Draft the family announcement that embeds the staged newsletter HTML.
+
+    The existing weekly page id is preserved. A missed Friday window does not
+    invent a send time. The announcement stays pending until the owner approves
+    it, and it is not posted by this function.
+    """
+    path = html_path(quarter, week)
+    if not path.exists():
+        return None
+    body = path.read_text(encoding="utf-8")
+    if not body.strip():
+        return None
+    resolution = load_page_resolution(quarter, week) or {}
+    code = week_code(quarter, week)
+    import re
+    match = re.search(r"W(\d+)$", code)
+    label = f"Week {int(match.group(1))}" if match else code
+    intro = (
+        "<p>Hound Families,</p>"
+        "<p>Please see this week's classroom newsletter below for important dates, "
+        "reminders, birthdays, and classroom updates.</p>"
+        "<p>Have a great week!</p><p>Mr. Reagan</p>"
+    )
+    message = intro + body
+    from . import schedule as rollover_schedule
+    start, _end = week_dates(quarter, week)
+    resolved = rollover_schedule.resolve_publication_time(
+        start, now=now, owner_selected_at=owner_selected_at,
+    )
+    requires_owner = bool(resolved["requires_owner_time"])
+    return {
+        "kind": "homeroom_weekly_family_announcement",
+        "title": f"4th Grade Happenings - {label}",
+        "course_id": COURSE_ID,
+        "page_id": resolution.get("page_id"),
+        "page_slug": resolution.get("slug"),
+        "message": message,
+        "newsletter_html_hash": _sha(body),
+        "contains_complete_newsletter_html": body in message,
+        "schedule_state": "OWNER_TIME_REQUIRED" if requires_owner else "FUTURE_SCHEDULED",
+        "scheduled": not requires_owner,
+        "delayed_post_at": resolved["scheduled_at"],
+        "canonical_delayed_post_at": resolved["canonical_scheduled_at"],
+        "timezone": rollover_schedule.NEW_YORK,
+        "approval_state": "PENDING",
+        "preview_only": True,
+        "requires_teacher_approval": True,
+        "publication_dependency": "HOMEROOM_PAGE_PUBLISHED_AND_VERIFIED",
+        "page_first": True,
+        "action": "BLOCKED" if requires_owner else "CREATE",
+    }
+
+
+def write_family_announcement(quarter: int, week: int, announcement: dict[str, Any]) -> Path:
+    path = imf.staging_dir(quarter, week) / ANNOUNCEMENT_FILE
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(announcement, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    return path
 
 
 def command_self_test() -> int:

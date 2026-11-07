@@ -134,6 +134,9 @@ def build_intake(
     page_lookup_override: dict[str, Any] | None = None,
     assignment_classifications: dict[str, str] | None = None,
     decisions_override: list[dict[str, Any]] | None = None,
+    now: datetime | None = None,
+    owner_publication_time: str | None = None,
+    notice_times: dict[str, str] | None = None,
 ) -> dict[str, Any]:
     """Run the full intake for one week and persist the staging packet.
 
@@ -209,6 +212,11 @@ def build_intake(
         else od.load_decisions(quarter, week)
     )
     science_override = od.science_assessment_override(decisions)
+    # Semantic decisions (Math "Test 8" -> WA8/FA8) touch a working copy only.
+    # week_norm has already been hashed and written; this copy is not saved
+    # back over the source snapshot.
+    working_week, semantic_applications = od.apply_translation_working_copy(week_norm, decisions)
+    m["semantic_applications"] = semantic_applications
 
     # ---- 3. Translate + draft per subject --------------------------------
     subject_reports: dict[str, dict[str, Any]] = {}
@@ -218,7 +226,9 @@ def build_intake(
     pages: dict[str, Any] = {}
 
     for subject in active:
-        report = _translate_subject(subject, week_norm)
+        report = _translate_subject(subject, working_week)
+        if subject == "math":
+            report = _apply_math_semantic_display(report, decisions, semantic_applications)
         subject_reports[subject] = report
         m["subjects"][subject]["deterministic"] = report.get("deterministic", False)
         m["subjects"][subject]["unresolved"] = len(report.get("unresolved") or [])
@@ -258,7 +268,7 @@ def build_intake(
         report = subject_reports[subject]
         days = _coerce_days(report)
         days = _apply_day_overrides(quarter, week, subject, days)
-        reminders = _reminders_for(week_norm, subject, quarter=quarter, week=week,
+        reminders = _reminders_for(working_week, subject, quarter=quarter, week=week,
                                    science_override=science_override)
         if subject == "reading_spelling":
             html = cp.build_combined_reading_spelling_html(
@@ -285,19 +295,39 @@ def build_intake(
     )
 
     # ---- 4. Announcements (weekly-update drafts; no POST) -----------------
-    announcements = _draft_weekly_announcements(week_norm, subject_reports, pages, page_html)
+    announcements = _draft_weekly_announcements(working_week, subject_reports, pages, page_html)
     (drafts_dir / "announcements.json").write_text(
         json.dumps(announcements, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
     )
 
     # ---- 4b. Assessment announcements (drafts only; no POST) --------------
-    # One deterministic engine for Reading Mastery, Fluency Checkout, Spelling,
-    # and owner-directed Science assessments. Math keeps its dedicated reminder
-    # (Power Up mapping) and is not duplicated here.
+    # Reading, fluency, spelling, science, and the Math/Language Arts
+    # two-notice pairs. A stored owner time is applied only to the notice
+    # whose duplicate identity matches. Future policy times are not replaced.
+    stored_times = load_owner_publication_times(quarter, week)
+    if owner_publication_time is None:
+        owner_publication_time = stored_times.get("release")
+    if notice_times is None:
+        notice_times = dict(stored_times.get("notices") or {})
     assessment_reminders: list[dict[str, Any]] = []
-    assessment_reminders += rem.draft_math_assessment_reminders(week_norm)
+    paired_notices = aa.draft_two_notice_announcements(
+        working_week, source_hash=m["source_hash"], decisions=decisions, now=now,
+        notice_times=notice_times,
+    )
+    covered_math_dates = {
+        item.get("assessment_date")
+        for item in paired_notices
+        if item.get("family") == "math_assessment"
+    }
+    for reminder in rem.draft_math_assessment_reminders(working_week):
+        if reminder.get("assessment_date") not in covered_math_dates:
+            assessment_reminders.append(reminder)
     assessment_reminders += aa.draft_assessment_announcements(
-        week_norm, source_hash=m["source_hash"], decisions=decisions,
+        working_week, source_hash=m["source_hash"], decisions=decisions,
+    )
+    assessment_reminders += paired_notices
+    aa.annotate_unscheduled_reminders(
+        assessment_reminders, now=now, notice_times=notice_times,
     )
     (drafts_dir / "assessment-reminders.json").write_text(
         json.dumps(assessment_reminders, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
@@ -369,6 +399,14 @@ def build_intake(
             }
         pages["page_lookup"] = page_lookup
 
+    announcements = _finalize_weekly_announcements(
+        announcements, week_norm=week_norm, page_html=page_html, page_lookup=page_lookup,
+        now=now, owner_publication_time=owner_publication_time,
+    )
+    (drafts_dir / "announcements.json").write_text(
+        json.dumps(announcements, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
+    )
+
     # ---- 6. Questions + teacher input ------------------------------------
     questions = qs.generate_questions(
         week=week_norm,
@@ -425,6 +463,13 @@ def build_intake(
     ready, blockers = ap.ready_to_publish(
         approvals, subjects=active, has_blocking_questions=has_blocking, artifacts=artifacts,
     )
+    blockers.extend(od.semantic_publication_blockers(semantic_applications))
+    known_identities = {item.get("duplicate_identity") for item in assessment_reminders}
+    for identity in notice_times or {}:
+        if identity not in known_identities:
+            blockers.append(f"owner time does not match a notice identity: {identity}")
+    if blockers:
+        ready = False
 
     # ---- 8. Finalize manifest + review ------------------------------------
     mf.advance_status(m, "DRAFTED")
@@ -539,6 +584,103 @@ def _course_id(subject: str) -> int | None:
         "history": "history",
     }
     return C.course_id_for_subject(mapping.get(subject, subject))
+
+
+def _apply_math_semantic_display(
+    report: dict[str, Any],
+    decisions: list[dict[str, Any]],
+    applications: list[dict[str, Any]] | None = None,
+) -> dict[str, Any]:
+    """Show owner assessment names only when that decision was applied."""
+    applied_ids = {
+        record.get("decision_id")
+        for record in applications or []
+        if record.get("applied") is True and record.get("conflict") is not True
+    }
+    for decision in od.semantic_decisions(decisions, subject="math"):
+        if decision.get("decision_id") not in applied_ids:
+            continue
+        day_name = decision.get("day") or ""
+        day = (report.get("days") or {}).get(day_name)
+        if not isinstance(day, dict):
+            continue
+        if decision.get("date") and day.get("date") and decision.get("date") != day.get("date"):
+            continue
+        if decision.get("source_value") and day.get("source_value") not in (None, "", decision.get("source_value")):
+            if day.get("source") not in (None, "", decision.get("source_value"), decision.get("owner_value")):
+                continue
+        labels = [decision.get("written_title"), decision.get("fact_title")]
+        labels = [str(label) for label in labels if label]
+        if not labels:
+            continue
+        day["in_class"] = labels
+        day["semantic_decision_id"] = decision.get("decision_id", "")
+        day["source_value"] = decision.get("source_value", day.get("source"))
+    return report
+
+
+def load_owner_publication_times(quarter: int, week: int) -> dict[str, Any]:
+    """Read owner-selected times. Missing file means no time was selected."""
+    path = mf.staging_dir(quarter, week) / "planner" / "owner-publication-times.json"
+    if not path.exists():
+        return {"release": None, "notices": {}}
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return {"release": None, "notices": {}}
+    if not isinstance(data, dict):
+        return {"release": None, "notices": {}}
+    notices = data.get("notices") if isinstance(data.get("notices"), dict) else {}
+    return {"release": data.get("release"), "notices": dict(notices)}
+
+
+def _finalize_weekly_announcements(
+    announcements: list[dict[str, Any]],
+    *,
+    week_norm: dict[str, Any],
+    page_html: dict[str, str],
+    page_lookup: dict[str, Any],
+    now: datetime | None,
+    owner_publication_time: str | None,
+) -> list[dict[str, Any]]:
+    """Store the exact composed family message on each weekly announcement."""
+    from scripts.canvas_llm_deploy.plan import compose_announcement_body
+    from scripts.canvas_llm_rollover.schedule import resolve_publication_time
+
+    week_code = (week_norm.get("week") or {}).get("code", "")
+    week_start = (week_norm.get("week") or {}).get("startDate", "")
+    publication = None
+    if week_start:
+        publication = resolve_publication_time(
+            week_start, now=now, owner_selected_at=owner_publication_time,
+        )
+    for item in announcements:
+        subject = _subject_key(item.get("course", ""))
+        html = page_html.get(subject, "")
+        message = compose_announcement_body(item, html)
+        item["message"] = message
+        item["message_hash"] = _hash(message)
+        item["course_id"] = _course_id(subject)
+        item["page_id"] = (page_lookup.get(subject) or {}).get("page_id")
+        item["week_code"] = week_code
+        item["approval_state"] = "PENDING"
+        item["preview_only"] = True
+        if publication and publication.get("requires_owner_time"):
+            item["schedule_state"] = "OWNER_TIME_REQUIRED"
+            item["scheduled"] = False
+            item["delayed_post_at"] = None
+        elif publication:
+            item["schedule_state"] = "FUTURE_SCHEDULED"
+            item["scheduled"] = True
+            item["delayed_post_at"] = publication.get("scheduled_at")
+        else:
+            item["schedule_state"] = "BLOCKED"
+            item["scheduled"] = False
+            item["delayed_post_at"] = None
+        item["duplicate_identity"] = pa.announcement_identity(
+            item.get("course", ""), "weekly_update", week_code, week_start or item.get("course", ""), "WEEKLY",
+        )
+    return announcements
 
 
 def _translate_subject(subject: str, week_norm: dict[str, Any]) -> dict[str, Any]:

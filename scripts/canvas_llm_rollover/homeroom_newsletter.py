@@ -271,7 +271,43 @@ def build_monthly_update(
         anchor_marker="📅 Important Dates",
         after=True,
     )
+    html = _strip_unmarked_birthday_duplicates(html)
+    html = _remove_obsolete_november_6_movie_card(html)
 
+    return html
+
+
+def _strip_unmarked_birthday_duplicates(html: str) -> str:
+    """Keep the marked birthday section and drop any second rendered copy."""
+    marked = re.search(
+        re.escape(BIRTHDAY_SECTION_START) + r".*?" + re.escape(BIRTHDAY_SECTION_END),
+        html,
+        re.DOTALL,
+    )
+    if marked is None:
+        return html
+    card = re.compile(
+        r'<div style="margin-bottom: 22px;"><h2[^>]*>[^<]*Birthdays[^<]*</h2>.*?</div>\s*',
+        re.DOTALL,
+    )
+    return card.sub("", html[: marked.start()]) + marked.group(0) + card.sub("", html[marked.end():])
+
+
+def _remove_obsolete_november_6_movie_card(html: str) -> str:
+    """Remove the retired November 6 Movie Night card, not the current dates grid."""
+    needle = "Family Movie Night — November 6"
+    start = html.find(needle)
+    if start < 0:
+        return html
+    open_at = html.rfind('<div style="flex: 1 1 250px;', 0, start)
+    if open_at < 0:
+        return html
+    depth = 0
+    for match in _DIV_RE.finditer(html[open_at:]):
+        depth += -1 if match.group(1) else 1
+        if depth == 0:
+            end = open_at + match.end()
+            return html[:open_at] + html[end:]
     return html
 
 

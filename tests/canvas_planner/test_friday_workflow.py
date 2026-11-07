@@ -11,6 +11,8 @@ from types import SimpleNamespace
 from unittest import mock
 from zoneinfo import ZoneInfo
 
+from scripts.canvas_llm_deploy import ledger as deploy_ledger
+from scripts.canvas_llm_intake import manifest as intake_manifest
 from scripts.canvas_llm_rollover import rollover
 from scripts.canvas_llm_rollover import cli as rollover_cli
 from scripts.canvas_llm_rollover import homeroom as homeroom_module
@@ -169,17 +171,19 @@ class FridayWorkflowTest(unittest.TestCase):
                 "course": "math", "course_id": 26404, "title": "Math practice",
                 "assignment_group": "Homework", "points_possible": 100,
                 "grading_type": "percent", "submission_types": ["on_paper"],
-                "due_utc": "", "omit_from_final_grade": False,
+                "due_utc": "", "omit_from_final_grade": False, "approved": True,
             }],
             "weekly_announcements": [{
                 "subject": "math", "course_id": 26404, "title": "Math weekly update",
                 "message": "Approved weekly update", "week_code": "Q2W3",
                 "agenda_hash": "agenda", "page_agenda_hash": "agenda",
                 "hash_consistent": True, "delayed_post_at": "2026-10-23T20:00:00Z",
+                "approved": True,
             }],
             "assessment_reminders": [{
                 "subject": "math", "course_id": 26404, "title": "Math assessment reminder",
                 "message": "Study the approved material",
+                "delayed_post_at": "2026-10-23T20:00:00Z", "approved": True,
             }],
         }
         fake = FakeDeployClient(courses={
@@ -198,12 +202,20 @@ class FridayWorkflowTest(unittest.TestCase):
             ledger_store["report"] = dict(report)
             return report
 
-        with mock.patch.object(rollover.rollover_manifest, "build_rollover_manifest", return_value=plan), \
-             mock.patch.object(rollover.ledger, "load_rollover_ledger", side_effect=load_ledger), \
-             mock.patch.object(rollover.ledger, "write_rollover_ledger", side_effect=write_ledger), \
-             mock.patch.object(rollover, "_record_publish_event"), \
-             mock.patch.object(rollover.deploy_ledger, "finalize_published_verified", return_value={}):
-            return rollover.publish_now(
+        with tempfile.TemporaryDirectory() as tmp:
+            staging = Path(tmp) / "intake" / "q2w3"
+            staging.mkdir(parents=True)
+            (staging / "intake-manifest.json").write_text(
+                '{"source_hash": "fixture"}\n', encoding="utf-8"
+            )
+            with mock.patch.object(intake_manifest, "staging_dir", lambda q, w: Path(tmp) / "intake" / f"q{q}w{w}"), \
+                 mock.patch.object(deploy_ledger, "DEPLOY_ROOT", Path(tmp) / "deployments"), \
+                 mock.patch.object(rollover.rollover_manifest, "build_rollover_manifest", return_value=plan), \
+                 mock.patch.object(rollover.ledger, "load_rollover_ledger", side_effect=load_ledger), \
+                 mock.patch.object(rollover.ledger, "write_rollover_ledger", side_effect=write_ledger), \
+                 mock.patch.object(rollover, "_record_publish_event"), \
+                 mock.patch.object(rollover.deploy_ledger, "finalize_published_verified", return_value={}):
+                return rollover.publish_now(
                 2, 2, 2, 3, client=fake, courses=list(courses),
                 owner_confirmation=phrase, now=now,
             )

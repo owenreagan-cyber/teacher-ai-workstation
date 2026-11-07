@@ -479,6 +479,244 @@ def _resolve_target(client: DeployClient, course_id: int, slug: str, label: str,
 # B–E. Guarded execution
 # --------------------------------------------------------------------------- #
 
+def _same_instant(left: str | None, right: str | None) -> bool:
+    from scripts.canvas_llm_deploy.coordinator import _same_instant as _compare
+    return _compare(left, right)
+
+
+def _announcement_exists(client, reminder: dict[str, Any]) -> bool:
+    try:
+        items = client.list_announcements(reminder["course_id"])
+    except Exception:  # noqa: BLE001
+        return False
+    message = reminder.get("message") or ""
+    for item in items:
+        if item.get("title") == reminder.get("title") and _canvas_owned_body(item.get("message") or "") == message:
+            return True
+    return False
+
+
+def _parse_aware_instant(value: str | None) -> datetime | None:
+    """Parse a timezone-aware instant. Naive or invalid values return None."""
+    if not value:
+        return None
+    try:
+        parsed = datetime.fromisoformat(str(value).replace("Z", "+00:00"))
+    except ValueError:
+        return None
+    if parsed.tzinfo is None:
+        return None
+    return parsed.astimezone(timezone.utc)
+
+
+def _stale_preflight_blockers(quarter: int, week: int, manifest: dict[str, Any]) -> list[str]:
+    """A stored preflight cannot be reused after the plan changes.
+
+    When no preflight exists, the in-process gate is the validation. When one
+    exists, its fingerprint must match both the manifest and the current plan.
+    """
+    directory = deploy_ledger.deploy_dir(quarter, week)
+    if not directory.exists():
+        return []
+    files = sorted(directory.glob("preflight-*.json"))
+    if not files:
+        return []
+    try:
+        stored = json.loads(files[-1].read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return ["stored preflight could not be read"]
+    stored_fingerprint = deploy_plan.plan_fingerprint(stored.get("plan") or {})
+    claimed = manifest.get("plan_fingerprint")
+    if not claimed:
+        return ["a preflight exists but the manifest has no plan fingerprint"]
+    if claimed != stored_fingerprint:
+        return ["manifest plan fingerprint does not match the stored preflight"]
+    try:
+        current = deploy_plan.plan_fingerprint(deploy_plan.build_plan(quarter, week))
+    except Exception as exc:  # noqa: BLE001
+        return [f"current plan could not be rebuilt: {type(exc).__name__}"]
+    if current != stored_fingerprint:
+        return ["current plan changed since preflight"]
+    return []
+
+
+def _authoritative_source_hash(quarter: int, week: int) -> str | None:
+    """Current intake source hash. This is not the manifest's own copy."""
+    from scripts.canvas_llm_intake import manifest as imf
+    record = imf.load_manifest(quarter, week) or {}
+    value = record.get("source_hash")
+    return value if isinstance(value, str) and value else None
+
+
+def _content_release(manifest: dict[str, Any]) -> bool:
+    if manifest.get("weekly_announcements"):
+        return True
+    if (manifest.get("homeroom") or {}).get("body") or (manifest.get("homeroom") or {}).get("proposed_content"):
+        return True
+    return any((course.get("page_body") for course in manifest.get("academic_courses") or []))
+
+
+def _future_schedule_blocker(item: dict[str, Any], *, now: datetime, label: str) -> str | None:
+    """FUTURE_SCHEDULED is accepted only when the instant is actually later than now."""
+    if item.get("schedule_state") != "FUTURE_SCHEDULED" and item.get("action") != "CREATE":
+        return None
+    if item.get("schedule_state") not in (None, "FUTURE_SCHEDULED") and item.get("action") != "CREATE":
+        return None
+    if item.get("schedule_state") != "FUTURE_SCHEDULED":
+        return None
+    raw = item.get("delayed_post_at")
+    if not raw:
+        return f"{label} is FUTURE_SCHEDULED without delayed_post_at"
+    try:
+        parsed = datetime.fromisoformat(str(raw).replace("Z", "+00:00"))
+    except ValueError:
+        return f"{label} delayed_post_at is not a valid timestamp"
+    if parsed.tzinfo is None:
+        return f"{label} delayed_post_at must include a timezone"
+    if parsed.astimezone(timezone.utc) <= now.astimezone(timezone.utc):
+        return f"{label} delayed_post_at is not in the future"
+    return None
+
+
+def _explicit_page_approval_blockers(record: dict[str, Any], label: str) -> list[str]:
+    """Approval must be the boolean True. Missing, null, and false all block."""
+    blockers: list[str] = []
+    if record.get("approved") is not True:
+        blockers.append(f"{label} approved is not true")
+    status = record.get("status") or record.get("approval_state")
+    if status in ("PENDING", "BLOCKED"):
+        blockers.append(f"{label} approval status is {status}")
+    if not record.get("course_id"):
+        blockers.append(f"{label} course id is missing")
+    approval_hash = (
+        record.get("approval_hash")
+        or record.get("approved_body_hash")
+        or record.get("to_page_hash")
+        or record.get("proposed_content_hash")
+    )
+    if not approval_hash:
+        blockers.append(f"{label} approval hash is missing")
+    current_hash = record.get("current_hash")
+    if current_hash is not None and approval_hash != current_hash:
+        blockers.append(f"{label} approval hash does not match the current page")
+    if record.get("page_id") and record.get("to_page_id") and str(record.get("page_id")) != str(record.get("to_page_id")):
+        blockers.append(f"{label} page id changed")
+    return blockers
+
+
+def _prewrite_blockers(
+    manifest: dict[str, Any],
+    client,
+    *,
+    now: datetime,
+    quarter: int,
+    week: int,
+) -> list[str]:
+    """Validate the whole release before any Canvas mutation."""
+    blockers: list[str] = []
+    if manifest.get("publication_time_required") and not manifest.get("owner_publication_time"):
+        blockers.append("publication time required")
+    if _content_release(manifest):
+        claimed = manifest.get("source_hash")
+        authoritative = _authoritative_source_hash(quarter, week)
+        if not claimed:
+            blockers.append("manifest source hash is missing")
+        elif not authoritative:
+            blockers.append("authoritative source snapshot is missing")
+        elif claimed != authoritative:
+            blockers.append("manifest source hash does not match the authoritative source")
+    required_subjects = ("math", "reading_spelling", "language_arts", "science")
+    present = {course.get("subject") for course in manifest.get("academic_courses") or []}
+    announced = {item.get("subject") for item in manifest.get("weekly_announcements") or []}
+    if set(required_subjects) <= announced:
+        missing = [subject for subject in required_subjects if subject not in present]
+        if missing:
+            blockers.append("five-course release is missing " + ", ".join(missing))
+        if not manifest.get("homeroom"):
+            blockers.append("five-course release is missing homeroom")
+    for course in manifest.get("academic_courses") or []:
+        subject = course.get("subject") or course.get("label")
+        blockers.extend(_explicit_page_approval_blockers(course, str(subject)))
+    for announcement in manifest.get("weekly_announcements") or []:
+        title = announcement.get("title")
+        if announcement.get("action") == "BLOCKED" or announcement.get("schedule_state") in (
+            "OWNER_TIME_REQUIRED", "BLOCKED",
+        ):
+            blockers.append(f"weekly announcement {title} is blocked")
+        if announcement.get("duplicate_classification") == "AMBIGUOUS" or announcement.get("duplicate_status") == "AMBIGUOUS":
+            blockers.append(f"weekly announcement {title} identity is ambiguous")
+        if not announcement.get("course_id"):
+            blockers.append(f"weekly announcement {title} has no course id")
+        if (
+            announcement.get("classification") != "EXACT_MATCH"
+            and announcement.get("schedule_state") != "IMMEDIATE_CONFIRMED"
+            and not announcement.get("delayed_post_at")
+        ):
+            blockers.append(f"weekly announcement {title} has no delayed_post_at")
+        if announcement.get("approved") is not True and announcement.get("approval_state") != "APPROVED":
+            blockers.append(f"weekly announcement {title} approved is not true")
+        if (announcement.get("status") or announcement.get("approval_state")) in ("PENDING", "BLOCKED"):
+            blockers.append(f"weekly announcement {title} approval status is {announcement.get('status') or announcement.get('approval_state')}")
+        future_problem = _future_schedule_blocker(announcement, now=now, label=f"weekly announcement {title}")
+        if future_problem:
+            blockers.append(future_problem)
+    for reminder in manifest.get("assessment_reminders") or []:
+        title = reminder.get("title")
+        if reminder.get("classification") == "ALREADY_SCHEDULED_VERIFIED":
+            continue
+        if reminder.get("action") == "BLOCKED" or reminder.get("schedule_state") in (
+            "OWNER_TIME_REQUIRED", "BLOCKED",
+        ):
+            blockers.append(f"assessment notice {title} is blocked")
+        if reminder.get("duplicate_status") == "AMBIGUOUS":
+            blockers.append(f"assessment notice {title} identity is ambiguous")
+        if reminder.get("approved") is not True and reminder.get("approval_state") != "APPROVED":
+            blockers.append(f"assessment notice {title} approved is not true")
+        if (reminder.get("status") or reminder.get("approval_state")) in ("PENDING", "BLOCKED"):
+            blockers.append(f"assessment notice {title} approval status is {reminder.get('status') or reminder.get('approval_state')}")
+        if reminder.get("content_status") not in (None, "READY"):
+            blockers.append(f"assessment notice {title} resource is unverified")
+        if not reminder.get("course_id"):
+            blockers.append(f"assessment notice {title} has no course id")
+        future_problem = _future_schedule_blocker(reminder, now=now, label=f"assessment notice {title}")
+        if future_problem:
+            blockers.append(future_problem)
+            continue
+        if _announcement_exists(client, reminder):
+            continue
+        future = reminder.get("schedule_state") == "FUTURE_SCHEDULED" and reminder.get("delayed_post_at")
+        if not future and not reminder.get("delayed_post_at"):
+            blockers.append(f"assessment notice {title} would post immediately")
+    for assignment in manifest.get("assignments") or []:
+        if assignment.get("action") == "BLOCKED":
+            blockers.append(f"assignment {assignment.get('title')} is blocked")
+        elif assignment.get("approved") is not True and assignment.get("approval_state") != "APPROVED":
+            blockers.append(f"assignment {assignment.get('title')} approved is not true")
+        if not assignment.get("course_id"):
+            blockers.append(f"assignment {assignment.get('title')} has no course id")
+    homeroom = manifest.get("homeroom") or {}
+    if manifest.get("homeroom"):
+        blockers.extend(_explicit_page_approval_blockers(homeroom, "homeroom"))
+    family = manifest.get("homeroom_announcement")
+    if family:
+        future_problem = _future_schedule_blocker(family, now=now, label="homeroom announcement")
+        if future_problem:
+            blockers.append(future_problem)
+        if not homeroom.get("approved"):
+            blockers.append("homeroom page is not approved")
+        if not homeroom.get("to_page_id"):
+            blockers.append("homeroom page id is missing")
+        if str(family.get("page_id")) != str(homeroom.get("to_page_id")):
+            blockers.append("homeroom announcement page id does not match the page")
+        if family.get("publication_dependency") != "HOMEROOM_PAGE_PUBLISHED_AND_VERIFIED":
+            blockers.append("homeroom announcement is missing its page-first dependency")
+        if family.get("approval_state") != "APPROVED":
+            blockers.append("homeroom announcement is not approved")
+        if family.get("schedule_state") != "FUTURE_SCHEDULED" or not family.get("delayed_post_at"):
+            blockers.append("homeroom announcement publication time is not scheduled")
+    return blockers
+
+
 def execute(
     from_quarter: int,
     from_week: int,
@@ -505,6 +743,10 @@ def execute(
         raise RolloverBlocked(
             f"owner confirmation missing (must be exactly 'ROLLOVER {to_code.upper()}')"
         )
+
+    existing = ledger.load_rollover_ledger(to_quarter, to_week)
+    if existing and existing.get("lifecycle") == schedule.PUBLISHED_VERIFIED:
+        return {"lifecycle": schedule.PUBLISHED_VERIFIED, "already_complete": True}
 
     # Publication-time gate. A caller that knows "now" (the scheduler or a
     # release-plan execution) must never reuse an expired delayed-post instant.
@@ -534,17 +776,30 @@ def execute(
                 "publication time required: the canonical Friday 4:00 PM window has passed; "
                 "supply an explicit future owner_publication_time"
             )
-        manifest = dict(manifest)
+        manifest = copy.deepcopy(manifest)
         manifest["scheduled_at"] = resolved["scheduled_at"]
         manifest["publication_time_source"] = resolved["source"]
         manifest["canonical_scheduled_at"] = resolved["canonical_scheduled_at"]
-        if not early_content_only:
-            for announcement in manifest.get("weekly_announcements", []):
-                announcement["delayed_post_at"] = resolved["scheduled_at"]
+        # Announcement schedule state is validated as submitted. A resolved
+        # Friday or owner time must not rewrite BLOCKED, OWNER_TIME_REQUIRED,
+        # or an already-recorded delayed_post_at before the gate.
+    elif _content_release(manifest):
+        manifest = copy.deepcopy(manifest)
 
-    existing = ledger.load_rollover_ledger(to_quarter, to_week)
-    if existing and existing.get("lifecycle") == schedule.PUBLISHED_VERIFIED:
-        return {"lifecycle": schedule.PUBLISHED_VERIFIED, "already_complete": True}
+    clock = now if now is not None else datetime.now(timezone.utc)
+    if clock.tzinfo is None:
+        raise RolloverBlocked("execution clock must be timezone-aware")
+    prewrite = _prewrite_blockers(manifest, client, now=clock, quarter=to_quarter, week=to_week)
+    prewrite.extend(_stale_preflight_blockers(to_quarter, to_week, manifest))
+    if prewrite:
+        return {
+            "lifecycle": schedule.BLOCKED,
+            "failures": prewrite,
+            "verb_totals": {"GET": 0, "POST": 0, "PUT": 0, "PATCH": 0, "DELETE": 0},
+            "canvas_writes": 0,
+            "email_sends": 0,
+            "already_complete": False,
+        }
 
     counts: dict[str, int] = {"GET": 0, "POST": 0, "PUT": 0, "PATCH": 0, "DELETE": 0}
     report: dict[str, Any] = {
@@ -646,6 +901,75 @@ def execute(
         )
         if homeroom_result is not None:
             return homeroom_result
+
+    announcement = manifest.get("homeroom_announcement")
+    if announcement:
+        if not (report.get("homeroom") or {}).get("verified"):
+            report["failures"].append("homeroom announcement: page publication was not verified first")
+            return _finish(to_quarter, to_week, report, schedule.BLOCKED, counts)
+        if str(announcement.get("page_id")) != str((h or {}).get("to_page_id")):
+            report["failures"].append("homeroom announcement: page id changed")
+            return _finish(to_quarter, to_week, report, schedule.BLOCKED, counts)
+        if not announcement.get("contains_complete_newsletter_html"):
+            report["failures"].append("homeroom announcement: complete newsletter HTML is missing")
+            return _finish(to_quarter, to_week, report, schedule.BLOCKED, counts)
+        if announcement.get("action") == "BLOCKED" or announcement.get("schedule_state") != "FUTURE_SCHEDULED":
+            report["failures"].append("homeroom announcement: owner-selected publication time required")
+            return _finish(to_quarter, to_week, report, schedule.BLOCKED, counts)
+        try:
+            created = client.create_announcement(
+                announcement["course_id"], title=announcement["title"],
+                message=announcement.get("message") or "", published=True,
+                delayed_post_at=announcement.get("delayed_post_at"),
+            )
+            counts["POST"] += 1
+            readback = client.get_announcement(announcement["course_id"], str(created.get("id")))
+            counts["GET"] += 1
+            in_feed = any(
+                (item.get("title") or "") == announcement["title"]
+                for item in client.list_active_announcements(
+                    context_codes=[f"course_{announcement['course_id']}"]
+                )
+            )
+            counts["GET"] += 1
+            from scripts.canvas_llm_intake import scheduling as sched
+            state = sched.classify_announcement(
+                delayed_post_at=readback.get("delayed_post_at"),
+                posted_at=readback.get("posted_at"),
+                published=readback.get("published"),
+                in_active_feed=in_feed,
+            )
+            delayed = announcement.get("delayed_post_at") or ""
+            page_body = (h or {}).get("body") or ""
+            live_message = _canvas_owned_body(readback.get("message") or "")
+            course_ok = (
+                readback.get("course_id") is not None
+                and int(readback.get("course_id")) == int(announcement["course_id"])
+            )
+            ok = (
+                readback.get("title") == announcement["title"]
+                and live_message == announcement.get("message")
+                and state == sched.HELD_SCHEDULED
+                and _same_instant(readback.get("delayed_post_at"), delayed)
+                and course_ok
+                and (not page_body or page_body in live_message)
+            )
+        except Exception as exc:  # noqa: BLE001
+            report["failures"].append(f"homeroom announcement: write failed: {type(exc).__name__}")
+            return _finish(to_quarter, to_week, report, schedule.BLOCKED, counts)
+        report["homeroom_announcement"] = {
+            "course_id": announcement["course_id"],
+            "page_id": announcement.get("page_id"),
+            "title": announcement["title"],
+            "announcement_id": created.get("id"),
+            "delayed_post_at": readback.get("delayed_post_at"),
+            "state": state,
+            "disposition": "SCHEDULED_VERIFIED" if ok else "FAILED",
+            "verified": ok,
+        }
+        if not ok:
+            report["failures"].append("homeroom announcement: readback mismatch")
+            return _finish(to_quarter, to_week, report, schedule.BLOCKED, counts)
 
     # ---- D. Approved assignments ----------------------------------------
     for a in manifest.get("assignments", []):
@@ -790,11 +1114,17 @@ def execute(
             and live_message == a["message"]
         )
         ok = content_ok and state in (sched.HELD_SCHEDULED, sched.POSTED)
+        if not ok:
+            disposition = "FAILED"
+        elif state == sched.HELD_SCHEDULED:
+            disposition = "SCHEDULED_VERIFIED"
+        else:
+            disposition = "PUBLISHED_VERIFIED"
         report["weekly_announcements"].append({
             "subject": a["subject"], "title": a["title"], "announcement_id": tid,
             "message_hash": hashlib.sha256(str(a.get("message", "")).encode("utf-8")).hexdigest(),
             "delayed_post_at": a.get("delayed_post_at"), "state": state,
-            "disposition": "PUBLISHED_VERIFIED" if ok else "FAILED", "verified": ok,
+            "disposition": disposition, "verified": ok,
         })
         if not ok:
             report["failures"].append(f"{a['subject']}: announcement visibility mismatch ({state})")
@@ -811,10 +1141,18 @@ def execute(
                 "verified": True,
             })
             continue
+        if a.get("action") == "BLOCKED" or a.get("schedule_state") in ("OWNER_TIME_REQUIRED", "BLOCKED"):
+            report["failures"].append(
+                f"reminder {title!r}: publication blocked ({a.get('schedule_state') or a.get('action')})"
+            )
+            return _finish(to_quarter, to_week, report, schedule.BLOCKED, counts)
+        scheduled = bool(a.get("scheduled")) and bool(a.get("delayed_post_at"))
+        delayed = a.get("delayed_post_at") if scheduled else None
         try:
             exact = next((item for item in client.list_announcements(a["course_id"])
                           if item.get("title") == title
-                          and _canvas_owned_body(item.get("message") or "") == a.get("message", "")), None)
+                          and _canvas_owned_body(item.get("message") or "") == a.get("message", "")
+                          and (not scheduled or _same_instant(item.get("delayed_post_at"), delayed))), None)
             counts["GET"] += 1
             if exact:
                 created = exact
@@ -822,20 +1160,45 @@ def execute(
             else:
                 created = client.create_announcement(
                     a["course_id"], title=title, message=a.get("message", ""),
-                    published=True, delayed_post_at=None,
+                    published=True, delayed_post_at=delayed,
                 )
                 counts["POST"] += 1
-                disposition = "PUBLISHED_VERIFIED"
+                disposition = "SCHEDULED_VERIFIED" if scheduled else "PUBLISHED_VERIFIED"
             readback = client.get_announcement(a["course_id"], str(created.get("id")))
             counts["GET"] += 1
-            ok = (readback.get("title") == title
-                  and _canvas_owned_body(readback.get("message") or "") == a.get("message", ""))
+            message_ok = _canvas_owned_body(readback.get("message") or "") == a.get("message", "")
+            delay_ok = True
+            state = None
+            if scheduled:
+                in_feed = any(
+                    (item.get("title") or "") == title
+                    for item in client.list_active_announcements(context_codes=[f"course_{a['course_id']}"])
+                )
+                counts["GET"] += 1
+                from scripts.canvas_llm_intake import scheduling as sched
+                state = sched.classify_announcement(
+                    delayed_post_at=readback.get("delayed_post_at"),
+                    posted_at=readback.get("posted_at"),
+                    published=readback.get("published"),
+                    in_active_feed=in_feed,
+                )
+                delay_ok = state == sched.HELD_SCHEDULED and _same_instant(readback.get("delayed_post_at"), delayed)
+                if delay_ok and disposition != "ALREADY_EXISTS":
+                    disposition = "SCHEDULED_VERIFIED"
+            course_ok = (
+                readback.get("course_id") is not None
+                and int(readback.get("course_id")) == int(a["course_id"])
+            )
+            ok = readback.get("title") == title and message_ok and delay_ok and course_ok
         except Exception as exc:  # noqa: BLE001
             report["failures"].append(f"reminder {title!r}: write failed: {type(exc).__name__}")
             return _finish(to_quarter, to_week, report, schedule.BLOCKED, counts)
         report["assessment_reminders"].append({
             "subject": a.get("subject"), "course_id": a["course_id"], "title": title,
-            "announcement_id": created.get("id"), "disposition": disposition if ok else "FAILED",
+            "announcement_id": created.get("id"),
+            "delayed_post_at": readback.get("delayed_post_at"),
+            "state": state,
+            "disposition": disposition if ok else "FAILED",
             "verified": ok,
         })
         if not ok:
@@ -1113,6 +1476,8 @@ def publish_now(
         scoped["homeroom"] = plan["homeroom"] if "homeroom" in selected else None
         for announcement in scoped["weekly_announcements"]:
             announcement["delayed_post_at"] = None
+            announcement["schedule_state"] = "IMMEDIATE_CONFIRMED"
+            announcement["scheduled"] = False
 
     readiness = run_preflight(
         from_quarter, from_week, to_quarter, to_week, client=client, today=today,
@@ -1177,7 +1542,17 @@ def status(
     # not create a new owner-selection blocker for work already completed.
     existing = ledger.load_rollover_ledger(to_quarter, to_week)
     ledger_state = existing.get("lifecycle") if existing else None
-    already_published = ledger_state == schedule.PUBLISHED_VERIFIED
+    published = deploy_ledger.load_published_verified(to_quarter, to_week)
+    already_published = (
+        ledger_state == schedule.PUBLISHED_VERIFIED
+        and isinstance(published, dict)
+        and published.get("status") == "PUBLISHED_VERIFIED"
+        and (
+            not published.get("source_hash")
+            or not (existing or {}).get("source_hash")
+            or published.get("source_hash") == existing.get("source_hash")
+        )
+    )
 
     # For unpublished work, a missed Friday 4 PM window still requires an
     # explicit future owner-selected timestamp.

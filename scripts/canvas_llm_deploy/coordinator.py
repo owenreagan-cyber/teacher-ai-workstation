@@ -55,6 +55,81 @@ def _confirm_ok(confirmation: str, week_code: str, *, deletes: int) -> bool:
     return "DEPLOY" in upper
 
 
+def _future_label_blocker(item: dict[str, Any], label: str, now: datetime) -> str | None:
+    """A FUTURE_SCHEDULED label is not evidence. The instant must be later than now."""
+    if item.get("schedule_state") != "FUTURE_SCHEDULED":
+        return None
+    raw = item.get("delayed_post_at")
+    if not raw:
+        return f"{label} is FUTURE_SCHEDULED without delayed_post_at"
+    try:
+        parsed = datetime.fromisoformat(str(raw).replace("Z", "+00:00"))
+    except ValueError:
+        return f"{label} delayed_post_at is not a valid timestamp"
+    if parsed.tzinfo is None:
+        return f"{label} delayed_post_at must include a timezone"
+    if parsed.astimezone(timezone.utc) <= now.astimezone(timezone.utc):
+        return f"{label} delayed_post_at is not in the future"
+    return None
+
+
+def _plan_prewrite_blockers(plan: dict[str, Any], *, now: datetime | None = None) -> list[str]:
+    """Refuse a plan that would write a blocked or immediate announcement."""
+    blockers: list[str] = []
+    clock = now or datetime.now(timezone.utc)
+    for announcement in plan.get("weekly_announcements") or []:
+        title = announcement.get("title")
+        if announcement.get("action") == "BLOCKED" or announcement.get("schedule_state") in (
+            "OWNER_TIME_REQUIRED", "BLOCKED",
+        ):
+            blockers.append(f"weekly announcement {title!r} is blocked")
+        elif announcement.get("action") == "CREATE" and not announcement.get("delayed_post_at"):
+            blockers.append(f"weekly announcement {title!r} has no delayed_post_at")
+        if announcement.get("duplicate_classification") == "AMBIGUOUS":
+            blockers.append(f"weekly announcement {title!r} identity is ambiguous")
+        if not announcement.get("course_id"):
+            blockers.append(f"weekly announcement {title!r} has no course id")
+        if announcement.get("approved") is not True and announcement.get("approval_state") != "APPROVED":
+            blockers.append(f"weekly announcement {title!r} approved is not true")
+        future_problem = _future_label_blocker(announcement, f"weekly announcement {title!r}", clock)
+        if future_problem:
+            blockers.append(future_problem)
+    for reminder in plan.get("assessment_reminders") or []:
+        title = reminder.get("title")
+        if reminder.get("action") == "BLOCKED" or reminder.get("schedule_state") in (
+            "OWNER_TIME_REQUIRED", "BLOCKED",
+        ):
+            blockers.append(f"assessment notice {title!r} is blocked")
+        elif reminder.get("approved") is not True and reminder.get("approval_state") != "APPROVED":
+            blockers.append(f"assessment notice {title!r} approved is not true")
+        elif reminder.get("action") == "CREATE" and not (
+            reminder.get("scheduled") and reminder.get("delayed_post_at")
+        ):
+            blockers.append(f"assessment notice {title!r} would post immediately")
+        if reminder.get("duplicate_status") == "AMBIGUOUS":
+            blockers.append(f"assessment notice {title!r} identity is ambiguous")
+        if reminder.get("content_status") not in (None, "READY"):
+            blockers.append(f"assessment notice {title!r} resource is unverified")
+        if not reminder.get("course_id"):
+            blockers.append(f"assessment notice {title!r} has no course id")
+        future_problem = _future_label_blocker(reminder, f"assessment notice {title!r}", clock)
+        if future_problem:
+            blockers.append(future_problem)
+    for assignment in plan.get("assignments") or []:
+        if assignment.get("action") == "BLOCKED":
+            blockers.append(f"assignment {assignment.get('title')!r} is blocked")
+        elif assignment.get("approved") is not True and assignment.get("approval_state") != "APPROVED":
+            blockers.append(f"assignment {assignment.get('title')!r} approved is not true")
+        if not assignment.get("course_id"):
+            blockers.append(f"assignment {assignment.get('title')!r} has no course id")
+    for page in plan.get("pages") or []:
+        if not page.get("course_id"):
+            blockers.append(f"page {page.get('subject')} has no course id")
+        if page.get("approved") is not True:
+            blockers.append(f"page {page.get('subject')} approved is not true")
+    return blockers
+
+
 def _load_and_validate(
     quarter: int, week: int, *, preflight_id: str,
     expected_source_hash: str, expected_approval_snapshot_hash: str,
@@ -131,15 +206,59 @@ def _verify_assignment(client: DeployClient, course_id: int, assignment_id: Any,
     return ok, "" if ok else f"name={a.get('name')!r} points={a.get('points_possible')} due={a.get('due_at')}"
 
 
+def _canvas_message(message: str) -> str:
+    """Drop Canvas-injected global assets before comparing announcement text."""
+    import re
+    text = message or ""
+    text = re.sub(
+        r'<link\b[^>]*\bhref=["\'][^"\']*canvas_global_app\.css[^"\']*["\'][^>]*>\s*',
+        "", text, flags=re.IGNORECASE,
+    )
+    text = re.sub(
+        r'\s*<script\b[^>]*\bsrc=["\'][^"\']*canvas_global_app\.js[^"\']*["\'][^>]*>\s*</script>',
+        "", text, flags=re.IGNORECASE,
+    )
+    return text
+
+
+def _same_instant(left: str | None, right: str | None) -> bool:
+    """Timezone-aware equality. Naive timestamps do not match."""
+    if not left or not right:
+        return False
+    try:
+        a = datetime.fromisoformat(str(left).replace("Z", "+00:00"))
+        b = datetime.fromisoformat(str(right).replace("Z", "+00:00"))
+    except ValueError:
+        return False
+    if a.tzinfo is None or b.tzinfo is None:
+        return False
+    return a.astimezone(timezone.utc) == b.astimezone(timezone.utc)
+
+
+def announcement_readback_disposition(*, scheduled: bool, verified: bool, state: str) -> str:
+    """A future delayed post is scheduled, never reported as published."""
+    from scripts.canvas_llm_intake import scheduling as sched
+    if not verified:
+        return "FAILED"
+    if scheduled:
+        return "SCHEDULED_VERIFIED" if state == sched.HELD_SCHEDULED else "FAILED"
+    return "PUBLISHED_VERIFIED" if state == sched.POSTED else "FAILED"
+
+
 def _verify_announcement(client: DeployClient, course_id: int, topic_id: Any,
                          *, title: str, scheduled: bool, delayed_post_at: str | None,
-                         expect_agenda: bool, counts: dict[str, int]) -> tuple[bool, str]:
+                         expect_agenda: bool, counts: dict[str, int],
+                         expected_message: str | None = None) -> tuple[bool, str, str]:
     a = client.get_announcement(course_id, str(topic_id))
     counts["GET"] = counts.get("GET", 0) + 1
-    msg = a.get("message") or ""
-    content_ok = a.get("title") == title and "Mr. Reagan" in msg
+    msg = _canvas_message(a.get("message") or "")
+    content_ok = a.get("title") == title
     if expect_agenda:
-        content_ok = content_ok and "kl_wrapper_3" in msg and "Reminders" in msg
+        content_ok = content_ok and "Mr. Reagan" in msg and "kl_wrapper_3" in msg and "Reminders" in msg
+    if expected_message is not None:
+        content_ok = content_ok and msg == _canvas_message(expected_message)
+    if a.get("course_id") is None or int(a.get("course_id")) != int(course_id):
+        content_ok = False
 
     from scripts.canvas_llm_intake import scheduling as sched
     in_feed = any(
@@ -156,14 +275,15 @@ def _verify_announcement(client: DeployClient, course_id: int, topic_id: Any,
     if scheduled:
         # Correct held state: future delayed_post_at + NOT in active feed.
         sched_ok = state == sched.HELD_SCHEDULED
-        # delayed_post_at must match intent (prefix).
-        if delayed_post_at and not (a.get("delayed_post_at") or "").startswith(delayed_post_at[:16]):
+        # delayed_post_at must match intent (prefix). A missing delay is not held.
+        if not _same_instant(a.get("delayed_post_at"), delayed_post_at):
             sched_ok = False
     else:
         # Immediate: should be POSTED (in active feed).
         sched_ok = state in (sched.POSTED,)
     ok = content_ok and sched_ok
-    return ok, "" if ok else f"title_ok={a.get('title')==title} content_ok={content_ok} sched={state}"
+    detail = "" if ok else f"title_ok={a.get('title')==title} content_ok={content_ok} sched={state} course_id={a.get('course_id')}"
+    return ok, detail, state
 
 
 def deploy(
@@ -174,6 +294,7 @@ def deploy(
     owner_confirmation: str,
     client: DeployClient,
     source: str = "OWNER_UI",
+    now: datetime | None = None,
 ) -> dict[str, Any]:
     """Execute the approved preflight's write plan (ordered, stop-on-failure)."""
     existing = ledger.load_ledger(quarter, week)
@@ -186,7 +307,18 @@ def deploy(
         expected_approval_snapshot_hash=expected_approval_snapshot_hash,
         owner_confirmation=owner_confirmation,
     )
+    if plan_mod.plan_fingerprint(pre.get("plan") or {}) != plan_mod.plan_fingerprint(current):
+        raise DeploymentBlocked("STALE — deployment plan changed since preflight; rerun preflight")
     plan = pre["plan"]
+    prewrite = _plan_prewrite_blockers(plan, now=now or datetime.now(timezone.utc))
+    if prewrite:
+        return {
+            "deployment_state": "BLOCKED",
+            "failures": prewrite,
+            "verb_totals": {"GET": 0, "POST": 0, "PUT": 0, "PATCH": 0, "DELETE": 0},
+            "canvas_writes": 0,
+            "email_sends": 0,
+        }
     week_code = plan.get("week_code")
     slug = plan.get("slug", "")
     counts: dict[str, int] = {"GET": 0, "POST": 0, "PUT": 0, "PATCH": 0, "DELETE": 0}
@@ -290,19 +422,27 @@ def deploy(
                 "disposition": "ALREADY_EXISTS", "verified": True, "canvas_id": None,
             })
             continue
+        if a.get("action") == "BLOCKED" or a.get("schedule_state") in ("OWNER_TIME_REQUIRED", "BLOCKED"):
+            report["failures"].append(f"announcement {title!r}: publication blocked ({a.get('schedule_state') or a.get('action')})")
+            return _finish_partial(quarter, week, report, "DEPLOYMENT_PARTIAL")
         try:
             created = client.create_announcement(
                 a["course_id"], title=title, message=a["message"], published=True,
                 delayed_post_at=a.get("delayed_post_at"))
             counts["POST"] += 1
             tid = created.get("id")
-            ok, detail = _verify_announcement(
-                client, a["course_id"], tid, title=title, scheduled=bool(a.get("scheduled")),
-                delayed_post_at=a.get("delayed_post_at"), expect_agenda=True, counts=counts)
+            scheduled = bool(a.get("scheduled")) and bool(a.get("delayed_post_at"))
+            ok, detail, state = _verify_announcement(
+                client, a["course_id"], tid, title=title, scheduled=scheduled,
+                delayed_post_at=a.get("delayed_post_at"), expect_agenda=True, counts=counts,
+                expected_message=a.get("message"))
             report["weekly_announcements"].append({
                 "subject": a["subject"], "title": title, "course_id": a["course_id"],
                 "delayed_post_at": a.get("delayed_post_at"), "canvas_id": tid,
-                "disposition": "PUBLISHED_VERIFIED" if ok else "FAILED",
+                "state": state,
+                "disposition": announcement_readback_disposition(
+                    scheduled=scheduled, verified=ok, state=state,
+                ),
                 "verified": ok, "detail": detail,
             })
             if not ok:
@@ -320,18 +460,30 @@ def deploy(
                 "verified": True, "canvas_id": None,
             })
             continue
+        if a.get("action") == "BLOCKED" or a.get("schedule_state") in ("OWNER_TIME_REQUIRED", "BLOCKED"):
+            report["failures"].append(
+                f"assessment reminder {title!r}: publication blocked ({a.get('schedule_state') or a.get('action')})"
+            )
+            return _finish_partial(quarter, week, report, "DEPLOYMENT_PARTIAL")
+        scheduled = bool(a.get("scheduled")) and bool(a.get("delayed_post_at"))
         try:
             created = client.create_announcement(
                 a["course_id"], title=title, message=a["message"], published=True,
-                delayed_post_at=None)
+                delayed_post_at=a.get("delayed_post_at") if scheduled else None)
             counts["POST"] += 1
             tid = created.get("id")
-            ok, detail = _verify_announcement(
-                client, a["course_id"], tid, title=title, scheduled=False,
-                delayed_post_at=None, expect_agenda=False, counts=counts)
+            ok, detail, state = _verify_announcement(
+                client, a["course_id"], tid, title=title, scheduled=scheduled,
+                delayed_post_at=a.get("delayed_post_at") if scheduled else None,
+                expect_agenda=False, counts=counts, expected_message=a.get("message"))
             report["assessment_reminders"].append({
                 "title": title, "course_id": a["course_id"], "type": a.get("type"),
-                "canvas_id": tid, "disposition": "PUBLISHED_VERIFIED" if ok else "FAILED",
+                "notice_type": a.get("notice_type"),
+                "delayed_post_at": a.get("delayed_post_at") if scheduled else None,
+                "state": state, "canvas_id": tid,
+                "disposition": announcement_readback_disposition(
+                    scheduled=scheduled, verified=ok, state=state,
+                ),
                 "verified": ok, "detail": detail,
             })
             if not ok:

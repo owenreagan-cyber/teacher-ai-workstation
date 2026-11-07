@@ -10,6 +10,7 @@ if str(Path(__file__).resolve().parents[2]) not in sys.path:
     sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 import hashlib
+import json
 import tempfile
 
 from scripts.canvas_llm_deploy import ledger as deploy_ledger
@@ -22,6 +23,7 @@ PAGE_ID = 798094
 SLUG = "q2w4-november-2-6-2026"
 WEEK = "Q2W4"
 HTML = '<div style="max-width: 900px;"><h1>4th Grade Happenings</h1><h2>🍂 November Birthdays 🎉</h2></div>'
+SOURCE_HASH = "q2w4-authoritative-source"
 
 
 def _sha(text: str) -> str:
@@ -34,6 +36,11 @@ def _tmp():
     tmp = tempfile.TemporaryDirectory()
     deploy_ledger.DEPLOY_ROOT = Path(tmp.name) / "deployments"
     intake_manifest.staging_dir = lambda q, w: Path(tmp.name) / "intake" / f"q{q}w{w}"
+    staging = Path(tmp.name) / "intake" / "q2w4"
+    staging.mkdir(parents=True)
+    (staging / "intake-manifest.json").write_text(
+        json.dumps({"source_hash": SOURCE_HASH}), encoding="utf-8"
+    )
     return orig_deploy, orig_staging, tmp
 
 
@@ -146,6 +153,7 @@ def test_execute_verifies_after_canvas_strips_html_comments():
         weekly["page_id"] = PAGE_ID
         m = {
             "from_week": "Q2W3", "to_week": "Q2W4",
+            "source_hash": SOURCE_HASH,
             "scheduled_at": "2026-10-30T20:00:00Z", "timezone": "America/New_York",
             "academic_courses": [],
             "homeroom": {
@@ -178,6 +186,7 @@ def test_execute_updates_existing_weekly_page_not_rolling_page():
                               title="Class 4A Newsletter", body="<p>rolling</p>", front_page=True)
         m = {
             "from_week": "Q2W3", "to_week": "Q2W4",
+            "source_hash": SOURCE_HASH,
             "scheduled_at": "2026-10-30T20:00:00Z", "timezone": "America/New_York",
             "academic_courses": [],
             "homeroom": {

@@ -20,9 +20,10 @@ def _now() -> str:
 
 
 def staging_dir(quarter: int, week: int) -> Path:
-    """Return the per-week staging directory under .local."""
+    """Return the per-week staging directory under the active storage root."""
+    from scripts.canvas_llm_storage import active_intake_root
     return (
-        C.INTAKE_ROOT
+        active_intake_root()
         / "2026-2027"
         / f"q{quarter}"
         / f"w{week}"
@@ -78,10 +79,19 @@ def advance_status(manifest: dict[str, Any], target: str) -> dict[str, Any]:
 
     TEACHER_APPROVED / READY_TO_PUBLISH may only be reached via explicit
     approval (the caller enforces this); this helper only records the move.
+
+    PUBLISHED_VERIFIED is not a status-helper transition. It is recorded only
+    by finalize_published_verified() after the publication ledger reads back.
     """
     current = manifest.get("status")
     if target not in C.LIFECYCLE_STATES:
         raise ValueError(f"unknown status {target!r}")
+    if target == "PUBLISHED_VERIFIED":
+        raise ValueError(
+            "PUBLISHED_VERIFIED requires a verified publication ledger, explicit "
+            "approval, matching source hash, matching plan fingerprint, and "
+            "five-course verification; advance_status() cannot record it"
+        )
     order = {s: i for i, s in enumerate(C.LIFECYCLE_STATES)}
     if current in order and order[target] < order[current]:
         raise ValueError(f"cannot move backward {current} -> {target}")
@@ -114,6 +124,12 @@ def command_self_test() -> int:
 
     # No auto-approval: TEACHER_APPROVED never set by the library.
     assert m["status"] != "TEACHER_APPROVED"
+    try:
+        advance_status(m, "PUBLISHED_VERIFIED")
+        raise AssertionError("expected ValueError")
+    except ValueError:
+        pass
+    assert m["status"] == "DRAFTED"
 
     # staging dir resolves under .local
     d = staging_dir(2, 2)

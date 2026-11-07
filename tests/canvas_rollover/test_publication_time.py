@@ -260,6 +260,8 @@ def test_invalid_release_time_fails_closed():
 
 
 def test_execute_missing_now_with_required_flag_blocks():
+    import tempfile
+    from scripts.canvas_llm_deploy import ledger as deploy_ledger
     from scripts.canvas_llm_deploy.client import FakeDeployClient
     manifest = {
         "from_week": "Q2W3", "to_week": "Q2W4",
@@ -269,14 +271,19 @@ def test_execute_missing_now_with_required_flag_blocks():
         "weekly_announcements": [], "assignments": [], "assessment_reminders": [],
     }
     client = FakeDeployClient(courses={26404: {"id": 26404, "name": "Math"}})
-    try:
-        rollover.execute(
-            2, 3, 2, 4, client=client, owner_confirmation="ROLLOVER Q2W4",
-            manifest=manifest,
-        )
-        raise AssertionError("expected RolloverBlocked")
-    except rollover.RolloverBlocked as exc:
-        assert "publication time" in str(exc).lower(), exc
+    original = deploy_ledger.DEPLOY_ROOT
+    with tempfile.TemporaryDirectory() as tmp:
+        deploy_ledger.DEPLOY_ROOT = Path(tmp) / "deployments"
+        try:
+            rollover.execute(
+                2, 3, 2, 4, client=client, owner_confirmation="ROLLOVER Q2W4",
+                manifest=manifest,
+            )
+            raise AssertionError("expected RolloverBlocked")
+        except rollover.RolloverBlocked as exc:
+            assert "publication time" in str(exc).lower(), exc
+        finally:
+            deploy_ledger.DEPLOY_ROOT = original
     assert client._write_counts["POST"] == 0
     assert client._write_counts["PUT"] == 0
 

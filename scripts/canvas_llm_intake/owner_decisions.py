@@ -16,6 +16,7 @@ Stored locally (gitignored) at::
 """
 from __future__ import annotations
 
+import copy
 import json
 from datetime import datetime, timezone
 from pathlib import Path
@@ -26,8 +27,15 @@ from . import manifest as mf
 # Decision kinds.
 KIND_ASSESSMENT_OVERRIDE = "assessment_override"
 KIND_UNIT_LABEL_OVERRIDE = "unit_label_override"
+# Parser-facing interpretation of an unchanged source cell (for example
+# Math "Test 8" -> "WA8/FA8"). Applied only to a translation working copy.
+KIND_SEMANTIC_INTERPRETATION = "semantic_interpretation"
 
-VALID_KINDS = (KIND_ASSESSMENT_OVERRIDE, KIND_UNIT_LABEL_OVERRIDE)
+VALID_KINDS = (
+    KIND_ASSESSMENT_OVERRIDE,
+    KIND_UNIT_LABEL_OVERRIDE,
+    KIND_SEMANTIC_INTERPRETATION,
+)
 
 # Provenance values.
 SOURCE_OWNER_INSTRUCTION = "OWNER_INSTRUCTION"
@@ -137,6 +145,104 @@ def active_decisions(quarter: int, week: int, *, kind: str | None = None) -> lis
     return items
 
 
+def semantic_decisions(
+    decisions: list[dict[str, Any]] | None = None, *, subject: str | None = None,
+) -> list[dict[str, Any]]:
+    """Active semantic interpretations, optionally limited to one subject."""
+    items = []
+    for decision in decisions or []:
+        if not decision.get("active", True):
+            continue
+        if decision.get("kind") != KIND_SEMANTIC_INTERPRETATION:
+            continue
+        if subject is not None and decision.get("subject") != subject:
+            continue
+        items.append(decision)
+    return items
+
+
+def _semantic_key(decision: dict[str, Any]) -> tuple[str, str, str]:
+    return (
+        str(decision.get("subject") or ""),
+        str(decision.get("day") or ""),
+        str(decision.get("date") or ""),
+    )
+
+
+def apply_translation_working_copy(
+    week: dict[str, Any], decisions: list[dict[str, Any]] | None,
+) -> tuple[dict[str, Any], list[dict[str, Any]]]:
+    """Return a deep copy whose matching cells use the owner parser value.
+
+    The caller's week dict and its raw source strings are not modified. A
+    decision applies only when the copied cell still equals ``source_value``,
+    the weekday matches, and the cell date matches the decision date. Duplicate
+    active decisions for the same cell fail closed and do not rewrite anything.
+    Inactive decisions are ignored.
+    """
+    working = copy.deepcopy(week)
+    week_code = ((week.get("week") or {}).get("code") or "")
+    active = semantic_decisions(decisions)
+    counts: dict[tuple[str, str, str], int] = {}
+    for decision in active:
+        key = _semantic_key(decision)
+        counts[key] = counts.get(key, 0) + 1
+    applied: list[dict[str, Any]] = []
+    for decision in active:
+        day_name = decision.get("day") or ""
+        subject = decision.get("subject") or ""
+        source_value = decision.get("source_value") or ""
+        owner_value = decision.get("owner_value") or ""
+        decision_date = decision.get("date") or ""
+        day = (working.get("days") or {}).get(day_name) or {}
+        cell = (day.get("subjects") or {}).get(subject) if isinstance(day, dict) else None
+        cell_date = day.get("date", "") if isinstance(day, dict) else ""
+        record = {
+            "decision_id": decision.get("decision_id", ""),
+            "subject": subject,
+            "day": day_name,
+            "date": decision_date,
+            "source_value": source_value,
+            "owner_value": owner_value,
+            "observed_raw": cell.get("raw") if isinstance(cell, dict) else None,
+            "observed_date": cell_date,
+            "applied": False,
+            "conflict": True,
+        }
+        decision_week = decision.get("week") or ""
+        if counts[_semantic_key(decision)] > 1:
+            record["reason"] = "duplicate active semantic decisions for the same cell"
+        elif decision_week and week_code and decision_week != week_code:
+            record["reason"] = "decision week does not match the instructional week"
+        elif not isinstance(cell, dict):
+            record["reason"] = "subject cell missing"
+        elif not decision_date or decision_date != cell_date:
+            record["reason"] = "source cell date does not match the decision date"
+        elif cell.get("raw") != source_value:
+            record["reason"] = "source value no longer matches the decision"
+        else:
+            cell["raw"] = owner_value
+            record["applied"] = True
+            record["conflict"] = False
+            record["reason"] = "applied to translation working copy only"
+        applied.append(record)
+    return working, applied
+
+
+def semantic_publication_blockers(applications: list[dict[str, Any]] | None) -> list[str]:
+    """Block publication when a semantic decision did not apply cleanly."""
+    blockers: list[str] = []
+    for record in applications or []:
+        if record.get("applied") is True and record.get("conflict") is not True:
+            continue
+        blockers.append(
+            "semantic override conflict: "
+            f"{record.get('subject')} {record.get('day')} {record.get('date')} "
+            f"({record.get('reason') or 'not applied'})"
+        )
+    return blockers
+
+
 def science_assessment_override(
     decisions: list[dict[str, Any]] | None = None, *, date: str | None = None
 ) -> dict[str, Any] | None:
@@ -194,6 +300,31 @@ def command_self_test() -> int:
             )
             assert len(load_decisions(2, 4)) == 1
             assert len(load_decisions(2, 4)[0]["history"]) == 2
+
+            week = {
+                "days": {"Tuesday": {"date": "2026-11-10", "subjects": {"math": {"raw": "Test 8"}}}},
+            }
+            original_raw = week["days"]["Tuesday"]["subjects"]["math"]["raw"]
+            decision = upsert_decision(
+                2, 4,
+                kind=KIND_SEMANTIC_INTERPRETATION,
+                subject="math",
+                day="Tuesday",
+                date="2026-11-10",
+                source_value="Test 8",
+                owner_value="WA8/FA8",
+                reason="owner-confirmed cumulative and fact assessments",
+                extra={"written_title": "Cumulative Test 8", "fact_title": "Fact Test 8"},
+            )
+            assert decision["written_title"] == "Cumulative Test 8"
+            working, applied = apply_translation_working_copy(week, load_decisions(2, 4))
+            assert week["days"]["Tuesday"]["subjects"]["math"]["raw"] == original_raw == "Test 8"
+            assert working["days"]["Tuesday"]["subjects"]["math"]["raw"] == "WA8/FA8"
+            assert applied[0]["applied"] is True
+            drifted = {"days": {"Tuesday": {"subjects": {"math": {"raw": "Test 9"}}}}}
+            _, skipped = apply_translation_working_copy(drifted, load_decisions(2, 4))
+            assert skipped[0]["applied"] is False
+            assert drifted["days"]["Tuesday"]["subjects"]["math"]["raw"] == "Test 9"
 
             # Both values are mandatory.
             try:

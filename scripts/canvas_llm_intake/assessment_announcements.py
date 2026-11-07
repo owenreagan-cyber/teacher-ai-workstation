@@ -30,7 +30,7 @@ from __future__ import annotations
 
 import hashlib
 import json
-from datetime import date
+from datetime import date, datetime
 from pathlib import Path
 from typing import Any
 
@@ -500,6 +500,478 @@ def _science_assessment_date(week: dict[str, Any]) -> str:
         if cell.get("assessment"):
             return day.get("date", "")
     return ""
+
+
+MATH_COURSE_ID = 26404
+LANGUAGE_ARTS_COURSE_ID = 28171
+
+
+def _matching_decision(
+    decisions: list[dict[str, Any]] | None,
+    *,
+    subject: str,
+    date_value: str,
+    kind: str | None = None,
+) -> dict[str, Any] | None:
+    found = None
+    for decision in decisions or []:
+        if not decision.get("active", True):
+            continue
+        if decision.get("subject") != subject:
+            continue
+        if kind is not None and decision.get("kind") != kind:
+            continue
+        if decision.get("date") and date_value and decision.get("date") != date_value:
+            continue
+        found = decision
+    return found
+
+
+def _mark_duplicate_identities(items: list[dict[str, Any]]) -> None:
+    counts: dict[str, int] = {}
+    for item in items:
+        identity = item.get("duplicate_identity") or ""
+        counts[identity] = counts.get(identity, 0) + 1
+    for item in items:
+        identity = item.get("duplicate_identity") or ""
+        if identity and counts.get(identity, 0) > 1:
+            item["duplicate_status"] = "AMBIGUOUS"
+            item["schedule_state"] = pa.BLOCKED
+            item["scheduled"] = False
+            item["delayed_post_at"] = None
+            item["publication_blocked"] = True
+            item["blocked_sections"] = list(item.get("blocked_sections") or []) + [
+                "announcement identity is ambiguous",
+            ]
+        else:
+            item["duplicate_status"] = "UNIQUE"
+
+
+def _notice_draft_hash(item: dict[str, Any]) -> str:
+    payload = {
+        "title": item.get("title", ""),
+        "course_id": item.get("course_id"),
+        "assessment_date": item.get("assessment_date", ""),
+        "notice_type": item.get("notice_type", ""),
+        "body": item.get("body", ""),
+        "proposed_post_date": item.get("proposed_post_date", ""),
+        "delayed_post_at": item.get("delayed_post_at") or "",
+    }
+    return _sha(json.dumps(payload, sort_keys=True, ensure_ascii=False))
+
+
+def _finish_notice(item: dict[str, Any], *, source_hash: str) -> dict[str, Any]:
+    item["draft_hash"] = _notice_draft_hash(item)
+    item["approval_state"] = "PENDING"
+    item["preview_only"] = True
+    item["requires_teacher_approval"] = True
+    item["approval_record"] = {
+        "granularity": "assessment_reminder",
+        "bundle_subject": item.get("subject", ""),
+        "state": "PENDING",
+        "draft_hash": item["draft_hash"],
+        "source_hash": source_hash,
+        "approved_by": None,
+    }
+    return item
+
+
+def _verified_resource(decision: dict[str, Any] | None, *, role: str) -> dict[str, Any] | None:
+    for resource in (decision or {}).get("resources") or []:
+        if resource.get("role") == role:
+            return resource
+    return None
+
+
+def _resource_blocks(
+    resource: dict[str, Any] | None, *, label: str, require_metadata: bool = False,
+) -> list[str]:
+    if not resource or not resource.get("verified") or not resource.get("file_id") or not resource.get("url"):
+        return [f"{label} is not a verified owner-supplied Canvas resource"]
+    if str(resource.get("file_id")) not in str(resource.get("url")):
+        return [f"{label} URL does not reference file {resource.get('file_id')}"]
+    if require_metadata and resource.get("source") != "CANVAS_FILE_METADATA":
+        return [f"{label} URL was not read from Canvas file metadata"]
+    return []
+
+
+def _math_notice_body(
+    *,
+    notice_type: str,
+    date_display: str,
+    written_title: str,
+    fact_title: str,
+    fact_count: int | None,
+    power_up: str | None,
+    resource: dict[str, Any] | None,
+) -> str:
+    if notice_type == "FIRST_NOTICE":
+        lead = f"Students will take {written_title} and {fact_title} on {date_display}."
+    else:
+        lead = f"This is a reminder that {written_title} and {fact_title} are {date_display}."
+    lines = [
+        "Good afternoon,",
+        "",
+        lead,
+        "",
+        f"{written_title} and {fact_title} will both be given {date_display}.",
+    ]
+    if fact_count:
+        lines.append(f"{fact_title} covers {fact_count} multiplication facts.")
+    if power_up:
+        lines.append(f"Students should practice Power Up {power_up}.")
+    if resource and resource.get("url"):
+        name = resource.get("display_name") or f"Power Up {power_up}"
+        lines.append(f"{name}: {resource['url']}")
+    lines.extend(["", "Thank you for your continued support at home!", "", "Owen Reagan"])
+    return "\n".join(lines)
+
+
+def _language_arts_notice_body(
+    *,
+    notice_type: str,
+    title: str,
+    date_display: str,
+    preparation: list[str],
+    resources: list[dict[str, Any]],
+) -> str:
+    if notice_type == "FIRST_NOTICE":
+        lead = (
+            "I hope you are having a wonderful weekend! I wanted to send a quick reminder that "
+            f"we are having our {title} on {date_display}."
+        )
+    else:
+        lead = (
+            f"Our {title} will take place {date_display}. "
+            "Please review the following material to prepare:"
+        )
+    lines = ["Good afternoon,", "", lead, ""]
+    lines.extend(preparation)
+    verified = [resource for resource in resources if resource.get("url")]
+    if verified:
+        lines.append("")
+        lines.append("Practice Resources")
+        for resource in verified:
+            label = resource.get("label") or resource.get("display_name") or "Practice resource"
+            lines.append(f"{label}: {resource['url']}")
+    lines.extend(["", "Thank you for your continued support!", "", "Owen Reagan"])
+    return "\n".join(lines)
+
+
+def _apply_owner_notice_time(
+    timing: dict[str, Any],
+    *,
+    proposed: str,
+    config: dict[str, Any],
+    now: datetime | None,
+    owner_time: str | None,
+) -> dict[str, Any]:
+    """Apply an owner time only to a notice that is not already future-scheduled.
+
+    A future policy time is preserved. A time that fails validation blocks the
+    notice instead of being invented or backdated.
+    """
+    if timing.get("schedule_state") == pa.FUTURE_SCHEDULED and timing.get("delayed_post_at"):
+        return timing
+    if not owner_time:
+        return timing
+    try:
+        return pa.classify_notice_schedule(proposed, config, now=now, owner_selected_at=owner_time)
+    except ValueError as exc:
+        return {
+            **timing,
+            "schedule_state": pa.BLOCKED,
+            "scheduled": False,
+            "delayed_post_at": None,
+            "schedule_error": str(exc),
+        }
+
+
+def _math_notices(
+    event: dict[str, Any],
+    *,
+    decision: dict[str, Any] | None,
+    source_hash: str,
+    config: dict[str, Any],
+    now: datetime | None,
+    notice_times: dict[str, str] | None = None,
+) -> list[dict[str, Any]]:
+    written = next((a for a in event.get("assignments") or [] if a and a.get("kind") == "written_assessment"), None)
+    fact = next((a for a in event.get("assignments") or [] if a and a.get("kind") == "fact_assessment"), None)
+    if written is None or fact is None:
+        return []
+    assessment_date = event.get("assessmentDate") or ""
+    number = fact.get("number")
+    mapped = rem.resolve_fact_test(int(number)) if number is not None else None
+    power_up = (mapped or {}).get("powerUpCode")
+    written_title = (decision or {}).get("written_title") or f"Cumulative Test {written.get('number')}"
+    fact_title = (decision or {}).get("fact_title") or f"Fact Test {fact.get('number')}"
+    fact_count = (decision or {}).get("fact_count")
+    resource = _verified_resource(decision, role="power_up")
+    blocks = []
+    if mapped is None or not power_up:
+        blocks.append("Fact Test practice map has no Power Up for this assessment")
+    elif decision and decision.get("power_up") and str(decision.get("power_up")).upper() not in {
+        str(power_up).upper(), f"POWER UP {str(power_up).upper()}",
+    }:
+        blocks.append("owner Power Up does not match the canonical fact-test practice map")
+    blocks.extend(_resource_blocks(
+        resource, label=f"Power Up {power_up or ''}", require_metadata=True,
+    ))
+    if not fact_count:
+        blocks.append("owner-confirmed fact count is missing")
+    source_event = pa.source_event_label(event)
+    schedule = pa.schedule_notices(assessment_date, config)
+    notices = []
+    for notice_type, proposed in (("FIRST_NOTICE", schedule["firstNotice"]), ("REMINDER", schedule["reminder"])):
+        identity = pa.announcement_identity(
+            "Math", "math_assessment", source_event, assessment_date, notice_type,
+        )
+        timing = pa.classify_notice_schedule(proposed, config, now=now)
+        timing = _apply_owner_notice_time(
+            timing, proposed=proposed, config=config, now=now,
+            owner_time=(notice_times or {}).get(identity),
+        )
+        if blocks:
+            timing = {
+                **timing,
+                "schedule_state": pa.BLOCKED,
+                "scheduled": False,
+                "delayed_post_at": None,
+            }
+        title = (
+            f"Math {written_title} and {fact_title}"
+            if notice_type == "FIRST_NOTICE"
+            else f"Math Assessment Reminder — {_month_day(assessment_date)}"
+        )
+        body = _math_notice_body(
+            notice_type=notice_type,
+            date_display=_display_date(assessment_date),
+            written_title=written_title,
+            fact_title=fact_title,
+            fact_count=int(fact_count) if fact_count else None,
+            power_up=power_up,
+            resource=resource if not blocks else None,
+        )
+        item = {
+            "artifact_type": "assessment_announcement",
+            "family": "math_assessment",
+            "type": "math_assessment",
+            "notice_type": notice_type,
+            "subject": "math",
+            "course": "Math",
+            "course_id": MATH_COURSE_ID,
+            "title": title,
+            "assessment_title": f"{written_title} and {fact_title}",
+            "assessment_date": assessment_date,
+            "date_display": _display_date(assessment_date),
+            "body": body,
+            "message": body,
+            "preparation": [
+                line for line in (
+                    f"{fact_title} covers {fact_count} multiplication facts." if fact_count else "",
+                    f"Students should practice Power Up {power_up}." if power_up else "",
+                ) if line
+            ],
+            "fact_packet": {
+                "assessmentDate": assessment_date,
+                "assessments": [written_title, fact_title],
+                "factCount": fact_count,
+                "powerUp": power_up,
+                "resourceFileId": None if blocks else (resource or {}).get("file_id"),
+                "sourceHash": source_hash,
+            },
+            "source_refs": [
+                "config/curriculum/math/saxon-math-5/fact-test-practice-map.json",
+                "config/curriculum/canvas/assessment-announcement-policy-2026-2027.json#twoNoticePolicy",
+                "owner-decisions.json#semantic_interpretation",
+            ],
+            "source_hashes": {"pacing_source": source_hash, "announcement_policy": _file_hash(ANNOUNCEMENT_POLICY_PATH)},
+            "source_hash": source_hash,
+            "provenance": {
+                "authority": "OWNER_INSTRUCTION",
+                "source_value": (decision or {}).get("source_value", ""),
+                "owner_value": (decision or {}).get("owner_value", ""),
+                "decision_id": (decision or {}).get("decision_id", ""),
+            },
+            "content_status": "PARTIAL" if blocks else "READY",
+            "blocked_sections": blocks,
+            "publication_blocked": bool(blocks),
+            "duplicate_identity": identity,
+            "schedule_warnings": schedule.get("warnings") or [],
+            **timing,
+        }
+        notices.append(_finish_notice(item, source_hash=source_hash))
+    return notices
+
+
+def _month_day(iso: str) -> str:
+    if not iso:
+        return ""
+    value = date.fromisoformat(iso)
+    return f"{value.strftime('%B')} {value.day}"
+
+
+def _language_arts_notices(
+    event: dict[str, Any],
+    *,
+    decision: dict[str, Any] | None,
+    source_hash: str,
+    config: dict[str, Any],
+    now: datetime | None,
+    notice_times: dict[str, str] | None = None,
+) -> list[dict[str, Any]]:
+    assignment = next((a for a in event.get("assignments") or [] if a and a.get("kind") == "chapter_test"), None)
+    if assignment is None:
+        return []
+    assessment_date = event.get("assessmentDate") or ""
+    chapter = assignment.get("number")
+    assessment_name = (decision or {}).get("assessment_title") or f"Chapter {chapter} Test"
+    preparation = [str(line) for line in ((decision or {}).get("preparation") or []) if str(line).strip()]
+    resources = [item for item in ((decision or {}).get("resources") or []) if item.get("role") == "practice"]
+    blocks: list[str] = []
+    if not preparation:
+        blocks.append("owner-supplied Chapter review content is missing")
+    if len([item for item in resources if item.get("verified") and item.get("file_id") and item.get("url")]) < 2:
+        blocks.append("both verified Language Arts practice resources are required")
+    source_event = pa.source_event_label(event)
+    schedule = pa.schedule_notices(assessment_date, config)
+    notices = []
+    for notice_type, proposed in (("FIRST_NOTICE", schedule["firstNotice"]), ("REMINDER", schedule["reminder"])):
+        identity = pa.announcement_identity(
+            "Language Arts", "language_arts_assessment", source_event, assessment_date, notice_type,
+        )
+        timing = pa.classify_notice_schedule(proposed, config, now=now)
+        timing = _apply_owner_notice_time(
+            timing, proposed=proposed, config=config, now=now,
+            owner_time=(notice_times or {}).get(identity),
+        )
+        if blocks:
+            timing = {**timing, "schedule_state": pa.BLOCKED, "scheduled": False, "delayed_post_at": None}
+        title = assessment_name if notice_type == "FIRST_NOTICE" else f"Reminder — {assessment_name}"
+        body = _language_arts_notice_body(
+            notice_type=notice_type,
+            title=assessment_name,
+            date_display=_display_date(assessment_date),
+            preparation=preparation,
+            resources=resources if not blocks else [],
+        )
+        item = {
+            "artifact_type": "assessment_announcement",
+            "family": "language_arts_assessment",
+            "type": "language_arts_assessment",
+            "notice_type": notice_type,
+            "subject": "language_arts",
+            "course": "Language Arts",
+            "course_id": LANGUAGE_ARTS_COURSE_ID,
+            "title": title,
+            "assessment_title": assessment_name,
+            "assessment_date": assessment_date,
+            "date_display": _display_date(assessment_date),
+            "body": body,
+            "message": body,
+            "preparation": preparation,
+            "fact_packet": {
+                "assessmentDate": assessment_date,
+                "assessments": [assessment_name],
+                "resourceFileIds": [item.get("file_id") for item in resources],
+                "sourceHash": source_hash,
+            },
+            "source_refs": [
+                "config/curriculum/canvas/assessment-announcement-policy-2026-2027.json#languageArtsAssessment",
+                "owner-decisions.json#language_arts",
+            ],
+            "source_hashes": {"pacing_source": source_hash, "announcement_policy": _file_hash(ANNOUNCEMENT_POLICY_PATH)},
+            "source_hash": source_hash,
+            "provenance": {
+                "authority": "OWNER_INSTRUCTION",
+                "source_value": (decision or {}).get("source_value", ""),
+                "owner_value": (decision or {}).get("owner_value", ""),
+                "decision_id": (decision or {}).get("decision_id", ""),
+            },
+            "content_status": "PARTIAL" if blocks else "READY",
+            "blocked_sections": blocks,
+            "publication_blocked": bool(blocks),
+            "duplicate_identity": identity,
+            "schedule_warnings": schedule.get("warnings") or [],
+            **timing,
+        }
+        notices.append(_finish_notice(item, source_hash=source_hash))
+    return notices
+
+
+def draft_two_notice_announcements(
+    week: dict[str, Any],
+    *,
+    source_hash: str = "",
+    decisions: list[dict[str, Any]] | None = None,
+    now: datetime | None = None,
+    notice_times: dict[str, str] | None = None,
+) -> list[dict[str, Any]]:
+    """Draft FIRST_NOTICE and REMINDER for Math and Language Arts assessments.
+
+    Math written and fact assessments stay one combined family announcement per
+    notice type. Nothing here is approved or posted.
+    """
+    config = pa.load_config()
+    notices: list[dict[str, Any]] = []
+    for event in pa.resolve_assessment_facts(week):
+        family = event.get("family")
+        assessment_date = event.get("assessmentDate") or ""
+        if family == "math_assessment":
+            decision = _matching_decision(
+                decisions, subject="math", date_value=assessment_date, kind="semantic_interpretation",
+            )
+            # Without an auditable semantic decision, Math keeps its existing
+            # single reminder. The two-notice pair is the owner-confirmed path.
+            if decision is None:
+                continue
+            notices.extend(_math_notices(
+                event, decision=decision, source_hash=source_hash, config=config, now=now,
+                notice_times=notice_times,
+            ))
+        elif family == "language_arts_assessment":
+            decision = _matching_decision(decisions, subject="language_arts", date_value=assessment_date)
+            if not decision or not decision.get("preparation"):
+                continue
+            notices.extend(_language_arts_notices(
+                event, decision=decision, source_hash=source_hash, config=config, now=now,
+                notice_times=notice_times,
+            ))
+    _mark_duplicate_identities(notices)
+    return notices
+
+
+def annotate_unscheduled_reminders(
+    reminders: list[dict[str, Any]],
+    *,
+    now: datetime | None = None,
+    notice_times: dict[str, str] | None = None,
+) -> list[dict[str, Any]]:
+    """Give every reminder an explicit schedule. Null delay never means post now."""
+    config = pa.load_config()
+    for item in reminders:
+        if item.get("notice_type") in ("FIRST_NOTICE", "REMINDER") and item.get("schedule_state"):
+            continue
+        assessment_date = item.get("assessment_date") or ""
+        identity = item.get("duplicate_identity") or ""
+        if not assessment_date:
+            item["schedule_state"] = pa.BLOCKED
+            item["scheduled"] = False
+            item["delayed_post_at"] = None
+            item["publication_blocked"] = True
+            item["schedule_error"] = "reminder has no assessment date"
+            continue
+        proposed = pa.schedule_notices(assessment_date, config)["reminder"]
+        timing = pa.classify_notice_schedule(proposed, config, now=now)
+        timing = _apply_owner_notice_time(
+            timing, proposed=proposed, config=config, now=now,
+            owner_time=(notice_times or {}).get(identity),
+        )
+        if timing.get("schedule_state") != pa.FUTURE_SCHEDULED:
+            item["publication_blocked"] = True
+        item.update(timing)
+    return reminders
 
 
 def command_self_test() -> int:

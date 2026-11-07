@@ -1,0 +1,77 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    name: Validate
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      PYTHONPATH: ${{ github.workspace }}
+      PYTHONDONTWRITEBYTECODE: "1"
+      TAW_STATE_ROOT: ${{ runner.temp }}/.local
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Shell syntax
+        run: |
+          set -euo pipefail
+          bash -n tests/canvas-llm-intake-test.sh
+          bash -n tests/canvas-llm-deploy-test.sh
+
+      - name: Whitespace and patch check
+        run: |
+          set -euo pipefail
+          git diff --check "$(git merge-base origin/main HEAD)" HEAD
+
+      - name: Q2W5 lifecycle and integration
+        run: |
+          set -euo pipefail
+          python3 tests/q2w5-lifecycle-integrity-test.py
+          python3 tests/q2w5-lifecycle-correction-test.py
+          python3 tests/q2w5-execution-gate-test.py
+          python3 tests/q2w5-canonical-assessment-integration-test.py
+          python3 -m scripts.canvas_llm_intake.manifest
+
+      - name: Canvas rollover
+        run: |
+          set -euo pipefail
+          files=0
+          for test in tests/canvas_rollover/test_*.py; do
+            echo "::group::$test"
+            python3 "$test"
+            echo "::endgroup::"
+            files=$((files + 1))
+          done
+          echo "Rollover files executed: $files"
+
+      - name: Canvas planner
+        run: python3 -m unittest discover -s tests/canvas_planner
+
+      - name: Canvas intake and deployment
+        run: |
+          set -euo pipefail
+          bash tests/canvas-llm-intake-test.sh
+          bash tests/canvas-llm-deploy-test.sh
+          python3 tests/canvas-llm-phase-3-announcement-test.py

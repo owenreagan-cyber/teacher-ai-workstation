@@ -60,6 +60,21 @@ class CanvasReadOnly:
         data = self._get(f"/api/v1/courses/{course_id}/assignments?per_page=100")
         return data if isinstance(data, list) else []
 
+    def get_file(self, course_id: int, file_id: int) -> dict[str, Any] | None:
+        """GET one course file. Returns only an authoritative URL that names the file id."""
+        data = self._get(f"/api/v1/courses/{course_id}/files/{int(file_id)}")
+        if not isinstance(data, dict) or int(data.get("id") or 0) != int(file_id):
+            return None
+        url = data.get("url") or data.get("html_url") or ""
+        if str(file_id) not in str(url):
+            return None
+        return {
+            "id": int(file_id),
+            "display_name": data.get("display_name") or data.get("filename") or "",
+            "url": url,
+            "source": "CANVAS_FILE_METADATA",
+        }
+
     def get_course(self, course_id: int) -> dict[str, Any] | None:
         """GET the course object (id, name, workflow_state)."""
         return self._get(f"/api/v1/courses/{course_id}")

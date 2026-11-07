@@ -487,7 +487,7 @@ class CanvasPlannerService:
             now_local = now.astimezone(EASTERN)
             published = (
                 verified.get("status") == "PUBLISHED_VERIFIED"
-                or rollover_ledger.get("lifecycle") == "PUBLISHED_VERIFIED"
+                and rollover_ledger.get("lifecycle") == "PUBLISHED_VERIFIED"
             )
             if now_local >= rollover_local and not published:
                 items.append(self._item(
@@ -526,7 +526,7 @@ class CanvasPlannerService:
     @staticmethod
     def _rollover_state(*, courses: list[dict[str, Any]], verified: dict[str, Any],
                         ledger: dict[str, Any], rollover_at: str | None, now: datetime) -> str:
-        if verified.get("status") == "PUBLISHED_VERIFIED" or ledger.get("lifecycle") == "PUBLISHED_VERIFIED":
+        if verified.get("status") == "PUBLISHED_VERIFIED" and ledger.get("lifecycle") == "PUBLISHED_VERIFIED":
             return "PUBLISHED_VERIFIED"
         if ledger.get("lifecycle") == "EXECUTING":
             return "EXECUTING"

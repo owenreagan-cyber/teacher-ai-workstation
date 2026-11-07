@@ -191,7 +191,114 @@ def _slug_for(week_code: str) -> str:
     return intake._slug_for(week_code)
 
 
-def build_plan(quarter: int, week: int) -> dict[str, Any]:
+def _reminder_plan_entry(
+    reminder: dict[str, Any],
+    *,
+    label: str,
+    subject: str,
+    week_code: str,
+    date_range: dict[str, Any],
+    now: datetime | None = None,
+    notice_times: dict[str, str] | None = None,
+) -> dict[str, Any]:
+    """Schedule a reminder. A missing delay never becomes an immediate post."""
+    from scripts.canvas_llm_intake import assessment_announcements as aa
+    from scripts.canvas_llm_phase3 import pacing_announcement as pa
+
+    item = dict(reminder)
+    identity = item.get("duplicate_identity") or ""
+    if not item.get("schedule_state"):
+        aa.annotate_unscheduled_reminders([item], now=now, notice_times=notice_times)
+    elif item.get("schedule_state") == "OWNER_TIME_REQUIRED" and identity in (notice_times or {}):
+        try:
+            timing = pa.classify_notice_schedule(
+                item.get("proposed_post_date") or item.get("assessment_date") or "",
+                pa.load_config(), now=now, owner_selected_at=(notice_times or {})[identity],
+            )
+            item.update(timing)
+            item["publication_blocked"] = False
+        except ValueError as exc:
+            item["schedule_state"] = "BLOCKED"
+            item["scheduled"] = False
+            item["delayed_post_at"] = None
+            item["publication_blocked"] = True
+            item["schedule_error"] = str(exc)
+    state = item.get("schedule_state")
+    delayed = item.get("delayed_post_at")
+    entry = {
+        "type": item.get("type"),
+        "notice_type": item.get("notice_type"),
+        "course": label,
+        "course_id": item.get("course_id"),
+        "subject": subject,
+        "title": item.get("title"),
+        "message": item.get("message") or item.get("body") or "",
+        "week_code": week_code,
+        "date_range": date_range,
+        "artifact_type": "assessment_reminder",
+        "duplicate_identity": identity,
+        "duplicate_status": item.get("duplicate_status"),
+        "content_status": item.get("content_status"),
+        "schedule_state": state,
+        "assessment_date": item.get("assessment_date"),
+    }
+    publishable = (
+        state == "FUTURE_SCHEDULED"
+        and bool(delayed)
+        and item.get("content_status", "READY") == "READY"
+        and item.get("duplicate_status", "UNIQUE") != "AMBIGUOUS"
+        and not item.get("publication_blocked")
+    )
+    if publishable:
+        entry.update({"scheduled": True, "delayed_post_at": delayed, "action": "CREATE"})
+    else:
+        entry.update({
+            "scheduled": False,
+            "delayed_post_at": None,
+            "action": "BLOCKED",
+            "block_reason": (
+                "owner-selected future publication time required"
+                if state in (None, "OWNER_TIME_REQUIRED")
+                else item.get("schedule_error") or item.get("blocked_sections") or "assessment notice is not publishable"
+            ),
+        })
+    return entry
+
+
+def plan_fingerprint(plan: dict[str, Any]) -> str:
+    """Hash the publish actions a reviewer actually approved."""
+    def _rows(items: list[dict[str, Any]], fields: tuple[str, ...]) -> list[dict[str, Any]]:
+        rows = []
+        for item in items or []:
+            row = {field: item.get(field) for field in fields}
+            message = item.get("message") or ""
+            if message:
+                row["message_hash"] = _sha(message)
+            rows.append(row)
+        return rows
+
+    payload = {
+        "assignments": _rows(plan.get("assignments") or [], (
+            "title", "action", "course_id", "due_date", "assignment_id",
+        )),
+        "weekly_announcements": _rows(plan.get("weekly_announcements") or [], (
+            "title", "action", "course_id", "page_id", "delayed_post_at", "schedule_state",
+        )),
+        "assessment_reminders": _rows(plan.get("assessment_reminders") or [], (
+            "title", "action", "course_id", "delayed_post_at", "schedule_state", "duplicate_identity",
+        )),
+    }
+    return _sha(json.dumps(payload, sort_keys=True, ensure_ascii=False, default=str))
+
+
+def build_plan(
+    quarter: int,
+    week: int,
+    *,
+    now: datetime | None = None,
+    owner_publication_time: str | None = None,
+    notice_times: dict[str, str] | None = None,
+) -> dict[str, Any]:
     """Produce the deterministic, reviewable write plan (no Canvas I/O)."""
     pkt = load_packet(quarter, week)
     summary = pkt["summary"]
@@ -204,6 +311,11 @@ def build_plan(quarter: int, week: int) -> dict[str, Any]:
 
     active = summary["active_subjects"]
     subjects = approvals.get("subjects", {})
+    stored_times = intake.load_owner_publication_times(quarter, week)
+    if owner_publication_time is None:
+        owner_publication_time = stored_times.get("release")
+    if notice_times is None:
+        notice_times = dict(stored_times.get("notices") or {})
 
     # Pages: UPDATE only for approved page artifacts.
     pages: list[dict[str, Any]] = []
@@ -273,6 +385,14 @@ def build_plan(quarter: int, week: int) -> dict[str, Any]:
             assignments.append(entry)
 
     # Weekly announcements: CREATE only for approved announcement artifact.
+    # A missed Friday 4:00 PM window is not backdated. Without an explicit
+    # owner-selected time the announcement is blocked.
+    publication = None
+    if week_start:
+        from scripts.canvas_llm_rollover.schedule import resolve_publication_time
+        publication = resolve_publication_time(
+            week_start, now=now, owner_selected_at=owner_publication_time,
+        )
     announcements_plan: list[dict[str, Any]] = []
     for subject in active:
         if subjects.get(subject, {}).get("announcement", {}).get("state") != "APPROVED":
@@ -283,21 +403,44 @@ def build_plan(quarter: int, week: int) -> dict[str, Any]:
             continue
         agenda_html = pkt["page_bodies"].get(subject, "")
         body = compose_announcement_body(ann, agenda_html)
+        if publication and publication.get("requires_owner_time"):
+            scheduled = False
+            delayed_post_at = None
+            schedule_state = "OWNER_TIME_REQUIRED"
+            action = "BLOCKED"
+        elif publication:
+            scheduled = True
+            delayed_post_at = publication.get("scheduled_at")
+            schedule_state = "FUTURE_SCHEDULED"
+            action = "CREATE"
+        else:
+            scheduled = True
+            delayed_post_at = weekly_update_delayed_post_at(week_start) if week_start else None
+            schedule_state = "FUTURE_SCHEDULED" if delayed_post_at else None
+            action = "CREATE"
+        if ann.get("hash_consistent") is False:
+            action = "BLOCKED"
+            scheduled = False
+            delayed_post_at = None
+            schedule_state = "BLOCKED"
         announcements_plan.append({
             "course": label,
             "course_id": _course_id(subject),
             "subject": subject,
+            "page_id": ann.get("page_id"),
             "title": ann.get("title", f"{label} Canvas Weekly Update"),
             "message": body,
-            "scheduled": True,
-            "delayed_post_at": weekly_update_delayed_post_at(week_start) if week_start else None,
+            "scheduled": scheduled,
+            "delayed_post_at": delayed_post_at,
+            "canonical_delayed_post_at": (publication or {}).get("canonical_scheduled_at"),
+            "schedule_state": schedule_state,
             "agenda_hash": ann.get("agenda_hash", ""),
             "page_agenda_hash": ann.get("page_agenda_hash", ""),
             "hash_consistent": ann.get("hash_consistent", False),
             "week_code": week_code,
             "date_range": date_range,
             "artifact_type": "weekly_update",
-            "action": "CREATE",
+            "action": action,
         })
 
     # Assessment reminders: CREATE only for approved assessment_reminder artifact.
@@ -309,20 +452,10 @@ def build_plan(quarter: int, week: int) -> dict[str, Any]:
         for r in pkt["reminders"]:
             if r.get("course") != label:
                 continue
-            reminders_plan.append({
-                "type": r.get("type"),
-                "course": label,
-                "course_id": r.get("course_id"),
-                "subject": subject,
-                "title": r.get("title"),
-                "message": r.get("body", ""),
-                "scheduled": False,
-                "delayed_post_at": None,
-                "week_code": week_code,
-                "date_range": date_range,
-                "artifact_type": "assessment_reminder",
-                "action": "CREATE",
-            })
+            reminders_plan.append(_reminder_plan_entry(
+                r, label=label, subject=subject, week_code=week_code, date_range=date_range,
+                now=now, notice_times=notice_times,
+            ))
 
     untouched = {
         s: True for s in SUBJECT_LABELS
@@ -340,7 +473,7 @@ def build_plan(quarter: int, week: int) -> dict[str, Any]:
         "deletes": 0,
     }
 
-    return {
+    result = {
         "quarter": quarter,
         "week": week,
         "week_code": week_code,
@@ -359,7 +492,10 @@ def build_plan(quarter: int, week: int) -> dict[str, Any]:
         "deletes": [],
         "untouched": untouched,
         "counts": counts,
+        "owner_publication_time": owner_publication_time,
     }
+    result["plan_fingerprint"] = plan_fingerprint(result)
+    return result
 
 
 def _course_id(subject: str) -> int | None:

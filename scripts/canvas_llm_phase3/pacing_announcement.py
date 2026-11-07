@@ -27,8 +27,9 @@ import hashlib
 import json
 import re
 import sys
-from datetime import date, datetime, timedelta
+from datetime import date, datetime, timedelta, timezone
 from typing import Any
+from zoneinfo import ZoneInfo
 
 from . import constants as C
 from . import pacing_translation as pt
@@ -360,6 +361,115 @@ def schedule_notices(assessment_date: str, config: dict[str, Any]) -> dict[str, 
     return {"firstNotice": first.isoformat(), "reminder": reminder.isoformat(), "warnings": warnings}
 
 
+FUTURE_SCHEDULED = "FUTURE_SCHEDULED"
+OWNER_TIME_REQUIRED = "OWNER_TIME_REQUIRED"
+BLOCKED = "BLOCKED"
+NOTICE_SCHEDULE_STATES = (FUTURE_SCHEDULED, OWNER_TIME_REQUIRED, BLOCKED)
+
+
+def _parse_clock(value: str) -> tuple[int, int]:
+    """Parse a policy clock such as ``4:00 PM`` into ``(hour, minute)``."""
+    match = re.match(r"^\s*(\d{1,2}):(\d{2})\s*(AM|PM)?\s*$", value or "", re.IGNORECASE)
+    if not match:
+        raise ValueError(f"unrecognized policy send time {value!r}")
+    hour = int(match.group(1))
+    minute = int(match.group(2))
+    meridiem = (match.group(3) or "").upper()
+    if meridiem == "PM" and hour != 12:
+        hour += 12
+    if meridiem == "AM" and hour == 12:
+        hour = 0
+    if not (0 <= hour <= 23 and 0 <= minute <= 59):
+        raise ValueError(f"unrecognized policy send time {value!r}")
+    return hour, minute
+
+
+def policy_send_instant(notice_date: str, config: dict[str, Any]) -> str:
+    """UTC ISO instant for a notice date at the configured policy send time."""
+    scheduling = config.get("scheduling") or {}
+    zone_name = scheduling.get("timezone") or "America/New_York"
+    clock = ((scheduling.get("sendTime") or {}).get("value")) or "4:00 PM"
+    hour, minute = _parse_clock(str(clock))
+    y, m, d = (int(part) for part in notice_date.split("-"))
+    local = datetime(y, m, d, hour, minute, tzinfo=ZoneInfo(zone_name))
+    return local.astimezone(ZoneInfo("UTC")).isoformat().replace("+00:00", "Z")
+
+
+def validate_owner_instant(value: str, now: datetime) -> str:
+    """Return a UTC instant for an owner-selected time, or raise ValueError.
+
+    The instant must be timezone-aware, strictly after ``now``, and on a later
+    local calendar date. Same-day times do not satisfy the missed-window policy.
+    This function never invents a time.
+    """
+    if now.tzinfo is None:
+        raise ValueError("now must be timezone-aware")
+    try:
+        selected = datetime.fromisoformat(str(value).replace("Z", "+00:00"))
+    except ValueError as exc:
+        raise ValueError("owner time must be an ISO-8601 timestamp") from exc
+    if selected.tzinfo is None:
+        raise ValueError("owner time must include a timezone")
+    if selected <= now:
+        raise ValueError("owner time must be in the future")
+    zone_name = "America/New_York"
+    if selected.astimezone(ZoneInfo(zone_name)).date() <= now.astimezone(ZoneInfo(zone_name)).date():
+        raise ValueError("same-day owner time does not meet the publication policy")
+    return selected.astimezone(ZoneInfo("UTC")).isoformat().replace("+00:00", "Z")
+
+
+def classify_notice_schedule(
+    notice_date: str,
+    config: dict[str, Any],
+    *,
+    now: datetime | None = None,
+    owner_selected_at: str | None = None,
+) -> dict[str, Any]:
+    """Classify one notice date without backdating or inventing a send time.
+
+    A notice whose local calendar date is today or earlier requires an explicit
+    future ``owner_selected_at``. A later date uses the configured policy send
+    time. ``BLOCKED`` is reserved for callers that cannot publish the notice.
+    """
+    now = now or datetime.now(timezone.utc)
+    if now.tzinfo is None:
+        raise ValueError("now must be timezone-aware")
+    zone_name = (config.get("scheduling") or {}).get("timezone") or "America/New_York"
+    policy_at = policy_send_instant(notice_date, config)
+    today = now.astimezone(ZoneInfo(zone_name)).date()
+    notice_day = date.fromisoformat(notice_date)
+    base = {
+        "proposed_post_date": notice_date,
+        "timezone": zone_name,
+        "policy_delayed_post_at": policy_at,
+        "owner_selected_at": owner_selected_at,
+    }
+    if owner_selected_at:
+        scheduled_at = validate_owner_instant(owner_selected_at, now)
+        return {
+            **base,
+            "schedule_state": FUTURE_SCHEDULED,
+            "scheduled": True,
+            "delayed_post_at": scheduled_at,
+            "schedule_source": "OWNER_SELECTED",
+        }
+    if notice_day <= today:
+        return {
+            **base,
+            "schedule_state": OWNER_TIME_REQUIRED,
+            "scheduled": False,
+            "delayed_post_at": None,
+            "schedule_source": "OWNER_SELECTED_REQUIRED",
+        }
+    return {
+        **base,
+        "schedule_state": FUTURE_SCHEDULED,
+        "scheduled": True,
+        "delayed_post_at": policy_at,
+        "schedule_source": "POLICY_SEND_TIME",
+    }
+
+
 # --------------------------------------------------------------------------- #
 # Duplicate identity
 # --------------------------------------------------------------------------- #
@@ -624,6 +734,17 @@ def command_self_test() -> int:
     assert sched_mon["firstNotice"] == "2026-10-14", sched_mon
     assert sched_mon["reminder"] == "2026-10-16", sched_mon  # Sun -> Fri, warn
     assert any("exceeds 2 days" in w for w in sched_mon["warnings"])
+
+    # Past and same-day notices fail closed; a future notice uses 4:00 PM local.
+    past_now = datetime(2026, 11, 7, 17, 32, tzinfo=timezone.utc)
+    past = classify_notice_schedule("2026-11-06", config, now=past_now)
+    assert past["schedule_state"] == OWNER_TIME_REQUIRED and past["delayed_post_at"] is None
+    same_day = classify_notice_schedule("2026-11-07", config, now=past_now)
+    assert same_day["schedule_state"] == OWNER_TIME_REQUIRED
+    future = classify_notice_schedule("2026-11-11", config, now=past_now)
+    assert future["schedule_state"] == FUTURE_SCHEDULED
+    assert future["delayed_post_at"] == "2026-11-11T21:00:00Z", future
+    assert future["timezone"] == "America/New_York"
 
     # Duplicate identity deterministic.
     i1 = announcement_identity("Math", "math_assessment", "Test6+Fact6", "2026-10-20", "FIRST_NOTICE")

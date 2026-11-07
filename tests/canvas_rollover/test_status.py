@@ -51,6 +51,10 @@ class PublishedStatusTest(unittest.TestCase):
                 return_value={"lifecycle": schedule.PUBLISHED_VERIFIED},
             ),
             mock.patch.object(
+                rollover.deploy_ledger, "load_published_verified",
+                return_value={"status": schedule.PUBLISHED_VERIFIED},
+            ),
+            mock.patch.object(
                 schedule, "resolve_publication_time",
                 side_effect=AssertionError(
                     "published rollover must not re-enter publication-time gate"

@@ -137,6 +137,29 @@ def build_release_plan(
     for blocker in assignment_reconciliation.get("blockers") or []:
         blockers.append(f"assignment reconciliation: {blocker}")
 
+    homeroom_announcement = None
+    try:
+        homeroom_announcement = _json.loads((drafts / "homeroom-announcement.json").read_text(encoding="utf-8"))
+    except (OSError, _json.JSONDecodeError, TypeError):
+        homeroom_announcement = None
+    if homeroom_announcement:
+        if homeroom_announcement.get("page_id") != homeroom_page_id:
+            blockers.append("Homeroom announcement page id does not match the resolved weekly page")
+        if not homeroom_announcement.get("contains_complete_newsletter_html"):
+            blockers.append("Homeroom announcement does not contain the complete newsletter HTML")
+        if homeroom_announcement.get("schedule_state") != "FUTURE_SCHEDULED":
+            blockers.append("Homeroom family announcement requires an owner-selected publication time")
+        if homeroom_announcement.get("publication_dependency") != "HOMEROOM_PAGE_PUBLISHED_AND_VERIFIED":
+            blockers.append("Homeroom announcement is missing its page-first dependency")
+    for item in staged_assessments:
+        state = item.get("schedule_state")
+        if state in ("OWNER_TIME_REQUIRED", "BLOCKED"):
+            blockers.append(f"{item.get('title')}: schedule {state}")
+        if item.get("duplicate_status") == "AMBIGUOUS":
+            blockers.append(f"{item.get('title')}: announcement identity is ambiguous")
+        if item.get("content_status") not in (None, "READY"):
+            blockers.append(f"{item.get('title')}: resource or preparation is unverified")
+
     status = "OWNER_PUBLICATION_TIME_REQUIRED" if resolved["requires_owner_time"] else "READY_FOR_OWNER_REVIEW"
     if assignment_reconciliation.get("blockers"):
         status = "BLOCKED"
@@ -162,6 +185,17 @@ def build_release_plan(
         "assignment_count": _count("assignments.json"),
         "assessment_announcement_count": _count("assessment-reminders.json"),
         "homeroom_artifact_present": (drafts / "homeroom-page.html").exists(),
+        "homeroom_announcement": {
+            "present": homeroom_announcement is not None,
+            "page_id": (homeroom_announcement or {}).get("page_id"),
+            "schedule_state": (homeroom_announcement or {}).get("schedule_state"),
+            "contains_complete_newsletter_html": (homeroom_announcement or {}).get(
+                "contains_complete_newsletter_html", False
+            ),
+            "publication_dependency": (homeroom_announcement or {}).get("publication_dependency"),
+            "approval_state": (homeroom_announcement or {}).get("approval_state"),
+            "page_first": (homeroom_announcement or {}).get("page_first", False),
+        },
         "assignment_reconciliation": {
             "bundle_status": assignment_reconciliation.get("bundle_status", "NOT_RUN"),
             "execution_ready": assignment_reconciliation.get("execution_ready", False),

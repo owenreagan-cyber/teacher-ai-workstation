@@ -35,7 +35,7 @@ def _update(title, assignment_id, due_utc, *, subject="language_arts", cid=ELA):
         "course": subject, "course_id": cid, "title": title,
         "assignment_group": "Classwork", "points_possible": 100,
         "grading_type": "percent", "submission_types": ["on_paper"],
-        "due_utc": due_utc, "omit_from_final_grade": False,
+        "due_utc": due_utc, "omit_from_final_grade": False, "approved": True,
         "action": "UPDATE", "assignment_id": assignment_id,
         "corrections": {"due_at": {"actual": "2026-10-30T03:59:00Z", "required": due_utc}},
     }
@@ -47,6 +47,7 @@ def _create(title, due_utc, *, subject="math", cid=MATH):
         "assignment_group": "Classwork", "points_possible": 100,
         "grading_type": "percent", "submission_types": ["on_paper"],
         "due_utc": due_utc, "omit_from_final_grade": False, "action": "CREATE",
+        "approved": True,
     }
 
 
@@ -331,7 +332,7 @@ def test_reminder_idempotent_after_canvas_wraps_message():
         m["assessment_reminders"] = [{
             "subject": "reading_spelling", "course_id": 26442,
             "title": "Fluency Checkout 5 — Tuesday, November 3",
-            "message": body, "classification": "NEW",
+            "message": body, "classification": "NEW", "approved": True,
         }]
         r = rollover.execute(2, 3, 2, 4, client=c, owner_confirmation="ROLLOVER Q2W4", manifest=m)
         assert r["lifecycle"] == schedule.PUBLISHED_VERIFIED, r.get("failures")

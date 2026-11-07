@@ -363,6 +363,16 @@ def run_preflight(quarter: int, week: int, client: DeployClient | None = None) -
         live["announcements"].setdefault(a.get("title"), cls)
         if cls == "AMBIGUOUS":
             blockers.append(f"announcement {a.get('title')!r}: ambiguous near-duplicate exists")
+        if a.get("duplicate_status") == "AMBIGUOUS":
+            blockers.append(f"announcement {a.get('title')!r}: announcement identity is ambiguous")
+        if a.get("hash_consistent") is False:
+            blockers.append(f"announcement {a.get('title')!r}: agenda hash differs from the page")
+        if a.get("action") == "BLOCKED" or a.get("schedule_state") in ("OWNER_TIME_REQUIRED", "BLOCKED"):
+            blockers.append(
+                f"announcement {a.get('title')!r}: {a.get('block_reason') or a.get('schedule_state') or 'blocked'}"
+            )
+        if a.get("content_status") not in (None, "READY"):
+            blockers.append(f"announcement {a.get('title')!r}: resource or content is unverified")
 
     ready = len(blockers) == 0
 

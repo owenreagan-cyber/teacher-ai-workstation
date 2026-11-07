@@ -9,6 +9,7 @@ from pathlib import Path
 if str(Path(__file__).resolve().parents[2]) not in sys.path:
     sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
+import json
 import tempfile
 import hashlib
 
@@ -23,6 +24,7 @@ LABELS = {"math": "Math", "reading_spelling": "Reading/Spelling",
           "language_arts": "Language Arts", "science": "Science"}
 COURSES = {"math": 26404, "reading_spelling": 26442,
            "language_arts": 28171, "science": 28166, "homeroom": 26429}
+SOURCE_HASH = "q2w3-authoritative-source"
 
 
 def _manifest():
@@ -43,15 +45,18 @@ def _manifest():
          "title": f"{LABELS[s]} Canvas Weekly Update", "week_code": "Q2W3",
          "agenda_hash": "h", "page_agenda_hash": "h", "hash_consistent": True,
          "body_hash": "h", "message": f"<p>Good afternoon,</p><p>{LABELS[s]} agenda</p><p>Mr. Reagan</p>",
-         "delayed_post_at": "2026-10-23T20:00:00Z", "classification": "NEW", "action": "CREATE"}
+         "delayed_post_at": "2026-10-23T20:00:00Z", "classification": "NEW", "action": "CREATE",
+         "approved": True}
         for s in SUBJECTS
     ]
     return {
         "from_week": "Q2W2", "to_week": "Q2W3",
+        "source_hash": SOURCE_HASH,
         "scheduled_at": "2026-10-23T20:00:00Z", "timezone": "America/New_York",
         "academic_courses": academic,
         "homeroom": {
             "course_id": 26429, "to_page_slug": SLUG, "front_page_action": "SET_FRONT_PAGE",
+            "approved": True,
             "source_content_hash": "src",
             "proposed_content_hash": hashlib.sha256(
                 homeroom.render_proposed(proposed_homeroom).encode()
@@ -64,10 +69,15 @@ def _manifest():
             "assignment_group": "Classwork", "points_possible": 100,
             "grading_type": "percent", "submission_types": ["on_paper"],
             "due_utc": "2026-10-27T03:59:00Z", "omit_from_final_grade": False,
+            "approved": True,
         }],
         "assessment_reminders": [{
             "subject": "math", "course_id": COURSES["math"], "title": "Math test reminder",
             "message": "<p>Math test Monday.</p>",
+            "schedule_state": "FUTURE_SCHEDULED",
+            "scheduled": True,
+            "delayed_post_at": "2026-12-04T21:00:00Z",
+            "approved": True,
         }],
     }
 
@@ -95,6 +105,11 @@ def _tmp_ledger():
     tmp = tempfile.TemporaryDirectory()
     deploy_ledger.DEPLOY_ROOT = Path(tmp.name) / "deployments"
     intake_manifest.staging_dir = lambda q, w: Path(tmp.name) / "intake" / f"q{q}w{w}"
+    staging = Path(tmp.name) / "intake" / "q2w3"
+    staging.mkdir(parents=True)
+    (staging / "intake-manifest.json").write_text(
+        json.dumps({"source_hash": SOURCE_HASH}), encoding="utf-8"
+    )
     return orig, orig_staging, tmp
 
 

@@ -166,6 +166,7 @@ class LiveDeployClient(DeployClient):
     def _norm_announcement(self, a: dict[str, Any]) -> dict[str, Any]:
         return {
             "id": a.get("id"),
+            "course_id": a.get("course_id"),
             "title": a.get("title"),
             "message": a.get("message") or "",
             "published": a.get("published"),

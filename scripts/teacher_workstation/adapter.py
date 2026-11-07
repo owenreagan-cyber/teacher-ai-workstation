@@ -58,9 +58,11 @@ def _deploy_dir(quarter: int, week: int) -> Path:
 def list_weeks() -> list[dict[str, Any]]:
     """Return all staged weeks (completed + prepared), newest first by code."""
     out: list[dict[str, Any]] = []
-    if not INTAKE_ROOT.exists():
+    from scripts.canvas_llm_storage import active_intake_root
+    intake = active_intake_root()
+    if not intake.exists():
         return out
-    for manifest_path in sorted(INTAKE_ROOT.glob("2026-2027/q*/w*/intake-manifest.json"), reverse=True):
+    for manifest_path in sorted(intake.glob("2026-2027/q*/w*/intake-manifest.json"), reverse=True):
         m = _read_json(manifest_path)
         if not isinstance(m, dict):
             continue
@@ -70,6 +72,9 @@ def list_weeks() -> list[dict[str, Any]]:
             "week_code": m.get("week_code"),
             "date_range": m.get("date_range", {}),
             "status": m.get("status"),
+            "approval_state": m.get("approval_state"),
+            "source_hash": m.get("source_hash"),
+            "plan_fingerprint": m.get("plan_fingerprint"),
             "ready_to_publish": bool(m.get("ready_to_publish")),
             "source_delta": m.get("source_delta"),
             "open_questions": len([q for q in (m.get("questions") or [])]),
@@ -81,16 +86,27 @@ def list_weeks() -> list[dict[str, Any]]:
 
 
 def latest_completed() -> dict[str, Any] | None:
-    """Return the latest PUBLISHED_VERIFIED week + its deployment ledger."""
+    """Return the latest week whose manifest and deployment ledger both verify.
+
+    A manifest status by itself is not completion.
+    """
     weeks = list_weeks()
-    completed = [w for w in weeks if w["status"] == "PUBLISHED_VERIFIED"]
-    if not completed:
-        return None
-    latest = completed[0]  # list_weeks is already newest-first
-    q, w = latest["quarter"], latest["week"]
-    ledger = _read_json(_deploy_dir(q, w) / "published-verified-ledger.json")
-    result = dict(latest)
-    if isinstance(ledger, dict):
+    for latest in weeks:
+        if latest.get("status") != "PUBLISHED_VERIFIED":
+            continue
+        if latest.get("approval_state") == "PENDING":
+            continue
+        if latest.get("approval_state") != "APPROVED":
+            continue
+        q, w = latest["quarter"], latest["week"]
+        ledger = _read_json(_deploy_dir(q, w) / "published-verified-ledger.json")
+        if not isinstance(ledger, dict) or ledger.get("status") != "PUBLISHED_VERIFIED":
+            continue
+        if ledger.get("source_hash") != latest.get("source_hash"):
+            continue
+        if ledger.get("plan_fingerprint") != latest.get("plan_fingerprint"):
+            continue
+        result = dict(latest)
         result["ledger"] = {
             "pages": ledger.get("pages", []),
             "assignment_count": len(ledger.get("assignments", [])),
@@ -102,7 +118,8 @@ def latest_completed() -> dict[str, Any] | None:
             "untouched": ledger.get("untouched", {}),
             "notes": ledger.get("notes", []),
         }
-    return result
+        return result
+    return None
 
 
 def _subject_day_states(manifest: dict[str, Any], week_norm: dict[str, Any] | None, quarter: int) -> dict[str, dict[str, str]]:

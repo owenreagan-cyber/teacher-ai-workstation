@@ -60,19 +60,22 @@ def synthetic_plan(**overrides):
         "publish_blockers": [],
         "source_hash": "src-hash-1", "approval_snapshot_hash": "appr-hash-1",
         "pages": [{"subject": "math", "course_id": 26404, "slug": SLUG, "title": "Q2W9",
-                   "action": "UPDATE", "live_page_id": "page-26404-q2w9-test"}],
+                   "action": "UPDATE", "live_page_id": "page-26404-q2w9-test",
+                   "approved": True}],
         "assignments": [
             {"course": "math", "course_id": 26404, "title": "SM5: Lesson 50 Homework",
              "assignment_group": "Homework/Class Work", "due_date": "2026-12-07",
              "due_utc": "2026-12-08T03:59:00Z", "points_possible": 100, "grading_type": "percent",
              "submission_types": ["on_paper"], "omit_from_final_grade": False,
-             "action": "CREATE", "duplicate_classification": "NEW"},
+             "action": "CREATE", "duplicate_classification": "NEW",
+             "approved": True},
         ],
         "weekly_announcements": [
             {"course": "Math", "course_id": 26404, "subject": "math", "title": "Math Canvas Weekly Update",
              "message": "<p>Good afternoon,</p><div id='kl_wrapper_3'>agenda</div><p>Reminders</p><p>Mr. Reagan</p>",
              "scheduled": True, "delayed_post_at": "2026-12-04T21:00:00Z",
-             "action": "CREATE", "duplicate_classification": "NEW"},
+             "action": "CREATE", "duplicate_classification": "NEW",
+             "approved": True},
         ],
         "assessment_reminders": [],
         "deletes": [],
@@ -149,10 +152,15 @@ with tempfile.TemporaryDirectory() as tmp:
         # every artifact has an explicit final disposition.
         assert rep["pages"][0]["verified"] is True
         assert rep["assignments"][0]["disposition"] == "PUBLISHED_VERIFIED"
-        assert rep["weekly_announcements"][0]["disposition"] == "PUBLISHED_VERIFIED"
-        # manifest advanced to PUBLISHED_VERIFIED.
-        assert imf.load_manifest(2, 9)["status"] == "PUBLISHED_VERIFIED"
-        print("PASS happy-path deploy -> PUBLISHED_VERIFIED + explicit dispositions")
+        weekly = rep["weekly_announcements"][0]
+        if weekly["state"] == "HELD_SCHEDULED":
+            assert weekly["disposition"] == "SCHEDULED_VERIFIED"
+        else:
+            assert weekly["disposition"] == "PUBLISHED_VERIFIED"
+        # A one-course deployment must not mark the week published.
+        assert imf.load_manifest(2, 9)["status"] == "READY_TO_PUBLISH"
+        assert imf.load_manifest(2, 9).get("published_at") is None
+        print("PASS happy-path deploy verifies writes without a partial lifecycle promotion")
 
         # ---- 2. Re-deploy after PUBLISHED_VERIFIED is blocked -------------
         try:

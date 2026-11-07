@@ -121,7 +121,13 @@ def build_rollover_manifest(
 
     active = IC.active_subject_keys_for_quarter(to_quarter)
     pkt = plan_mod.load_packet(to_quarter, to_week)
-    deploy_plan = plan_mod.build_plan(to_quarter, to_week)
+    from scripts.canvas_llm_intake.intake import load_owner_publication_times
+    owner_times = load_owner_publication_times(to_quarter, to_week)
+    deploy_plan = plan_mod.build_plan(
+        to_quarter, to_week,
+        owner_publication_time=owner_times.get("release"),
+        notice_times=owner_times.get("notices") or {},
+    )
     approvals = pkt.get("approvals", {})
     slug = plan_mod._slug_for(to_code)
     agenda_html = pkt.get("page_bodies", {})
@@ -178,10 +184,18 @@ def build_rollover_manifest(
             "hash_consistent": True,
             "body_hash": _sha(body),
             "message": body,
-            "delayed_post_at": scheduled_at,
+            "delayed_post_at": owner_times.get("release") or scheduled_at,
+            "owner_publication_time": owner_times.get("release"),
             "classification": "NEW",
             "action": "CREATE",
         })
+
+    homeroom_announcement = None
+    announcement_path = imf.staging_dir(to_quarter, to_week) / "drafts" / "homeroom-announcement.json"
+    try:
+        homeroom_announcement = json.loads(announcement_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        homeroom_announcement = None
 
     source_hash = _sha(json.dumps(
         {"to": to_code, "agendas": {s: _sha(agenda_html.get(s, "")) for s in active}},
@@ -192,10 +206,13 @@ def build_rollover_manifest(
         "school_year": "2026-2027",
         "from_week": wr.week_code_for(from_quarter, from_week),
         "to_week": to_code,
-        "scheduled_at": scheduled_at,
+        "scheduled_at": owner_times.get("release") or scheduled_at,
+        "owner_publication_time": owner_times.get("release"),
+        "notice_times": owner_times.get("notices") or {},
         "timezone": schedule.NEW_YORK,
         "academic_courses": academic_courses,
         "homeroom": homeroom_block,
+        "homeroom_announcement": homeroom_announcement,
         "weekly_announcements": weekly_announcements,
         "assignments": deploy_plan.get("assignments", []),
         "assessment_reminders": deploy_plan.get("assessment_reminders", []),

@@ -22,7 +22,7 @@ def run_preflight(quarter: int, week: int, production: bool) -> dict[str, Any]:
 
     if production:
         from scripts.canvas_llm_deploy.client import LiveDeployClient
-        client = LiveDeployClient()
+        client = LiveDeployClient(quarter=quarter, week=week)
         return pf.run_preflight(quarter, week, client)
     return pf.run_preflight(quarter, week, None)
 
@@ -47,7 +47,7 @@ def run_rollover_dry_run(quarter: int, week: int, production: bool = False) -> d
     client = None
     if production:
         from scripts.canvas_llm_deploy.client import LiveDeployClient
-        client = LiveDeployClient()
+        client = LiveDeployClient(quarter=tq, week=tw)
     result = rollover.run_preflight(fq, fw, tq, tw, client=client)
     return {
         "summary": "Dry run finished. Nothing was changed.",
@@ -67,7 +67,7 @@ def run_rollover_partial(
 
     fq, fw, tq, tw = cli._resolve(None, None, f"q{quarter}w{week}")
     return rollover.publish_approved_courses_only(
-        fq, fw, tq, tw, client=LiveDeployClient(),
+        fq, fw, tq, tw, client=LiveDeployClient(quarter=tq, week=tw),
         owner_confirmation=owner_confirmation,
         now=datetime.now(timezone.utc),
     )
@@ -84,6 +84,6 @@ def run_publish_now(
 
     fq, fw, tq, tw = cli._resolve(None, None, f"q{quarter}w{week}")
     return rollover.publish_now(
-        fq, fw, tq, tw, client=LiveDeployClient(), courses=courses,
+        fq, fw, tq, tw, client=LiveDeployClient(quarter=tq, week=tw), courses=courses,
         owner_confirmation=owner_confirmation,
     )

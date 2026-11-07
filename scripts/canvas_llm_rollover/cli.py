@@ -84,7 +84,7 @@ def main(argv: list[str] | None = None) -> int:
     if args.dry_run:
         if args.live_readonly:
             from scripts.canvas_llm_deploy.client import LiveDeployClient
-            rec = rollover.run_preflight(fq, fw, tq, tw, LiveDeployClient())
+            rec = rollover.run_preflight(fq, fw, tq, tw, LiveDeployClient(quarter=tq, week=tw))
             view = _dry_run_view(rec["manifest"])
             view.update({
                 "MODE": "LIVE_READONLY",
@@ -103,7 +103,7 @@ def main(argv: list[str] | None = None) -> int:
         client = None
         if args.production:
             from scripts.canvas_llm_deploy.client import LiveDeployClient
-            client = LiveDeployClient()
+            client = LiveDeployClient(quarter=tq, week=tw)
         rec = rollover.run_preflight(fq, fw, tq, tw, client)
         print(json.dumps(_dry_run_view(rec["manifest"]), indent=2, ensure_ascii=False))
         print("READY:", rec["ready"])
@@ -119,7 +119,7 @@ def main(argv: list[str] | None = None) -> int:
             return 2
         try:
             from scripts.canvas_llm_deploy.client import LiveDeployClient
-            client = LiveDeployClient()
+            client = LiveDeployClient(quarter=tq, week=tw)
         except Exception as exc:  # noqa: BLE001
             print(f"BLOCKED: Canvas transport unavailable: {type(exc).__name__}")
             return 2

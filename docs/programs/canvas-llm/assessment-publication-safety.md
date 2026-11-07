@@ -29,6 +29,21 @@ Every academic page and the Homeroom page in that release must have `approved is
 
 When a preflight file exists, its plan fingerprint must match the manifest and the current plan. A stale preflight blocks before writes. A week already recorded as `PUBLISHED_VERIFIED` returns `already_complete` and does not write again.
 
+A weekly live client must be constructed with its quarter and week. That scope reads `planner/live-transport-authorization.json` and checks the academic year, quarter, week, active state, expiry, current source hash, current plan fingerprint, and course id. `CANVAS_LLM_LIVE_Q1W2_APPROVED` does not satisfy that check, and a Q2W5 record does not satisfy the Q1W2 client. The check runs before credentials are loaded and before any Canvas request. A valid week record still requires `CANVAS_LLM_DEPLOYMENT_MODE=live`; that switch does not identify the week. An unscoped client clears any previous week scope before the Q1W2 gate.
+
+```text
+owner authorization record
+  -> LiveDeployClient(quarter, week)
+  -> year, quarter, week, state, expiry
+  -> current manifest source hash and plan fingerprint
+  -> credential load and Canvas client
+  -> path allowlist
+  -> course in the authorization and the school allowlist
+  -> Canvas request
+```
+
+The unscoped client stops at `CANVAS_LLM_DEPLOYMENT_MODE=live` and `CANVAS_LLM_LIVE_Q1W2_APPROVED=1` before credentials. It never reads a weekly authorization record.
+
 `finalize_published_verified()` validates source hash, plan fingerprint, explicit approval, five-course verification, announcement verification, assignment verification, and Homeroom page-first order before it writes the published ledger. It advances the intake manifest only after that ledger reads back intact. A split storage root, a failed write, or a corrupt readback leaves the intake manifest unchanged. Pending approval cannot set `ready_to_publish`. Chief of Staff completion requires the manifest and the published ledger to agree; the manifest status alone is not completion.
 
 ## Scheduled versus published

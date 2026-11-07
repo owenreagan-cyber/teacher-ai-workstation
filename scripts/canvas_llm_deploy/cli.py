@@ -20,15 +20,15 @@ def _resolve(args: Any) -> tuple[int, int]:
     return int(args.quarter), int(args.week)
 
 
-def _make_client(production: bool):
+def _make_client(production: bool, quarter: int, week: int):
     if not production:
         return None
-    return LiveDeployClient()
+    return LiveDeployClient(quarter=quarter, week=week)
 
 
 def cmd_preflight(args: Any) -> int:
     quarter, week = _resolve(args)
-    client = _make_client(args.production)
+    client = _make_client(args.production, quarter, week)
     rec = preflight_mod.run_preflight(quarter, week, client)
     print(json.dumps(rec, indent=2, ensure_ascii=False))
     return 0
@@ -52,7 +52,7 @@ def cmd_deploy(args: Any) -> int:
 
 def cmd_verify(args: Any) -> int:
     quarter, week = _resolve(args)
-    client = _make_client(args.production)
+    client = _make_client(args.production, quarter, week)
     if client is None:
         print("BLOCKED: verify requires --production (readback against live Canvas)")
         return 2

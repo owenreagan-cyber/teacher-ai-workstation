@@ -126,6 +126,8 @@ def require_live_prerequisites(*, test_mode: bool = False) -> None:
 def _validate_course(course_id: int) -> None:
     if int(course_id) not in ALLOWED_LIVE_COURSE_IDS:
         raise PermissionError(f'BLOCKED: course {course_id} is not allowlisted for Q1W2 live writes')
+    from scripts.canvas_llm_deploy.live_authorization import require_authorized_course
+    require_authorized_course(int(course_id))
 
 
 def _is_allowed_get_path(path: str) -> bool:

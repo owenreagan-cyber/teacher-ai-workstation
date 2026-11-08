@@ -46,7 +46,7 @@ class DaemonApiCompatibilityTest(CosdStateTest):
             "/v1/ask",
             method="POST",
             token=self.srv.token,
-            body={"question": "ping"},
+            body={"question": "what time is it"},
         )
         self.assertEqual(status, 200)
         self.assertTrue(body.get("ok"))

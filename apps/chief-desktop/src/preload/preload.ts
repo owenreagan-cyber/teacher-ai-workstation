@@ -48,6 +48,15 @@ const bridge: PreloadBridge = {
   deviceCredentials: (deviceId) => electron.ipcRenderer.invoke("chief:device-credentials", String(deviceId)),
   rotateDeviceCredential: (deviceId, confirm) => electron.ipcRenderer.invoke("chief:device-rotate-credential", String(deviceId), confirm === true),
   revokeDeviceCredential: (deviceId, confirm) => electron.ipcRenderer.invoke("chief:device-revoke-credential", String(deviceId), confirm === true),
+  createEnrollmentInvitation: (input) => electron.ipcRenderer.invoke("chief:enrollments-create", input),
+  listPendingEnrollments: () => electron.ipcRenderer.invoke("chief:enrollments-pending"),
+  getEnrollment: (enrollmentId) => electron.ipcRenderer.invoke("chief:enrollment-get", String(enrollmentId)),
+  approveEnrollment: (enrollmentId, input, confirm) =>
+    electron.ipcRenderer.invoke("chief:enrollment-approve", String(enrollmentId), input, confirm === true),
+  rejectEnrollment: (enrollmentId, confirm) =>
+    electron.ipcRenderer.invoke("chief:enrollment-reject", String(enrollmentId), confirm === true),
+  cancelEnrollment: (enrollmentId, confirm) =>
+    electron.ipcRenderer.invoke("chief:enrollment-cancel", String(enrollmentId), confirm === true),
   cosdStart: () => electron.ipcRenderer.invoke("chief:cosd-start"),
   cosdStop: (confirm) => electron.ipcRenderer.invoke("chief:cosd-stop", confirm === true),
   cosdRestart: (confirm) => electron.ipcRenderer.invoke("chief:cosd-restart", confirm === true),

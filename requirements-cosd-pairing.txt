@@ -1,0 +1,4 @@
+# P1b.4c authenticated pairing delivery (X25519 + HKDF-SHA256 + AES-256-GCM).
+# The daemon starts without it, but owner approval fails closed with
+# 503 crypto_unavailable until this dependency is installed.
+cryptography>=42

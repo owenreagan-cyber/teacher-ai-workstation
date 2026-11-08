@@ -6,6 +6,8 @@ import {
   type DeviceCreateInput,
   type DevicePatchInput,
   type DeviceProfile,
+  type EnrollmentApproveInput,
+  type EnrollmentCreateInput,
   validateDeviceProfile,
   validateDeviceType,
   validateDisplayName,
@@ -124,5 +126,42 @@ export function validateDeviceFilter(value: unknown): { status?: string; profile
     if (!(DEVICE_PROFILES as readonly string[]).includes(profile)) throw new Error("profile invalid");
     out.profile = profile;
   }
+  return out;
+}
+
+export function validateEnrollmentId(value: unknown): string {
+  return validateDeviceId(value);
+}
+
+export function validateEnrollmentCreateInput(value: unknown): EnrollmentCreateInput {
+  if (!isRecord(value)) throw new Error("enrollment input must be an object");
+  const out: EnrollmentCreateInput = {
+    display_name: validateDisplayName(value.display_name),
+    device_type: validateDeviceType(value.device_type ?? "other"),
+    platform: validatePlatform(value.platform ?? "unknown"),
+    requested_profile: validateDeviceProfile(value.requested_profile ?? "capture_only"),
+  };
+  if (value.app_version !== undefined) {
+    if (typeof value.app_version !== "string" || value.app_version.length > MAX_APP_VERSION) {
+      throw new Error("appVersion invalid");
+    }
+    out.app_version = value.app_version.trim();
+  }
+  if (value.owner_id !== undefined) {
+    out.owner_id = requireString(value.owner_id, MAX_OWNER, "ownerId");
+  }
+  if (out.requested_profile === "revoked") throw new Error("requestedProfile cannot be revoked");
+  return out;
+}
+
+export function validateEnrollmentApproveInput(value: unknown): EnrollmentApproveInput {
+  if (!isRecord(value)) throw new Error("approval input must be an object");
+  const profile = validateDeviceProfile(value.device_profile);
+  if (profile === "revoked") throw new Error("cannot approve a revoked profile");
+  const out: EnrollmentApproveInput = { device_profile: profile };
+  if (value.replaces_device_id !== undefined && value.replaces_device_id !== null && value.replaces_device_id !== "") {
+    out.replaces_device_id = validateDeviceId(value.replaces_device_id);
+  }
+  if (value.allow_owner === true) out.allow_owner = true;
   return out;
 }

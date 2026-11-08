@@ -89,7 +89,8 @@ const ALLOWED = [
   "cosdConnection", "cosdReconnect", "listTasks", "getTask", "createTask", "cancelTask", "retryTask",
   "taskHistory", "queueSnapshot", "listDevices", "getDevice", "createDevice", "updateDevice",
   "disableDevice", "enableDevice", "revokeDevice", "removeDevice", "bootstrapDevice", "deviceCredentials",
-  "rotateDeviceCredential", "revokeDeviceCredential", "cosdStart", "cosdStop", "cosdRestart", "runtimeSnapshot", "opsPrefsGet", "opsPrefsSet",
+  "rotateDeviceCredential", "revokeDeviceCredential", "createEnrollmentInvitation", "listPendingEnrollments",
+  "getEnrollment", "approveEnrollment", "rejectEnrollment", "cancelEnrollment", "cosdStart", "cosdStop", "cosdRestart", "runtimeSnapshot", "opsPrefsGet", "opsPrefsSet",
   "stop", "resume", "setPin", "setProtection", "hide", "onEvent",
 ];
 const bridgeBody = preload.match(/const bridge: PreloadBridge = \{([\s\S]*?)\n\};/)?.[1] ?? "";
@@ -216,6 +217,9 @@ check("device page confirms profile and lifecycle changes", /window\.confirm\(co
 check("device page never mentions Keychain references", !/keychain/i.test(devicesTsx));
 check("device page never renders api.token", !/api\.token/i.test(devicesTsx));
 check("device page never reads a credential token field", !/credential\.token|\.token\b/.test(devicesTsx));
+check("device page confirms enrollment approval with the profile restrictions", /enrollmentApprovalMessage/.test(devicesTsx));
+check("device page renders the pairing QR", /QRCode\.toDataURL/.test(devicesTsx));
+check("device page never handles the enrollment request token", !/request_token/.test(devicesTsx));
 
 // 7. Dev script: no package-internal paths (TypeScript 7 stopped exporting typescript/bin/tsc,
 // which broke `npm run dev` with ERR_PACKAGE_PATH_NOT_EXPORTED). Compile through build:main.

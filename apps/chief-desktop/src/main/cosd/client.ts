@@ -8,8 +8,12 @@ import {
   type DevicePatchInput,
   type DeviceProfile,
   type DeviceRecord,
+  type EnrollmentApproveInput,
+  type EnrollmentCreateInput,
+  type EnrollmentRecord,
   parseCredential,
   parseDevice,
+  parseEnrollment,
 } from "../../shared/devices.js";
 import { COS_STATE_DIR } from "../config.js";
 import { CosdHttpError, requestAskNdjsonStream, requestJson } from "./http.js";
@@ -336,6 +340,95 @@ export class CosdClient {
   async deviceProfiles(_ep: DaemonEndpoint): Promise<DeviceProfile[]> {
     // The profile list is a fixed local contract; it is not fetched at runtime.
     return ["owner", "personal", "partner", "school", "read_only", "capture_only", "revoked"];
+  }
+
+  async createEnrollment(
+    ep: DaemonEndpoint,
+    input: EnrollmentCreateInput,
+  ): Promise<{ enrollment: EnrollmentRecord; pairing_code: string; qr_payload: string; expires_at: string }> {
+    const { status, body } = await this.authed(ep, "POST", "/v1/enroll/request", input);
+    if (status !== 201 && status !== 200) {
+      throw new CosdHttpError(String(body.error ?? "enrollment request failed"), String(body.error_kind ?? "internal"));
+    }
+    const enrollment = parseEnrollment(body.enrollment);
+    if (!enrollment || typeof body.pairing_code !== "string" || typeof body.qr_payload !== "string") {
+      throw new CosdHttpError("invalid enrollment invitation", "internal");
+    }
+    return {
+      enrollment,
+      pairing_code: body.pairing_code,
+      qr_payload: body.qr_payload,
+      expires_at: typeof body.expires_at === "string" ? body.expires_at : enrollment.expires_at,
+    };
+  }
+
+  async listPendingEnrollments(ep: DaemonEndpoint) {
+    const { body } = await this.authed(ep, "GET", "/v1/devices/pending");
+    const enrollments = Array.isArray(body.enrollments)
+      ? body.enrollments.map(parseEnrollment).filter((e): e is EnrollmentRecord => e !== null)
+      : [];
+    return {
+      enrollments,
+      total: typeof body.total === "number" ? body.total : enrollments.length,
+      limit: typeof body.limit === "number" ? body.limit : enrollments.length,
+      offset: typeof body.offset === "number" ? body.offset : 0,
+    };
+  }
+
+  async getEnrollment(ep: DaemonEndpoint, enrollmentId: string): Promise<EnrollmentRecord> {
+    const { body } = await this.authed(ep, "GET", `/v1/devices/pending/${enrollmentId}`);
+    const enrollment = parseEnrollment(body.enrollment);
+    if (!enrollment) throw new CosdHttpError("invalid enrollment", "internal");
+    return enrollment;
+  }
+
+  async approveEnrollment(
+    ep: DaemonEndpoint,
+    enrollmentId: string,
+    input: EnrollmentApproveInput,
+  ): Promise<{ enrollment: EnrollmentRecord; device: DeviceRecord | null; credential: CredentialMetadata | null }> {
+    const { status, body } = await this.authed(
+      ep,
+      "POST",
+      `/v1/devices/pending/${enrollmentId}/approve`,
+      { ...input, confirm: true },
+    );
+    if (status !== 200 || body.ok !== true) {
+      throw new CosdHttpError(String(body.error ?? "approval failed"), String(body.error_kind ?? "internal"));
+    }
+    const enrollment = parseEnrollment(body.enrollment);
+    if (!enrollment) throw new CosdHttpError("invalid enrollment after approval", "internal");
+    return { enrollment, device: parseDevice(body.device), credential: parseCredential(body.credential) };
+  }
+
+  async rejectEnrollment(ep: DaemonEndpoint, enrollmentId: string, reason: string): Promise<EnrollmentRecord> {
+    const { status, body } = await this.authed(
+      ep,
+      "POST",
+      `/v1/devices/pending/${enrollmentId}/reject`,
+      { confirm: true, reason },
+    );
+    if (status !== 200 || body.ok !== true) {
+      throw new CosdHttpError(String(body.error ?? "rejection failed"), String(body.error_kind ?? "internal"));
+    }
+    const enrollment = parseEnrollment(body.enrollment);
+    if (!enrollment) throw new CosdHttpError("invalid enrollment after rejection", "internal");
+    return enrollment;
+  }
+
+  async cancelEnrollment(ep: DaemonEndpoint, enrollmentId: string, reason: string): Promise<EnrollmentRecord> {
+    const { status, body } = await this.authed(
+      ep,
+      "POST",
+      `/v1/devices/pending/${enrollmentId}/cancel`,
+      { confirm: true, reason },
+    );
+    if (status !== 200 || body.ok !== true) {
+      throw new CosdHttpError(String(body.error ?? "cancellation failed"), String(body.error_kind ?? "internal"));
+    }
+    const enrollment = parseEnrollment(body.enrollment);
+    if (!enrollment) throw new CosdHttpError("invalid enrollment after cancellation", "internal");
+    return enrollment;
   }
 
   connectionStateFromDiscover(ep: DaemonEndpoint | null, authed: boolean): CosdConnectionState {

@@ -17,7 +17,26 @@ gateway are still deferred, so remote-specific rows remain planned/gap.
 | Revocation immediately invalid | Implemented (`401`, no master fallback) |
 | School / partner / capture-only boundaries | Implemented in the profile matrix |
 | Device audit + provenance after removal | Implemented (`device_events` + hash-chained JSONL) |
-| Remote enrollment / Tailscale / TLS | **Not implemented** (P1b.4c/4d) |
+| Remote enrollment / Tailscale / TLS | **Not implemented** (P1b.4c local pairing; P1b.4d remote) |
+
+## P1b.4c implementation evidence
+
+| Control | State |
+| --- | --- |
+| Owner-created pairing invitation + QR | Implemented locally |
+| 60-bit one-time code, salted hash, single use | Implemented; 10-minute code TTL |
+| Replay / concurrent redemption | Implemented; `pairing.replay_denied` |
+| Code/request rate limiting | Implemented durably in SQLite |
+| Device-generated X25519 identity | Implemented; private key never sent |
+| Explicit owner approval + profile selection | Implemented; owner never automatic |
+| Independent credential issuance | Reuses P1b.4b credential service |
+| Authenticated credential delivery | X25519 + HKDF-SHA256 + AES-256-GCM; local loopback only |
+| Re-pairing / replacement | Explicit `replaces_device_id`; old identity revoked |
+| Enrollment audit | Full lifecycle in hash chain + device events |
+
+**Remaining remote warnings:** no TLS gateway, no Tailscale ACL enforcement, no
+remote credential delivery, and no remote enrollment endpoint are active. Those
+threats stay open until P1b.4d and must not be marked resolved here.
 
 Residual local risks: the master token remains on disk for existing clients; the
 Keychain provider passes the secret as a `security` argv element for a brief
@@ -58,10 +77,10 @@ Legend: **PASS** = adequately mitigated at target architecture; **WARN** = parti
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | Stolen `api.token` from disk | Low | Critical | File mode 0600; loopback bind | Keep master local; device tokens for remote | audit auth failures | rotate-token | **PASS** (local) |
 | Master token on remote | High (if mis-designed) | Critical | Not deployed | **Never distribute** master token | Code review CERT | Revoke devices | **FAIL** without 4b |
-| Replayed pairing code | Medium | High | No pairing yet | Single-use TTL codes | audit pairing.rejected | Invalidate pending | **PASS** (planned) |
+| Replayed pairing code | Medium | High | No pairing yet | Single-use TTL codes | audit pairing.rejected | Invalidate pending | **PASS** (local, P1b.4c) |
 | Token leakage in logs | Medium | High | cosd does not log bearer | Gateway scrub headers; no debug dumps | Log review | Rotate cred | **WARN** |
 | Session hijacking (HTTP) | Low | High | Loopback only today | TLS on tailnet path | TLS termination audit | Revoke session device | **PASS** (planned) |
-| Unauthorized enrollment | Medium | Critical | No enroll endpoint | Owner approval + rate limit | enroll deny audit | Block source | **PASS** (planned) |
+| Unauthorized enrollment | Medium | Critical | No enroll endpoint | Owner approval + rate limit | enroll deny audit | Block source | **PASS** (local, P1b.4c) |
 
 ---
 

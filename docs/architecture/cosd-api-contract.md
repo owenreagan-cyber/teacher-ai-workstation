@@ -30,6 +30,18 @@ the master bearer token. A Keychain outage receives `503`.
 The existing `Authorization: Bearer <master-token>` path remains the trusted
 local owner context and keeps its former behaviour.
 
+### Enrollment principals (P1b.4c)
+
+A redeemed pairing request uses:
+
+```http
+Authorization: Enrollment <request-token>
+```
+
+Only enrollment status/completion endpoints accept it. The master bearer token is
+not accepted as an enrollment token, and a permanent device credential cannot
+approve or manage enrollments.
+
 ## Limits
 
 | Limit | Value |
@@ -152,6 +164,30 @@ Local owner only. All responses exclude raw credentials, Keychain contents,
 
 No remote enrollment, pairing, or credential-distribution endpoints exist.
 
+## Pairing and enrollment (P1b.4c)
+
+Local loopback only. The owner creates an invitation; the device redeems the
+one-time code with its X25519 public key; the owner approves a profile; the
+credential is delivered in an authenticated encrypted envelope.
+
+| Method | Endpoint | Auth | Permission |
+| --- | --- | --- | --- |
+| POST | `/v1/enroll/request` | master bearer | `devices.manage` |
+| POST | `/v1/enroll/redeem` | one-time code | none (rate-limited) |
+| GET | `/v1/enroll/status/{id}` | `Enrollment <token>` | enrollment token |
+| POST | `/v1/enroll/status/{id}/complete` | `Enrollment <token>` | enrollment token |
+| GET | `/v1/devices/pending` | master bearer | `devices.read` |
+| GET | `/v1/devices/pending/{id}` | master bearer | `devices.read` |
+| POST | `/v1/devices/pending/{id}/approve` | master bearer | `devices.manage` |
+| POST | `/v1/devices/pending/{id}/reject` | master bearer | `devices.manage` |
+| POST | `/v1/devices/pending/{id}/cancel` | master bearer | `devices.manage` |
+
+The invitation response contains a one-time pairing code and QR payload (no
+master token, private key, or permanent credential). Redemption returns a
+one-time enrollment request token. Completion returns an X25519/HKDF/AES-GCM
+ciphertext envelope once; the device decrypts and stores it. Approval responses
+contain device/credential metadata only, never the credential secret.
+
 ## Tasks (P1b.1b)
 
 All task endpoints require authentication. Task IDs are 32-character hex strings.
@@ -231,14 +267,16 @@ Active and historical lease records (bounded).
 
 | HTTP | `error_kind` | Meaning |
 | --- | --- | --- |
-| 401 | `auth` | Missing/invalid bearer or device credential |
+| 401 | `auth` | Missing/invalid bearer, device, or enrollment credential |
 | 403 | `forbidden` | Authenticated principal lacks the required permission |
-| 404 | `not_found` | Unknown route, task, device, or credential |
-| 409 | `conflict` | Invalid transition, duplicate/primary constraint, or idempotency conflict |
+| 404 | `not_found` | Unknown route, task, device, credential, or enrollment |
+| 409 | `conflict` | Invalid transition, duplicate/primary constraint, replay, or idempotency conflict |
 | 405 | `method` | Unsupported HTTP method |
+| 410 | `expired` | Pairing code or enrollment window expired |
 | 413 | `usage` | Body too large |
+| 429 | `rate_limited` | Pairing request/redeem attempt limit reached |
+| 503 | `unavailable` / `crypto_unavailable` / `delivery_unavailable` | Registry, credential store, encryption, audit, or delivery unavailable (fail closed) |
 | 504 | `timeout` | Ask exceeded server timeout |
-| 503 | `unavailable` | Device registry, credential store, or audit unavailable (fail closed) |
 
 ## CLI client (`bin/cos`)
 
@@ -258,6 +296,6 @@ Request paths and status are logged at INFO. Tokens, bearer headers, and session
 - Unrestricted tool invocation
 - Remote or non-loopback listeners
 - TLS (deferred)
-- QR pairing / remote enrollment (P1b.4c)
-- Remote credential distribution (P1b.4c/P1b.4d)
+- QR pairing / remote enrollment (P1b.4c local pairing exists; remote disabled)
+- Remote credential distribution (P1b.4c local envelope only; remote disabled)
 - Tailscale gateway or public network access (P1b.4d)

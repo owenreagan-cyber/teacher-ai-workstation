@@ -41,6 +41,9 @@ import {
   validateDeviceFilter,
   validateDeviceId,
   validateDevicePatchInput,
+  validateEnrollmentApproveInput,
+  validateEnrollmentCreateInput,
+  validateEnrollmentId,
 } from "./ipc-cosd.js";
 import { validateDisplayName } from "../shared/devices.js";
 import { notifyDaemonConnection, notifyTaskEvent } from "./notifications.js";
@@ -478,6 +481,26 @@ function registerIpc(): void {
   handle("chief:device-revoke-credential", (deviceId, confirm) => {
     validateDeviceConfirm(confirm);
     return runtime.revokeDeviceCredential(validateDeviceId(deviceId));
+  });
+  handle("chief:enrollments-create", (input) =>
+    runtime.createEnrollmentInvitation(validateEnrollmentCreateInput(input)));
+  handle("chief:enrollments-pending", () => runtime.listPendingEnrollments());
+  handle("chief:enrollment-get", (enrollmentId) =>
+    runtime.getEnrollment(validateEnrollmentId(enrollmentId)));
+  handle("chief:enrollment-approve", (enrollmentId, input, confirm) => {
+    validateDeviceConfirm(confirm);
+    return runtime.approveEnrollment(
+      validateEnrollmentId(enrollmentId),
+      validateEnrollmentApproveInput(input),
+    );
+  });
+  handle("chief:enrollment-reject", (enrollmentId, confirm) => {
+    validateDeviceConfirm(confirm);
+    return runtime.rejectEnrollment(validateEnrollmentId(enrollmentId));
+  });
+  handle("chief:enrollment-cancel", (enrollmentId, confirm) => {
+    validateDeviceConfirm(confirm);
+    return runtime.cancelEnrollment(validateEnrollmentId(enrollmentId));
   });
   handle("chief:cosd-start", () => cosdStart(cosdPath));
   handle("chief:cosd-stop", (confirm) => (confirm === true ? cosdStop(cosdPath) : { ok: false, error: "confirmation required" }));

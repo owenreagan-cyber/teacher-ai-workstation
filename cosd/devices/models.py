@@ -69,6 +69,14 @@ def new_credential_id() -> str:
     return uuid.uuid4().hex
 
 
+def validate_fingerprint(value: str | None) -> str | None:
+    if value is None:
+        return None
+    if not isinstance(value, str) or not re.fullmatch(r"[a-f0-9]{64}", value):
+        raise DeviceError("public_key_fingerprint must be 64 lowercase hex characters")
+    return value
+
+
 def validate_device_id(value: str) -> str:
     if not isinstance(value, str) or not _HEX32.fullmatch(value):
         raise DeviceError("device_id must be 32 lowercase hex characters")
@@ -177,6 +185,7 @@ class DeviceRecord:
     revoked_at: str | None
     metadata: dict[str, Any] = field(default_factory=dict)
     is_primary_owner: bool = False
+    public_key_fingerprint: str | None = None
 
     @property
     def active(self) -> bool:
@@ -200,4 +209,5 @@ class DeviceRecord:
             "revoked_at": self.revoked_at,
             "metadata": dict(self.metadata),
             "is_primary_owner": self.is_primary_owner,
+            "public_key_fingerprint": self.public_key_fingerprint,
         }

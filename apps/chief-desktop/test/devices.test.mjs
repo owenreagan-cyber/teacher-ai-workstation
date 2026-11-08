@@ -72,3 +72,71 @@ test("IPC validators bound device input", () => {
   assert.throws(() => ipc.validateDeviceId("short"));
   assert.equal(ipc.validateDeviceId("a".repeat(32)), "a".repeat(32));
 });
+
+const ENROLLMENT = {
+  enrollment_id: "c".repeat(32),
+  status: "AWAITING_OWNER_APPROVAL",
+  source: "owner_invitation",
+  display_name: "School iPad",
+  device_type: "ipad",
+  platform: "ipados",
+  app_version: "0.1.0",
+  owner_id: "school",
+  requested_profile: "school",
+  approved_profile: null,
+  requested_permissions: ["ask", "status.read", "tasks.create"],
+  approved_permissions: [],
+  public_key_fingerprint: "d".repeat(64),
+  protocol_version: 1,
+  created_at: "2026-11-08T12:00:00.000+00:00",
+  updated_at: "2026-11-08T12:00:00.000+00:00",
+  expires_at: "2026-11-08T12:10:00.000+00:00",
+  redeemed_at: null,
+  approved_at: null,
+  completed_at: null,
+  rejected_at: null,
+  cancelled_at: null,
+  delivery_expires_at: null,
+  device_id: null,
+  credential_id: null,
+  replaces_device_id: null,
+  reason: null,
+  failed_attempts: 0,
+};
+
+test("parseEnrollment accepts bounded enrollment records and drops secrets", () => {
+  const parsed = devices.parseEnrollment({ ...ENROLLMENT, pairing_code: "SECRET", token: "SECRET" });
+  assert.ok(parsed);
+  assert.equal(parsed.requested_profile, "school");
+  assert.equal(parsed.status, "AWAITING_OWNER_APPROVAL");
+  assert.equal(parsed.pairing_code, undefined);
+  assert.equal(parsed.token, undefined);
+  assert.equal(devices.parseEnrollment({ ...ENROLLMENT, status: "NOPE" }), null);
+  assert.equal(devices.parseEnrollment({ ...ENROLLMENT, requested_profile: "superuser" }), null);
+});
+
+test("enrollment approval text states the exact profile restrictions", () => {
+  const message = devices.enrollmentApprovalMessage("School iPad", "school");
+  assert.ok(message.includes("School iPad"));
+  assert.ok(message.includes("Restricted ask"));
+  assert.ok(message.includes("no history"));
+  assert.ok(devices.enrollmentLifecycleMessage("reject", "iPad").includes("Reject"));
+  assert.ok(devices.enrollmentLifecycleMessage("cancel", "iPad").includes("Cancel"));
+});
+
+test("IPC enrollment validators bound profiles and ids", () => {
+  const create = ipc.validateEnrollmentCreateInput({
+    display_name: "School iPad",
+    device_type: "ipad",
+    platform: "ipados",
+    requested_profile: "school",
+  });
+  assert.equal(create.requested_profile, "school");
+  assert.throws(() => ipc.validateEnrollmentCreateInput({ display_name: "x", requested_profile: "revoked" }));
+  assert.throws(() => ipc.validateEnrollmentCreateInput({ display_name: "x", requested_profile: "owner", device_type: "toaster" }));
+  const approve = ipc.validateEnrollmentApproveInput({ device_profile: "school" });
+  assert.equal(approve.device_profile, "school");
+  assert.throws(() => ipc.validateEnrollmentApproveInput({ device_profile: "revoked" }));
+  assert.throws(() => ipc.validateEnrollmentApproveInput({ device_profile: "school", replaces_device_id: "short" }));
+  assert.equal(ipc.validateEnrollmentId("a".repeat(32)), "a".repeat(32));
+});

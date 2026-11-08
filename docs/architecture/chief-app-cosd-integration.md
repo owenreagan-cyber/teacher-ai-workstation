@@ -20,7 +20,7 @@ Renderer (sandboxed) → preload (`window.chief`) → Electron main → cosd (lo
 | Chat `ask` | `POST /v1/ask` when connected |
 | Status dot / Settings | `GET /v1/status` when connected |
 | Task center | `/v1/tasks`, `/v1/queue`, history/cancel/retry |
-| Devices (P1b.4b) | `/v1/devices`, lifecycle, credential metadata |
+| Devices (P1b.4b/4c) | `/v1/devices`, lifecycle, credential metadata, pending enrollments |
 
 Brief, home, config, history (session read), warm, kill switch remain **`bin/cos` via execFile** (same policy path as before).
 
@@ -52,9 +52,11 @@ Settings → **Runtime & notifications** can `start` / `stop` / `restart` via ma
 - `contextIsolation: true`, `nodeIntegration: false`, narrow preload IPC.
 - Tokens never logged or sent to renderer.
 - Task IDs validated (`[a-f0-9]{32}`); ask/session strings bounded.
-- Device management (P1b.4b) is local owner only: main validates device ids,
-  profiles, metadata, and confirmations; the renderer receives only bounded
-  device/credential metadata (never tokens or Keychain references).
+- Device management (P1b.4b/4c) is local owner only: main validates device and
+  enrollment ids, profiles, metadata, and confirmations; the renderer receives
+  only bounded device/enrollment/credential metadata (never tokens or Keychain
+  references). Pairing QR/code data stays in the main process/renderer; the QR
+  never contains the master token or a permanent credential.
 
 ## Troubleshooting
 

@@ -5,6 +5,7 @@ from __future__ import annotations
 import logging
 import platform as host_platform
 import sqlite3
+from contextlib import nullcontext
 from pathlib import Path
 from typing import Any, Callable
 
@@ -31,6 +32,7 @@ from .models import (
     validate_choice,
     validate_device_id,
     validate_display_name,
+    validate_fingerprint,
     validate_metadata,
     validate_owner_id,
 )
@@ -130,6 +132,43 @@ class DeviceRegistry:
                 details={"reason": reason} if reason else {},
             )
 
+    def record_event(
+        self,
+        conn: sqlite3.Connection,
+        kind: str,
+        *,
+        device_id: str,
+        display_name: str | None = None,
+        result: str = "ok",
+        profile: str | None = None,
+        credential_id: str | None = None,
+        actor: str = "local_owner",
+        details: dict[str, Any] | None = None,
+    ) -> None:
+        """Record a lifecycle/security event inside the caller's transaction."""
+        self._record_event(
+            conn,
+            kind,
+            device_id=device_id,
+            display_name=display_name,
+            result=result,
+            profile=profile,
+            credential_id=credential_id,
+            actor=actor,
+            details=details,
+        )
+
+    def find_by_fingerprint(self, fingerprint: str) -> list[DeviceRecord]:
+        fingerprint = validate_fingerprint(fingerprint)
+        if fingerprint is None:
+            return []
+        rows = self.db.execute(
+            "SELECT * FROM devices WHERE public_key_fingerprint = ? "
+            "ORDER BY registered_at DESC",
+            (fingerprint,),
+        ).fetchall()
+        return [_row_to_device(row) for row in rows]
+
     def events_for(self, device_id: str, *, limit: int = 100) -> list[dict[str, Any]]:
         limit = max(1, min(int(limit), MAX_LIST_LIMIT))
         rows = self.db.execute(
@@ -169,6 +208,9 @@ class DeviceRegistry:
         credential_expires_at: str | None = None,
         device_id: str | None = None,
         actor: str = "local_owner",
+        initial_status: str = "active",
+        public_key_fingerprint: str | None = None,
+        conn: sqlite3.Connection | None = None,
     ) -> tuple[DeviceRecord, IssuedCredential | None]:
         display_name = validate_display_name(display_name)
         device_type = validate_choice("device_type", device_type, DEVICE_TYPES)
@@ -177,6 +219,8 @@ class DeviceRegistry:
         device_profile = validate_choice("device_profile", device_profile, PROFILES)
         if device_profile == "revoked":
             raise DeviceError("use revoke to revoke a device, not the revoked profile")
+        if initial_status not in ("active", "disabled"):
+            raise DeviceError("initial_status must be active or disabled")
         trust = validate_choice(
             "trust_level",
             trust_level or TRUST_BY_PROFILE[device_profile],
@@ -184,16 +228,18 @@ class DeviceRegistry:
         )
         app_version = validate_app_version(app_version)
         meta = validate_metadata(metadata)
+        fingerprint = validate_fingerprint(public_key_fingerprint)
         if device_id is not None:
             device_id = validate_device_id(device_id)
         else:
             device_id = new_device_id()
 
         now = utc_now()
+        manager = self.db.transaction() if conn is None else nullcontext(conn)
         try:
-            with self.db.transaction() as conn:
+            with manager as active_conn:
                 if is_primary_owner:
-                    existing = conn.execute(
+                    existing = active_conn.execute(
                         "SELECT device_id FROM devices WHERE is_primary_owner = 1"
                     ).fetchone()
                     if existing is not None:
@@ -202,13 +248,13 @@ class DeviceRegistry:
                             kind="conflict",
                             http_status=409,
                         )
-                conn.execute(
+                active_conn.execute(
                     """INSERT INTO devices(
                         device_id, display_name, device_type, platform, owner_id,
                         device_profile, trust_level, status, app_version,
                         registered_at, last_seen_at, updated_at, revoked_at,
-                        metadata_json, is_primary_owner
-                    ) VALUES (?, ?, ?, ?, ?, ?, ?, 'active', ?, ?, NULL, ?, NULL, ?, ?)""",
+                        metadata_json, is_primary_owner, public_key_fingerprint
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NULL, ?, NULL, ?, ?, ?)""",
                     (
                         device_id,
                         display_name,
@@ -217,15 +263,17 @@ class DeviceRegistry:
                         owner_id,
                         device_profile,
                         trust,
+                        initial_status,
                         app_version,
                         now,
                         now,
                         _dumps(meta),
                         1 if is_primary_owner else 0,
+                        fingerprint,
                     ),
                 )
                 self._record_event(
-                    conn,
+                    active_conn,
                     "device.registered",
                     device_id=device_id,
                     display_name=display_name,
@@ -236,6 +284,7 @@ class DeviceRegistry:
                         "platform": platform,
                         "trust_level": trust,
                         "is_primary_owner": bool(is_primary_owner),
+                        "initial_status": initial_status,
                     },
                 )
                 issued = None
@@ -244,14 +293,14 @@ class DeviceRegistry:
                         device_id,
                         expires_at=credential_expires_at,
                         actor=actor,
-                        conn=conn,
+                        conn=active_conn,
                     )
-                row = conn.execute(
+                row = active_conn.execute(
                     "SELECT * FROM devices WHERE device_id = ?", (device_id,)
                 ).fetchone()
         except sqlite3.IntegrityError as exc:
             raise DeviceError(
-                "device could not be registered (duplicate or constraint failure)",
+                "device could not be registered (duplicate identity, public key, or constraint)",
                 kind="conflict",
                 http_status=409,
             ) from exc
@@ -498,24 +547,33 @@ class DeviceRegistry:
             )
         return self.get_device(device.device_id)
 
-    def revoke_device(self, device_id: str, *, actor: str = "local_owner", reason: str = "") -> DeviceRecord:
+    def revoke_device(
+        self,
+        device_id: str,
+        *,
+        actor: str = "local_owner",
+        reason: str = "",
+        conn: sqlite3.Connection | None = None,
+    ) -> DeviceRecord:
         device = self.get_device(device_id)
         if device.is_primary_owner:
             raise PrimaryDeviceProtected()
         if device.status == "revoked":
             return device
         now = utc_now()
-        with self.db.transaction() as conn:
-            conn.execute(
+        manager = self.db.transaction() if conn is None else nullcontext(conn)
+        refs: list[str] = []
+        with manager as active_conn:
+            active_conn.execute(
                 "UPDATE devices SET status = 'revoked', revoked_at = ?, updated_at = ? "
                 "WHERE device_id = ?",
                 (now, now, device.device_id),
             )
             refs = self.credentials.revoke_all_for_device(
-                device.device_id, actor=actor, reason=reason, conn=conn
+                device.device_id, actor=actor, reason=reason, conn=active_conn
             )
             self._record_event(
-                conn,
+                active_conn,
                 "device.revoked",
                 device_id=device.device_id,
                 display_name=device.display_name,
@@ -523,7 +581,8 @@ class DeviceRegistry:
                 actor=actor,
                 details={"reason": reason} if reason else {},
             )
-        self.credentials.delete_secrets(refs)
+        if conn is None:
+            self.credentials.delete_secrets(refs)
         return self.get_device(device.device_id)
 
     def remove_device(self, device_id: str, *, actor: str = "local_owner") -> dict[str, Any]:
@@ -733,6 +792,11 @@ def _row_to_device(row: sqlite3.Row) -> DeviceRecord:
         revoked_at=row["revoked_at"],
         metadata=parse_metadata(row["metadata_json"]),
         is_primary_owner=bool(row["is_primary_owner"]),
+        public_key_fingerprint=(
+            row["public_key_fingerprint"]
+            if "public_key_fingerprint" in row.keys()
+            else None
+        ),
     )
 
 

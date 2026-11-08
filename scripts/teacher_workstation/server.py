@@ -326,7 +326,7 @@ class Handler(BaseHTTPRequestHandler):
             try:
                 from scripts.canvas_llm_deploy.client import LiveDeployClient
                 result = agent_service.publish_now(
-                    quarter, week, client=LiveDeployClient(),
+                    quarter, week, client=LiveDeployClient(quarter=quarter, week=week),
                     owner_confirmation=owner_confirmation)
                 self._send_json(200, result)
             except Exception as exc:  # noqa: BLE001

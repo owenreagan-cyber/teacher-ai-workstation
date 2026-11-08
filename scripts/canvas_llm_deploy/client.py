@@ -108,11 +108,26 @@ class LiveDeployClient(DeployClient):
 
     transport = "live"
 
-    def __init__(self) -> None:
+    def __init__(self, *, quarter: int | None = None, week: int | None = None) -> None:
         from scripts.canvas_llm_phase22 import canvas_credentials as credentials
         from scripts.canvas_llm_phase22 import canvas_connection_manager as transport
         from scripts.canvas_llm_intake import canvas_readonly
 
+        if (quarter is None) != (week is None):
+            raise RuntimeError("BLOCKED: quarter and week must be supplied together")
+        self.quarter = quarter
+        self.week = week
+        if quarter is not None and week is not None:
+            from scripts.canvas_llm_deploy.live_authorization import require_scoped_live_transport
+            require_scoped_live_transport(quarter=quarter, week=week)
+            if not transport.is_live_deployment_mode():
+                raise RuntimeError(
+                    "BLOCKED: CANVAS_LLM_DEPLOYMENT_MODE=live required for real Canvas transport"
+                )
+        else:
+            from scripts.canvas_llm_deploy.live_authorization import clear_scope
+            clear_scope()
+            transport.require_live_prerequisites(test_mode=False)
         credentials.load_credentials()  # exports into os.environ for the live client
         self._transport = transport
         self._write = transport.Phase22LiveCanvasClient.from_env()
@@ -432,6 +447,8 @@ def build_client(*, production: bool = False, fake: DeployClient | None = None) 
     if fake is not None:
         return fake
     if production:
+        # Unscoped construction stays on the Q1W2 environment gate.
+        # Weekly release callers must pass quarter and week.
         return LiveDeployClient()
     # Non-production: fake client with a minimal sandbox course is NOT safe to
     # write against; callers must explicitly request production for real writes.

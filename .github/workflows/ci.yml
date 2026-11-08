@@ -6,9 +6,10 @@ on:
   push:
     branches:
       - main
-      # This branch introduces the workflow. GitHub starts push jobs only when
-      # the branch is listed here; pull_request jobs use the file on main.
+      # These branches are listed so a push can start jobs before the workflow
+      # file is the only copy on main. pull_request jobs also run for main.
       - feat/automated-ci-validation
+      - fix/canvas-quarter-week-live-authorization
   workflow_dispatch:
 
 permissions:
@@ -87,11 +88,4 @@ jobs:
           python3 tests/canvas-llm-phase-3-announcement-test.py
 
       - name: Live authorization
-        run: |
-          set -euo pipefail
-          if [[ ! -f tests/canvas-live-authorization-test.py ]]; then
-            echo "Live authorization suite is absent from this commit."
-            echo "The step runs it whenever the file is present."
-            exit 0
-          fi
-          python3 tests/canvas-live-authorization-test.py
+        run: python3 tests/canvas-live-authorization-test.py

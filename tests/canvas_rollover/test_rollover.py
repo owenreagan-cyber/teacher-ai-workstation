@@ -25,6 +25,7 @@ LABELS = {"math": "Math", "reading_spelling": "Reading/Spelling",
 COURSES = {"math": 26404, "reading_spelling": 26442,
            "language_arts": 28171, "science": 28166, "homeroom": 26429}
 SOURCE_HASH = "q2w3-authoritative-source"
+PLAN_FINGERPRINT = "q2w3-plan-fingerprint"
 
 
 def _manifest():
@@ -52,6 +53,7 @@ def _manifest():
     return {
         "from_week": "Q2W2", "to_week": "Q2W3",
         "source_hash": SOURCE_HASH,
+        "plan_fingerprint": PLAN_FINGERPRINT,
         "scheduled_at": "2026-10-23T20:00:00Z", "timezone": "America/New_York",
         "academic_courses": academic,
         "homeroom": {
@@ -108,7 +110,11 @@ def _tmp_ledger():
     staging = Path(tmp.name) / "intake" / "q2w3"
     staging.mkdir(parents=True)
     (staging / "intake-manifest.json").write_text(
-        json.dumps({"source_hash": SOURCE_HASH}), encoding="utf-8"
+        json.dumps({
+            "quarter": 2, "week": 3, "week_code": "Q2W3",
+            "status": "READY_TO_PUBLISH", "approval_state": "APPROVED",
+            "source_hash": SOURCE_HASH, "plan_fingerprint": PLAN_FINGERPRINT,
+        }), encoding="utf-8"
     )
     return orig, orig_staging, tmp
 

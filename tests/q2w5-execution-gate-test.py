@@ -55,11 +55,15 @@ def _zero(client) -> None:
     assert counts["DELETE"] == 0, counts
 
 
-def _seed_source(root: Path, source: str = SOURCE) -> None:
+def _seed_source(root: Path, source: str = SOURCE, fingerprint: str = "q2w5-plan") -> None:
     staging = root / "intake" / "q2w5"
     staging.mkdir(parents=True, exist_ok=True)
     (staging / "intake-manifest.json").write_text(
-        json.dumps({"source_hash": source}), encoding="utf-8"
+        json.dumps({
+            "quarter": 2, "week": 5, "week_code": "Q2W5",
+            "status": "READY_TO_PUBLISH", "approval_state": "APPROVED",
+            "source_hash": source, "plan_fingerprint": fingerprint,
+        }), encoding="utf-8"
     )
 
 
@@ -100,6 +104,7 @@ def _release(**overrides) -> dict:
         "from_week": "Q2W4",
         "to_week": "Q2W5",
         "source_hash": SOURCE,
+        "plan_fingerprint": "q2w5-plan",
         "owner_publication_time": FUTURE,
         "scheduled_at": FUTURE,
         "timezone": "America/New_York",

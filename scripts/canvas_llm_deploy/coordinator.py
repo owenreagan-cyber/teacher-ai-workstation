@@ -261,11 +261,8 @@ def _verify_announcement(client: DeployClient, course_id: int, topic_id: Any,
         content_ok = False
 
     from scripts.canvas_llm_intake import scheduling as sched
-    in_feed = any(
-        (x.get("title") or "") == title
-        for x in client.list_active_announcements(context_codes=[f"course_{course_id}"])
-    )
-    counts["GET"] = counts.get("GET", 0) + 1
+    from scripts.canvas_llm_rollover.rollover import _announcement_in_active_feed
+    in_feed = _announcement_in_active_feed(client, course_id, topic_id, counts=counts)
     state = sched.classify_announcement(
         delayed_post_at=a.get("delayed_post_at"),
         posted_at=a.get("posted_at"),

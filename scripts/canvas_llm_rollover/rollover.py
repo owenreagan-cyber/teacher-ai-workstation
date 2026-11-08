@@ -16,6 +16,7 @@ from __future__ import annotations
 
 import copy
 import hashlib
+import html
 import json
 import re
 from datetime import date, datetime, timezone
@@ -176,10 +177,41 @@ def _canvas_comparable_body(body: str) -> str:
     return text.rstrip("\n")
 
 
+def _canvas_comparable_announcement_message(body: str) -> str:
+    """Announcement HTML normalization (includes entity decoding on readback).
+
+    Canvas re-encodes query strings in links (e.g. & -> &amp;) on discussion write.
+    """
+    return html.unescape(_canvas_comparable_body(body))
+
+
 def _canvas_body_hash(body: str) -> str:
     # Canvas strips HTML comments and trailing newlines on write. Neither is
     # visible content, so bind verification to the Canvas-comparable body.
     return deploy_plan._sha(_canvas_comparable_body(body))
+
+
+def _announcement_in_active_feed(
+    client: DeployClient,
+    course_id: int,
+    topic_id: Any,
+    *,
+    counts: dict[str, int] | None = None,
+) -> bool:
+    """Whether this topic id appears in the course's active_only announcement feed.
+
+    Weekly titles repeat every week (e.g. "Math Canvas Weekly Update"); never
+    infer visibility from title alone or a prior week's live post false-triggers
+    PREMATURE_LIVE on a correctly held successor.
+    """
+    tid = str(topic_id)
+    try:
+        items = client.list_active_announcements(context_codes=[f"course_{course_id}"])
+        if counts is not None:
+            counts["GET"] = counts.get("GET", 0) + 1
+        return any(str(item.get("id")) == tid for item in items)
+    except Exception:  # noqa: BLE001
+        return False
 
 
 def _homeroom_required_markers(approved_body: str) -> list[str]:
@@ -1265,22 +1297,43 @@ def execute(
         if announcement.get("action") == "BLOCKED" or announcement.get("schedule_state") != "FUTURE_SCHEDULED":
             report["failures"].append("homeroom announcement: owner-selected publication time required")
             return _finish(to_quarter, to_week, report, schedule.BLOCKED, counts)
+        expected_message = _canvas_comparable_announcement_message(announcement.get("message") or "")
+        delayed = announcement.get("delayed_post_at") or ""
+        page_body = _canvas_comparable_announcement_message((h or {}).get("body") or "")
         try:
-            created = client.create_announcement(
-                announcement["course_id"], title=announcement["title"],
-                message=announcement.get("message") or "", published=True,
-                delayed_post_at=announcement.get("delayed_post_at"),
-            )
-            counts["POST"] += 1
-            readback = client.get_announcement(announcement["course_id"], str(created.get("id")))
-            counts["GET"] += 1
-            in_feed = any(
-                (item.get("title") or "") == announcement["title"]
-                for item in client.list_active_announcements(
-                    context_codes=[f"course_{announcement['course_id']}"]
+            created: dict[str, Any] | None = None
+            for item in client.list_announcements(announcement["course_id"]):
+                counts["GET"] += 1
+                if (item.get("title") or "") != announcement["title"]:
+                    continue
+                candidate = client.get_announcement(
+                    announcement["course_id"], str(item.get("id")),
                 )
+                counts["GET"] += 1
+                live_message = _canvas_comparable_announcement_message(candidate.get("message") or "")
+                if (
+                    live_message == expected_message
+                    and _same_instant(candidate.get("delayed_post_at"), delayed)
+                ):
+                    created = candidate
+                    break
+            if created is None:
+                created = client.create_announcement(
+                    announcement["course_id"], title=announcement["title"],
+                    message=announcement.get("message") or "", published=True,
+                    delayed_post_at=delayed,
+                )
+                counts["POST"] += 1
+                readback = client.get_announcement(announcement["course_id"], str(created.get("id")))
+                counts["GET"] += 1
+            else:
+                readback = created
+            in_feed = _announcement_in_active_feed(
+                client,
+                int(announcement["course_id"]),
+                readback.get("id"),
+                counts=counts,
             )
-            counts["GET"] += 1
             from scripts.canvas_llm_intake import scheduling as sched
             state = sched.classify_announcement(
                 delayed_post_at=readback.get("delayed_post_at"),
@@ -1288,13 +1341,11 @@ def execute(
                 published=readback.get("published"),
                 in_active_feed=in_feed,
             )
-            delayed = announcement.get("delayed_post_at") or ""
-            page_body = _canvas_owned_body((h or {}).get("body") or "")
-            live_message = _canvas_owned_body(readback.get("message") or "")
-            expected_message = _canvas_owned_body(announcement.get("message") or "")
+            live_message = _canvas_comparable_announcement_message(readback.get("message") or "")
+            live_course = readback.get("course_id")
             course_ok = (
-                readback.get("course_id") is not None
-                and int(readback.get("course_id")) == int(announcement["course_id"])
+                live_course is None
+                or int(live_course) == int(announcement["course_id"])
             )
             ok = (
                 readback.get("title") == announcement["title"]
@@ -1432,39 +1483,48 @@ def execute(
                  "message_hash": hashlib.sha256(str(a.get("message", "")).encode("utf-8")).hexdigest(),
                  "disposition": "ALREADY_EXISTS", "verified": True})
             continue
+        expected_message = _canvas_comparable_announcement_message(a.get("message") or "")
+        delayed = a.get("delayed_post_at") or ""
         try:
-            created = client.create_announcement(
-                cid, title=a["title"], message=a["message"], published=True,
-                delayed_post_at=a.get("delayed_post_at"))
-            counts["POST"] += 1
-            tid = created.get("id")
-            announcement_readback = client.get_announcement(cid, str(tid))
-            counts["GET"] += 1
+            created_ann: dict[str, Any] | None = None
+            for item in client.list_announcements(cid):
+                counts["GET"] += 1
+                if (item.get("title") or "") != a["title"]:
+                    continue
+                candidate = client.get_announcement(cid, str(item.get("id")))
+                counts["GET"] += 1
+                live_message = _canvas_comparable_announcement_message(candidate.get("message") or "")
+                if (
+                    live_message == expected_message
+                    and _same_instant(candidate.get("delayed_post_at"), delayed)
+                ):
+                    created_ann = candidate
+                    break
+            if created_ann is None:
+                created_ann = client.create_announcement(
+                    cid, title=a["title"], message=a["message"], published=True,
+                    delayed_post_at=delayed)
+                counts["POST"] += 1
+                announcement_readback = client.get_announcement(cid, str(created_ann.get("id")))
+                counts["GET"] += 1
+            else:
+                announcement_readback = created_ann
         except Exception as exc:  # noqa: BLE001
             report["failures"].append(f"{a['subject']}: announcement write failed: {type(exc).__name__}")
             return _finish(to_quarter, to_week, report, schedule.BLOCKED, counts)
-        # A run before 4 PM is held; a due/manual run may already be posted.
-        in_feed = False
-        try:
-            in_feed = any(
-                (x.get("title") or "") == a["title"]
-                for x in client.list_active_announcements(context_codes=[f"course_{cid}"])
-            )
-            counts["GET"] += 1
-        except Exception:  # noqa: BLE001
-            in_feed = False
+        tid = announcement_readback.get("id")
+        in_feed = _announcement_in_active_feed(client, cid, tid, counts=counts)
         from scripts.canvas_llm_intake import scheduling as sched
         state = sched.classify_announcement(
-            delayed_post_at=a.get("delayed_post_at"), posted_at=created.get("posted_at"),
-            published=created.get("published"), in_active_feed=in_feed)
-        # Canvas prepends its account-level canvas_global_app.css <link> to
-        # announcement messages on write (same injection as wiki-page bodies).
-        # Normalize it off before comparing, so verification binds to our
-        # authored message rather than Canvas-owned global assets.
-        live_message = _canvas_owned_body(announcement_readback.get("message") or "")
+            delayed_post_at=announcement_readback.get("delayed_post_at"),
+            posted_at=announcement_readback.get("posted_at"),
+            published=announcement_readback.get("published"),
+            in_active_feed=in_feed,
+        )
+        live_message = _canvas_comparable_announcement_message(announcement_readback.get("message") or "")
         content_ok = (
             announcement_readback.get("title") == a["title"]
-            and live_message == a["message"]
+            and live_message == expected_message
         )
         ok = content_ok and state in (sched.HELD_SCHEDULED, sched.POSTED)
         if not ok:
@@ -1502,10 +1562,17 @@ def execute(
         scheduled = bool(a.get("scheduled")) and bool(a.get("delayed_post_at"))
         delayed = a.get("delayed_post_at") if scheduled else None
         try:
-            exact = next((item for item in client.list_announcements(a["course_id"])
-                          if item.get("title") == title
-                          and _canvas_owned_body(item.get("message") or "") == a.get("message", "")
-                          and (not scheduled or _same_instant(item.get("delayed_post_at"), delayed))), None)
+            expected_message = _canvas_comparable_announcement_message(a.get("message") or "")
+            exact = next(
+                (
+                    item
+                    for item in client.list_announcements(a["course_id"])
+                    if item.get("title") == title
+                    and _canvas_comparable_announcement_message(item.get("message") or "") == expected_message
+                    and (not scheduled or _same_instant(item.get("delayed_post_at"), delayed))
+                ),
+                None,
+            )
             counts["GET"] += 1
             if exact:
                 created = exact
@@ -1519,15 +1586,13 @@ def execute(
                 disposition = "SCHEDULED_VERIFIED" if scheduled else "PUBLISHED_VERIFIED"
             readback = client.get_announcement(a["course_id"], str(created.get("id")))
             counts["GET"] += 1
-            message_ok = _canvas_owned_body(readback.get("message") or "") == a.get("message", "")
+            message_ok = _canvas_comparable_announcement_message(readback.get("message") or "") == expected_message
             delay_ok = True
             state = None
             if scheduled:
-                in_feed = any(
-                    (item.get("title") or "") == title
-                    for item in client.list_active_announcements(context_codes=[f"course_{a['course_id']}"])
+                in_feed = _announcement_in_active_feed(
+                    client, int(a["course_id"]), readback.get("id"), counts=counts,
                 )
-                counts["GET"] += 1
                 from scripts.canvas_llm_intake import scheduling as sched
                 state = sched.classify_announcement(
                     delayed_post_at=readback.get("delayed_post_at"),
@@ -1538,9 +1603,10 @@ def execute(
                 delay_ok = state == sched.HELD_SCHEDULED and _same_instant(readback.get("delayed_post_at"), delayed)
                 if delay_ok and disposition != "ALREADY_EXISTS":
                     disposition = "SCHEDULED_VERIFIED"
+            live_course = readback.get("course_id")
             course_ok = (
-                readback.get("course_id") is not None
-                and int(readback.get("course_id")) == int(a["course_id"])
+                live_course is None
+                or int(live_course) == int(a["course_id"])
             )
             ok = readback.get("title") == title and message_ok and delay_ok and course_ok
         except Exception as exc:  # noqa: BLE001

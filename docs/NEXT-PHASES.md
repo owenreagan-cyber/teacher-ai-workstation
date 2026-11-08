@@ -61,7 +61,9 @@ There is **one `cos` core with two faces.**
 
 **P1b.1c (complete):** Execution queue, worker leases, checkpoints, startup recovery, registered handlers, `bin/cosd queue`. No autonomous scheduler or multi-agent orchestration yet.
 
-**P1b.1d (complete):** `bin/cos` smart client (`COS_USE_DAEMON`, `cosd/client.py`) for `ask`/`status` with standalone fallback. Chief.app migration deferred to P1b.1e.
+**P1b.1d (complete):** `bin/cos` smart client (`COS_USE_DAEMON`, `cosd/client.py`) for `ask`/`status` with standalone fallback.
+
+**P1b.1e (complete):** Chief.app (`apps/chief-desktop`) uses loopback cosd for ask, status, and task center; execFile fallback for other cos commands. See `docs/architecture/chief-app-cosd-integration.md`.
 
 **Later P1b:**
 - HTTPS on the Mac's Tailscale name. Device pairing by QR code, with revocable tokens.

@@ -1,6 +1,7 @@
 // Shapes of what cos prints (cos ask/history/status/brief --json) plus the few envelopes the
 // main process adds. The renderer displays these; it never invents their values.
 import type { Block } from "./blocks.js";
+import type { CosdConnectionState, ExecutionMode } from "./cosd.js";
 import type { HomeSnapshot } from "./home.js";
 import type { ConfigReport } from "./settings.js";
 
@@ -72,6 +73,9 @@ export type StatusResult =
       audit: "ok" | "empty" | "fail";
       version: string;
       auto_search: boolean;
+      via_daemon?: boolean;
+      cosd_connection?: CosdConnectionState;
+      execution_mode?: ExecutionMode;
     }
   | Failure;
 
@@ -99,6 +103,7 @@ export type WindowState = { pinned: boolean; protected: boolean; startAtLogin: b
 export type ShellEvent =
   | { kind: "brief-requested" }
   | { kind: "status-changed" }
+  | { kind: "cosd-connection"; snapshot: import("./cosd.js").CosdConnectionSnapshot }
   | { kind: "window-state"; state: WindowState };
 
 export interface ChiefBridge {
@@ -115,5 +120,15 @@ export interface ChiefBridge {
   setPin(pinned: boolean): Promise<WindowState>;
   setProtection(enabled: boolean): Promise<WindowState>;
   hide(): Promise<void>;
+  cosdConnection(): Promise<import("./cosd.js").CosdConnectionResult>;
+  cosdReconnect(): Promise<import("./cosd.js").CosdConnectionResult>;
+  cancelAsk(): Promise<void>;
+  listTasks(state?: string): Promise<import("./cosd.js").TaskListResult>;
+  getTask(taskId: string): Promise<import("./cosd.js").TaskDetailResult>;
+  createTask(title: string, kind: string, idempotencyKey: string): Promise<import("./cosd.js").TaskDetailResult & { reused?: boolean }>;
+  cancelTask(taskId: string): Promise<import("./cosd.js").TaskDetailResult>;
+  retryTask(taskId: string): Promise<import("./cosd.js").TaskDetailResult>;
+  taskHistory(taskId: string): Promise<import("./cosd.js").TaskHistoryResult>;
+  queueSnapshot(): Promise<import("./cosd.js").QueueResult>;
   onEvent(listener: (event: ShellEvent) => void): () => void;
 }

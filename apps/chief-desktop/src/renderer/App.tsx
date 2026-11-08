@@ -151,7 +151,7 @@ export function App() {
     const timer = setInterval(() => void refreshStatus(), STATUS_POLL_MS);
     const off = window.chief.onEvent((event) => {
       if (event.kind === "window-state") setWindowState(event.state);
-      else if (event.kind === "status-changed") void refreshStatus();
+      else if (event.kind === "status-changed" || event.kind === "cosd-connection") void refreshStatus();
       else if (event.kind === "brief-requested") void runBrief();
     });
     return () => {

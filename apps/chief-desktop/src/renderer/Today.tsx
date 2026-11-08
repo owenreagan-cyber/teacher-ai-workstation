@@ -20,6 +20,7 @@ import {
   type WeatherData,
 } from "../shared/home";
 import { WeatherIcon } from "./Blocks";
+import { TaskCenter } from "./Tasks";
 
 export type HomeState =
   | { state: "loading" }
@@ -444,9 +445,14 @@ export function MacPage({ home, now }: { home: HomeState; now: Date }) {
 
 export function AgentsPage({ home, now }: { home: HomeState; now: Date }) {
   return (
-    <div className="mx-auto max-w-[800px] space-y-4 p-6">
+    <div className="mx-auto max-w-[900px] space-y-4 p-6">
       <h1 className="text-[22px] font-semibold">Agents & builds</h1>
-      <AgentsCard />
+      <section aria-labelledby="task-center-heading">
+        <h2 id="task-center-heading" className="mb-3 text-[15px] font-semibold">
+          Task center
+        </h2>
+        <TaskCenter />
+      </section>
       {home.state === "ready" ? <BuildsCard section={home.snap.builds} now={now} /> : <div className="text-[13px] text-muted">Loading…</div>}
     </div>
   );

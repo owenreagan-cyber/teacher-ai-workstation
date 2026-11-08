@@ -21,6 +21,7 @@ on:
       - fix/q2w5-lifecycle-test-isolation
       - feat/cosd-local-daemon
       - feat/cosd-persistent-task-registry
+      - feat/cosd-persistent-execution-queue
   workflow_dispatch:
 
 permissions:

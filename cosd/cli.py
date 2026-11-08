@@ -232,6 +232,80 @@ def cmd_tasks_retry(args: argparse.Namespace) -> int:
         return EXIT_ERROR
 
 
+def cmd_queue_status(_args: argparse.Namespace) -> int:
+    try:
+        status, body = _authenticated_request("/v1/queue")
+        return _print_api(status, body)
+    except (URLError, RuntimeError) as exc:
+        print(f"cosd: {exc}", file=sys.stderr)
+        return EXIT_ERROR
+
+
+def cmd_queue_list(_args: argparse.Namespace) -> int:
+    try:
+        status, body = _authenticated_request("/v1/tasks", query={"state": "QUEUED", "limit": "100"})
+        return _print_api(status, body)
+    except (URLError, RuntimeError) as exc:
+        print(f"cosd: {exc}", file=sys.stderr)
+        return EXIT_ERROR
+
+
+def cmd_queue_run(args: argparse.Namespace) -> int:
+    try:
+        status, body = _authenticated_request(
+            f"/v1/tasks/{args.task_id}/execute", method="POST", body=b"{}"
+        )
+        return _print_api(status, body)
+    except (URLError, RuntimeError) as exc:
+        print(f"cosd: {exc}", file=sys.stderr)
+        return EXIT_ERROR
+
+
+def cmd_queue_pause(_args: argparse.Namespace) -> int:
+    try:
+        status, body = _authenticated_request("/v1/queue/pause", method="POST", body=b"{}")
+        return _print_api(status, body)
+    except (URLError, RuntimeError) as exc:
+        print(f"cosd: {exc}", file=sys.stderr)
+        return EXIT_ERROR
+
+
+def cmd_queue_resume(_args: argparse.Namespace) -> int:
+    try:
+        status, body = _authenticated_request("/v1/queue/resume", method="POST", body=b"{}")
+        return _print_api(status, body)
+    except (URLError, RuntimeError) as exc:
+        print(f"cosd: {exc}", file=sys.stderr)
+        return EXIT_ERROR
+
+
+def cmd_workers_list(_args: argparse.Namespace) -> int:
+    try:
+        status, body = _authenticated_request("/v1/workers")
+        return _print_api(status, body)
+    except (URLError, RuntimeError) as exc:
+        print(f"cosd: {exc}", file=sys.stderr)
+        return EXIT_ERROR
+
+
+def cmd_tasks_attempts(args: argparse.Namespace) -> int:
+    try:
+        status, body = _authenticated_request(f"/v1/tasks/{args.task_id}/attempts")
+        return _print_api(status, body)
+    except (URLError, RuntimeError) as exc:
+        print(f"cosd: {exc}", file=sys.stderr)
+        return EXIT_ERROR
+
+
+def cmd_tasks_checkpoints(args: argparse.Namespace) -> int:
+    try:
+        status, body = _authenticated_request(f"/v1/tasks/{args.task_id}/checkpoints")
+        return _print_api(status, body)
+    except (URLError, RuntimeError) as exc:
+        print(f"cosd: {exc}", file=sys.stderr)
+        return EXIT_ERROR
+
+
 def cmd_tasks_history(args: argparse.Namespace) -> int:
     try:
         status, body = _authenticated_request(f"/v1/tasks/{args.task_id}/history")
@@ -314,6 +388,28 @@ def main(argv: list[str] | None = None) -> int:
     thist = tasks_sub.add_parser("history", help="task event history")
     thist.add_argument("task_id")
     thist.set_defaults(func=cmd_tasks_history)
+
+    tatt = tasks_sub.add_parser("attempts", help="execution attempts")
+    tatt.add_argument("task_id")
+    tatt.set_defaults(func=cmd_tasks_attempts)
+
+    tcps = tasks_sub.add_parser("checkpoints", help="execution checkpoints")
+    tcps.add_argument("task_id")
+    tcps.set_defaults(func=cmd_tasks_checkpoints)
+
+    queue = sub.add_parser("queue", help="execution queue via daemon API")
+    queue_sub = queue.add_subparsers(dest="queue_command", required=True)
+    queue_sub.add_parser("status").set_defaults(func=cmd_queue_status)
+    queue_sub.add_parser("list").set_defaults(func=cmd_queue_list)
+    qrun = queue_sub.add_parser("run", help="execute one task")
+    qrun.add_argument("--task-id", dest="task_id", required=True)
+    qrun.set_defaults(func=cmd_queue_run)
+    queue_sub.add_parser("pause").set_defaults(func=cmd_queue_pause)
+    queue_sub.add_parser("resume").set_defaults(func=cmd_queue_resume)
+
+    workers = sub.add_parser("workers", help="worker leases")
+    workers_sub = workers.add_subparsers(dest="workers_command", required=True)
+    workers_sub.add_parser("list").set_defaults(func=cmd_workers_list)
 
     args = parser.parse_args(argv)
     if hasattr(args, "host"):

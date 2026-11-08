@@ -114,7 +114,7 @@ class AskTimeoutTest(CosdStateTest):
         with mock.patch.object(cosd_server, "ASK_TIMEOUT_S", 0.05), mock.patch.object(
             cosd_server, "run_ask", slow_ask
         ):
-            srv = RunningServer(self.state)
+            srv = RunningServer(self.state, use_subprocess=False)
             try:
                 status, body = http_json(
                     srv.port,

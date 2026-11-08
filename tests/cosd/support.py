@@ -84,19 +84,73 @@ class CosdStateTest(unittest.TestCase):
 
 
 class RunningServer:
-    def __init__(self, state_base: Path, port: int | None = None):
+    def __init__(self, state_base: Path, port: int | None = None, *, use_subprocess: bool = True):
+        import os
+        import subprocess
+        import sys
+        from datetime import datetime, timezone
+
         from cosd.auth import ensure_token
-        from cosd.server import run_server
+        from cosd.lifecycle import PidRecord, clear_pid, write_pid
 
         self.state_base = state_base
         self.port = port or free_port()
         self.token = ensure_token(state_base).token
-        self._thread = threading.Thread(
-            target=run_server,
-            kwargs={"host": "127.0.0.1", "port": self.port, "state_base": state_base},
-            daemon=True,
+        self._proc = None
+        self._thread = None
+        if not use_subprocess:
+            from cosd.server import run_server
+
+            self._thread = threading.Thread(
+                target=run_server,
+                kwargs={"host": "127.0.0.1", "port": self.port, "state_base": state_base},
+                daemon=True,
+            )
+            self._thread.start()
+
+            def health_ok() -> bool:
+                try:
+                    _, body = http_json(self.port, "/health")
+                except (OSError, URLError):
+                    return False
+                return bool(body.get("ok"))
+
+            if not wait_until(health_ok):
+                raise RuntimeError("cosd test server failed to start")
+            return
+
+        env = os.environ.copy()
+        env["PYTHONPATH"] = str(REPO_ROOT)
+        self._proc = subprocess.Popen(
+            [
+                sys.executable,
+                "-s",
+                "-E",
+                "-c",
+                "import sys; sys.path.insert(0, sys.argv[1]); from cosd.cli import main; "
+                "raise SystemExit(main(sys.argv[2:]))",
+                str(REPO_ROOT),
+                "serve",
+                "--host",
+                "127.0.0.1",
+                "--port",
+                str(self.port),
+            ],
+            cwd=str(REPO_ROOT),
+            env=env,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
         )
-        self._thread.start()
+        write_pid(
+            PidRecord(
+                pid=self._proc.pid,
+                host="127.0.0.1",
+                port=self.port,
+                started_at=datetime.now(timezone.utc).isoformat(),
+            ),
+            state_base,
+        )
+
         def health_ok() -> bool:
             try:
                 _, body = http_json(self.port, "/health")
@@ -105,7 +159,26 @@ class RunningServer:
             return bool(body.get("ok"))
 
         if not wait_until(health_ok):
+            self._proc.terminate()
+            clear_pid(state_base)
             raise RuntimeError("cosd test server failed to start")
 
     def stop(self) -> None:
-        http_json(self.port, "/v1/stop", method="POST", body={}, token=self.token)
+        from cosd.lifecycle import clear_pid, read_pid, stop_process
+
+        try:
+            http_json(self.port, "/v1/stop", method="POST", body={}, token=self.token)
+        except (OSError, URLError, Exception):
+            pass
+        if self._thread is not None:
+            return
+        rec = read_pid(self.state_base)
+        if rec:
+            stop_process(rec, base=self.state_base, timeout=3)
+        if self._proc is not None and self._proc.poll() is None:
+            self._proc.terminate()
+            try:
+                self._proc.wait(timeout=3)
+            except Exception:
+                self._proc.kill()
+        clear_pid(self.state_base)

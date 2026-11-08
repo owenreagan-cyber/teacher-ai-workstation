@@ -164,9 +164,13 @@ Active and historical lease records (bounded).
 | 413 | `usage` | Body too large |
 | 504 | `timeout` | Ask exceeded server timeout |
 
+## CLI client (`bin/cos`)
+
+P1b.1d: `bin/cos` may call this API for `ask` and `status` when `COS_USE_DAEMON` is `auto` or `required` and a healthy authenticated `cosd` instance is discovered via the pid file (`COS_STATE_DIR`). Task and queue operations remain on `bin/cosd` (same API, not duplicated in `bin/cos`). See `docs/architecture/cos-daemon-client.md`.
+
 ## Versioning
 
-URL prefix `/v1/` is stable for P1b.1a. Breaking changes require a new prefix; `cosd` version is reported on `/health`.
+URL prefix `/v1/` is stable for P1b.1a. Breaking changes require a new prefix; `cosd` version is reported on `/health`. `cosd.client.CosdClient` requires `version >= 0.1.0` from `GET /health` and probes `GET /v1/status` before treating the daemon as authenticated.
 
 ## Logging
 

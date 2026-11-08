@@ -70,6 +70,10 @@ SQLite store: `docs/architecture/cosd-task-registry.md`. CLI: `bin/cosd tasks �
 
 `docs/architecture/cosd-execution-queue.md`. CLI: `bin/cosd queue …`, `bin/cosd workers list`.
 
+## cos client (P1b.1d)
+
+`docs/architecture/cos-daemon-client.md` — `bin/cos` delegates `ask`/`status` when daemon is healthy.
+
 ## Limitations
 
 - No Tailscale/TLS/remote pairing

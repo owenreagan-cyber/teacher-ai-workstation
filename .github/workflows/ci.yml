@@ -18,6 +18,7 @@ on:
       - fix/q2w5-approval-integrity
       - feat/canvas-duplicate-prevention
       - fix/canvas-announcement-identity-idempotency
+      - fix/q2w5-lifecycle-test-isolation
   workflow_dispatch:
 
 permissions:

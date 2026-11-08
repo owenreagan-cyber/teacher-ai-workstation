@@ -1,12 +1,15 @@
 """Guarded reversal of the false Q2W5 published lifecycle.
 
-Tests use temporary storage. They do not apply the real correction.
+All mutation tests run inside :func:`isolated_storage` temporary trees. They
+never depend on, read expectations from, or modify the real ``.local`` Q2W5
+manifest bytes.
 """
 from __future__ import annotations
 
 import hashlib
 import json
 import sys
+from dataclasses import dataclass
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -15,18 +18,38 @@ if str(ROOT) not in sys.path:
 
 from scripts.canvas_llm_deploy import ledger, lifecycle_reconciliation as rec
 from scripts.canvas_llm_intake import manifest as imf
-from scripts.canvas_llm_storage import isolated_storage
+from scripts.canvas_llm_storage import canonical_intake_root, isolated_storage
 
 REAL_MANIFEST = Path(".local/canvas-llm/intake/2026-2027/q2/w5/intake-manifest.json")
-CURRENT_REAL_MANIFEST_SHA256 = "0c4c71396440b43105baa4affc856ed16856fa66ac23f01c7619b38885ddb751"
 PUBLISHED_AT = rec.EXPECTED_PUBLISHED_AT
 SOURCE = rec.EXPECTED_SOURCE_HASH
 
 
-def _real_hash() -> str | None:
+@dataclass(frozen=True)
+class RealManifestSnapshot:
+    """Read-only fingerprint of the developer's real manifest (if present)."""
+
+    sha256: str
+    payload: bytes
+
+
+def _real_manifest_snapshot() -> RealManifestSnapshot | None:
     if not REAL_MANIFEST.exists():
         return None
-    return hashlib.sha256(REAL_MANIFEST.read_bytes()).hexdigest()
+    payload = REAL_MANIFEST.read_bytes()
+    return RealManifestSnapshot(
+        sha256=hashlib.sha256(payload).hexdigest(),
+        payload=payload,
+    )
+
+
+def _assert_real_manifest_untouched(snapshot: RealManifestSnapshot | None) -> None:
+    if snapshot is None:
+        return
+    assert REAL_MANIFEST.exists(), "real Q2W5 intake manifest disappeared"
+    now = REAL_MANIFEST.read_bytes()
+    assert hashlib.sha256(now).hexdigest() == snapshot.sha256, "real manifest SHA-256 changed"
+    assert now == snapshot.payload, "real manifest bytes changed"
 
 
 def _false_manifest(**overrides) -> dict:
@@ -49,18 +72,20 @@ def _false_manifest(**overrides) -> dict:
     return manifest
 
 
-def _setup(manifest: dict) -> tuple[str, dict]:
+def _setup(manifest: dict) -> tuple[str, dict, bytes]:
+    """Write isolated manifest; return (sha256, preview, exact file bytes)."""
     imf.save_manifest(2, 5, manifest)
     path = imf.staging_dir(2, 5) / "intake-manifest.json"
-    digest = hashlib.sha256(path.read_bytes()).hexdigest()
+    original_bytes = path.read_bytes()
+    digest = hashlib.sha256(original_bytes).hexdigest()
     preview = rec.build_preview(2, 5)
-    return digest, preview
+    return digest, preview, original_bytes
 
 
 def test_exact_hash_dry_run_and_apply_preserve_history():
-    before = _real_hash()
+    snapshot = _real_manifest_snapshot()
     with isolated_storage():
-        digest, preview = _setup(_false_manifest())
+        digest, preview, _ = _setup(_false_manifest())
         history = list(imf.load_manifest(2, 5)["history"])
         dry = rec.apply_correction(
             2, 5, preview=preview, expected_manifest_sha256=digest,
@@ -91,13 +116,16 @@ def test_exact_hash_dry_run_and_apply_preserve_history():
         assert record["evidence"]["false_transition"]["to"] == "PUBLISHED_VERIFIED"
         for name in rec.LEDGER_NAMES:
             assert not (ledger.deploy_dir(2, 5) / name).exists()
-    assert _real_hash() == before
+        staging = imf.staging_dir(2, 5)
+        assert canonical_intake_root() not in staging.parents
+        assert staging.resolve() != REAL_MANIFEST.parent.resolve()
+    _assert_real_manifest_untouched(snapshot)
 
 
 def test_changed_hash_unexpected_ledger_and_wrong_source_block():
-    before = _real_hash()
+    snapshot = _real_manifest_snapshot()
     with isolated_storage():
-        digest, preview = _setup(_false_manifest())
+        digest, preview, _ = _setup(_false_manifest())
         changed = rec.apply_correction(
             2, 5, preview=preview, expected_manifest_sha256="0" * 64,
             expected_source_hash=SOURCE, apply=True,
@@ -114,20 +142,20 @@ def test_changed_hash_unexpected_ledger_and_wrong_source_block():
         assert any("unexpected ledger" in item for item in unexpected["failures"])
         (ledger.deploy_dir(2, 5) / "deployment-ledger.json").unlink()
         _setup(_false_manifest(source_hash="changed-source"))
-        digest, preview = _setup(_false_manifest(source_hash="changed-source"))
+        digest, preview, _ = _setup(_false_manifest(source_hash="changed-source"))
         wrong_source = rec.apply_correction(
             2, 5, preview=preview, expected_manifest_sha256=digest,
             expected_source_hash=SOURCE, apply=True,
         )
         assert wrong_source["status"] == "BLOCKED"
         assert any("source hash" in item for item in wrong_source["failures"])
-    assert _real_hash() == before
+    _assert_real_manifest_untouched(snapshot)
 
 
 def test_missing_preview_evidence_wrong_state_and_nonpending_approval_block():
-    before = _real_hash()
+    snapshot = _real_manifest_snapshot()
     with isolated_storage():
-        digest, preview = _setup(_false_manifest())
+        digest, preview, _ = _setup(_false_manifest())
         preview["missing_evidence"] = ["plan_fingerprint"]
         missing = rec.apply_correction(
             2, 5, preview=preview, expected_manifest_sha256=digest,
@@ -135,14 +163,14 @@ def test_missing_preview_evidence_wrong_state_and_nonpending_approval_block():
         )
         assert missing["status"] == "BLOCKED"
         assert any("missing deployment evidence" in item for item in missing["failures"])
-        digest, preview = _setup(_false_manifest(status="DRAFTED", ready_to_publish=False, published_at=None))
+        digest, preview, _ = _setup(_false_manifest(status="DRAFTED", ready_to_publish=False, published_at=None))
         wrong_state = rec.apply_correction(
             2, 5, preview=preview, expected_manifest_sha256=digest,
             expected_source_hash=SOURCE, apply=True,
         )
         assert wrong_state["status"] == "BLOCKED"
         assert any("not PUBLISHED_VERIFIED" in item for item in wrong_state["failures"])
-        digest, preview = _setup(_false_manifest(approval_state="APPROVED"))
+        digest, preview, _ = _setup(_false_manifest(approval_state="APPROVED"))
         approved = rec.apply_correction(
             2, 5, preview=preview, expected_manifest_sha256=digest,
             expected_source_hash=SOURCE, apply=True,
@@ -150,15 +178,14 @@ def test_missing_preview_evidence_wrong_state_and_nonpending_approval_block():
         assert approved["status"] == "BLOCKED"
         assert any("not PENDING" in item for item in approved["failures"])
         assert imf.load_manifest(2, 5)["approval_state"] == "APPROVED"
-    assert _real_hash() == before
+    _assert_real_manifest_untouched(snapshot)
 
 
 def test_atomic_write_and_readback_failures_restore_the_manifest():
-    before = _real_hash()
+    snapshot = _real_manifest_snapshot()
     with isolated_storage():
-        digest, preview = _setup(_false_manifest())
+        digest, preview, original_bytes = _setup(_false_manifest())
         path = imf.staging_dir(2, 5) / "intake-manifest.json"
-        original_bytes = path.read_bytes()
         original_write = Path.write_text
 
         def fail_partial(self, text, *args, **kwargs):
@@ -199,13 +226,14 @@ def test_atomic_write_and_readback_failures_restore_the_manifest():
         )["history"]
         assert not path.with_name(path.name + ".partial").exists()
         assert not path.with_name(path.name + ".restore").exists()
-    assert _real_hash() == before
+    _assert_real_manifest_untouched(snapshot)
 
 
 def test_repeated_application_is_idempotent():
-    before = _real_hash()
+    snapshot = _real_manifest_snapshot()
     with isolated_storage():
-        digest, preview = _setup(_false_manifest())
+        digest, preview, fixture_bytes = _setup(_false_manifest())
+        assert digest == hashlib.sha256(fixture_bytes).hexdigest()
         first = rec.apply_correction(
             2, 5, preview=preview, expected_manifest_sha256=digest,
             expected_source_hash=SOURCE, apply=True,
@@ -223,12 +251,51 @@ def test_repeated_application_is_idempotent():
         assert len(saved["lifecycle_corrections"]) == 1
         assert saved["history"] == json.loads(after.decode("utf-8"))["history"]
         assert len(saved["history"]) == 4
-    if before is not None:
-        assert before == CURRENT_REAL_MANIFEST_SHA256
-    assert _real_hash() == before
+    _assert_real_manifest_untouched(snapshot)
+
+
+def test_isolated_storage_never_writes_canonical_intake_tree():
+    snapshot = _real_manifest_snapshot()
+    canonical_bytes = REAL_MANIFEST.read_bytes() if REAL_MANIFEST.exists() else None
+    with isolated_storage() as tmp:
+        digest, preview, _ = _setup(_false_manifest())
+        isolated_path = imf.staging_dir(2, 5) / "intake-manifest.json"
+        assert tmp in isolated_path.parents
+        assert isolated_path != REAL_MANIFEST
+        rec.apply_correction(
+            2, 5, preview=preview, expected_manifest_sha256=digest,
+            expected_source_hash=SOURCE, apply=True,
+        )
+        assert imf.load_manifest(2, 5)["status"] == "READY_FOR_REVIEW"
+    if canonical_bytes is not None:
+        assert REAL_MANIFEST.read_bytes() == canonical_bytes
+    _assert_real_manifest_untouched(snapshot)
+
+
+def verify_real_q2w5_manifest_readonly() -> dict[str, object]:
+    """Optional read-only integrity probe for the developer ``.local`` manifest.
+
+    Not part of the default unit suite and never mutates storage.
+    """
+    if not REAL_MANIFEST.exists():
+        return {"present": False}
+    payload = REAL_MANIFEST.read_bytes()
+    data = json.loads(payload.decode("utf-8"))
+    return {
+        "present": True,
+        "path": str(REAL_MANIFEST),
+        "sha256": hashlib.sha256(payload).hexdigest(),
+        "status": data.get("status"),
+        "approval_state": data.get("approval_state"),
+        "published_at": data.get("published_at"),
+        "source_hash": data.get("source_hash"),
+        "history_len": len(data.get("history") or []),
+        "lifecycle_corrections_len": len(data.get("lifecycle_corrections") or []),
+    }
 
 
 def _run():
+    suite_snapshot = _real_manifest_snapshot()
     failed = 0
     tests = [(name, fn) for name, fn in sorted(globals().items()) if name.startswith("test_") and callable(fn)]
     for name, fn in tests:
@@ -238,9 +305,14 @@ def _run():
         except Exception as exc:  # noqa: BLE001
             failed += 1
             print(f"FAIL {name}: {type(exc).__name__}: {exc}")
+    _assert_real_manifest_untouched(suite_snapshot)
     print(f"RESULT: {len(tests) - failed} passed, {failed} failed")
     sys.exit(1 if failed else 0)
 
 
 if __name__ == "__main__":
+    if "--verify-production" in sys.argv:
+        report = verify_real_q2w5_manifest_readonly()
+        print(json.dumps(report, indent=2, sort_keys=True))
+        raise SystemExit(0)
     _run()

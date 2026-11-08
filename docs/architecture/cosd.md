@@ -80,7 +80,7 @@ See `docs/architecture/cosd-local-operations.md` — `/v1/events` (SSE), `/v1/ru
 
 ## Limitations
 
-- No Tailscale/TLS/remote pairing
+- No Tailscale/TLS/remote pairing **in production** (P1b.4a design: loopback preserved; see ADR-021)
 - No autonomous scheduler or executor (P1b.1c)
 - Chief.app integrated (P1b.1e); Raycast cosd client (P1b.3): `docs/architecture/raycast-chief-of-staff.md`
 - `bin/cos` remains the primary one-shot CLI

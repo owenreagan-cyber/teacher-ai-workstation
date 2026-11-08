@@ -217,6 +217,37 @@ def test_execute_updates_existing_weekly_page_not_rolling_page():
         intake_manifest.staging_dir = orig_staging
 
 
+def test_q2w5_staged_and_canvas_live_bodies_hash_equivalent():
+    staged = (Path(__file__).parent / "fixtures/q2w5-homeroom-staged.html").read_text(encoding="utf-8")
+    live = (Path(__file__).parent / "fixtures/q2w5-homeroom-live.html").read_text(encoding="utf-8")
+    assert rollover._canvas_body_hash(staged) == rollover._canvas_body_hash(live)
+
+
+def test_q2w5_meaningful_content_survives_canvas_normalization():
+    staged = (Path(__file__).parent / "fixtures/q2w5-homeroom-staged.html").read_text(encoding="utf-8")
+    live = (Path(__file__).parent / "fixtures/q2w5-homeroom-live.html").read_text(encoding="utf-8")
+    ok, gaps = rollover._homeroom_meaningful_content_ok(
+        live, staged, slug="q2w5-november-9-13-2026",
+    )
+    assert ok, gaps
+
+
+def test_meaningful_homeroom_content_rejects_stale_july_text():
+    approved = '<div>Track 2, Week 5 · November 9–13, 2026</div><p>Veterans Day</p><p>Movie Night</p>'
+    live = approved.replace("November", "July")
+    ok, gaps = rollover._homeroom_meaningful_content_ok(
+        live, approved, slug="q2w5-november-9-13-2026",
+    )
+    assert not ok
+    assert gaps
+
+
+def test_orphan_closing_divs_do_not_break_verification():
+    inner = "<div><p>Veterans Day</p><p>Movie Night</p></div></div></div>"
+    live = f"{inner}</div>"
+    assert rollover._canvas_body_hash(inner) == rollover._canvas_body_hash(live)
+
+
 def test_canvas_owned_assets_are_ignored_on_both_sides_of_readback():
     css = '<link rel="stylesheet" href="https://instructure-uploads.s3.amazonaws.com/account_1/attachments/1/canvas_global_app.css">'
     script = '<script src="https://instructure-uploads.s3.amazonaws.com/account_1/attachments/1/canvas_global_app.js"></script>'

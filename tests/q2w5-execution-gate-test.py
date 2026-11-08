@@ -359,6 +359,48 @@ def test_blocked_notice_weekly_and_assignment_write_nothing():
     _blocked(assignment)
 
 
+def test_lexicographic_preflight_does_not_override_matching_record():
+    manifest = _release(weekly_announcements=[])
+    good_plan = {"weekly_announcements": [], "source_hash": SOURCE}
+    fingerprint = plan_fingerprint(good_plan)
+    manifest["plan_fingerprint"] = fingerprint
+    with tempfile.TemporaryDirectory() as tmp:
+        root = Path(tmp)
+        original_deploy = ledger.DEPLOY_ROOT
+        original_staging = intake_manifest.staging_dir
+        ledger.DEPLOY_ROOT = root / "deployments"
+        intake_manifest.staging_dir = lambda q, w: root / "intake" / f"q{q}w{w}"
+        _seed_source(root, fingerprint=fingerprint)
+        ledger.write_preflight(2, 5, {
+            "preflight_id": "aaaaaaaaaaaaaaaa",
+            "created_at": "2026-11-07T10:00:00+00:00",
+            "expires_at": "2099-01-01T00:00:00+00:00", "quarter": 2, "week": 5,
+            "week_code": "Q2W5", "source_hash": SOURCE, "approval_snapshot_hash": "appr",
+            "plan": good_plan, "ready": True, "canvas_writes": 0, "blockers": [],
+        })
+        ledger.write_preflight(2, 5, {
+            "preflight_id": "zzzzzzzzzzzzzzzz",
+            "created_at": "2026-11-07T12:00:00+00:00",
+            "expires_at": "2099-01-01T00:00:00+00:00", "quarter": 2, "week": 5,
+            "week_code": "Q2W5", "source_hash": "stale-source", "approval_snapshot_hash": "appr",
+            "plan": {"weekly_announcements": [], "source_hash": "stale-source"},
+            "ready": True, "canvas_writes": 0, "blockers": [],
+        })
+        selected, blockers = ledger.find_authoritative_preflight(
+            2, 5,
+            manifest_plan_fingerprint=fingerprint,
+            current_plan_fingerprint=fingerprint,
+            manifest_source_hash=SOURCE,
+            current_source_hash=SOURCE,
+        )
+        try:
+            assert not blockers
+            assert selected["preflight_id"] == "aaaaaaaaaaaaaaaa"
+        finally:
+            ledger.DEPLOY_ROOT = original_deploy
+            intake_manifest.staging_dir = original_staging
+
+
 def test_stale_preflight_and_changed_owner_time_write_nothing():
     manifest = _release(weekly_announcements=[])
     manifest["plan_fingerprint"] = "approved-fingerprint"

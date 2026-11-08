@@ -12,6 +12,9 @@
 | `cosd/cli.py` | `serve`, `start`, `status`, `health`, `stop`, `restart`, `rotate-token` |
 | `bin/cosd` | Python 3.12 entrypoint |
 | `cos/service.py` | Shared `run_ask` / `run_status` for CLI and HTTP |
+| `cosd/storage.py` | SQLite WAL task database |
+| `cosd/tasks.py` | Task registry service |
+| `cosd/task_http.py` | `/v1/tasks` HTTP routing |
 
 API contract: `docs/architecture/cosd-api-contract.md`.
 
@@ -59,10 +62,14 @@ Uses the same `COS_STATE_DIR` / Chief private directory as `cos`.
 | `401 unauthorized` | Ensure client uses current token; run `bin/cosd rotate-token` if rotated elsewhere |
 | Stop refused | PID file may point at a non-cosd process; fix pid file manually after verification |
 
-## Limitations (P1b.1a)
+## Task registry (P1b.1b)
+
+SQLite store: `docs/architecture/cosd-task-registry.md`. CLI: `bin/cosd tasks …`.
+
+## Limitations
 
 - No Tailscale/TLS/remote pairing
-- No task queue or SQLite WAL job graph (see ADR-020)
+- No autonomous scheduler or executor (P1b.1c)
 - No Chief.app or Raycast migration yet
 - `bin/cos` remains the primary one-shot CLI
 

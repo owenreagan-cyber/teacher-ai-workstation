@@ -1,6 +1,6 @@
 # ADR-020: cosd persistent task registry (deferred)
 
-**Status:** Proposed (design only — not implemented in P1b.1a)
+**Status:** Accepted — implemented in P1b.1b (persistence and API; execution deferred to P1b.1c)
 **Date:** 2026-11-08
 
 ## Context
@@ -11,9 +11,8 @@ Future `cosd` milestones need durable background work: scheduled briefs, multi-s
 
 Store tasks in SQLite with WAL mode under the Chief private state directory, separate from `cos` session JSONL:
 
-- Table `tasks`: id, created_at, updated_at, state, priority, kind, payload_json, lease_owner, lease_until
-- Table `task_events`: append-only audit of state transitions
-- Workers poll with short leases; crashed workers expire leases for retry
+- Table `tasks` + `task_events` + `task_metadata` (see `cosd/storage.py`)
+- Workers poll with short leases — **deferred to P1b.1c** (no `lease_owner` columns in v1)
 - API surface remains authenticated; no arbitrary shell execution
 
 ## Consequences

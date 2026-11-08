@@ -17,6 +17,8 @@ from cos.service import run_ask, run_status
 from . import __version__
 from .auth import authorize, ensure_token
 from .constants import ASK_TIMEOUT_S, DEFAULT_HOST, MAX_BODY_BYTES, SERVICE_NAME
+from .task_http import dispatch_task_request
+from .tasks import TaskRegistry
 
 LOG = logging.getLogger("cosd")
 
@@ -27,6 +29,7 @@ class CosdHTTPServer(ThreadingHTTPServer):
 
     def __init__(self, server_address, RequestHandlerClass, *, state_base=None):
         self.state_base = state_base
+        self.task_registry = TaskRegistry.open(state_base)
         super().__init__(server_address, RequestHandlerClass)
 
     def request_shutdown(self) -> None:
@@ -77,12 +80,36 @@ class Handler(BaseHTTPRequestHandler):
             if not self._require_auth():
                 return
             cfg = load_config()
-            self._send_json(200, {"ok": True, "cosd": __version__, **run_status(cfg)})
+            counts = self.server.task_registry.get_task_counts()
+            self._send_json(
+                200,
+                {"ok": True, "cosd": __version__, "task_counts": counts, **run_status(cfg)},
+            )
             return
+        if path == "/v1/tasks" or path.startswith("/v1/tasks/"):
+            if not self._require_auth():
+                return
+            routed = dispatch_task_request(
+                self, registry=self.server.task_registry, max_body=MAX_BODY_BYTES
+            )
+            if routed is not None:
+                status, body = routed
+                self._send_json(status, body)
+                return
         self._send_json(404, {"ok": False, "error": "not found", "error_kind": "not_found"})
 
     def do_POST(self) -> None:  # noqa: N802
         path = urlparse(self.path).path
+        if path == "/v1/tasks" or path.startswith("/v1/tasks/"):
+            if not self._require_auth():
+                return
+            routed = dispatch_task_request(
+                self, registry=self.server.task_registry, max_body=MAX_BODY_BYTES
+            )
+            if routed is not None:
+                status, body = routed
+                self._send_json(status, body)
+                return
         if path == "/v1/stop":
             if not self._require_auth():
                 return

@@ -78,12 +78,68 @@ Authenticated graceful **daemon** shutdown (not the `cos` kill switch).
 
 After responding, the server initiates shutdown. Clients should not send further requests.
 
+## Tasks (P1b.1b)
+
+All task endpoints require authentication. Task IDs are 32-character hex strings.
+
+### `POST /v1/tasks`
+
+Create a queued task.
+
+**Request**
+
+```json
+{
+  "kind": "brief",
+  "title": "Morning brief",
+  "description": "",
+  "payload": {},
+  "priority": 0,
+  "idempotency_key": "optional-unique-key",
+  "requested_by": "",
+  "source": "api",
+  "data_class": "internal"
+}
+```
+
+**201** — `{"ok":true,"task":{...},"reused":false}`
+**200** — idempotent replay (`"reused":true`)
+**409** — idempotency key conflict (different content)
+
+### `GET /v1/tasks`
+
+Query: `state`, `kind`, `limit` (≤100), `offset`.
+
+**200** — `{"ok":true,"tasks":[...],"total":N,"limit":L,"offset":O}`
+
+### `GET /v1/tasks/{id}`
+
+**200** — `{"ok":true,"task":{...}}`
+**404** — unknown id
+
+### `POST /v1/tasks/{id}/cancel`
+
+Optional body: `{"reason":"..."}`.
+
+**200** — cancelled task (from `QUEUED`, `RUNNING`, or `BLOCKED`)
+
+### `POST /v1/tasks/{id}/retry`
+
+**200** — task returned to `QUEUED` from `FAILED` or `BLOCKED`
+
+### `GET /v1/tasks/{id}/history`
+
+**200** — `{"ok":true,"task_id":"...","events":[...]}`
+
+Task records never execute tools or agents in P1b.1b.
+
 ## Errors
 
 | HTTP | `error_kind` | Meaning |
 | --- | --- | --- |
 | 401 | `auth` | Missing/invalid bearer token |
-| 404 | `not_found` | Unknown route |
+| 404 | `not_found` | Unknown route or task |
+| 409 | `conflict` | Invalid transition or idempotency conflict |
 | 405 | `method` | Unsupported HTTP method |
 | 413 | `usage` | Body too large |
 | 504 | `timeout` | Ask exceeded server timeout |

@@ -20,6 +20,7 @@ on:
       - fix/canvas-announcement-identity-idempotency
       - fix/q2w5-lifecycle-test-isolation
       - feat/cosd-local-daemon
+      - feat/cosd-persistent-task-registry
   workflow_dispatch:
 
 permissions:

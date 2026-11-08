@@ -55,7 +55,9 @@ There is **one `cos` core with two faces.**
 
 ### P1b — `cosd` daemon
 
-**P1b.1a (in progress):** loopback-only daemon foundation — `bin/cosd`, authenticated HTTP (`GET /health`, `GET /v1/status`, `POST /v1/ask`, `POST /v1/stop`), shared `cos/service.py` ask path, private-state bearer token, hermetic `tests/cosd/`. See `docs/architecture/cosd.md`. No LaunchAgent, no Tailscale yet.
+**P1b.1a (complete):** loopback daemon, authenticated HTTP, lifecycle CLI, `run_ask` integration.
+
+**P1b.1b (complete):** SQLite task registry (`cosd/tasks.sqlite3`), task APIs (`/v1/tasks/*`), idempotency, event history, `bin/cosd tasks`. No executor/scheduler yet (P1b.1c).
 
 **Later P1b:**
 - HTTPS on the Mac's Tailscale name. Device pairing by QR code, with revocable tokens.

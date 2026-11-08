@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import json
 import os
+import signal
 import subprocess
 import sys
 import tempfile
@@ -13,7 +14,7 @@ from unittest import mock
 from support import REPO_ROOT, CosdStateTest, free_port, wait_until
 
 from cosd import cli
-from cosd.lifecycle import PidRecord, clear_pid, read_pid, spawn_server, stop_process, write_pid
+from cosd.lifecycle import PidRecord, clear_pid, process_alive, process_is_cosd, read_pid, spawn_server, stop_process, write_pid
 from support import http_json
 
 
@@ -61,11 +62,14 @@ class LifecycleCliTests(CosdStateTest):
     def test_already_running_detection(self):
         port = free_port()
         pid1 = spawn_server(host="127.0.0.1", port=port, base=self.state)
+        self._spawned = pid1
 
         def _stop_spawned():
             rec = read_pid(self.state)
-            if rec:
+            if rec and rec.pid == self._spawned:
                 stop_process(rec, base=self.state)
+            elif process_alive(self._spawned) and process_is_cosd(self._spawned):
+                os.kill(self._spawned, signal.SIGTERM)
 
         self.addCleanup(_stop_spawned)
         with self.assertRaises(RuntimeError):

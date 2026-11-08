@@ -8,7 +8,9 @@ import unittest
 from cos.service import iter_ask_stream
 from cos.cli import build_runtime
 
-from .support import FIXTURES
+from pathlib import Path
+
+FIXTURES = Path(__file__).resolve().parents[2] / "evals" / "fixtures" / "default"
 
 
 class AskStreamTest(unittest.TestCase):

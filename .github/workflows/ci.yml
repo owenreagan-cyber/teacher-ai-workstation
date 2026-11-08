@@ -22,7 +22,7 @@ on:
       - feat/cosd-local-daemon
       - feat/cosd-persistent-task-registry
       - feat/cosd-persistent-execution-queue
-      - feat/cos-persistent-daemon-client
+      - feat/chief-app-cosd-integration
   workflow_dispatch:
 
 permissions:
@@ -109,3 +109,10 @@ jobs:
           set -euo pipefail
           python3 -m unittest discover -s tests/cos -p 'test_*.py'
           python3 -m unittest discover -s tests/cosd -p 'test_*.py'
+
+      - name: Chief desktop (Electron)
+        run: |
+          set -euo pipefail
+          cd apps/chief-desktop
+          npm ci
+          npm test

@@ -157,7 +157,8 @@ MCP adapters (D-023, D-024, D-025), and the iPhone app (D-007).
 
 ## Daily use (P1a messenger)
 
-The Chief window (Chief.app), Raycast, and `bin/cos ask` all reach the same `cos` core.
+The Chief window (Chief.app), Raycast, and `bin/cos ask` all reach the same runtime. Chief.app
+uses persistent `cosd` for ask, status, and tasks when the daemon is healthy (`docs/architecture/chief-app-cosd-integration.md`).
 
 ### Web search
 

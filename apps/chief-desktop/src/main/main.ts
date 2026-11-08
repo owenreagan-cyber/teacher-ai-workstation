@@ -29,7 +29,10 @@ import {
   savePrefs,
   saveWindowState,
 } from "./config.js";
+import { ChiefRuntime } from "./chief-runtime.js";
 import { CosRunner } from "./cos.js";
+import { CosdConnectionManager } from "./cosd/connection.js";
+import { validateAskInput, validateCreateTask, validateOptionalState, validateTaskId } from "./ipc-cosd.js";
 import { openLink, ResourceTable } from "./resources.js";
 import { APP_URL, devServerUrl, lockDownContents, lockDownSession, registerAppScheme, serveRenderer } from "./security.js";
 import { trayTemplateImage } from "./trayIcon.js";
@@ -52,7 +55,9 @@ let macHistory: MacSample[] = [];
 
 const config = loadDesktopConfig();
 const resources = new ResourceTable(); // link id -> URL; never sent to the renderer
-const cos = new CosRunner(config.cosPath, config.error, (list) => resources.add(list));
+const cosRunner = new CosRunner(config.cosPath, config.error, (list) => resources.add(list));
+const cosdConnection = new CosdConnectionManager((snapshot) => sendEvent({ kind: "cosd-connection", snapshot }));
+const runtime = new ChiefRuntime(cosRunner, cosdConnection, (list) => resources.add(list));
 const devUrl = devServerUrl();
 const stateFile = () => path.join(app.getPath("userData"), "window-state.json");
 const prefsFile = () => path.join(app.getPath("userData"), "prefs.json");
@@ -78,6 +83,7 @@ function start(): void {
   createTray();
   registerHotkey();
   registerIpc();
+  cosdConnection.startPolling();
   warmModel(); // in the background: the first question should not wait for a cold model load
 }
 
@@ -86,7 +92,7 @@ function start(): void {
 function warmModel(): void {
   if (warming) return;
   warming = true;
-  void cos.warm().finally(() => {
+  void runtime.warm().finally(() => {
     warming = false;
   });
 }
@@ -227,7 +233,7 @@ function setProtection(enabled: boolean): WindowState {
 // The Today snapshot. Each fresh Mac reading becomes a sample for the trend lines: the last 30
 // minutes, kept in this process's memory only (never written to disk).
 async function home(cached: boolean): Promise<HomeResult> {
-  const res = await cos.home(cached);
+  const res = await runtime.home(cached);
   if (!res.ok) return res;
   const at = res.mac.generated_at ? Date.parse(res.mac.generated_at) : NaN;
   if (res.mac.data && Number.isFinite(at)) {
@@ -253,7 +259,7 @@ function createTray(): void {
 }
 
 async function refreshKillSwitch(): Promise<void> {
-  const status = await cos.status();
+  const status = await runtime.status();
   lastKillSwitch = status.ok ? status.kill_switch : null;
   lastAutoSearch = status.ok ? status.auto_search : null;
 }
@@ -261,7 +267,7 @@ async function refreshKillSwitch(): Promise<void> {
 // Main process only (no preload bridge): cos writes auto_search in its own config.json.
 async function toggleAutoSearch(): Promise<void> {
   if (lastAutoSearch === null) return;
-  const res = await cos.setAutoSearch(!lastAutoSearch);
+  const res = await runtime.setAutoSearch(!lastAutoSearch);
   if (res.ok) lastAutoSearch = res.auto_search;
 }
 
@@ -308,7 +314,7 @@ function trayMenu(): Menu {
 }
 
 async function control(action: "stop" | "resume"): Promise<void> {
-  await (action === "stop" ? cos.stop() : cos.resume());
+  await (action === "stop" ? runtime.stop() : runtime.resume());
   sendEvent({ kind: "status-changed" });
 }
 
@@ -335,7 +341,10 @@ app.on("before-quit", () => {
   quitting = true;
   rememberWindow();
 });
-app.on("will-quit", () => globalShortcut.unregisterAll());
+app.on("will-quit", () => {
+  cosdConnection.stopPolling();
+  globalShortcut.unregisterAll();
+});
 app.on("window-all-closed", () => {
   // Closing hides the window; the app keeps running in the menu bar until Quit.
 });
@@ -356,23 +365,44 @@ function handle(channel: string, fn: (...args: unknown[]) => unknown): void {
 }
 
 function registerIpc(): void {
-  handle("chief:ask", (question, sessionId) => cos.ask(question, sessionId));
-  handle("chief:history", (sessionId) => cos.history(sessionId));
+  handle("chief:ask", (question, sessionId) => {
+    const v = validateAskInput(question, sessionId);
+    return runtime.ask(v.question, v.sessionId);
+  });
+  handle("chief:cancel-ask", () => {
+    runtime.cancelAsk();
+  });
+  handle("chief:history", (sessionId) => runtime.history(sessionId));
   // The only way a link opens: by id, looked up in the main process's table, https only.
   handle("chief:open-link", (linkId) => openLink(resources, linkId, (url) => shell.openExternal(url)));
-  handle("chief:brief", () => cos.brief());
+  handle("chief:brief", () => runtime.brief());
   handle("chief:home", (cached) => home(cached === true));
   // Settings: cos validates every write (config schema, settable keys); buildArgs re-checks the key.
-  handle("chief:config-get", () => cos.configGet());
-  handle("chief:config-set", (key, value) => cos.configSet(key, value));
+  handle("chief:config-get", () => runtime.configGet());
+  handle("chief:config-set", (key, value) => runtime.configSet(key, value));
   handle("chief:status", async () => {
-    const status: StatusResult = await cos.status();
+    const status: StatusResult = await runtime.status();
     lastKillSwitch = status.ok ? status.kill_switch : null;
     lastAutoSearch = status.ok ? status.auto_search : null;
     return status;
   });
-  handle("chief:stop", () => cos.stop());
-  handle("chief:resume", () => cos.resume());
+  handle("chief:cosd-connection", () => ({ ok: true, snapshot: runtime.connectionSnapshot() }));
+  handle("chief:cosd-reconnect", async () => {
+    const snapshot = await cosdConnection.refresh();
+    return { ok: true, snapshot };
+  });
+  handle("chief:tasks-list", (state) => runtime.listTasks(validateOptionalState(state)));
+  handle("chief:task-get", (taskId) => runtime.getTask(validateTaskId(taskId)));
+  handle("chief:task-create", (title, kind, idempotencyKey) => {
+    const v = validateCreateTask(title, kind, idempotencyKey);
+    return runtime.createTask(v.title, v.kind, v.idempotencyKey);
+  });
+  handle("chief:task-cancel", (taskId) => runtime.cancelTask(validateTaskId(taskId)));
+  handle("chief:task-retry", (taskId) => runtime.retryTask(validateTaskId(taskId)));
+  handle("chief:task-history", (taskId) => runtime.taskHistory(validateTaskId(taskId)));
+  handle("chief:queue", () => runtime.queueSnapshot());
+  handle("chief:stop", () => runtime.stop());
+  handle("chief:resume", () => runtime.resume());
   handle("chief:set-pin", (pinned) => setPin(pinned === true));
   handle("chief:set-protection", (enabled) => setProtection(enabled === true));
   handle("chief:hide", () => win?.hide());

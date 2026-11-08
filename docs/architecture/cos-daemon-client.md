@@ -31,6 +31,10 @@
 
 Daemon `ask` uses the same `COS_STATE_DIR` sessions and audit as standalone `run_ask`.
 
+## Chief.app (P1b.1e)
+
+Electron main process calls the same API via `apps/chief-desktop/src/main/cosd/` (loopback HTTP only). See `docs/architecture/chief-app-cosd-integration.md`.
+
 ## Tasks
 
 Use `bin/cosd tasks` / `bin/cosd queue` for SQLite-backed tasks (no direct DB access from `bin/cos`).

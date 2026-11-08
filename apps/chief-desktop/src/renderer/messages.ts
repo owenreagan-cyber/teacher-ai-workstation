@@ -25,7 +25,15 @@ export function statusDot(status: StatusResult | null, busy: boolean): Dot {
   if (busy) return { color: "amber", label: "Working" };
   if (status === null) return { color: "gray", label: "Checking" };
   if (!status.ok) return { color: "gray", label: "Chief unavailable" };
+  if (status.cosd_connection === "AUTH_ERROR") return { color: "red", label: "cosd auth error" };
+  if (status.cosd_connection === "DISCONNECTED" && status.execution_mode === "daemon") {
+    return { color: "gray", label: "cosd disconnected" };
+  }
+  if (status.cosd_connection === "RECOVERING" || status.cosd_connection === "CONNECTING") {
+    return { color: "amber", label: "Connecting to cosd" };
+  }
   if (status.kill_switch) return { color: "red", label: "Stopped" };
   if (!status.ollama_reachable) return { color: "gray", label: "Local model unavailable" };
+  if (status.via_daemon) return { color: "green", label: "Ready (cosd)" };
   return { color: "green", label: "Ready" };
 }

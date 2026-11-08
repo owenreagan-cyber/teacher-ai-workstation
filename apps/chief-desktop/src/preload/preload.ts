@@ -18,6 +18,7 @@ electron.ipcRenderer.on("chief:event", (_e, event: PreloadEvent) => {
 
 const bridge: PreloadBridge = {
   ask: (question, sessionId) => electron.ipcRenderer.invoke("chief:ask", String(question), String(sessionId)),
+  cancelAsk: () => electron.ipcRenderer.invoke("chief:cancel-ask"),
   history: (sessionId) => electron.ipcRenderer.invoke("chief:history", String(sessionId)),
   openLink: (linkId) => electron.ipcRenderer.invoke("chief:open-link", String(linkId)),
   brief: () => electron.ipcRenderer.invoke("chief:brief"),
@@ -25,6 +26,16 @@ const bridge: PreloadBridge = {
   configGet: () => electron.ipcRenderer.invoke("chief:config-get"),
   configSet: (key, value) => electron.ipcRenderer.invoke("chief:config-set", String(key), value),
   status: () => electron.ipcRenderer.invoke("chief:status"),
+  cosdConnection: () => electron.ipcRenderer.invoke("chief:cosd-connection"),
+  cosdReconnect: () => electron.ipcRenderer.invoke("chief:cosd-reconnect"),
+  listTasks: (state) => electron.ipcRenderer.invoke("chief:tasks-list", state ?? ""),
+  getTask: (taskId) => electron.ipcRenderer.invoke("chief:task-get", String(taskId)),
+  createTask: (title, kind, idempotencyKey) =>
+    electron.ipcRenderer.invoke("chief:task-create", String(title), String(kind), String(idempotencyKey)),
+  cancelTask: (taskId) => electron.ipcRenderer.invoke("chief:task-cancel", String(taskId)),
+  retryTask: (taskId) => electron.ipcRenderer.invoke("chief:task-retry", String(taskId)),
+  taskHistory: (taskId) => electron.ipcRenderer.invoke("chief:task-history", String(taskId)),
+  queueSnapshot: () => electron.ipcRenderer.invoke("chief:queue"),
   stop: () => electron.ipcRenderer.invoke("chief:stop"),
   resume: () => electron.ipcRenderer.invoke("chief:resume"),
   setPin: (pinned) => electron.ipcRenderer.invoke("chief:set-pin", pinned === true),

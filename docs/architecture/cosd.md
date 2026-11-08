@@ -78,7 +78,7 @@ SQLite store: `docs/architecture/cosd-task-registry.md`. CLI: `bin/cosd tasks â€
 
 - No Tailscale/TLS/remote pairing
 - No autonomous scheduler or executor (P1b.1c)
-- No Chief.app or Raycast migration yet
+- Chief.app integrated (P1b.1e); Raycast deferred
 - `bin/cos` remains the primary one-shot CLI
 
 ## Future milestones

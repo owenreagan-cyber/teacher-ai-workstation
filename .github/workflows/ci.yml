@@ -19,6 +19,7 @@ on:
       - feat/canvas-duplicate-prevention
       - fix/canvas-announcement-identity-idempotency
       - fix/q2w5-lifecycle-test-isolation
+      - feat/cosd-local-daemon
   workflow_dispatch:
 
 permissions:
@@ -99,3 +100,9 @@ jobs:
 
       - name: Live authorization
         run: python3 tests/canvas-live-authorization-test.py
+
+      - name: Chief of Staff (cos + cosd)
+        run: |
+          set -euo pipefail
+          python3 -m unittest discover -s tests/cos -p 'test_*.py'
+          python3 -m unittest discover -s tests/cosd -p 'test_*.py'

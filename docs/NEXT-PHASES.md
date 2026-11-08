@@ -54,7 +54,10 @@ There is **one `cos` core with two faces.**
 - **Same contract on iPhone:** the iPhone app (P1c) renders this same block schema.
 
 ### P1b — `cosd` daemon
-- A long-running local service with an API. The desktop app and Raycast become its clients.
+
+**P1b.1a (in progress):** loopback-only daemon foundation — `bin/cosd`, authenticated HTTP (`GET /health`, `GET /v1/status`, `POST /v1/ask`, `POST /v1/stop`), shared `cos/service.py` ask path, private-state bearer token, hermetic `tests/cosd/`. See `docs/architecture/cosd.md`. No LaunchAgent, no Tailscale yet.
+
+**Later P1b:**
 - HTTPS on the Mac's Tailscale name. Device pairing by QR code, with revocable tokens.
 - Read-only for remote clients.
 - **New CERTs:**

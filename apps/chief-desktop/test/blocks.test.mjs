@@ -8,6 +8,7 @@ import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { after, test } from "node:test";
+import { cosEnv } from "./cos-env.mjs";
 
 const require = createRequire(import.meta.url);
 const { CosRunner } = require("../out/main/cos.js");
@@ -125,8 +126,7 @@ test("the real cos in fixture mode produces blocks this validator accepts unchan
   const wrapper = fakeCos("fixture-cos", `
     const { execFileSync } = require("node:child_process");
     const out = execFileSync(${JSON.stringify(path.join(REPO, "bin", "cos"))}, process.argv.slice(2), {
-      env: { ...process.env, COS_STATE_DIR: ${JSON.stringify(state)},
-             COS_FIXTURE_DIR: ${JSON.stringify(path.join(REPO, "evals", "fixtures", "default"))}, TZ: "America/New_York" },
+      env: ${JSON.stringify(cosEnv(state))},
       encoding: "utf8" });
     process.stdout.write(out);`);
   for (const q of ["weather", "5 day forecast", "hourly forecast", "what can you do?", "weather in raleigh"]) {

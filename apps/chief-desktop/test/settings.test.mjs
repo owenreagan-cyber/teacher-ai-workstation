@@ -5,8 +5,8 @@ import fs from "node:fs";
 import { createRequire } from "node:module";
 import os from "node:os";
 import path from "node:path";
-import { fileURLToPath } from "node:url";
 import { after, test } from "node:test";
+import { cosEnv, REPO } from "./cos-env.mjs";
 
 const require = createRequire(import.meta.url);
 const { CosRunner } = require("../out/main/cos.js");
@@ -16,17 +16,17 @@ const React = require("react");
 const { renderToStaticMarkup } = require("react-dom/server");
 const { SettingsPage } = require("../out-test/renderer/Settings.js");
 
-const REPO = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "..", "..");
 const dir = fs.mkdtempSync(path.join(os.tmpdir(), "chief-settings-test-"));
 after(() => fs.rmSync(dir, { recursive: true, force: true }));
 
 function realCos(state) {
   const file = path.join(dir, `cos-${path.basename(state)}`);
+  const env = cosEnv(state);
   fs.writeFileSync(file, `#!${process.execPath}
     const { execFileSync } = require("node:child_process");
     try {
       process.stdout.write(execFileSync(${JSON.stringify(path.join(REPO, "bin", "cos"))}, process.argv.slice(2), {
-        env: { ...process.env, COS_STATE_DIR: ${JSON.stringify(state)} }, encoding: "utf8" }));
+        env: ${JSON.stringify(env)}, encoding: "utf8" }));
     } catch (e) { process.stdout.write(String(e.stdout ?? "")); process.exit(e.status ?? 1); }\n`, { mode: 0o700 });
   return file;
 }

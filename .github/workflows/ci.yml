@@ -1,0 +1,97 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches:
+      - main
+      # This branch introduces the workflow. GitHub starts push jobs only when
+      # the branch is listed here; pull_request jobs use the file on main.
+      - feat/automated-ci-validation
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    name: Validate
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      PYTHONPATH: ${{ github.workspace }}
+      PYTHONDONTWRITEBYTECODE: "1"
+      # runner.temp is not available in job env. This path is empty on the
+      # hosted runner and still contains .local for the manifest self-test.
+      TAW_STATE_ROOT: /tmp/taw-ci-state/.local
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Shell syntax
+        run: |
+          set -euo pipefail
+          bash -n tests/canvas-llm-intake-test.sh
+          bash -n tests/canvas-llm-deploy-test.sh
+
+      - name: Whitespace and patch check
+        run: |
+          set -euo pipefail
+          git diff --check "$(git merge-base origin/main HEAD)" HEAD
+
+      - name: Q2W5 lifecycle and integration
+        run: |
+          set -euo pipefail
+          python3 tests/q2w5-lifecycle-integrity-test.py
+          python3 tests/q2w5-lifecycle-correction-test.py
+          python3 tests/q2w5-execution-gate-test.py
+          python3 tests/q2w5-canonical-assessment-integration-test.py
+          python3 -m scripts.canvas_llm_intake.manifest
+
+      - name: Canvas rollover
+        run: |
+          set -euo pipefail
+          files=0
+          for test in tests/canvas_rollover/test_*.py; do
+            echo "::group::$test"
+            python3 "$test"
+            echo "::endgroup::"
+            files=$((files + 1))
+          done
+          echo "Rollover files executed: $files"
+          if [[ "$files" -lt 1 ]]; then
+            echo "FAIL: no Canvas rollover tests ran"
+            exit 1
+          fi
+
+      - name: Canvas planner
+        run: python3 -m unittest discover -s tests/canvas_planner
+
+      - name: Canvas intake and deployment
+        run: |
+          set -euo pipefail
+          bash tests/canvas-llm-intake-test.sh
+          bash tests/canvas-llm-deploy-test.sh
+          python3 tests/canvas-llm-phase-3-announcement-test.py
+
+      - name: Live authorization
+        run: |
+          set -euo pipefail
+          if [[ ! -f tests/canvas-live-authorization-test.py ]]; then
+            echo "Live authorization suite is absent from this commit."
+            echo "The step runs it whenever the file is present."
+            exit 0
+          fi
+          python3 tests/canvas-live-authorization-test.py

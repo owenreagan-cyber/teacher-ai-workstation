@@ -10,6 +10,7 @@ on:
       # file is the only copy on main. pull_request jobs also run for main.
       - feat/automated-ci-validation
       - fix/canvas-quarter-week-live-authorization
+      - fix/q2w5-approval-propagation
   workflow_dispatch:
 
 permissions:
@@ -59,6 +60,7 @@ jobs:
           python3 tests/q2w5-lifecycle-correction-test.py
           python3 tests/q2w5-execution-gate-test.py
           python3 tests/q2w5-canonical-assessment-integration-test.py
+          python3 tests/q2w5-approval-propagation-test.py
           python3 -m scripts.canvas_llm_intake.manifest
 
       - name: Canvas rollover

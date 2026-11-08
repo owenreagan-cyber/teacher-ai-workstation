@@ -695,6 +695,13 @@ def _prewrite_blockers(
         if not assignment.get("course_id"):
             blockers.append(f"assignment {assignment.get('title')} has no course id")
     homeroom = manifest.get("homeroom") or {}
+    announced = {item.get("subject") for item in manifest.get("weekly_announcements") or []}
+    if (
+        homeroom.get("mode") == "homeroom_weekly_newsletter_html"
+        and set(required_subjects) <= announced
+        and not manifest.get("homeroom_announcement")
+    ):
+        blockers.append("homeroom announcement is missing")
     if manifest.get("homeroom"):
         blockers.extend(_explicit_page_approval_blockers(homeroom, "homeroom"))
     family = manifest.get("homeroom_announcement")

@@ -390,9 +390,16 @@ def build_plan(
     publication = None
     if week_start:
         from scripts.canvas_llm_rollover.schedule import resolve_publication_time
-        publication = resolve_publication_time(
-            week_start, now=now, owner_selected_at=owner_publication_time,
-        )
+        try:
+            publication = resolve_publication_time(
+                week_start, now=now, owner_selected_at=owner_publication_time,
+            )
+        except ValueError:
+            publication = {
+                "requires_owner_time": True,
+                "scheduled_at": None,
+                "canonical_scheduled_at": None,
+            }
     announcements_plan: list[dict[str, Any]] = []
     for subject in active:
         if subjects.get(subject, {}).get("announcement", {}).get("state") != "APPROVED":
@@ -495,7 +502,70 @@ def build_plan(
         "owner_publication_time": owner_publication_time,
     }
     result["plan_fingerprint"] = plan_fingerprint(result)
+    _stamp_plan_approval(
+        result,
+        approvals=approvals,
+        quarter=quarter,
+        week=week,
+        source_hash=summary.get("source_hash") or "",
+        owner_publication_time=owner_publication_time,
+    )
     return result
+
+
+def _stamp_plan_approval(
+    plan: dict[str, Any],
+    *,
+    approvals: dict[str, Any],
+    quarter: int,
+    week: int,
+    source_hash: str,
+    owner_publication_time: str | None,
+) -> None:
+    """Copy granular approval onto the items the prewrite gate checks.
+
+    Schedule fields stay as built. A stale or missing record cannot become
+    ``approved``.
+    """
+    from scripts.canvas_llm_intake import approval as approval_mod
+    from scripts.canvas_planner.approval_bundle import current_bundle
+
+    fingerprint = plan.get("plan_fingerprint")
+    subjects = approvals.get("subjects") or {}
+    bundles: dict[str, dict[str, Any]] = {}
+
+    def bundle_for(subject: str) -> dict[str, Any]:
+        if subject not in bundles:
+            bundles[subject] = current_bundle(quarter, week, subject)
+        return bundles[subject]
+
+    def apply(item: dict[str, Any], subject: str, granularity: str) -> None:
+        if not subject:
+            item["approved"] = False
+            item["approval_state"] = "PENDING"
+            return
+        record = (subjects.get(subject) or {}).get(granularity)
+        item.update(approval_mod.resolve_artifact_approval(
+            record,
+            draft_hash=(bundle_for(subject).get("hashes") or {}).get(granularity, ""),
+            source_hash=source_hash,
+            subject=subject,
+            granularity=granularity,
+            quarter=quarter,
+            week=week,
+            course_id=item.get("course_id"),
+            plan_fingerprint=fingerprint,
+            owner_publication_time=owner_publication_time,
+        ))
+
+    for item in plan.get("assignments") or []:
+        apply(item, item.get("course") or item.get("subject") or "", "assignments")
+    for item in plan.get("weekly_announcements") or []:
+        apply(item, item.get("subject") or "", "announcement")
+    for item in plan.get("assessment_reminders") or []:
+        apply(item, item.get("subject") or "", "assessment_reminder")
+    for item in plan.get("pages") or []:
+        apply(item, item.get("subject") or "", "page")
 
 
 def _course_id(subject: str) -> int | None:

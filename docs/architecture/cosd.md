@@ -16,6 +16,7 @@
 | `cosd/tasks.py` | Task registry service |
 | `cosd/task_http.py` | `/v1/tasks` HTTP routing |
 | `cosd/devices/` | Device registry, permissions, credentials, authorization, `/v1/devices` (P1b.4b) |
+| `cosd/devices/pairing/` | Pairing/enrollment, codes, owner approval, delivery envelope (P1b.4c) |
 
 API contract: `docs/architecture/cosd-api-contract.md`.
 
@@ -59,6 +60,9 @@ Uses the same `COS_STATE_DIR` / Chief private directory as `cos`.
   back to the master token (P1b.4b).
 - Device secrets live in the macOS Keychain; SQLite holds only references and
   one-way verifiers.
+- Pairing codes are one-time, 10-minute, salted-hash verified, rate-limited, and
+  never logged; delivery envelopes are encrypted to the device public key
+  (P1b.4c, loopback only).
 - `/v1/ask` uses the same policy gate and kill switch as `bin/cos ask`.
 - Authentication failures are audit-logged without recording supplied tokens.
 
@@ -86,12 +90,14 @@ SQLite store: `docs/architecture/cosd-task-registry.md`. CLI: `bin/cosd tasks �
 
 See `docs/architecture/cosd-local-operations.md` — `/v1/events` (SSE), `/v1/runtime`, `/v1/ask/stream`, notification hooks for Chief.app.
 
-## Device registry (P1b.4b)
+## Device registry (P1b.4b/P1b.4c)
 
 `cosd/devices/` — persistent local device identity, permission profiles,
-Keychain-backed credential references, rotation/revocation, lifecycle APIs, and
-audit. Chief.app has a local owner Devices screen. See
-`docs/architecture/device-registry-implementation.md`. Remote enrollment and
+Keychain-backed credential references, rotation/revocation, lifecycle APIs,
+pairing/enrollment, and audit. Chief.app has a local owner Devices screen with
+pending enrollments and Add Device. See
+`docs/architecture/device-registry-implementation.md` and
+`docs/architecture/device-pairing-implementation.md`. Remote enrollment and
 network access are **not** enabled.
 
 ## Limitations

@@ -145,6 +145,12 @@ export interface ChiefBridge {
   deviceCredentials(deviceId: string): Promise<import("./devices.js").DeviceCredentialsResult>;
   rotateDeviceCredential(deviceId: string, confirm: boolean): Promise<{ ok: true; credential: import("./devices.js").CredentialMetadata } | Failure>;
   revokeDeviceCredential(deviceId: string, confirm: boolean): Promise<{ ok: true } | Failure>;
+  createEnrollmentInvitation(input: import("./devices.js").EnrollmentCreateInput): Promise<import("./devices.js").EnrollmentInvitationResult>;
+  listPendingEnrollments(): Promise<import("./devices.js").EnrollmentListResult>;
+  getEnrollment(enrollmentId: string): Promise<import("./devices.js").EnrollmentDetailResult>;
+  approveEnrollment(enrollmentId: string, input: import("./devices.js").EnrollmentApproveInput, confirm: boolean): Promise<import("./devices.js").EnrollmentActionResult>;
+  rejectEnrollment(enrollmentId: string, confirm: boolean): Promise<import("./devices.js").EnrollmentActionResult>;
+  cancelEnrollment(enrollmentId: string, confirm: boolean): Promise<import("./devices.js").EnrollmentActionResult>;
   cosdStart(): Promise<{ ok: boolean; error?: string }>;
   cosdStop(confirm: boolean): Promise<{ ok: boolean; error?: string }>;
   cosdRestart(confirm: boolean): Promise<{ ok: boolean; error?: string }>;

@@ -1,7 +1,7 @@
 # Device registry and credential foundation (P1b.4b)
 
-**Status:** Implemented locally (P1b.4b). Remote access, pairing, QR codes,
-Tailscale, and the gateway remain disabled.
+**Status:** Implemented locally (P1b.4b/P1b.4c). Remote access, pairing over
+networks, QR-based remote enrollment, Tailscale, and the gateway remain disabled.
 
 This document records the implementation that follows ADR-021 and
 `docs/architecture/device-registry.md`. It does not change an accepted
@@ -19,7 +19,7 @@ architectural decision.
 | Device security audit events | **Implemented** (hash-chained JSONL + SQLite events) |
 | Authenticated local device APIs | **Implemented** (`/v1/devices`) |
 | Chief.app device management | **Implemented** (local owner only) |
-| Remote enrollment / QR pairing | **Not implemented** (P1b.4c) |
+| Remote enrollment / QR pairing | **Implemented locally** (P1b.4c); remote delivery not enabled |
 | Tailscale / TLS gateway | **Not implemented** (P1b.4d) |
 | Remote credential distribution | **Not implemented** |
 
@@ -172,6 +172,21 @@ Two principal kinds are distinguished:
 Network membership is not consulted for authorization. A future gateway may
 add network policy, but application authorization stays here.
 
+## Pairing and enrollment (P1b.4c)
+
+P1b.4c adds owner-created pairing invitations, one-time codes/QR payloads,
+device-generated X25519 identities, explicit owner approval, authenticated
+credential-delivery envelopes, re-pairing/replacement, and enrollment audit.
+The implementation lives in `cosd/devices/pairing/` and reuses this registry and
+credential service. Codes are 60-bit, single-use, salted-hash verified, expire
+within 10 minutes, and are rate-limited/replay-audited. Raw credentials are
+never stored in SQLite; the encrypted delivery envelope is held in Keychain and
+the device decrypts it with its private key.
+
+**Remote enrollment remains disabled.** All pairing endpoints are loopback-only
+until P1b.4d supplies the authenticated TLS gateway. Full protocol:
+`docs/architecture/device-pairing-implementation.md`.
+
 ## Credentials
 
 ### Provider interface
@@ -297,9 +312,10 @@ Raycast remains a cosd client and does not manage devices in this milestone.
 | Disabled/expired/rotated credential | `401`; device must be re-enabled, re-issued, or re-enrolled by the owner. |
 | Primary owner needs replacement | `recover-primary` with the exact phrase, then revoke/remove and bootstrap a new primary. |
 
-## Explicitly deferred (P1b.4c / P1b.4d)
+## Explicitly deferred (P1b.4d / P1c)
 
 QR pairing, one-time remote enrollment, Tailscale install/ACLs, remote gateway,
 remote TLS endpoint, public network access, iPhone/iPad connectivity, remote
 device credentials, NAS doorman, Wake-on-LAN, and remote notifications are not
-part of P1b.4b.
+part of P1b.4b/P1b.4c remote activation. P1b.4c implements the local pairing and
+delivery primitives only; remote delivery remains P1b.4d.

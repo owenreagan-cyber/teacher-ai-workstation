@@ -73,6 +73,15 @@ Devices screen. `cosd` still binds to `127.0.0.1`; the master token is unchanged
 and never distributed to devices; the gateway does not exist yet. See
 `docs/architecture/device-registry-implementation.md`.
 
+## Implementation note (P1b.4c)
+
+Local pairing/enrollment is implemented without changing this decision:
+owner-created invitations, one-time codes/QR, device-generated X25519 keys,
+explicit owner approval, independent credential issuance, and authenticated
+credential-delivery envelopes. All enrollment endpoints remain loopback-only;
+remote enrollment and delivery still require the P1b.4d authenticated TLS
+gateway. See `docs/architecture/device-pairing-implementation.md`.
+
 ## References
 
 - `docs/security/p1b4-multi-device-architecture.md`

@@ -19,7 +19,7 @@ from cos.config import FILE_MODE, STATE_DIR_MODE
 
 from ..storage import BUSY_TIMEOUT_MS, database_path
 
-DEVICE_SCHEMA_VERSION = 1
+DEVICE_SCHEMA_VERSION = 2
 DEVICE_SCHEMA_KEY = "device_schema_version"
 
 _SCHEMA_V1 = """
@@ -93,6 +93,65 @@ CREATE INDEX IF NOT EXISTS idx_device_events_created
     ON device_events(created_at);
 """
 
+# P1b.4c: enrollment requests and durable pairing rate limits. These tables
+# share the same database file. Enrollment rows deliberately have no foreign
+# key to devices so a rejected/expired request and its audit remain readable.
+_SCHEMA_V2 = """
+CREATE TABLE IF NOT EXISTS enrollment_requests (
+    enrollment_id TEXT PRIMARY KEY,
+    status TEXT NOT NULL CHECK(status IN
+        ('PENDING','AWAITING_OWNER_APPROVAL','APPROVED','REJECTED','EXPIRED','COMPLETED','CANCELLED')),
+    source TEXT NOT NULL DEFAULT 'owner_invitation',
+    display_name TEXT NOT NULL CHECK(length(display_name) BETWEEN 1 AND 80),
+    device_type TEXT NOT NULL CHECK(device_type IN ('mac','iphone','ipad','other')),
+    platform TEXT NOT NULL CHECK(platform IN ('macos','ios','ipados','unknown')),
+    app_version TEXT NOT NULL DEFAULT '',
+    owner_id TEXT NOT NULL DEFAULT 'unassigned',
+    requested_profile TEXT NOT NULL,
+    approved_profile TEXT,
+    requested_permissions_json TEXT NOT NULL DEFAULT '[]',
+    approved_permissions_json TEXT,
+    device_public_key TEXT,
+    device_key_algorithm TEXT,
+    device_nonce TEXT,
+    public_key_fingerprint TEXT,
+    protocol_version INTEGER NOT NULL DEFAULT 1,
+    pairing_code_hash TEXT,
+    pairing_code_salt TEXT,
+    pairing_code_expires_at TEXT,
+    request_token_hash TEXT,
+    request_token_salt TEXT,
+    failed_attempts INTEGER NOT NULL DEFAULT 0,
+    reason TEXT,
+    device_id TEXT,
+    credential_id TEXT,
+    delivery_ref TEXT,
+    replaces_device_id TEXT,
+    metadata_json TEXT NOT NULL DEFAULT '{}',
+    created_at TEXT NOT NULL,
+    updated_at TEXT NOT NULL,
+    expires_at TEXT NOT NULL,
+    redeemed_at TEXT,
+    approved_at TEXT,
+    completed_at TEXT,
+    rejected_at TEXT,
+    cancelled_at TEXT,
+    delivery_expires_at TEXT
+);
+
+CREATE INDEX IF NOT EXISTS idx_enrollment_status ON enrollment_requests(status);
+CREATE INDEX IF NOT EXISTS idx_enrollment_expires ON enrollment_requests(expires_at);
+CREATE INDEX IF NOT EXISTS idx_enrollment_fingerprint
+    ON enrollment_requests(public_key_fingerprint);
+
+CREATE TABLE IF NOT EXISTS pairing_rate_limits (
+    bucket TEXT PRIMARY KEY,
+    window_started_at TEXT NOT NULL,
+    attempts INTEGER NOT NULL,
+    blocked_until TEXT
+);
+"""
+
 
 def _ensure_private_dir(path: Path) -> None:
     path.parent.mkdir(parents=True, exist_ok=True, mode=STATE_DIR_MODE)
@@ -138,6 +197,19 @@ class DeviceDatabase:
     def _migrate(self) -> None:
         with self._lock:
             self._conn.executescript(_SCHEMA_V1)
+            self._conn.executescript(_SCHEMA_V2)
+            columns = {
+                row[1] for row in self._conn.execute("PRAGMA table_info(devices)").fetchall()
+            }
+            if "public_key_fingerprint" not in columns:
+                self._conn.execute(
+                    "ALTER TABLE devices ADD COLUMN public_key_fingerprint TEXT"
+                )
+            self._conn.execute(
+                "CREATE UNIQUE INDEX IF NOT EXISTS idx_devices_active_fingerprint "
+                "ON devices(public_key_fingerprint) "
+                "WHERE public_key_fingerprint IS NOT NULL AND status = 'active'"
+            )
             row = self._conn.execute(
                 "SELECT value FROM schema_meta WHERE key = ?", (DEVICE_SCHEMA_KEY,)
             ).fetchone()
@@ -153,7 +225,6 @@ class DeviceDatabase:
                         f"device schema {current} newer than cosd {DEVICE_SCHEMA_VERSION}"
                     )
                 if current < DEVICE_SCHEMA_VERSION:
-                    # Only v1 exists. Future migrations branch here by version.
                     self._conn.execute(
                         "UPDATE schema_meta SET value = ? WHERE key = ?",
                         (str(DEVICE_SCHEMA_VERSION), DEVICE_SCHEMA_KEY),

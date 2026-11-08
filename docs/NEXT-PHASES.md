@@ -69,9 +69,10 @@ There is **one `cos` core with two faces.**
 
 **P1b.4b (complete — local foundation only):** Persistent device registry in the existing cosd SQLite file, independent stable device ids, permission profiles with central authorization, Keychain-backed device credential references, rotation/expiration/revocation, device audit events, authenticated local `/v1/devices` APIs, primary Mac bootstrap, and a Chief.app local owner Devices screen. Implementation: `docs/architecture/device-registry-implementation.md`. The master token, Chief.app, Raycast, and `bin/cos` paths are unchanged. **Remote enrollment, pairing, Tailscale, TLS, and remote credentials remain disabled.**
 
+**P1b.4c (complete — local pairing only):** Owner-created pairing invitations with 60-bit one-time codes and QR payloads, device-generated X25519 identities, code redemption with replay/rate limiting, explicit owner approval, permission selection, independent credential issuance, authenticated X25519/HKDF/AES-GCM delivery envelopes, re-pairing/replacement, enrollment audit, and Chief.app Pending Enrollments/Add Device UI. Implementation: `docs/architecture/device-pairing-implementation.md`. **All enrollment endpoints remain loopback-only; remote delivery and network access wait for P1b.4d.**
+
 **Later P1b (implementation, gated):**
-- **P1b.4c** — Pairing, QR, owner approval, remote enrollment codes.
-- **P1b.4d** — Tailscale, TLS gateway, ACLs (cross-model security review).
+- **P1b.4d** — Tailscale, TLS gateway, ACLs, remote enrollment activation (cross-model security review).
 - HTTPS on gateway (not on raw cosd listener).
 - Read-only / capture-only profiles for remote clients by default.
 - **New CERTs:**

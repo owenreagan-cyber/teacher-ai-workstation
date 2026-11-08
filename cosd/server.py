@@ -29,6 +29,8 @@ from .devices import (
     default_credential_provider,
 )
 from .devices.http import dispatch_device_request
+from .devices.pairing import PairingService, default_envelope_cipher
+from .devices.pairing.http import dispatch_pairing_request
 from .event_bus import get_event_bus
 from .execution.engine import ExecutionEngine
 from .execution_http import dispatch_execution_request
@@ -55,6 +57,7 @@ class CosdHTTPServer(ThreadingHTTPServer):
         *,
         state_base=None,
         credential_provider=None,
+        envelope_cipher=None,
     ):
         self.state_base = state_base
         self.audit = AuditLog(_audit_path(state_base))
@@ -68,6 +71,8 @@ class CosdHTTPServer(ThreadingHTTPServer):
         self.device_registry = None
         self.device_auth = None
         self.device_unavailable = None
+        self.pairing_service = None
+        self.pairing_unavailable = None
         try:
             self.device_registry = DeviceRegistry.open(
                 state_base,
@@ -83,6 +88,15 @@ class CosdHTTPServer(ThreadingHTTPServer):
         except Exception as exc:  # noqa: BLE001 - local daemon must keep serving
             self.device_unavailable = str(exc)
             LOG.warning("device registry unavailable: %s", exc)
+        if self.device_registry is not None:
+            try:
+                self.pairing_service = PairingService(
+                    self.device_registry,
+                    cipher=envelope_cipher or default_envelope_cipher(),
+                )
+            except Exception as exc:  # noqa: BLE001 - pairing must not take cosd down
+                self.pairing_unavailable = str(exc)
+                LOG.warning("device pairing unavailable: %s", exc)
         super().__init__(server_address, RequestHandlerClass)
 
     def request_shutdown(self) -> None:
@@ -239,6 +253,50 @@ class Handler(BaseHTTPRequestHandler):
             return "devices.read"
         return "devices.read"
 
+    def _route_pairing(self) -> bool:
+        path = urlparse(self.path).path
+        if not (
+            path == "/v1/enroll/request"
+            or path == "/v1/enroll/redeem"
+            or path.startswith("/v1/enroll/status/")
+            or path == "/v1/devices/pending"
+            or path.startswith("/v1/devices/pending/")
+        ):
+            return False
+        if self.server.pairing_service is None:
+            self._unavailable()
+            return True
+        owner_actor = None
+        if path == "/v1/devices/pending" or path.startswith("/v1/devices/pending/"):
+            permission = "devices.read" if self.command == "GET" else "devices.manage"
+            principal = self._require_permission(permission)
+            if principal is None:
+                return True
+            owner_actor = (
+                "local_owner" if principal.is_local_owner else f"device:{principal.device_id}"
+            )
+        elif path == "/v1/enroll/request":
+            principal = self._require_permission("devices.manage")
+            if principal is None:
+                return True
+            owner_actor = (
+                "local_owner" if principal.is_local_owner else f"device:{principal.device_id}"
+            )
+        # /v1/enroll/redeem authenticates with the one-time code.
+        # /v1/enroll/status/* authenticates with the Enrollment request token.
+        routed = dispatch_pairing_request(
+            self,
+            pairing=self.server.pairing_service,
+            max_body=MAX_BODY_BYTES,
+            owner_actor=owner_actor,
+        )
+        if routed is None:
+            self._send_json(404, {"ok": False, "error": "not found", "error_kind": "not_found"})
+            return True
+        status, body = routed
+        self._send_json(status, body)
+        return True
+
     def _route_devices(self) -> bool:
         path = urlparse(self.path).path
         if path != "/v1/devices" and not path.startswith("/v1/devices/"):
@@ -360,6 +418,8 @@ class Handler(BaseHTTPRequestHandler):
                 },
             )
             return
+        if self._route_pairing():
+            return
         if self._route_devices():
             return
         if path == "/v1/status":
@@ -393,6 +453,8 @@ class Handler(BaseHTTPRequestHandler):
 
     def do_POST(self) -> None:  # noqa: N802
         path = urlparse(self.path).path
+        if self._route_pairing():
+            return
         if self._route_devices():
             return
         if self._route_tasks_and_execution():
@@ -511,7 +573,12 @@ def validate_bind_host(host: str) -> str:
 
 
 def run_server(
-    *, host: str = DEFAULT_HOST, port: int, state_base=None, credential_provider=None
+    *,
+    host: str = DEFAULT_HOST,
+    port: int,
+    state_base=None,
+    credential_provider=None,
+    envelope_cipher=None,
 ) -> None:
     host = validate_bind_host(host)
     ensure_token(state_base)
@@ -520,6 +587,7 @@ def run_server(
         Handler,
         state_base=state_base,
         credential_provider=credential_provider,
+        envelope_cipher=envelope_cipher,
     )
     LOG.info("cosd listening on %s:%s", host, port)
 

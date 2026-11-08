@@ -1,8 +1,9 @@
 # Remote access gateway (design — P1b.4a)
 
 **Status:** Architecture only for the gateway. P1b.4b shipped the local device
-registry, permission profiles, and credential foundation. `cosd` remains
-`127.0.0.1` only and no gateway process ships in this phase.
+registry, permission profiles, and credential foundation. P1b.4c shipped local
+pairing/enrollment and an authenticated credential-delivery envelope. `cosd`
+remains `127.0.0.1` only and no gateway process ships in this phase.
 
 ## Decision summary
 
@@ -92,7 +93,8 @@ Future: local clients may **optionally** use device credential + gateway on `127
 | --- | --- |
 | Gateway down, cosd up | Local clients work; remote fails closed |
 | cosd down | All clients see degraded; no silent CLI cloud fallback for mobile |
-| Device revoked | Gateway 401; audit `device.auth_failed` |
+| Device revoked | Local device auth `401`; P1b.4d gateway must deny within one refresh cycle |
+| Pairing/redeem | Local-only loopback in P1b.4c; remote enrollment waits for P1b.4d TLS gateway |
 | Tailscale down | Remote offline; local loopback unaffected |
 | Master token rotated | Local clients refresh from disk; **remote device tokens unaffected** |
 
@@ -101,7 +103,7 @@ Future: local clients may **optionally** use device credential + gateway on `127
 | Phase | Deliverable |
 | --- | --- |
 | P1b.4b | Registry schema, Keychain broker, device credential format — **done locally** |
-| P1b.4c | Pairing + owner approval |
+| P1b.4c | Pairing, codes, owner approval, local credential-delivery envelope — **done locally** |
 | P1b.4d | Gateway binary, TLS, Tailscale bind, ACL documentation |
 | P1c | SwiftUI client uses device credential only |
-| P1d | Chief.app device management UI (basic local owner screen shipped in P1b.4b) |
+| P1d | Chief.app device management UI (basic local owner screen shipped in P1b.4b; enrollment in P1b.4c) |

@@ -87,7 +87,7 @@ class CosdStateTest(unittest.TestCase):
 
 
 class RunningServer:
-    def __init__(self, state_base: Path, port: int | None = None, *, use_subprocess: bool = True, credential_provider=None):
+    def __init__(self, state_base: Path, port: int | None = None, *, use_subprocess: bool = True, credential_provider=None, envelope_cipher=None):
         import os
         import subprocess
         import sys
@@ -111,6 +111,7 @@ class RunningServer:
                     "port": self.port,
                     "state_base": state_base,
                     "credential_provider": credential_provider,
+                    "envelope_cipher": envelope_cipher,
                 },
                 daemon=True,
             )

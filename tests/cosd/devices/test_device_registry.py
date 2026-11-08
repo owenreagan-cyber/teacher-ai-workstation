@@ -1,13 +1,14 @@
 """Device registry persistence, identity, and schema tests."""
 from __future__ import annotations
 
+import sqlite3
 import unittest
 
 from device_support import DeviceStateTest
 
 from cosd.devices import DeviceError, DeviceRegistry, MemoryCredentialProvider
-from cosd.devices.storage import DEVICE_SCHEMA_KEY, DEVICE_SCHEMA_VERSION
-from cosd.storage import SCHEMA_VERSION, TaskDatabase
+from cosd.devices.storage import _SCHEMA_V1, DEVICE_SCHEMA_KEY, DEVICE_SCHEMA_VERSION
+from cosd.storage import SCHEMA_VERSION, TaskDatabase, database_path
 from cosd.tasks import TaskRegistry
 
 
@@ -146,6 +147,54 @@ class StorageTests(DeviceStateTest):
                     ("b" * 32, "f" * 32),
                 )
         self.assertEqual(self.registry.db.integrity_check(), "ok")
+
+    def test_v1_to_v2_migration_preserves_devices(self):
+        path = database_path(self.state)
+        path.parent.mkdir(parents=True, exist_ok=True)
+        conn = sqlite3.connect(path)
+        try:
+            conn.executescript(_SCHEMA_V1)
+            conn.execute(
+                "INSERT OR REPLACE INTO schema_meta(key, value) VALUES (?, '1')",
+                (DEVICE_SCHEMA_KEY,),
+            )
+            conn.execute(
+                """INSERT INTO devices(
+                    device_id, display_name, device_type, platform, owner_id,
+                    device_profile, trust_level, status, app_version,
+                    registered_at, last_seen_at, updated_at, revoked_at,
+                    metadata_json, is_primary_owner
+                ) VALUES (?, 'Legacy iPad', 'ipad', 'ipados', 'school', 'school',
+                    'restricted', 'active', '0.1.0', 'a', NULL, 'a', NULL, '{}', 0)""",
+                ("a" * 32,),
+            )
+            conn.commit()
+        finally:
+            conn.close()
+
+        self.registry.close()
+        self.registry = DeviceRegistry.open(
+            self.state, credential_provider=MemoryCredentialProvider(), audit=self.audit
+        )
+        device = self.registry.get_device("a" * 32)
+        self.assertEqual(device.display_name, "Legacy iPad")
+        self.assertIsNone(device.public_key_fingerprint)
+        columns = {
+            row[1] for row in self.registry.db.execute("PRAGMA table_info(devices)").fetchall()
+        }
+        self.assertIn("public_key_fingerprint", columns)
+        indexes = {
+            row[1] for row in self.registry.db.execute("PRAGMA index_list(devices)").fetchall()
+        }
+        self.assertIn("idx_devices_active_fingerprint", indexes)
+        self.assertEqual(
+            int(
+                self.registry.db.execute(
+                    "SELECT value FROM schema_meta WHERE key = ?", (DEVICE_SCHEMA_KEY,)
+                ).fetchone()["value"]
+            ),
+            2,
+        )
 
 
 if __name__ == "__main__":

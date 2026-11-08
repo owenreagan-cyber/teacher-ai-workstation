@@ -1,7 +1,9 @@
 # Device registry
 
-**Status:** Implemented locally (P1b.4b). Remote enrollment and network access
-remain disabled. Implementation details: `docs/architecture/device-registry-implementation.md`.
+**Status:** Implemented locally (P1b.4b registry/credentials; P1b.4c pairing/enrollment).
+Remote enrollment and network access remain disabled. Implementation details:
+`docs/architecture/device-registry-implementation.md` and
+`docs/architecture/device-pairing-implementation.md`.
 
 ## Purpose
 
@@ -84,8 +86,23 @@ Full matrix: `cosd/devices/permissions.py`.
 ## Management surface
 
 Chief.app **Devices** (local owner only): list, detail, rename, change profile,
-disable, re-enable, revoke, remove, credential rotate/revoke, primary bootstrap.
-Profile and lifecycle changes require confirmation.
+disable, re-enable, revoke, remove, credential rotate/revoke, primary bootstrap,
+and **Add Device / Pending Enrollments** (P1b.4c). Profile and lifecycle changes
+require confirmation.
+
+## Pairing and enrollment (P1b.4c)
+
+Owner-created pairing invitations produce a one-time 60-bit code and QR payload
+(no master token, private key, or permanent credential). The device redeems with
+its X25519 public key; the owner explicitly approves the profile; the daemon
+issues a P1b.4b credential and encrypts the delivery payload with X25519 +
+HKDF-SHA256 + AES-256-GCM. Codes expire within 10 minutes, are single-use,
+salted-hash verified, rate-limited, and replay-audited. Re-pairing requires an
+explicit replacement of the existing key-bound identity. See
+`docs/architecture/device-pairing-implementation.md`.
+
+All pairing endpoints are loopback-only in this phase. The P1b.4d gateway will
+later expose only approved enrollment operations over authenticated TLS.
 
 Raycast and future mobile clients **must not** manage other devices.
 

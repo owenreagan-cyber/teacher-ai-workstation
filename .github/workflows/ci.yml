@@ -118,6 +118,12 @@ jobs:
           set -euo pipefail
           python3 -m unittest discover -s tests/cosd/devices -p 'test_*.py'
 
+      - name: Device pairing and enrollment
+        run: |
+          set -euo pipefail
+          python3 -m pip install --break-system-packages -r requirements-cosd-pairing.txt
+          python3 -m unittest discover -s tests/cosd/devices/pairing -p 'test_*.py'
+
       - name: Chief desktop (Electron)
         run: |
           set -euo pipefail

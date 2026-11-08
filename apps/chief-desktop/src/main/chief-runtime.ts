@@ -12,6 +12,12 @@ import type {
   DeviceListResult,
   DevicePatchInput,
   DeviceRecord,
+  EnrollmentActionResult,
+  EnrollmentApproveInput,
+  EnrollmentCreateInput,
+  EnrollmentDetailResult,
+  EnrollmentInvitationResult,
+  EnrollmentListResult,
 } from "../shared/devices.js";
 import { CosRunner, toStatus } from "./cos.js";
 import { CosdClient } from "./cosd/client.js";
@@ -329,6 +335,73 @@ export class ChiefRuntime {
       return { ok: true };
     } catch (e) {
       return fail("internal", e instanceof CosdHttpError ? e.message : "credential revocation failed");
+    }
+  }
+
+  async createEnrollmentInvitation(input: EnrollmentCreateInput): Promise<EnrollmentInvitationResult | Failure> {
+    const ep = this.connection.getEndpoint();
+    if (!ep) return fail("setup", "Enrollment requires a running cosd");
+    try {
+      const result = await this.cosd.createEnrollment(ep, input);
+      return { ok: true, ...result };
+    } catch (e) {
+      return fail("internal", e instanceof CosdHttpError ? e.message : "enrollment request failed");
+    }
+  }
+
+  async listPendingEnrollments(): Promise<EnrollmentListResult | Failure> {
+    const ep = this.connection.getEndpoint();
+    if (!ep) return fail("setup", "Enrollment requires a running cosd");
+    try {
+      return { ok: true, ...(await this.cosd.listPendingEnrollments(ep)) };
+    } catch (e) {
+      return fail("internal", e instanceof CosdHttpError ? e.message : "pending enrollments failed");
+    }
+  }
+
+  async getEnrollment(enrollmentId: string): Promise<EnrollmentDetailResult | Failure> {
+    const ep = this.connection.getEndpoint();
+    if (!ep) return fail("setup", "Enrollment requires a running cosd");
+    try {
+      return { ok: true, enrollment: await this.cosd.getEnrollment(ep, enrollmentId) };
+    } catch (e) {
+      return fail("internal", e instanceof CosdHttpError ? e.message : "enrollment fetch failed");
+    }
+  }
+
+  async approveEnrollment(enrollmentId: string, input: EnrollmentApproveInput): Promise<EnrollmentActionResult | Failure> {
+    const ep = this.connection.getEndpoint();
+    if (!ep) return fail("setup", "Enrollment requires a running cosd");
+    try {
+      const result = await this.cosd.approveEnrollment(ep, enrollmentId, input);
+      return {
+        ok: true,
+        enrollment: result.enrollment,
+        ...(result.device ? { device: result.device } : {}),
+        ...(result.credential ? { credential: result.credential } : {}),
+      };
+    } catch (e) {
+      return fail("internal", e instanceof CosdHttpError ? e.message : "enrollment approval failed");
+    }
+  }
+
+  async rejectEnrollment(enrollmentId: string): Promise<EnrollmentActionResult | Failure> {
+    const ep = this.connection.getEndpoint();
+    if (!ep) return fail("setup", "Enrollment requires a running cosd");
+    try {
+      return { ok: true, enrollment: await this.cosd.rejectEnrollment(ep, enrollmentId, "owner rejected") };
+    } catch (e) {
+      return fail("internal", e instanceof CosdHttpError ? e.message : "enrollment rejection failed");
+    }
+  }
+
+  async cancelEnrollment(enrollmentId: string): Promise<EnrollmentActionResult | Failure> {
+    const ep = this.connection.getEndpoint();
+    if (!ep) return fail("setup", "Enrollment requires a running cosd");
+    try {
+      return { ok: true, enrollment: await this.cosd.cancelEnrollment(ep, enrollmentId, "owner cancelled") };
+    } catch (e) {
+      return fail("internal", e instanceof CosdHttpError ? e.message : "enrollment cancellation failed");
     }
   }
 

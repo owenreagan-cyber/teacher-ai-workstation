@@ -38,6 +38,7 @@ export type DeviceRecord = {
   revoked_at: string | null;
   metadata: Record<string, unknown>;
   is_primary_owner: boolean;
+  public_key_fingerprint?: string | null;
 };
 
 export type CredentialMetadata = {
@@ -80,6 +81,99 @@ export type DevicePatchInput = {
 };
 
 export type DeviceAction = "profile" | "disable" | "enable" | "revoke" | "remove";
+
+export const ENROLLMENT_STATUSES = [
+  "PENDING",
+  "AWAITING_OWNER_APPROVAL",
+  "APPROVED",
+  "REJECTED",
+  "EXPIRED",
+  "COMPLETED",
+  "CANCELLED",
+] as const;
+export type EnrollmentStatus = (typeof ENROLLMENT_STATUSES)[number];
+
+export const ENROLLMENT_STATUS_LABELS: Record<EnrollmentStatus, string> = {
+  PENDING: "Waiting for device",
+  AWAITING_OWNER_APPROVAL: "Awaiting approval",
+  APPROVED: "Approved — delivery pending",
+  REJECTED: "Rejected",
+  EXPIRED: "Expired",
+  COMPLETED: "Completed",
+  CANCELLED: "Cancelled",
+};
+
+export type EnrollmentRecord = {
+  enrollment_id: string;
+  status: EnrollmentStatus;
+  source: string;
+  display_name: string;
+  device_type: DeviceType;
+  platform: string;
+  app_version: string;
+  owner_id: string;
+  requested_profile: DeviceProfile;
+  approved_profile: DeviceProfile | null;
+  requested_permissions: string[];
+  approved_permissions: string[];
+  public_key_fingerprint: string | null;
+  protocol_version: number;
+  created_at: string;
+  updated_at: string;
+  expires_at: string;
+  redeemed_at: string | null;
+  approved_at: string | null;
+  completed_at: string | null;
+  rejected_at: string | null;
+  cancelled_at: string | null;
+  delivery_expires_at: string | null;
+  device_id: string | null;
+  credential_id: string | null;
+  replaces_device_id: string | null;
+  reason: string | null;
+  failed_attempts: number;
+};
+
+export type EnrollmentInvitationResult =
+  | { ok: true; enrollment: EnrollmentRecord; pairing_code: string; qr_payload: string; expires_at: string }
+  | { ok: false; error: string; error_kind: string };
+
+export type EnrollmentListResult =
+  | { ok: true; enrollments: EnrollmentRecord[]; total: number; limit: number; offset: number }
+  | { ok: false; error: string; error_kind: string };
+
+export type EnrollmentDetailResult =
+  | { ok: true; enrollment: EnrollmentRecord }
+  | { ok: false; error: string; error_kind: string };
+
+export type EnrollmentActionResult =
+  | { ok: true; enrollment: EnrollmentRecord; device?: DeviceRecord; credential?: CredentialMetadata }
+  | { ok: false; error: string; error_kind: string };
+
+export type EnrollmentCreateInput = {
+  display_name: string;
+  device_type: DeviceType;
+  platform: string;
+  requested_profile: DeviceProfile;
+  app_version?: string;
+  owner_id?: string;
+};
+
+export type EnrollmentApproveInput = {
+  device_profile: DeviceProfile;
+  replaces_device_id?: string;
+  allow_owner?: boolean;
+};
+
+export const PROFILE_RESTRICTIONS: Record<DeviceProfile, string> = {
+  owner: "Full authorized control, including device and credential administration.",
+  personal: "Personal ask, tasks, history, and sessions; no device administration.",
+  partner: "Shared ask and task capture/read; no private personal history, execution, or administration.",
+  school: "Restricted ask, task capture, and status only; no history, sessions, execution, or administration.",
+  read_only: "Status, task list, and task history only; cannot change records.",
+  capture_only: "Create tasks and read status only; cannot ask, list tasks, or execute.",
+  revoked: "No access at all.",
+};
 
 export const PROFILE_LABELS: Record<DeviceProfile, string> = {
   owner: "Owner",
@@ -181,6 +275,58 @@ export function parseDevice(raw: unknown): DeviceRecord | null {
     revoked_at: typeof o.revoked_at === "string" ? o.revoked_at : null,
     metadata: (o.metadata as Record<string, unknown>) ?? {},
     is_primary_owner: o.is_primary_owner,
+    public_key_fingerprint: typeof o.public_key_fingerprint === "string" ? o.public_key_fingerprint : null,
+  };
+}
+
+export function validateEnrollmentId(value: unknown): string {
+  return validateDeviceId(value);
+}
+
+function stringList(value: unknown): string[] {
+  return Array.isArray(value) ? value.filter((item): item is string => typeof item === "string") : [];
+}
+
+export function parseEnrollment(raw: unknown): EnrollmentRecord | null {
+  if (typeof raw !== "object" || raw === null || Array.isArray(raw)) return null;
+  const o = raw as Record<string, unknown>;
+  if (typeof o.enrollment_id !== "string" || !DEVICE_ID_RE.test(o.enrollment_id)) return null;
+  if (typeof o.status !== "string" || !(ENROLLMENT_STATUSES as readonly string[]).includes(o.status)) return null;
+  if (typeof o.display_name !== "string" || !o.display_name) return null;
+  if (typeof o.device_type !== "string" || !(DEVICE_TYPES as readonly string[]).includes(o.device_type)) return null;
+  if (typeof o.device_profile === "string") return null; // enrollments use requested/approved profiles
+  if (typeof o.requested_profile !== "string" || !(DEVICE_PROFILES as readonly string[]).includes(o.requested_profile)) return null;
+  if (o.approved_profile !== null && (typeof o.approved_profile !== "string" || !(DEVICE_PROFILES as readonly string[]).includes(o.approved_profile))) return null;
+  if (typeof o.created_at !== "string" || typeof o.expires_at !== "string") return null;
+  return {
+    enrollment_id: o.enrollment_id,
+    status: o.status as EnrollmentStatus,
+    source: typeof o.source === "string" ? o.source : "",
+    display_name: o.display_name,
+    device_type: o.device_type as DeviceType,
+    platform: typeof o.platform === "string" ? o.platform : "unknown",
+    app_version: typeof o.app_version === "string" ? o.app_version : "",
+    owner_id: typeof o.owner_id === "string" ? o.owner_id : "unassigned",
+    requested_profile: o.requested_profile as DeviceProfile,
+    approved_profile: typeof o.approved_profile === "string" ? (o.approved_profile as DeviceProfile) : null,
+    requested_permissions: stringList(o.requested_permissions),
+    approved_permissions: stringList(o.approved_permissions),
+    public_key_fingerprint: typeof o.public_key_fingerprint === "string" ? o.public_key_fingerprint : null,
+    protocol_version: typeof o.protocol_version === "number" ? o.protocol_version : 1,
+    created_at: o.created_at,
+    updated_at: typeof o.updated_at === "string" ? o.updated_at : o.created_at,
+    expires_at: o.expires_at,
+    redeemed_at: typeof o.redeemed_at === "string" ? o.redeemed_at : null,
+    approved_at: typeof o.approved_at === "string" ? o.approved_at : null,
+    completed_at: typeof o.completed_at === "string" ? o.completed_at : null,
+    rejected_at: typeof o.rejected_at === "string" ? o.rejected_at : null,
+    cancelled_at: typeof o.cancelled_at === "string" ? o.cancelled_at : null,
+    delivery_expires_at: typeof o.delivery_expires_at === "string" ? o.delivery_expires_at : null,
+    device_id: typeof o.device_id === "string" ? o.device_id : null,
+    credential_id: typeof o.credential_id === "string" ? o.credential_id : null,
+    replaces_device_id: typeof o.replaces_device_id === "string" ? o.replaces_device_id : null,
+    reason: typeof o.reason === "string" ? o.reason : null,
+    failed_attempts: typeof o.failed_attempts === "number" ? o.failed_attempts : 0,
   };
 }
 
@@ -220,4 +366,13 @@ export function confirmationMessage(action: DeviceAction, name: string): string 
     case "remove":
       return `Remove "${name}" from the registry? Audit provenance is retained.`;
   }
+}
+
+export function enrollmentApprovalMessage(name: string, profile: DeviceProfile): string {
+  return `Approve "${name}" as ${PROFILE_LABELS[profile]}?\n\n${PROFILE_RESTRICTIONS[profile]}\n\nThis grants access immediately.`;
+}
+
+export function enrollmentLifecycleMessage(action: "reject" | "cancel", name: string): string {
+  if (action === "reject") return `Reject the enrollment request from "${name}"?`;
+  return `Cancel the enrollment request from "${name}"?`;
 }

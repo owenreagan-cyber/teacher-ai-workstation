@@ -41,7 +41,7 @@ test("the device page lists devices and shows the selected record", () => {
   );
   const t = text(html);
   for (const want of [
-    "Devices", "Local owner management only", "Remote enrollment, pairing, and network access are disabled",
+    "Devices", "Local owner management only", "Pairing is local; remote enrollment, network access, and the TLS gateway are disabled",
     "Classroom iPad", "Partner Mac", "ipad", "ipados", "School", "Active",
     "Registered", "Last seen", "App version", "0.1.0", "Permission profile",
     "Rotate credential", "Revoke credential",
@@ -77,4 +77,64 @@ test("the device page never renders credential secrets or Keychain references", 
 test("the device page offers primary bootstrap when no primary exists", () => {
   const html = renderToStaticMarkup(h(DevicesPage, { bridge, initial: [] }));
   assert.ok(text(html).includes("Register this Mac as primary"));
+});
+
+test("the device page renders pending enrollments, approval controls, and the QR", () => {
+  const enrollment = {
+    enrollment_id: "c".repeat(32),
+    status: "AWAITING_OWNER_APPROVAL",
+    source: "owner_invitation",
+    display_name: "School iPad",
+    device_type: "ipad",
+    platform: "ipados",
+    app_version: "0.1.0",
+    owner_id: "school",
+    requested_profile: "school",
+    approved_profile: null,
+    requested_permissions: ["ask", "status.read", "tasks.create"],
+    approved_permissions: [],
+    public_key_fingerprint: "d".repeat(64),
+    protocol_version: 1,
+    created_at: "2026-11-08T12:00:00.000+00:00",
+    updated_at: "2026-11-08T12:00:00.000+00:00",
+    expires_at: "2026-11-08T12:10:00.000+00:00",
+    redeemed_at: null,
+    approved_at: null,
+    completed_at: null,
+    rejected_at: null,
+    cancelled_at: null,
+    delivery_expires_at: null,
+    device_id: null,
+    credential_id: null,
+    replaces_device_id: null,
+    reason: null,
+    failed_attempts: 0,
+  };
+  const invitation = {
+    ok: true,
+    enrollment: { ...enrollment, status: "PENDING", pairing_code: "ABCD-EFGH-JKMN" },
+    pairing_code: "ABCD-EFGH-JKMN",
+    qr_payload: '{"v":1,"enrollment_id":"c","code":"ABCD-EFGH-JKMN"}',
+    expires_at: "2026-11-08T12:10:00.000+00:00",
+  };
+  const html = renderToStaticMarkup(
+    h(DevicesPage, {
+      bridge,
+      initial: [],
+      initialEnrollments: [enrollment],
+      initialInvitation: invitation,
+      initialQrDataUrl: "data:image/png;base64,AAAA",
+    }),
+  );
+  const t = text(html);
+  for (const want of [
+    "Pending Enrollments", "School iPad", "Awaiting approval", "Approve", "Reject",
+    "Requested School", "Add Device", "Generate pairing request", "ABCD-EFGH-JKMN",
+    "one-time code", "The device must still be approved",
+  ]) {
+    assert.ok(t.includes(want), want);
+  }
+  assert.match(html, /alt="Pairing QR code"/);
+  assert.ok(!html.includes("keychain"));
+  assert.ok(!html.includes("super-secret-token"));
 });

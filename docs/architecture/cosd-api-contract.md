@@ -66,6 +66,18 @@ Authenticated ask through the existing `cos` responder path (`run_ask`).
 
 Idempotency: not guaranteed; each call appends session turns when `session_id` is set.
 
+### `POST /v1/ask/stream`
+
+Authenticated NDJSON stream after `run_ask` completes (chunked `text` for UI). Same policy gate as `/v1/ask`. Final line has `"type":"done"`.
+
+### `GET /v1/events`
+
+Authenticated SSE (`text/event-stream`). Query `since=<event_id>`. Bounded buffer; no secrets in event payloads.
+
+### `GET /v1/runtime`
+
+Authenticated monitoring snapshot (counts, queue, workers, storage sizes, model status). No tokens or session content.
+
 ### `POST /v1/stop`
 
 Authenticated graceful **daemon** shutdown (not the `cos` kill switch).

@@ -2,6 +2,7 @@
 // main process adds. The renderer displays these; it never invents their values.
 import type { Block } from "./blocks.js";
 import type { CosdConnectionState, ExecutionMode } from "./cosd.js";
+import type { OpsPrefs } from "./ops-prefs.js";
 import type { HomeSnapshot } from "./home.js";
 import type { ConfigReport } from "./settings.js";
 
@@ -104,6 +105,8 @@ export type ShellEvent =
   | { kind: "brief-requested" }
   | { kind: "status-changed" }
   | { kind: "cosd-connection"; snapshot: import("./cosd.js").CosdConnectionSnapshot }
+  | { kind: "cosd-task-event"; event: { id: number; type: string; title?: string; task_id?: string } }
+  | { kind: "ask-chunk"; text: string }
   | { kind: "window-state"; state: WindowState };
 
 export interface ChiefBridge {
@@ -130,5 +133,11 @@ export interface ChiefBridge {
   retryTask(taskId: string): Promise<import("./cosd.js").TaskDetailResult>;
   taskHistory(taskId: string): Promise<import("./cosd.js").TaskHistoryResult>;
   queueSnapshot(): Promise<import("./cosd.js").QueueResult>;
+  cosdStart(): Promise<{ ok: boolean; error?: string }>;
+  cosdStop(confirm: boolean): Promise<{ ok: boolean; error?: string }>;
+  cosdRestart(confirm: boolean): Promise<{ ok: boolean; error?: string }>;
+  runtimeSnapshot(): Promise<{ ok: true; body: Record<string, unknown> } | { ok: false; error: string }>;
+  opsPrefsGet(): Promise<{ ok: true; prefs: OpsPrefs }>;
+  opsPrefsSet(prefs: OpsPrefs): Promise<{ ok: true }>;
   onEvent(listener: (event: ShellEvent) => void): () => void;
 }

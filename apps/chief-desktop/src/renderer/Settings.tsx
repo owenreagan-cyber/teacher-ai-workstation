@@ -5,6 +5,7 @@ import { useCallback, useEffect, useState } from "react";
 
 import { type ConfigReport, KEEP_ALIVE_CHOICES, parsePlace, type PlaceDraft, placeKey, type PlaceValue, type SettableKey } from "../shared/settings";
 import type { ConfigResult, WindowState } from "../shared/types";
+import { RuntimeOpsSection } from "./RuntimeOps";
 
 export type SettingsBridge = {
   configGet: () => Promise<ConfigResult>;
@@ -218,6 +219,8 @@ export function SettingsPage({ windowState, onWindowState, bridge, initial = nul
           </select>
         </Row>
       </Section>
+
+      <RuntimeOpsSection />
 
       <footer className="px-1 text-[12px] text-muted">
         These settings are saved in config.json in Chief's data folder{report ? ` (${report.path})` : ""}.

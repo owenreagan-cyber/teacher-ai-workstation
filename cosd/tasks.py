@@ -134,6 +134,26 @@ class TaskRegistry:
                 _utc_now(),
             ),
         )
+        try:
+            from .event_bus import get_event_bus
+
+            title = (details or {}).get("title")
+            bus = get_event_bus()
+            etype = f"task.{event_type}"
+            if new_state:
+                etype = f"task.state.{new_state.lower()}"
+            bus.publish(
+                etype,
+                task_id=task_id,
+                title=str(title)[:200] if title else None,
+                detail={
+                    "previous_state": previous_state,
+                    "new_state": new_state,
+                    **({} if not details else {k: v for k, v in details.items() if k != "title"}),
+                },
+            )
+        except Exception:  # noqa: BLE001
+            pass
 
     def create_task(
         self,
@@ -210,7 +230,7 @@ class TaskRegistry:
                 event_type="created",
                 previous_state=None,
                 new_state=TaskState.QUEUED.value,
-                details={"source": source},
+                details={"source": source, "title": title},
             )
             row = conn.execute("SELECT * FROM tasks WHERE id = ?", (task_id,)).fetchone()
         return _row_to_task(row), False

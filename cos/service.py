@@ -110,6 +110,35 @@ def run_ask(
     return EXIT_OK, body
 
 
+def iter_ask_stream(
+    rt,
+    *,
+    question: str,
+    session_id: str | None = None,
+    chunk_chars: int = 48,
+):
+    """Yield NDJSON-ready dicts: chunk events then a final done or error event.
+
+    Uses the existing run_ask path; chunks the final text for incremental UI delivery.
+    True token streaming from Ollama is deferred (see docs/architecture/cosd-local-operations.md).
+    """
+    code, body = run_ask(rt, question=question, session_id=session_id)
+    if not body.get("ok"):
+        yield {"type": "error", "code": code, "body": body}
+        return
+    text = str(body.get("text") or body.get("answer") or "")
+    pos = 0
+    while pos < len(text):
+        piece = text[pos : pos + chunk_chars]
+        pos += chunk_chars
+        if piece:
+            yield {"type": "chunk", "text": piece}
+    final = {k: v for k, v in body.items() if k not in ("text", "answer")}
+    final["type"] = "done"
+    final["text"] = text
+    yield final
+
+
 def run_status(cfg) -> dict:
     """Read-only status snapshot (same as cos status --json)."""
     report = status_report(cfg)

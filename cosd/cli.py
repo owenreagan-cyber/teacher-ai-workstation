@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import subprocess
 import sys
 from pathlib import Path
 from urllib.error import HTTPError, URLError
@@ -410,6 +411,56 @@ def main(argv: list[str] | None = None) -> int:
     workers = sub.add_parser("workers", help="worker leases")
     workers_sub = workers.add_subparsers(dest="workers_command", required=True)
     workers_sub.add_parser("list").set_defaults(func=cmd_workers_list)
+
+    la = sub.add_parser("launchagent", help="optional LaunchAgent plist (opt-in)")
+    la_sub = la.add_subparsers(dest="launchagent_command", required=True)
+
+    def cmd_launchagent_show(_args: argparse.Namespace) -> int:
+        from .launchagent import plist_path, render_plist
+
+        print(json.dumps({"ok": True, "plist": render_plist(), "path": str(plist_path())}))
+        return EXIT_OK
+
+    def cmd_launchagent_install(args: argparse.Namespace) -> int:
+        if sys.platform != "darwin":
+            print("cosd: launchagent is macOS only", file=sys.stderr)
+            return EXIT_USAGE
+        if not args.confirm:
+            print("cosd: pass --confirm to install LaunchAgent", file=sys.stderr)
+            return EXIT_USAGE
+        from .launchagent import install_with_launchctl
+
+        def load(p: str) -> None:
+            subprocess.run(["launchctl", "load", "-w", p], check=True)
+
+        path = install_with_launchctl(load, port=args.port)
+        print(json.dumps({"ok": True, "installed": str(path), "enabled": False}))
+        return EXIT_OK
+
+    def cmd_launchagent_remove(args: argparse.Namespace) -> int:
+        if sys.platform != "darwin":
+            print("cosd: launchagent is macOS only", file=sys.stderr)
+            return EXIT_USAGE
+        if not args.confirm:
+            print("cosd: pass --confirm to remove LaunchAgent", file=sys.stderr)
+            return EXIT_USAGE
+        from .launchagent import unload_with_launchctl
+
+        def unload(p: str) -> None:
+            subprocess.run(["launchctl", "unload", p], check=False)
+
+        ok = unload_with_launchctl(unload)
+        print(json.dumps({"ok": True, "removed": ok}))
+        return EXIT_OK
+
+    la_sub.add_parser("show").set_defaults(func=cmd_launchagent_show)
+    lain = la_sub.add_parser("install", help="write plist and launchctl load (opt-in)")
+    lain.add_argument("--confirm", action="store_true")
+    lain.add_argument("--port", type=int, default=DEFAULT_PORT)
+    lain.set_defaults(func=cmd_launchagent_install)
+    larm = la_sub.add_parser("remove", help="unload and delete plist")
+    larm.add_argument("--confirm", action="store_true")
+    larm.set_defaults(func=cmd_launchagent_remove)
 
     args = parser.parse_args(argv)
     if hasattr(args, "host"):

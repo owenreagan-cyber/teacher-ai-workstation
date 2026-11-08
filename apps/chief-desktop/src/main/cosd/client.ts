@@ -3,7 +3,7 @@ import { promisify } from "node:util";
 
 import type { CosdConnectionState, CosdHealth, CosdTask, QueueSnapshot, TaskHistoryEvent, TaskState } from "../../shared/cosd.js";
 import { COS_STATE_DIR } from "../config.js";
-import { CosdHttpError, requestJson } from "./http.js";
+import { CosdHttpError, requestAskNdjsonStream, requestJson } from "./http.js";
 import { processAlive, readDaemonToken, readPidRecord, type PidRecord } from "./paths.js";
 
 const execFileAsync = promisify(execFile);
@@ -128,6 +128,19 @@ export class CosdClient {
     const { status, body } = await this.authed(ep, "GET", "/v1/status");
     if (status !== 200 || body.ok !== true) throw new CosdHttpError("status failed", "internal");
     return body;
+  }
+
+  async askStream(
+    ep: DaemonEndpoint,
+    question: string,
+    sessionId: string | null,
+    signal: AbortSignal | undefined,
+    onChunk: (text: string) => void,
+  ): Promise<Record<string, unknown>> {
+    if (signal?.aborted) throw new CosdHttpError("cancelled", "usage");
+    const token = this.token();
+    if (!token) throw new CosdHttpError("cosd token unavailable", "auth");
+    return requestAskNdjsonStream(ep.host, ep.port, token, question, sessionId, onChunk, signal, ASK_TIMEOUT_MS);
   }
 
   async ask(ep: DaemonEndpoint, question: string, sessionId: string | null, signal?: AbortSignal): Promise<Record<string, unknown>> {

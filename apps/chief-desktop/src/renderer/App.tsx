@@ -27,6 +27,7 @@ export function App() {
   const [turns, setTurns] = useState<Turn[]>([]);
   const [cards, setCards] = useState<Card[]>([]);
   const [pending, setPending] = useState<string | null>(null);
+  const [streamPreview, setStreamPreview] = useState("");
   const [input, setInput] = useState("");
   const [asking, setAsking] = useState(false);
   const [briefing, setBriefing] = useState(false);
@@ -153,6 +154,7 @@ export function App() {
       if (event.kind === "window-state") setWindowState(event.state);
       else if (event.kind === "status-changed" || event.kind === "cosd-connection") void refreshStatus();
       else if (event.kind === "brief-requested") void runBrief();
+      else if (event.kind === "ask-chunk") setStreamPreview((prev) => prev + event.text);
     });
     return () => {
       clearInterval(timer);
@@ -203,6 +205,7 @@ export function App() {
     if (mode === "hide") setMode("split");
     setAsking(true);
     setPending(question);
+    setStreamPreview("");
     setInput("");
     try {
       const res = await window.chief.ask(question, SESSION);
@@ -217,6 +220,7 @@ export function App() {
       }
     } finally {
       setPending(null);
+      setStreamPreview("");
       setAsking(false);
       void refreshStatus();
       inputRef.current?.focus();
@@ -256,6 +260,7 @@ export function App() {
       turns={turns}
       cards={cards}
       pending={pending}
+      streamPreview={streamPreview}
       input={input}
       asking={asking}
       focus={mode === "focus"}

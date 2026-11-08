@@ -35,15 +35,16 @@ Brief, home, config, history (session read), warm, kill switch remain **`bin/cos
 
 `DISCONNECTED`, `CONNECTING`, `CONNECTED`, `DEGRADED`, `AUTH_ERROR`, `VERSION_MISMATCH`, `RECOVERING`.
 
-Main polls every 15s with bounded backoff on failure. Renderer receives `chief:event` `cosd-connection` updates.
+Main polls every 15s (60s when **Live task events** is on) with bounded backoff. Renderer receives `chief:event` updates for `cosd-connection`, `cosd-task-event`, and `ask-chunk`.
 
 ## Streaming
 
-`/v1/ask` returns a complete JSON body (no SSE yet). Chief.app shows loading until the full answer arrives; `chief:cancel-ask` aborts an in-flight daemon request.
+- **Ask:** `POST /v1/ask/stream` (NDJSON chunks) when Settings → *Streaming ask* is enabled; otherwise `POST /v1/ask`.
+- **Tasks:** `GET /v1/events` SSE authenticated stream; Task center refreshes on push events.
 
 ## Lifecycle
 
-Chief does **not** install LaunchAgents or spawn cosd automatically. User starts/stops via `bin/cosd`. UI offers **Retry connection** only.
+Settings → **Runtime & notifications** can `start` / `stop` / `restart` via main-process `bin/cosd` (stop/restart require confirmation). LaunchAgent remains opt-in CLI only; Chief does not install login items for cosd.
 
 ## Security
 

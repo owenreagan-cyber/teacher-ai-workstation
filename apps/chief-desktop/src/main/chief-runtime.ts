@@ -8,7 +8,8 @@ import type { CosdConnectionSnapshot, CosdTask, QueueSnapshot, TaskHistoryEvent 
 import { CosRunner, toStatus } from "./cos.js";
 import { CosdClient } from "./cosd/client.js";
 import { CosdConnectionManager, daemonModeFromEnv } from "./cosd/connection.js";
-import { CosdHttpError } from "./cosd/http.js";
+import { CosdHttpError, requestJson } from "./cosd/http.js";
+import { readDaemonToken } from "./cosd/paths.js";
 
 const isStr = (v: unknown): v is string => typeof v === "string";
 const isStrList = (v: unknown): v is string[] => Array.isArray(v) && v.every(isStr);
@@ -62,7 +63,7 @@ export class ChiefRuntime {
     return fail("setup", snap.detail ?? "cosd is required but unavailable");
   }
 
-  async ask(question: unknown, sessionId: unknown): Promise<AskResult> {
+  async ask(question: unknown, sessionId: unknown, onChunk?: (text: string) => void): Promise<AskResult> {
     const q = String(question ?? "").trim();
     const sid = sessionId ? String(sessionId) : null;
     if (!q) return fail("usage", "ask needs a question");
@@ -73,7 +74,9 @@ export class ChiefRuntime {
       this.askAbort?.abort();
       this.askAbort = new AbortController();
       try {
-        const body = await this.cosd.ask(ep, q, sid, this.askAbort.signal);
+        const body = onChunk
+          ? await this.cosd.askStream(ep, q, sid, this.askAbort.signal, onChunk)
+          : await this.cosd.ask(ep, q, sid, this.askAbort.signal);
         return answerFromDaemon(body, this.onResources);
       } catch (e) {
         if (e instanceof CosdHttpError && e.kind === "usage" && e.message === "cancelled") {
@@ -232,5 +235,19 @@ export class ChiefRuntime {
   }
   setAutoSearch(enabled: boolean) {
     return this.cos.setAutoSearch(enabled);
+  }
+
+  async runtimeSnapshot(): Promise<{ ok: true; body: Record<string, unknown> } | Failure> {
+    const ep = this.connection.getEndpoint();
+    if (!ep) return fail("setup", "cosd not connected");
+    const token = readDaemonToken();
+    if (!token) return fail("setup", "cosd token unavailable");
+    try {
+      const { status, body } = await requestJson(ep.host, ep.port, "/v1/runtime", { token });
+      if (status !== 200 || body.ok !== true) return fail("internal", "runtime snapshot failed");
+      return { ok: true, body };
+    } catch (e) {
+      return fail("internal", e instanceof CosdHttpError ? e.message : "runtime failed");
+    }
   }
 }

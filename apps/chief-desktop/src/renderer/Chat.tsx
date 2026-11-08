@@ -125,6 +125,7 @@ type Props = {
   turns: Turn[];
   cards: Card[];
   pending: string | null;
+  streamPreview: string;
   input: string;
   asking: boolean;
   focus: boolean; // centered ~780 px column
@@ -137,7 +138,7 @@ type Props = {
 };
 
 export function ChatPanel(props: Props) {
-  const { turns, cards, pending, input, asking, focus, inputRef, feedRef } = props;
+  const { turns, cards, pending, streamPreview, input, asking, focus, inputRef, feedRef } = props;
   const feed: React.ReactNode[] = [];
   for (let i = 0; i <= turns.length; i++) {
     for (const card of cards.filter((c) => c.afterTurns === i)) feed.push(<CardView key={`c${card.id}`} card={card} />);
@@ -178,7 +179,13 @@ export function ChatPanel(props: Props) {
                   {pending}
                 </div>
               </div>
-              <div className="text-[12px] text-muted">Thinking…</div>
+              {streamPreview ? (
+                <article className="max-w-[85%] whitespace-pre-wrap break-words rounded-2xl rounded-bl-md bg-surface px-3 py-2 text-[13px]">
+                  {streamPreview}
+                </article>
+              ) : (
+                <div className="text-[12px] text-muted">Thinking…</div>
+              )}
             </div>
           )}
         </div>

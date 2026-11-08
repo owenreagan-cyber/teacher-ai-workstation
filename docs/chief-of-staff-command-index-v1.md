@@ -82,6 +82,7 @@ These flags exist in `bin/chief-of-staff` and work as read-only local status sur
 | `bin/chief-of-staff --live-q1w2-deployment-preview` | Live Q1W2 controlled deployment preview |
 | `bin/chief-of-staff --live-q1w2-deployment-status` | Live Q1W2 controlled deployment status and verification summary |
 | `bin/chief-of-staff --canvas-live-transport-status` | Canvas live API transport readiness summary |
+| `bin/chief-of-staff --canvas-weekly-release` | Prepare, review, approve, or publish one weekly Canvas release through the existing rollover engine |
 | `bin/chief-of-staff --c2c2-q1w2-live-status` | C2C2 Q1W2 live deployment status with transport verification |
 
 ### Proof

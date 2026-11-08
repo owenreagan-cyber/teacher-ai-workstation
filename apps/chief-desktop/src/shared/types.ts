@@ -133,6 +133,18 @@ export interface ChiefBridge {
   retryTask(taskId: string): Promise<import("./cosd.js").TaskDetailResult>;
   taskHistory(taskId: string): Promise<import("./cosd.js").TaskHistoryResult>;
   queueSnapshot(): Promise<import("./cosd.js").QueueResult>;
+  listDevices(filter?: { status?: string; profile?: string }): Promise<import("./devices.js").DeviceListResult>;
+  getDevice(deviceId: string): Promise<import("./devices.js").DeviceDetailResult>;
+  createDevice(input: import("./devices.js").DeviceCreateInput): Promise<import("./devices.js").DeviceDetailResult>;
+  updateDevice(deviceId: string, patch: import("./devices.js").DevicePatchInput): Promise<import("./devices.js").DeviceDetailResult>;
+  disableDevice(deviceId: string, confirm: boolean): Promise<import("./devices.js").DeviceDetailResult>;
+  enableDevice(deviceId: string, confirm: boolean): Promise<import("./devices.js").DeviceDetailResult>;
+  revokeDevice(deviceId: string, confirm: boolean): Promise<import("./devices.js").DeviceDetailResult>;
+  removeDevice(deviceId: string, confirm: boolean): Promise<{ ok: true } | Failure>;
+  bootstrapDevice(displayName: string, confirm: boolean): Promise<import("./devices.js").DeviceDetailResult & { created?: boolean }>;
+  deviceCredentials(deviceId: string): Promise<import("./devices.js").DeviceCredentialsResult>;
+  rotateDeviceCredential(deviceId: string, confirm: boolean): Promise<{ ok: true; credential: import("./devices.js").CredentialMetadata } | Failure>;
+  revokeDeviceCredential(deviceId: string, confirm: boolean): Promise<{ ok: true } | Failure>;
   cosdStart(): Promise<{ ok: boolean; error?: string }>;
   cosdStop(confirm: boolean): Promise<{ ok: boolean; error?: string }>;
   cosdRestart(confirm: boolean): Promise<{ ok: boolean; error?: string }>;

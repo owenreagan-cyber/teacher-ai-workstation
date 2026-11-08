@@ -2,6 +2,15 @@ import { execFile } from "node:child_process";
 import { promisify } from "node:util";
 
 import type { CosdConnectionState, CosdHealth, CosdTask, QueueSnapshot, TaskHistoryEvent, TaskState } from "../../shared/cosd.js";
+import {
+  type CredentialMetadata,
+  type DeviceCreateInput,
+  type DevicePatchInput,
+  type DeviceProfile,
+  type DeviceRecord,
+  parseCredential,
+  parseDevice,
+} from "../../shared/devices.js";
 import { COS_STATE_DIR } from "../config.js";
 import { CosdHttpError, requestAskNdjsonStream, requestJson } from "./http.js";
 import { processAlive, readDaemonToken, readPidRecord, type PidRecord } from "./paths.js";
@@ -234,6 +243,99 @@ export class CosdClient {
   async workers(ep: DaemonEndpoint): Promise<unknown[]> {
     const { body } = await this.authed(ep, "GET", "/v1/workers");
     return Array.isArray(body.workers) ? body.workers : [];
+  }
+
+  private deviceFrom(body: Record<string, unknown>): DeviceRecord {
+    const device = parseDevice(body.device);
+    if (!device) throw new CosdHttpError("invalid device record", "internal");
+    return device;
+  }
+
+  async listDevices(
+    ep: DaemonEndpoint,
+    query: { status?: string; profile?: string; limit?: number; offset?: number } = {},
+  ) {
+    const qs = new URLSearchParams();
+    if (query.status) qs.set("status", query.status);
+    if (query.profile) qs.set("device_profile", query.profile);
+    if (query.limit !== undefined) qs.set("limit", String(query.limit));
+    if (query.offset !== undefined) qs.set("offset", String(query.offset));
+    const suffix = qs.size ? `?${qs.toString()}` : "";
+    const { body } = await this.authed(ep, "GET", `/v1/devices${suffix}`);
+    const devices = Array.isArray(body.devices)
+      ? body.devices.map(parseDevice).filter((d): d is DeviceRecord => d !== null)
+      : [];
+    return {
+      devices,
+      total: typeof body.total === "number" ? body.total : devices.length,
+      limit: typeof body.limit === "number" ? body.limit : devices.length,
+      offset: typeof body.offset === "number" ? body.offset : 0,
+    };
+  }
+
+  async getDevice(ep: DaemonEndpoint, deviceId: string): Promise<DeviceRecord> {
+    const { body } = await this.authed(ep, "GET", `/v1/devices/${deviceId}`);
+    return this.deviceFrom(body);
+  }
+
+  async createDevice(ep: DaemonEndpoint, input: DeviceCreateInput): Promise<{ device: DeviceRecord; credential: CredentialMetadata | null }> {
+    const { status, body } = await this.authed(ep, "POST", "/v1/devices", input);
+    if (status !== 201 && status !== 200) throw new CosdHttpError(String(body.error ?? "register failed"), String(body.error_kind ?? "internal"));
+    return {
+      device: this.deviceFrom(body),
+      credential: parseCredential(body.credential),
+    };
+  }
+
+  async updateDevice(ep: DaemonEndpoint, deviceId: string, patch: DevicePatchInput): Promise<DeviceRecord> {
+    const { body } = await this.authed(ep, "PATCH", `/v1/devices/${deviceId}`, patch);
+    return this.deviceFrom(body);
+  }
+
+  async deviceAction(
+    ep: DaemonEndpoint,
+    deviceId: string,
+    action: "disable" | "enable" | "revoke",
+    reason?: string,
+  ): Promise<DeviceRecord> {
+    const payload = action === "revoke" && reason ? { reason } : {};
+    const { body } = await this.authed(ep, "POST", `/v1/devices/${deviceId}/${action}`, payload);
+    return this.deviceFrom(body);
+  }
+
+  async deleteDevice(ep: DaemonEndpoint, deviceId: string): Promise<void> {
+    await this.authed(ep, "DELETE", `/v1/devices/${deviceId}`);
+  }
+
+  async bootstrapDevice(ep: DaemonEndpoint, displayName: string): Promise<{ device: DeviceRecord; created: boolean }> {
+    const { body } = await this.authed(ep, "POST", "/v1/devices/bootstrap", {
+      confirm: true,
+      display_name: displayName,
+    });
+    return { device: this.deviceFrom(body), created: body.created === true };
+  }
+
+  async listCredentials(ep: DaemonEndpoint, deviceId: string): Promise<CredentialMetadata[]> {
+    const { body } = await this.authed(ep, "GET", `/v1/devices/${deviceId}/credentials`);
+    return Array.isArray(body.credentials)
+      ? body.credentials.map(parseCredential).filter((c): c is CredentialMetadata => c !== null)
+      : [];
+  }
+
+  async rotateCredential(ep: DaemonEndpoint, deviceId: string, credentialId?: string): Promise<CredentialMetadata> {
+    const { body } = await this.authed(ep, "POST", `/v1/devices/${deviceId}/credentials/rotate`, credentialId ? { credential_id: credentialId } : {});
+    const credential = parseCredential(body.credential);
+    if (!credential) throw new CosdHttpError("invalid credential metadata", "internal");
+    return credential;
+  }
+
+  async revokeCredential(ep: DaemonEndpoint, deviceId: string, credentialId?: string): Promise<void> {
+    await this.authed(ep, "POST", `/v1/devices/${deviceId}/credentials/revoke`, credentialId ? { credential_id: credentialId } : {});
+  }
+
+  async deviceProfiles(_ep: DaemonEndpoint): Promise<DeviceProfile[]> {
+    // The profile list is a fixed local contract; it is not fetched at runtime.
+    return ["owner", "personal", "partner", "school", "read_only", "capture_only", "revoked"];
   }
 
   connectionStateFromDiscover(ep: DaemonEndpoint | null, authed: boolean): CosdConnectionState {

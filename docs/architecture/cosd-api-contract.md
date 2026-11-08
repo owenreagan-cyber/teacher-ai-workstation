@@ -14,6 +14,22 @@ The token is a 256-bit hex secret stored outside the repository under the Chief 
 
 Rotation: `bin/cosd rotate-token` (or `cosd.auth.rotate_token`) issues a new token and invalidates the previous one.
 
+### Device principals (P1b.4b)
+
+An independently registered device uses:
+
+```http
+Authorization: Chief-Device <credential_id>.<secret>
+```
+
+The device is resolved from the registry. Its status, credential status,
+expiration, profile, and the required route permission are checked on every
+request. A failed device credential receives `401`; it **never** falls back to
+the master bearer token. A Keychain outage receives `503`.
+
+The existing `Authorization: Bearer <master-token>` path remains the trusted
+local owner context and keeps its former behaviour.
+
 ## Limits
 
 | Limit | Value |
@@ -21,6 +37,29 @@ Rotation: `bin/cosd rotate-token` (or `cosd.auth.rotate_token`) issues a new tok
 | Max request body | 65,536 bytes |
 | Ask processing timeout | 305 s (matches model budget; worker isolated per request) |
 | Binding | `127.0.0.1` only (non-loopback hosts are rejected at startup) |
+
+## Authorization
+
+Every protected route evaluates a granular permission centrally. Local owner
+(master token) has all permissions; a device has only its profile's permissions.
+
+| Route family | Permission |
+| --- | --- |
+| `GET /v1/status`, `GET /v1/events` | `status.read` |
+| `POST /v1/ask`, `POST /v1/ask/stream` | `ask` |
+| `GET /v1/tasks`, `GET /v1/tasks/{id}` | `tasks.read` |
+| `POST /v1/tasks` | `tasks.create` |
+| `POST /v1/tasks/{id}/cancel` | `tasks.cancel` |
+| `POST /v1/tasks/{id}/retry` | `tasks.retry` |
+| `POST /v1/tasks/{id}/execute` | `tasks.execute` |
+| `GET /v1/tasks/{id}/history|attempts|checkpoints` | `history.read` |
+| `GET /v1/queue` | `tasks.read` |
+| `POST /v1/queue/*`, `/v1/runtime`, `/v1/workers`, `/v1/stop` | `runtime.manage` |
+| `GET /v1/devices*` | `devices.read` |
+| `POST|PATCH|DELETE /v1/devices*` | `devices.manage` |
+| `POST /v1/devices/{id}/credentials/*` | `credentials.manage` |
+
+Profiles and the full matrix: `docs/architecture/device-registry.md`.
 
 ## Endpoints
 
@@ -89,6 +128,29 @@ Authenticated graceful **daemon** shutdown (not the `cos` kill switch).
 ```
 
 After responding, the server initiates shutdown. Clients should not send further requests.
+
+## Devices (P1b.4b)
+
+Local owner only. All responses exclude raw credentials, Keychain contents,
+`keychain_ref`, and verifier material.
+
+| Method | Endpoint | Purpose |
+| --- | --- | --- |
+| GET | `/v1/devices` | List (`status`, `device_profile`, `limit` ≤100, `offset`) |
+| POST | `/v1/devices` | Register an approved local device |
+| POST | `/v1/devices/bootstrap` | Register the primary Mac (`confirm: true`, idempotent) |
+| GET | `/v1/devices/{id}` | Detail |
+| PATCH | `/v1/devices/{id}` | Rename, profile, metadata, app version |
+| DELETE | `/v1/devices/{id}` | Remove a disabled/revoked device |
+| POST | `/v1/devices/{id}/disable` | Disable |
+| POST | `/v1/devices/{id}/enable` | Re-enable |
+| POST | `/v1/devices/{id}/revoke` | Revoke permanently |
+| POST | `/v1/devices/{id}/recover-primary` | Release primary protection (exact phrase) |
+| GET | `/v1/devices/{id}/credentials` | Credential metadata only |
+| POST | `/v1/devices/{id}/credentials/rotate` | Rotate; returns metadata only |
+| POST | `/v1/devices/{id}/credentials/revoke` | Revoke one or all active credentials |
+
+No remote enrollment, pairing, or credential-distribution endpoints exist.
 
 ## Tasks (P1b.1b)
 
@@ -169,12 +231,14 @@ Active and historical lease records (bounded).
 
 | HTTP | `error_kind` | Meaning |
 | --- | --- | --- |
-| 401 | `auth` | Missing/invalid bearer token |
-| 404 | `not_found` | Unknown route or task |
-| 409 | `conflict` | Invalid transition or idempotency conflict |
+| 401 | `auth` | Missing/invalid bearer or device credential |
+| 403 | `forbidden` | Authenticated principal lacks the required permission |
+| 404 | `not_found` | Unknown route, task, device, or credential |
+| 409 | `conflict` | Invalid transition, duplicate/primary constraint, or idempotency conflict |
 | 405 | `method` | Unsupported HTTP method |
 | 413 | `usage` | Body too large |
 | 504 | `timeout` | Ask exceeded server timeout |
+| 503 | `unavailable` | Device registry, credential store, or audit unavailable (fail closed) |
 
 ## CLI client (`bin/cos`)
 
@@ -194,3 +258,6 @@ Request paths and status are logged at INFO. Tokens, bearer headers, and session
 - Unrestricted tool invocation
 - Remote or non-loopback listeners
 - TLS (deferred)
+- QR pairing / remote enrollment (P1b.4c)
+- Remote credential distribution (P1b.4c/P1b.4d)
+- Tailscale gateway or public network access (P1b.4d)

@@ -7,17 +7,28 @@ import threading
 import time
 from concurrent.futures import ThreadPoolExecutor, TimeoutError as FuturesTimeout
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+from pathlib import Path
 from typing import Any
 from urllib.parse import parse_qs, urlparse
 
 from cos.audit import AuditLog
 from cos.cli import EXIT_MODEL, EXIT_OK, EXIT_STOPPED, EXIT_USAGE, build_runtime
-from cos.config import load_config
+from cos.config import load_config, state_dir
+from cos.policy import KillSwitch
 from cos.service import iter_ask_stream, run_ask, run_status
 
 from . import __version__
 from .auth import authorize, ensure_token
 from .constants import ASK_TIMEOUT_S, DEFAULT_HOST, MAX_BODY_BYTES, SERVICE_NAME
+from .devices import (
+    AuthorizationDenied,
+    DeviceAuthenticationError,
+    DeviceAuthorizationService,
+    DeviceRegistry,
+    LOCAL_OWNER_PRINCIPAL,
+    default_credential_provider,
+)
+from .devices.http import dispatch_device_request
 from .event_bus import get_event_bus
 from .execution.engine import ExecutionEngine
 from .execution_http import dispatch_execution_request
@@ -28,12 +39,25 @@ from .tasks import TaskRegistry
 LOG = logging.getLogger("cosd")
 
 
+def _audit_path(state_base=None) -> Path:
+    root = Path(state_base) if state_base is not None else state_dir()
+    return root / "audit.jsonl"
+
+
 class CosdHTTPServer(ThreadingHTTPServer):
     daemon_threads = True
     allow_reuse_address = True
 
-    def __init__(self, server_address, RequestHandlerClass, *, state_base=None):
+    def __init__(
+        self,
+        server_address,
+        RequestHandlerClass,
+        *,
+        state_base=None,
+        credential_provider=None,
+    ):
         self.state_base = state_base
+        self.audit = AuditLog(_audit_path(state_base))
         self.task_registry = TaskRegistry.open(state_base)
         self.execution = ExecutionEngine(self.task_registry)
         self.execution.startup_recovery()
@@ -41,6 +65,24 @@ class CosdHTTPServer(ThreadingHTTPServer):
         self.event_bus = get_event_bus()
         self._sse_clients = 0
         self._sse_lock = threading.Lock()
+        self.device_registry = None
+        self.device_auth = None
+        self.device_unavailable = None
+        try:
+            self.device_registry = DeviceRegistry.open(
+                state_base,
+                credential_provider=credential_provider or default_credential_provider(),
+                audit=self.audit,
+            )
+            root = Path(state_base) if state_base is not None else state_dir()
+            self.device_auth = DeviceAuthorizationService(
+                self.device_registry,
+                kill_switch=KillSwitch(root),
+                audit=self.audit,
+            )
+        except Exception as exc:  # noqa: BLE001 - local daemon must keep serving
+            self.device_unavailable = str(exc)
+            LOG.warning("device registry unavailable: %s", exc)
         super().__init__(server_address, RequestHandlerClass)
 
     def request_shutdown(self) -> None:
@@ -68,18 +110,158 @@ class Handler(BaseHTTPRequestHandler):
         self.wfile.write(raw)
 
     def _unauthorized(self) -> None:
-        AuditLog(load_config().audit_path)(
-            "cosd_auth_failure",
-            path=self.path,
-            reason="missing_or_invalid_token",
-        )
+        try:
+            self.server.audit(
+                "cosd_auth_failure",
+                path=self.path,
+                reason="missing_or_invalid_token",
+            )
+        except Exception:  # noqa: BLE001 - an audit outage must not mask 401
+            LOG.error("could not audit authentication failure")
         self._send_json(401, {"ok": False, "error": "unauthorized", "error_kind": "auth"})
 
-    def _require_auth(self) -> bool:
-        if authorize(self.headers.get("Authorization"), base=self.server.state_base):
-            return True
+    def _device_unauthorized(self) -> None:
+        # The authorization service already audited device.auth_failed.
+        self._send_json(401, {"ok": False, "error": "unauthorized", "error_kind": "auth"})
+
+    def _forbidden(self, exc: AuthorizationDenied, *, audit: bool = True) -> None:
+        if audit:
+            try:
+                self.server.audit(
+                    "authorization.denied",
+                    path=self.path,
+                    permission=exc.permission,
+                    reason=exc.reason,
+                    device_id=exc.device_id,
+                    profile=exc.profile,
+                    result="denied",
+                )
+            except Exception:  # noqa: BLE001
+                LOG.error("could not audit authorization denial")
+        self._send_json(
+            403,
+            {
+                "ok": False,
+                "error": "forbidden",
+                "error_kind": "forbidden",
+                "permission": exc.permission,
+            },
+        )
+
+    def _unavailable(self) -> None:
+        try:
+            self.server.audit(
+                "device.registry_unavailable",
+                path=self.path,
+                reason="device_registry_unavailable",
+                result="unavailable",
+            )
+        except Exception:  # noqa: BLE001
+            LOG.error("could not audit device registry outage")
+        self._send_json(
+            503,
+            {"ok": False, "error": "device registry unavailable", "error_kind": "unavailable"},
+        )
+
+    def _require_permission(self, permission: str):
+        """Resolve the caller and authorize one permission. Fail closed.
+
+        A master bearer token is the trusted local owner context. A
+        ``Chief-Device`` token is an independently authenticated device and is
+        never allowed to fall back to the master token.
+        """
+        header = self.headers.get("Authorization") or ""
+        if header.startswith("Chief-Device "):
+            token = header[len("Chief-Device ") :].strip()
+            if self.server.device_auth is None:
+                self._unavailable()
+                return None
+            try:
+                principal = self.server.device_auth.authenticate_device_token(token)
+            except DeviceAuthenticationError as exc:
+                if exc.unavailable:
+                    self._unavailable()
+                else:
+                    self._device_unauthorized()
+                return None
+            try:
+                self.server.device_auth.authorize(principal, permission)
+            except AuthorizationDenied as exc:
+                self._forbidden(exc, audit=False)  # service audited it
+                return None
+            return principal
+        if authorize(header, base=self.server.state_base):
+            principal = LOCAL_OWNER_PRINCIPAL
+            if permission not in principal.permissions:
+                self._forbidden(
+                    AuthorizationDenied(permission, "not_permitted"), audit=True
+                )
+                return None
+            return principal
         self._unauthorized()
-        return False
+        return None
+
+    @staticmethod
+    def _task_permission(path: str, method: str) -> str:
+        if path == "/v1/queue":
+            return "tasks.read" if method == "GET" else "runtime.manage"
+        if path == "/v1/workers":
+            return "runtime.manage"
+        if path.startswith("/v1/tasks/"):
+            if path.endswith("/cancel"):
+                return "tasks.cancel"
+            if path.endswith("/retry"):
+                return "tasks.retry"
+            if path.endswith("/execute"):
+                return "tasks.execute"
+            if path.endswith(("/history", "/attempts", "/checkpoints")):
+                return "history.read"
+            return "tasks.read"
+        if path == "/v1/tasks":
+            return "tasks.read" if method == "GET" else "tasks.create"
+        return "tasks.read"
+
+    @staticmethod
+    def _device_permission(path: str, method: str) -> str:
+        if path == "/v1/devices/bootstrap":
+            return "devices.manage"
+        if path == "/v1/devices":
+            return "devices.read" if method == "GET" else "devices.manage"
+        if path.endswith("/credentials") and method == "GET":
+            return "devices.read"
+        if path.endswith(("/credentials/rotate", "/credentials/revoke")):
+            return "credentials.manage"
+        if path.startswith("/v1/devices/"):
+            if method in ("PATCH", "DELETE"):
+                return "devices.manage"
+            if method == "POST":
+                return "devices.manage"
+            return "devices.read"
+        return "devices.read"
+
+    def _route_devices(self) -> bool:
+        path = urlparse(self.path).path
+        if path != "/v1/devices" and not path.startswith("/v1/devices/"):
+            return False
+        permission = self._device_permission(path, self.command)
+        principal = self._require_permission(permission)
+        if principal is None:
+            return True
+        if self.server.device_registry is None:
+            self._unavailable()
+            return True
+        routed = dispatch_device_request(
+            self,
+            registry=self.server.device_registry,
+            max_body=MAX_BODY_BYTES,
+            principal=principal,
+        )
+        if routed is None:
+            self._send_json(404, {"ok": False, "error": "not found", "error_kind": "not_found"})
+            return True
+        status, body = routed
+        self._send_json(status, body)
+        return True
 
     def _route_tasks_and_execution(self) -> bool:
         path = urlparse(self.path).path
@@ -90,7 +272,7 @@ class Handler(BaseHTTPRequestHandler):
             or path == "/v1/workers"
         ):
             return False
-        if not self._require_auth():
+        if self._require_permission(self._task_permission(path, self.command)) is None:
             return True
         routed = dispatch_execution_request(
             self,
@@ -115,7 +297,7 @@ class Handler(BaseHTTPRequestHandler):
         return False
 
     def _handle_events_sse(self, query: dict[str, list[str]]) -> None:
-        if not self._require_auth():
+        if self._require_permission("status.read") is None:
             return
         srv = self.server
         unsub = lambda: None  # noqa: E731
@@ -178,8 +360,10 @@ class Handler(BaseHTTPRequestHandler):
                 },
             )
             return
+        if self._route_devices():
+            return
         if path == "/v1/status":
-            if not self._require_auth():
+            if self._require_permission("status.read") is None:
                 return
             cfg = load_config()
             counts = self.server.task_registry.get_task_counts()
@@ -189,7 +373,7 @@ class Handler(BaseHTTPRequestHandler):
             )
             return
         if path == "/v1/runtime":
-            if not self._require_auth():
+            if self._require_permission("runtime.manage") is None:
                 return
             cfg = load_config()
             body = runtime_snapshot(
@@ -209,16 +393,18 @@ class Handler(BaseHTTPRequestHandler):
 
     def do_POST(self) -> None:  # noqa: N802
         path = urlparse(self.path).path
+        if self._route_devices():
+            return
         if self._route_tasks_and_execution():
             return
         if path == "/v1/stop":
-            if not self._require_auth():
+            if self._require_permission("runtime.manage") is None:
                 return
             self._send_json(200, {"ok": True, "stopping": True})
             threading.Thread(target=self.server.request_shutdown, daemon=True).start()
             return
         if path == "/v1/ask":
-            if not self._require_auth():
+            if self._require_permission("ask") is None:
                 return
             length = int(self.headers.get("Content-Length", "0") or "0")
             if length > MAX_BODY_BYTES:
@@ -264,7 +450,7 @@ class Handler(BaseHTTPRequestHandler):
             self._send_json(http_status, body)
             return
         if path == "/v1/ask/stream":
-            if not self._require_auth():
+            if self._require_permission("ask") is None:
                 return
             length = int(self.headers.get("Content-Length", "0") or "0")
             if length > MAX_BODY_BYTES:
@@ -307,6 +493,16 @@ class Handler(BaseHTTPRequestHandler):
     def do_PUT(self) -> None:  # noqa: N802
         self._send_json(405, {"ok": False, "error": "method not allowed", "error_kind": "method"})
 
+    def do_PATCH(self) -> None:  # noqa: N802
+        if self._route_devices():
+            return
+        self._send_json(404, {"ok": False, "error": "not found", "error_kind": "not_found"})
+
+    def do_DELETE(self) -> None:  # noqa: N802
+        if self._route_devices():
+            return
+        self._send_json(404, {"ok": False, "error": "not found", "error_kind": "not_found"})
+
 
 def validate_bind_host(host: str) -> str:
     if host in ("127.0.0.1", "localhost"):
@@ -314,10 +510,17 @@ def validate_bind_host(host: str) -> str:
     raise ValueError(f"refusing to bind cosd to non-loopback host {host!r}")
 
 
-def run_server(*, host: str = DEFAULT_HOST, port: int, state_base=None) -> None:
+def run_server(
+    *, host: str = DEFAULT_HOST, port: int, state_base=None, credential_provider=None
+) -> None:
     host = validate_bind_host(host)
     ensure_token(state_base)
-    httpd = CosdHTTPServer((host, port), Handler, state_base=state_base)
+    httpd = CosdHTTPServer(
+        (host, port),
+        Handler,
+        state_base=state_base,
+        credential_provider=credential_provider,
+    )
     LOG.info("cosd listening on %s:%s", host, port)
 
     def handle_sigterm(*_args) -> None:

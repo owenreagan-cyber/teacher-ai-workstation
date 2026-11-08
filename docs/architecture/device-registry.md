@@ -1,82 +1,115 @@
-# Device registry (design — P1b.4a)
+# Device registry
 
-**Status:** Architecture only. No registry tables, pairing, or remote credentials exist in code.
+**Status:** Implemented locally (P1b.4b). Remote enrollment and network access
+remain disabled. Implementation details: `docs/architecture/device-registry-implementation.md`.
 
 ## Purpose
 
-Authoritative inventory of **clients** allowed to use Chief of Staff capabilities against `cosd`, independent of Tailscale membership or local filesystem access.
+Authoritative inventory of **clients** allowed to use Chief of Staff capabilities
+against `cosd`, independent of Tailscale membership or local filesystem access.
 
-## Non-goals (P1b.4a)
+## Non-goals (current)
 
-- No enrollment UI.
-- No live registry writes.
+- No enrollment UI or QR pairing.
+- No remote clients or remote credential distribution.
 - No hardware fingerprinting beyond optional user-supplied platform strings.
 
-## Device record (logical schema)
+## Device record
 
 | Field | Type | Notes |
 | --- | --- | --- |
-| `device_id` | UUID v4 (stable) | Primary key; never derived from IP/MAC alone |
-| `display_name` | string | User-editable |
-| `category` | enum | `personal_mac`, `personal_iphone`, `partner_mac`, `school_ipad`, `future`, … extensible |
-| `platform` | string | e.g. `macos-26`, `ios-19`; optional |
-| `owner` | string | `owen`, `partner`, `school-managed`, unassigned |
-| `trust_class` | enum | `owner`, `personal_trusted`, `partner`, `school_managed`, `readonly`, `capture_only`, `revoked` |
-| `permission_profile_id` | UUID | Points at versioned profile document |
-| `enrolled_at` | ISO8601 UTC | |
-| `last_seen_at` | ISO8601 UTC | Updated on successful authenticated API use via gateway |
-| `auth_state` | enum | `pending`, `active`, `disabled`, `revoked` |
-| `credential_id` | opaque ref | Pointer to credential record in Keychain / secure enclave store — **not** stored inline |
+| `device_id` | 32-char hex (UUID4) | Primary key; random, generated once; never derived from IP, MAC, or name |
+| `display_name` | string | User-editable, 1–80 characters |
+| `device_type` | enum | `mac`, `iphone`, `ipad`, `other` |
+| `platform` | enum | `macos`, `ios`, `ipados`, `unknown` |
+| `owner_id` | string | `owen`, `partner`, `school`, `unassigned`, … |
+| `device_profile` | enum | `owner`, `personal`, `partner`, `school`, `read_only`, `capture_only`, `revoked` |
+| `trust_level` | enum | `owner`, `trusted`, `limited`, `restricted`, `untrusted` |
+| `status` | enum | `active`, `disabled`, `revoked`, `removed` |
 | `app_version` | string | Last reported client build |
-| `metadata` | JSON object | Bounded, non-secret tags (e.g. `raycast`, `chief-ios`) |
+| `registered_at` | ISO8601 UTC | Enrollment timestamp |
+| `last_seen_at` | ISO8601 UTC | Last successful device authentication |
+| `updated_at` | ISO8601 UTC | Last metadata update |
+| `revoked_at` | ISO8601 UTC | Revocation timestamp |
+| `metadata_json` | JSON object | Bounded, non-sensitive tags; secret-like and student/PII-like keys refused |
+| `is_primary_owner` | boolean | At most one primary owner (unique partial index) |
 
-**Revoked** devices remain in registry for audit; `auth_state=revoked` blocks all gateway paths.
+**Revoked** devices remain in the registry until explicitly removed;
+`status=revoked` blocks all device paths. Removal deletes the registry row only
+after disable/revoke, while `device_events` and the JSONL audit retain
+provenance.
 
-## Storage (future P1b.4b)
+## Storage
 
-- SQLite table family under Chief private state (`ChiefOfStaff/cosd/`), WAL mode, same backup posture as task registry.
-- Separate `device_credentials` table: only `credential_id`, `device_id`, `issued_at`, `expires_at`, `revoked_at` — **never** the secret bytes in SQLite.
-- Secrets: macOS Keychain on primary Mac (host); iOS Keychain on mobile clients.
+- Same database file as the task registry: `<state>/cosd/tasks.sqlite3`.
+- Versioned by `schema_meta.device_schema_version`; independent of the task
+  schema so a device migration failure does not stop the local daemon.
+- `device_credentials`: only `credential_id`, `device_id`, `credential_type`,
+  `keychain_ref`, salted one-way verifier, status, and lifecycle timestamps —
+  **never** the secret bytes.
+- Secrets: macOS login Keychain on the primary Mac; no plaintext fallback.
 
 ## Lifecycle
 
 ```mermaid
 stateDiagram-v2
-  [*] --> pending: enrollment requested
-  pending --> active: owner approves
-  pending --> [*]: expired / rejected
+  [*] --> active: register / bootstrap with owner confirmation
   active --> disabled: owner suspend
-  disabled --> active: re-enable
+  disabled --> active: re-enable (same identity)
   active --> revoked: owner revoke
   disabled --> revoked: owner revoke
-  revoked --> [*]: optional purge after retention
+  revoked --> [*]: remove (row deleted; audit retained)
+  disabled --> [*]: remove (row deleted; audit retained)
 ```
 
-## Management surface (future P1d)
+The primary owner device is protected from disable/revoke/remove/profile
+downgrade. Recovery requires the exact phrase `RECOVER PRIMARY OWNER`, then a
+new bootstrap.
 
-Chief.app **Device Management** (main process only):
+## Permission profiles
 
-- List / filter by category and trust.
-- Rename, change permission profile, disable, revoke.
-- View last connection, app version, recent security events (from audit).
-- Initiate pairing (display QR / approve pending enrollment).
+| Profile | Capabilities |
+| --- | --- |
+| `owner` | Full authorized control, including device and credential administration |
+| `personal` | Approved personal workflows; no administration |
+| `partner` | Explicitly shared ask/task capabilities; no private history, execution, or administration |
+| `school` | Restricted ask, task capture, status only; no history/sessions/execution/administration |
+| `read_only` | Status and task history; no mutation |
+| `capture_only` | Create tasks; no ask, read, or execution |
+| `revoked` | No access |
 
-Raycast and mobile clients **must not** manage other devices.
+No profile inherits from `owner`. Unknown profiles/permissions fail closed.
+Full matrix: `cosd/devices/permissions.py`.
+
+## Management surface
+
+Chief.app **Devices** (local owner only): list, detail, rename, change profile,
+disable, re-enable, revoke, remove, credential rotate/revoke, primary bootstrap.
+Profile and lifecycle changes require confirmation.
+
+Raycast and future mobile clients **must not** manage other devices.
 
 ## Relationship to network identity
 
 | Layer | Identifies | Grants access? |
 | --- | --- | --- |
 | Tailscale node | Machine on tailnet | **No** (network reachability only) |
-| Device registry | Client + profile | **Yes** (via gateway) |
+| Device registry | Client + profile | **Yes** (application authorization) |
 | User (future) | Human operator | Constrains approvals, not automatic API auth |
 
-## Audit hooks (required on implementation)
+## API
 
-Each state transition emits hash-chained audit events: `device.enrolled`, `device.profile_changed`, `device.disabled`, `device.revoked` (see `docs/security/p1b4-threat-model.md`).
+Authenticated loopback routes under `/v1/devices/*`, owner permissions only.
+Device principals use `Authorization: Chief-Device <credential_id>.<secret>`;
+local clients keep `Authorization: Bearer <master-token>`. See
+`docs/architecture/cosd-api-contract.md`.
 
-## API implications
+## Audit hooks
 
-Future authenticated routes under `/v1/devices/*` (gateway-admin only, owner profile). Remote clients never call these.
-
-Stable read-only client contract remains `/v1/ask`, `/v1/tasks`, … with **device-scoped** credentials, not the daemon master token.
+Each transition emits a hash-chained audit event: `device.registered`,
+`device.renamed`, `device.metadata_changed`, `device.profile_changed`,
+`device.disabled`, `device.re_enabled`, `device.credential_created`,
+`device.credential_rotated`, `device.credential_revoked`, `device.revoked`,
+`device.removed`, `device.primary_recovery`, `device.auth_ok`,
+`device.auth_failed`, `authorization.denied`. Tokens, secrets, private keys, and
+student information are never recorded.

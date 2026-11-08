@@ -2,7 +2,7 @@
 // Collapsed (icons only) below RAIL_BREAKPOINT_PX and in Focus; every icon-only button keeps its
 // name in aria-label.
 import { type Page, RAIL_PAGES } from "../shared/layout";
-import { AgentsIcon, ChatIcon, FilesIcon, MacIcon, PlayIcon, SettingsIcon, StopIcon, TodayIcon } from "./icons";
+import { AgentsIcon, ChatIcon, DevicesIcon, FilesIcon, MacIcon, PlayIcon, SettingsIcon, StopIcon, TodayIcon } from "./icons";
 import type { Dot } from "./messages";
 
 const ICONS: Record<Page, () => React.ReactNode> = {
@@ -11,6 +11,7 @@ const ICONS: Record<Page, () => React.ReactNode> = {
   agents: () => <AgentsIcon />,
   mac: () => <MacIcon />,
   files: () => <FilesIcon />,
+  devices: () => <DevicesIcon />,
   settings: () => <SettingsIcon />,
 };
 
@@ -89,6 +90,7 @@ export function Rail({ collapsed, active, dot, stopped, onPage, onKillSwitch }: 
       </div>
       <div className="flex-1" />
       <div className="space-y-0.5">
+        <RailButton label="Devices" shortcut="⌘6" icon={<DevicesIcon />} collapsed={collapsed} active={active === "devices"} onClick={() => onPage("devices")} />
         <RailButton label="Settings" icon={<SettingsIcon />} collapsed={collapsed} active={active === "settings"} onClick={() => onPage("settings")} />
         <button
           type="button"

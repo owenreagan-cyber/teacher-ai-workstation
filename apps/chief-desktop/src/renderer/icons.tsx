@@ -82,6 +82,15 @@ export const MacIcon = ({ className }: P) => (
   </svg>
 );
 
+export const DevicesIcon = ({ className }: P) => (
+  <svg {...base} className={className} aria-hidden="true">
+    <rect x="1.75" y="3" width="8.5" height="6.5" rx="1" />
+    <path d="M1.75 11.5h8.5M5.5 9.5v2" />
+    <rect x="10.75" y="6" width="3.5" height="7" rx="1" />
+    <path d="M12 11.5h.01" />
+  </svg>
+);
+
 export const FilesIcon = ({ className }: P) => (
   <svg {...base} className={className} aria-hidden="true">
     <path d="M2.5 4.5a1 1 0 0 1 1-1h3l1.5 1.5h4.5a1 1 0 0 1 1 1v6a1 1 0 0 1-1 1h-9a1 1 0 0 1-1-1v-7.5Z" />

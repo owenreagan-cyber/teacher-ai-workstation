@@ -158,7 +158,7 @@ MCP adapters (D-023, D-024, D-025), and the iPhone app (D-007).
 ## Daily use (P1a messenger)
 
 The Chief window (Chief.app), Raycast, and `bin/cos ask` all reach the same runtime. Chief.app
-uses persistent `cosd` for ask, status, and tasks when the daemon is healthy (`docs/architecture/chief-app-cosd-integration.md`). P1b.2: lifecycle controls, SSE task events, notifications, runtime snapshot, chunked ask stream (`docs/architecture/cosd-local-operations.md`). P1b.3 Raycast: `integrations/raycast/chief-of-staff/` (`docs/architecture/raycast-chief-of-staff.md`). P1b.4a (architecture only): secure multi-device access — ADR-021, gateway + device registry, no remote activation (`docs/security/p1b4-multi-device-architecture.md`).
+uses persistent `cosd` for ask, status, and tasks when the daemon is healthy (`docs/architecture/chief-app-cosd-integration.md`). P1b.2: lifecycle controls, SSE task events, notifications, runtime snapshot, chunked ask stream (`docs/architecture/cosd-local-operations.md`). P1b.3 Raycast: `integrations/raycast/chief-of-staff/` (`docs/architecture/raycast-chief-of-staff.md`). P1b.4a architecture: secure multi-device access — ADR-021, gateway + device registry (`docs/security/p1b4-multi-device-architecture.md`). P1b.4b: local device registry, permission profiles, Keychain-backed credential references, rotation/revocation, `/v1/devices`, and a Chief.app Devices screen (`docs/architecture/device-registry-implementation.md`). **No remote access, pairing, or Tailscale is enabled.**
 
 ### Web search
 

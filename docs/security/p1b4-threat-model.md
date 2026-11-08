@@ -1,6 +1,6 @@
 # P1b.4a — Multi-device threat model
 
-**Scope:** Chief of Staff (`cosd`) and future remote clients over Tailscale + gateway.  
+**Scope:** Chief of Staff (`cosd`) and future remote clients over Tailscale + gateway.
 **Status:** Design-time; mitigations marked **existing**, **planned**, or **gap**.
 
 Legend: **PASS** = adequately mitigated at target architecture; **WARN** = partial / depends on implementation discipline; **FAIL** = unacceptable without planned control.

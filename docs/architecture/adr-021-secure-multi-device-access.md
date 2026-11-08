@@ -1,7 +1,7 @@
 # ADR-021: Secure multi-device access to cosd
 
-**Status:** Accepted (architecture — P1b.4a)  
-**Date:** 2026-11-08  
+**Status:** Accepted (architecture — P1b.4a)
+**Date:** 2026-11-08
 **Deciders:** Owen Reagan (owner); implementation gated per `docs/implementation-approval-gate.md`
 
 ## Context

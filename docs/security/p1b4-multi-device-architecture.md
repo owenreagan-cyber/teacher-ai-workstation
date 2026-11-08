@@ -1,6 +1,6 @@
 # P1b.4a — Secure multi-device access architecture
 
-**Phase:** P1b.4a (architecture and threat model only)  
+**Phase:** P1b.4a (architecture and threat model only)
 **Activation:** None — no network, credential, or code changes in this milestone.
 
 ## Current-state inventory (verified)

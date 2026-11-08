@@ -253,9 +253,22 @@ class FridayWorkflowTest(unittest.TestCase):
             scheduled_readiness["manifest"]["weekly_announcements"][0]["classification"],
             "EXACT_MATCH",
         )
-        with mock.patch.object(rollover, "run_preflight", return_value=scheduled_readiness), mock.patch.object(
-            rollover.ledger, "load_rollover_ledger", return_value=ledger_store.get("report")
-        ):
+        completed = dict(ledger_store.get("report") or {})
+        completed.update({
+            "lifecycle": "PUBLISHED_VERIFIED",
+            "source_hash": "fixture",
+            "plan_fingerprint": "fp",
+        })
+        agreed = {
+            "status": "PUBLISHED_VERIFIED",
+            "approval_state": "APPROVED",
+            "source_hash": "fixture",
+            "plan_fingerprint": "fp",
+        }
+        with mock.patch.object(rollover, "run_preflight", return_value=scheduled_readiness), \
+             mock.patch.object(rollover.ledger, "load_rollover_ledger", return_value=completed), \
+             mock.patch.object(rollover.deploy_ledger, "load_published_verified", return_value=agreed), \
+             mock.patch.object(rollover.imf, "load_manifest", return_value=agreed):
             again = rollover.publish_weekly_package(
                 2, 2, 2, 3, client=fake, owner_confirmation="ROLLOVER Q2W3",
                 today=date(2026, 10, 23),

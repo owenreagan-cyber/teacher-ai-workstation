@@ -11,6 +11,7 @@ on:
       - feat/automated-ci-validation
       - fix/canvas-quarter-week-live-authorization
       - fix/q2w5-approval-propagation
+      - fix/rollover-finalizer-integration
   workflow_dispatch:
 
 permissions:

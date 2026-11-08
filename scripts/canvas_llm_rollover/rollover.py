@@ -724,6 +724,154 @@ def _prewrite_blockers(
     return blockers
 
 
+def _publication_records_agree(existing, published, intake) -> bool:
+    """True only when rollover, published ledger, and intake all say the same release."""
+    if not isinstance(existing, dict) or existing.get("lifecycle") != schedule.PUBLISHED_VERIFIED:
+        return False
+    if not isinstance(published, dict) or published.get("status") != schedule.PUBLISHED_VERIFIED:
+        return False
+    if not isinstance(intake, dict) or intake.get("status") != schedule.PUBLISHED_VERIFIED:
+        return False
+    if intake.get("approval_state") != "APPROVED":
+        return False
+    source = intake.get("source_hash")
+    fingerprint = intake.get("plan_fingerprint")
+    if not source or not fingerprint:
+        return False
+    return (
+        published.get("source_hash") == source
+        and published.get("plan_fingerprint") == fingerprint
+        and existing.get("source_hash") == source
+        and existing.get("plan_fingerprint") == fingerprint
+    )
+
+
+def _restore_rollover_completion(quarter: int, week: int, published: dict, intake: dict) -> dict[str, Any]:
+    """Write the missing rollover completion record. Do not touch Canvas."""
+    record = {
+        "lifecycle": schedule.PUBLISHED_VERIFIED,
+        "source_hash": intake.get("source_hash"),
+        "plan_fingerprint": intake.get("plan_fingerprint"),
+        "recovered_from": "published-verified-ledger",
+        "verified_at": published.get("verified_at"),
+    }
+    try:
+        ledger.write_rollover_ledger(quarter, week, record)
+        written = ledger.load_rollover_ledger(quarter, week)
+    except Exception as exc:  # noqa: BLE001
+        return {
+            "lifecycle": "PUBLICATION_VERIFIED_ROLLOVER_INCOMPLETE",
+            "already_complete": False,
+            "failures": [f"rollover completion record could not be written: {type(exc).__name__}"],
+            "source_hash": intake.get("source_hash"),
+            "plan_fingerprint": intake.get("plan_fingerprint"),
+        }
+    if not _publication_records_agree(written, published, intake):
+        return {
+            "lifecycle": "PUBLICATION_VERIFIED_ROLLOVER_INCOMPLETE",
+            "already_complete": False,
+            "failures": ["rollover completion record did not read back"],
+            "source_hash": intake.get("source_hash"),
+            "plan_fingerprint": intake.get("plan_fingerprint"),
+        }
+    return {
+        "lifecycle": schedule.PUBLISHED_VERIFIED,
+        "already_complete": True,
+        "rollover_recovered": True,
+    }
+
+
+def _five_course_report(report: dict[str, Any]) -> bool:
+    subjects = {item.get("subject") for item in report.get("pages") or []}
+    homeroom = report.get("homeroom") if isinstance(report.get("homeroom"), dict) else {}
+    if homeroom.get("verified") is True:
+        subjects.add("homeroom")
+    return set(deploy_ledger.REQUIRED_COURSES) <= subjects
+
+
+def _finalization_evidence(quarter: int, week: int, report: dict[str, Any], manifest: dict[str, Any]) -> tuple[dict[str, Any] | None, list[str]]:
+    """Build finalizer evidence from the executed plan and the intake manifest."""
+    intake = imf.load_manifest(quarter, week) or {}
+    source = manifest.get("source_hash")
+    fingerprint = manifest.get("plan_fingerprint")
+    failures: list[str] = []
+    if not source or source != intake.get("source_hash"):
+        failures.append("execution source hash does not match the intake manifest")
+    if not fingerprint or fingerprint != intake.get("plan_fingerprint"):
+        failures.append("execution plan fingerprint does not match the intake manifest")
+    if intake.get("approval_state") != "APPROVED":
+        failures.append("intake approval is not explicitly approved")
+    if report.get("failures"):
+        failures.append("deployment report has outstanding failures")
+    evidence = {
+        "school_year": report.get("school_year"),
+        "quarter": quarter,
+        "week": week,
+        "week_code": report.get("to_week"),
+        "verified_at": report.get("finished_at"),
+        "status": "PUBLISHED_VERIFIED",
+        "publisher": "FRIDAY_ROLLOVER",
+        "source_hash": source,
+        "plan_fingerprint": fingerprint,
+        "pages": report.get("pages"),
+        "assignments": report.get("assignments"),
+        "weekly_announcements": report.get("weekly_announcements"),
+        "assessment_reminders": report.get("assessment_reminders"),
+        "homeroom": report.get("homeroom"),
+        "communication": report.get("communication"),
+    }
+    family = report.get("homeroom_announcement")
+    if isinstance(family, dict):
+        evidence["homeroom_announcement"] = family
+        evidence["homeroom_page_before_announcement"] = True
+    return (None, failures) if failures else (evidence, [])
+
+
+def _blocked_finalization(quarter: int, week: int, report: dict[str, Any], failures: list[str]) -> dict[str, Any]:
+    report["lifecycle"] = "FINALIZATION_BLOCKED"
+    report["failures"] = list(report.get("failures") or []) + failures
+    report["already_complete"] = False
+    ledger.write_rollover_ledger(quarter, week, report)
+    return report
+
+
+def _finalize_five_course(quarter: int, week: int, report: dict[str, Any], manifest: dict[str, Any]) -> dict[str, Any]:
+    """Finalize first. A rollover ledger may say PUBLISHED_VERIFIED only after that succeeds."""
+    evidence, problems = _finalization_evidence(quarter, week, report, manifest)
+    if problems or evidence is None:
+        return _blocked_finalization(quarter, week, report, problems or ["finalization evidence is missing"])
+    try:
+        result = deploy_ledger.finalize_published_verified(quarter, week, evidence)
+    except Exception as exc:  # noqa: BLE001
+        return _blocked_finalization(
+            quarter, week, report, [f"finalizer raised {type(exc).__name__}"],
+        )
+    if not isinstance(result, dict) or result.get("status") != "PUBLISHED_VERIFIED":
+        detail = []
+        if isinstance(result, dict):
+            detail.extend(result.get("failures") or ["finalizer did not return PUBLISHED_VERIFIED"])
+        else:
+            detail.append("finalizer returned no result")
+        return _blocked_finalization(quarter, week, report, detail)
+    report["lifecycle"] = schedule.PUBLISHED_VERIFIED
+    report["source_hash"] = evidence["source_hash"]
+    report["plan_fingerprint"] = evidence["plan_fingerprint"]
+    report["already_complete"] = False
+    try:
+        ledger.write_rollover_ledger(quarter, week, report)
+        written = ledger.load_rollover_ledger(quarter, week)
+    except Exception as exc:  # noqa: BLE001
+        report["lifecycle"] = "PUBLICATION_VERIFIED_ROLLOVER_INCOMPLETE"
+        report["failures"] = [f"publication is verified but the rollover ledger was not written: {type(exc).__name__}"]
+        return report
+    if not isinstance(written, dict) or written.get("lifecycle") != schedule.PUBLISHED_VERIFIED:
+        report["lifecycle"] = "PUBLICATION_VERIFIED_ROLLOVER_INCOMPLETE"
+        report["failures"] = ["publication is verified but the rollover ledger did not read back"]
+        return report
+    _record_publish_event(quarter, week, report, partial=False)
+    return report
+
+
 def execute(
     from_quarter: int,
     from_week: int,
@@ -752,8 +900,27 @@ def execute(
         )
 
     existing = ledger.load_rollover_ledger(to_quarter, to_week)
-    if existing and existing.get("lifecycle") == schedule.PUBLISHED_VERIFIED:
+    published = deploy_ledger.load_published_verified(to_quarter, to_week)
+    intake = imf.load_manifest(to_quarter, to_week) or {}
+    if _publication_records_agree(existing, published, intake):
         return {"lifecycle": schedule.PUBLISHED_VERIFIED, "already_complete": True}
+    if (
+        isinstance(intake, dict)
+        and intake.get("status") == "PUBLISHED_VERIFIED"
+        and isinstance(published, dict)
+        and published.get("status") == "PUBLISHED_VERIFIED"
+        and published.get("source_hash") == intake.get("source_hash")
+        and published.get("plan_fingerprint") == intake.get("plan_fingerprint")
+    ):
+        return _restore_rollover_completion(to_quarter, to_week, published, intake)
+    if existing and existing.get("lifecycle") == schedule.PUBLISHED_VERIFIED:
+        return {
+            "lifecycle": "FINALIZATION_INCOMPLETE",
+            "already_complete": False,
+            "failures": [
+                "rollover ledger claims publication but the published ledger and intake manifest do not agree"
+            ],
+        }
 
     # Publication-time gate. A caller that knows "now" (the scheduler or a
     # release-plan execution) must never reuse an expired delayed-post instant.
@@ -1227,22 +1394,12 @@ def execute(
         ledger.write_rollover_ledger(to_quarter, to_week, report)
         _record_publish_event(to_quarter, to_week, report, partial=True)
         return report
-    report["lifecycle"] = schedule.PUBLISHED_VERIFIED
-    ledger.write_rollover_ledger(to_quarter, to_week, report)
-    deploy_ledger.finalize_published_verified(
-        to_quarter, to_week,
-        {
-            "school_year": report["school_year"], "quarter": to_quarter, "week": to_week,
-            "week_code": report["to_week"], "verified_at": report["finished_at"],
-            "status": "PUBLISHED_VERIFIED", "publisher": "FRIDAY_ROLLOVER",
-            "pages": report["pages"], "assignments": report["assignments"],
-            "weekly_announcements": report["weekly_announcements"],
-            "assessment_reminders": report["assessment_reminders"],
-            "homeroom": report["homeroom"], "communication": report["communication"],
-        },
-    )
-    _record_publish_event(to_quarter, to_week, report, partial=False)
-    return report
+    if not _five_course_report(report):
+        report["lifecycle"] = schedule.PUBLISHED_VERIFIED
+        ledger.write_rollover_ledger(to_quarter, to_week, report)
+        _record_publish_event(to_quarter, to_week, report, partial=False)
+        return report
+    return _finalize_five_course(to_quarter, to_week, report, manifest)
 
 
 def _execute_homeroom(client, h, *, to_code, counts, report, to_quarter, to_week,

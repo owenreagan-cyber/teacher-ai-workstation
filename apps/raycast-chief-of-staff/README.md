@@ -1,4 +1,6 @@
-# Chief of Staff — Raycast extension (M1)
+# Chief of Staff — Raycast extension (legacy M1 CLI)
+
+**Superseded for cosd:** use `integrations/raycast/chief-of-staff/` (P1b.3) for ask, tasks, and queue against the persistent daemon.
 
 Two commands that call the local `cos` CLI. The extension itself makes no network
 requests. Every answer comes from a local Ollama model on this Mac.

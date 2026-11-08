@@ -1,0 +1,76 @@
+{
+  "$schema": "https://www.raycast.com/schemas/extension.json",
+  "name": "chief-of-staff",
+  "title": "Chief of Staff",
+  "description": "Fast Raycast client for the local cosd runtime (ask, capture, tasks, queue, status).",
+  "icon": "icon.png",
+  "author": "owen",
+  "license": "MIT",
+  "private": true,
+  "commands": [
+    {
+      "name": "ask-chief-of-staff",
+      "title": "Ask Chief of Staff",
+      "description": "Ask the persistent local Chief of Staff daemon.",
+      "mode": "view"
+    },
+    {
+      "name": "capture-task",
+      "title": "Capture Task",
+      "description": "Quick capture a reminder or work item into the cosd task registry.",
+      "mode": "view"
+    },
+    {
+      "name": "chief-tasks",
+      "title": "Chief of Staff Tasks",
+      "description": "Browse, search, and manage tasks in cosd.",
+      "mode": "view"
+    },
+    {
+      "name": "chief-queue",
+      "title": "Chief of Staff Queue",
+      "description": "Queue depth, workers, and execution status.",
+      "mode": "view"
+    },
+    {
+      "name": "chief-status",
+      "title": "Chief of Staff Status",
+      "description": "Daemon health, model status, and runtime counts.",
+      "mode": "view"
+    }
+  ],
+  "preferences": [
+    {
+      "name": "stateDir",
+      "title": "Chief state directory",
+      "description": "Where cosd stores api.token and cosd.pid (ChiefOfStaff Application Support).",
+      "type": "textfield",
+      "required": false,
+      "default": "~/Library/Application Support/ChiefOfStaff"
+    },
+    {
+      "name": "sessionId",
+      "title": "Ask session id",
+      "description": "Optional cos session id for follow-up context (max 40 chars).",
+      "type": "textfield",
+      "required": false,
+      "default": "raycast"
+    }
+  ],
+  "dependencies": {
+    "@raycast/api": "^1.104.25"
+  },
+  "devDependencies": {
+    "@types/node": "^22.19.17",
+    "@types/react": "^19.0.10",
+    "typescript": "^5.4.0"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit -p .",
+    "build:lib": "tsc -p tsconfig.lib.json",
+    "test": "npm run build:lib && node --test test/*.test.mjs",
+    "dev": "ray develop",
+    "build": "ray build -e dist",
+    "lint": "ray lint"
+  }
+}

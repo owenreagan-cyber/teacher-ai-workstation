@@ -45,6 +45,75 @@ def load_preflight(quarter: int, week: int, preflight_id: str) -> dict[str, Any]
     return read_json(deploy_dir(quarter, week) / f"preflight-{preflight_id}.json")
 
 
+def _preflight_created_at(record: dict[str, Any]) -> str:
+    return str(record.get("created_at") or "")
+
+
+def _preflight_source_hash(record: dict[str, Any]) -> str:
+    plan = record.get("plan") or {}
+    value = record.get("source_hash") or plan.get("source_hash")
+    return str(value or "")
+
+
+def find_authoritative_preflight(
+    quarter: int,
+    week: int,
+    *,
+    manifest_plan_fingerprint: str,
+    current_plan_fingerprint: str,
+    manifest_source_hash: str,
+    current_source_hash: str | None,
+) -> tuple[dict[str, Any] | None, list[str]]:
+    """Pick the preflight record that matches the approved plan (not filename order)."""
+    directory = deploy_dir(quarter, week)
+    if not directory.exists():
+        return None, []
+    paths = sorted(directory.glob("preflight-*.json"))
+    if not paths:
+        return None, []
+
+    parsed: list[tuple[str, dict[str, Any]]] = []
+    for path in paths:
+        stored = read_json(path)
+        if not isinstance(stored, dict):
+            continue
+        if stored.get("quarter") not in (None, quarter) or stored.get("week") not in (None, week):
+            continue
+        parsed.append((_preflight_created_at(stored), stored))
+
+    if not parsed:
+        return None, ["stored preflight could not be read"]
+
+    from scripts.canvas_llm_deploy import plan as deploy_plan
+
+    def _matches(record: dict[str, Any]) -> bool:
+        if record.get("ready") is False:
+            return False
+        plan = record.get("plan") or {}
+        stored_fp = deploy_plan.plan_fingerprint(plan)
+        if manifest_plan_fingerprint and stored_fp != manifest_plan_fingerprint:
+            return False
+        if current_plan_fingerprint and stored_fp != current_plan_fingerprint:
+            return False
+        stored_src = _preflight_source_hash(record)
+        if manifest_source_hash and stored_src != manifest_source_hash:
+            return False
+        if current_source_hash and stored_src != current_source_hash:
+            return False
+        return True
+
+    matches = [(created, rec) for created, rec in parsed if _matches(rec)]
+    if matches:
+        matches.sort(key=lambda item: item[0], reverse=True)
+        return matches[0][1], []
+
+    stale_names = [p.name for p in paths]
+    return None, [
+        "stored preflight does not match the approved plan fingerprint and source hash",
+        f"preflight files present: {', '.join(stale_names)}",
+    ]
+
+
 def write_ledger(quarter: int, week: int, ledger: dict[str, Any]) -> Path:
     return write_json(deploy_dir(quarter, week) / "deployment-ledger.json", ledger)
 

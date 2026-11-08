@@ -57,6 +57,8 @@ _CANVAS_GLOBAL_JS_RE = re.compile(
     re.IGNORECASE,
 )
 _CANVAS_HTML_COMMENT_RE = re.compile(r"<!--.*?-->", re.DOTALL)
+_DIV_OPEN_RE = re.compile(r"<div\b", re.IGNORECASE)
+_DIV_CLOSE_RE = re.compile(r"</div>", re.IGNORECASE)
 
 
 def _submission_type(value: Any) -> str:
@@ -132,11 +134,97 @@ def _canvas_owned_body(body: str) -> str:
     return text
 
 
+def _drop_orphan_closing_divs(body: str) -> str:
+    """Drop closing </div> tags Canvas strips when they have no open <div> match.
+
+    Canvas may remove surplus closing tags that appear after malformed or partially
+    edited newsletter markup while leaving visible instructional HTML intact.
+    """
+    if not body:
+        return body
+    events: list[tuple[int, str]] = []
+    for match in _DIV_OPEN_RE.finditer(body):
+        events.append((match.start(), "open"))
+    for match in _DIV_CLOSE_RE.finditer(body):
+        events.append((match.start(), "close"))
+    events.sort()
+    depth = 0
+    skip_spans: list[tuple[int, int]] = []
+    for pos, kind in events:
+        if kind == "open":
+            depth += 1
+        elif depth <= 0:
+            skip_spans.append((pos, pos + len("</div>")))
+        else:
+            depth -= 1
+    if not skip_spans:
+        return body
+    parts: list[str] = []
+    last = 0
+    for start, end in skip_spans:
+        parts.append(body[last:start])
+        last = end
+    parts.append(body[last:])
+    return "".join(parts)
+
+
+def _canvas_comparable_body(body: str) -> str:
+    """Normalize wiki HTML to the deterministic form used for readback hashing."""
+    text = _CANVAS_HTML_COMMENT_RE.sub("", body or "")
+    text = _canvas_owned_body(text)
+    text = _drop_orphan_closing_divs(text)
+    return text.rstrip("\n")
+
+
 def _canvas_body_hash(body: str) -> str:
     # Canvas strips HTML comments and trailing newlines on write. Neither is
     # visible content, so bind verification to the Canvas-comparable body.
-    text = _CANVAS_HTML_COMMENT_RE.sub("", _canvas_owned_body(body)).rstrip("\n")
-    return deploy_plan._sha(text)
+    return deploy_plan._sha(_canvas_comparable_body(body))
+
+
+def _homeroom_required_markers(approved_body: str) -> list[str]:
+    """Visible markers that must survive Canvas write/readback for the approved week."""
+    markers: list[str] = []
+    if "Veterans Day" in approved_body:
+        markers.append("Veterans Day")
+    if "Movie Night" in approved_body:
+        markers.append("Movie Night")
+    week_banner = re.search(r"Track 2, Week \d+[^<]{0,80}", approved_body)
+    if week_banner:
+        markers.append(week_banner.group(0).strip())
+    return markers
+
+
+def _homeroom_meaningful_content_ok(live_body: str, approved_body: str, *, slug: str) -> tuple[bool, list[str]]:
+    """Reject stale weekly HTML while accepting Canvas-owned normalization only."""
+    comparable = _canvas_comparable_body(live_body)
+    missing = [m for m in _homeroom_required_markers(approved_body) if m not in comparable]
+    stale: list[str] = []
+    if "november" in slug and re.search(r"\bJuly\b", comparable, re.IGNORECASE):
+        stale.append("July-week stale content")
+    return (not missing and not stale), missing + stale
+
+
+def _wiki_page_readback_checks(
+    readback: dict[str, Any],
+    *,
+    page_id: Any,
+    expected_body_hash: str,
+    require_front_page: bool,
+) -> dict[str, bool]:
+    """Independent wiki page readback channels (identity / body / front page)."""
+    identity_ok = str(readback.get("page_id")) == str(page_id)
+    body_ok = _canvas_body_hash(readback.get("body") or "") == expected_body_hash
+    if require_front_page:
+        front_page_ok = bool(readback.get("front_page"))
+    else:
+        front_page_ok = True
+    return {
+        "page_identity_readback": identity_ok,
+        "body_hash_readback": body_ok,
+        "front_page_readback": front_page_ok,
+        "verified": identity_ok and body_ok and front_page_ok,
+    }
 
 
 def _manifest_body_hash(block: dict[str, Any]) -> str:
@@ -539,29 +627,36 @@ def _stale_preflight_blockers(quarter: int, week: int, manifest: dict[str, Any])
     """A stored preflight cannot be reused after the plan changes.
 
     When no preflight exists, the in-process gate is the validation. When one
-    exists, its fingerprint must match both the manifest and the current plan.
+    exists, select the record that matches quarter/week, source hash, and the
+    current plan fingerprint — never lexicographic filename order alone.
     """
-    directory = deploy_ledger.deploy_dir(quarter, week)
-    if not directory.exists():
-        return []
-    files = sorted(directory.glob("preflight-*.json"))
-    if not files:
-        return []
-    try:
-        stored = json.loads(files[-1].read_text(encoding="utf-8"))
-    except (OSError, json.JSONDecodeError):
-        return ["stored preflight could not be read"]
-    stored_fingerprint = deploy_plan.plan_fingerprint(stored.get("plan") or {})
     claimed = manifest.get("plan_fingerprint")
     if not claimed:
-        return ["a preflight exists but the manifest has no plan fingerprint"]
-    if claimed != stored_fingerprint:
-        return ["manifest plan fingerprint does not match the stored preflight"]
+        directory = deploy_ledger.deploy_dir(quarter, week)
+        if directory.exists() and list(directory.glob("preflight-*.json")):
+            return ["a preflight exists but the manifest has no plan fingerprint"]
+        return []
     try:
-        current = deploy_plan.plan_fingerprint(deploy_plan.build_plan(quarter, week))
+        current_fp = deploy_plan.plan_fingerprint(deploy_plan.build_plan(quarter, week))
     except Exception as exc:  # noqa: BLE001
         return [f"current plan could not be rebuilt: {type(exc).__name__}"]
-    if current != stored_fingerprint:
+    current_source = _authoritative_source_hash(quarter, week)
+    stored, blockers = deploy_ledger.find_authoritative_preflight(
+        quarter,
+        week,
+        manifest_plan_fingerprint=str(claimed),
+        current_plan_fingerprint=current_fp,
+        manifest_source_hash=str(manifest.get("source_hash") or ""),
+        current_source_hash=current_source,
+    )
+    if blockers:
+        return blockers
+    if stored is None:
+        return []
+    stored_fingerprint = deploy_plan.plan_fingerprint(stored.get("plan") or {})
+    if claimed != stored_fingerprint:
+        return ["manifest plan fingerprint does not match the stored preflight"]
+    if current_fp != stored_fingerprint:
         return ["current plan changed since preflight"]
     return []
 
@@ -1085,11 +1180,22 @@ def execute(
         except Exception as exc:  # noqa: BLE001
             report["failures"].append(f"{subject}: page update failed: {type(exc).__name__}")
             return _finish(to_quarter, to_week, report, schedule.BLOCKED, counts)
-        page_ok = _canvas_body_hash(page_readback.get("body") or "") == course.get("to_page_hash")
+        page_checks = _wiki_page_readback_checks(
+            page_readback, page_id=pid, expected_body_hash=course.get("to_page_hash"),
+            require_front_page=False,
+        )
+        page_ok = page_checks["body_hash_readback"]
         report["pages"].append({
             "subject": subject, "course_id": cid, "page_id": pid,
-            "disposition": "PUBLISHED_VERIFIED" if page_ok else "FAILED", "verified": page_ok,
+            "disposition": "PUBLISHED_VERIFIED" if page_ok else "FAILED",
+            "verified": page_ok,
+            **{k: page_checks[k] for k in (
+                "page_identity_readback", "body_hash_readback", "front_page_readback",
+            )},
         })
+        if not page_checks["page_identity_readback"]:
+            report["failures"].append(f"{subject}: page identity readback mismatch")
+            return _finish(to_quarter, to_week, report, schedule.BLOCKED, counts)
         if not page_ok:
             report["failures"].append(f"{subject}: page body readback mismatch")
             return _finish(to_quarter, to_week, report, schedule.BLOCKED, counts)
@@ -1112,12 +1218,25 @@ def execute(
         except Exception as exc:  # noqa: BLE001
             report["failures"].append(f"{subject}: front-page write failed: {type(exc).__name__}")
             return _finish(to_quarter, to_week, report, schedule.BLOCKED, counts)
-        ok = str(readback.get("page_id")) == str(pid) and bool(readback.get("front_page"))
+        front_checks = _wiki_page_readback_checks(
+            readback, page_id=pid, expected_body_hash=course.get("to_page_hash"),
+            require_front_page=True,
+        )
+        front_ok = (
+            front_checks["page_identity_readback"] and front_checks["front_page_readback"]
+        )
         report["academic_front_pages"].append({
             "subject": subject, "course_id": cid, "page_id": pid,
-            "disposition": "PUBLISHED_VERIFIED" if ok else "FAILED", "verified": ok,
+            "disposition": "PUBLISHED_VERIFIED" if front_ok else "FAILED",
+            "verified": front_ok,
+            "page_identity_readback": front_checks["page_identity_readback"],
+            "body_hash_readback": front_checks["body_hash_readback"],
+            "front_page_readback": front_checks["front_page_readback"],
         })
-        if not ok:
+        if not front_checks["page_identity_readback"]:
+            report["failures"].append(f"{subject}: page identity readback mismatch")
+            return _finish(to_quarter, to_week, report, schedule.BLOCKED, counts)
+        if not front_checks["front_page_readback"]:
             report["failures"].append(f"{subject}: front-page readback mismatch")
             return _finish(to_quarter, to_week, report, schedule.BLOCKED, counts)
 
@@ -1526,17 +1645,39 @@ def _execute_homeroom(client, h, *, to_code, counts, report, to_quarter, to_week
     except Exception as exc:  # noqa: BLE001
         report["failures"].append(f"homeroom: readback failed: {type(exc).__name__}")
         return _finish(to_quarter, to_week, report, schedule.BLOCKED, counts)
-    h_ok = (
-        str(hread.get("page_id")) == str(hres["page_id"])
-        and (early_content_only or bool(hread.get("front_page")))
-        and _canvas_body_hash(hread.get("body") or "") == proposed_hash
+    homeroom_checks = _wiki_page_readback_checks(
+        hread,
+        page_id=hres["page_id"],
+        expected_body_hash=proposed_hash,
+        require_front_page=not early_content_only,
     )
+    h_ok = homeroom_checks["verified"]
     report["homeroom"] = {
         "course_id": h["course_id"], "page_id": hres["page_id"],
         "disposition": "PUBLISHED_VERIFIED" if h_ok else "FAILED", "verified": h_ok,
         "front_page_disposition": front_page_disposition,
+        "page_identity_readback": homeroom_checks["page_identity_readback"],
+        "body_hash_readback": homeroom_checks["body_hash_readback"],
+        "front_page_readback": homeroom_checks["front_page_readback"],
     }
-    if not h_ok:
+    if not homeroom_checks["page_identity_readback"]:
+        report["failures"].append("homeroom: page identity readback mismatch")
+        return _finish(to_quarter, to_week, report, schedule.BLOCKED, counts)
+    if not homeroom_checks["body_hash_readback"]:
+        report["failures"].append("homeroom: page body readback mismatch")
+        return _finish(to_quarter, to_week, report, schedule.BLOCKED, counts)
+    meaningful_ok, meaningful_gaps = _homeroom_meaningful_content_ok(
+        hread.get("body") or "", body, slug=str(h.get("to_page_slug") or ""),
+    )
+    report["homeroom"]["meaningful_content_readback"] = meaningful_ok
+    if not meaningful_ok:
+        report["failures"].append(
+            "homeroom: current-week content readback mismatch: " + "; ".join(meaningful_gaps)
+        )
+        report["homeroom"]["verified"] = False
+        report["homeroom"]["disposition"] = "FAILED"
+        return _finish(to_quarter, to_week, report, schedule.BLOCKED, counts)
+    if not early_content_only and not homeroom_checks["front_page_readback"]:
         report["failures"].append("homeroom: front-page readback mismatch")
         return _finish(to_quarter, to_week, report, schedule.BLOCKED, counts)
 

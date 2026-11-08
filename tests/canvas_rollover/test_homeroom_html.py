@@ -217,6 +217,54 @@ def test_execute_updates_existing_weekly_page_not_rolling_page():
         intake_manifest.staging_dir = orig_staging
 
 
+# Observed Q2W5 Canvas transform: surplus orphan </div> after birthday markup + outer close.
+_Q2W5_STAGED_FRAGMENT = (
+    '<div style="max-width:900px;">'
+    '<p>Veterans Day</p><p>Movie Night</p>'
+    '<span>Track 2, Week 5 · November 9–13, 2026</span>'
+    '<!-- BIRTHDAY_SECTION_START -->'
+    '<div><h2>Birthdays</h2></div><!-- BIRTHDAY_SECTION_END -->'
+    '<div>Patricie Passler</div><div>November 20</div></div></div></div>'
+    '</div>'
+    '<script src="https://instructure-uploads/canvas_global_app.js"></script>'
+)
+_Q2W5_LIVE_FRAGMENT = (
+    '<div style="max-width:900px;">'
+    '<p>Veterans Day</p><p>Movie Night</p>'
+    '<span>Track 2, Week 5 · November 9–13, 2026</span>'
+    '<div><h2>Birthdays</h2></div>'
+    '<div>Patricie Passler</div><div>November 20</div></div>'
+    '<script src="https://instructure-uploads/canvas_global_app.js"></script>'
+)
+
+
+def test_q2w5_staged_and_canvas_live_bodies_hash_equivalent():
+    assert rollover._canvas_body_hash(_Q2W5_STAGED_FRAGMENT) == rollover._canvas_body_hash(_Q2W5_LIVE_FRAGMENT)
+
+
+def test_q2w5_meaningful_content_survives_canvas_normalization():
+    ok, gaps = rollover._homeroom_meaningful_content_ok(
+        _Q2W5_LIVE_FRAGMENT, _Q2W5_STAGED_FRAGMENT, slug="q2w5-november-9-13-2026",
+    )
+    assert ok, gaps
+
+
+def test_meaningful_homeroom_content_rejects_stale_july_text():
+    approved = '<div>Track 2, Week 5 · November 9–13, 2026</div><p>Veterans Day</p><p>Movie Night</p>'
+    live = approved.replace("November", "July")
+    ok, gaps = rollover._homeroom_meaningful_content_ok(
+        live, approved, slug="q2w5-november-9-13-2026",
+    )
+    assert not ok
+    assert gaps
+
+
+def test_orphan_closing_divs_do_not_break_verification():
+    inner = "<div><p>Veterans Day</p><p>Movie Night</p></div></div></div>"
+    live = f"{inner}</div>"
+    assert rollover._canvas_body_hash(inner) == rollover._canvas_body_hash(live)
+
+
 def test_canvas_owned_assets_are_ignored_on_both_sides_of_readback():
     css = '<link rel="stylesheet" href="https://instructure-uploads.s3.amazonaws.com/account_1/attachments/1/canvas_global_app.css">'
     script = '<script src="https://instructure-uploads.s3.amazonaws.com/account_1/attachments/1/canvas_global_app.js"></script>'

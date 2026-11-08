@@ -243,10 +243,10 @@ def build_rollover_manifest(
     except (OSError, json.JSONDecodeError):
         homeroom_announcement = None
 
-    source_hash = _sha(json.dumps(
-        {"to": to_code, "agendas": {s: _sha(agenda_html.get(s, "")) for s in active}},
-        sort_keys=True, ensure_ascii=False,
-    ))
+    agenda_hash = plan_mod.agenda_composite_hash(to_code, {
+        subject: _sha(agenda_html.get(subject, "")) for subject in active
+    })
+    source_hash = (pkt.get("summary") or {}).get("source_hash") or ""
     return {
         "schemaVersion": 1,
         "school_year": "2026-2027",
@@ -265,12 +265,17 @@ def build_rollover_manifest(
         "approvals": plan_mod.approval_snapshot_hash(approvals),
         "approval_snapshot_hash": plan_mod.approval_snapshot_hash(approvals),
         "source_hash": source_hash,
+        "agenda_hash": agenda_hash,
+        "plan_fingerprint": deploy_plan.get("plan_fingerprint"),
         "created_at": _now(),
     }
 
 
 def command_self_test() -> int:
-    m = build_rollover_manifest(2, 2, 2, 3)
+    from datetime import datetime, timezone
+    m = build_rollover_manifest(
+        2, 2, 2, 3, now=datetime(2026, 10, 19, 12, tzinfo=timezone.utc),
+    )
     assert m["from_week"] == "Q2W2" and m["to_week"] == "Q2W3", m
     assert m["scheduled_at"] == "2026-10-23T20:00:00Z", m["scheduled_at"]
     assert m["timezone"] == "America/New_York"

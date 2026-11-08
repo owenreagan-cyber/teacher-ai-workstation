@@ -15,6 +15,7 @@ on:
       - fix/q2w5-source-hash-contract
       - feat/canvas-weekly-release-manager
       - fix/q2w5-homeroom-page-identity
+      - fix/q2w5-approval-integrity
   workflow_dispatch:
 
 permissions:

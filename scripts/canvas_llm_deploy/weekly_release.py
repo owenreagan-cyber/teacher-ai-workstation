@@ -253,21 +253,29 @@ def _artifact_rows(manifest: dict[str, Any]) -> list[dict[str, Any]]:
 
 
 def package_blockers(rows: list[dict[str, Any]], *, owner_publication_time: str | None = None) -> list[str]:
-    """Every BLOCKED artifact is a package blocker. Supplied owner time resolves only that gate."""
+    """Every BLOCKED artifact remains blocked. A timestamp cannot change its action."""
+    del owner_publication_time
     blockers: list[str] = []
     for row in rows:
         if row.get("action") != "BLOCKED":
             continue
         reason = row.get("reason") or f"{row.get('kind')} is BLOCKED"
         row["reason"] = reason
-        if reason == OWNER_TIME_BLOCK and owner_publication_time:
-            row["action"] = "CREATE"
-            row["delayed_post_at"] = owner_publication_time
-            row["reason"] = None
-            continue
         if reason not in blockers:
             blockers.append(reason)
     return blockers
+
+
+def require_owner_publication_time(value: str | None, now: datetime) -> str:
+    """Reject a publication time before any approval record is written."""
+    from scripts.canvas_llm_phase3.pacing_announcement import validate_owner_instant
+    text = "" if value is None else str(value).strip()
+    if not text:
+        raise ReleaseBlocked("owner publication time is missing")
+    try:
+        return validate_owner_instant(text, _clock(now))
+    except ValueError as exc:
+        raise ReleaseBlocked(str(exc)) from exc
 
 
 def build_package(
@@ -290,7 +298,7 @@ def build_package(
         quarter, week, now=clock, owner_publication_time=owner_publication_time,
     )
     rows = _artifact_rows(manifest)
-    blockers = package_blockers(rows, owner_publication_time=owner_publication_time)
+    blockers = package_blockers(rows)
     if manifest.get("source_hash") != plan.get("source_hash"):
         blockers.append("rollover source hash does not match the deploy plan")
     return {
@@ -525,8 +533,7 @@ def approve_release(
     code = weeks.week_code_for(quarter, week)
     if (confirmation or "").strip() != f"APPROVE {code}":
         raise ReleaseBlocked(f"type exactly: APPROVE {code}")
-    if not owner_publication_time:
-        raise ReleaseBlocked("owner publication time is required")
+    validated_time = require_owner_publication_time(owner_publication_time, clock)
     intake = intake_manifest.load_manifest(quarter, week) or {}
     source_hash = str(intake.get("source_hash") or "")
     if not source_hash:
@@ -535,26 +542,37 @@ def approve_release(
     if not family_path.is_file():
         raise ReleaseBlocked("homeroom family announcement is missing")
     identity = resolve_homeroom_identity(quarter, week)
-    package = build_package(
-        quarter, week, now=clock, owner_publication_time=owner_publication_time,
-    )
+    page_approval = homeroom_weekly.load_approval(quarter, week) or {}
+    if not page_approval.get("approved") or page_approval.get("approved_body_hash") != identity["page_hash"]:
+        raise ReleaseBlocked("homeroom page approval is incomplete")
+    family = json.loads(family_path.read_text(encoding="utf-8"))
+    if family.get("approval_state") != "APPROVED" or family.get("approved") is not True:
+        raise ReleaseBlocked("homeroom family announcement approval is incomplete")
+    if family.get("action") == "BLOCKED":
+        raise ReleaseBlocked("homeroom family announcement is BLOCKED")
+    package = build_package(quarter, week, now=clock)
     if package["blockers"]:
         raise ReleaseBlocked("; ".join(package["blockers"]))
+    if package.get("plan_fingerprint") and intake.get("plan_fingerprint") not in (None, "", package["plan_fingerprint"]):
+        raise ReleaseBlocked("stale plan fingerprint")
+    if not package.get("source_hash") or package["source_hash"] != source_hash:
+        raise ReleaseBlocked("stale source hash")
+    existing = approval.load_approvals(quarter, week, intake_constants.active_subject_keys_for_quarter(quarter))
+    for entry in (existing.get("subjects") or {}).values():
+        for rec in entry.values():
+            if rec.get("state") == "APPROVED" and rec.get("source_hash") not in (None, source_hash):
+                raise ReleaseBlocked("stale source hash")
+    already = _release_already_approved(existing, source_hash, package["plan_fingerprint"], validated_time)
+    if already:
+        return {
+            "state": APPROVED, "week_code": code, "source_hash": source_hash,
+            "plan_fingerprint": package["plan_fingerprint"],
+            "owner_publication_time": validated_time, "idempotent": True,
+        }
     fingerprint = _stable_approval(
         quarter, week, source_hash=source_hash,
-        owner_publication_time=owner_publication_time, now=clock,
+        owner_publication_time=validated_time, now=clock,
     )
-    html = homeroom_weekly.html_path(quarter, week).read_text(encoding="utf-8")
-    homeroom_weekly.record_approval(
-        quarter, week, page_id=identity["page_id"],
-        page_slug=identity["page_slug"], week_code_value=code,
-        source_body_hash=identity["page_hash"], approved_body_hash=identity["page_hash"],
-        body=html,
-    )
-    family = json.loads(family_path.read_text(encoding="utf-8"))
-    family["approval_state"] = "APPROVED"
-    family["approved"] = True
-    homeroom_weekly.write_family_announcement(quarter, week, family)
     intake["approval_state"] = "APPROVED"
     intake["ready_to_publish"] = True
     intake["status"] = "READY_TO_PUBLISH"
@@ -565,8 +583,69 @@ def approve_release(
         "week_code": code,
         "source_hash": source_hash,
         "plan_fingerprint": fingerprint,
-        "owner_publication_time": owner_publication_time,
+        "owner_publication_time": validated_time,
     }
+
+
+def withdraw_invalid_release(quarter: int, week: int, *, reason: str) -> dict[str, Any]:
+    """Revoke an approval that was recorded against an invalid publication time.
+
+    History is kept. A verified publication cannot be withdrawn here.
+    """
+    published = deploy_ledger.load_published_verified(quarter, week)
+    intake = intake_manifest.load_manifest(quarter, week) or {}
+    if intake.get("status") == "PUBLISHED_VERIFIED" or (
+        isinstance(published, dict) and published.get("status") == "PUBLISHED_VERIFIED"
+    ):
+        raise ReleaseBlocked("a verified publication cannot be withdrawn")
+    subjects = intake_constants.active_subject_keys_for_quarter(quarter)
+    data = approval.load_approvals(quarter, week, subjects)
+    for subject, entry in (data.get("subjects") or {}).items():
+        for kind, rec in entry.items():
+            if rec.get("state") == "APPROVED":
+                approval.revoke_approval(quarter, week, subject, kind, subjects=subjects, reason=reason)
+            elif rec.get("state") == "NOT_REQUIRED":
+                approval.set_state(
+                    quarter, week, subject, kind, "PENDING",
+                    draft_hash="", subjects=subjects, source=approval.SOURCE_UI, reason=reason,
+                )
+    if (homeroom_weekly.load_approval(quarter, week) or {}).get("approved"):
+        homeroom_weekly.revoke_page_approval(quarter, week, reason=reason)
+    family_path = intake_manifest.staging_dir(quarter, week) / homeroom_weekly.ANNOUNCEMENT_FILE
+    if family_path.is_file():
+        family = json.loads(family_path.read_text(encoding="utf-8"))
+        if family.get("approval_state") == "APPROVED" or family.get("approved") is True:
+            homeroom_weekly.revoke_family_approval(quarter, week, reason=reason)
+    if intake:
+        intake.setdefault("history", []).append({
+            "from": intake.get("status"),
+            "to": "READY_FOR_REVIEW",
+            "at": datetime.now(timezone.utc).isoformat(),
+            "reason": reason,
+        })
+        intake["status"] = "READY_FOR_REVIEW"
+        intake["approval_state"] = "PENDING"
+        intake["ready_to_publish"] = False
+        intake.pop("plan_fingerprint", None)
+        intake_manifest.save_manifest(quarter, week, intake)
+    return release_state(quarter, week)
+
+
+def _release_already_approved(data: dict[str, Any], source_hash: str, fingerprint: str, owner_time: str) -> bool:
+    subjects = data.get("subjects") or {}
+    if not subjects:
+        return False
+    for entry in subjects.values():
+        for kind, rec in entry.items():
+            if kind == "assessment_reminder" and rec.get("state") == "NOT_REQUIRED":
+                continue
+            if rec.get("state") != "APPROVED":
+                return False
+            if rec.get("source_hash") != source_hash or rec.get("plan_fingerprint") != fingerprint:
+                return False
+            if rec.get("owner_publication_time") != owner_time:
+                return False
+    return True
 
 
 def invalidate_changed_artifacts(
@@ -574,6 +653,7 @@ def invalidate_changed_artifacts(
     week: int,
     *,
     plan_fingerprint: str | None = None,
+    owner_publication_time: str | None = None,
 ) -> bool:
     """Drop granular approval when a draft, source, or plan fingerprint changed."""
     subjects = intake_constants.active_subject_keys_for_quarter(quarter)
@@ -586,6 +666,7 @@ def invalidate_changed_artifacts(
             data, subject=subject, draft_hashes=hashes,
             source_hash=intake.get("source_hash"),
             plan_fingerprint=plan_fingerprint,
+            owner_publication_time=owner_publication_time,
         ) or changed
     if changed:
         approval.save_approvals(quarter, week, data)

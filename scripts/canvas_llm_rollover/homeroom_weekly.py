@@ -273,6 +273,50 @@ def verify_at(
     return (len(problems) == 0), problems
 
 
+def revoke_page_approval(quarter: int, week: int, *, reason: str) -> dict[str, Any]:
+    """Withdraw a page approval and keep the rejected record in its history."""
+    record = load_approval(quarter, week) or {}
+    if not record.get("approved"):
+        raise HomeroomWeeklyError("homeroom page is not approved")
+    history = list(record.get("history") or [])
+    history.append({
+        "action": "revoke",
+        "at": _now(),
+        "reason": reason,
+        "rejected_approved_at": record.get("approved_at"),
+        "rejected_approved_by": record.get("approved_by"),
+        "rejected_body_hash": record.get("approved_body_hash"),
+    })
+    record["history"] = history
+    record["approved"] = False
+    record["status"] = "PENDING_OWNER_APPROVAL"
+    record["approved_at"] = None
+    record["approved_by"] = None
+    record["preview_only"] = True
+    approval_path(quarter, week).write_text(
+        json.dumps(record, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
+    )
+    return record
+
+
+def revoke_family_approval(quarter: int, week: int, *, reason: str) -> dict[str, Any]:
+    """Withdraw family-announcement approval without changing its schedule or message."""
+    path = imf.staging_dir(quarter, week) / ANNOUNCEMENT_FILE
+    record = json.loads(path.read_text(encoding="utf-8"))
+    history = list(record.get("history") or [])
+    history.append({
+        "action": "revoke",
+        "at": _now(),
+        "reason": reason,
+        "previous_approval_state": record.get("approval_state"),
+    })
+    record["history"] = history
+    record["approval_state"] = "PENDING"
+    record["approved"] = False
+    write_family_announcement(quarter, week, record)
+    return record
+
+
 def verify(quarter: int, week: int, *, course_id: int = COURSE_ID) -> tuple[bool, list[str]]:
     return verify_at(
         imf.staging_dir(quarter, week),

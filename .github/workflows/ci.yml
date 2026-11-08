@@ -116,6 +116,8 @@ jobs:
           if ! command -v python3.12 >/dev/null 2>&1; then
             sudo ln -sf "$(command -v python3)" /usr/local/bin/python3.12
           fi
+          python3 -m pip install --user pymupdf pyyaml
+          export PATH="${HOME}/.local/bin:${PATH}"
           export COS_FIXTURE_DIR="${{ github.workspace }}/evals/fixtures/default"
           cd apps/chief-desktop
           npm ci

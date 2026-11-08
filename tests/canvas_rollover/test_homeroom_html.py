@@ -217,6 +217,14 @@ def test_execute_updates_existing_weekly_page_not_rolling_page():
         intake_manifest.staging_dir = orig_staging
 
 
+def test_canvas_owned_assets_are_ignored_on_both_sides_of_readback():
+    css = '<link rel="stylesheet" href="https://instructure-uploads.s3.amazonaws.com/account_1/attachments/1/canvas_global_app.css">'
+    script = '<script src="https://instructure-uploads.s3.amazonaws.com/account_1/attachments/1/canvas_global_app.js"></script>'
+    authored = f"<p>Hound Families,</p>{css}<div>Newsletter</div>{script}"
+    assert rollover._canvas_owned_body(authored) == rollover._canvas_owned_body(css + authored + script)
+    assert "<div>Newsletter</div>" in rollover._canvas_owned_body(authored)
+
+
 def _run():
     fns = [(n, f) for n, f in sorted(globals().items()) if n.startswith("test_") and callable(f)]
     failed = 0

@@ -265,6 +265,14 @@ def _reminder_plan_entry(
     return entry
 
 
+def agenda_composite_hash(week_code: str, agendas: dict[str, str]) -> str:
+    """Hash the week code and each subject's page agenda. This is not the intake source hash."""
+    return _sha(json.dumps(
+        {"to": week_code, "agendas": agendas},
+        sort_keys=True, ensure_ascii=False,
+    ))
+
+
 def plan_fingerprint(plan: dict[str, Any]) -> str:
     """Hash the publish actions a reviewer actually approved."""
     def _rows(items: list[dict[str, Any]], fields: tuple[str, ...]) -> list[dict[str, Any]]:
@@ -501,6 +509,9 @@ def build_plan(
         "counts": counts,
         "owner_publication_time": owner_publication_time,
     }
+    result["agenda_hash"] = agenda_composite_hash(week_code, {
+        subject: _sha(pkt["page_bodies"].get(subject, "")) for subject in active
+    })
     result["plan_fingerprint"] = plan_fingerprint(result)
     _stamp_plan_approval(
         result,

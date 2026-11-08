@@ -604,6 +604,28 @@ def _explicit_page_approval_blockers(record: dict[str, Any], label: str) -> list
     return blockers
 
 
+def _agenda_hash_blocker(manifest: dict[str, Any]) -> str | None:
+    """Verify the stored agenda composite. A missing field stays compatible with older plans."""
+    if "agenda_hash" not in manifest:
+        return None
+    claimed = manifest.get("agenda_hash")
+    if not claimed:
+        return "manifest agenda hash is missing"
+    agendas: dict[str, str] = {}
+    for item in manifest.get("weekly_announcements") or []:
+        subject = str(item.get("subject") or "")
+        digest = item.get("agenda_hash")
+        if not subject or not digest:
+            return "weekly announcement agenda hash is missing"
+        agendas[subject] = str(digest)
+    expected = deploy_plan.agenda_composite_hash(str(manifest.get("to_week") or ""), agendas)
+    if claimed != expected:
+        return "manifest agenda hash does not match the weekly agendas"
+    if claimed == manifest.get("source_hash"):
+        return "agenda hash cannot stand in for the intake source hash"
+    return None
+
+
 def _prewrite_blockers(
     manifest: dict[str, Any],
     client,
@@ -625,6 +647,14 @@ def _prewrite_blockers(
             blockers.append("authoritative source snapshot is missing")
         elif claimed != authoritative:
             blockers.append("manifest source hash does not match the authoritative source")
+        claimed_fingerprint = manifest.get("plan_fingerprint")
+        if claimed_fingerprint:
+            intake_fingerprint = (imf.load_manifest(quarter, week) or {}).get("plan_fingerprint")
+            if claimed_fingerprint != intake_fingerprint:
+                blockers.append("manifest plan fingerprint does not match the intake manifest")
+        agenda_problem = _agenda_hash_blocker(manifest)
+        if agenda_problem:
+            blockers.append(agenda_problem)
     required_subjects = ("math", "reading_spelling", "language_arts", "science")
     present = {course.get("subject") for course in manifest.get("academic_courses") or []}
     announced = {item.get("subject") for item in manifest.get("weekly_announcements") or []}
@@ -1114,15 +1144,16 @@ def execute(
                 in_active_feed=in_feed,
             )
             delayed = announcement.get("delayed_post_at") or ""
-            page_body = (h or {}).get("body") or ""
+            page_body = _canvas_owned_body((h or {}).get("body") or "")
             live_message = _canvas_owned_body(readback.get("message") or "")
+            expected_message = _canvas_owned_body(announcement.get("message") or "")
             course_ok = (
                 readback.get("course_id") is not None
                 and int(readback.get("course_id")) == int(announcement["course_id"])
             )
             ok = (
                 readback.get("title") == announcement["title"]
-                and live_message == announcement.get("message")
+                and live_message == expected_message
                 and state == sched.HELD_SCHEDULED
                 and _same_instant(readback.get("delayed_post_at"), delayed)
                 and course_ok

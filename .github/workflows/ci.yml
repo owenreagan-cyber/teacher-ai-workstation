@@ -12,6 +12,7 @@ on:
       - fix/canvas-quarter-week-live-authorization
       - fix/q2w5-approval-propagation
       - fix/rollover-finalizer-integration
+      - fix/q2w5-source-hash-contract
   workflow_dispatch:
 
 permissions:

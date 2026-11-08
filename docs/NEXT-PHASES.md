@@ -67,9 +67,10 @@ There is **one `cos` core with two faces.**
 
 **P1b.4a (architecture — complete):** Multi-device security design only. ADR-021: loopback `cosd` + tailnet **gateway**, device registry, per-device credentials (not master token). See `docs/security/p1b4-multi-device-architecture.md`, `docs/security/p1b4-threat-model.md`, `docs/architecture/device-registry.md`, `docs/architecture/remote-access-gateway.md`. **No remote access activated.**
 
+**P1b.4b (complete — local foundation only):** Persistent device registry in the existing cosd SQLite file, independent stable device ids, permission profiles with central authorization, Keychain-backed device credential references, rotation/expiration/revocation, device audit events, authenticated local `/v1/devices` APIs, primary Mac bootstrap, and a Chief.app local owner Devices screen. Implementation: `docs/architecture/device-registry-implementation.md`. The master token, Chief.app, Raycast, and `bin/cos` paths are unchanged. **Remote enrollment, pairing, Tailscale, TLS, and remote credentials remain disabled.**
+
 **Later P1b (implementation, gated):**
-- **P1b.4b** — Device registry + credential foundation (Keychain broker).
-- **P1b.4c** — Pairing, QR, owner approval.
+- **P1b.4c** — Pairing, QR, owner approval, remote enrollment codes.
 - **P1b.4d** — Tailscale, TLS gateway, ACLs (cross-model security review).
 - HTTPS on gateway (not on raw cosd listener).
 - Read-only / capture-only profiles for remote clients by default.

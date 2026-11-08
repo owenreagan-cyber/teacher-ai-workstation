@@ -1,6 +1,8 @@
 # Remote access gateway (design — P1b.4a)
 
-**Status:** Architecture only. `cosd` remains `127.0.0.1` only. No gateway process ships in this phase.
+**Status:** Architecture only for the gateway. P1b.4b shipped the local device
+registry, permission profiles, and credential foundation. `cosd` remains
+`127.0.0.1` only and no gateway process ships in this phase.
 
 ## Decision summary
 
@@ -98,8 +100,8 @@ Future: local clients may **optionally** use device credential + gateway on `127
 
 | Phase | Deliverable |
 | --- | --- |
-| P1b.4b | Registry schema, Keychain broker, device credential format |
+| P1b.4b | Registry schema, Keychain broker, device credential format — **done locally** |
 | P1b.4c | Pairing + owner approval |
 | P1b.4d | Gateway binary, TLS, Tailscale bind, ACL documentation |
 | P1c | SwiftUI client uses device credential only |
-| P1d | Chief.app device management UI |
+| P1d | Chief.app device management UI (basic local owner screen shipped in P1b.4b) |

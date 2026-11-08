@@ -87,7 +87,9 @@ const preload = read("src/preload/preload.ts");
 const ALLOWED = [
   "ask", "cancelAsk", "history", "openLink", "brief", "home", "configGet", "configSet", "status",
   "cosdConnection", "cosdReconnect", "listTasks", "getTask", "createTask", "cancelTask", "retryTask",
-  "taskHistory", "queueSnapshot", "cosdStart", "cosdStop", "cosdRestart", "runtimeSnapshot", "opsPrefsGet", "opsPrefsSet",
+  "taskHistory", "queueSnapshot", "listDevices", "getDevice", "createDevice", "updateDevice",
+  "disableDevice", "enableDevice", "revokeDevice", "removeDevice", "bootstrapDevice", "deviceCredentials",
+  "rotateDeviceCredential", "revokeDeviceCredential", "cosdStart", "cosdStop", "cosdRestart", "runtimeSnapshot", "opsPrefsGet", "opsPrefsSet",
   "stop", "resume", "setPin", "setProtection", "hide", "onEvent",
 ];
 const bridgeBody = preload.match(/const bridge: PreloadBridge = \{([\s\S]*?)\n\};/)?.[1] ?? "";
@@ -206,6 +208,14 @@ check("config set accepts only the settable keys", /return \["config", "set", "-
 check("preload configSet passes the key as a string", /configSet: \(key, value\) => electron\.ipcRenderer\.invoke\("chief:config-set", String\(key\), value\)/.test(preload));
 check("start at login is display-only in Settings (no bridge)", !/startAtLogin|setLoginItem/.test(preload) && !/setLoginItemSettings/.test(read("src/renderer/Settings.tsx")));
 check("a need's command action is only copied, never run", /else copyText\(action\.command\);/.test(read("src/renderer/App.tsx")));
+
+// 6i. Device management: access changes confirm in the renderer, and the
+// renderer never holds Keychain references or raw credential material.
+const devicesTsx = read("src/renderer/Devices.tsx");
+check("device page confirms profile and lifecycle changes", /window\.confirm\(confirmationMessage/.test(devicesTsx));
+check("device page never mentions Keychain references", !/keychain/i.test(devicesTsx));
+check("device page never renders api.token", !/api\.token/i.test(devicesTsx));
+check("device page never reads a credential token field", !/credential\.token|\.token\b/.test(devicesTsx));
 
 // 7. Dev script: no package-internal paths (TypeScript 7 stopped exporting typescript/bin/tsc,
 // which broke `npm run dev` with ERR_PACKAGE_PATH_NOT_EXPORTED). Compile through build:main.

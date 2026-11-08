@@ -4,6 +4,7 @@ import type { NeedAction } from "../shared/home";
 import { type ChatMode, loadChatMode, type Page, railCollapsed, saveChatMode, shortcutFor, toggleHide } from "../shared/layout";
 import type { ErrorKind, StatusResult, Turn, WindowState } from "../shared/types";
 import { type Card, type CardBody, ChatPanel, copyText, ModeControl } from "./Chat";
+import { DevicesPage } from "./Devices";
 import { errorMessage, statusDot } from "./messages";
 import { Rail } from "./Rail";
 import { SettingsPage } from "./Settings";
@@ -277,6 +278,7 @@ export function App() {
   if (mode === "focus") content = chat;
   else if (page === "mac") content = <MacPage home={home} now={now} />;
   else if (page === "agents") content = <AgentsPage home={home} now={now} />;
+  else if (page === "devices") content = <DevicesPage bridge={window.chief} />;
   else if (page === "settings") content = <SettingsPage windowState={windowState} onWindowState={setWindowState} />;
   else {
     content = (

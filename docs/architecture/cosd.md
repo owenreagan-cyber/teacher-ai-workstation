@@ -15,6 +15,7 @@
 | `cosd/storage.py` | SQLite WAL task database |
 | `cosd/tasks.py` | Task registry service |
 | `cosd/task_http.py` | `/v1/tasks` HTTP routing |
+| `cosd/devices/` | Device registry, permissions, credentials, authorization, `/v1/devices` (P1b.4b) |
 
 API contract: `docs/architecture/cosd-api-contract.md`.
 
@@ -44,6 +45,8 @@ LaunchAgent is **opt-in** only (P1b.2): `bin/cosd launchagent install --confirm`
 | `cosd/cosd.pid` | Running process record (service name `cosd`) |
 | `cosd/api.token` | API bearer secret (`0600`) |
 | `cosd/auth.meta.json` | Token version metadata |
+| `cosd/tasks.sqlite3` | Task registry + device registry tables (WAL) |
+| `audit.jsonl` | Hash-chained audit log (state root) |
 
 Uses the same `COS_STATE_DIR` / Chief private directory as `cos`.
 
@@ -51,6 +54,11 @@ Uses the same `COS_STATE_DIR` / Chief private directory as `cos`.
 
 - Binds only to `127.0.0.1`.
 - Bearer token required for all endpoints except `/health`.
+- Device principals may use `Authorization: Chief-Device <credential>`; permission
+  profiles are enforced centrally, and a failed device credential never falls
+  back to the master token (P1b.4b).
+- Device secrets live in the macOS Keychain; SQLite holds only references and
+  one-way verifiers.
 - `/v1/ask` uses the same policy gate and kill switch as `bin/cos ask`.
 - Authentication failures are audit-logged without recording supplied tokens.
 
@@ -78,12 +86,21 @@ SQLite store: `docs/architecture/cosd-task-registry.md`. CLI: `bin/cosd tasks �
 
 See `docs/architecture/cosd-local-operations.md` — `/v1/events` (SSE), `/v1/runtime`, `/v1/ask/stream`, notification hooks for Chief.app.
 
+## Device registry (P1b.4b)
+
+`cosd/devices/` — persistent local device identity, permission profiles,
+Keychain-backed credential references, rotation/revocation, lifecycle APIs, and
+audit. Chief.app has a local owner Devices screen. See
+`docs/architecture/device-registry-implementation.md`. Remote enrollment and
+network access are **not** enabled.
+
 ## Limitations
 
-- No Tailscale/TLS/remote pairing **in production** (P1b.4a design: loopback preserved; see ADR-021)
+- No Tailscale/TLS/remote pairing **in production** (P1b.4a design: loopback preserved; see ADR-021). P1b.4b adds only the local identity/credential foundation.
 - No autonomous scheduler or executor (P1b.1c)
 - Chief.app integrated (P1b.1e); Raycast cosd client (P1b.3): `docs/architecture/raycast-chief-of-staff.md`
 - `bin/cos` remains the primary one-shot CLI
+- Device credentials are not distributed to remote clients (P1b.4c/P1b.4d)
 
 ## Future milestones
 

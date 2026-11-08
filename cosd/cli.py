@@ -322,6 +322,113 @@ def cmd_rotate_token(_args: argparse.Namespace) -> int:
     return EXIT_OK
 
 
+def _device_call(path: str, *, method: str = "GET", body: dict | None = None) -> int:
+    try:
+        raw = None if body is None else json.dumps(body).encode("utf-8")
+        status, resp = _authenticated_request(path, method=method, body=raw)
+        return _print_api(status, resp)
+    except (URLError, RuntimeError, json.JSONDecodeError) as exc:
+        print(f"cosd: {exc}", file=sys.stderr)
+        return EXIT_ERROR
+
+
+def cmd_devices_list(args: argparse.Namespace) -> int:
+    query = {}
+    if args.status:
+        query["status"] = args.status
+    if args.profile:
+        query["device_profile"] = args.profile
+    if args.limit is not None:
+        query["limit"] = str(args.limit)
+    if args.offset is not None:
+        query["offset"] = str(args.offset)
+    try:
+        status, body = _authenticated_request("/v1/devices", query=query or None)
+        return _print_api(status, body)
+    except (URLError, RuntimeError, json.JSONDecodeError) as exc:
+        print(f"cosd: {exc}", file=sys.stderr)
+        return EXIT_ERROR
+
+
+def cmd_devices_show(args: argparse.Namespace) -> int:
+    return _device_call(f"/v1/devices/{args.device_id}")
+
+
+def cmd_devices_credentials(args: argparse.Namespace) -> int:
+    return _device_call(f"/v1/devices/{args.device_id}/credentials")
+
+
+def cmd_devices_bootstrap(args: argparse.Namespace) -> int:
+    if not args.confirm:
+        print("cosd: pass --confirm to register this Mac as the primary owner device", file=sys.stderr)
+        return EXIT_USAGE
+    body: dict = {"confirm": True}
+    if args.name:
+        body["display_name"] = args.name
+    if args.owner:
+        body["owner_id"] = args.owner
+    return _device_call("/v1/devices/bootstrap", method="POST", body=body)
+
+
+def cmd_devices_rename(args: argparse.Namespace) -> int:
+    return _device_call(
+        f"/v1/devices/{args.device_id}", method="PATCH", body={"display_name": args.name}
+    )
+
+
+def cmd_devices_profile(args: argparse.Namespace) -> int:
+    body: dict = {"device_profile": args.profile}
+    if args.trust:
+        body["trust_level"] = args.trust
+    return _device_call(f"/v1/devices/{args.device_id}", method="PATCH", body=body)
+
+
+def cmd_devices_disable(args: argparse.Namespace) -> int:
+    return _device_call(f"/v1/devices/{args.device_id}/disable", method="POST", body={})
+
+
+def cmd_devices_enable(args: argparse.Namespace) -> int:
+    return _device_call(f"/v1/devices/{args.device_id}/enable", method="POST", body={})
+
+
+def cmd_devices_revoke(args: argparse.Namespace) -> int:
+    return _device_call(
+        f"/v1/devices/{args.device_id}/revoke",
+        method="POST",
+        body={"reason": args.reason or ""},
+    )
+
+
+def cmd_devices_remove(args: argparse.Namespace) -> int:
+    return _device_call(f"/v1/devices/{args.device_id}", method="DELETE")
+
+
+def cmd_devices_rotate_credential(args: argparse.Namespace) -> int:
+    body = {}
+    if args.credential_id:
+        body["credential_id"] = args.credential_id
+    return _device_call(
+        f"/v1/devices/{args.device_id}/credentials/rotate", method="POST", body=body
+    )
+
+
+def cmd_devices_revoke_credential(args: argparse.Namespace) -> int:
+    body = {}
+    if args.credential_id:
+        body["credential_id"] = args.credential_id
+    return _device_call(
+        f"/v1/devices/{args.device_id}/credentials/revoke", method="POST", body=body
+    )
+
+
+def cmd_devices_recover_primary(args: argparse.Namespace) -> int:
+    return _device_call(
+        f"/v1/devices/{args.device_id}/recover-primary",
+        method="POST",
+        body={"confirm_phrase": args.confirm_phrase},
+    )
+
+
 def main(argv: list[str] | None = None) -> int:
     if sys.version_info < (3, 12):
         print("cosd: Python 3.12+ required", file=sys.stderr)
@@ -351,6 +458,75 @@ def main(argv: list[str] | None = None) -> int:
         sub.add_parser(name).set_defaults(func=func)
 
     sub.add_parser("rotate-token").set_defaults(func=cmd_rotate_token)
+
+    devices = sub.add_parser("devices", help="local device registry (loopback owner only)")
+    devices_sub = devices.add_subparsers(dest="devices_command", required=True)
+
+    dlist = devices_sub.add_parser("list", help="list registered devices")
+    dlist.add_argument("--status")
+    dlist.add_argument("--profile")
+    dlist.add_argument("--limit", type=int)
+    dlist.add_argument("--offset", type=int)
+    dlist.set_defaults(func=cmd_devices_list)
+
+    dshow = devices_sub.add_parser("show", help="show one device")
+    dshow.add_argument("device_id")
+    dshow.set_defaults(func=cmd_devices_show)
+
+    dcreds = devices_sub.add_parser("credentials", help="list credential metadata")
+    dcreds.add_argument("device_id")
+    dcreds.set_defaults(func=cmd_devices_credentials)
+
+    dboot = devices_sub.add_parser("bootstrap", help="register this Mac as the primary owner device")
+    dboot.add_argument("--confirm", action="store_true")
+    dboot.add_argument("--name")
+    dboot.add_argument("--owner")
+    dboot.set_defaults(func=cmd_devices_bootstrap)
+
+    drename = devices_sub.add_parser("rename", help="rename a device")
+    drename.add_argument("device_id")
+    drename.add_argument("name")
+    drename.set_defaults(func=cmd_devices_rename)
+
+    dprofile = devices_sub.add_parser("profile", help="change a device permission profile")
+    dprofile.add_argument("device_id")
+    dprofile.add_argument("profile")
+    dprofile.add_argument("--trust")
+    dprofile.set_defaults(func=cmd_devices_profile)
+
+    for name, func, help_text in (
+        ("disable", cmd_devices_disable, "temporarily prevent authentication"),
+        ("enable", cmd_devices_enable, "restore a disabled device"),
+    ):
+        p = devices_sub.add_parser(name, help=help_text)
+        p.add_argument("device_id")
+        p.set_defaults(func=func)
+
+    drevoke = devices_sub.add_parser("revoke", help="permanently invalidate a device")
+    drevoke.add_argument("device_id")
+    drevoke.add_argument("--reason", default="")
+    drevoke.set_defaults(func=cmd_devices_revoke)
+
+    dremove = devices_sub.add_parser("remove", help="remove a disabled or revoked device")
+    dremove.add_argument("device_id")
+    dremove.set_defaults(func=cmd_devices_remove)
+
+    drotate = devices_sub.add_parser("rotate-credential", help="rotate a device credential")
+    drotate.add_argument("device_id")
+    drotate.add_argument("--credential-id", dest="credential_id")
+    drotate.set_defaults(func=cmd_devices_rotate_credential)
+
+    drevcred = devices_sub.add_parser("revoke-credential", help="revoke a device credential")
+    drevcred.add_argument("device_id")
+    drevcred.add_argument("--credential-id", dest="credential_id")
+    drevcred.set_defaults(func=cmd_devices_revoke_credential)
+
+    drecover = devices_sub.add_parser(
+        "recover-primary", help="release primary-owner protection after explicit confirmation"
+    )
+    drecover.add_argument("device_id")
+    drecover.add_argument("--confirm-phrase", dest="confirm_phrase", required=True)
+    drecover.set_defaults(func=cmd_devices_recover_primary)
 
     tasks = sub.add_parser("tasks", help="task registry via daemon API")
     tasks_sub = tasks.add_subparsers(dest="tasks_command", required=True)

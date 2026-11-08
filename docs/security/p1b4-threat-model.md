@@ -2,6 +2,27 @@
 
 **Scope:** Chief of Staff (`cosd`) and future remote clients over Tailscale + gateway.
 **Status:** Design-time; mitigations marked **existing**, **planned**, or **gap**.
+**P1b.4b:** Local device identity, permission profiles, credential references,
+rotation/revocation, and audit are implemented. Remote enrollment, TLS, and the
+gateway are still deferred, so remote-specific rows remain planned/gap.
+
+## P1b.4b implementation evidence
+
+| Control | State |
+| --- | --- |
+| Independent device identity + persistence | Implemented (`cosd/devices`, `device_schema_version`) |
+| Central permission authorization | Implemented for local owner and `Chief-Device` principals |
+| Per-device credential references | Implemented; secrets in macOS Keychain, verifier in SQLite |
+| Rotation / expiration / revocation | Implemented; checked on every request |
+| Revocation immediately invalid | Implemented (`401`, no master fallback) |
+| School / partner / capture-only boundaries | Implemented in the profile matrix |
+| Device audit + provenance after removal | Implemented (`device_events` + hash-chained JSONL) |
+| Remote enrollment / Tailscale / TLS | **Not implemented** (P1b.4c/4d) |
+
+Residual local risks: the master token remains on disk for existing clients; the
+Keychain provider passes the secret as a `security` argv element for a brief
+period; a compromised owner session can still mutate the registry. These are
+documented in `docs/architecture/device-registry-implementation.md`.
 
 Legend: **PASS** = adequately mitigated at target architecture; **WARN** = partial / depends on implementation discipline; **FAIL** = unacceptable without planned control.
 
@@ -25,7 +46,7 @@ Legend: **PASS** = adequately mitigated at target architecture; **WARN** = parti
 | Stolen MacBook (remote client) | Low | High | None for remote | Gateway + device token; no master token on laptop | Audit auth_failed | Revoke; rotate device cred | **WARN** |
 | Shared household iPad | Medium | Medium | None | `capture_only` / school profile default | Profile audit | Disable device | **WARN** |
 | Compromised tailnet peer | Low | Critical | None | ACL least-privilege; app-layer device auth | Gateway deny logs | Revoke all device creds on peer | **WARN** |
-| Formerly authorized device | Medium | High | Local token only today | Central revoke without master rotation | `last_seen_at` stale + revoke | Re-enroll | **PASS** (planned) |
+| Formerly authorized device | Medium | High | Local token only today | Central revoke without master rotation | `last_seen_at` stale + revoke | Re-enroll | **PASS** (local, P1b.4b) |
 | School-managed MDM wipe | Medium | Low | N/A | No master token on school devices | Enrollment audit | Re-pair personal | **PASS** (planned) |
 | Outdated client app | High | Medium | Version check in Chief desktop | Min client version in gateway | `app_version` field | Block + force upgrade | **WARN** |
 
@@ -66,7 +87,7 @@ Legend: **PASS** = adequately mitigated at target architecture; **WARN** = parti
 | Cross-device data exposure | Medium | High | Local sessions today | Task/session scoping by profile | Access audit | Revoke device | **WARN** |
 | API abuse / flood | Medium | Medium | Timeouts | Rate limits at gateway | Metrics | Throttle IP/device | **WARN** |
 | Replay mutating requests | Low | Medium | Idempotency keys (tasks) | Optional request nonces for gateway | Duplicate idempotency | Reject | **PASS** (tasks exist) |
-| Inadequate revocation | Medium | High | rotate-token is global today | Per-device credential revoke | Registry state | Instant gateway deny | **WARN** until 4b |
+| Inadequate revocation | Medium | High | rotate-token is global today | Per-device credential revoke | Registry state | Instant deny | **PASS** (local, P1b.4b) |
 
 ---
 

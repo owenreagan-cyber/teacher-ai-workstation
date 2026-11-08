@@ -1,6 +1,6 @@
 # ADR-021: Secure multi-device access to cosd
 
-**Status:** Accepted (architecture — P1b.4a)
+**Status:** Accepted (architecture — P1b.4a); local implementation note added for P1b.4b
 **Date:** 2026-11-08
 **Deciders:** Owen Reagan (owner); implementation gated per `docs/implementation-approval-gate.md`
 
@@ -63,6 +63,15 @@ No superseding of D-007 or D-015 required.
 ## Implementation approval
 
 P1b.4b through P1b.4d and P1c each require separate mission approval per implementation gate.
+
+## Implementation note (P1b.4b)
+
+The local foundation is implemented without changing this decision: device
+registry and permission profiles in `cosd/devices/`, Keychain-backed credential
+references with rotation/revocation, `/v1/devices` local owner APIs, and a Chief.app
+Devices screen. `cosd` still binds to `127.0.0.1`; the master token is unchanged
+and never distributed to devices; the gateway does not exist yet. See
+`docs/architecture/device-registry-implementation.md`.
 
 ## References
 

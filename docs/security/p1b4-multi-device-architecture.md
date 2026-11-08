@@ -1,7 +1,7 @@
 # P1b.4a — Secure multi-device access architecture
 
-**Phase:** P1b.4a (architecture and threat model only)
-**Activation:** None — no network, credential, or code changes in this milestone.
+**Phase:** P1b.4a architecture; P1b.4b local identity/credential foundation
+**Activation:** Local only. No network, remote pairing, Tailscale, or remote credential distribution in this milestone.
 
 ## Current-state inventory (verified)
 
@@ -11,15 +11,47 @@
 | Single shared bearer `api.token` | **Implemented** | `cosd/auth.py`; Chief.app + Raycast read from `ChiefOfStaff/cosd/` |
 | Task registry + execution queue | **Implemented** | P1b.1b–c |
 | Chief.app / Raycast / `bin/cos` clients | **Implemented** | P1b.1e–3 |
-| Device registry | **Not implemented** | — |
-| Device pairing | **Not implemented** | Planned in D-007, NEXT-PHASES P1b |
-| Tailscale / remote bind | **Not implemented** | Explicitly deferred in `cosd.md` |
+| Device registry | **Implemented locally** | P1b.4b `cosd/devices/`; same SQLite file |
+| Device permission profiles | **Implemented locally** | P1b.4b central authorization |
+| Per-device credential foundation | **Implemented locally** | P1b.4b Keychain references + rotation/revocation; not distributed remotely |
+| Device management API | **Implemented locally** | P1b.4b `/v1/devices` |
+| Device pairing | **Not implemented** | Planned in D-007, NEXT-PHASES P1b.4c |
+| Tailscale / remote bind | **Not implemented** | Explicitly deferred in `cosd.md` and P1b.4d |
 | NAS doorman (D-015) | **Not implemented** | Documented in DECISIONS only |
-| Per-device credentials | **Not implemented** | — |
 | HTTPS on cosd | **Not implemented** | — |
 | iPhone SwiftUI client | **Not implemented** | D-007 ACCEPTED, future P1c |
 
-**Conclusion:** Multi-device access is **designed only**. Local-first security boundaries shipped in P1b.1–3 remain authoritative.
+**Conclusion:** Multi-device access is still **not activated**. P1b.4b establishes
+local device identity, permissions, credentials, and revocation; remote
+enrollment and network access remain P1b.4c/P1b.4d work.
+
+## P1b.4b implementation status
+
+The local foundation now exists:
+
+- Device records persist in the existing cosd SQLite database with a separate
+  `device_schema_version` migration.
+- Device ids are random 128-bit values, stable across restarts, and independent
+  of IP/hostname/name.
+- Permission profiles are enforced centrally for master-token owner requests and
+  independently authenticated `Chief-Device` principals.
+- Device credentials are opaque `<credential_id>.<secret>` tokens; only a
+  Keychain reference and a salted one-way verifier are stored in SQLite.
+- Rotation, expiration, and revocation are implemented. Revocation is checked on
+  every authorization decision; old credentials fail immediately.
+- Device lifecycle and authentication events are written to the hash-chained
+  audit log and a `device_events` table that survives device removal.
+- The primary Mac can be bootstrapped as the owner device with explicit
+  confirmation; the existing master token is unchanged.
+- Chief.app has a local owner Devices screen.
+
+Implementation names used in code are `personal`, `school`, and `read_only` for
+the architecture table's `personal_trusted`, `school_managed`, and `readonly`.
+The `ask` capability is a separate `ask` permission in code so school/partner
+ask restrictions are enforceable without granting task read or execution.
+
+Still disabled: QR pairing, remote enrollment, Tailscale, TLS gateway, remote
+credentials, and remote clients.
 
 ## Trust boundaries (six layers)
 

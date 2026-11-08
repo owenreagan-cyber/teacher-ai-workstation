@@ -113,6 +113,11 @@ jobs:
           python3 -m unittest discover -s tests/cos -p 'test_*.py'
           python3 -m unittest discover -s tests/cosd -p 'test_*.py'
 
+      - name: Device registry and credential foundation
+        run: |
+          set -euo pipefail
+          python3 -m unittest discover -s tests/cosd/devices -p 'test_*.py'
+
       - name: Chief desktop (Electron)
         run: |
           set -euo pipefail

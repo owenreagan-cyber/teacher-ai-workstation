@@ -70,9 +70,12 @@ class CosdStateTest(unittest.TestCase):
         self._tmp = tempfile.TemporaryDirectory(prefix="cosd-test-")
         self.state = Path(self._tmp.name) / "ChiefOfStaff"
         self.state.mkdir(parents=True, exist_ok=True)
-        self._old = {k: os.environ.get(k) for k in ("COS_STATE_DIR", "COS_FIXTURE_DIR")}
+        self._old = {k: os.environ.get(k) for k in ("COS_STATE_DIR", "COS_FIXTURE_DIR", "COSD_CREDENTIAL_PROVIDER")}
         os.environ["COS_STATE_DIR"] = str(self.state)
         os.environ["COS_FIXTURE_DIR"] = str(FIXTURES)
+        # Device credentials are always a fake in tests; the real Keychain is
+        # never touched by the ordinary suite.
+        os.environ["COSD_CREDENTIAL_PROVIDER"] = "memory"
 
     def tearDown(self):
         for k, v in self._old.items():
@@ -84,7 +87,7 @@ class CosdStateTest(unittest.TestCase):
 
 
 class RunningServer:
-    def __init__(self, state_base: Path, port: int | None = None, *, use_subprocess: bool = True):
+    def __init__(self, state_base: Path, port: int | None = None, *, use_subprocess: bool = True, credential_provider=None):
         import os
         import subprocess
         import sys
@@ -103,7 +106,12 @@ class RunningServer:
 
             self._thread = threading.Thread(
                 target=run_server,
-                kwargs={"host": "127.0.0.1", "port": self.port, "state_base": state_base},
+                kwargs={
+                    "host": "127.0.0.1",
+                    "port": self.port,
+                    "state_base": state_base,
+                    "credential_provider": credential_provider,
+                },
                 daemon=True,
             )
             self._thread.start()
@@ -174,6 +182,7 @@ class RunningServer:
         except (OSError, URLError, Exception):
             pass
         if self._thread is not None:
+            self._thread.join(timeout=5)
             return
         rec = read_pid(self.state_base)
         if rec:

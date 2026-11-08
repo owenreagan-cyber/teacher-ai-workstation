@@ -5,6 +5,14 @@ import type {
   StatusResult,
 } from "../shared/types.js";
 import type { CosdConnectionSnapshot, CosdTask, QueueSnapshot, TaskHistoryEvent } from "../shared/cosd.js";
+import type {
+  CredentialMetadata,
+  DeviceCreateInput,
+  DeviceDetailResult,
+  DeviceListResult,
+  DevicePatchInput,
+  DeviceRecord,
+} from "../shared/devices.js";
 import { CosRunner, toStatus } from "./cos.js";
 import { CosdClient } from "./cosd/client.js";
 import { CosdConnectionManager, daemonModeFromEnv } from "./cosd/connection.js";
@@ -205,6 +213,122 @@ export class ChiefRuntime {
       return { ok: true, queue: await this.cosd.queue(ep) };
     } catch (e) {
       return fail("internal", e instanceof CosdHttpError ? e.message : "queue failed");
+    }
+  }
+
+  async listDevices(filter?: { status?: string; profile?: string }): Promise<DeviceListResult | Failure> {
+    const ep = this.connection.getEndpoint();
+    if (!ep) return fail("setup", "Devices require a running cosd");
+    try {
+      const { devices, total, limit, offset } = await this.cosd.listDevices(ep, filter ?? {});
+      return { ok: true, devices, total, limit, offset };
+    } catch (e) {
+      return fail("internal", e instanceof CosdHttpError ? e.message : "device list failed");
+    }
+  }
+
+  async getDevice(deviceId: string): Promise<DeviceDetailResult | Failure> {
+    const ep = this.connection.getEndpoint();
+    if (!ep) return fail("setup", "Devices require a running cosd");
+    try {
+      return { ok: true, device: await this.cosd.getDevice(ep, deviceId) };
+    } catch (e) {
+      return fail("internal", e instanceof CosdHttpError ? e.message : "device fetch failed");
+    }
+  }
+
+  async createDevice(input: DeviceCreateInput): Promise<DeviceDetailResult | Failure> {
+    const ep = this.connection.getEndpoint();
+    if (!ep) return fail("setup", "Devices require a running cosd");
+    try {
+      const result = await this.cosd.createDevice(ep, input);
+      return { ok: true, device: result.device, ...(result.credential ? { credential: result.credential } : {}) };
+    } catch (e) {
+      return fail("internal", e instanceof CosdHttpError ? e.message : "device register failed");
+    }
+  }
+
+  async updateDevice(deviceId: string, patch: DevicePatchInput): Promise<DeviceDetailResult | Failure> {
+    const ep = this.connection.getEndpoint();
+    if (!ep) return fail("setup", "Devices require a running cosd");
+    try {
+      return { ok: true, device: await this.cosd.updateDevice(ep, deviceId, patch) };
+    } catch (e) {
+      return fail("internal", e instanceof CosdHttpError ? e.message : "device update failed");
+    }
+  }
+
+  async deviceDisable(deviceId: string): Promise<DeviceDetailResult | Failure> {
+    return this.deviceAction(deviceId, "disable");
+  }
+
+  async deviceEnable(deviceId: string): Promise<DeviceDetailResult | Failure> {
+    return this.deviceAction(deviceId, "enable");
+  }
+
+  async deviceRevoke(deviceId: string): Promise<DeviceDetailResult | Failure> {
+    return this.deviceAction(deviceId, "revoke");
+  }
+
+  private async deviceAction(deviceId: string, action: "disable" | "enable" | "revoke"): Promise<DeviceDetailResult | Failure> {
+    const ep = this.connection.getEndpoint();
+    if (!ep) return fail("setup", "Devices require a running cosd");
+    try {
+      return { ok: true, device: await this.cosd.deviceAction(ep, deviceId, action) };
+    } catch (e) {
+      return fail("internal", e instanceof CosdHttpError ? e.message : `device ${action} failed`);
+    }
+  }
+
+  async deviceRemove(deviceId: string): Promise<{ ok: true } | Failure> {
+    const ep = this.connection.getEndpoint();
+    if (!ep) return fail("setup", "Devices require a running cosd");
+    try {
+      await this.cosd.deleteDevice(ep, deviceId);
+      return { ok: true };
+    } catch (e) {
+      return fail("internal", e instanceof CosdHttpError ? e.message : "device remove failed");
+    }
+  }
+
+  async bootstrapDevice(displayName: string): Promise<{ ok: true; device: DeviceRecord; created: boolean } | Failure> {
+    const ep = this.connection.getEndpoint();
+    if (!ep) return fail("setup", "Devices require a running cosd");
+    try {
+      return { ok: true, ...(await this.cosd.bootstrapDevice(ep, displayName)) };
+    } catch (e) {
+      return fail("internal", e instanceof CosdHttpError ? e.message : "device bootstrap failed");
+    }
+  }
+
+  async deviceCredentials(deviceId: string): Promise<{ ok: true; device_id: string; credentials: CredentialMetadata[] } | Failure> {
+    const ep = this.connection.getEndpoint();
+    if (!ep) return fail("setup", "Devices require a running cosd");
+    try {
+      return { ok: true, device_id: deviceId, credentials: await this.cosd.listCredentials(ep, deviceId) };
+    } catch (e) {
+      return fail("internal", e instanceof CosdHttpError ? e.message : "credential list failed");
+    }
+  }
+
+  async rotateDeviceCredential(deviceId: string): Promise<{ ok: true; credential: CredentialMetadata } | Failure> {
+    const ep = this.connection.getEndpoint();
+    if (!ep) return fail("setup", "Devices require a running cosd");
+    try {
+      return { ok: true, credential: await this.cosd.rotateCredential(ep, deviceId) };
+    } catch (e) {
+      return fail("internal", e instanceof CosdHttpError ? e.message : "credential rotation failed");
+    }
+  }
+
+  async revokeDeviceCredential(deviceId: string): Promise<{ ok: true } | Failure> {
+    const ep = this.connection.getEndpoint();
+    if (!ep) return fail("setup", "Devices require a running cosd");
+    try {
+      await this.cosd.revokeCredential(ep, deviceId);
+      return { ok: true };
+    } catch (e) {
+      return fail("internal", e instanceof CosdHttpError ? e.message : "credential revocation failed");
     }
   }
 

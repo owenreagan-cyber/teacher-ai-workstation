@@ -35,6 +35,14 @@ import { CosdConnectionManager } from "./cosd/connection.js";
 import { CosdEventStream, tokenForStream } from "./cosd/event-stream.js";
 import { cosdBinFromCos, cosdRestart, cosdStart, cosdStop } from "./cosd/lifecycle-control.js";
 import { validateAskInput, validateCreateTask, validateOptionalState, validateTaskId } from "./ipc-cosd.js";
+import {
+  validateDeviceConfirm,
+  validateDeviceCreateInput,
+  validateDeviceFilter,
+  validateDeviceId,
+  validateDevicePatchInput,
+} from "./ipc-cosd.js";
+import { validateDisplayName } from "../shared/devices.js";
 import { notifyDaemonConnection, notifyTaskEvent } from "./notifications.js";
 import { loadOpsPrefs, saveOpsPrefs, type OpsPrefs } from "./ops-prefs.js";
 import { openLink, ResourceTable } from "./resources.js";
@@ -437,6 +445,40 @@ function registerIpc(): void {
   handle("chief:task-retry", (taskId) => runtime.retryTask(validateTaskId(taskId)));
   handle("chief:task-history", (taskId) => runtime.taskHistory(validateTaskId(taskId)));
   handle("chief:queue", () => runtime.queueSnapshot());
+  handle("chief:devices-list", (filter) => runtime.listDevices(validateDeviceFilter(filter)));
+  handle("chief:device-get", (deviceId) => runtime.getDevice(validateDeviceId(deviceId)));
+  handle("chief:device-create", (input) => runtime.createDevice(validateDeviceCreateInput(input)));
+  handle("chief:device-update", (deviceId, patch) =>
+    runtime.updateDevice(validateDeviceId(deviceId), validateDevicePatchInput(patch)));
+  handle("chief:device-disable", (deviceId, confirm) => {
+    validateDeviceConfirm(confirm);
+    return runtime.deviceDisable(validateDeviceId(deviceId));
+  });
+  handle("chief:device-enable", (deviceId, confirm) => {
+    validateDeviceConfirm(confirm);
+    return runtime.deviceEnable(validateDeviceId(deviceId));
+  });
+  handle("chief:device-revoke", (deviceId, confirm) => {
+    validateDeviceConfirm(confirm);
+    return runtime.deviceRevoke(validateDeviceId(deviceId));
+  });
+  handle("chief:device-remove", (deviceId, confirm) => {
+    validateDeviceConfirm(confirm);
+    return runtime.deviceRemove(validateDeviceId(deviceId));
+  });
+  handle("chief:devices-bootstrap", (displayName, confirm) => {
+    validateDeviceConfirm(confirm);
+    return runtime.bootstrapDevice(validateDisplayName(displayName));
+  });
+  handle("chief:device-credentials", (deviceId) => runtime.deviceCredentials(validateDeviceId(deviceId)));
+  handle("chief:device-rotate-credential", (deviceId, confirm) => {
+    validateDeviceConfirm(confirm);
+    return runtime.rotateDeviceCredential(validateDeviceId(deviceId));
+  });
+  handle("chief:device-revoke-credential", (deviceId, confirm) => {
+    validateDeviceConfirm(confirm);
+    return runtime.revokeDeviceCredential(validateDeviceId(deviceId));
+  });
   handle("chief:cosd-start", () => cosdStart(cosdPath));
   handle("chief:cosd-stop", (confirm) => (confirm === true ? cosdStop(cosdPath) : { ok: false, error: "confirmation required" }));
   handle("chief:cosd-restart", (confirm) => (confirm === true ? cosdRestart(cosdPath) : { ok: false, error: "confirmation required" }));

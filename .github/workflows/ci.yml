@@ -17,6 +17,7 @@ on:
       - fix/q2w5-homeroom-page-identity
       - fix/q2w5-approval-integrity
       - feat/canvas-duplicate-prevention
+      - fix/canvas-announcement-identity-idempotency
   workflow_dispatch:
 
 permissions:

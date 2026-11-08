@@ -181,6 +181,34 @@ def test_partial_failure_blocks():
         intake_manifest.staging_dir = orig_staging
 
 
+def test_weekly_held_when_prior_week_same_title_still_active():
+    """Regression: active-feed membership must be scoped to the new topic id."""
+    orig, orig_staging, tmp = _tmp_ledger()
+    try:
+        c = _client()
+        c.create_announcement(
+            COURSES["math"],
+            title="Math Canvas Weekly Update",
+            message="<p>Prior week body</p>",
+            published=True,
+            delayed_post_at=None,
+        )
+        m = _manifest()
+        future = "2027-06-01T20:00:00Z"
+        for ann in m["weekly_announcements"]:
+            ann["delayed_post_at"] = future
+        r = rollover.execute(2, 2, 2, 3, client=c, owner_confirmation="ROLLOVER Q2W3",
+                             manifest=m)
+        assert r["lifecycle"] == schedule.PUBLISHED_VERIFIED, r.get("failures")
+        math = next(x for x in r["weekly_announcements"] if x["subject"] == "math")
+        assert math["state"] == "HELD_SCHEDULED", math
+        assert math["verified"] is True
+    finally:
+        tmp.cleanup()
+        deploy_ledger.DEPLOY_ROOT = orig
+        intake_manifest.staging_dir = orig_staging
+
+
 def test_reminder_already_scheduled_skips():
     orig, orig_staging, tmp = _tmp_ledger()
     try:

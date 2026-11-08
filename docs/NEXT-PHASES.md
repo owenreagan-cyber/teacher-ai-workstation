@@ -65,13 +65,17 @@ There is **one `cos` core with two faces.**
 
 **P1b.1e (complete):** Chief.app (`apps/chief-desktop`) uses loopback cosd for ask, status, and task center; execFile fallback for other cos commands. See `docs/architecture/chief-app-cosd-integration.md`.
 
-**Later P1b:**
-- HTTPS on the Mac's Tailscale name. Device pairing by QR code, with revocable tokens.
-- Read-only for remote clients.
+**P1b.4a (architecture — complete):** Multi-device security design only. ADR-021: loopback `cosd` + tailnet **gateway**, device registry, per-device credentials (not master token). See `docs/security/p1b4-multi-device-architecture.md`, `docs/security/p1b4-threat-model.md`, `docs/architecture/device-registry.md`, `docs/architecture/remote-access-gateway.md`. **No remote access activated.**
+
+**Later P1b (implementation, gated):**
+- **P1b.4b** — Device registry + credential foundation (Keychain broker).
+- **P1b.4c** — Pairing, QR, owner approval.
+- **P1b.4d** — Tailscale, TLS gateway, ACLs (cross-model security review).
+- HTTPS on gateway (not on raw cosd listener).
+- Read-only / capture-only profiles for remote clients by default.
 - **New CERTs:**
-  - no request is served without a valid token
-  - not reachable outside localhost and Tailscale
-- Cross-model security review is required.
+  - no remote request without valid **device** credential
+  - cosd not reachable outside localhost except via gateway
 
 ### P1b+ — NAS doorman (D-015)
 - A Docker container on the UGREEN NAS. It runs Tailscale, is always on, and serves only paired devices.

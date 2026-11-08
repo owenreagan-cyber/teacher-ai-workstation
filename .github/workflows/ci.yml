@@ -22,6 +22,7 @@ on:
       - feat/cosd-local-daemon
       - feat/cosd-local-operations
       - feat/raycast-chief-of-staff
+      - docs/p1b4-secure-device-architecture
       - feat/cosd-persistent-task-registry
       - feat/cosd-persistent-execution-queue
       - feat/chief-app-cosd-integration

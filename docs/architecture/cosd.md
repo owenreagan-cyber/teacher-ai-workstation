@@ -66,6 +66,10 @@ Uses the same `COS_STATE_DIR` / Chief private directory as `cos`.
 
 SQLite store: `docs/architecture/cosd-task-registry.md`. CLI: `bin/cosd tasks …`.
 
+## Execution queue (P1b.1c)
+
+`docs/architecture/cosd-execution-queue.md`. CLI: `bin/cosd queue …`, `bin/cosd workers list`.
+
 ## Limitations
 
 - No Tailscale/TLS/remote pairing

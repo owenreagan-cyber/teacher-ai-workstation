@@ -17,6 +17,8 @@ from cos.service import run_ask, run_status
 from . import __version__
 from .auth import authorize, ensure_token
 from .constants import ASK_TIMEOUT_S, DEFAULT_HOST, MAX_BODY_BYTES, SERVICE_NAME
+from .execution.engine import ExecutionEngine
+from .execution_http import dispatch_execution_request
 from .task_http import dispatch_task_request
 from .tasks import TaskRegistry
 
@@ -30,9 +32,12 @@ class CosdHTTPServer(ThreadingHTTPServer):
     def __init__(self, server_address, RequestHandlerClass, *, state_base=None):
         self.state_base = state_base
         self.task_registry = TaskRegistry.open(state_base)
+        self.execution = ExecutionEngine(self.task_registry)
+        self.execution.startup_recovery()
         super().__init__(server_address, RequestHandlerClass)
 
     def request_shutdown(self) -> None:
+        self.execution.prepare_shutdown()
         threading.Thread(target=self.shutdown, daemon=True).start()
 
 
@@ -64,6 +69,39 @@ class Handler(BaseHTTPRequestHandler):
         self._unauthorized()
         return False
 
+    def _route_tasks_and_execution(self) -> bool:
+        path = urlparse(self.path).path
+        if not (
+            path == "/v1/tasks"
+            or path.startswith("/v1/tasks/")
+            or path.startswith("/v1/queue")
+            or path == "/v1/workers"
+        ):
+            return False
+        if not self._require_auth():
+            return True
+        routed = dispatch_execution_request(
+            self,
+            registry=self.server.task_registry,
+            engine=self.server.execution,
+            max_body=MAX_BODY_BYTES,
+        )
+        if routed is not None:
+            status, body = routed
+            self._send_json(status, body)
+            return True
+        routed = dispatch_task_request(
+            self, registry=self.server.task_registry, max_body=MAX_BODY_BYTES
+        )
+        if routed is not None:
+            status, body = routed
+            self._send_json(status, body)
+            return True
+        if path.startswith("/v1/tasks") or path.startswith("/v1/queue") or path == "/v1/workers":
+            self._send_json(404, {"ok": False, "error": "not found", "error_kind": "not_found"})
+            return True
+        return False
+
     def do_GET(self) -> None:  # noqa: N802
         path = urlparse(self.path).path
         if path == "/health":
@@ -86,30 +124,13 @@ class Handler(BaseHTTPRequestHandler):
                 {"ok": True, "cosd": __version__, "task_counts": counts, **run_status(cfg)},
             )
             return
-        if path == "/v1/tasks" or path.startswith("/v1/tasks/"):
-            if not self._require_auth():
-                return
-            routed = dispatch_task_request(
-                self, registry=self.server.task_registry, max_body=MAX_BODY_BYTES
-            )
-            if routed is not None:
-                status, body = routed
-                self._send_json(status, body)
-                return
-        self._send_json(404, {"ok": False, "error": "not found", "error_kind": "not_found"})
+        if not self._route_tasks_and_execution():
+            self._send_json(404, {"ok": False, "error": "not found", "error_kind": "not_found"})
 
     def do_POST(self) -> None:  # noqa: N802
         path = urlparse(self.path).path
-        if path == "/v1/tasks" or path.startswith("/v1/tasks/"):
-            if not self._require_auth():
-                return
-            routed = dispatch_task_request(
-                self, registry=self.server.task_registry, max_body=MAX_BODY_BYTES
-            )
-            if routed is not None:
-                status, body = routed
-                self._send_json(status, body)
-                return
+        if self._route_tasks_and_execution():
+            return
         if path == "/v1/stop":
             if not self._require_auth():
                 return

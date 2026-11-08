@@ -8,7 +8,9 @@ from urllib.parse import parse_qs, urlparse
 
 from .tasks import TaskError, TaskRegistry
 
-_TASK_PATH = re.compile(r"^/v1/tasks(?:/([a-f0-9]{32}))?(?:/(cancel|retry|history))?$")
+_TASK_PATH = re.compile(
+    r"^/v1/tasks(?:/([a-f0-9]{32}))?(?:/(cancel|retry|history|execute|attempts|checkpoints))?$"
+)
 
 
 def _read_json(handler, max_bytes: int) -> dict[str, Any] | None:
@@ -72,6 +74,8 @@ def dispatch_task_request(handler, *, registry: TaskRegistry, max_body: int) -> 
         if task_id and action == "retry" and method == "POST":
             task = registry.retry_task(task_id)
             return 200, {"ok": True, "task": task}
+        if task_id and action in ("execute", "attempts", "checkpoints"):
+            return None
         if path.startswith("/v1/tasks"):
             return 405, {"ok": False, "error": "method not allowed", "error_kind": "method"}
     except TaskError as exc:

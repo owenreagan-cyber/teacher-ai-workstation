@@ -133,6 +133,26 @@ Optional body: `{"reason":"..."}`.
 
 Task records never execute tools or agents in P1b.1b.
 
+## Execution (P1b.1c)
+
+### `POST /v1/tasks/{id}/execute`
+
+Claim (if `QUEUED`) and run through a **registered** handler only (`noop`, `calc`, `diagnostic`).
+
+### `GET /v1/tasks/{id}/attempts` / `GET /v1/tasks/{id}/checkpoints`
+
+Durable execution history for the task.
+
+### `GET /v1/queue`
+
+`paused`, `task_counts`, `active_leases`.
+
+### `POST /v1/queue/pause` / `POST /v1/queue/resume`
+
+### `GET /v1/workers`
+
+Active and historical lease records (bounded).
+
 ## Errors
 
 | HTTP | `error_kind` | Meaning |

@@ -10,7 +10,7 @@ from typing import Any, Iterator
 
 from cos.config import FILE_MODE, STATE_DIR_MODE, state_dir
 
-SCHEMA_VERSION = 1
+SCHEMA_VERSION = 2
 DB_FILENAME = "tasks.sqlite3"
 BUSY_TIMEOUT_MS = 5000
 
@@ -67,6 +67,48 @@ CREATE INDEX IF NOT EXISTS idx_task_events_task_id ON task_events(task_id);
 CREATE INDEX IF NOT EXISTS idx_task_events_created_at ON task_events(created_at);
 """
 
+_SCHEMA_V2 = """
+CREATE TABLE IF NOT EXISTS execution_attempts (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    task_id TEXT NOT NULL REFERENCES tasks(id) ON DELETE CASCADE,
+    attempt_number INTEGER NOT NULL,
+    worker_id TEXT NOT NULL,
+    state TEXT NOT NULL,
+    started_at TEXT NOT NULL,
+    heartbeat_at TEXT NOT NULL,
+    finished_at TEXT,
+    error_json TEXT,
+    result_json TEXT,
+    UNIQUE(task_id, attempt_number)
+);
+
+CREATE TABLE IF NOT EXISTS worker_leases (
+    lease_id TEXT PRIMARY KEY,
+    task_id TEXT NOT NULL UNIQUE,
+    worker_id TEXT NOT NULL,
+    attempt_id INTEGER NOT NULL REFERENCES execution_attempts(id) ON DELETE CASCADE,
+    acquired_at TEXT NOT NULL,
+    expires_at TEXT NOT NULL,
+    heartbeat_at TEXT NOT NULL,
+    state TEXT NOT NULL DEFAULT 'active'
+);
+
+CREATE TABLE IF NOT EXISTS execution_checkpoints (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    task_id TEXT NOT NULL REFERENCES tasks(id) ON DELETE CASCADE,
+    attempt_id INTEGER NOT NULL REFERENCES execution_attempts(id) ON DELETE CASCADE,
+    checkpoint_key TEXT NOT NULL,
+    checkpoint_json TEXT NOT NULL,
+    created_at TEXT NOT NULL,
+    UNIQUE(attempt_id, checkpoint_key)
+);
+
+CREATE INDEX IF NOT EXISTS idx_attempts_task_id ON execution_attempts(task_id);
+CREATE INDEX IF NOT EXISTS idx_attempts_state ON execution_attempts(state);
+CREATE INDEX IF NOT EXISTS idx_leases_expires ON worker_leases(expires_at);
+CREATE INDEX IF NOT EXISTS idx_checkpoints_task ON execution_checkpoints(task_id);
+"""
+
 
 def database_path(base: Path | None = None) -> Path:
     root = base or state_dir()
@@ -114,6 +156,12 @@ class TaskDatabase:
         with self._lock:
             self._conn.close()
 
+    def _apply_v2(self) -> None:
+        self._conn.executescript(_SCHEMA_V2)
+        cols = [r[1] for r in self._conn.execute("PRAGMA table_info(tasks)").fetchall()]
+        if "retry_after_at" not in cols:
+            self._conn.execute("ALTER TABLE tasks ADD COLUMN retry_after_at TEXT")
+
     def _migrate(self) -> None:
         with self._lock:
             self._conn.executescript(_SCHEMA_V1)
@@ -121,6 +169,7 @@ class TaskDatabase:
                 "SELECT value FROM schema_meta WHERE key = 'schema_version'"
             ).fetchone()
             if row is None:
+                self._apply_v2()
                 self._conn.execute(
                     "INSERT INTO schema_meta(key, value) VALUES ('schema_version', ?)",
                     (str(SCHEMA_VERSION),),
@@ -129,6 +178,8 @@ class TaskDatabase:
                 current = int(row["value"])
                 if current > SCHEMA_VERSION:
                     raise RuntimeError(f"database schema {current} newer than cosd {SCHEMA_VERSION}")
+                if current < 2:
+                    self._apply_v2()
                 if current < SCHEMA_VERSION:
                     self._conn.execute(
                         "UPDATE schema_meta SET value = ? WHERE key = 'schema_version'",

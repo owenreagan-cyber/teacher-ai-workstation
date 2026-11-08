@@ -57,7 +57,9 @@ There is **one `cos` core with two faces.**
 
 **P1b.1a (complete):** loopback daemon, authenticated HTTP, lifecycle CLI, `run_ask` integration.
 
-**P1b.1b (complete):** SQLite task registry (`cosd/tasks.sqlite3`), task APIs (`/v1/tasks/*`), idempotency, event history, `bin/cosd tasks`. No executor/scheduler yet (P1b.1c).
+**P1b.1b (complete):** SQLite task registry, task APIs, idempotency, event history.
+
+**P1b.1c (complete):** Execution queue, worker leases, checkpoints, startup recovery, registered handlers, `bin/cosd queue`. No autonomous scheduler or multi-agent orchestration yet.
 
 **Later P1b:**
 - HTTPS on the Mac's Tailscale name. Device pairing by QR code, with revocable tokens.

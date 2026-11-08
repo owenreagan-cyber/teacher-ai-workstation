@@ -217,17 +217,34 @@ def test_execute_updates_existing_weekly_page_not_rolling_page():
         intake_manifest.staging_dir = orig_staging
 
 
+# Observed Q2W5 Canvas transform: surplus orphan </div> after birthday markup + outer close.
+_Q2W5_STAGED_FRAGMENT = (
+    '<div style="max-width:900px;">'
+    '<p>Veterans Day</p><p>Movie Night</p>'
+    '<span>Track 2, Week 5 · November 9–13, 2026</span>'
+    '<!-- BIRTHDAY_SECTION_START -->'
+    '<div><h2>Birthdays</h2></div><!-- BIRTHDAY_SECTION_END -->'
+    '<div>Patricie Passler</div><div>November 20</div></div></div></div>'
+    '</div>'
+    '<script src="https://instructure-uploads/canvas_global_app.js"></script>'
+)
+_Q2W5_LIVE_FRAGMENT = (
+    '<div style="max-width:900px;">'
+    '<p>Veterans Day</p><p>Movie Night</p>'
+    '<span>Track 2, Week 5 · November 9–13, 2026</span>'
+    '<div><h2>Birthdays</h2></div>'
+    '<div>Patricie Passler</div><div>November 20</div></div>'
+    '<script src="https://instructure-uploads/canvas_global_app.js"></script>'
+)
+
+
 def test_q2w5_staged_and_canvas_live_bodies_hash_equivalent():
-    staged = (Path(__file__).parent / "fixtures/q2w5-homeroom-staged.html").read_text(encoding="utf-8")
-    live = (Path(__file__).parent / "fixtures/q2w5-homeroom-live.html").read_text(encoding="utf-8")
-    assert rollover._canvas_body_hash(staged) == rollover._canvas_body_hash(live)
+    assert rollover._canvas_body_hash(_Q2W5_STAGED_FRAGMENT) == rollover._canvas_body_hash(_Q2W5_LIVE_FRAGMENT)
 
 
 def test_q2w5_meaningful_content_survives_canvas_normalization():
-    staged = (Path(__file__).parent / "fixtures/q2w5-homeroom-staged.html").read_text(encoding="utf-8")
-    live = (Path(__file__).parent / "fixtures/q2w5-homeroom-live.html").read_text(encoding="utf-8")
     ok, gaps = rollover._homeroom_meaningful_content_ok(
-        live, staged, slug="q2w5-november-9-13-2026",
+        _Q2W5_LIVE_FRAGMENT, _Q2W5_STAGED_FRAGMENT, slug="q2w5-november-9-13-2026",
     )
     assert ok, gaps
 

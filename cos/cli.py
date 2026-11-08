@@ -125,52 +125,20 @@ def _now_stamp() -> str:
 
 
 def cmd_ask(rt: Runtime, args) -> int:
+    from cos.service import run_ask
+
     question = " ".join(args.question).strip()
-    if not question:
-        _emit_error(args.json, "ask needs a question", "usage")
-        return EXIT_USAGE
     session_id = args.session
-    try:
-        turns = read_turns(rt.config.state_dir, session_id) if session_id else []
-        history = history_messages(turns) if session_id else None
-        started = time.monotonic()
-        result = make_responder(rt).answer(question, previous=turns[-1] if turns else None,
-                                           history=history, mode="ask")
-        total_ms = int((time.monotonic() - started) * 1000)
-    except Stopped:
-        _emit_error(args.json, f"stopped by kill switch ({rt.kill_switch.reason()}); run cos resume",
-                    "stopped")
-        return EXIT_STOPPED
-    except ModelError as e:
-        _emit_error(args.json, f"local model unavailable: {e}", "model_unavailable")
-        return EXIT_MODEL
-    except CloudModelRefused as e:
-        _emit_error(args.json, str(e), "internal")
-        return EXIT_INTERNAL
-    except SessionReadError as e:
-        _emit_error(args.json, str(e), "internal")
-        return EXIT_INTERNAL
-    except Exception as e:  # noqa: BLE001 - JSON callers get data, not a traceback
-        if not args.json:
-            raise
-        _emit_error(True, f"internal error ({type(e).__name__})", "internal")
-        return EXIT_INTERNAL
-    stamp = _now_stamp()
-    if session_id:
-        try:
-            append_turn(rt.config.state_dir, session_id, {
-                "ts": stamp, "question": question, "answer": result.answer,
-                "tools_used": result.tools_used, "fast_path": result.fast_path, "model": result.model,
-                "notices": result.notices, "total_ms": total_ms, "intent": result.intent,
-                "search_query": result.search_query, "blocks": result.blocks,
-                "resources": result.resources})
-        except TurnError as e:
-            print(f"cos: turn not recorded in session ({e})", file=sys.stderr)
+    code, body = run_ask(rt, question=question, session_id=session_id)
+    if not body.get("ok"):
+        _emit_error(args.json, body.get("error", "ask failed"), body.get("error_kind", "internal"))
+        return code
     if args.json:
-        print(json.dumps({**result.as_json(), "session_id": session_id, "ts": stamp,
-                          "total_ms": total_ms}))
-    else:
-        print(result.text())
+        print(json.dumps(body))
+        return EXIT_OK
+    print(body.get("text") or body.get("answer", ""))
+    if body.get("session_warning"):
+        print(f"cos: {body['session_warning']}", file=sys.stderr)
     return EXIT_OK
 
 

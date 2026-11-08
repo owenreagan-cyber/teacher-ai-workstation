@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+# cosd: Chief of Staff local daemon (loopback, authenticated). Pinned to Python 3.12.
+set -euo pipefail
+
+py="$(command -v python3.12 || true)"
+if [[ -z "${py}" && -x /opt/homebrew/bin/python3.12 ]]; then
+  py=/opt/homebrew/bin/python3.12
+fi
+if [[ -z "${py}" ]]; then
+  echo "cosd: python3.12 not found (brew install python@3.12)" >&2
+  exit 127
+fi
+
+root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd -P)"
+exec "${py}" -s -E -P -c 'import sys; sys.path.insert(0, sys.argv.pop(1)); from cosd.cli import main; sys.exit(main(sys.argv[1:]))' "${root}" "$@"

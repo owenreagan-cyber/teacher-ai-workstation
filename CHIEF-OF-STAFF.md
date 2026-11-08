@@ -24,7 +24,7 @@ Since MERGE-1 (2026-10-18), the Chief stack and the Teacher Workstation share on
 | Area | Path |
 |---|---|
 | Teacher Workstation, Canvas, and dashboard | Existing `main` paths: `bin/chief-of-staff`, `scripts/`, `apps/teacher-workstation/` and the other workstation apps, `config/`, `docs/programs/`, `tests/` |
-| Chief core | `cos/`, `bin/cos` |
+| Chief core | `cos/`, `bin/cos`, `cosd/`, `bin/cosd` (P1b.1a local daemon) |
 | Chief desktop | `apps/chief-desktop/` |
 | Evals | `evals/` |
 | Developer safety | `tools/dev_safety/` |

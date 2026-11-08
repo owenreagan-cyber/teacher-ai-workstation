@@ -104,6 +104,7 @@ def build_rollover_manifest(
     to_week: int,
     *,
     today: date | None = None,
+    now: datetime | None = None,
 ) -> dict[str, Any]:
     """Build the deterministic rollover plan (no Canvas I/O)."""
     to_code = wr.week_code_for(to_quarter, to_week)
@@ -114,18 +115,34 @@ def build_rollover_manifest(
         "start": bounds[0].isoformat() if bounds else "",
         "end": bounds[1].isoformat() if bounds else "",
     }
-    scheduled_at = (
-        schedule.instructional_rollover_scheduled_at(to_date_range["start"])
-        if to_date_range["start"] else ""
-    )
-
     active = IC.active_subject_keys_for_quarter(to_quarter)
     pkt = plan_mod.load_packet(to_quarter, to_week)
     from scripts.canvas_llm_intake.intake import load_owner_publication_times
     owner_times = load_owner_publication_times(to_quarter, to_week)
+    release = owner_times.get("release")
+    publication = {
+        "scheduled_at": None,
+        "requires_owner_time": True,
+        "canonical_scheduled_at": "",
+    }
+    if to_date_range["start"]:
+        try:
+            publication = schedule.resolve_publication_time(
+                to_date_range["start"],
+                now=now,
+                owner_selected_at=release,
+            )
+        except ValueError:
+            publication = {
+                "scheduled_at": None,
+                "requires_owner_time": True,
+                "canonical_scheduled_at": schedule.instructional_rollover_scheduled_at(to_date_range["start"]),
+            }
+    scheduled_at = publication.get("scheduled_at") or ""
     deploy_plan = plan_mod.build_plan(
         to_quarter, to_week,
-        owner_publication_time=owner_times.get("release"),
+        now=now,
+        owner_publication_time=release,
         notice_times=owner_times.get("notices") or {},
     )
     approvals = pkt.get("approvals", {})
@@ -140,11 +157,23 @@ def build_rollover_manifest(
         if any(r.get("course") == SUBJECT_LABELS.get(subject, subject)
                for r in pkt.get("reminders", [])):
             required.append("assessment_reminder")
+        from scripts.canvas_llm_intake import approval as approval_mod
         from scripts.canvas_planner.approval_bundle import current_bundle
         current_hashes = current_bundle(to_quarter, to_week, subject)["hashes"]
+        source_hash = (pkt.get("summary") or {}).get("source_hash") or ""
         approved_now = all(
-            (subject_approvals.get(kind) or {}).get("state") == "APPROVED"
-            and (subject_approvals.get(kind) or {}).get("draft_hash") == current_hashes.get(kind)
+            approval_mod.resolve_artifact_approval(
+                subject_approvals.get(kind) or {},
+                draft_hash=current_hashes.get(kind, ""),
+                source_hash=source_hash,
+                subject=subject,
+                granularity=kind,
+                quarter=to_quarter,
+                week=to_week,
+                course_id=_course_id(subject),
+                plan_fingerprint=deploy_plan.get("plan_fingerprint"),
+                owner_publication_time=owner_times.get("release"),
+            )["approved"]
             for kind in required
         )
         academic_courses.append({
@@ -173,7 +202,7 @@ def build_rollover_manifest(
         ann = next((x for x in drafted if x.get("course") == label), None) or {}
         html = agenda_html.get(subject, "")
         body = plan_mod.compose_announcement_body(ann, html)
-        weekly_announcements.append({
+        item = {
             "subject": subject,
             "label": label,
             "course_id": _course_id(subject),
@@ -184,11 +213,28 @@ def build_rollover_manifest(
             "hash_consistent": True,
             "body_hash": _sha(body),
             "message": body,
-            "delayed_post_at": owner_times.get("release") or scheduled_at,
+            "delayed_post_at": None if publication.get("requires_owner_time") else publication.get("scheduled_at"),
+            "schedule_state": "OWNER_TIME_REQUIRED" if publication.get("requires_owner_time") else "FUTURE_SCHEDULED",
             "owner_publication_time": owner_times.get("release"),
             "classification": "NEW",
-            "action": "CREATE",
-        })
+            "action": "BLOCKED" if publication.get("requires_owner_time") else "CREATE",
+        }
+        from scripts.canvas_llm_intake import approval as approval_mod
+        from scripts.canvas_planner.approval_bundle import current_bundle
+        hashes = current_bundle(to_quarter, to_week, subject)["hashes"]
+        item.update(approval_mod.resolve_artifact_approval(
+            (approvals.get("subjects") or {}).get(subject, {}).get("announcement") or {},
+            draft_hash=hashes.get("announcement", ""),
+            source_hash=(pkt.get("summary") or {}).get("source_hash") or "",
+            subject=subject,
+            granularity="announcement",
+            quarter=to_quarter,
+            week=to_week,
+            course_id=item["course_id"],
+            plan_fingerprint=deploy_plan.get("plan_fingerprint"),
+            owner_publication_time=owner_times.get("release"),
+        ))
+        weekly_announcements.append(item)
 
     homeroom_announcement = None
     announcement_path = imf.staging_dir(to_quarter, to_week) / "drafts" / "homeroom-announcement.json"
@@ -206,7 +252,7 @@ def build_rollover_manifest(
         "school_year": "2026-2027",
         "from_week": wr.week_code_for(from_quarter, from_week),
         "to_week": to_code,
-        "scheduled_at": owner_times.get("release") or scheduled_at,
+        "scheduled_at": scheduled_at,
         "owner_publication_time": owner_times.get("release"),
         "notice_times": owner_times.get("notices") or {},
         "timezone": schedule.NEW_YORK,

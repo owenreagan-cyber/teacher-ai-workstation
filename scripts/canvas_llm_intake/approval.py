@@ -87,6 +87,9 @@ def set_state(
     source_hash: str | None = None,
     source: str = SOURCE_OWNER,
     reason: str = "",
+    plan_fingerprint: str | None = None,
+    owner_publication_time: str | None = None,
+    course_id: int | None = None,
 ) -> dict[str, Any]:
     """Set an approval state, binding it to the current draft hash (+ source hash).
 
@@ -105,6 +108,12 @@ def set_state(
         "approved_at": _now() if state == "APPROVED" else None,
         "draft_hash": draft_hash if state == "APPROVED" else None,
         "source_hash": source_hash if state == "APPROVED" else None,
+        "plan_fingerprint": plan_fingerprint if state == "APPROVED" else None,
+        "owner_publication_time": owner_publication_time if state == "APPROVED" else None,
+        "course_id": course_id if state == "APPROVED" else None,
+        "quarter": quarter if state == "APPROVED" else None,
+        "week": week if state == "APPROVED" else None,
+        "school_year": "2026-2027" if state == "APPROVED" else None,
         "invalidated_at": _now() if state in ("PENDING", "NEEDS_CHANGES", "BLOCKED") and prev.get("state") == "APPROVED" else prev.get("invalidated_at"),
     }
     if prev.get("history"):
@@ -124,11 +133,19 @@ def approve_artifact(
     draft_hash: str,
     source_hash: str,
     subjects: list[str],
+    plan_fingerprint: str | None = None,
+    owner_publication_time: str | None = None,
+    course_id: int | None = None,
 ) -> dict[str, Any]:
     """Approve an artifact, binding to the EXACT current draft + source hashes."""
-    return set_state(quarter, week, subject, granularity, "APPROVED",
-                     draft_hash=draft_hash, source_hash=source_hash,
-                     subjects=subjects, source=SOURCE_UI)
+    return set_state(
+        quarter, week, subject, granularity, "APPROVED",
+        draft_hash=draft_hash, source_hash=source_hash,
+        subjects=subjects, source=SOURCE_UI,
+        plan_fingerprint=plan_fingerprint,
+        owner_publication_time=owner_publication_time,
+        course_id=course_id,
+    )
 
 
 def revoke_approval(
@@ -170,12 +187,99 @@ def mark_not_required(
                      draft_hash="", subjects=subjects, source=SOURCE_UI, reason=reason)
 
 
+def resolve_artifact_approval(
+    record: Any,
+    *,
+    draft_hash: str,
+    source_hash: str,
+    subject: str,
+    granularity: str,
+    quarter: int,
+    week: int,
+    course_id: int | None = None,
+    plan_fingerprint: str | None = None,
+    owner_publication_time: str | None = None,
+) -> dict[str, Any]:
+    """Copy one approval record onto a plan item, or fail closed.
+
+    Approval is the granular record from ``approve_artifact``. A title match is
+    not approval. A record for another subject, week, course, hash, or plan
+    fingerprint cannot satisfy this item.
+    """
+    stamp: dict[str, Any] = {
+        "approved": False,
+        "approval_state": "PENDING",
+        "approval_subject": subject,
+        "approval_granularity": granularity,
+        "school_year": "2026-2027",
+        "quarter": quarter,
+        "week": week,
+        "approval_course_id": course_id,
+    }
+    if isinstance(record, list) or (isinstance(record, dict) and isinstance(record.get("records"), list)):
+        stamp["approval_state"] = "BLOCKED"
+        stamp["approval_block"] = "duplicate approval record"
+        return stamp
+    if not isinstance(record, dict) or not record.get("state"):
+        stamp["approval_block"] = "missing approval record"
+        return stamp
+    state = str(record.get("state"))
+    if state != "APPROVED":
+        stamp["approval_state"] = state if state in STATES else "PENDING"
+        stamp["approval_block"] = f"{subject}:{granularity} is {stamp['approval_state']}"
+        return stamp
+    if not record.get("draft_hash") or not record.get("source_hash") or not record.get("approved_at"):
+        stamp["approval_state"] = "BLOCKED"
+        stamp["approval_block"] = "incomplete approval record"
+        return stamp
+    if record.get("draft_hash") != draft_hash:
+        stamp["approval_block"] = "draft hash mismatch"
+        return stamp
+    if record.get("source_hash") != source_hash:
+        stamp["approval_block"] = "source hash mismatch"
+        return stamp
+    if record.get("quarter") not in (None, quarter) or record.get("week") not in (None, week):
+        stamp["approval_state"] = "BLOCKED"
+        stamp["approval_block"] = "approval week does not match"
+        return stamp
+    if record.get("school_year") not in (None, "2026-2027"):
+        stamp["approval_state"] = "BLOCKED"
+        stamp["approval_block"] = "approval academic year does not match"
+        return stamp
+    if course_id is not None and record.get("course_id") not in (None, course_id):
+        stamp["approval_state"] = "BLOCKED"
+        stamp["approval_block"] = "approval course does not match"
+        return stamp
+    if record.get("granularity") not in (None, granularity):
+        stamp["approval_state"] = "BLOCKED"
+        stamp["approval_block"] = "approval artifact type does not match"
+        return stamp
+    if plan_fingerprint is not None and record.get("plan_fingerprint") != plan_fingerprint:
+        stamp["approval_block"] = "plan fingerprint mismatch"
+        return stamp
+    if owner_publication_time is not None and record.get("owner_publication_time") not in (None, owner_publication_time):
+        stamp["approval_block"] = "owner publication time mismatch"
+        return stamp
+    stamp.update({
+        "approved": True,
+        "approval_state": "APPROVED",
+        "approved_at": record.get("approved_at"),
+        "approved_by": record.get("approved_by"),
+        "approval_draft_hash": record.get("draft_hash"),
+        "approval_source_hash": record.get("source_hash"),
+        "approval_plan_fingerprint": record.get("plan_fingerprint"),
+        "approval_owner_publication_time": record.get("owner_publication_time"),
+    })
+    return stamp
+
+
 def invalidate_if_stale(
     data: dict[str, Any],
     *,
     subject: str,
     draft_hashes: dict[str, str],
     source_hash: str | None = None,
+    plan_fingerprint: str | None = None,
 ) -> bool:
     """Invalidate an approved artifact whose draft hash or source hash changed.
 
@@ -196,12 +300,17 @@ def invalidate_if_stale(
               and rec.get("source_hash") != source_hash):
             stale = True
             reason = "source changed"
+        elif (plan_fingerprint is not None and rec.get("plan_fingerprint") not in (None, plan_fingerprint)):
+            stale = True
+            reason = "plan fingerprint changed"
         if stale:
             rec["state"] = "PENDING"
             rec["approved_by"] = None
             rec["approved_at"] = None
             rec["draft_hash"] = None
             rec["source_hash"] = None
+            rec["plan_fingerprint"] = None
+            rec["owner_publication_time"] = None
             rec["invalidated_at"] = _now()
             _append_history(rec, "invalidated", source="system", reason=reason)
             changed = True

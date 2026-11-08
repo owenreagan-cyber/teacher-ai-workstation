@@ -23,7 +23,7 @@ One `Validate` job on `ubuntu-latest` with Python 3.12. `TAW_STATE_ROOT` is `/tm
 | --- | --- |
 | Shell syntax | `bash -n` on the intake and deployment shell tests |
 | Whitespace | `git diff --check` from the merge base with `origin/main` |
-| Q2W5 lifecycle and integration | the four `tests/q2w5-*.py` files and `python3 -m scripts.canvas_llm_intake.manifest` |
+| Q2W5 lifecycle and integration | the `tests/q2w5-*.py` files, including approval propagation, and `python3 -m scripts.canvas_llm_intake.manifest` |
 | Canvas rollover | every `tests/canvas_rollover/test_*.py`, with the repository root on `PYTHONPATH` |
 | Canvas planner | `python3 -m unittest discover -s tests/canvas_planner` |
 | Canvas intake and deployment | `tests/canvas-llm-intake-test.sh`, `tests/canvas-llm-deploy-test.sh`, and `tests/canvas-llm-phase-3-announcement-test.py` |
@@ -47,6 +47,7 @@ python3 tests/q2w5-lifecycle-integrity-test.py
 python3 tests/q2w5-lifecycle-correction-test.py
 python3 tests/q2w5-execution-gate-test.py
 python3 tests/q2w5-canonical-assessment-integration-test.py
+python3 tests/q2w5-approval-propagation-test.py
 python3 -m scripts.canvas_llm_intake.manifest
 for test in tests/canvas_rollover/test_*.py; do python3 "$test" || exit 1; done
 python3 -m unittest discover -s tests/canvas_planner

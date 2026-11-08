@@ -17,7 +17,7 @@ The job permission is `contents: read`. It has no secrets.
 
 ## What it runs
 
-One `Validate` job on `ubuntu-latest` with Python 3.12. `TAW_STATE_ROOT` is `${{ runner.temp }}/.local`, an empty directory on the runner. A missed redirect cannot see a developer machine's `.local`. The path still contains `.local`, which the intake manifest self-test checks.
+One `Validate` job on `ubuntu-latest` with Python 3.12. `TAW_STATE_ROOT` is `/tmp/taw-ci-state/.local` on the hosted runner. `runner.temp` cannot be used in the job environment, and this path is still empty there. A missed redirect cannot see a developer machine's `.local`. The path contains `.local`, which the intake manifest self-test checks.
 
 | Step | Command |
 | --- | --- |

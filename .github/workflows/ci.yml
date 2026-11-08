@@ -26,7 +26,9 @@ jobs:
     env:
       PYTHONPATH: ${{ github.workspace }}
       PYTHONDONTWRITEBYTECODE: "1"
-      TAW_STATE_ROOT: ${{ runner.temp }}/.local
+      # runner.temp is not available in job env. This path is empty on the
+      # hosted runner and still contains .local for the manifest self-test.
+      TAW_STATE_ROOT: /tmp/taw-ci-state/.local
     steps:
       - name: Checkout
         uses: actions/checkout@v4

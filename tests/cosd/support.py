@@ -121,6 +121,9 @@ class RunningServer:
 
         env = os.environ.copy()
         env["PYTHONPATH"] = str(REPO_ROOT)
+        env["COS_STATE_DIR"] = str(state_base)
+        if FIXTURES.is_dir():
+            env["COS_FIXTURE_DIR"] = str(FIXTURES)
         self._proc = subprocess.Popen(
             [
                 sys.executable,

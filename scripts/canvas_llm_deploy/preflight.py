@@ -89,6 +89,7 @@ def classify_weekly_announcement(proposed: dict[str, Any], live: list[dict[str, 
     title = _norm_name(proposed.get("title", ""))
     proposed_week = proposed.get("week_code") or ""
     proposed_delayed = proposed.get("delayed_post_at")
+    proposed_course = proposed.get("course_id")
     # Compare embedded agenda fragments apples-to-apples: the proposed message's
     # kl_wrapper_3-onward fragment vs the live message's same fragment (both
     # Canvas-normalized). The page agenda hash is a different fragment (the page
@@ -96,29 +97,34 @@ def classify_weekly_announcement(proposed: dict[str, Any], live: list[dict[str, 
     proposed_agenda = (_embedded_agenda_hash(proposed.get("message") or "")
                        or proposed.get("agenda_hash") or proposed.get("page_agenda_hash") or "")
 
+    same_week: list[dict[str, Any]] = []
+    other_week = False
     for a in live:
+        if proposed_course is not None and a.get("course_id") not in (None, proposed_course):
+            continue
         if _norm_name(a.get("title") or "") != title:
             continue
         live_delayed = a.get("delayed_post_at")
-        live_agenda = a.get("agenda_hash") or a.get("page_agenda_hash") or _embedded_agenda_hash(a.get("message") or "")
         live_week = a.get("week_code") or ""
-
-        # Same week identity (deterministic schedule or explicit week_code).
-        same_week = False
-        if proposed_week and live_week and proposed_week == live_week:
-            same_week = True
-        elif proposed_delayed and live_delayed and proposed_delayed == live_delayed:
-            same_week = True
-
-        if same_week:
-            if proposed_agenda and live_agenda and proposed_agenda == live_agenda:
-                return "EXACT_MATCH"
-            # Same week but body differs -> needs update/review.
-            return "BODY_CHANGED_SAME_WEEK"
-        # Same title, different week (or no trustworthy week identity to prove
-        # otherwise) -> prior-week generic title, NOT a current duplicate.
+        matched_week = bool(proposed_week and live_week and proposed_week == live_week)
+        matched_time = bool(proposed_delayed and live_delayed and proposed_delayed == live_delayed)
+        if matched_week or matched_time:
+            same_week.append(a)
+        else:
+            other_week = True
+    if len(same_week) > 1:
+        return "AMBIGUOUS"
+    if len(same_week) == 1:
+        live_agenda = (
+            same_week[0].get("agenda_hash")
+            or same_week[0].get("page_agenda_hash")
+            or _embedded_agenda_hash(same_week[0].get("message") or "")
+        )
+        if proposed_agenda and live_agenda and proposed_agenda == live_agenda:
+            return "EXACT_MATCH"
+        return "BODY_CHANGED_SAME_WEEK"
+    if other_week:
         return "PRIOR_WEEK_SAME_TITLE"
-
     return "NEW"
 
 
@@ -161,17 +167,49 @@ def classify_assessment_reminder(reminder: dict[str, Any], live: list[dict[str, 
     """
     title = reminder.get("title") or ""
     message = _canvas_owned_message(reminder.get("message") or reminder.get("body") or "")
-    for a in live:
-        if ((a.get("title") or "") == title
-                and _canvas_owned_message(a.get("message") or "") == message):
-            return "EXACT_MATCH"
+    proposed_course = reminder.get("course_id")
+    proposed_role = _notice_role(reminder)
+    scoped = [
+        item for item in live
+        if proposed_course is None or item.get("course_id") in (None, proposed_course)
+    ]
+    exact = [
+        item for item in scoped
+        if (item.get("title") or "") == title
+        and _canvas_owned_message(item.get("message") or "") == message
+    ]
+    if len(exact) > 1:
+        return "AMBIGUOUS"
+    if len(exact) == 1:
+        return "EXACT_MATCH"
     tokens = _reminder_identity_tokens(reminder)
     if tokens:
-        for a in live:
-            live_title = _norm_name(a.get("title") or "")
+        covered = []
+        for item in scoped:
+            live_role = _notice_role(item)
+            if proposed_role and live_role and proposed_role != live_role:
+                continue
+            live_title = _norm_name(item.get("title") or "")
             if all(tok.lower() in live_title for tok in tokens):
-                return REMINDER_ALREADY_SCHEDULED
+                covered.append(item)
+        if len(covered) > 1:
+            return "AMBIGUOUS"
+        if len(covered) == 1:
+            return REMINDER_ALREADY_SCHEDULED
     return "NEW"
+
+
+def _notice_role(item: dict[str, Any]) -> str | None:
+    """Separate a first notice from a reminder. Title similarity is not enough."""
+    role = str(item.get("notice_role") or item.get("notice_kind") or "").lower()
+    if role in {"reminder", "second"}:
+        return "reminder"
+    if role in {"first", "first_notice"}:
+        return "first"
+    title = (item.get("title") or "").lower()
+    if title.startswith("reminder") or " reminder " in f" {title} ":
+        return "reminder"
+    return None
 
 
 def _embedded_agenda_hash(message: str) -> str:

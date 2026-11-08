@@ -56,6 +56,8 @@ Stage the week with the existing intake command and the instructional-week calen
 ## Troubleshooting
 
 - `publication time must be a future timezone-aware instant`: choose the next America/New_York calendar day. Do not reuse a Friday that has passed.
+- `homeroom page identity is not recorded`: `planner/homeroom-page-resolution.json` must contain `course_id`, `page_id`, and `slug` from the existing page resolution. The manager does not invent a page id. A pending preview hash is not reused; an approval record that claims a different page hash blocks.
+- `homeroom family announcement requires an owner publication time`: the family announcement is BLOCKED until `--owner-time` supplies a future timestamp. That blocker is listed with the package, not only on the artifact.
 - `homeroom page content is missing` or `homeroom family announcement is missing`: stage both files. The manager will not draft them.
 - `manifest source hash does not match`: the rollover package and the intake manifest describe different content. Rebuild; do not copy the agenda hash into `source_hash`.
 - `BLOCKED: weekly publication requires --production`: the preview commands are working. Live publication is a separate explicit command.

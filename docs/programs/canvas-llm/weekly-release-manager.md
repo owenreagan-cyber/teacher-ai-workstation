@@ -57,7 +57,8 @@ Stage the week with the existing intake command and the instructional-week calen
 
 - `publication time must be a future timezone-aware instant`: choose the next America/New_York calendar day. Do not reuse a Friday that has passed.
 - `homeroom page identity is not recorded`: `planner/homeroom-page-resolution.json` must contain `course_id`, `page_id`, and `slug` from the existing page resolution. The manager does not invent a page id. A pending preview hash is not reused; an approval record that claims a different page hash blocks.
-- `homeroom family announcement requires an owner publication time`: the family announcement is BLOCKED until `--owner-time` supplies a future timestamp. That blocker is listed with the package, not only on the artifact.
+- `homeroom family announcement requires an owner publication time`: the family announcement stays BLOCKED until its schedule is resolved. A timestamp does not change a BLOCKED action into CREATE. `--owner-time` must be a future timezone-aware instant on a later America/New_York date. Placeholder text, a missing value, a naive time, and a past time are rejected before any approval write.
+- An approval recorded against an invalid publication time is withdrawn with `withdraw_invalid_release`. The revocation stays in the approval history.
 - `homeroom page content is missing` or `homeroom family announcement is missing`: stage both files. The manager will not draft them.
 - `manifest source hash does not match`: the rollover package and the intake manifest describe different content. Rebuild; do not copy the agenda hash into `source_hash`.
 - `BLOCKED: weekly publication requires --production`: the preview commands are working. Live publication is a separate explicit command.

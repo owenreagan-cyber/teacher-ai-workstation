@@ -167,6 +167,8 @@ def revoke_approval(
     rec["approved_at"] = None
     rec["draft_hash"] = None
     rec["source_hash"] = None
+    rec["plan_fingerprint"] = None
+    rec["owner_publication_time"] = None
     rec["invalidated_at"] = _now()
     _append_history(rec, "revoke", source=SOURCE_UI, reason=reason)
     save_approvals(quarter, week, data)
@@ -280,6 +282,7 @@ def invalidate_if_stale(
     draft_hashes: dict[str, str],
     source_hash: str | None = None,
     plan_fingerprint: str | None = None,
+    owner_publication_time: str | None = None,
 ) -> bool:
     """Invalidate an approved artifact whose draft hash or source hash changed.
 
@@ -303,6 +306,9 @@ def invalidate_if_stale(
         elif (plan_fingerprint is not None and rec.get("plan_fingerprint") not in (None, plan_fingerprint)):
             stale = True
             reason = "plan fingerprint changed"
+        elif (owner_publication_time is not None and rec.get("owner_publication_time") not in (None, owner_publication_time)):
+            stale = True
+            reason = "owner publication time changed"
         if stale:
             rec["state"] = "PENDING"
             rec["approved_by"] = None

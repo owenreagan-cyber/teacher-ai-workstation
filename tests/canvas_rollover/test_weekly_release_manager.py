@@ -239,13 +239,18 @@ def test_approval_is_granular_and_a_changed_artifact_invalidates_it():
         (drafts / "assessment-reminders.json").write_text("[]", encoding="utf-8")
         html = "<p>Homeroom week</p>"
         (drafts / "homeroom-page.html").write_text(html, encoding="utf-8")
+        page_hash = hashlib.sha256(html.encode()).hexdigest()
         (drafts / "homeroom-announcement.json").write_text(json.dumps({
             "title": "4th Grade Happenings - Week 5", "message": html,
             "course_id": 26429, "page_id": 798096, "page_slug": "q2w5-november-9-13-2026",
-            "newsletter_html_hash": hashlib.sha256(html.encode()).hexdigest(),
-            "approval_state": "PENDING",
+            "newsletter_html_hash": page_hash, "approval_state": "APPROVED", "approved": True,
+            "action": "CREATE",
         }), encoding="utf-8")
-        (staging / "planner").mkdir()
+        (staging / "planner").mkdir(exist_ok=True)
+        (staging / "planner" / "homeroom-weekly-approval.json").write_text(json.dumps({
+            "course_id": 26429, "page_id": 798096, "page_slug": "q2w5-november-9-13-2026",
+            "approved": True, "approved_body_hash": page_hash, "status": "APPROVED",
+        }), encoding="utf-8")
         (staging / "planner" / "homeroom-page-resolution.json").write_text(json.dumps({
             "course_id": 26429, "page_id": 798096, "slug": "q2w5-november-9-13-2026",
             "status": "FOUND",
@@ -350,7 +355,15 @@ def test_wrong_or_missing_homeroom_identity_blocks_before_approval_writes():
             "approval_state": "PENDING", "source_hash": SOURCE,
             "date_range": {"start": "2026-11-09", "end": "2026-11-13"},
         })
-        _write_identity(staging, action="BLOCKED", schedule_state="BLOCKED", block_reason="duplicate family announcement")
+        current = hashlib.sha256(b"<p>Homeroom week</p>").hexdigest()
+        _write_identity(
+            staging, approved=True, approved_hash=current,
+            action="BLOCKED", schedule_state="BLOCKED", block_reason="duplicate family announcement",
+        )
+        family = json.loads((staging / "drafts" / "homeroom-announcement.json").read_text())
+        family["approval_state"] = "APPROVED"
+        family["approved"] = True
+        (staging / "drafts" / "homeroom-announcement.json").write_text(json.dumps(family), encoding="utf-8")
         try:
             weekly_release.approve_release(
                 2, 5, confirmation="APPROVE Q2W5", owner_publication_time=_future_owner(),
@@ -379,10 +392,91 @@ def test_blocked_family_announcement_is_a_package_blocker_until_owner_time():
             "course_id": 26429, "title": "4th Grade Happenings - Week 5",
             "action": "BLOCKED", "schedule_state": "OWNER_TIME_REQUIRED",
         },
+        "assignments": [{"course": "math", "title": "Math", "action": "BLOCKED", "block_reason": "duplicate title"}],
     })
-    assert weekly_release.package_blockers(resolved, owner_publication_time=_future_owner()) == []
-    family = next(row for row in resolved if row["kind"] == "family_announcement")
-    assert family["action"] == "CREATE"
+    blockers = weekly_release.package_blockers(resolved, owner_publication_time=_future_owner())
+    assert weekly_release.OWNER_TIME_BLOCK in blockers
+    assert "duplicate title" in blockers or any("assignment" in item for item in blockers)
+    assert all(row["action"] != "CREATE" or row["kind"] != "family_announcement" for row in resolved)
+
+
+def test_invalid_owner_time_writes_nothing_and_blocked_packages_cannot_be_approved():
+    with isolated_storage():
+        staging = intake_manifest.staging_dir(2, 5)
+        _write_identity(staging, approved=True, approved_hash=hashlib.sha256(b"<p>Homeroom week</p>").hexdigest())
+        family = json.loads((staging / "drafts" / "homeroom-announcement.json").read_text())
+        family["approval_state"] = "APPROVED"
+        family["approved"] = True
+        (staging / "drafts" / "homeroom-announcement.json").write_text(json.dumps(family), encoding="utf-8")
+        intake_manifest.save_manifest(2, 5, {
+            "quarter": 2, "week": 5, "week_code": "Q2W5", "status": "READY_FOR_REVIEW",
+            "approval_state": "PENDING", "source_hash": SOURCE,
+            "date_range": {"start": "2026-11-09", "end": "2026-11-13"},
+        })
+        before = (staging / "approvals" / "approval-manifest.json").exists()
+        for bad in ("PASTE_ACTUAL_TIMESTAMP_HERE", "", "2026-11-08T00:01:00", "2020-01-01T00:01:00Z", "not-a-time"):
+            try:
+                weekly_release.approve_release(
+                    2, 5, confirmation="APPROVE Q2W5", owner_publication_time=bad,
+                    now=datetime.now(NY),
+                )
+                raise AssertionError(bad)
+            except weekly_release.ReleaseBlocked:
+                pass
+        assert (staging / "approvals" / "approval-manifest.json").exists() is before
+        assert intake_manifest.load_manifest(2, 5)["approval_state"] == "PENDING"
+        assert not (staging / "planner" / "live-transport-authorization.json").exists()
+        family["action"] = "BLOCKED"
+        family["block_reason"] = "duplicate family announcement"
+        (staging / "drafts" / "homeroom-announcement.json").write_text(json.dumps(family), encoding="utf-8")
+        try:
+            weekly_release.approve_release(
+                2, 5, confirmation="APPROVE Q2W5", owner_publication_time=_future_owner(),
+                now=datetime.now(NY),
+            )
+            raise AssertionError("blocked package was approved")
+        except weekly_release.ReleaseBlocked as exc:
+            assert "BLOCKED" in str(exc)
+        assert intake_manifest.load_manifest(2, 5)["status"] == "READY_FOR_REVIEW"
+
+
+def test_repeated_approval_is_idempotent_and_a_new_owner_time_invalidates_it():
+    owner = _future_owner()
+    with isolated_storage():
+        staging = intake_manifest.staging_dir(2, 5)
+        drafts = staging / "drafts"
+        drafts.mkdir(parents=True)
+        for subject in ("math", "reading_spelling", "language_arts", "science"):
+            name = "reading-page.html" if subject == "reading_spelling" else f"{subject}-page.html"
+            (drafts / name).write_text(f"<p>{subject}</p>", encoding="utf-8")
+        (drafts / "assignments.json").write_text("[]", encoding="utf-8")
+        (drafts / "announcements.json").write_text("[]", encoding="utf-8")
+        (drafts / "assessment-reminders.json").write_text("[]", encoding="utf-8")
+        current = _write_identity(staging, approved=True, approved_hash=hashlib.sha256(b"<p>Homeroom week</p>").hexdigest())
+        family = json.loads((drafts / "homeroom-announcement.json").read_text())
+        family.update({"approval_state": "APPROVED", "approved": True, "action": "CREATE", "newsletter_html_hash": current})
+        (drafts / "homeroom-announcement.json").write_text(json.dumps(family), encoding="utf-8")
+        intake_manifest.save_manifest(2, 5, {
+            "quarter": 2, "week": 5, "week_code": "Q2W5", "status": "READY_FOR_REVIEW",
+            "approval_state": "PENDING", "source_hash": SOURCE,
+            "date_range": {"start": "2026-11-09", "end": "2026-11-13"}, "history": [],
+        })
+        first = weekly_release.approve_release(2, 5, confirmation="APPROVE Q2W5", owner_publication_time=owner, now=datetime.now(NY))
+        again = weekly_release.approve_release(2, 5, confirmation="APPROVE Q2W5", owner_publication_time=owner, now=datetime.now(NY))
+        assert again.get("idempotent") is True
+        assert again["plan_fingerprint"] == first["plan_fingerprint"]
+        later = (datetime.now(NY) + timedelta(days=2)).replace(hour=0, minute=1, second=0, microsecond=0)
+        later_value = later.astimezone(timezone.utc).isoformat().replace("+00:00", "Z")
+        assert weekly_release.invalidate_changed_artifacts(2, 5, owner_publication_time=later_value) is True
+        assert intake_manifest.load_manifest(2, 5)["approval_state"] == "PENDING"
+        intake = intake_manifest.load_manifest(2, 5)
+        intake["plan_fingerprint"] = "stale-fingerprint"
+        intake_manifest.save_manifest(2, 5, intake)
+        try:
+            weekly_release.approve_release(2, 5, confirmation="APPROVE Q2W5", owner_publication_time=owner, now=datetime.now(NY))
+            raise AssertionError("stale fingerprint was approved")
+        except weekly_release.ReleaseBlocked as exc:
+            assert "fingerprint" in str(exc)
 
 
 def test_publish_reaches_verified_and_rerun_writes_nothing():

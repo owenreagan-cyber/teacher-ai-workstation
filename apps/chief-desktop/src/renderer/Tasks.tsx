@@ -55,7 +55,17 @@ export function TaskCenter() {
       void loadQueue();
       void refreshConnection();
     }, 20_000);
-    return () => clearInterval(id);
+    const off = window.chief.onEvent((event) => {
+      if (event.kind === "cosd-task-event" || event.kind === "cosd-connection") {
+        void loadTasks();
+        void loadQueue();
+        if (event.kind === "cosd-connection") void refreshConnection();
+      }
+    });
+    return () => {
+      clearInterval(id);
+      off();
+    };
   }, [loadTasks, loadQueue, refreshConnection]);
 
   const openTask = async (task: CosdTask) => {

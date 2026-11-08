@@ -75,3 +75,94 @@ export function requestJson(
     req.end();
   });
 }
+
+export function requestAskNdjsonStream(
+  host: string,
+  port: number,
+  token: string,
+  question: string,
+  sessionId: string | null,
+  onChunk: (text: string) => void,
+  signal: AbortSignal | undefined,
+  timeoutMs: number,
+): Promise<Record<string, unknown>> {
+  assertLoopback(host);
+  if (signal?.aborted) throw new CosdHttpError("cancelled", "usage");
+  const payload = JSON.stringify({ question, ...(sessionId ? { session_id: sessionId } : {}) });
+  return new Promise((resolve, reject) => {
+    const req = http.request(
+      {
+        host,
+        port,
+        path: "/v1/ask/stream",
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+          "Content-Length": String(Buffer.byteLength(payload)),
+        },
+        family: 4,
+      },
+      (res) => {
+        let buf = "";
+        let size = 0;
+        const fail = (msg: string) => reject(new CosdHttpError(msg, "internal"));
+        res.setEncoding("utf8");
+        res.on("data", (chunk: string) => {
+          size += chunk.length;
+          if (size > MAX_RESPONSE_BYTES) {
+            req.destroy();
+            fail("response too large");
+            return;
+          }
+          buf += chunk;
+          let nl: number;
+          while ((nl = buf.indexOf("\n")) >= 0) {
+            const line = buf.slice(0, nl).trim();
+            buf = buf.slice(nl + 1);
+            if (!line) continue;
+            try {
+              const item = JSON.parse(line) as Record<string, unknown>;
+              if (item.type === "chunk" && typeof item.text === "string") onChunk(item.text);
+              else if (item.type === "done") resolve(item);
+              else if (item.type === "error") {
+                const body = (item.body as Record<string, unknown>) ?? item;
+                reject(new CosdHttpError(String(body.error ?? "ask failed"), String(body.error_kind ?? "internal")));
+              }
+            } catch {
+              fail("invalid NDJSON from cosd");
+            }
+          }
+        });
+        res.on("end", () => {
+          if (buf.trim()) {
+            try {
+              const item = JSON.parse(buf.trim()) as Record<string, unknown>;
+              if (item.type === "done") resolve(item);
+              return;
+            } catch {
+              fail("truncated stream");
+              return;
+            }
+          }
+          fail("empty stream");
+        });
+        res.on("error", () => reject(new CosdHttpError("cosd unreachable", "unavailable")));
+      },
+    );
+    req.on("error", () => reject(new CosdHttpError("cosd unreachable", "unavailable")));
+    const onAbort = () => {
+      req.destroy();
+      reject(new CosdHttpError("cancelled", "usage"));
+    };
+    signal?.addEventListener("abort", onAbort, { once: true });
+    req.on("close", () => signal?.removeEventListener("abort", onAbort));
+    const t = setTimeout(() => {
+      req.destroy();
+      reject(new CosdHttpError("cosd request timed out", "timeout"));
+    }, timeoutMs);
+    req.on("close", () => clearTimeout(t));
+    req.write(payload);
+    req.end();
+  });
+}

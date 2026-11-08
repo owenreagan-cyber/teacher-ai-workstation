@@ -35,7 +35,7 @@ Foreground (debug or tests):
 bin/cosd serve --port 8765
 ```
 
-No LaunchAgent is installed in P1b.1a; the daemon does not start at login.
+LaunchAgent is **opt-in** only (P1b.2): `bin/cosd launchagent install --confirm`. Default install keeps `RunAtLoad` false.
 
 ## State
 
@@ -73,6 +73,10 @@ SQLite store: `docs/architecture/cosd-task-registry.md`. CLI: `bin/cosd tasks �
 ## cos client (P1b.1d)
 
 `docs/architecture/cos-daemon-client.md` — `bin/cos` delegates `ask`/`status` when daemon is healthy.
+
+## Local operations (P1b.2)
+
+See `docs/architecture/cosd-local-operations.md` — `/v1/events` (SSE), `/v1/runtime`, `/v1/ask/stream`, notification hooks for Chief.app.
 
 ## Limitations
 

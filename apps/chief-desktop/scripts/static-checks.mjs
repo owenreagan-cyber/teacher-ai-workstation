@@ -36,13 +36,14 @@ const MAIN_FORBIDDEN = [
   [/\bfetch\s*\(/, "fetch("], [/\bnet\.request\b/, "net.request"],
   [/webviewTag\s*:\s*true/, "webviewTag: true"], [/nodeIntegration\s*:\s*true/, "nodeIntegration: true"],
 ];
+const cosdNetOk = (file) => /cosd[\\/](http|event-stream)\.ts$/.test(file);
 for (const file of [...walk("src/main", [".ts"]), ...walk("src/preload", [".ts"])]) {
-  if (file.includes("cosd/http.ts") || file.includes("cosd\\http.ts")) continue;
+  if (cosdNetOk(file)) continue;
   const text = read(file);
   for (const [re, label] of MAIN_FORBIDDEN) check(`main/preload has no ${label}`, !re.test(text), file);
 }
 for (const file of walk("src/main", [".ts"])) {
-  if (file.includes("cosd/http.ts") || file.includes("cosd\\http.ts")) continue;
+  if (cosdNetOk(file)) continue;
   const text = read(file);
   check("main (except cosd/http) has no node:http import", !/from "node:http"/.test(text), file);
 }
@@ -86,7 +87,8 @@ const preload = read("src/preload/preload.ts");
 const ALLOWED = [
   "ask", "cancelAsk", "history", "openLink", "brief", "home", "configGet", "configSet", "status",
   "cosdConnection", "cosdReconnect", "listTasks", "getTask", "createTask", "cancelTask", "retryTask",
-  "taskHistory", "queueSnapshot", "stop", "resume", "setPin", "setProtection", "hide", "onEvent",
+  "taskHistory", "queueSnapshot", "cosdStart", "cosdStop", "cosdRestart", "runtimeSnapshot", "opsPrefsGet", "opsPrefsSet",
+  "stop", "resume", "setPin", "setProtection", "hide", "onEvent",
 ];
 const bridgeBody = preload.match(/const bridge: PreloadBridge = \{([\s\S]*?)\n\};/)?.[1] ?? "";
 const keys = [...bridgeBody.matchAll(/^ {2}(\w+):/gm)].map((m) => m[1]);
@@ -98,7 +100,7 @@ check("preload never sends or exposes ipcRenderer", !/ipcRenderer\.(send|sendSyn
 
 // 6b. cos warm: main process only, on launch and when shown after more than 90 minutes hidden.
 check("buildArgs has warm", /case "warm":\s*return \["warm", "--json"\];/.test(read("src/main/args.ts")));
-check("main warms the model on launch", /registerIpc\(\);\s*cosdConnection\.startPolling\(\);\s*warmModel\(\);/.test(mainTs));
+check("main warms the model on launch", /registerIpc\(\);\s*cosdConnection\.startPolling\([^)]*\);\s*warmModel\(\);/.test(mainTs));
 check("main re-warms after more than 90 minutes hidden",
   mainTs.includes("REWARM_AFTER_HIDDEN_MS = 90 * 60 * 1000") && /Date\.now\(\) - hiddenSince > REWARM_AFTER_HIDDEN_MS\) warmModel\(\)/.test(mainTs));
 check("warm runs through cos warm --json", /this\.json\("warm"\)/.test(cosTs));
@@ -111,7 +113,11 @@ const mainFiles = [...walk("src/main", [".ts"]), ...walk("src/preload", [".ts"])
 for (const file of mainFiles) {
   const text = read(file);
   check("main never sets a tray title or tooltip", !/\.(setTitle|setToolTip)\s*\(/.test(text), file);
-  check("main shows no notifications", !/\bNotification\b/.test(text), file);
+  if (file.endsWith(`${path.sep}notifications.ts`)) {
+    check("notifications stay in the main process module", /\bNotification\b/.test(text), file);
+  } else {
+    check("main shows no notifications", !/\bNotification\b/.test(text), file);
+  }
   check("main never touches the dock badge or menu", !/\bapp\.dock\b|setBadge/.test(text), file);
   // cos.ts only validates the card and returns it to the renderer; the window and tray code never see it.
   if (file !== path.join("src", "main", "cos.ts")) {
@@ -136,7 +142,7 @@ check("login item is only set by the packaged app", /function setStartAtLogin[\s
 check("first run turns start at login on", /if \(prefs\.startAtLogin === null\) setStartAtLogin\(true\)/.test(mainTs));
 check("a login launch starts hidden", /createWindow\(!openedAtLogin\(\)\)/.test(mainTs) && /wasOpenedAtLogin/.test(mainTs));
 check("tray has a Start at login toggle", /label: app\.isPackaged \? "Start at login"/.test(mainTs) && /click: \(\) => setStartAtLogin\(!startAtLoginChecked\(\)\)/.test(mainTs));
-check("the model still warms on every launch", /registerIpc\(\);\s*cosdConnection\.startPolling\(\);\s*warmModel\(\);/.test(mainTs));
+check("the model still warms on every launch", /registerIpc\(\);\s*cosdConnection\.startPolling\([^)]*\);\s*warmModel\(\);/.test(mainTs));
 
 // 6e. Search answers carry "Search by Brave" in the window.
 check("search answers show Brave attribution", /searchAttribution\(turn\)/.test(read("src/renderer/Chat.tsx")));

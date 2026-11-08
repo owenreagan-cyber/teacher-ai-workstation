@@ -32,7 +32,11 @@ import {
 import { ChiefRuntime } from "./chief-runtime.js";
 import { CosRunner } from "./cos.js";
 import { CosdConnectionManager } from "./cosd/connection.js";
+import { CosdEventStream, tokenForStream } from "./cosd/event-stream.js";
+import { cosdBinFromCos, cosdRestart, cosdStart, cosdStop } from "./cosd/lifecycle-control.js";
 import { validateAskInput, validateCreateTask, validateOptionalState, validateTaskId } from "./ipc-cosd.js";
+import { notifyDaemonConnection, notifyTaskEvent } from "./notifications.js";
+import { loadOpsPrefs, saveOpsPrefs, type OpsPrefs } from "./ops-prefs.js";
 import { openLink, ResourceTable } from "./resources.js";
 import { APP_URL, devServerUrl, lockDownContents, lockDownSession, registerAppScheme, serveRenderer } from "./security.js";
 import { trayTemplateImage } from "./trayIcon.js";
@@ -56,8 +60,35 @@ let macHistory: MacSample[] = [];
 const config = loadDesktopConfig();
 const resources = new ResourceTable(); // link id -> URL; never sent to the renderer
 const cosRunner = new CosRunner(config.cosPath, config.error, (list) => resources.add(list));
-const cosdConnection = new CosdConnectionManager((snapshot) => sendEvent({ kind: "cosd-connection", snapshot }));
+const cosdPath = cosdBinFromCos(config.cosPath);
+let opsPrefs: OpsPrefs = { notifyTaskCompleted: true, notifyTaskFailed: true, notifyTaskBlocked: true, notifyRecovery: true, notifyDaemonConnection: true, streamingAsk: true, progressViaEvents: true };
+const eventStream = new CosdEventStream();
+let lastConn: string | null = null;
+const runtimeRef: { current: ChiefRuntime | null } = { current: null };
+const cosdConnection = new CosdConnectionManager((snapshot) => {
+  sendEvent({ kind: "cosd-connection", snapshot });
+  if (snapshot.state !== lastConn) {
+    if (snapshot.state === "DISCONNECTED") notifyDaemonConnection(opsPrefs, "cosd disconnected");
+    if (snapshot.state === "CONNECTED" && lastConn && lastConn !== "CONNECTED") {
+      notifyDaemonConnection(opsPrefs, "cosd connected");
+    }
+    lastConn = snapshot.state;
+  }
+  if (snapshot.state === "CONNECTED" && opsPrefs.progressViaEvents) {
+    const ep = runtimeRef.current?.connection.getEndpoint();
+    const tok = tokenForStream();
+    if (ep && tok) {
+      eventStream.connect(ep, tok, (ev) => {
+        notifyTaskEvent(opsPrefs, ev.type, { title: ev.title, taskId: ev.task_id });
+        sendEvent({ kind: "cosd-task-event", event: ev });
+      }, eventStream.lastEventId);
+    }
+  } else {
+    eventStream.disconnect();
+  }
+});
 const runtime = new ChiefRuntime(cosRunner, cosdConnection, (list) => resources.add(list));
+runtimeRef.current = runtime;
 const devUrl = devServerUrl();
 const stateFile = () => path.join(app.getPath("userData"), "window-state.json");
 const prefsFile = () => path.join(app.getPath("userData"), "prefs.json");
@@ -73,6 +104,7 @@ if (!app.requestSingleInstanceLock()) {
 }
 
 function start(): void {
+  opsPrefs = loadOpsPrefs(app.getPath.bind(app));
   lockDownSession(devUrl);
   serveRenderer(path.join(__dirname, "..", "..", "dist", "renderer"));
   Menu.setApplicationMenu(appMenu());
@@ -83,7 +115,7 @@ function start(): void {
   createTray();
   registerHotkey();
   registerIpc();
-  cosdConnection.startPolling();
+  cosdConnection.startPolling(opsPrefs.progressViaEvents ? 60_000 : 15_000);
   warmModel(); // in the background: the first question should not wait for a cold model load
 }
 
@@ -342,6 +374,7 @@ app.on("before-quit", () => {
   rememberWindow();
 });
 app.on("will-quit", () => {
+  eventStream.disconnect();
   cosdConnection.stopPolling();
   globalShortcut.unregisterAll();
 });
@@ -367,7 +400,10 @@ function handle(channel: string, fn: (...args: unknown[]) => unknown): void {
 function registerIpc(): void {
   handle("chief:ask", (question, sessionId) => {
     const v = validateAskInput(question, sessionId);
-    return runtime.ask(v.question, v.sessionId);
+    const onChunk = opsPrefs.streamingAsk
+      ? (text: string) => sendEvent({ kind: "ask-chunk", text })
+      : undefined;
+    return runtime.ask(v.question, v.sessionId, onChunk);
   });
   handle("chief:cancel-ask", () => {
     runtime.cancelAsk();
@@ -401,6 +437,22 @@ function registerIpc(): void {
   handle("chief:task-retry", (taskId) => runtime.retryTask(validateTaskId(taskId)));
   handle("chief:task-history", (taskId) => runtime.taskHistory(validateTaskId(taskId)));
   handle("chief:queue", () => runtime.queueSnapshot());
+  handle("chief:cosd-start", () => cosdStart(cosdPath));
+  handle("chief:cosd-stop", (confirm) => (confirm === true ? cosdStop(cosdPath) : { ok: false, error: "confirmation required" }));
+  handle("chief:cosd-restart", (confirm) => (confirm === true ? cosdRestart(cosdPath) : { ok: false, error: "confirmation required" }));
+  handle("chief:runtime-snapshot", async () => {
+    const res = await runtime.runtimeSnapshot();
+    return res.ok ? { ok: true, body: res.body } : { ok: false, error: res.error };
+  });
+  handle("chief:ops-prefs-get", () => ({ ok: true, prefs: opsPrefs }));
+  handle("chief:ops-prefs-set", (prefs) => {
+    if (typeof prefs !== "object" || prefs === null) throw new Error("invalid prefs");
+    opsPrefs = { ...opsPrefs, ...(prefs as OpsPrefs) };
+    saveOpsPrefs(app.getPath.bind(app), opsPrefs);
+    cosdConnection.stopPolling();
+    cosdConnection.startPolling(opsPrefs.progressViaEvents ? 60_000 : 15_000);
+    return { ok: true };
+  });
   handle("chief:stop", () => runtime.stop());
   handle("chief:resume", () => runtime.resume());
   handle("chief:set-pin", (pinned) => setPin(pinned === true));

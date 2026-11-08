@@ -16,6 +16,7 @@ on:
       - feat/canvas-weekly-release-manager
       - fix/q2w5-homeroom-page-identity
       - fix/q2w5-approval-integrity
+      - feat/canvas-duplicate-prevention
   workflow_dispatch:
 
 permissions:

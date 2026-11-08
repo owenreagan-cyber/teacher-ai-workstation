@@ -318,6 +318,23 @@ def run_preflight(
             blockers.append(f"assignment {assignment.get('title')!r}: group {group!r} missing")
         title = str(assignment.get("title") or "")
         matches = _assignment_matches(assignments_by_course[cid], title)
+        identity = str(assignment.get("assessment_identity") or assignment.get("canonical_identity") or "")
+        if identity:
+            same_identity = [
+                item for item in assignments_by_course[cid]
+                if str(item.get("assessment_identity") or item.get("canonical_identity") or "") == identity
+            ]
+            identity_ids = {str(item.get("id")) for item in same_identity if item.get("id") not in (None, "")}
+            if len(identity_ids) > 1:
+                blockers.append(
+                    f"assignment {title!r}: assessment identity {identity} has conflicting Canvas IDs"
+                )
+                assignment["classification"] = "BLOCKED"
+                assignment["action"] = "BLOCKED"
+                live["assignments"][assignment.get("title")] = {
+                    "classification": "BLOCKED", "action": "BLOCKED",
+                }
+                continue
         action = str(assignment.get("action") or "CREATE")
         if action == "BLOCKED":
             blockers.append(
@@ -407,7 +424,12 @@ def run_preflight(
             # An immediate Publish-now post has no delayed_post_at. Only the
             # verified ledger for this target week can prove it was ours.
             a["classification"] = "EXACT_MATCH"
-        a["action"] = "SKIP" if a["classification"] == "EXACT_MATCH" else "CREATE"
+        if a["classification"] == "EXACT_MATCH":
+            a["action"] = "SKIP"
+        elif a["classification"] in ("AMBIGUOUS", "BODY_CHANGED_SAME_WEEK"):
+            a["action"] = "BLOCKED"
+        else:
+            a["action"] = "CREATE"
         live["weekly_announcements"][a["title"]] = {
             "classification": a["classification"], "action": a["action"]}
         if a["classification"] == "BODY_CHANGED_SAME_WEEK":
@@ -429,9 +451,13 @@ def run_preflight(
             reminder, announcement_cache[cid]
         )
         reminder["classification"] = classification
-        reminder["action"] = "SKIP" if classification in (
-            "EXACT_MATCH", deploy_preflight.REMINDER_ALREADY_SCHEDULED,
-        ) else "CREATE"
+        if classification in ("EXACT_MATCH", deploy_preflight.REMINDER_ALREADY_SCHEDULED):
+            reminder["action"] = "SKIP"
+        elif classification == "AMBIGUOUS":
+            reminder["action"] = "BLOCKED"
+            blockers.append(f"{reminder.get('title')}: multiple reminder candidates")
+        else:
+            reminder["action"] = "CREATE"
         live["assessment_reminders"][reminder.get("title")] = {
             "classification": classification, "action": reminder["action"]}
 
@@ -1278,6 +1304,9 @@ def execute(
     # ---- E. Weekly updates and approved reminders -----------------------
     for a in ([] if early_content_only else manifest.get("weekly_announcements", [])):
         cid = a["course_id"]
+        if a.get("classification") in ("AMBIGUOUS", "BODY_CHANGED_SAME_WEEK") or a.get("action") == "BLOCKED":
+            report["failures"].append(f"{a.get('subject')}: announcement identity is ambiguous or changed")
+            return _finish(to_quarter, to_week, report, schedule.BLOCKED, counts)
         if a.get("classification") == "EXACT_MATCH":
             report["weekly_announcements"].append(
                 {"subject": a["subject"], "title": a["title"],

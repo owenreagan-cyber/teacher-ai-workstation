@@ -10,6 +10,7 @@ The Saxon lesson-page deployment stays in `.github/workflows/deploy-saxon-lesson
 
 - pull requests targeting `main`
 - pushes to `main`
+- pushes to `feat/automated-ci-validation`, so this workflow can execute before it exists on `main`
 - manual `workflow_dispatch`
 
 The job permission is `contents: read`. It has no secrets.
@@ -26,6 +27,9 @@ One `Validate` job on `ubuntu-latest` with Python 3.12. `TAW_STATE_ROOT` is `${{
 | Canvas rollover | every `tests/canvas_rollover/test_*.py`, with the repository root on `PYTHONPATH` |
 | Canvas planner | `python3 -m unittest discover -s tests/canvas_planner` |
 | Canvas intake and deployment | `tests/canvas-llm-intake-test.sh`, `tests/canvas-llm-deploy-test.sh`, and `tests/canvas-llm-phase-3-announcement-test.py` |
+| Live authorization | `tests/canvas-live-authorization-test.py` whenever that file is in the commit |
+
+The rollover step fails if it executes no files. The live-authorization step fails if that test fails. This foundation commit does not contain the file; the quarter/week authorization change does. A commit that contains the file cannot pass while skipping it.
 
 A failing step fails the job. Output is not converted into a warning.
 
@@ -49,6 +53,9 @@ python3 -m unittest discover -s tests/canvas_planner
 bash tests/canvas-llm-intake-test.sh
 bash tests/canvas-llm-deploy-test.sh
 python3 tests/canvas-llm-phase-3-announcement-test.py
+if [[ -f tests/canvas-live-authorization-test.py ]]; then
+  python3 tests/canvas-live-authorization-test.py
+fi
 ```
 
 ## Diagnose a failure

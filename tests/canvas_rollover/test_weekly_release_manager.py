@@ -169,6 +169,7 @@ def test_missing_homeroom_is_blocked_and_not_invented():
     row = next(item for item in view["artifacts"] if item["kind"] == "homeroom_page")
     assert row["action"] == "BLOCKED"
     assert view["counts"]["BLOCKED"] == 1
+    assert "homeroom content is missing" in view["blockers"]
 
 
 def test_reconciliation_classifies_without_writing():
@@ -236,14 +237,18 @@ def test_approval_is_granular_and_a_changed_artifact_invalidates_it():
             "course": "Math", "title": "Math Canvas Weekly Update", "message": "<p>Math</p>",
         }]), encoding="utf-8")
         (drafts / "assessment-reminders.json").write_text("[]", encoding="utf-8")
-        (drafts / "homeroom-page.html").write_text("<p>Homeroom week</p>", encoding="utf-8")
+        html = "<p>Homeroom week</p>"
+        (drafts / "homeroom-page.html").write_text(html, encoding="utf-8")
         (drafts / "homeroom-announcement.json").write_text(json.dumps({
-            "title": "4th Grade Happenings - Week 5", "message": "<p>Homeroom week</p>",
+            "title": "4th Grade Happenings - Week 5", "message": html,
+            "course_id": 26429, "page_id": 798096, "page_slug": "q2w5-november-9-13-2026",
+            "newsletter_html_hash": hashlib.sha256(html.encode()).hexdigest(),
             "approval_state": "PENDING",
         }), encoding="utf-8")
         (staging / "planner").mkdir()
         (staging / "planner" / "homeroom-page-resolution.json").write_text(json.dumps({
-            "page_id": 798096, "page_slug": "q2w5-november-9-13-2026",
+            "course_id": 26429, "page_id": 798096, "slug": "q2w5-november-9-13-2026",
+            "status": "FOUND",
         }), encoding="utf-8")
         intake_manifest.save_manifest(2, 5, {
             "quarter": 2, "week": 5, "week_code": "Q2W5",
@@ -264,6 +269,120 @@ def test_approval_is_granular_and_a_changed_artifact_invalidates_it():
         assert weekly_release.invalidate_changed_artifacts(2, 5) is True
         assert intake_manifest.load_manifest(2, 5)["approval_state"] == "PENDING"
         assert intake_manifest.load_manifest(2, 5)["ready_to_publish"] is False
+
+
+def _write_identity(staging: Path, *, page_id=798096, slug="q2w5-november-9-13-2026",
+                    course_id=26429, approved=False, approved_hash=None, announcement_page_id=798096,
+                    announcement_slug="q2w5-november-9-13-2026", announcement_course=26429,
+                    action="CREATE", schedule_state="FUTURE_SCHEDULED", block_reason=None):
+    html = "<p>Homeroom week</p>"
+    current = hashlib.sha256(html.encode()).hexdigest()
+    drafts = staging / "drafts"
+    drafts.mkdir(parents=True, exist_ok=True)
+    (drafts / "homeroom-page.html").write_text(html, encoding="utf-8")
+    (drafts / "homeroom-announcement.json").write_text(json.dumps({
+        "title": "4th Grade Happenings - Week 5", "message": html,
+        "course_id": announcement_course, "page_id": announcement_page_id,
+        "page_slug": announcement_slug, "newsletter_html_hash": current,
+        "approval_state": "PENDING", "action": action, "schedule_state": schedule_state,
+        "block_reason": block_reason,
+    }), encoding="utf-8")
+    planner = staging / "planner"
+    planner.mkdir(exist_ok=True)
+    (planner / "homeroom-page-resolution.json").write_text(json.dumps({
+        "course_id": course_id, "page_id": page_id, "slug": slug, "status": "FOUND",
+    }), encoding="utf-8")
+    approval_path = planner / "homeroom-weekly-approval.json"
+    if approved_hash is not None:
+        approval_path.write_text(json.dumps({
+            "course_id": course_id, "page_id": page_id, "page_slug": slug,
+            "approved": approved, "approved_body_hash": approved_hash,
+            "status": "APPROVED" if approved else "PENDING_OWNER_APPROVAL",
+        }), encoding="utf-8")
+    elif approval_path.exists():
+        approval_path.unlink()
+    return current
+
+
+def test_homeroom_identity_uses_resolution_slug_and_current_hash():
+    with isolated_storage():
+        staging = intake_manifest.staging_dir(2, 5)
+        current = _write_identity(staging)
+        identity = weekly_release.resolve_homeroom_identity(2, 5)
+        assert identity["course_id"] == 26429
+        assert identity["page_id"] == 798096
+        assert identity["page_slug"] == "q2w5-november-9-13-2026"
+        assert identity["page_hash"] == current
+        stale = "c3cb881258c1bc7cba3e9a3d3f8969a18c522505661b5388ace82d33853e7c85"
+        _write_identity(staging, approved=False, approved_hash=stale)
+        pending = weekly_release.resolve_homeroom_identity(2, 5)
+        assert pending["page_hash"] == current
+        assert pending["page_hash"] != stale
+
+
+def test_wrong_or_missing_homeroom_identity_blocks_before_approval_writes():
+    cases = (
+        {"page_id": 1},
+        {"course_id": 999},
+        {"slug": "wrong-slug"},
+        {"page_id": None},
+        {"approved": True, "approved_hash": "c3cb881258c1bc7cba3e9a3d3f8969a18c522505661b5388ace82d33853e7c85"},
+    )
+    with isolated_storage():
+        staging = intake_manifest.staging_dir(2, 5)
+        for case in cases:
+            kwargs = {"page_id": 798096, "slug": "q2w5-november-9-13-2026", "course_id": 26429}
+            kwargs.update(case)
+            if kwargs["page_id"] is None:
+                _write_identity(staging)
+                record = json.loads((staging / "planner" / "homeroom-page-resolution.json").read_text())
+                record["page_id"] = None
+                (staging / "planner" / "homeroom-page-resolution.json").write_text(json.dumps(record), encoding="utf-8")
+            else:
+                _write_identity(staging, **kwargs)
+            try:
+                weekly_release.resolve_homeroom_identity(2, 5)
+                raise AssertionError(case)
+            except weekly_release.ReleaseBlocked:
+                pass
+        intake_manifest.save_manifest(2, 5, {
+            "quarter": 2, "week": 5, "week_code": "Q2W5", "status": "READY_FOR_REVIEW",
+            "approval_state": "PENDING", "source_hash": SOURCE,
+            "date_range": {"start": "2026-11-09", "end": "2026-11-13"},
+        })
+        _write_identity(staging, action="BLOCKED", schedule_state="BLOCKED", block_reason="duplicate family announcement")
+        try:
+            weekly_release.approve_release(
+                2, 5, confirmation="APPROVE Q2W5", owner_publication_time=_future_owner(),
+                now=datetime.now(NY),
+            )
+            raise AssertionError("blocked announcement was approved")
+        except weekly_release.ReleaseBlocked as exc:
+            assert "family announcement" in str(exc)
+        assert intake_manifest.load_manifest(2, 5)["approval_state"] == "PENDING"
+
+
+def test_blocked_family_announcement_is_a_package_blocker_until_owner_time():
+    home = {"course_id": 26429, "proposed_content_hash": "hash", "body": "<p>Homeroom week</p>"}
+    rows = weekly_release._artifact_rows({
+        "homeroom": home,
+        "homeroom_announcement": {
+            "course_id": 26429, "title": "4th Grade Happenings - Week 5",
+            "action": "BLOCKED", "schedule_state": "OWNER_TIME_REQUIRED",
+            "page_id": 798096, "page_slug": "q2w5-november-9-13-2026",
+        },
+    })
+    assert weekly_release.package_blockers(rows) == [weekly_release.OWNER_TIME_BLOCK]
+    resolved = weekly_release._artifact_rows({
+        "homeroom": home,
+        "homeroom_announcement": {
+            "course_id": 26429, "title": "4th Grade Happenings - Week 5",
+            "action": "BLOCKED", "schedule_state": "OWNER_TIME_REQUIRED",
+        },
+    })
+    assert weekly_release.package_blockers(resolved, owner_publication_time=_future_owner()) == []
+    family = next(row for row in resolved if row["kind"] == "family_announcement")
+    assert family["action"] == "CREATE"
 
 
 def test_publish_reaches_verified_and_rerun_writes_nothing():

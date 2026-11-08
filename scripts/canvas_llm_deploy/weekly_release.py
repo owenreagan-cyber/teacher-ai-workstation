@@ -45,6 +45,7 @@ COURSE_IDS = {
     "homeroom": HOMEROOM_COURSE_ID,
 }
 RELEASE_COURSES = ("math", "reading_spelling", "language_arts", "science", "homeroom")
+OWNER_TIME_BLOCK = "homeroom family announcement requires an owner publication time"
 
 NOT_STARTED = "NOT_STARTED"
 PREPARED = "PREPARED"
@@ -232,15 +233,41 @@ def _artifact_rows(manifest: dict[str, Any]) -> list[dict[str, Any]]:
         })
     family = manifest.get("homeroom_announcement") or {}
     if family:
+        action = _ACTIONS.get(str(family.get("action") or "CREATE"), "BLOCKED")
+        reason = None
+        if action == "BLOCKED":
+            if family.get("schedule_state") == "OWNER_TIME_REQUIRED":
+                reason = OWNER_TIME_BLOCK
+            else:
+                reason = family.get("block_reason") or "family announcement is BLOCKED"
         rows.append({
             "kind": "family_announcement",
             "subject": "homeroom",
             "course_id": family.get("course_id"),
             "title": family.get("title"),
             "delayed_post_at": family.get("delayed_post_at"),
-            "action": _ACTIONS.get(str(family.get("action") or "CREATE"), "BLOCKED"),
+            "action": action,
+            "reason": reason,
         })
     return rows
+
+
+def package_blockers(rows: list[dict[str, Any]], *, owner_publication_time: str | None = None) -> list[str]:
+    """Every BLOCKED artifact is a package blocker. Supplied owner time resolves only that gate."""
+    blockers: list[str] = []
+    for row in rows:
+        if row.get("action") != "BLOCKED":
+            continue
+        reason = row.get("reason") or f"{row.get('kind')} is BLOCKED"
+        row["reason"] = reason
+        if reason == OWNER_TIME_BLOCK and owner_publication_time:
+            row["action"] = "CREATE"
+            row["delayed_post_at"] = owner_publication_time
+            row["reason"] = None
+            continue
+        if reason not in blockers:
+            blockers.append(reason)
+    return blockers
 
 
 def build_package(
@@ -263,7 +290,7 @@ def build_package(
         quarter, week, now=clock, owner_publication_time=owner_publication_time,
     )
     rows = _artifact_rows(manifest)
-    blockers = [row["reason"] for row in rows if row.get("reason")]
+    blockers = package_blockers(rows, owner_publication_time=owner_publication_time)
     if manifest.get("source_hash") != plan.get("source_hash"):
         blockers.append("rollover source hash does not match the deploy plan")
     return {
@@ -311,6 +338,9 @@ def review_package(package: dict[str, Any], reconciliation: dict[str, Any] | Non
     """Owner-facing release. Artifact bodies stay in the staged files."""
     artifacts = reconciliation["artifacts"] if reconciliation else package["artifacts"]
     blockers = list(package.get("blockers") or [])
+    for reason in package_blockers(artifacts):
+        if reason not in blockers:
+            blockers.append(reason)
     if reconciliation:
         blockers.extend(reconciliation.get("blockers") or [])
     return {
@@ -435,6 +465,53 @@ def _stable_approval(
     return fingerprint
 
 
+def _identity_agrees(record: dict[str, Any], *, page_id: Any, slug: str, course_id: int) -> None:
+    if record.get("page_id") is not None and str(record.get("page_id")) != str(page_id):
+        raise ReleaseBlocked("homeroom page id does not match")
+    recorded_slug = record.get("page_slug") or record.get("slug")
+    if recorded_slug and recorded_slug != slug:
+        raise ReleaseBlocked("homeroom page slug does not match")
+    if record.get("course_id") is not None and int(record.get("course_id")) != int(course_id):
+        raise ReleaseBlocked("homeroom course id does not match")
+
+
+def resolve_homeroom_identity(quarter: int, week: int) -> dict[str, Any]:
+    """Read the page identity recorded by Homeroom resolution. Do not invent one."""
+    resolution = homeroom_weekly.load_page_resolution(quarter, week) or {}
+    page_id = resolution.get("page_id")
+    slug = resolution.get("slug") or ""
+    course_id = resolution.get("course_id")
+    if page_id in (None, "") or not slug or course_id in (None, ""):
+        raise ReleaseBlocked("homeroom page identity is not recorded")
+    if int(course_id) != int(homeroom_weekly.COURSE_ID):
+        raise ReleaseBlocked("homeroom course id does not match")
+    html_path = homeroom_weekly.html_path(quarter, week)
+    if not html_path.is_file():
+        raise ReleaseBlocked("homeroom page content is missing")
+    current_hash = homeroom_weekly._sha(html_path.read_text(encoding="utf-8"))
+    approval_record = homeroom_weekly.load_approval(quarter, week) or {}
+    if approval_record:
+        _identity_agrees(approval_record, page_id=page_id, slug=slug, course_id=int(course_id))
+        if approval_record.get("approved") and approval_record.get("approved_body_hash") != current_hash:
+            raise ReleaseBlocked("stale homeroom page hash")
+    family_path = intake_manifest.staging_dir(quarter, week) / homeroom_weekly.ANNOUNCEMENT_FILE
+    if family_path.is_file():
+        family = json.loads(family_path.read_text(encoding="utf-8"))
+        if family.get("page_id") is None or not (family.get("page_slug") or family.get("slug")):
+            raise ReleaseBlocked("homeroom family announcement does not reference the page")
+        _identity_agrees(family, page_id=page_id, slug=slug, course_id=int(course_id))
+        if family.get("newsletter_html_hash") not in (None, "", current_hash):
+            raise ReleaseBlocked("stale homeroom page hash")
+        if html_path.read_text(encoding="utf-8") not in (family.get("message") or ""):
+            raise ReleaseBlocked("homeroom family announcement does not contain the staged page")
+    return {
+        "course_id": int(course_id),
+        "page_id": int(page_id),
+        "page_slug": slug,
+        "page_hash": current_hash,
+    }
+
+
 def approve_release(
     quarter: int,
     week: int,
@@ -454,25 +531,25 @@ def approve_release(
     source_hash = str(intake.get("source_hash") or "")
     if not source_hash:
         raise ReleaseBlocked("the intake source hash is missing")
-    html_path = homeroom_weekly.html_path(quarter, week)
-    if not html_path.is_file():
-        raise ReleaseBlocked("homeroom page content is missing")
     family_path = intake_manifest.staging_dir(quarter, week) / homeroom_weekly.ANNOUNCEMENT_FILE
     if not family_path.is_file():
         raise ReleaseBlocked("homeroom family announcement is missing")
-    resolution = homeroom_weekly.load_page_resolution(quarter, week) or {}
-    if not resolution.get("page_id") or not resolution.get("page_slug"):
-        raise ReleaseBlocked("homeroom page identity is not recorded")
+    identity = resolve_homeroom_identity(quarter, week)
+    package = build_package(
+        quarter, week, now=clock, owner_publication_time=owner_publication_time,
+    )
+    if package["blockers"]:
+        raise ReleaseBlocked("; ".join(package["blockers"]))
     fingerprint = _stable_approval(
         quarter, week, source_hash=source_hash,
         owner_publication_time=owner_publication_time, now=clock,
     )
-    html = html_path.read_text(encoding="utf-8")
-    digest = homeroom_weekly._sha(html)
+    html = homeroom_weekly.html_path(quarter, week).read_text(encoding="utf-8")
     homeroom_weekly.record_approval(
-        quarter, week, page_id=int(resolution["page_id"]),
-        page_slug=str(resolution["page_slug"]), week_code_value=code,
-        source_body_hash=digest, approved_body_hash=digest, body=html,
+        quarter, week, page_id=identity["page_id"],
+        page_slug=identity["page_slug"], week_code_value=code,
+        source_body_hash=identity["page_hash"], approved_body_hash=identity["page_hash"],
+        body=html,
     )
     family = json.loads(family_path.read_text(encoding="utf-8"))
     family["approval_state"] = "APPROVED"

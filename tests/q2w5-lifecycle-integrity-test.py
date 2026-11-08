@@ -37,6 +37,13 @@ def _hash(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
+def _protected() -> tuple[str | None, list[str] | None]:
+    """Hash the real week only when this machine has one. CI does not."""
+    if not REAL_MANIFEST.exists() or not REAL_DEPLOY.exists():
+        return None, None
+    return _hash(REAL_MANIFEST), sorted(path.name for path in REAL_DEPLOY.iterdir())
+
+
 def _manifest(**overrides) -> dict:
     manifest = imf.new_manifest(
         quarter=2, week=5, week_code="Q2W5",
@@ -80,14 +87,15 @@ def _save(manifest: dict) -> None:
     imf.save_manifest(2, 5, manifest)
 
 
-def _unchanged(before: str, names: list[str]) -> None:
-    assert _hash(REAL_MANIFEST) == before
+def _unchanged(before: str | None, names: list[str] | None) -> None:
+    if before is None:
+        return
+    assert _protected()[0] == before
     assert sorted(path.name for path in REAL_DEPLOY.iterdir()) == names
 
 
 def test_successful_and_failed_finalization_stay_in_temporary_storage():
-    before = _hash(REAL_MANIFEST)
-    names = sorted(path.name for path in REAL_DEPLOY.iterdir())
+    before, names = _protected()
     with isolated_storage() as root:
         _save(_manifest())
         result = ledger.finalize_published_verified(2, 5, _report())
@@ -110,8 +118,7 @@ def test_successful_and_failed_finalization_stay_in_temporary_storage():
 
 
 def test_negative_finalization_does_not_advance_intake():
-    before = _hash(REAL_MANIFEST)
-    names = sorted(path.name for path in REAL_DEPLOY.iterdir())
+    before, names = _protected()
     cases = {
         "missing report": None,
         "missing approval": (_manifest(approval_state="PENDING"), _report()),
@@ -150,8 +157,7 @@ def test_negative_finalization_does_not_advance_intake():
 
 
 def test_failed_ledger_write_and_corrupt_readback_do_not_advance():
-    before = _hash(REAL_MANIFEST)
-    names = sorted(path.name for path in REAL_DEPLOY.iterdir())
+    before, names = _protected()
     with isolated_storage():
         _save(_manifest())
         original = Path.write_text
@@ -208,7 +214,7 @@ def test_duplicate_finalization_does_not_rewrite_history():
 
 
 def test_split_storage_cannot_finalize_against_real_intake(tmp_path=None):
-    before = _hash(REAL_MANIFEST)
+    before, _names = _protected()
     with tempfile.TemporaryDirectory() as tmp:
         original = ledger.DEPLOY_ROOT
         ledger.DEPLOY_ROOT = Path(tmp) / "deployments"
@@ -218,7 +224,7 @@ def test_split_storage_cannot_finalize_against_real_intake(tmp_path=None):
             ledger.DEPLOY_ROOT = original
     assert result["status"] == "BLOCKED"
     assert any("split" in item for item in result["failures"])
-    assert _hash(REAL_MANIFEST) == before
+    assert _protected()[0] == before
 
 
 def test_chief_of_staff_ignores_manifest_status_without_a_ledger():
@@ -266,7 +272,7 @@ def test_reconciliation_preview_is_not_applied():
 
 
 def test_advance_status_cannot_enter_published_verified():
-    before = _hash(REAL_MANIFEST)
+    before, _names = _protected()
     manifest = _manifest(status="SOURCE_FETCHED", approval_state="PENDING", ready_to_publish=False)
     imf.advance_status(manifest, "NORMALIZED")
     imf.advance_status(manifest, "DRAFTED")
@@ -325,7 +331,7 @@ def test_advance_status_cannot_enter_published_verified():
         )
         assert corrected["status"] == "APPLIED", corrected
         assert imf.load_manifest(2, 5)["status"] == "READY_FOR_REVIEW"
-    assert _hash(REAL_MANIFEST) == before
+    assert _protected()[0] == before
 
 
 def _run():

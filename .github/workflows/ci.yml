@@ -22,6 +22,7 @@ on:
       - feat/cosd-local-daemon
       - feat/cosd-persistent-task-registry
       - feat/cosd-persistent-execution-queue
+      - feat/cos-persistent-daemon-client
   workflow_dispatch:
 
 permissions:

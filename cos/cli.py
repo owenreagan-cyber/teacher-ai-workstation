@@ -510,6 +510,11 @@ def main(argv: list[str]) -> int:
         except SessionIdError as e:
             _emit_error(as_json, str(e), "usage")
             return EXIT_USAGE
+    from cos.daemon_client import dispatch_daemon_command
+
+    routed = dispatch_daemon_command(args)
+    if routed is not None:
+        return routed
     try:
         if getattr(args, "config_only", False):
             return args.func(load_config(), args)

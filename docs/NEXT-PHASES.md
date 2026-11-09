@@ -39,33 +39,28 @@ There is **one `cos` core with two faces.**
 
 ## Build order
 
-### P0 — Operational deployment and certification (open)
+### P0 — Operational deployment and certification (complete, one blocked capability)
 
-**Certified 2026-11-09:** the installed `/Applications/Chief.app` is v0.1.0, arm64, Electron 44.5.1,
-signed (Team 98F559Y354, hardened runtime, not notarized), and built from commit `24c9df4` — proven
-by a byte-identical rebuild of all 28 asar payload files. `cosd` lifecycle, authentication, task
-persistence, device registry and pairing are certified against a temporary state root.
+**Activated 2026-11-09:** `/Applications/Chief.app` is the certified P0.2a package (asar
+`529c221c…92506`, arm64, Electron 44.5.1, signed, hardened runtime, not notarized). `cosd` runs as
+PID 34750 on `127.0.0.1:8765` with WAL SQLite (`integrity_check` ok), `0700` state, `0600` token,
+authenticated status, working kill switch, and task persistence verified across a daemon restart.
+Chief.app connects to the daemon over an established authenticated socket. The dedicated runtime is
+`~/.chief-runtime/venv` (Python 3.12.13, cryptography 50.0.2) selected through
+`~/.chief-runtime/python`.
 
-**Still open:**
-- The installed build predates `cosd`: no tasks, queue, devices, pairing, or notifications. It runs
-  the `bin/cos` CLI fallback.
-- `cosd` has never run in production (no state directory exists).
-- `cryptography` is missing from the operating Python 3.12; pairing approval fails closed today. A
-  reproducible venv procedure and `scripts/chief-cosd-dependency-status.sh` now exist, but the
-  dependency is not installed.
-- The P0.2a candidate (asar sha256 `529c221c…92506`) is built and **not installed**. Installation
-  needs owner approval. The app resolves its runtime at
-  `~/Projects/teacher-ai-workstation/bin/cos`, so that checkout must stay in place.
+Existing `config.json`, `sessions/`, `cache/` and the hash-chained `audit.jsonl` were preserved; the
+audit log was appended to, never rewritten.
 
-**Fixed in P0.2a:** the private state directory (`<state>` and `<state>/cosd`) is now created `0700`
-and an existing permissive directory is corrected in place, with 10 regression tests.
+**Blocked:** device pairing. A concurrent-redemption defect in `cosd/devices/pairing/service.py` can
+raise `TypeError` instead of a clean conflict on the losing thread; enrollment stays disabled until
+it is fixed with cross-model review (D-010).
 
-**Prepared in P0.2b (not activated):** candidate/backup/hash verification, an exact activation and
-rollback procedure, a re-runnable read-only preflight, and an explicit interpreter contract
-(`CHIEF_PYTHON` or `~/.chief-runtime/python`) so an isolated Chief venv is the single runtime for
-both `bin/cos` and `bin/cosd`. Plan: `docs/operations/chief-p0.2b-activation-plan.md`.
+**Known operational limits:** `cosd` does not start at login (no LaunchAgent, by design); the app
+resolves its runtime at `~/Projects/teacher-ai-workstation/bin/cos`, so that checkout must stay in
+place; not notarized.
 
-Details and rollback: `docs/operations/master-chief-operational-certification.md`.
+Evidence and rollback: `docs/operations/master-chief-production-activation.md`.
 
 ### P1a — Messenger complete (Mac). Next.
 - **Web search:** an explicit command ("search …" / "look up …"), one allowlisted API, the API

@@ -3,6 +3,10 @@
 Status: ACCEPTED · revised 2026-10-02
 Settled rules are recorded in `docs/DECISIONS.md`. This file is the build order.
 
+**Canonical product direction and program sequence: `docs/master-chief-roadmap.md`.** This file
+keeps the phase-level detail for work already sequenced there. "Master Chief" is the internal
+codename for the platform; the product is **Chief**.
+
 ## Product shape
 
 There is **one `cos` core with two faces.**

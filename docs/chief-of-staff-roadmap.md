@@ -1,5 +1,13 @@
 # Chief of Staff Roadmap
 
+> **Historical document.** This is the original Phase 1A–1I roadmap for the legacy
+> `bin/chief-of-staff` CLI era. It is kept for history and is **not** the current plan.
+>
+> The canonical product direction and development roadmap is
+> [`docs/master-chief-roadmap.md`](master-chief-roadmap.md). Phase-level build order lives in
+> [`docs/NEXT-PHASES.md`](NEXT-PHASES.md), and settled rules live in
+> [`docs/DECISIONS.md`](DECISIONS.md).
+
 ## Phase 1A: Safety and training docs
 
 Complete. Create the role, permission model, memory policy, sensitivity rules, workflows, training docs, eval prompts, and future source map. No app is built.

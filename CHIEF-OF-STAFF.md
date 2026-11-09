@@ -30,6 +30,7 @@ Since MERGE-1 (2026-10-18), the Chief stack and the Teacher Workstation share on
 | Developer safety | `tools/dev_safety/` |
 | Decisions | `docs/DECISIONS.md` |
 | Plan | `docs/NEXT-PHASES.md` |
+| **Product direction and development roadmap (canonical)** | **`docs/master-chief-roadmap.md`** |
 | Earlier workspace architecture (`assistant/chief-of-staff/workspace/`) | On branch `wip/canvas-live-q1w9`; reference only, not yet merged |
 
 ---
@@ -520,6 +521,14 @@ keep one compact chat surface (Raycast first) rather than maintaining two.
 ---
 
 ## 11. Phase plan
+
+**Product direction lives in `docs/master-chief-roadmap.md`.** That file is the canonical strategic
+roadmap: naming, architecture, principles, the P0–P6 sequence, the parallel multi-device track, and
+the permanent requirement that Chief.app work with no Raycast installed. The table below keeps the
+milestone detail these phases were written against; where the two differ, the roadmap governs
+sequencing and `docs/DECISIONS.md` governs behavior.
+
+"Master Chief" is the internal codename for the platform. The product is **Chief**.
 
 | Stage | Milestone | Exit criterion |
 |---|---|---|

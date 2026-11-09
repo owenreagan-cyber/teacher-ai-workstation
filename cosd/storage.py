@@ -8,7 +8,7 @@ from contextlib import contextmanager
 from pathlib import Path
 from typing import Any, Iterator
 
-from cos.config import FILE_MODE, STATE_DIR_MODE, state_dir
+from cos.config import FILE_MODE, ensure_private_dir, state_dir
 
 SCHEMA_VERSION = 2
 DB_FILENAME = "tasks.sqlite3"
@@ -116,7 +116,7 @@ def database_path(base: Path | None = None) -> Path:
 
 
 def _ensure_private_dir(path: Path) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True, mode=STATE_DIR_MODE)
+    ensure_private_dir(path.parent)
 
 
 def _chmod_db(path: Path) -> None:

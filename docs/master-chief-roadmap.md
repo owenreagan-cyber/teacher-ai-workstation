@@ -206,12 +206,12 @@ source checkout is not a system Owen can rely on.
 - Prepare a provenance-stamped Chief.app package.
 - **Owner approval before any live application replacement.**
 
-**P0.1 status (2026-11-09).** Source/installed reconciliation is **done** and proven to commit
+**P0.1/P0.2a status (2026-11-09).** Source/installed reconciliation is **done** and proven to commit
 `24c9df4`; `cosd` lifecycle, authentication, persistence, device registry and pairing are
-**certified** against a temporary state root; a signed candidate from `98b9dfc` exists but is
-**not installed**. Still open: installing that candidate, activating `cosd` in production, and
-installing the `cryptography` pairing requirement. Evidence:
-`docs/operations/master-chief-operational-certification.md`.
+**certified** against a temporary state root. P0.2a fixed the private state-directory permission
+defect, added a PASS/WARN/FAIL pairing-dependency readiness check, and rebuilt the candidate. Still
+open: installing that candidate, activating `cosd` in production, and installing the `cryptography`
+pairing requirement. Evidence: `docs/operations/master-chief-operational-certification.md`.
 
 **Exit criteria:** a signed package with recorded provenance is installed by Owen, `cosd`
 startup/authentication is certified with evidence, and source, package, and installed versions all

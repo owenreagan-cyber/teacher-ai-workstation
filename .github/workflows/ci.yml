@@ -124,6 +124,9 @@ jobs:
           python3 -m pip install --break-system-packages -r requirements-cosd-pairing.txt
           python3 -m unittest discover -s tests/cosd/devices/pairing -p 'test_*.py'
 
+      - name: Pairing dependency readiness
+        run: ./scripts/chief-cosd-dependency-status.sh --require
+
       - name: Chief desktop (Electron)
         run: |
           set -euo pipefail

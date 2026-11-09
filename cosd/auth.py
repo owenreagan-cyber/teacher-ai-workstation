@@ -6,7 +6,7 @@ from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
 
-from cos.config import open_private, state_dir
+from cos.config import ensure_private_dir, open_private, state_dir
 
 from .constants import META_FILENAME, TOKEN_FILENAME
 
@@ -27,6 +27,19 @@ def cosd_state_dir(base: Path | None = None) -> Path:
     return root / "cosd"
 
 
+def ensure_cosd_state_dir(base: Path | None = None) -> Path:
+    """Secure the state root and the cosd subdirectory, then return the latter.
+
+    Both levels are private by definition: the root holds the audit log and
+    configuration, and `cosd/` holds the token, auth metadata, pid file and
+    SQLite database. Only these two directories are touched; contents keep their
+    own modes and are never changed recursively.
+    """
+    root = base or state_dir()
+    ensure_private_dir(root)
+    return ensure_private_dir(root / "cosd")
+
+
 def _meta_path(base: Path | None = None) -> Path:
     return cosd_state_dir(base) / META_FILENAME
 
@@ -41,8 +54,7 @@ def _now() -> str:
 
 def ensure_token(base: Path | None = None) -> TokenRecord:
     """Load or create the API token (0600 file, never logged)."""
-    d = cosd_state_dir(base)
-    d.mkdir(parents=True, exist_ok=True)
+    ensure_cosd_state_dir(base)
     tpath = _token_path(base)
     mpath = _meta_path(base)
     if tpath.is_file() and mpath.is_file():
@@ -53,8 +65,7 @@ def ensure_token(base: Path | None = None) -> TokenRecord:
 
 
 def rotate_token(base: Path | None = None) -> TokenRecord:
-    d = cosd_state_dir(base)
-    d.mkdir(parents=True, exist_ok=True)
+    d = ensure_cosd_state_dir(base)
     prev_version = 0
     mpath = _meta_path(base)
     if mpath.is_file():

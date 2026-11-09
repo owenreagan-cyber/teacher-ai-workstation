@@ -13,7 +13,7 @@ from typing import Any
 from urllib.error import URLError
 from urllib.request import Request, urlopen
 
-from cos.config import FILE_MODE, open_private, state_dir
+from cos.config import FILE_MODE, ensure_private_dir, open_private, state_dir
 
 from .constants import DEFAULT_HOST, DEFAULT_PORT, PID_FILENAME, SERVICE_NAME
 from .server import validate_bind_host
@@ -55,7 +55,7 @@ def pid_path(base: Path | None = None) -> Path:
 
 def write_pid(record: PidRecord, base: Path | None = None) -> None:
     path = pid_path(base)
-    path.parent.mkdir(parents=True, exist_ok=True)
+    ensure_private_dir(path.parent)
     with open_private(path, "w") as fh:
         json.dump(record.to_dict(), fh, sort_keys=True)
         fh.write("\n")

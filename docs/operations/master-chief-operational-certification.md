@@ -1,11 +1,13 @@
-# Master Chief P0.1 — Operational Certification
+# Master Chief — Operational Certification (P0.1 and P0.2a)
 
 ```text
 Status: certification record (evidence-based)
-Scope: discovery, reconciliation, runtime certification, candidate packaging
+Scope: discovery, reconciliation, runtime certification, remediation, candidate packaging
 Implementation approval: none granted by this document
-Audited: 2026-11-09
+Audited: 2026-11-09 (P0.1)
+Remediated: 2026-11-09 (P0.2a)
 Source commit at audit: 98b9dfc6b1ff40b7a9d09eaeefddfe184cbb56fa
+Production activation: NOT authorized — see §15
 ```
 
 This record replaces the earlier assumption that "no Chief.app exists". Chief.app exists, is
@@ -242,7 +244,7 @@ queue, devices, notifications, runtime, or recovery. Raycast remains optional.
 
 | Finding | Severity | Detail |
 | --- | --- | --- |
-| **`<state>/cosd` directory mode is `0755`, not `0700`** | **WARN** (defense in depth) | `cosd/auth.py:ensure_token()` creates the directory with a bare `mkdir(parents=True, exist_ok=True)`. `cosd/storage.py:_ensure_private_dir()` later calls `mkdir(mode=0o700)`, which is a **no-op on an existing directory** — it never chmods. `cos/state_dir()`'s `ensure_state_dir()` does chmod, but it is not on this path. Token contents remain protected (`0600`), so this is metadata exposure to other local accounts, not a secret leak. Single-user Mac: low practical risk, real spec deviation. |
+| **`<state>/cosd` directory mode is `0755`, not `0700`** | **WARN → RESOLVED in P0.2a** | `cosd/auth.py:ensure_token()` created the directory with a bare `mkdir(parents=True, exist_ok=True)`, and `cosd/storage.py:_ensure_private_dir()`'s `mkdir(mode=0o700)` was a **no-op on an existing directory**, so it was never chmod-ed. Fixed by one authoritative `cos.config.ensure_private_dir()` that creates 0700, tightens an existing wider directory, does not recurse, and raises when the mode cannot be established. See §15. |
 | `cryptography` missing in the operational interpreter | WARN | Pairing approval fails closed (`503 crypto_unavailable`). Fail-closed is correct; the dependency is simply not installed. |
 | Application not notarized | INFO | `notarize: false` in `electron-builder.yml`; signed with an Apple Development identity and hardened runtime. Expected for local use; Gatekeeper on another Mac would warn. |
 | Token handling | PASS | Token never appears in logs, audit entries, or any state file other than `api.token` (`0600`). |
@@ -368,11 +370,152 @@ is not a healthy production state. All three distinctions are preserved above.
 ## 14. Next steps
 
 1. **Owner decision:** approve or decline installing the candidate package (§12).
-2. **Fix the directory mode** — `ensure_token()` should create the directory with `0o700` and
-   tighten an existing wide directory, matching `ensure_state_dir()`.
-3. **Install the pairing requirement** in the operating interpreter, or document the isolated venv
-   as the supported runtime.
+2. ~~Fix the directory mode~~ — **done in P0.2a** (§15).
+3. ~~Install the pairing requirement~~ — **procedure and readiness check added in P0.2a**; the
+   package itself is still not installed in the operating interpreter.
 4. **Certify `cosd` as the production runtime** after installation: start it once against the real
    state root, confirm Chief.app reports `cosd` rather than CLI fallback, then record the evidence.
 5. **Do not claim P0 complete** until an installed build with `cosd` is running and its `app.asar`
    hash is recorded here.
+
+---
+
+## 15. P0.2a — remediation and activation preflight (2026-11-09)
+
+P0.2a resolved the two source-level findings from P0.1 and produced a fresh candidate. **It did
+not install, replace, or launch anything, and it did not start a production daemon.**
+
+### 15.1 Private state-directory permissions
+
+`cos/config.py` now owns one authoritative mechanism:
+
+```python
+ensure_private_dir(path)   # create 0700, tighten an existing wider dir, verify, else raise
+ensure_state_dir(path)     # ensure_private_dir(state_dir())
+ensure_private_subdir(...) # ensure_private_dir(ensure_state_dir(root) / name)
+```
+
+Behavior, which is what the regression tests pin:
+
+- A new directory is created `0700`.
+- An existing `0755` directory is chmod-ed to `0700` in place.
+- An already-`0700` directory is left untouched (same inode, same mtime).
+- Only the named directory changes — **no recursion**, contained files keep their modes.
+- If the mode still cannot be established after chmod, `StatePermissionError` is raised so startup
+  fails closed instead of serving from an exposed directory.
+
+Call sites converted: `cosd/auth.py` (`ensure_token`, `rotate_token`), `cosd/storage.py`,
+`cosd/devices/storage.py`, `cosd/lifecycle.py`. `cosd/launchagent.py` intentionally still targets
+`~/Library/LaunchAgents`, which is not a private state directory.
+
+`cosd` now secures **both** the state root and `<state>/cosd`:
+
+| Before | After |
+| --- | --- |
+| root `0755`, `cosd/` `0755` | root `0700`, `cosd/` `0700`, token `0600` |
+
+Verified against a live daemon started on a temporary state root that was deliberately pre-created
+at `0755`.
+
+### 15.2 Reproducible pairing dependency
+
+`bin/cosd` pins `python3.12` (PATH, then `/opt/homebrew/bin/python3.12`). That interpreter still
+does not have `cryptography`, so pairing fails closed today by design.
+
+Documented, reproducible procedure that does **not** touch the global interpreter or the default
+Python:
+
+```bash
+python3.12 -m venv ~/.chief-runtime/venv
+~/.chief-runtime/venv/bin/python -m pip install -r requirements-cosd-pairing.txt
+```
+
+Then either run the daemon with that interpreter, or install into the pinned user environment once
+the owner approves it. The requirement stays `cryptography>=42`; fail-closed behavior is unchanged.
+
+Automated readiness check: `scripts/chief-cosd-dependency-status.sh`.
+
+| State | Result | Exit |
+| --- | --- | --- |
+| `cryptography` importable, real cipher wired | **PASS** | 0 |
+| absent, pairing correctly unavailable | **WARN** | 0 |
+| absent but pairing advertised, or installed but not wired | **FAIL** | 1 |
+| absent with `--require` (activation gate) | **FAIL** | 1 |
+
+It never installs, never starts the daemon, and never touches state. Current machine:
+
+```
+PASS: interpreter /opt/homebrew/bin/python3.12 is Python 3.12.13 (matches bin/cosd pin)
+WARN: cryptography is not installed; pairing is correctly unavailable (503 crypto_unavailable)
+PASS: requirements-cosd-pairing.txt pins cryptography>=42
+PASS: isolated-venv install procedure is documented
+PASS: 3  WARN: 1  FAIL: 0
+```
+
+Against a venv with the dependency installed, the same check reports `PASS: 4, WARN: 0, FAIL: 0`
+with `X25519AesGcmEnvelope`.
+
+### 15.3 Regression tests
+
+New file `tests/cosd/test_state_permissions.py`, 10 tests:
+
+| # | Case | Test |
+| --- | --- | --- |
+| 1 | New directory created at 0700 | `test_new_cosd_directory_is_created_at_0700`, `test_state_root_is_created_at_0700` |
+| 2 | Existing permissive directory corrected | `test_world_readable_directory_is_corrected_in_place` |
+| 3 | Existing 0700 left untouched | `test_already_private_directory_is_left_alone` |
+| 4 | Existing token stays 0600 and unchanged | `test_existing_token_and_metadata_are_preserved`, `test_rotation_keeps_private_directory_and_file_modes` |
+| 5 | Existing database and rows intact | `test_existing_database_and_rows_survive_correction` |
+| 6 | Cannot secure → fail closed | `test_unsecurable_directory_raises`, `test_token_creation_fails_closed_when_directory_cannot_be_secured` |
+| — | No recursion into contents | `test_correction_is_not_recursive` |
+
+### 15.4 Full test results
+
+| Suite | Result |
+| --- | --- |
+| `tests/cos` | **403 tests, OK** |
+| `tests/cosd` | **90 tests, OK** (80 existing + 10 new), 0 skipped |
+| `tests/cosd/devices` | **89 tests, OK** |
+| `tests/cosd/devices/pairing` (venv with `cryptography 50.0.2`) | **64 tests, OK, 0 skipped** |
+| Chief desktop `npm test` | **98 pass, 0 fail, 0 skipped** |
+| Desktop static checks | **610 passed, 0 failed** |
+| Dependency readiness | PASS/WARN/FAIL as above |
+
+### 15.5 P0.2a candidate
+
+| Field | Value |
+| --- | --- |
+| Path | `apps/chief-desktop/release/p0.2a-candidate/mac-arm64/Chief.app` |
+| Source commit | `0471e51` + P0.2a changes |
+| Version / bundle id / arch | `0.1.0` / `local.chief-of-staff.desktop` / arm64 |
+| `app.asar` SHA-256 | `529c221ca296b634559f374d6a2d71fbd3e940d79ad4e3bc361d09df9ef92506` |
+| `app.asar` size | 2,259,976 bytes (272 entries) |
+| Signature | Apple Development `KXYQ8895ZL`, Team `98F559Y354`, hardened runtime, not notarized |
+| `codesign --verify --strict` | OK |
+| Installed / launched | **No** |
+
+The asar hash is identical to the P0.1 candidate because every P0.2a change is Python-side; the
+Electron bundle does not embed the runtime. Package contents confirm `cosd` client, task IPC,
+devices, notifications and runtime modules; the renderer bundle contains Devices, Pairing, Task
+center and Queue, and the string `Raycast` does not appear in it.
+
+**Installation caveat:** the desktop app resolves the runtime at
+`~/Projects/teacher-ai-workstation/bin/cos` (`src/main/config.ts`). Installing the app without that
+checkout at that path yields a client with no runtime.
+
+### 15.6 Updated matrix
+
+| # | Area | P0.1 | Now |
+| --- | --- | --- | --- |
+| 2 | Source/package reconciliation | WARN | **WARN** — installed app still `24c9df4` |
+| 3 | Python dependency readiness | WARN | **WARN** — procedure + check added; not installed |
+| 9 | Pairing | PASS/WARN | **PASS** in venv, **WARN** operationally |
+| 13 | Security | WARN | **WARN → PASS** for state-directory permissions; per-user install remains WARN |
+| 14 | Documentation | PASS | **PASS** |
+
+### 15.7 Activation decision
+
+**Not activated.** The production application and daemon remain untouched: `/Applications/Chief.app`
+still has asar `1933772…6115`, the running process is unchanged, no `cosd` was started against the
+real state root, and no LaunchAgent exists. Installing the candidate and activating `cosd` require
+explicit owner approval in P0.2b.

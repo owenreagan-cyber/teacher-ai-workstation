@@ -84,13 +84,23 @@ failure, and agreement between both entrypoints.
 `requirements-cosd-pairing.txt` gained an explicit upper bound so a future major release cannot be
 pulled in silently.
 
-Readiness gate: `scripts/chief-cosd-dependency-status.sh`.
+Readiness gate: `scripts/chief-cosd-dependency-status.sh`. It resolves the interpreter in
+**exactly** the same order as `bin/cos` and `bin/cosd` — `CHIEF_PYTHON`, then
+`~/.chief-runtime/python`, then `python3.12` — so the gate reports on the runtime that would
+actually run, not on a different interpreter.
 
 | Runtime | Result |
 | --- | --- |
 | System 3.12 | `PASS: 3 / WARN: 1 / FAIL: 0` |
-| Isolated venv | `PASS: 4 / WARN: 0 / FAIL: 0` |
-| Venv with `--require` | exit 0 |
+| Isolated venv via `CHIEF_PYTHON` | `PASS: 4 / WARN: 0 / FAIL: 0` |
+| Isolated venv via `~/.chief-runtime/python` marker | `PASS: 4 / WARN: 0 / FAIL: 0` |
+| Either, with `--require` | exit 0 |
+
+**Runtime prepared 2026-11-09 (application and daemon still untouched).** `~/.chief-runtime/venv`
+exists (Python 3.12.13) with `cryptography 50.0.2`, `cffi 2.1.1`, `pycparser 3.12`; the marker
+`~/.chief-runtime/python` (mode `0600`) points at it. Verified end to end: `bin/cos` and `bin/cosd`
+resolve the marker without `CHIEF_PYTHON`, and a fixture ask returns the deterministic fast-path
+answer with no model call.
 
 ---
 

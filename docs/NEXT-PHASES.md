@@ -7,6 +7,9 @@ Settled rules are recorded in `docs/DECISIONS.md`. This file is the build order.
 keeps the phase-level detail for work already sequenced there. "Master Chief" is the internal
 codename for the platform; the product is **Chief**.
 
+Operating evidence for P0.1 (installed application identity, source provenance, `cosd` and device
+certification, candidate package hash): `docs/operations/master-chief-operational-certification.md`.
+
 ## Product shape
 
 There is **one `cos` core with two faces.**
@@ -35,6 +38,23 @@ There is **one `cos` core with two faces.**
 - **Find, then fix.** Harness failures are listed first, then fixed in a separate batch.
 
 ## Build order
+
+### P0 — Operational deployment and certification (open)
+
+**Certified 2026-11-09:** the installed `/Applications/Chief.app` is v0.1.0, arm64, Electron 44.5.1,
+signed (Team 98F559Y354, hardened runtime, not notarized), and built from commit `24c9df4` — proven
+by a byte-identical rebuild of all 28 asar payload files. `cosd` lifecycle, authentication, task
+persistence, device registry and pairing are certified against a temporary state root.
+
+**Still open:**
+- The installed build predates `cosd`: no tasks, queue, devices, pairing, or notifications. It runs
+  the `bin/cos` CLI fallback.
+- `cosd` has never run in production (no state directory exists).
+- `cryptography` is missing from the operating Python 3.12; pairing approval fails closed today.
+- A signed candidate from `98b9dfc` (`app.asar` sha256 `529c221c…92506`) is built and **not
+  installed**. Installation needs owner approval.
+
+Details and rollback: `docs/operations/master-chief-operational-certification.md`.
 
 ### P1a — Messenger complete (Mac). Next.
 - **Web search:** an explicit command ("search …" / "look up …"), one allowlisted API, the API

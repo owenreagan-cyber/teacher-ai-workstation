@@ -9,6 +9,7 @@ Reality audit: docs/master-plan/build-state-checklist.md
 Canonical roadmap references:
 
 - `docs/master-build-roadmap.md`
+- `docs/master-chief-roadmap.md` (Chief platform product direction; P0–P6 sequence)
 - `docs/build-queue.md`
 - `docs/whole-system-master-roadmap-build-state-report.md`
 - `docs/phase-1-chief-of-staff-status-audit.md`

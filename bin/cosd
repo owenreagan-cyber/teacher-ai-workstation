@@ -2,13 +2,31 @@
 # cosd: Chief of Staff local daemon (loopback, authenticated). Pinned to Python 3.12.
 set -euo pipefail
 
-py="$(command -v python3.12 || true)"
-if [[ -z "${py}" && -x /opt/homebrew/bin/python3.12 ]]; then
-  py=/opt/homebrew/bin/python3.12
+# Interpreter: CHIEF_PYTHON wins, then ~/.chief-runtime/python (the isolated
+# Chief runtime marker), then python3.12 from PATH. An explicit interpreter is
+# validated so a stale or wrong-version venv fails here instead of mid-request.
+py="${CHIEF_PYTHON:-}"
+if [[ -z "${py}" && -f "${HOME}/.chief-runtime/python" ]]; then
+  py="$(cat "${HOME}/.chief-runtime/python")"
 fi
-if [[ -z "${py}" ]]; then
-  echo "cosd: python3.12 not found (brew install python@3.12)" >&2
-  exit 127
+if [[ -n "${py}" ]]; then
+  if [[ ! -x "${py}" ]]; then
+    echo "cosd: CHIEF_PYTHON is not executable: ${py}" >&2
+    exit 127
+  fi
+  if [[ "$("${py}" -c 'import sys; print("%d.%d" % sys.version_info[:2])' 2>/dev/null)" != "3.12" ]]; then
+    echo "cosd: CHIEF_PYTHON must be Python 3.12: ${py}" >&2
+    exit 127
+  fi
+else
+  py="$(command -v python3.12 || true)"
+  if [[ -z "${py}" && -x /opt/homebrew/bin/python3.12 ]]; then
+    py=/opt/homebrew/bin/python3.12
+  fi
+  if [[ -z "${py}" ]]; then
+    echo "cosd: python3.12 not found (brew install python@3.12)" >&2
+    exit 127
+  fi
 fi
 
 root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd -P)"

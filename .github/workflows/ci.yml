@@ -113,6 +113,14 @@ jobs:
           python3 -m unittest discover -s tests/cos -p 'test_*.py'
           python3 -m unittest discover -s tests/cosd -p 'test_*.py'
 
+      - name: Chief interpreter resolution
+        run: |
+          set -euo pipefail
+          if ! command -v python3.12 >/dev/null 2>&1; then
+            sudo ln -sf "$(command -v python3)" /usr/local/bin/python3.12
+          fi
+          bash tests/chief-interpreter-test.sh
+
       - name: Device registry and credential foundation
         run: |
           set -euo pipefail

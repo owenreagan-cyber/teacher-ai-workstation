@@ -33,6 +33,7 @@ Since MERGE-1 (2026-10-18), the Chief stack and the Teacher Workstation share on
 | **Product direction and development roadmap (canonical)** | **`docs/master-chief-roadmap.md`** |
 | P0.1 operational certification | `docs/operations/master-chief-operational-certification.md` |
 | Runtime dependency readiness (pairing / `cryptography`) | `scripts/chief-cosd-dependency-status.sh` |
+| P0.2b activation plan and rollback | `docs/operations/chief-p0.2b-activation-plan.md` |
 | Earlier workspace architecture (`assistant/chief-of-staff/workspace/`) | On branch `wip/canvas-live-q1w9`; reference only, not yet merged |
 
 ---

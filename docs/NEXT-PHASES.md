@@ -60,6 +60,11 @@ persistence, device registry and pairing are certified against a temporary state
 **Fixed in P0.2a:** the private state directory (`<state>` and `<state>/cosd`) is now created `0700`
 and an existing permissive directory is corrected in place, with 10 regression tests.
 
+**Prepared in P0.2b (not activated):** candidate/backup/hash verification, an exact activation and
+rollback procedure, a re-runnable read-only preflight, and an explicit interpreter contract
+(`CHIEF_PYTHON` or `~/.chief-runtime/python`) so an isolated Chief venv is the single runtime for
+both `bin/cos` and `bin/cosd`. Plan: `docs/operations/chief-p0.2b-activation-plan.md`.
+
 Details and rollback: `docs/operations/master-chief-operational-certification.md`.
 
 ### P1a — Messenger complete (Mac). Next.

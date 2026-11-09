@@ -120,6 +120,9 @@ done
 
 # 6. Both entrypoints agree on which interpreter they execute.
 #    A shim earlier on PATH records each invocation, then execs the real 3.12.
+#    HOME is emptied of a runtime marker so this exercises PATH resolution only.
+NOMARK_HOME="${TMP_STATE}/nomarker-home"
+mkdir -p "${NOMARK_HOME}"
 FAKEBIN="${TMP_STATE}/bin"
 mkdir -p "${FAKEBIN}"
 CALLS="${TMP_STATE}/calls.log"
@@ -132,9 +135,9 @@ SHIM
 chmod +x "${FAKEBIN}/python3.12"
 
 set +e
-PATH="${FAKEBIN}:${PATH}" "${ROOT}/bin/cos" --version >/dev/null 2>&1
+HOME="${NOMARK_HOME}" PATH="${FAKEBIN}:${PATH}" "${ROOT}/bin/cos" --version >/dev/null 2>&1
 cos_rc=$?
-PATH="${FAKEBIN}:${PATH}" "${ROOT}/bin/cosd" --version >/dev/null 2>&1
+HOME="${NOMARK_HOME}" PATH="${FAKEBIN}:${PATH}" "${ROOT}/bin/cosd" --version >/dev/null 2>&1
 cosd_rc=$?
 set -e
 

@@ -39,10 +39,20 @@ ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd -P)"
 
 section 'Interpreter'
 
-# Mirror bin/cosd exactly: python3.12 from PATH, then the Homebrew path.
+# Mirror bin/cos and bin/cosd exactly: CHIEF_PYTHON, then the isolated runtime
+# marker, then python3.12 from PATH, then Homebrew. Reporting on a different
+# interpreter than the one the runtime actually uses would make this gate lie.
 PY=""
 if [ -n "${CHIEF_PYTHON:-}" ]; then
   PY="${CHIEF_PYTHON}"
+elif [ -f "${HOME}/.chief-runtime/python" ]; then
+  PY="$(cat "${HOME}/.chief-runtime/python")"
+  if [ ! -x "${PY}" ]; then
+    fail "runtime marker points at a non-executable interpreter: ${PY}"
+    printf '\n## Summary\n'
+    printf 'PASS: %s\nWARN: %s\nFAIL: %s\n' "${PASS_COUNT}" "${WARN_COUNT}" "${FAIL_COUNT}"
+    exit 1
+  fi
 elif command -v python3.12 >/dev/null 2>&1; then
   PY="$(command -v python3.12)"
 elif [ -x /opt/homebrew/bin/python3.12 ]; then

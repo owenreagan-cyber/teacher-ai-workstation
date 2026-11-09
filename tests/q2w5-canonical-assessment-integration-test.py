@@ -463,7 +463,7 @@ def test_owner_time_propagates_and_invalid_times_stay_blocked():
             assert plan["owner_publication_time"] == "2026-11-08T21:00:00Z"
             record = preflight_mod.run_preflight(2, 5, client=None)
             assert record["plan"]["owner_publication_time"] == "2026-11-08T21:00:00Z"
-            rolled = rollover_manifest.build_rollover_manifest(2, 4, 2, 5)
+            rolled = rollover_manifest.build_rollover_manifest(2, 4, 2, 5, now=NOW)
             assert rolled["owner_publication_time"] == "2026-11-08T21:00:00Z"
             assert any(item.get("delayed_post_at") == "2026-11-08T21:00:00Z" for item in rolled["weekly_announcements"])
             again = build_plan(2, 5, now=NOW)
@@ -487,6 +487,7 @@ def test_blocked_direct_execution_performs_zero_canvas_writes():
         try:
             result = rollover.execute(
                 2, 4, 2, 5, client=client, owner_confirmation="ROLLOVER Q2W5", manifest=manifest,
+                now=NOW,
             )
         except rollover.RolloverBlocked:
             result = {"lifecycle": "BLOCKED"}

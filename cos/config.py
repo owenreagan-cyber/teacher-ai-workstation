@@ -93,21 +93,41 @@ def state_dir() -> Path:
     return Path(override).expanduser() if override else DEFAULT_STATE_DIR
 
 
-def ensure_state_dir(path: Path | None = None) -> Path:
-    """Create the state directory with 0700 and tighten it if it is wider."""
-    path = path or state_dir()
+class StatePermissionError(RuntimeError):
+    """A private state directory could not be secured. Callers must fail closed."""
+
+
+def ensure_private_dir(path: Path) -> Path:
+    """Create *path* as a private 0700 directory and verify the result.
+
+    This is the one authoritative mechanism for every Chief state directory.
+    An existing directory that is wider than 0700 is tightened in place, so a
+    directory created earlier by a wider process is corrected rather than
+    trusted. Only the named directory changes: its contents are never touched,
+    nothing is changed recursively, and existing files keep their own modes.
+    If the required mode cannot be established the call raises, so startup fails
+    closed instead of running with a world-readable state directory.
+    """
+    path = Path(path)
     path.mkdir(parents=True, exist_ok=True, mode=STATE_DIR_MODE)
-    if stat.S_IMODE(path.stat().st_mode) != STATE_DIR_MODE:
+    mode = stat.S_IMODE(path.stat().st_mode)
+    if mode != STATE_DIR_MODE:
         os.chmod(path, STATE_DIR_MODE)
+        mode = stat.S_IMODE(path.stat().st_mode)
+    if mode != STATE_DIR_MODE:
+        raise StatePermissionError(
+            f"cannot secure {path}: mode {mode:04o}, requires {STATE_DIR_MODE:04o}"
+        )
     return path
 
 
+def ensure_state_dir(path: Path | None = None) -> Path:
+    """Create the state directory with 0700 and tighten it if it is wider."""
+    return ensure_private_dir(path or state_dir())
+
+
 def ensure_private_subdir(name: str, root: Path | None = None) -> Path:
-    sub = ensure_state_dir(root) / name
-    sub.mkdir(exist_ok=True, mode=STATE_DIR_MODE)
-    if stat.S_IMODE(sub.stat().st_mode) != STATE_DIR_MODE:
-        os.chmod(sub, STATE_DIR_MODE)
-    return sub
+    return ensure_private_dir(ensure_state_dir(root) / name)
 
 
 def open_private(path: Path, mode: str = "a"):

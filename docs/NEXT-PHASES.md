@@ -50,9 +50,15 @@ persistence, device registry and pairing are certified against a temporary state
 - The installed build predates `cosd`: no tasks, queue, devices, pairing, or notifications. It runs
   the `bin/cos` CLI fallback.
 - `cosd` has never run in production (no state directory exists).
-- `cryptography` is missing from the operating Python 3.12; pairing approval fails closed today.
-- A signed candidate from `98b9dfc` (`app.asar` sha256 `529c221c…92506`) is built and **not
-  installed**. Installation needs owner approval.
+- `cryptography` is missing from the operating Python 3.12; pairing approval fails closed today. A
+  reproducible venv procedure and `scripts/chief-cosd-dependency-status.sh` now exist, but the
+  dependency is not installed.
+- The P0.2a candidate (asar sha256 `529c221c…92506`) is built and **not installed**. Installation
+  needs owner approval. The app resolves its runtime at
+  `~/Projects/teacher-ai-workstation/bin/cos`, so that checkout must stay in place.
+
+**Fixed in P0.2a:** the private state directory (`<state>` and `<state>/cosd`) is now created `0700`
+and an existing permissive directory is corrected in place, with 10 regression tests.
 
 Details and rollback: `docs/operations/master-chief-operational-certification.md`.
 

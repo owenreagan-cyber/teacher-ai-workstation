@@ -15,7 +15,7 @@ from contextlib import contextmanager
 from pathlib import Path
 from typing import Iterator
 
-from cos.config import FILE_MODE, STATE_DIR_MODE
+from cos.config import FILE_MODE, ensure_private_dir
 
 from ..storage import BUSY_TIMEOUT_MS, database_path
 
@@ -154,7 +154,7 @@ CREATE TABLE IF NOT EXISTS pairing_rate_limits (
 
 
 def _ensure_private_dir(path: Path) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True, mode=STATE_DIR_MODE)
+    ensure_private_dir(path.parent)
 
 
 def _chmod_db(path: Path) -> None:

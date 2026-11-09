@@ -1,4 +1,8 @@
 # P1b.4c authenticated pairing delivery (X25519 + HKDF-SHA256 + AES-256-GCM).
 # The daemon starts without it, but owner approval fails closed with
 # 503 crypto_unavailable until this dependency is installed.
-cryptography>=42
+#
+# The upper bound is deliberate: raising it is a reviewed change, so a major
+# release can never be pulled in silently. Verified against 50.0.2 on Python
+# 3.12.13 (see docs/operations/chief-p0.2b-activation-plan.md).
+cryptography>=42,<51

@@ -206,12 +206,16 @@ source checkout is not a system Owen can rely on.
 - Prepare a provenance-stamped Chief.app package.
 - **Owner approval before any live application replacement.**
 
-**P0.1/P0.2a status (2026-11-09).** Source/installed reconciliation is **done** and proven to commit
-`24c9df4`; `cosd` lifecycle, authentication, persistence, device registry and pairing are
+**P0.1/P0.2a/P0.2b status (2026-11-09).** Source/installed reconciliation is **done** and proven to
+commit `24c9df4`; `cosd` lifecycle, authentication, persistence, device registry and pairing are
 **certified** against a temporary state root. P0.2a fixed the private state-directory permission
-defect, added a PASS/WARN/FAIL pairing-dependency readiness check, and rebuilt the candidate. Still
-open: installing that candidate, activating `cosd` in production, and installing the `cryptography`
-pairing requirement. Evidence: `docs/operations/master-chief-operational-certification.md`.
+defect, added a PASS/WARN/FAIL pairing-dependency readiness check, and rebuilt the candidate. P0.2b
+prepared activation: verified candidate/backup/hashes, added an explicit interpreter contract so an
+isolated Chief venv can be the one runtime for both `bin/cos` and `bin/cosd`, and wrote the bounded
+activation and rollback procedure. **Nothing is activated.** Still open: installing the candidate,
+starting production `cosd`, and installing the `cryptography` pair requirement — all owner-gated.
+Evidence: `docs/operations/master-chief-operational-certification.md` and
+`docs/operations/chief-p0.2b-activation-plan.md`.
 
 **Exit criteria:** a signed package with recorded provenance is installed by Owen, `cosd`
 startup/authentication is certified with evidence, and source, package, and installed versions all

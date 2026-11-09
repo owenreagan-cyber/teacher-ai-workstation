@@ -31,6 +31,7 @@ Since MERGE-1 (2026-10-18), the Chief stack and the Teacher Workstation share on
 | Decisions | `docs/DECISIONS.md` |
 | Plan | `docs/NEXT-PHASES.md` |
 | **Product direction and development roadmap (canonical)** | **`docs/master-chief-roadmap.md`** |
+| P0.1 operational certification | `docs/operations/master-chief-operational-certification.md` |
 | Earlier workspace architecture (`assistant/chief-of-staff/workspace/`) | On branch `wip/canvas-live-q1w9`; reference only, not yet merged |
 
 ---
@@ -90,6 +91,12 @@ Outside products were studied for logic and features to rebuild, not to adopt.
   a static network-free/read-only check), but new features are not added to it.
 
 ### Works today
+
+**Installed build note (2026-11-09).** The running `/Applications/Chief.app` was built from commit
+`24c9df4` on 2026-10-21 and predates the `cosd` generation described below, so it uses the `bin/cos`
+CLI path and has no Tasks, Devices, pairing, or notifications. Source on `main` is newer than the
+installed app. Evidence, candidate package hash, and rollback:
+`docs/operations/master-chief-operational-certification.md`.
 - **Chat:** one-shot `cos ask` and multi-turn `cos chat`, on the local model, with tool calling
   (`cos tools` lists them).
 - **Request sorting (P1a.5):** every message gets one label (time, weather, calendar,

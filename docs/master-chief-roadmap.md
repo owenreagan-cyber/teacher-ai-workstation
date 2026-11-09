@@ -21,6 +21,7 @@ Related authority:
 | `CHIEF-OF-STAFF.md` | Developer README: what exists today, code stack, operational detail |
 | `docs/master-build-roadmap.md` | Whole-repository Teacher Workstation v1.0 program roadmap (different scope) |
 | `docs/security/p1b4-multi-device-architecture.md` | Accepted multi-device security architecture (P1b.4a) |
+| `docs/operations/master-chief-operational-certification.md` | P0.1 discovery, reconciliation, runtime certification and package provenance |
 | `docs/chief-of-staff-roadmap.md` | Historical Phase 1A–1I roadmap; superseded by this file |
 
 If this document and `docs/DECISIONS.md` disagree, the decision wins.
@@ -173,13 +174,19 @@ and remote credential delivery are **not activated**.
 
 | Item | Finding | Status |
 | --- | --- | --- |
-| Chief.app source | `apps/chief-desktop` at version `0.1.0` | **Implemented** |
-| Chief.app installed build | No installed build found in standard application locations at audit time; source and installed versions are not reconciled | **Unknown — P0 work** |
-| Provenance-stamped package | Not produced | **Designed only — P0 work** |
-| Certified `cosd` startup and auth on the working machine | Not recorded as a certification artifact | **Unknown — P0 work** |
+| Chief.app source | `apps/chief-desktop` at version `0.1.0`; 47 IPC channels, 1:1 with the preload bridge | **Implemented** |
+| Chief.app installed build | `/Applications/Chief.app`, v0.1.0, arm64, Electron 44.5.1, signed (Apple Development, Team 98F559Y354, hardened runtime, not notarized) | **Deployed** |
+| Installed build source commit | **`24c9df4`** (2026-10-21), proven by a byte-identical rebuild of all 28 asar payload files | **Verified** |
+| Divergence from `main` | Installed build predates the `cosd` generation: no persistent daemon client, tasks, queue, devices, pairing, or notifications | **Open — P0** |
+| Provenance-stamped package | Candidate built from `98b9dfc`, signed, hashed (`app.asar` sha256 `529c221c…92506`), **not installed** | **Built — awaiting owner approval** |
+| `cosd` in production | Never started on this Mac; no `cosd` state directory exists. Installed app runs the `bin/cos` CLI fallback | **Not activated — P0** |
+| `cosd` lifecycle certification | Start, health, auth, tasks, queue, rotation, kill switch, restart persistence, WAL, loopback-only: all verified against a temporary state root | **Tested** |
 
-These three unknowns are the reason P0 exists. Until they are closed, no part of Chief should be
-described as deployed or production-ready.
+Full evidence: `docs/operations/master-chief-operational-certification.md`.
+
+These entries are the reason P0 exists. A running application is not current source, and a built
+package is not a deployment. Until an installed build from current source is running with `cosd`
+and its hash is recorded, no part of Chief should be described as production-ready.
 
 ---
 
@@ -198,6 +205,13 @@ source checkout is not a system Owen can rely on.
 - Verify the device registry and pairing dependency chain end to end.
 - Prepare a provenance-stamped Chief.app package.
 - **Owner approval before any live application replacement.**
+
+**P0.1 status (2026-11-09).** Source/installed reconciliation is **done** and proven to commit
+`24c9df4`; `cosd` lifecycle, authentication, persistence, device registry and pairing are
+**certified** against a temporary state root; a signed candidate from `98b9dfc` exists but is
+**not installed**. Still open: installing that candidate, activating `cosd` in production, and
+installing the `cryptography` pairing requirement. Evidence:
+`docs/operations/master-chief-operational-certification.md`.
 
 **Exit criteria:** a signed package with recorded provenance is installed by Owen, `cosd`
 startup/authentication is certified with evidence, and source, package, and installed versions all

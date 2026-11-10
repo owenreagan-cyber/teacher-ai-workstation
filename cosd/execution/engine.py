@@ -47,12 +47,12 @@ class ExecutionEngine:
 
     def list_attempts(self, task_id: str) -> dict[str, Any]:
         self.registry.get_task(task_id)
-        rows = self.registry.db.execute(
+        rows = self.registry.db.query_all(
             """SELECT id, task_id, attempt_number, worker_id, state, started_at, heartbeat_at,
                       finished_at, error_json, result_json
                FROM execution_attempts WHERE task_id = ? ORDER BY attempt_number ASC""",
             (task_id,),
-        ).fetchall()
+        )
         attempts = []
         for r in rows:
             attempts.append(
@@ -76,10 +76,10 @@ class ExecutionEngine:
         return {"ok": True, "task_id": task_id, "checkpoints": list_checkpoints_db(self.registry.db, task_id)}
 
     def list_workers(self) -> dict[str, Any]:
-        rows = self.registry.db.execute(
+        rows = self.registry.db.query_all(
             """SELECT lease_id, task_id, worker_id, acquired_at, expires_at, heartbeat_at, state
                FROM worker_leases ORDER BY acquired_at DESC LIMIT 100"""
-        ).fetchall()
+        )
         return {
             "ok": True,
             "workers": [dict(r) for r in rows],

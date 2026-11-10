@@ -232,8 +232,26 @@ class DeviceDatabase:
             self._conn.commit()
 
     def execute(self, sql: str, params: tuple | list = ()) -> sqlite3.Cursor:
+        """Run a statement whose rows will **not** be read (writes, DDL, PRAGMA).
+
+        The lock is held only for the ``execute`` call. Reading rows from the
+        returned cursor is unsafe: another thread can commit on this shared
+        connection before the fetch, which resets the open statement and yields
+        a row whose columns are all NULL. Any read must use :meth:`query_one`
+        or :meth:`query_all`, which hold the lock through the fetch.
+        """
         with self._lock:
             return self._conn.execute(sql, params)
+
+    def query_one(self, sql: str, params: tuple | list = ()) -> sqlite3.Row | None:
+        """Run a read and materialize one row while holding the lock."""
+        with self._lock:
+            return self._conn.execute(sql, params).fetchone()
+
+    def query_all(self, sql: str, params: tuple | list = ()) -> list[sqlite3.Row]:
+        """Run a read and materialize every row while holding the lock."""
+        with self._lock:
+            return self._conn.execute(sql, params).fetchall()
 
     @contextmanager
     def _transaction(self) -> Iterator[sqlite3.Connection]:
@@ -251,5 +269,5 @@ class DeviceDatabase:
             yield conn
 
     def integrity_check(self) -> str:
-        row = self.execute("PRAGMA integrity_check").fetchone()
+        row = self.query_one("PRAGMA integrity_check")
         return str(row[0]) if row else "unknown"

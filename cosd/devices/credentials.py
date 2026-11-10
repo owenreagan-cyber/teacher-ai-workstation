@@ -305,10 +305,10 @@ class CredentialService:
 
         # Refuse a second active credential for one device. Rotation marks the
         # old row rotated inside the same transaction, then issues the new one.
-        active = self._db.execute(
+        active = self._db.query_one(
             "SELECT credential_id FROM device_credentials WHERE device_id = ? AND status = 'active'",
             (device_id,),
-        ).fetchone()
+        )
         if active is not None:
             raise DeviceError(
                 "device already has an active credential; rotate or revoke it first",
@@ -384,9 +384,9 @@ class CredentialService:
 
     def rotate(self, credential_id: str, *, actor: str = "local_owner") -> IssuedCredential:
         credential_id = validate_credential_id(credential_id)
-        row = self._db.execute(
+        row = self._db.query_one(
             "SELECT * FROM device_credentials WHERE credential_id = ?", (credential_id,)
-        ).fetchone()
+        )
         if row is None:
             raise DeviceError("credential not found", kind="not_found", http_status=404)
         if row["status"] != "active":
@@ -562,9 +562,9 @@ class CredentialService:
         credential_id, secret = token.split(".", 1)
         if not secret or not _valid_hex(credential_id):
             raise CredentialInvalid("malformed")
-        row = self._db.execute(
+        row = self._db.query_one(
             "SELECT * FROM device_credentials WHERE credential_id = ?", (credential_id,)
-        ).fetchone()
+        )
         if row is None:
             raise CredentialInvalid("unknown")
         if row["status"] != "active":
@@ -587,18 +587,18 @@ class CredentialService:
         )
 
     def active_for_device(self, credential_id: str, device_id: str) -> bool:
-        row = self._db.execute(
+        row = self._db.query_one(
             "SELECT status, expires_at FROM device_credentials "
             "WHERE credential_id = ? AND device_id = ?",
             (credential_id, device_id),
-        ).fetchone()
+        )
         return bool(row and row["status"] == "active" and not _expired(row["expires_at"]))
 
     def list_for_device(self, device_id: str) -> list[dict[str, Any]]:
-        rows = self._db.execute(
+        rows = self._db.query_all(
             "SELECT * FROM device_credentials WHERE device_id = ? ORDER BY created_at DESC",
             (device_id,),
-        ).fetchall()
+        )
         return [self._metadata(row) for row in rows]
 
     @staticmethod

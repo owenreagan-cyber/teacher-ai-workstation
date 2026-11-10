@@ -44,22 +44,22 @@ def write_checkpoint(
 
 
 def latest_checkpoint_db(db, *, attempt_id: int, checkpoint_key: str) -> dict | None:
-    row = db.execute(
+    row = db.query_one(
         """SELECT checkpoint_json FROM execution_checkpoints
            WHERE attempt_id = ? AND checkpoint_key = ?""",
         (attempt_id, checkpoint_key),
-    ).fetchone()
+    )
     if not row:
         return None
     return json.loads(row["checkpoint_json"])
 
 
 def list_checkpoints_db(db, task_id: str) -> list[dict[str, Any]]:
-    rows = db.execute(
+    rows = db.query_all(
         """SELECT id, attempt_id, checkpoint_key, checkpoint_json, created_at
            FROM execution_checkpoints WHERE task_id = ? ORDER BY id ASC""",
         (task_id,),
-    ).fetchall()
+    )
     return [
         {
             "id": r["id"],

@@ -30,9 +30,9 @@ class ExecutionQueue:
         AuditLog(load_config().audit_path)(kind, **fields)
 
     def is_paused(self) -> bool:
-        row = self.registry.db.execute(
+        row = self.registry.db.query_one(
             "SELECT value_json FROM task_metadata WHERE key = ?", (QUEUE_META_KEY,)
-        ).fetchone()
+        )
         if not row:
             return False
         return bool(json.loads(row["value_json"]).get("paused"))
@@ -50,9 +50,9 @@ class ExecutionQueue:
 
     def status(self) -> dict[str, Any]:
         counts = self.registry.get_task_counts()
-        active = self.registry.db.execute(
+        active = self.registry.db.query_one(
             "SELECT COUNT(*) AS c FROM worker_leases WHERE state = 'active'"
-        ).fetchone()["c"]
+        )["c"]
         return {
             "ok": True,
             "paused": self.is_paused(),
@@ -61,10 +61,10 @@ class ExecutionQueue:
         }
 
     def list_eligible(self, *, limit: int = 50) -> list[dict[str, Any]]:
-        rows = self.registry.db.execute(
+        rows = self.registry.db.query_all(
             """SELECT * FROM tasks WHERE state = ? ORDER BY priority DESC, created_at ASC LIMIT ?""",
             (TaskState.QUEUED.value, limit),
-        ).fetchall()
+        )
         return [dict(r) for r in rows]
 
     def claim_task(self, task_id: str, *, worker_id: str | None = None) -> dict[str, Any]:

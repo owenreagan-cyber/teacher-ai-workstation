@@ -52,9 +52,11 @@ Chief.app connects to the daemon over an established authenticated socket. The d
 Existing `config.json`, `sessions/`, `cache/` and the hash-chained `audit.jsonl` were preserved; the
 audit log was appended to, never rewritten.
 
-**Blocked:** device pairing. A concurrent-redemption defect in `cosd/devices/pairing/service.py` can
-raise `TypeError` instead of a clean conflict on the losing thread; enrollment stays disabled until
-it is fixed with cross-model review (D-010).
+**Pairing defect fixed (P0.3a):** the concurrent-redemption `TypeError` came from fetching from a
+shared SQLite connection outside the lock, which could return an all-NULL row. Reads now materialize
+under the lock, transitions are validated inside the write transaction, and 18 deterministic tests
+enforce a single winner. **Enrollment remains disabled** until the owner decides to enable it; the
+fix does not activate pairing.
 
 **Known operational limits:** `cosd` does not start at login (no LaunchAgent, by design); the app
 resolves its runtime at `~/Projects/teacher-ai-workstation/bin/cos`, so that checkout must stay in

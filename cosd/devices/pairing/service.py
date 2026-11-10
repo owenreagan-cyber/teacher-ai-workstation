@@ -120,6 +120,16 @@ def _loads_list(raw: str | None) -> tuple[str, ...]:
 
 
 def _row_to_record(row: sqlite3.Row) -> EnrollmentRecord:
+    protocol_version = row["protocol_version"]
+    if protocol_version is None:
+        # A row with no protocol version cannot be interpreted. This used to
+        # surface as a bare TypeError when a reset cursor produced a row of
+        # NULLs; fail closed with a controlled error instead.
+        raise DeviceError(
+            "enrollment record is not usable (missing protocol version)",
+            kind="conflict",
+            http_status=409,
+        )
     return EnrollmentRecord(
         enrollment_id=row["enrollment_id"],
         status=row["status"],
@@ -134,7 +144,7 @@ def _row_to_record(row: sqlite3.Row) -> EnrollmentRecord:
         requested_permissions=_loads_list(row["requested_permissions_json"]),
         approved_permissions=_loads_list(row["approved_permissions_json"]),
         public_key_fingerprint=row["public_key_fingerprint"],
-        protocol_version=int(row["protocol_version"]),
+        protocol_version=int(protocol_version),
         created_at=row["created_at"],
         updated_at=row["updated_at"],
         expires_at=row["expires_at"],
@@ -189,10 +199,10 @@ class PairingService:
         return self.clock().astimezone(timezone.utc)
 
     def _fetch(self, enrollment_id: str) -> EnrollmentRecord:
-        row = self.db.execute(
+        row = self.db.query_one(
             "SELECT * FROM enrollment_requests WHERE enrollment_id = ?",
             (enrollment_id,),
-        ).fetchone()
+        )
         if row is None:
             raise DeviceError("enrollment not found", kind="not_found", http_status=404)
         return _row_to_record(row)
@@ -368,18 +378,18 @@ class PairingService:
         return record
 
     def expire_stale(self) -> int:
-        rows = self.db.execute(
+        rows = self.db.query_all(
             "SELECT * FROM enrollment_requests WHERE status IN "
             "('PENDING','AWAITING_OWNER_APPROVAL','APPROVED')"
-        ).fetchall()
+        )
         count = 0
         for row in rows:
             before = row["status"]
             self._maybe_expire(_row_to_record(row))
-            after = self.db.execute(
+            after = self.db.query_one(
                 "SELECT status FROM enrollment_requests WHERE enrollment_id = ?",
                 (row["enrollment_id"],),
-            ).fetchone()
+            )
             if after is not None and after["status"] == PairingState.EXPIRED.value and before != after["status"]:
                 count += 1
         return count
@@ -700,15 +710,15 @@ class PairingService:
 
     def _find_code_row(self, enrollment_id: str | None, pairing_code: str) -> sqlite3.Row | None:
         if enrollment_id:
-            row = self.db.execute(
+            row = self.db.query_one(
                 "SELECT * FROM enrollment_requests WHERE enrollment_id = ?",
                 (enrollment_id,),
-            ).fetchone()
+            )
             return row
-        rows = self.db.execute(
+        rows = self.db.query_all(
             "SELECT * FROM enrollment_requests WHERE status = 'PENDING' "
             "AND pairing_code_hash IS NOT NULL ORDER BY created_at DESC LIMIT 500"
-        ).fetchall()
+        )
         for row in rows:
             if verify_pairing_code(
                 pairing_code, salt=row["pairing_code_salt"], verifier=row["pairing_code_hash"]
@@ -751,10 +761,10 @@ class PairingService:
     # ------------------------------------------------------------------ status
 
     def verify_request_token(self, enrollment_id: str, request_token: str) -> EnrollmentRecord:
-        row = self.db.execute(
+        row = self.db.query_one(
             "SELECT * FROM enrollment_requests WHERE enrollment_id = ?",
             (enrollment_id,),
-        ).fetchone()
+        )
         if row is None or not row["request_token_hash"] or not row["request_token_salt"]:
             raise DeviceError("invalid enrollment session", kind="auth", http_status=401)
         expected = hmac.new(
@@ -913,11 +923,11 @@ class PairingService:
         if target is not None:
             old_refs = [
                 row["keychain_ref"]
-                for row in self.db.execute(
+                for row in self.db.query_all(
                     "SELECT keychain_ref FROM device_credentials "
                     "WHERE device_id = ? AND status = 'active'",
                     (target.device_id,),
-                ).fetchall()
+                )
             ]
         try:
             with self.db.transaction() as conn:
@@ -1165,11 +1175,11 @@ class PairingService:
         if record.status == PairingState.APPROVED.value and record.device_id:
             old_refs = [
                 row["keychain_ref"]
-                for row in self.db.execute(
+                for row in self.db.query_all(
                     "SELECT keychain_ref FROM device_credentials "
                     "WHERE device_id = ? AND status = 'active'",
                     (record.device_id,),
-                ).fetchall()
+                )
             ]
         with self.db.transaction() as conn:
             latest = self._fetch_conn(conn, enrollment_id)
@@ -1218,16 +1228,16 @@ class PairingService:
         self.expire_stale()
         limit = max(1, min(int(limit), 100))
         offset = max(0, int(offset))
-        rows = self.db.execute(
+        rows = self.db.query_all(
             "SELECT * FROM enrollment_requests WHERE status IN "
             "('PENDING','AWAITING_OWNER_APPROVAL','APPROVED') "
             "ORDER BY created_at DESC LIMIT ? OFFSET ?",
             (limit, offset),
-        ).fetchall()
-        total = self.db.execute(
+        )
+        total = self.db.query_one(
             "SELECT COUNT(*) AS c FROM enrollment_requests WHERE status IN "
             "('PENDING','AWAITING_OWNER_APPROVAL','APPROVED')"
-        ).fetchone()["c"]
+        )["c"]
         return {
             "enrollments": [_row_to_record(row).public_dict() for row in rows],
             "total": total,

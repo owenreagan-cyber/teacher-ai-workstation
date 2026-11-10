@@ -52,9 +52,9 @@ class WorkerRunner:
                 error={"error": str(exc), "retriable": False},
                 permanent=True,
             )
-        attempt = self.registry.db.execute(
+        attempt = self.registry.db.query_one(
             "SELECT * FROM execution_attempts WHERE id = ?", (attempt_id,)
-        ).fetchone()
+        )
         if not attempt or attempt["worker_id"] != worker_id:
             raise RuntimeError("attempt ownership mismatch")
         now = _utc_now()
@@ -170,9 +170,9 @@ class WorkerRunner:
     ) -> dict[str, Any]:
         now = _utc_now()
         err_json = _json_dumps(error)
-        attempt_number = self.registry.db.execute(
+        attempt_number = self.registry.db.query_one(
             "SELECT attempt_number FROM execution_attempts WHERE id = ?", (attempt_id,)
-        ).fetchone()["attempt_number"]
+        )["attempt_number"]
         retry_at = None
         if not permanent and error.get("retriable") and spec.retryable:
             retry_at = next_retry_at(attempt_number, max_attempts=spec.max_attempts)

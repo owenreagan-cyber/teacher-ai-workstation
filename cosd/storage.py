@@ -198,8 +198,25 @@ class TaskDatabase:
                 raise
 
     def execute(self, sql: str, params: tuple | list = ()) -> sqlite3.Cursor:
+        """Run a statement whose rows will **not** be read (writes, DDL, PRAGMA).
+
+        The lock covers only the ``execute`` call. Reading from the returned
+        cursor is unsafe: a concurrent commit on this shared connection resets
+        the open statement and the fetch can yield a row whose columns are all
+        NULL. Reads must use :meth:`query_one` / :meth:`query_all`.
+        """
         with self._lock:
             return self._conn.execute(sql, params)
+
+    def query_one(self, sql: str, params: tuple | list = ()) -> sqlite3.Row | None:
+        """Run a read and materialize one row while holding the lock."""
+        with self._lock:
+            return self._conn.execute(sql, params).fetchone()
+
+    def query_all(self, sql: str, params: tuple | list = ()) -> list[sqlite3.Row]:
+        """Run a read and materialize every row while holding the lock."""
+        with self._lock:
+            return self._conn.execute(sql, params).fetchall()
 
     def executemany(self, sql: str, seq: list[tuple]) -> None:
         with self._lock:
@@ -211,5 +228,5 @@ class TaskDatabase:
             yield conn
 
     def integrity_check(self) -> str:
-        row = self.execute("PRAGMA integrity_check").fetchone()
+        row = self.query_one("PRAGMA integrity_check")
         return str(row[0]) if row else "unknown"

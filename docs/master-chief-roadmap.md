@@ -181,7 +181,7 @@ and remote credential delivery are **not activated**.
 | `cosd` in production | Running as PID 34750 on `127.0.0.1:8765`; state at `~/Library/Application Support/ChiefOfStaff/cosd/` (0700, token 0600, SQLite WAL, integrity ok) | **Deployed** |
 | Chief.app ↔ `cosd` | Established authenticated socket from the app process to the daemon | **Verified** |
 | `cosd` lifecycle certification | Start, health, auth, tasks, queue, rotation, kill switch, restart persistence, WAL, loopback-only | **Tested** |
-| Device pairing | Open concurrency defect in `pairing/service.py`; enrollment intentionally disabled | **Blocked — separate fix** |
+| Device pairing | Concurrency defect fixed in P0.3a (single-winner enforced, 18 deterministic tests); enrollment still disabled pending owner decision | **Fixed — not enabled** |
 
 Full evidence: `docs/operations/master-chief-production-activation.md`.
 

@@ -25,7 +25,7 @@ gateway are still deferred, so remote-specific rows remain planned/gap.
 | --- | --- |
 | Owner-created pairing invitation + QR | Implemented locally |
 | 60-bit one-time code, salted hash, single use | Implemented; 10-minute code TTL |
-| Replay / concurrent redemption | Implemented; `pairing.replay_denied` |
+| Replay / concurrent redemption | Implemented; `pairing.replay_denied`; single-winner enforced under contention (P0.3a) |
 | Code/request rate limiting | Implemented durably in SQLite |
 | Device-generated X25519 identity | Implemented; private key never sent |
 | Explicit owner approval + profile selection | Implemented; owner never automatic |
@@ -42,6 +42,46 @@ Residual local risks: the master token remains on disk for existing clients; the
 Keychain provider passes the secret as a `security` argv element for a brief
 period; a compromised owner session can still mutate the registry. These are
 documented in `docs/architecture/device-registry-implementation.md`.
+
+### P0.3a — concurrent redemption defect (found and fixed)
+
+**Finding.** Two simultaneous redemptions of one invitation could crash one
+request with `TypeError: int() argument must be ... not 'NoneType'` inside
+`_row_to_record`, instead of returning a clean conflict.
+
+**Root cause.** `DeviceDatabase` shares one SQLite connection across threads and
+guards it with an `RLock`. `execute()` held that lock only for the statement
+call and returned a cursor; callers fetched afterwards, outside the lock. When
+another thread committed on the same connection in that window, SQLite reset the
+open statement and the fetch produced a row whose columns were **all NULL**.
+The failure was therefore not specific to `protocol_version`; any read on that
+connection could be corrupted this way.
+
+**Impact.** Availability and correct conflict reporting in an authenticated
+local path. It did not permit a second successful redemption, second credential,
+or authorization bypass: the transaction-level state check already rejected the
+loser. It did mean a losing request could surface as an unhandled 500.
+
+**Remediation.** Reads are materialized under the lock (`query_one`,
+`query_all`); writes continue to run inside `transaction()`, which holds the
+lock for the whole unit of work. `_row_to_record` fails closed with a controlled
+`DeviceError` when a record has no protocol version. The same read pattern was
+present in the task registry and execution layer (`cosd/tasks.py`,
+`cosd/execution/`), so those reads were converted too, and a static test now
+forbids `execute(...).fetchone()/fetchall()` anywhere under `cosd/`.
+
+**Residual risk.** Low. All database access on the shared connection is now
+mutually exclusive, so a local write transaction briefly serializes reads. That
+is acceptable for a single-owner daemon and is covered by the busy/contention
+test. Device pairing remains disabled in production until the owner decides to
+enable it.
+
+**Residual risk (medium, deferred).** `approve()` performs envelope encryption
+and credential-provider I/O while holding the shared connection lock. A stalled
+provider (for example a slow Keychain call) can briefly serialize unrelated
+device reads. This is availability-only and pre-existing in shape; it is
+tracked for a follow-up that moves that I/O outside the transaction without
+weakening the "no false APPROVED state" guarantee.
 
 Legend: **PASS** = adequately mitigated at target architecture; **WARN** = partial / depends on implementation discipline; **FAIL** = unacceptable without planned control.
 

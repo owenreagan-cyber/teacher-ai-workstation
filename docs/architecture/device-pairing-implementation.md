@@ -215,6 +215,67 @@ Approval and all lifecycle actions require confirmation. The renderer never
 receives tokens or Keychain references; the main process validates ids,
 profiles, metadata, and confirmation flags.
 
+## Concurrent redemption (P0.3a)
+
+Redemption is a compare-and-set against authoritative database state, not a
+read-then-hope sequence.
+
+- **One authoritative read path.** `DeviceDatabase.query_one` / `query_all`
+  (and the same helpers on the task `TaskDatabase`) materialize rows while
+  holding the connection lock. Fetching from a cursor after the lock is released
+  is forbidden across `cosd/`; a static test enforces it. This closes the defect
+  where a concurrent commit reset an open statement and produced an all-NULL row
+  (which surfaced as `TypeError: int() ... not 'NoneType'` in `_row_to_record`).
+  The same pattern was present in the task registry and execution layer
+  (`cosd/tasks.py`, `cosd/execution/`), so those reads were converted too.
+- **Transition is validated inside the write transaction.** `redeem()`
+  re-reads the enrollment with `_fetch_conn` inside `transaction()` and calls
+  `_transition`, which uses `ensure_transition` and raises
+  `DeviceError(kind="conflict", http_status=409)` for any illegal move. A
+  request that read `PENDING` before another request consumed the code
+  therefore cannot also succeed.
+- **Invariant.** For one invitation, exactly one request may reach
+  `AWAITING_OWNER_APPROVAL`; every other request receives 401 (unknown code),
+  409 (already used / illegal transition) or 410 (expired). No request receives
+  an unhandled exception, and no second device or credential is created.
+- **Fail-closed record guard.** An enrollment row without a protocol version is
+  rejected with a controlled 409 rather than a `TypeError`.
+- **Retry semantics.** A client retry after an ambiguous response hits the
+  same transition check and receives 409; the committed winner is unchanged.
+- **Recovery.** A transaction that fails before commit rolls back, leaving the
+  invitation `PENDING` with no device or credential. A committed redemption
+  survives daemon restart because it lives in SQLite.
+
+Enrollment remains **disabled in production**. This section describes verified
+behaviour, not an activation decision.
+
+### Independent review (D-010)
+
+Reviewed by a different model family from the builder, in a separate review
+session, against the uncommitted patch (storage helpers, service/registry/
+credential read conversion, the fail-closed record guard, and the new tests).
+
+**Verdict: APPROVE WITH REQUIRED CHANGES — no critical or high findings.**
+The reviewer independently confirmed: single-winner redemption, replay
+prevention, one-credential issuance through the approval flow, approval binding
+to the enrollment fingerprint/profile, state-machine correctness, transactional
+rollback, rate-limit preservation, no new secret exposure, and consistent
+cross-device boundaries.
+
+Follow-ups it raised, both medium/low and neither correctness-breaking:
+
+1. **Lock scope during approval.** `approve()` performs credential-envelope
+   encryption and credential-provider writes inside the DB transaction, so the
+   shared connection lock is held across that I/O. Pre-existing in shape; a
+   stalled provider could briefly serialize unrelated device reads. Deferred to
+   a follow-up rather than changed here, because reordering provider writes and
+   the commit would alter the failure/cleanup semantics that currently prevent
+   a false APPROVED state. Recorded in the threat model as a residual risk.
+2. **Guard breadth.** The static guard now flags any `.execute(...).fetch*`
+   whose receiver is not a lock-held connection (`conn`, `c`, `active_conn`,
+   `self._conn`). Verified against the pre-fix `registry.py` (10 sites flagged)
+   and the patched tree (0 flagged).
+
 ## Testing
 
 `tests/cosd/devices/pairing/` covers code generation/entropy/expiry, single use,
@@ -223,6 +284,14 @@ profile escalation, credential issuance/binding/replacement, restart/keychain/
 audit/database recovery, API authentication, six device classes, audit chain,
 and real X25519/AES-GCM when the dependency is installed. All tests use temporary
 state and fake credential stores/ciphers; the real Keychain is never touched.
+
+`test_pairing_concurrency.py` adds 18 deterministic cases for P0.3a: two- and
+ten-way contention, differing identities, races with expiry/cancellation/
+approval, repeated approval, missing and unsupported protocol versions,
+interrupted transactions, restart, retry, write-lock contention, independent
+invitations, audit consistency, read coherency under concurrent writes, and a
+static guard against cursor-fetch reads. Barriers and hooks are used instead of
+sleeps, so the interleavings reproduce.
 
 ## Explicitly deferred
 

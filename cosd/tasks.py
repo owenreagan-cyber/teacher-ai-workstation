@@ -185,9 +185,9 @@ class TaskRegistry:
         fp = content_fingerprint(kind=kind, title=title, description=description, payload=payload)
 
         if idempotency_key:
-            existing = self.db.execute(
+            existing = self.db.query_one(
                 "SELECT * FROM tasks WHERE idempotency_key = ?", (idempotency_key,)
-            ).fetchone()
+            )
             if existing:
                 if existing["content_fingerprint"] != fp:
                     raise TaskError(
@@ -236,7 +236,7 @@ class TaskRegistry:
         return _row_to_task(row), False
 
     def get_task(self, task_id: str) -> dict[str, Any]:
-        row = self.db.execute("SELECT * FROM tasks WHERE id = ?", (task_id,)).fetchone()
+        row = self.db.query_one("SELECT * FROM tasks WHERE id = ?", (task_id,))
         if not row:
             raise TaskError("task not found", kind="not_found", http_status=404)
         return _row_to_task(row)
@@ -262,12 +262,12 @@ class TaskRegistry:
             clauses.append("kind = ?")
             params.append(kind.strip())
         where = " AND ".join(clauses)
-        total = self.db.execute(f"SELECT COUNT(*) AS c FROM tasks WHERE {where}", params).fetchone()["c"]
-        rows = self.db.execute(
+        total = self.db.query_one(f"SELECT COUNT(*) AS c FROM tasks WHERE {where}", params)["c"]
+        rows = self.db.query_all(
             f"""SELECT * FROM tasks WHERE {where}
                 ORDER BY created_at DESC LIMIT ? OFFSET ?""",
             (*params, limit, offset),
-        ).fetchall()
+        )
         return {
             "ok": True,
             "tasks": [_row_to_task(r) for r in rows],
@@ -380,11 +380,11 @@ class TaskRegistry:
 
     def get_task_history(self, task_id: str) -> dict[str, Any]:
         self.get_task(task_id)
-        rows = self.db.execute(
+        rows = self.db.query_all(
             """SELECT id, task_id, event_type, previous_state, new_state, details_json, created_at
                FROM task_events WHERE task_id = ? ORDER BY id ASC""",
             (task_id,),
-        ).fetchall()
+        )
         events = [
             {
                 "id": r["id"],
@@ -400,7 +400,7 @@ class TaskRegistry:
         return {"ok": True, "task_id": task_id, "events": events}
 
     def get_task_counts(self) -> dict[str, int]:
-        rows = self.db.execute("SELECT state, COUNT(*) AS c FROM tasks GROUP BY state").fetchall()
+        rows = self.db.query_all("SELECT state, COUNT(*) AS c FROM tasks GROUP BY state")
         counts = {s.value: 0 for s in TaskState}
         for r in rows:
             counts[r["state"]] = r["c"]

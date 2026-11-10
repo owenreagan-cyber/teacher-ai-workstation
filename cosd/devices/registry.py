@@ -162,19 +162,19 @@ class DeviceRegistry:
         fingerprint = validate_fingerprint(fingerprint)
         if fingerprint is None:
             return []
-        rows = self.db.execute(
+        rows = self.db.query_all(
             "SELECT * FROM devices WHERE public_key_fingerprint = ? "
             "ORDER BY registered_at DESC",
             (fingerprint,),
-        ).fetchall()
+        )
         return [_row_to_device(row) for row in rows]
 
     def events_for(self, device_id: str, *, limit: int = 100) -> list[dict[str, Any]]:
         limit = max(1, min(int(limit), MAX_LIST_LIMIT))
-        rows = self.db.execute(
+        rows = self.db.query_all(
             "SELECT * FROM device_events WHERE device_id = ? ORDER BY id DESC LIMIT ?",
             (device_id, limit),
-        ).fetchall()
+        )
         return [
             {
                 "device_id": r["device_id"],
@@ -322,9 +322,9 @@ class DeviceRegistry:
         """
         if confirm is not True:
             raise DeviceError("explicit owner confirmation is required")
-        existing = self.db.execute(
+        existing = self.db.query_one(
             "SELECT * FROM devices WHERE is_primary_owner = 1"
-        ).fetchone()
+        )
         if existing is not None:
             return _row_to_device(existing), None, False
 
@@ -352,18 +352,18 @@ class DeviceRegistry:
             return record, issued, True
         except DeviceError as exc:
             if exc.kind == "conflict":
-                row = self.db.execute(
+                row = self.db.query_one(
                     "SELECT * FROM devices WHERE is_primary_owner = 1"
-                ).fetchone()
+                )
                 if row is not None:
                     return _row_to_device(row), None, False
             raise
 
     def get_device(self, device_id: str) -> DeviceRecord:
         device_id = validate_device_id(device_id)
-        row = self.db.execute(
+        row = self.db.query_one(
             "SELECT * FROM devices WHERE device_id = ?", (device_id,)
-        ).fetchone()
+        )
         if row is None:
             raise DeviceError("device not found", kind="not_found", http_status=404)
         return _row_to_device(row)
@@ -387,15 +387,15 @@ class DeviceRegistry:
             clauses.append("device_profile = ?")
             params.append(validate_choice("device_profile", profile, PROFILES))
         where = " AND ".join(clauses)
-        total = self.db.execute(
+        total = self.db.query_one(
             f"SELECT COUNT(*) AS c FROM devices WHERE {where}", params
-        ).fetchone()["c"]
-        rows = self.db.execute(
+        )["c"]
+        rows = self.db.query_all(
             f"""SELECT * FROM devices WHERE {where}
                 ORDER BY is_primary_owner DESC, registered_at ASC, device_id ASC
                 LIMIT ? OFFSET ?""",
             (*params, limit, offset),
-        ).fetchall()
+        )
         return {
             "devices": [_row_to_device(r).public_dict() for r in rows],
             "total": total,
@@ -597,10 +597,10 @@ class DeviceRegistry:
             )
         refs = [
             r["keychain_ref"]
-            for r in self.db.execute(
+            for r in self.db.query_all(
                 "SELECT keychain_ref FROM device_credentials WHERE device_id = ?",
                 (device.device_id,),
-            ).fetchall()
+            )
         ]
         with self.db.transaction() as conn:
             # The event is recorded before deletion and has no foreign key, so
@@ -673,11 +673,11 @@ class DeviceRegistry:
         if device.status != "active":
             raise DeviceError("device is not active", kind="conflict", http_status=409)
         if credential_id is None:
-            row = self.db.execute(
+            row = self.db.query_one(
                 "SELECT credential_id FROM device_credentials "
                 "WHERE device_id = ? AND status = 'active'",
                 (device.device_id,),
-            ).fetchone()
+            )
             if row is None:
                 raise DeviceError("no active credential to rotate", kind="not_found", http_status=404)
             credential_id = row["credential_id"]
@@ -698,10 +698,10 @@ class DeviceRegistry:
             )
             self.credentials.delete_secrets(refs)
             return {"device_id": device.device_id, "revoked": len(refs)}
-        row = self.db.execute(
+        row = self.db.query_one(
             "SELECT device_id FROM device_credentials WHERE credential_id = ?",
             (credential_id,),
-        ).fetchone()
+        )
         if row is None:
             raise DeviceError("credential not found", kind="not_found", http_status=404)
         if row["device_id"] != device.device_id:

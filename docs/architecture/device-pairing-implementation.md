@@ -272,14 +272,17 @@ Follow-ups it raised, both medium/low and neither correctness-breaking:
    the commit would alter the failure/cleanup semantics that currently prevent
    a false APPROVED state. Recorded in the threat model as a residual risk.
 
-   Measured in P0.3b with a provider delaying each write by 1.0 s: approval took
-   2.01 s (credential + envelope) and unrelated `list_devices` reads waited up
-   to 2.00 s. Correctness held: one device, one active credential, and a
-   provider failure rolled back to `AWAITING_OWNER_APPROVAL` with no device.
-   Classified **WARN** (availability only). A durable-reservation design that
-   removes provider I/O from the transaction is specified in
-   `docs/operations/master-chief-runtime-reliability.md` §5a but not yet
-   implemented.
+   **Resolved in P0.3c.1.** Approval is now two short transactions around the
+   provider call: Txn A inserts a durable row in `credential_reservations`
+   (primary key `enrollment_id`, so a competing approval fails closed with 409);
+   the provider runs with no database lock; Txn B revalidates the reservation,
+   enrollment state, fingerprint and expiry, then registers the device, inserts
+   the credential and transitions to APPROVED in one commit. No credential row
+   exists before Txn B, so a partially issued credential cannot authenticate.
+   Measured with a 1 s provider delay per write: approval still 2.01 s, but
+   unrelated `list_devices` reads p95 **0 ms** (max 4 ms, 528 samples) and an
+   unrelated write completes immediately. Interrupted reservations are cleaned
+   at startup by `reconcile_reservations()` (bounded, idempotent, never approves).
 2. **Guard breadth.** The static guard now flags any `.execute(...).fetch*`
    whose receiver is not a lock-held connection (`conn`, `c`, `active_conn`,
    `self._conn`). Verified against the pre-fix `registry.py` (10 sites flagged)

@@ -382,6 +382,83 @@ class CredentialService:
             expires_at=expires,
         )
 
+    def prepare(
+        self,
+        *,
+        credential_type: str = "device_access",
+        expires_at: str | None = None,
+    ) -> dict[str, Any]:
+        """Generate credential material **without** touching the database or provider.
+
+        Used by the crash-consistent approval path: the secret can be written to
+        the provider while no database lock is held, then activated in one short
+        transaction. Nothing returned here is authoritative until
+        :meth:`insert_prepared` commits inside that transaction.
+        """
+        if credential_type not in CREDENTIAL_TYPES:
+            raise DeviceError("unsupported credential_type")
+        expires = _parse_expiry(expires_at)
+        credential_id = new_credential_id()
+        salt = secrets.token_hex(16)
+        secret = secrets.token_urlsafe(32)
+        return {
+            "credential_id": credential_id,
+            "credential_type": credential_type,
+            "token": f"{credential_id}.{secret}",
+            "secret": secret,
+            "verifier": _verifier(secret, salt),
+            "salt": salt,
+            "keychain_ref": f"device:{credential_id}",
+            "created_at": utc_now(),
+            "expires_at": expires,
+        }
+
+    def insert_prepared(
+        self,
+        conn: sqlite3.Connection,
+        prepared: dict[str, Any],
+        *,
+        device_id: str,
+        actor: str = "local_owner",
+    ) -> IssuedCredential:
+        """Activate prepared material inside the caller's transaction.
+
+        The caller must already have written the token to the provider. This
+        row is what makes the credential usable; the provider alone never does.
+        """
+        self._insert(
+            conn,
+            credential_id=prepared["credential_id"],
+            device_id=device_id,
+            credential_type=prepared["credential_type"],
+            keychain_ref=prepared["keychain_ref"],
+            verifier=prepared["verifier"],
+            salt=prepared["salt"],
+            created_at=prepared["created_at"],
+            expires_at=prepared["expires_at"],
+        )
+        self._event(
+            conn,
+            "device.credential_created",
+            device_id=device_id,
+            credential_id=prepared["credential_id"],
+            actor=actor,
+            result="ok",
+            details={
+                "credential_type": prepared["credential_type"],
+                "expires_at": prepared["expires_at"],
+            },
+        )
+        return IssuedCredential(
+            credential_id=prepared["credential_id"],
+            device_id=device_id,
+            credential_type=prepared["credential_type"],
+            token=prepared["token"],
+            keychain_ref=prepared["keychain_ref"],
+            created_at=prepared["created_at"],
+            expires_at=prepared["expires_at"],
+        )
+
     def rotate(self, credential_id: str, *, actor: str = "local_owner") -> IssuedCredential:
         credential_id = validate_credential_id(credential_id)
         row = self._db.query_one(

@@ -912,13 +912,6 @@ class PairingService:
                 http_status=409,
             )
 
-        now = self._now()
-        delivery_expires = now + timedelta(seconds=self.delivery_ttl_s)
-        delivery_ref = f"enrollment:{record.enrollment_id}"
-        issued = None
-        envelope_written = False
-        device_id: str | None = None
-        credential_id: str | None = None
         old_refs: list[str] = []
         if target is not None:
             old_refs = [
@@ -929,10 +922,154 @@ class PairingService:
                     (target.device_id,),
                 )
             ]
+
+        now = self._now()
+        delivery_expires = now + timedelta(seconds=self.delivery_ttl_s)
+        delivery_ref = f"enrollment:{record.enrollment_id}"
+        reservation_id = secrets.token_hex(16)
+
+        # Cheap reads + pure crypto happen before any lock is taken.
+        key_row = self.db.query_one(
+            "SELECT device_public_key FROM enrollment_requests WHERE enrollment_id = ?",
+            (enrollment_id,),
+        )
+        public_key = key_row["device_public_key"] if key_row else None
+        if not public_key:
+            raise DeviceError(
+                "enrollment has no device public key", kind="conflict", http_status=409
+            )
+        try:
+            actual_fingerprint = public_key_fingerprint(public_key)
+        except (CryptoError, DeviceError) as exc:
+            raise DeviceError(
+                "device public key is invalid", kind="conflict", http_status=409
+            ) from exc
+        if not hmac.compare_digest(actual_fingerprint, record.public_key_fingerprint):
+            raise DeviceError(
+                "device public key does not match the enrollment fingerprint",
+                kind="conflict",
+                http_status=409,
+            )
+
+        prepared = self.registry.credentials.prepare()
+        # The device id is generated before the envelope so the delivered
+        # credential names the device that Txn B will create.
+        new_device = new_device_id()
+        issued = None
+        device = None
+        try:
+            context = self._delivery_context(
+                record.enrollment_id, record.public_key_fingerprint
+            )
+            envelope = self.cipher.encrypt(
+                public_key=public_key,
+                plaintext=_dumps(
+                    {
+                        "v": PROTOCOL_VERSION,
+                        "credential_id": prepared["credential_id"],
+                        "token": prepared["token"],
+                        "device_id": new_device,
+                        "profile": device_profile,
+                        "expires_at": prepared["expires_at"],
+                    }
+                ).encode("utf-8"),
+                context=context,
+            )
+        except CryptoError as exc:
+            raise DeviceError(
+                "authenticated credential encryption is unavailable",
+                kind="crypto_unavailable",
+                http_status=503,
+            ) from exc
+
+        # --- Txn A: short, atomic reservation. Holds the lock for milliseconds.
         try:
             with self.db.transaction() as conn:
                 latest = self._fetch_conn(conn, enrollment_id)
+                if latest["status"] != PairingState.AWAITING_OWNER_APPROVAL.value:
+                    raise DeviceError(
+                        f"enrollment is {latest['status']}, not awaiting owner approval",
+                        kind="conflict",
+                        http_status=409,
+                    )
                 ensure_transition(latest["status"], PairingState.APPROVED.value)
+                conn.execute(
+                    """INSERT INTO credential_reservations(
+                        enrollment_id, reservation_id, credential_id, delivery_ref,
+                        device_profile, public_key_fingerprint, expected_state, generation,
+                        created_at, expires_at, attempts, state, reason
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, 1, ?, ?, 0, 'pending', NULL)""",
+                    (
+                        enrollment_id,
+                        reservation_id,
+                        prepared["credential_id"],
+                        delivery_ref,
+                        device_profile,
+                        record.public_key_fingerprint,
+                        latest["status"],
+                        now.isoformat(),
+                        (now + timedelta(seconds=self.approval_ttl_s)).isoformat(),
+                    ),
+                )
+        except sqlite3.IntegrityError as exc:
+            raise DeviceError(
+                "an approval for this enrollment is already in progress",
+                kind="conflict",
+                http_status=409,
+            ) from exc
+
+        # --- Provider work: no database lock held. Slow Keychain calls cannot
+        # block unrelated device reads or writes.
+        try:
+            self.provider.set_secret(prepared["keychain_ref"], prepared["secret"])
+            self.provider.set_secret(delivery_ref, _dumps(envelope))
+        except Exception as exc:  # noqa: BLE001 - provider is external
+            self._finish_failed_reservation(
+                reservation_id,
+                reason="provider_unavailable",
+                refs=[prepared["keychain_ref"], delivery_ref],
+            )
+            raise DeviceError(
+                "credential delivery store unavailable",
+                kind="delivery_unavailable",
+                http_status=503,
+            ) from exc
+
+        # --- Txn B: short, atomic activation. Revalidates everything.
+        try:
+            with self.db.transaction() as conn:
+                claimed = conn.execute(
+                    "UPDATE credential_reservations SET attempts = attempts + 1 "
+                    "WHERE reservation_id = ? AND state = 'pending'",
+                    (reservation_id,),
+                ).rowcount
+                if claimed != 1:
+                    raise DeviceError(
+                        "approval reservation is no longer current",
+                        kind="conflict",
+                        http_status=409,
+                    )
+                reservation = conn.execute(
+                    "SELECT * FROM credential_reservations WHERE reservation_id = ?",
+                    (reservation_id,),
+                ).fetchone()
+                if _dt(reservation["expires_at"]) <= self._now():
+                    raise DeviceError(
+                        "approval reservation expired", kind="conflict", http_status=409
+                    )
+                latest = self._fetch_conn(conn, enrollment_id)
+                if latest["status"] != PairingState.AWAITING_OWNER_APPROVAL.value:
+                    raise DeviceError(
+                        "enrollment changed during approval",
+                        kind="conflict",
+                        http_status=409,
+                    )
+                if latest["public_key_fingerprint"] != reservation["public_key_fingerprint"]:
+                    raise DeviceError(
+                        "enrollment identity changed during approval",
+                        kind="conflict",
+                        http_status=409,
+                    )
                 if target is not None:
                     self.registry.revoke_device(
                         target.device_id,
@@ -947,7 +1084,7 @@ class PairingService:
                 }
                 if replaces_device_id:
                     metadata["replaced_device_id"] = replaces_device_id
-                device, issued = self.registry.register_device(
+                device, _unused = self.registry.register_device(
                     display_name=record.display_name,
                     device_type=record.device_type,
                     platform=record.platform,
@@ -956,63 +1093,15 @@ class PairingService:
                     app_version=record.app_version,
                     metadata=metadata,
                     is_primary_owner=False,
-                    issue_credential=True,
+                    issue_credential=False,
+                    device_id=new_device,
                     public_key_fingerprint=record.public_key_fingerprint,
                     actor=actor,
                     conn=conn,
                 )
-                device_id = device.device_id
-                credential_id = issued.credential_id
-                plaintext = _dumps(
-                    {
-                        "v": PROTOCOL_VERSION,
-                        "credential_id": issued.credential_id,
-                        "token": issued.token,
-                        "device_id": device.device_id,
-                        "profile": device_profile,
-                        "expires_at": issued.expires_at,
-                    }
-                ).encode("utf-8")
-                context = self._delivery_context(
-                    record.enrollment_id,
-                    record.public_key_fingerprint,
+                issued = self.registry.credentials.insert_prepared(
+                    conn, prepared, device_id=device.device_id, actor=actor
                 )
-                public_key = self._public_key(conn, record.enrollment_id)
-                try:
-                    actual_fingerprint = public_key_fingerprint(public_key)
-                except (CryptoError, DeviceError) as exc:
-                    raise DeviceError(
-                        "device public key is invalid",
-                        kind="conflict",
-                        http_status=409,
-                    ) from exc
-                if not hmac.compare_digest(actual_fingerprint, record.public_key_fingerprint):
-                    raise DeviceError(
-                        "device public key does not match the enrollment fingerprint",
-                        kind="conflict",
-                        http_status=409,
-                    )
-                try:
-                    envelope = self.cipher.encrypt(
-                        public_key=public_key,
-                        plaintext=plaintext,
-                        context=context,
-                    )
-                except CryptoError as exc:
-                    raise DeviceError(
-                        "authenticated credential encryption is unavailable",
-                        kind="crypto_unavailable",
-                        http_status=503,
-                    ) from exc
-                try:
-                    self.provider.set_secret(delivery_ref, _dumps(envelope))
-                    envelope_written = True
-                except Exception as exc:  # noqa: BLE001
-                    raise DeviceError(
-                        "credential delivery store unavailable",
-                        kind="delivery_unavailable",
-                        http_status=503,
-                    ) from exc
                 self._transition(
                     conn,
                     latest,
@@ -1070,20 +1159,256 @@ class PairingService:
                             "public_key_fingerprint": record.public_key_fingerprint,
                         },
                     )
-            self.registry.credentials.delete_secrets(old_refs)
+                conn.execute(
+                    "DELETE FROM credential_reservations WHERE reservation_id = ?",
+                    (reservation_id,),
+                )
+            if target is not None and old_refs:
+                self.registry.credentials.delete_secrets(old_refs)
             return self._fetch(enrollment_id), device.public_dict(), issued.public_dict()
         except Exception:
-            if issued is not None:
-                try:
-                    self.provider.delete_secret(issued.keychain_ref)
-                except Exception:  # noqa: BLE001
-                    pass
-            if envelope_written or issued is not None:
-                try:
-                    self.provider.delete_secret(delivery_ref)
-                except Exception:  # noqa: BLE001
-                    pass
+            # The provider succeeded but activation did not commit. Delete both
+            # provider entries; the row is never created, so nothing authenticates.
+            self._finish_failed_reservation(
+                reservation_id,
+                reason="activation_failed",
+                refs=[prepared["keychain_ref"], delivery_ref],
+            )
             raise
+
+    # ---------------------------------------------------------- reservations
+
+    def _delete_provider_refs(self, refs: list[str]) -> bool:
+        ok = True
+        for ref in refs:
+            try:
+                self.provider.delete_secret(ref)
+            except Exception:  # noqa: BLE001 - cleanup must not mask the original error
+                ok = False
+                LOG.warning("could not delete credential-provider reference %s", ref)
+        return ok
+
+    def _finish_failed_reservation(self, reservation_id: str, *, reason: str, refs: list[str]) -> None:
+        cleaned = self._delete_provider_refs(refs)
+        try:
+            with self.db.transaction() as conn:
+                if cleaned:
+                    conn.execute(
+                        "DELETE FROM credential_reservations WHERE reservation_id = ?",
+                        (reservation_id,),
+                    )
+                else:
+                    conn.execute(
+                        "UPDATE credential_reservations SET state = 'cleanup_failed', reason = ? "
+                        "WHERE reservation_id = ?",
+                        (reason, reservation_id),
+                    )
+        except Exception:  # noqa: BLE001 - the reservation stays for recovery
+            LOG.warning("could not update reservation %s during cleanup", reservation_id)
+
+    def reconcile_reservations(self) -> dict[str, Any]:
+        """Idempotent, bounded cleanup of stale or orphaned reservations.
+
+        Never approves anything and never creates a device. Provider entries for
+        a stale reservation are deleted before the row is removed; if deletion
+        fails the row stays visible as `cleanup_failed` for the next attempt.
+        """
+        rows = self.db.query_all("SELECT * FROM credential_reservations")
+        cleaned: list[str] = []
+        remaining: list[str] = []
+        for row in rows:
+            enrollment = self.db.query_one(
+                "SELECT status FROM enrollment_requests WHERE enrollment_id = ?",
+                (row["enrollment_id"],),
+            )
+            expires = _dt(row["expires_at"])
+            stale = (
+                enrollment is None
+                or enrollment["status"] != PairingState.AWAITING_OWNER_APPROVAL.value
+                or (expires is not None and expires <= self._now())
+                or row["state"] == "cleanup_failed"
+            )
+            if not stale:
+                remaining.append(row["enrollment_id"])
+                continue
+            refs = [f"device:{row['credential_id']}", row["delivery_ref"]]
+            if self._delete_provider_refs(refs):
+                with self.db.transaction() as conn:
+                    conn.execute(
+                        "DELETE FROM credential_reservations WHERE reservation_id = ?",
+                        (row["reservation_id"],),
+                    )
+                cleaned.append(row["enrollment_id"])
+            else:
+                with self.db.transaction() as conn:
+                    conn.execute(
+                        "UPDATE credential_reservations SET state = 'cleanup_failed' "
+                        "WHERE reservation_id = ?",
+                        (row["reservation_id"],),
+                    )
+                remaining.append(row["enrollment_id"])
+        return {"ok": True, "cleaned": cleaned, "remaining": remaining}
+
+    @staticmethod
+    def _validate_nonce(value: str | None) -> str:
+        if value is None:
+            return secrets.token_hex(16)
+        if not isinstance(value, str) or not value or len(value) > 256:
+            raise DeviceError("device_nonce is invalid")
+        try:
+            raw = base64.b64decode(value, validate=True)
+        except (ValueError, TypeError):
+            raw = value.encode("utf-8")
+        if not (16 <= len(raw) <= 64):
+            raise DeviceError("device_nonce must encode 16-64 bytes")
+        return value
+
+    def _find_code_row(self, enrollment_id: str | None, pairing_code: str) -> sqlite3.Row | None:
+        if enrollment_id:
+            row = self.db.query_one(
+                "SELECT * FROM enrollment_requests WHERE enrollment_id = ?",
+                (enrollment_id,),
+            )
+            return row
+        rows = self.db.query_all(
+            "SELECT * FROM enrollment_requests WHERE status = 'PENDING' "
+            "AND pairing_code_hash IS NOT NULL ORDER BY created_at DESC LIMIT 500"
+        )
+        for row in rows:
+            if verify_pairing_code(
+                pairing_code, salt=row["pairing_code_salt"], verifier=row["pairing_code_hash"]
+            ):
+                return row
+        return None
+
+    def _audit_replay(self, record: EnrollmentRecord, *, actor: str, reason: str) -> None:
+        try:
+            with self.db.transaction() as conn:
+                self._audit(
+                    conn,
+                    "pairing.replay_denied",
+                    enrollment_id=record.enrollment_id,
+                    device_id=record.device_id,
+                    display_name=record.display_name,
+                    result="denied",
+                    profile=record.approved_profile or record.requested_profile,
+                    credential_id=record.credential_id,
+                    actor=actor,
+                    details={"reason": reason},
+                )
+        except DeviceError:
+            LOG.error("could not audit pairing replay denial")
+
+    def _audit_unknown_failure(self, *, enrollment_id: str, actor: str, reason: str) -> None:
+        try:
+            with self.db.transaction() as conn:
+                self._audit(
+                    conn,
+                    "device.enrollment_failed",
+                    enrollment_id=enrollment_id,
+                    result="denied",
+                    actor=actor,
+                    details={"failure_category": reason},
+                )
+        except DeviceError:
+            LOG.error("could not audit pairing failure")
+
+    # ------------------------------------------------------------------ status
+
+    def verify_request_token(self, enrollment_id: str, request_token: str) -> EnrollmentRecord:
+        row = self.db.query_one(
+            "SELECT * FROM enrollment_requests WHERE enrollment_id = ?",
+            (enrollment_id,),
+        )
+        if row is None or not row["request_token_hash"] or not row["request_token_salt"]:
+            raise DeviceError("invalid enrollment session", kind="auth", http_status=401)
+        expected = hmac.new(
+            str(row["request_token_salt"]).encode("utf-8"),
+            str(request_token or "").encode("utf-8"),
+            "sha256",
+        ).hexdigest()
+        if not hmac.compare_digest(expected, row["request_token_hash"]):
+            raise DeviceError("invalid enrollment session", kind="auth", http_status=401)
+        record = _row_to_record(row)
+        return self._maybe_expire(record)
+
+    def status(self, enrollment_id: str, request_token: str) -> EnrollmentRecord:
+        return self.verify_request_token(enrollment_id, request_token)
+
+    def complete(self, enrollment_id: str, request_token: str) -> dict[str, Any]:
+        record = self.verify_request_token(enrollment_id, request_token)
+        if record.status == PairingState.COMPLETED.value:
+            raise DeviceError("enrollment already completed", kind="conflict", http_status=409)
+        if record.status != PairingState.APPROVED.value:
+            raise DeviceError(
+                f"enrollment is {record.status}, not approved",
+                kind="conflict",
+                http_status=409,
+            )
+        try:
+            raw = self.provider.get_secret(f"enrollment:{record.enrollment_id}")
+        except Exception as exc:  # noqa: BLE001
+            raise DeviceError(
+                "credential delivery store unavailable",
+                kind="delivery_unavailable",
+                http_status=503,
+            ) from exc
+        if not raw:
+            raise DeviceError(
+                "credential delivery envelope unavailable",
+                kind="delivery_unavailable",
+                http_status=503,
+            )
+        try:
+            envelope = json.loads(raw)
+        except (TypeError, ValueError) as exc:
+            raise DeviceError(
+                "credential delivery envelope invalid",
+                kind="delivery_unavailable",
+                http_status=503,
+            ) from exc
+        now = self._now()
+        with self.db.transaction() as conn:
+            latest = self._fetch_conn(conn, enrollment_id)
+            self._transition(
+                conn,
+                latest,
+                PairingState.COMPLETED.value,
+                now=now,
+                completed_at=_stamp(now),
+                delivery_ref=None,
+                pairing_code_hash=None,
+                pairing_code_salt=None,
+            )
+            self._audit(
+                conn,
+                "pairing.completed",
+                enrollment_id=latest["enrollment_id"],
+                device_id=latest["device_id"],
+                display_name=latest["display_name"],
+                profile=latest["approved_profile"],
+                credential_id=latest["credential_id"],
+                actor="enrolling_device",
+                details={},
+            )
+            self._audit(
+                conn,
+                "device.enrolled",
+                enrollment_id=latest["enrollment_id"],
+                device_id=latest["device_id"],
+                display_name=latest["display_name"],
+                profile=latest["approved_profile"],
+                credential_id=latest["credential_id"],
+                actor="enrolling_device",
+                details={"public_key_fingerprint": latest["public_key_fingerprint"]},
+            )
+        try:
+            self.provider.delete_secret(f"enrollment:{record.enrollment_id}")
+        except Exception:  # noqa: BLE001
+            LOG.warning("could not delete delivered enrollment envelope")
+        return envelope
+
+    # ---------------------------------------------------------------- approval
 
     @staticmethod
     def _delivery_context(enrollment_id: str, fingerprint: str) -> bytes:

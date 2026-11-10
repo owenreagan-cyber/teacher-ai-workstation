@@ -81,9 +81,12 @@ and credential-provider I/O while holding the shared connection lock. A stalled
 provider (for example a slow Keychain call) can briefly serialize unrelated
 device reads. Measured baseline (1 s provider delay per write): approval 2.01 s,
 unrelated reads median 1000 ms / p95 1999 ms, unrelated write 1.51 s.
-P0.3c specifies a durable-reservation design that moves that I/O outside the
-lock while keeping "no credential row until the final commit"; implementation
-is pending. Device pairing stays disabled.
+**Resolved in P0.3c.1:** a durable reservation (`credential_reservations`,
+primary key `enrollment_id`) is committed in a short transaction, the provider
+runs with no lock, and a second short transaction revalidates and activates.
+No credential row exists before that commit. Post-fix: unrelated reads p95
+0 ms (max 4 ms over 528 samples) during a 2 s provider delay. Device pairing
+remains disabled until a separate activation review.
 
 Legend: **PASS** = adequately mitigated at target architecture; **WARN** = partial / depends on implementation discipline; **FAIL** = unacceptable without planned control.
 

@@ -97,6 +97,28 @@ CREATE INDEX IF NOT EXISTS idx_device_events_created
 # share the same database file. Enrollment rows deliberately have no foreign
 # key to devices so a rejected/expired request and its audit remain readable.
 _SCHEMA_V2 = """
+-- P0.3c.1: one durable reservation per enrollment. The primary key is the
+-- concurrency guard: a second approval of the same enrollment cannot insert a
+-- second row, so it fails closed instead of issuing a second credential.
+CREATE TABLE IF NOT EXISTS credential_reservations (
+    enrollment_id TEXT PRIMARY KEY,
+    reservation_id TEXT NOT NULL UNIQUE,
+    credential_id TEXT NOT NULL,
+    delivery_ref TEXT NOT NULL,
+    device_profile TEXT NOT NULL,
+    public_key_fingerprint TEXT NOT NULL,
+    expected_state TEXT NOT NULL,
+    generation INTEGER NOT NULL,
+    created_at TEXT NOT NULL,
+    expires_at TEXT NOT NULL,
+    attempts INTEGER NOT NULL DEFAULT 0,
+    state TEXT NOT NULL CHECK(state IN ('pending','cleanup_failed')),
+    reason TEXT
+);
+
+CREATE INDEX IF NOT EXISTS idx_credential_reservations_expires
+    ON credential_reservations(expires_at);
+
 CREATE TABLE IF NOT EXISTS enrollment_requests (
     enrollment_id TEXT PRIMARY KEY,
     status TEXT NOT NULL CHECK(status IN

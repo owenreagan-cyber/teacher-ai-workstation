@@ -99,6 +99,9 @@ class CosdHTTPServer(ThreadingHTTPServer):
                     self.device_registry,
                     cipher=envelope_cipher or default_envelope_cipher(),
                 )
+                # Bounded, idempotent cleanup of approvals interrupted by a
+                # crash between reservation and activation. Never approves.
+                self.pairing_service.reconcile_reservations()
             except Exception as exc:  # noqa: BLE001 - pairing must not take cosd down
                 self.pairing_unavailable = str(exc)
                 LOG.warning("device pairing unavailable: %s", exc)

@@ -1064,6 +1064,16 @@ class PairingService:
                         kind="conflict",
                         http_status=409,
                     )
+                if (
+                    reservation["device_profile"] != device_profile
+                    or reservation["credential_id"] != prepared["credential_id"]
+                    or reservation["delivery_ref"] != delivery_ref
+                ):
+                    raise DeviceError(
+                        "approval reservation does not match this operation",
+                        kind="conflict",
+                        http_status=409,
+                    )
                 if latest["public_key_fingerprint"] != reservation["public_key_fingerprint"]:
                     raise DeviceError(
                         "enrollment identity changed during approval",
@@ -1206,7 +1216,7 @@ class PairingService:
         except Exception:  # noqa: BLE001 - the reservation stays for recovery
             LOG.warning("could not update reservation %s during cleanup", reservation_id)
 
-    def reconcile_reservations(self) -> dict[str, Any]:
+    def reconcile_reservations(self, *, startup: bool = True) -> dict[str, Any]:
         """Idempotent, bounded cleanup of stale or orphaned reservations.
 
         Never approves anything and never creates a device. Provider entries for
@@ -1228,6 +1238,12 @@ class PairingService:
                 or (expires is not None and expires <= self._now())
                 or row["state"] == "cleanup_failed"
             )
+            if not stale and startup and row["state"] == "pending":
+                # Called at daemon startup: no approval can be in flight in this
+                # process, so an unexpired pending row is debris from a crash
+                # between reservation commit and activation. Clean it so the
+                # owner can retry instead of waiting for the lease to expire.
+                stale = True
             if not stale:
                 remaining.append(row["enrollment_id"])
                 continue

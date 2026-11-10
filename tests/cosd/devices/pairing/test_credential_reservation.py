@@ -233,6 +233,34 @@ class ReservationTests(PairingStateTest):
             self.pairing.get_enrollment(enrollment_id).status, "AWAITING_OWNER_APPROVAL"
         )
 
+    def test_unexpired_pending_reservation_is_cleaned_at_startup_and_retry_succeeds(self):
+        """A crash between reservation commit and activation must not strand the enrollment."""
+        self._install(HookProvider())
+        invitation = self.invite()
+        self.redeem(invitation, self.identity(b"debris"))
+        enrollment_id = invitation.enrollment.enrollment_id
+        now = self.pairing._now()
+        with self.registry.db.transaction() as conn:
+            conn.execute(
+                """INSERT INTO credential_reservations(
+                    enrollment_id, reservation_id, credential_id, delivery_ref,
+                    device_profile, public_key_fingerprint, expected_state, generation,
+                    created_at, expires_at, attempts, state, reason
+                ) VALUES (?, 'res2', 'cred2', 'enrollment:' || ?, 'school', ?, 'AWAITING_OWNER_APPROVAL', 1, ?, ?, 1, 'pending', NULL)""",
+                (enrollment_id, enrollment_id, "fingerprint",
+                 now.isoformat(), (now + __import__("datetime").timedelta(seconds=300)).isoformat()),
+            )
+        # The reservation is not expired, but startup reconciliation must still
+        # clear it: no approval can be in flight in a freshly started daemon.
+        report = self.pairing.reconcile_reservations(startup=True)
+        self.assertIn(enrollment_id, report["cleaned"])
+        self.assertIsNone(self._reservation(enrollment_id))
+        # And the owner can now retry successfully.
+        self.approve(invitation)
+        devices = self.registry.list_devices()["devices"]
+        self.assertEqual(len(devices), 1)
+        self.assertEqual(len(self.registry.list_credentials(devices[0]["device_id"])), 1)
+
     def test_unrelated_reads_are_not_blocked_by_a_slow_provider(self):
         self._install(HookProvider(delay_s=1.0))
         invitation = self.invite()

@@ -63,8 +63,8 @@ fix does not activate pairing.
 checkout has moved past the running process, and refuses to start on an occupied port or a pid file
 that points at an unrelated process. Credential-provider I/O still runs inside the approval
 transaction (measured WARN: 2.0 s unrelated reads, 1.5 s unrelated write under a 1 s provider
-delay). Implemented in P0.3c.1: durable reservation, provider work outside the lock, bounded
-reconciliation. Post-fix reads p95 0 ms (max 4 ms). Record:
+delay). Implemented in P0.3c.1 (issuance) and P0.3c.2 (rotation): durable reservations, provider
+work outside the lock, bounded reconciliation, generation fencing. Reads p95 0 ms. Record:
 `docs/operations/master-chief-runtime-reliability.md` §5a.
 
 **Known operational limits:** `cosd` does not start at login (no LaunchAgent, by design); the app

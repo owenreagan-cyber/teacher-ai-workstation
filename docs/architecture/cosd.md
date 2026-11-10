@@ -100,6 +100,21 @@ pending enrollments and Add Device. See
 `docs/architecture/device-pairing-implementation.md`. Remote enrollment and
 network access are **not** enabled.
 
+## Runtime provenance and health (P0.3b)
+
+`cosd` freezes provenance at process start (`version`, `python`, `environment`, git commit/branch,
+dirty flag) and never re-reads the checkout, so a later `git pull` cannot make an old process claim
+it is current. `restart_required` is reported when the checkout has moved; it is `null` when no
+checkout is readable, and the daemon keeps serving.
+
+Health is classified as `HEALTHY`, `DEGRADED`, `RECOVERING` or `BLOCKED` from state (kill switch,
+database readability, queue pause, device registry availability, checkout drift, recent recovery),
+not from the socket answering. `/health` remains a liveness probe; `/v1/status` and `/v1/runtime`
+carry the classification, reasons and provenance. `cosd status` reports one of `running`,
+`stale_pid`, `not_running` or `absent`, never a bare boolean.
+
+Details: `docs/operations/master-chief-runtime-reliability.md`.
+
 ## Limitations
 
 - No Tailscale/TLS/remote pairing **in production** (P1b.4a design: loopback preserved; see ADR-021). P1b.4b adds only the local identity/credential foundation.

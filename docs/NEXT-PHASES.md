@@ -58,6 +58,12 @@ under the lock, transitions are validated inside the write transaction, and 18 d
 enforce a single winner. **Enrollment remains disabled** until the owner decides to enable it; the
 fix does not activate pairing.
 
+**Runtime reliability (P0.3b):** the daemon now freezes its provenance at start, reports
+`HEALTHY`/`DEGRADED`/`RECOVERING`/`BLOCKED` from state rather than from the socket, detects when the
+checkout has moved past the running process, and refuses to start on an occupied port or a pid file
+that points at an unrelated process. Credential-provider I/O still runs inside the approval
+transaction (measured WARN). Record: `docs/operations/master-chief-runtime-reliability.md`.
+
 **Known operational limits:** `cosd` does not start at login (no LaunchAgent, by design); the app
 resolves its runtime at `~/Projects/teacher-ai-workstation/bin/cos`, so that checkout must stay in
 place; not notarized.

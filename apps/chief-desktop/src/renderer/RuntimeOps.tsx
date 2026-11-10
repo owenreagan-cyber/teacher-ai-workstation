@@ -1,20 +1,14 @@
 import { useCallback, useEffect, useState } from "react";
 
 import type { OpsPrefs } from "../shared/ops-prefs";
-
-type RuntimeBody = {
-  ok?: boolean;
-  cosd_version?: string;
-  uptime_s?: number;
-  task_counts?: Record<string, number>;
-  queue_paused?: boolean;
-};
+import { type RuntimeBody, runtimeSummary } from "../shared/runtime";
 
 export function RuntimeOpsSection() {
   const [runtime, setRuntime] = useState<RuntimeBody | null>(null);
   const [prefs, setPrefs] = useState<OpsPrefs | null>(null);
   const [busy, setBusy] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const summary = runtimeSummary(runtime);
 
   const refresh = useCallback(async () => {
     const snap = await window.chief.runtimeSnapshot();
@@ -56,8 +50,14 @@ export function RuntimeOpsSection() {
     <section className="rounded-xl border border-line bg-surface p-4">
       <h2 className="mb-3 text-[13px] font-semibold">Runtime & notifications</h2>
       <p className="mb-3 text-[12px] text-muted">
-        cosd {runtime?.cosd_version ?? "—"} · uptime {runtime?.uptime_s ?? "—"}s · queue {runtime?.queue_paused ? "paused" : "active"}
+        {summary.state} · cosd {summary.version} · {summary.commit} · python {summary.python} · uptime{" "}
+        {runtime?.uptime_s ?? "—"}s · queue {runtime?.queue_paused ? "paused" : "active"}
       </p>
+      {summary.warning && (
+        <p className="mb-3 text-[12px] text-bad" data-testid="runtime-warning">
+          {summary.warning}
+        </p>
+      )}
       <div className="mb-3 flex flex-wrap gap-2">
         <button type="button" className="rounded-md border border-line px-2 py-1 text-[12px]" disabled={!!busy} onClick={() => void run("start", true)}>
           Start cosd

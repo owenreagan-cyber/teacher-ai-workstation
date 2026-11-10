@@ -32,6 +32,14 @@ Brief, home, config, history (session read), warm, kill switch remain **`bin/cos
 - **required:** ask/status fail clearly if cosd unavailable.
 - **disabled:** never contact cosd.
 
+## Runtime state and provenance (P0.3b)
+
+The Runtime section shows the daemon's classified state (`HEALTHY`, `DEGRADED`, `RECOVERING`,
+`BLOCKED`), the loaded commit, the Python version, and an explicit **Restart required** warning when
+the checkout has moved past the running process. `DISCONNECTED` is shown only when the app cannot
+reach the daemon; the app never presents a stale snapshot as live. The renderer receives formatted
+metadata only — never a bearer token — and Raycast is not required.
+
 ## Connection states
 
 `DISCONNECTED`, `CONNECTING`, `CONNECTED`, `DEGRADED`, `AUTH_ERROR`, `VERSION_MISMATCH`, `RECOVERING`.

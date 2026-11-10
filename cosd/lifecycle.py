@@ -89,8 +89,30 @@ def process_alive(pid: int) -> bool:
     return True
 
 
+_DAEMON_MARKERS = (
+    "from cosd.cli import main",
+    "cosd/__main__.py",
+    " -m cosd ",
+    "cosd.cli",
+)
+
+
+def _looks_like_cosd_command(cmd: str) -> bool:
+    """True only when a command line positively identifies this daemon."""
+    padded = f" {cmd.strip()} "
+    return any(marker in padded for marker in _DAEMON_MARKERS)
+
+
 def process_is_cosd(pid: int) -> bool:
-    """Best-effort identity check before signaling."""
+    """Identity check before signaling: the pid must be *this* daemon.
+
+    Matching a bare "cosd" substring would accept an unrelated shell that
+    happens to mention it, and then a stop could signal the wrong process.
+    Platform fallbacks fail closed: an unidentifiable process is never treated
+    as cosd.
+    """
+    if pid <= 0 or not process_alive(pid):
+        return False
     if sys.platform == "darwin":
         try:
             out = subprocess.run(
@@ -100,11 +122,54 @@ def process_is_cosd(pid: int) -> bool:
                 check=False,
                 timeout=2,
             )
-            cmd = (out.stdout or "").strip()
-            return SERVICE_NAME in cmd or "cosd" in cmd
         except (OSError, subprocess.TimeoutExpired):
             return False
-    return process_alive(pid)
+        return _looks_like_cosd_command(out.stdout or "")
+    # Linux and other POSIX: read the command line directly. Anything we cannot
+    # identify is refused rather than trusted on liveness alone.
+    try:
+        raw = Path(f"/proc/{pid}/cmdline").read_bytes()
+    except OSError:
+        return False
+    return _looks_like_cosd_command(raw.replace(b"\x00", b" ").decode("utf-8", "replace"))
+
+
+def port_in_use(host: str, port: int, timeout: float = 0.5) -> bool:
+    """True when something already accepts connections on host:port."""
+    import socket
+
+    try:
+        with socket.create_connection((host, port), timeout=timeout):
+            return True
+    except OSError:
+        return False
+
+
+def pid_report(base: Path | None = None) -> dict[str, Any]:
+    """Classify the pid file: absent, not_running, stale_pid or running."""
+    record = read_pid(base)
+    if record is None:
+        return {"state": "absent", "pid": None, "running": False}
+    alive = process_alive(record.pid)
+    is_cosd = process_is_cosd(record.pid) if alive else False
+    health = fetch_health(record.host, record.port) if is_cosd else None
+    healthy = bool(health and health.get("ok"))
+    if healthy:
+        state = "running"
+    elif alive:
+        state = "stale_pid"
+    else:
+        state = "not_running"
+    return {
+        "state": state,
+        "pid": record.pid,
+        "host": record.host,
+        "port": record.port,
+        "pid_alive": alive,
+        "pid_is_cosd": is_cosd,
+        "health": health,
+        "running": healthy,
+    }
 
 
 def fetch_health(host: str, port: int, timeout: float = 2.0) -> dict[str, Any] | None:
@@ -150,8 +215,15 @@ def spawn_server(
 ) -> int:
     host = validate_bind_host(host)
     existing = read_pid(base)
-    if existing and process_alive(existing.pid) and fetch_health(existing.host, existing.port):
-        raise RuntimeError("cosd is already running")
+    if existing and process_alive(existing.pid):
+        if not process_is_cosd(existing.pid):
+            raise RuntimeError(
+                f"pid file points to an unrelated process ({existing.pid}); refusing to start"
+            )
+        if fetch_health(existing.host, existing.port):
+            raise RuntimeError("cosd is already running")
+    if port_in_use(host, port):
+        raise RuntimeError(f"port {host}:{port} is already in use by another process")
     repo = str(Path(__file__).resolve().parents[1])
     cmd = [
         sys.executable,

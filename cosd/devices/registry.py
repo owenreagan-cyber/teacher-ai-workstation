@@ -684,6 +684,10 @@ class DeviceRegistry:
         issued = self.credentials.rotate(credential_id, actor=actor)
         return issued.public_dict()
 
+    def reconcile_credential_rotations(self) -> dict[str, Any]:
+        """Bounded, idempotent cleanup of interrupted credential rotations."""
+        return self.credentials.reconcile_rotations()
+
     def revoke_credential(
         self,
         device_id: str,

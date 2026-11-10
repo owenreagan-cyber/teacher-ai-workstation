@@ -319,3 +319,29 @@ remote TLS endpoint, public network access, iPhone/iPad connectivity, remote
 device credentials, NAS doorman, Wake-on-LAN, and remote notifications are not
 part of P1b.4b/P1b.4c remote activation. P1b.4c implements the local pairing and
 delivery primitives only; remote delivery remains P1b.4d.
+
+## Credential rotation reservation (P0.3c.2)
+
+`rotate_credential()` now reserves durably before touching the provider. The
+table `credential_rotation_reservations` is keyed by the **credential id being
+rotated**, so two concurrent rotations of one credential cannot both proceed;
+the loser gets `409`.
+
+Sequence: short transaction validates the credential is still `active` and
+inserts the reservation -> provider writes the new secret with **no database
+lock held** -> a second short transaction claims the reservation (`rowcount =
+1`), fences on the exact credential observed at reservation time
+(`UPDATE ... WHERE credential_id = ? AND status = 'active'`), marks the old row
+`rotated`, inserts the new active row, audits, and deletes the reservation. The
+old credential stays usable until that commit; the new one exists only after it.
+
+After commit the old provider secret is deleted. If deletion fails, a
+`cleanup_failed` row is recorded and `reconcile_credential_rotations()` retries
+it at startup. Interrupted rotations (pending reservations) are cleared at
+startup together with their orphaned new secret; nothing is ever activated by
+reconciliation.
+
+Measured with a 1 s provider delay: rotation total 1.01 s, unrelated
+`list_devices` p95 **0 ms** (268 samples). Note: rotation already wrote the
+provider outside the transaction before this change; the gap closed here is
+crash consistency and orphan cleanup, not lock scope.

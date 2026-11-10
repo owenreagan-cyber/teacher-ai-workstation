@@ -84,6 +84,7 @@ class CosdHTTPServer(ThreadingHTTPServer):
                 credential_provider=credential_provider or default_credential_provider(),
                 audit=self.audit,
             )
+            self.device_registry.reconcile_credential_rotations()
             root = Path(state_base) if state_base is not None else state_dir()
             self.device_auth = DeviceAuthorizationService(
                 self.device_registry,

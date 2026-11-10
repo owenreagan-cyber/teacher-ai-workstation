@@ -18,7 +18,7 @@ import subprocess
 import sys
 import threading
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from typing import Any, Callable, Protocol
 
 from .models import (
@@ -28,6 +28,8 @@ from .models import (
     utc_now,
     validate_credential_id,
 )
+
+ROTATION_TTL_S = 300
 
 LOG = logging.getLogger("cosd.devices.credentials")
 
@@ -460,6 +462,13 @@ class CredentialService:
         )
 
     def rotate(self, credential_id: str, *, actor: str = "local_owner") -> IssuedCredential:
+        """Rotate a device credential with a durable, crash-consistent reservation.
+
+        The provider write happens between two short transactions, so a slow
+        Keychain call never holds the shared database lock. The old credential
+        stays active until the final commit; no credential row exists for the
+        new material before then.
+        """
         credential_id = validate_credential_id(credential_id)
         row = self._db.query_one(
             "SELECT * FROM device_credentials WHERE credential_id = ?", (credential_id,)
@@ -473,25 +482,87 @@ class CredentialService:
                 http_status=409,
             )
         device_id = row["device_id"]
-        new_id = new_credential_id()
-        salt = secrets.token_hex(16)
-        secret = secrets.token_urlsafe(32)
-        token = f"{new_id}.{secret}"
-        keychain_ref = f"device:{new_id}"
-        verifier = _verifier(secret, salt)
-        created_at = utc_now()
-
-        try:
-            self._provider.set_secret(keychain_ref, secret)
-        except CredentialProviderError as exc:
-            raise DeviceError("credential store unavailable", kind="unavailable", http_status=503) from exc
+        prepared = self.prepare()
+        reservation_id = secrets.token_hex(16)
+        new_ref = prepared["keychain_ref"]
+        now = utc_now()
+        expires = (
+            datetime.now(timezone.utc) + timedelta(seconds=ROTATION_TTL_S)
+        ).isoformat()
 
         try:
             with self._db.transaction() as conn:
+                current = conn.execute(
+                    "SELECT status FROM device_credentials WHERE credential_id = ?",
+                    (credential_id,),
+                ).fetchone()
+                if current is None or current["status"] != "active":
+                    raise DeviceError(
+                        "credential is no longer active", kind="conflict", http_status=409
+                    )
+                conn.execute(
+                    """INSERT INTO credential_rotation_reservations(
+                        credential_id, reservation_id, new_credential_id, new_keychain_ref,
+                        device_id, created_at, expires_at, attempts, state, reason
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, 0, 'pending', NULL)""",
+                    (
+                        credential_id,
+                        reservation_id,
+                        prepared["credential_id"],
+                        new_ref,
+                        device_id,
+                        now,
+                        expires,
+                    ),
+                )
+        except sqlite3.IntegrityError as exc:
+            raise DeviceError(
+                "a rotation for this credential is already in progress",
+                kind="conflict",
+                http_status=409,
+            ) from exc
+
+        try:
+            self._provider.set_secret(new_ref, prepared["secret"])
+        except Exception as exc:  # noqa: BLE001 - provider is external
+            self._finish_failed_rotation(reservation_id, "provider_unavailable", [new_ref])
+            raise DeviceError(
+                "credential store unavailable", kind="unavailable", http_status=503
+            ) from exc
+
+        try:
+            with self._db.transaction() as conn:
+                claimed = conn.execute(
+                    "UPDATE credential_rotation_reservations SET attempts = attempts + 1 "
+                    "WHERE reservation_id = ? AND state = 'pending'",
+                    (reservation_id,),
+                ).rowcount
+                if claimed != 1:
+                    raise DeviceError(
+                        "rotation reservation is no longer current",
+                        kind="conflict",
+                        http_status=409,
+                    )
+                reservation = conn.execute(
+                    "SELECT * FROM credential_rotation_reservations WHERE reservation_id = ?",
+                    (reservation_id,),
+                ).fetchone()
+                if datetime.fromisoformat(reservation["expires_at"]) <= datetime.now(timezone.utc):
+                    raise DeviceError(
+                        "rotation reservation expired", kind="conflict", http_status=409
+                    )
+                if reservation["new_credential_id"] != prepared["credential_id"]:
+                    raise DeviceError(
+                        "rotation reservation does not match this operation",
+                        kind="conflict",
+                        http_status=409,
+                    )
+                # Generation fence: the exact credential observed at reservation
+                # time must still be the active one.
                 updated = conn.execute(
                     "UPDATE device_credentials SET status = 'rotated', rotated_at = ? "
                     "WHERE credential_id = ? AND status = 'active'",
-                    (created_at, credential_id),
+                    (prepared["created_at"], credential_id),
                 )
                 if updated.rowcount != 1:
                     raise DeviceError(
@@ -499,46 +570,121 @@ class CredentialService:
                     )
                 self._insert(
                     conn,
-                    credential_id=new_id,
+                    credential_id=prepared["credential_id"],
                     device_id=device_id,
                     credential_type=row["credential_type"],
-                    keychain_ref=keychain_ref,
-                    verifier=verifier,
-                    salt=salt,
-                    created_at=created_at,
+                    keychain_ref=new_ref,
+                    verifier=prepared["verifier"],
+                    salt=prepared["salt"],
+                    created_at=prepared["created_at"],
                     expires_at=row["expires_at"],
                 )
                 self._event(
                     conn,
                     "device.credential_rotated",
                     device_id=device_id,
-                    credential_id=new_id,
+                    credential_id=prepared["credential_id"],
                     actor=actor,
                     result="ok",
                     details={"previous_credential_id": credential_id},
                 )
+                conn.execute(
+                    "DELETE FROM credential_rotation_reservations WHERE reservation_id = ?",
+                    (reservation_id,),
+                )
         except Exception:
-            try:
-                self._provider.delete_secret(keychain_ref)
-            except Exception:  # noqa: BLE001
-                pass
+            self._finish_failed_rotation(reservation_id, "activation_failed", [new_ref])
             raise
 
-        # The old secret is useless once the row is rotated; remove it if able.
+        # The old row is already 'rotated', so its secret is inert. Removing it
+        # is best effort; a failure is recorded so recovery retries.
         try:
             self._provider.delete_secret(row["keychain_ref"])
         except Exception:  # noqa: BLE001 - status already blocks it
             LOG.warning("could not delete rotated credential secret from store")
+            try:
+                with self._db.transaction() as conn:
+                    conn.execute(
+                        """INSERT OR IGNORE INTO credential_rotation_reservations(
+                            credential_id, reservation_id, new_credential_id, new_keychain_ref,
+                            device_id, created_at, expires_at, attempts, state, reason
+                        ) VALUES (?, ?, ?, ?, ?, ?, ?, 0, 'cleanup_failed', 'old_secret')""",
+                        (
+                            credential_id,
+                            f"cleanup-{credential_id}",
+                            credential_id,
+                            row["keychain_ref"],
+                            device_id,
+                            now,
+                            expires,
+                        ),
+                    )
+            except Exception:  # noqa: BLE001 - logging is the fallback
+                LOG.warning("could not record rotation cleanup for %s", credential_id)
 
         return IssuedCredential(
-            credential_id=new_id,
+            credential_id=prepared["credential_id"],
             device_id=device_id,
             credential_type=row["credential_type"],
-            token=token,
-            keychain_ref=keychain_ref,
-            created_at=created_at,
+            token=prepared["token"],
+            keychain_ref=new_ref,
+            created_at=prepared["created_at"],
             expires_at=row["expires_at"],
         )
+
+    def _finish_failed_rotation(self, reservation_id: str, reason: str, refs: list[str]) -> None:
+        cleaned = True
+        for ref in refs:
+            try:
+                self._provider.delete_secret(ref)
+            except Exception:  # noqa: BLE001
+                cleaned = False
+                LOG.warning("could not delete rotation secret %s", ref)
+        try:
+            with self._db.transaction() as conn:
+                if cleaned:
+                    conn.execute(
+                        "DELETE FROM credential_rotation_reservations WHERE reservation_id = ?",
+                        (reservation_id,),
+                    )
+                else:
+                    conn.execute(
+                        "UPDATE credential_rotation_reservations SET state = 'cleanup_failed', reason = ? "
+                        "WHERE reservation_id = ?",
+                        (reason, reservation_id),
+                    )
+        except Exception:  # noqa: BLE001 - recovery will retry
+            LOG.warning("could not update rotation reservation %s", reservation_id)
+
+    def reconcile_rotations(self) -> dict[str, Any]:
+        """Idempotent cleanup of interrupted rotations. Never activates anything."""
+        rows = self._db.query_all("SELECT * FROM credential_rotation_reservations")
+        cleaned: list[str] = []
+        remaining: list[str] = []
+        for row in rows:
+            ref = (
+                row["new_keychain_ref"]
+                if row["state"] == "pending"
+                else row["new_keychain_ref"]
+            )
+            try:
+                self._provider.delete_secret(ref)
+            except Exception:  # noqa: BLE001 - keep the row for the next attempt
+                with self._db.transaction() as conn:
+                    conn.execute(
+                        "UPDATE credential_rotation_reservations SET state = 'cleanup_failed' "
+                        "WHERE reservation_id = ?",
+                        (row["reservation_id"],),
+                    )
+                remaining.append(row["credential_id"])
+                continue
+            with self._db.transaction() as conn:
+                conn.execute(
+                    "DELETE FROM credential_rotation_reservations WHERE reservation_id = ?",
+                    (row["reservation_id"],),
+                )
+            cleaned.append(row["credential_id"])
+        return {"ok": True, "cleaned": cleaned, "remaining": remaining}
 
     def revoke(
         self,

@@ -34,6 +34,7 @@ Since MERGE-1 (2026-10-18), the Chief stack and the Teacher Workstation share on
 | P0.1 operational certification | `docs/operations/master-chief-operational-certification.md` |
 | Runtime dependency readiness (pairing / `cryptography`) | `scripts/chief-cosd-dependency-status.sh` |
 | P0.2b activation plan and rollback | `docs/operations/chief-p0.2b-activation-plan.md` |
+| **P0.2c production activation record (current deployment state)** | **`docs/operations/master-chief-production-activation.md`** |
 | Earlier workspace architecture (`assistant/chief-of-staff/workspace/`) | On branch `wip/canvas-live-q1w9`; reference only, not yet merged |
 
 ---
@@ -94,11 +95,11 @@ Outside products were studied for logic and features to rebuild, not to adopt.
 
 ### Works today
 
-**Installed build note (2026-11-09).** The running `/Applications/Chief.app` was built from commit
-`24c9df4` on 2026-10-21 and predates the `cosd` generation described below, so it uses the `bin/cos`
-CLI path and has no Tasks, Devices, pairing, or notifications. Source on `main` is newer than the
-installed app. Evidence, candidate package hash, and rollback:
-`docs/operations/master-chief-operational-certification.md`.
+**Deployment note (2026-11-09, P0.2c).** `/Applications/Chief.app` is the certified `cosd`-aware
+build (asar `529c221c…92506`), and `cosd` runs on `127.0.0.1:8765`. The app talks to the daemon over
+an authenticated socket; the `bin/cos` CLI path remains the fallback when the daemon is down. Device
+pairing is intentionally disabled pending a concurrency fix. Evidence and rollback:
+`docs/operations/master-chief-production-activation.md`.
 - **Chat:** one-shot `cos ask` and multi-turn `cos chat`, on the local model, with tool calling
   (`cos tools` lists them).
 - **Request sorting (P1a.5):** every message gets one label (time, weather, calendar,

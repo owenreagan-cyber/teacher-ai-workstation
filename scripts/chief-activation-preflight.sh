@@ -9,6 +9,10 @@
 # activation:
 #   CHIEF_EXPECTED_INSTALLED_ASAR   default: the pre-P0.2b bundle (24c9df4)
 #   CHIEF_EXPECTED_CANDIDATE_ASAR   default: the P0.2a candidate
+#   CHIEF_EXPECTED_BACKUP_ASAR      default: the pre-P0.2c installed bundle; set this
+#                                   to the bundle that was backed up, so the backup
+#                                   check stays meaningful after activation replaces
+#                                   the installed app
 #   CHIEF_CANDIDATE                 candidate bundle path
 #   CHIEF_BACKUP                    backup bundle path
 #
@@ -21,6 +25,7 @@ CANDIDATE="${CHIEF_CANDIDATE:-${ROOT}/apps/chief-desktop/release/p0.2a-candidate
 BACKUP="${CHIEF_BACKUP:-${HOME}/ChiefBackups/pre-p0.2b-24c9df4/Chief.app}"
 EXPECTED_INSTALLED_ASAR="${CHIEF_EXPECTED_INSTALLED_ASAR:-193377246224b378aa5535db2632c59f30f45ba73a0e4218b8035b071bba6115}"
 EXPECTED_CANDIDATE_ASAR="${CHIEF_EXPECTED_CANDIDATE_ASAR:-529c221ca296b634559f374d6a2d71fbd3e940d79ad4e3bc361d09df9ef92506}"
+EXPECTED_BACKUP_ASAR="${CHIEF_EXPECTED_BACKUP_ASAR:-193377246224b378aa5535db2632c59f30f45ba73a0e4218b8035b071bba6115}"
 STATE_DIR="${COS_STATE_DIR:-${HOME}/Library/Application Support/ChiefOfStaff}"
 
 PASS_COUNT=0
@@ -63,12 +68,12 @@ section 'Prepared backup'
 if [ -d "${BACKUP}" ]; then
   backup_hash="$(asar_hash "${BACKUP}")"
   pass "backup present: ${BACKUP}"
-  if [ -n "${installed_hash:-}" ] && [ "${backup_hash}" = "${installed_hash}" ]; then
+  if [ "${backup_hash}" = "${EXPECTED_BACKUP_ASAR}" ]; then
+    pass "backup matches the recorded pre-activation baseline (${backup_hash:0:12}…)"
+  elif [ -n "${installed_hash:-}" ] && [ "${backup_hash}" = "${installed_hash}" ]; then
     pass "backup is byte-identical to the installed app"
-  elif [ "${backup_hash}" = "${EXPECTED_INSTALLED_ASAR}" ]; then
-    pass "backup matches the recorded pre-activation baseline"
   else
-    fail "backup app.asar ${backup_hash:0:12}… does not match the installed app"
+    fail "backup app.asar ${backup_hash:0:12}… matches neither the expected baseline nor the installed app"
   fi
   [ "$(signed "${BACKUP}")" = "OK" ] && pass 'backup signature valid' || fail 'backup signature invalid'
   [ -f "${BACKUP}/../manifest.txt" ] || [ -f "$(dirname "${BACKUP}")/manifest.txt" ] \
@@ -187,8 +192,8 @@ else
 fi
 
 section 'Processes and startup'
-if pgrep -f 'cosd serve' >/dev/null 2>&1; then
-  warn "a cosd process is running: $(pgrep -fl 'cosd serve' | head -1)"
+if pgrep -f 'from cosd\.cli import main' >/dev/null 2>&1; then
+  warn "a cosd process is running: $(pgrep -f 'from cosd\.cli import main' | head -1)"
 else
   pass 'no cosd process running'
 fi

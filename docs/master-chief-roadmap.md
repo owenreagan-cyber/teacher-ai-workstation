@@ -174,19 +174,19 @@ and remote credential delivery are **not activated**.
 
 | Item | Finding | Status |
 | --- | --- | --- |
-| Chief.app source | `apps/chief-desktop` at version `0.1.0`; 47 IPC channels, 1:1 with the preload bridge | **Implemented** |
-| Chief.app installed build | `/Applications/Chief.app`, v0.1.0, arm64, Electron 44.5.1, signed (Apple Development, Team 98F559Y354, hardened runtime, not notarized) | **Deployed** |
-| Installed build source commit | **`24c9df4`** (2026-10-21), proven by a byte-identical rebuild of all 28 asar payload files | **Verified** |
-| Divergence from `main` | Installed build predates the `cosd` generation: no persistent daemon client, tasks, queue, devices, pairing, or notifications | **Open — P0** |
-| Provenance-stamped package | Candidate built from `98b9dfc`, signed, hashed (`app.asar` sha256 `529c221c…92506`), **not installed** | **Built — awaiting owner approval** |
-| `cosd` in production | Never started on this Mac; no `cosd` state directory exists. Installed app runs the `bin/cos` CLI fallback | **Not activated — P0** |
-| `cosd` lifecycle certification | Start, health, auth, tasks, queue, rotation, kill switch, restart persistence, WAL, loopback-only: all verified against a temporary state root | **Tested** |
+| Chief.app source | `apps/chief-desktop` at version `0.1.0`; 48 IPC channels, 1:1 with the preload bridge | **Implemented** |
+| Chief.app installed build | `/Applications/Chief.app`, v0.1.0, arm64, Electron 44.5.1, signed (Apple Development, Team 98F559Y354, hardened runtime, not notarized), asar `529c221c…92506` | **Deployed** (2026-11-09) |
+| Installed build source | Desktop tree at `e469f3b`, unchanged through `0670d0e`; no rebuild was needed for P0.2c | **Verified** |
+| Provenance-stamped package | P0.2a candidate, installed and hash-verified on the machine | **Deployed** |
+| `cosd` in production | Running as PID 34750 on `127.0.0.1:8765`; state at `~/Library/Application Support/ChiefOfStaff/cosd/` (0700, token 0600, SQLite WAL, integrity ok) | **Deployed** |
+| Chief.app ↔ `cosd` | Established authenticated socket from the app process to the daemon | **Verified** |
+| `cosd` lifecycle certification | Start, health, auth, tasks, queue, rotation, kill switch, restart persistence, WAL, loopback-only | **Tested** |
+| Device pairing | Open concurrency defect in `pairing/service.py`; enrollment intentionally disabled | **Blocked — separate fix** |
 
-Full evidence: `docs/operations/master-chief-operational-certification.md`.
+Full evidence: `docs/operations/master-chief-production-activation.md`.
 
-These entries are the reason P0 exists. A running application is not current source, and a built
-package is not a deployment. Until an installed build from current source is running with `cosd`
-and its hash is recorded, no part of Chief should be described as production-ready.
+The deployment distinctions still hold: a running application is not current source, and a running
+daemon is not a certified system. Both are now evidenced above rather than assumed.
 
 ---
 
@@ -206,15 +206,19 @@ source checkout is not a system Owen can rely on.
 - Prepare a provenance-stamped Chief.app package.
 - **Owner approval before any live application replacement.**
 
-**P0.1/P0.2a/P0.2b status (2026-11-09).** Source/installed reconciliation is **done** and proven to
-commit `24c9df4`; `cosd` lifecycle, authentication, persistence, device registry and pairing are
-**certified** against a temporary state root. P0.2a fixed the private state-directory permission
-defect, added a PASS/WARN/FAIL pairing-dependency readiness check, and rebuilt the candidate. P0.2b
-prepared activation: verified candidate/backup/hashes, added an explicit interpreter contract so an
-isolated Chief venv can be the one runtime for both `bin/cos` and `bin/cosd`, and wrote the bounded
-activation and rollback procedure. **Nothing is activated.** Still open: installing the candidate,
-starting production `cosd`, and installing the `cryptography` pair requirement — all owner-gated.
-Evidence: `docs/operations/master-chief-operational-certification.md` and
+**P0 status (2026-11-09): COMPLETE, with one blocked capability.** The certified package is installed
+(asar `529c221c…92506`), `cosd` runs on `127.0.0.1:8765` with WAL SQLite, `0700` state, `0600` token,
+authenticated status, working kill switch, and task persistence verified across a restart. Chief.app
+connects to the daemon over an established authenticated socket. Existing configuration, sessions and
+the hash-chained audit log were preserved; the audit log was appended to, never rewritten.
+
+**Not complete:** device pairing. A concurrent-redemption defect in
+`cosd/devices/pairing/service.py` can raise `TypeError` instead of a clean conflict on the losing
+thread. Enrollment is intentionally disabled until that is fixed with cross-model review (D-010).
+`cosd` also does not start at login by design (no LaunchAgent).
+
+Evidence: `docs/operations/master-chief-production-activation.md`,
+`docs/operations/master-chief-operational-certification.md`, and
 `docs/operations/chief-p0.2b-activation-plan.md`.
 
 **Exit criteria:** a signed package with recorded provenance is installed by Owen, `cosd`

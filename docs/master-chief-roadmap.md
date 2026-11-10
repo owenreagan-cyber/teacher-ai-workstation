@@ -182,6 +182,8 @@ and remote credential delivery are **not activated**.
 | Chief.app ↔ `cosd` | Established authenticated socket from the app process to the daemon | **Verified** |
 | `cosd` lifecycle certification | Start, health, auth, tasks, queue, rotation, kill switch, restart persistence, WAL, loopback-only | **Tested** |
 | Device pairing | Concurrency defect fixed in P0.3a (single-winner enforced, 18 deterministic tests); enrollment still disabled pending owner decision | **Fixed — not enabled** |
+| Runtime reliability | Lifecycle identity/port checks, frozen provenance, `HEALTHY`/`DEGRADED`/`RECOVERING`/`BLOCKED` health, restart-required detection, recovery reporting | **Implemented (P0.3b)** |
+| Credential-provider lock scope | Provider I/O inside the approval transaction blocks unrelated device reads (WARN, measured) | **Open — scheduled** |
 
 Full evidence: `docs/operations/master-chief-production-activation.md`.
 

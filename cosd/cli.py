@@ -17,6 +17,7 @@ from .constants import DEFAULT_HOST, DEFAULT_PORT
 from .lifecycle import (
     clear_pid,
     fetch_health,
+    pid_report,
     process_alive,
     process_is_cosd,
     read_pid,
@@ -57,23 +58,23 @@ def _record_endpoint(record) -> tuple[str, int]:
 
 
 def cmd_status(_args: argparse.Namespace) -> int:
-    record = read_pid(_state_base())
-    if record is None:
+    report = pid_report(_state_base())
+    if report["state"] == "absent":
         print(json.dumps({"ok": False, "running": False, "reason": "no pid file"}))
         return EXIT_OK
-    host, port = _record_endpoint(record)
-    alive = process_alive(record.pid) and process_is_cosd(record.pid)
-    health = fetch_health(host, port) if alive else None
     print(
         json.dumps(
             {
                 "ok": True,
-                "running": bool(health and health.get("ok")),
-                "pid": record.pid,
-                "host": host,
-                "port": port,
-                "health": health,
-                "stale_pid": alive and not (health and health.get("ok")),
+                "running": report["running"],
+                "state": report["state"],
+                "pid": report["pid"],
+                "host": report["host"],
+                "port": report["port"],
+                "health": report["health"],
+                "pid_alive": report["pid_alive"],
+                "pid_is_cosd": report["pid_is_cosd"],
+                "stale_pid": report["pid_alive"] and not report["running"],
             }
         )
     )

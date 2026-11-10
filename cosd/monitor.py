@@ -35,6 +35,10 @@ def runtime_snapshot(
     cfg,
     state_base: Path | None = None,
     started_monotonic: float | None = None,
+    provenance: dict[str, Any] | None = None,
+    drift: dict[str, Any] | None = None,
+    health: dict[str, Any] | None = None,
+    recovery: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     from .lifecycle import fetch_health, process_alive, read_pid
 
@@ -56,6 +60,11 @@ def runtime_snapshot(
         "api_version": "v1",
         "pid": pid_rec.pid if pid_rec else None,
         "health": health,
+        "state": (health or {}).get("state") if health else None,
+        "state_reasons": (health or {}).get("reasons", []) if health else [],
+        "provenance": provenance or {},
+        "checkout": drift or {},
+        "recovery": recovery or {},
         "uptime_s": uptime_s,
         "task_counts": counts,
         "queue_paused": paused,

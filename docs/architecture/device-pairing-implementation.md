@@ -271,6 +271,13 @@ Follow-ups it raised, both medium/low and neither correctness-breaking:
    a follow-up rather than changed here, because reordering provider writes and
    the commit would alter the failure/cleanup semantics that currently prevent
    a false APPROVED state. Recorded in the threat model as a residual risk.
+
+   Measured in P0.3b with a provider delaying each write by 1.0 s: approval took
+   2.01 s (credential + envelope) and unrelated `list_devices` reads waited up
+   to 2.00 s. Correctness held: one device, one active credential, and a
+   provider failure rolled back to `AWAITING_OWNER_APPROVAL` with no device.
+   Classified **WARN** (availability only). See
+   `docs/operations/master-chief-runtime-reliability.md` §5.
 2. **Guard breadth.** The static guard now flags any `.execute(...).fetch*`
    whose receiver is not a lock-held connection (`conn`, `c`, `active_conn`,
    `self._conn`). Verified against the pre-fix `registry.py` (10 sites flagged)

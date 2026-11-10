@@ -27,6 +27,10 @@ On daemon start, expired leases on RUNNING tasks are reconciled using handler `r
 - `checkpoint_resume` with checkpoint → `BLOCKED` (manual)
 - otherwise → `BLOCKED` (no blind replay)
 
+Recovery runs before the server accepts work and respects the KillSwitch and permissions. The result
+(`recovery.repaired`) is captured at startup and exposed through `/v1/runtime`; a repair within the
+last 30 seconds classifies runtime health as `RECOVERING`.
+
 ## API
 
 See `docs/architecture/cosd-api-contract.md` — `/v1/tasks/{id}/execute`, `/attempts`, `/checkpoints`, `/v1/queue`, `/v1/workers`.

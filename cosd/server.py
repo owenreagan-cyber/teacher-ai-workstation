@@ -19,6 +19,8 @@ from cos.service import iter_ask_stream, run_ask, run_status
 
 from . import __version__
 from .auth import authorize, ensure_token
+from .health import classify
+from .provenance import drift, snapshot
 from .constants import ASK_TIMEOUT_S, DEFAULT_HOST, MAX_BODY_BYTES, SERVICE_NAME
 from .devices import (
     AuthorizationDenied,
@@ -63,7 +65,10 @@ class CosdHTTPServer(ThreadingHTTPServer):
         self.audit = AuditLog(_audit_path(state_base))
         self.task_registry = TaskRegistry.open(state_base)
         self.execution = ExecutionEngine(self.task_registry)
-        self.execution.startup_recovery()
+        # Captured once so /v1/runtime can report what startup actually repaired.
+        self.recovery_report = self.execution.startup_recovery()
+        self.recovery_at = time.monotonic()
+        self.provenance = snapshot(__version__)
         self.started_monotonic = time.monotonic()
         self.event_bus = get_event_bus()
         self._sse_clients = 0
@@ -102,6 +107,33 @@ class CosdHTTPServer(ThreadingHTTPServer):
     def request_shutdown(self) -> None:
         self.execution.prepare_shutdown()
         threading.Thread(target=self.shutdown, daemon=True).start()
+
+    def drift_report(self) -> dict[str, Any]:
+        """Checkout drift, cached briefly so polling does not shell out constantly."""
+        now = time.monotonic()
+        cached = getattr(self, "_drift_cache", None)
+        if cached is not None and now - cached[0] < 5.0:
+            return cached[1]
+        value = drift(self.provenance)
+        self._drift_cache = (now, value)
+        return value
+
+    def health_report(self) -> dict[str, Any]:
+        try:
+            self.task_registry.db.query_one("SELECT 1")
+            db_ok = True
+        except Exception:  # noqa: BLE001 - health must report, never crash
+            db_ok = False
+        recovered = len((self.recovery_report or {}).get("repaired") or [])
+        return classify(
+            db_ok=db_ok,
+            kill_switch=bool(run_status(load_config()).get("kill_switch")),
+            queue_paused=self.execution.queue.is_paused(),
+            device_registry_available=self.device_registry is not None,
+            restart_required=self.drift_report().get("restart_required"),
+            recovered_count=recovered,
+            recovery_age_s=max(0.0, time.monotonic() - self.recovery_at),
+        )
 
 
 class Handler(BaseHTTPRequestHandler):
@@ -427,9 +459,24 @@ class Handler(BaseHTTPRequestHandler):
                 return
             cfg = load_config()
             counts = self.server.task_registry.get_task_counts()
+            health = self.server.health_report()
+            drift = self.server.drift_report()
             self._send_json(
                 200,
-                {"ok": True, "cosd": __version__, "task_counts": counts, **run_status(cfg)},
+                {
+                    "ok": True,
+                    "cosd": __version__,
+                    "task_counts": counts,
+                    **run_status(cfg),
+                    "state": health["state"],
+                    "state_reasons": health["reasons"],
+                    "runtime": {
+                        **self.server.provenance.public_dict(),
+                        "current_commit": drift.get("current_commit"),
+                        "restart_required": drift.get("restart_required"),
+                        "restart_reason": drift.get("reason", ""),
+                    },
+                },
             )
             return
         if path == "/v1/runtime":
@@ -442,6 +489,10 @@ class Handler(BaseHTTPRequestHandler):
                 cfg=cfg,
                 state_base=self.server.state_base,
                 started_monotonic=self.server.started_monotonic,
+                provenance=self.server.provenance.public_dict(),
+                drift=self.server.drift_report(),
+                health=self.server.health_report(),
+                recovery=self.server.recovery_report,
             )
             self._send_json(200, body)
             return

@@ -183,7 +183,7 @@ and remote credential delivery are **not activated**.
 | `cosd` lifecycle certification | Start, health, auth, tasks, queue, rotation, kill switch, restart persistence, WAL, loopback-only | **Tested** |
 | Device pairing | Concurrency defect fixed in P0.3a (single-winner enforced, 18 deterministic tests); enrollment still disabled pending owner decision | **Fixed — not enabled** |
 | Runtime reliability | Lifecycle identity/port checks, frozen provenance, `HEALTHY`/`DEGRADED`/`RECOVERING`/`BLOCKED` health, restart-required detection, recovery reporting | **Implemented (P0.3b)** |
-| Credential-provider lock scope | Provider I/O inside the approval transaction blocks unrelated device reads (WARN, measured) | **Open — scheduled** |
+| Credential-provider lock scope | Provider I/O inside the approval transaction blocks unrelated reads/writes (WARN; measured 2.0 s reads, 1.5 s write). Durable-reservation design specified, implementation pending | **Open — design specified** |
 
 Full evidence: `docs/operations/master-chief-production-activation.md`.
 

@@ -138,6 +138,86 @@ the current guarantee that no device is ever `APPROVED` without a delivered cred
 state-machine change, not a small fix, and doing it without a crash-consistent reservation would be
 worse than the current cost. It is recorded as the next reliability task.
 
+### 5a. P0.3c reservation design (specified, not implemented)
+
+Baseline re-measured on `89fee83` with a provider delaying each write by 1.0 s:
+
+| Measurement | Baseline |
+| --- | --- |
+| Approval total | **2.01 s** (two provider writes) |
+| Concurrent `list_devices` reads | n=2, median **1000 ms**, p95 **1999 ms**, max **1999 ms** |
+| Concurrent write to an unrelated device (`rename_device`) | **1.51 s** |
+
+Both reads and writes are blocked: the approval transaction holds the single connection's `RLock`
+for the whole provider interaction.
+
+**Chosen design — durable reservation, provider work outside the lock.**
+
+No new database, queue or broker. One new table plus one short transaction on each side.
+
+```text
+Txn A (ms)                provider (seconds, no lock)              Txn B (ms)
+┌──────────────────┐      ┌───────────────────────────┐           ┌──────────────────────────┐
+│ validate enrollment │   │ prepare credential token  │           │ re-read enrollment        │
+│ validate profile    │   │ X25519/HKDF/AES-GCM       │           │ check reservation owner   │
+│ insert reservation  │──▶│ provider.set_secret (x2)  │──────────▶│ check expiry + profile    │
+└──────────────────┘      └───────────────────────────┘           │ register device           │
+        │                             │                            │ insert credential active  │
+        │ failure                     │ failure                    │ transition APPROVED       │
+        ▼                             ▼                            │ delete reservation        │
+  409 / no state              delete provider secrets             └──────────────────────────┘
+                              delete reservation                              │
+                              enrollment stays AWAITING                        ▼ commit (atomic)
+```
+
+**Table.**
+
+| Column | Purpose |
+| --- | --- |
+| `enrollment_id` | **primary key** — a second concurrent approval fails closed |
+| `credential_id`, `delivery_ref` | provider references for cleanup |
+| `device_profile` | binds the operation to the approved profile |
+| `expected_state` | enrollment state observed at reservation |
+| `created_at`, `expires_at` | bounded lease |
+| `attempts`, `state`, `reason` | diagnostics and idempotent reconciliation |
+
+**Why no `staged` credential status.** The credential table's status CHECK is
+`('active','rotated','expired','revoked')`. Adding `staged` forces a table rebuild and an auth-path
+change. The design instead creates **no credential row until Txn B**, which is strictly stronger: a
+credential that does not exist cannot authenticate. Provider material written early is keyed by a
+random `delivery_ref` and is inert.
+
+**Crash windows.**
+
+| Crash point | State | Recovery |
+| --- | --- | --- |
+| before A commits | nothing changed | none |
+| after A, before provider | reservation, enrollment AWAITING | delete reservation |
+| during provider | reservation + partial secrets | delete secrets by ref, delete reservation |
+| after provider, before B | reservation + valid secrets, **no credential row** | delete secrets, delete reservation |
+| during B | SQLite transaction is atomic | rollback; row set is all-or-nothing |
+| after B commits | device + active credential + APPROVED | complete; retry gets 409 |
+
+**Reconciliation.** At startup (bounded, idempotent): delete provider secrets for every reservation
+whose `expires_at` has passed or whose enrollment is no longer `AWAITING_OWNER_APPROVAL`, then delete
+the reservation. It never approves, never creates a device, and never touches the KillSwitch.
+
+**Rejected alternatives.**
+
+| Alternative | Why rejected |
+| --- | --- |
+| `staged` credential status | schema rebuild + auth-path change for no additional guarantee |
+| Move provider write after commit | can leave `APPROVED` without a delivered credential |
+| Per-thread read connections | fixes reads only; writes still block, and it weakens the single-writer invariant |
+| Retry loop around the lock | does not shorten lock ownership |
+
+**Acceptance targets for implementation.** Unrelated read p95 < 250 ms with a 2 s provider delay;
+single active credential under 2- and 10-way contention; deterministic crash injection at each
+window above; no change to X25519/HKDF/AES-GCM behavior.
+
+**Status: not implemented.** This phase delivered the root-cause evidence and the design only.
+Production pairing remains disabled and no credential path changed.
+
 ---
 
 ## 6. Safe restart procedure (owner action)

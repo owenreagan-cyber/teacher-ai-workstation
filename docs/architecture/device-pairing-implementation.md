@@ -276,8 +276,10 @@ Follow-ups it raised, both medium/low and neither correctness-breaking:
    2.01 s (credential + envelope) and unrelated `list_devices` reads waited up
    to 2.00 s. Correctness held: one device, one active credential, and a
    provider failure rolled back to `AWAITING_OWNER_APPROVAL` with no device.
-   Classified **WARN** (availability only). See
-   `docs/operations/master-chief-runtime-reliability.md` §5.
+   Classified **WARN** (availability only). A durable-reservation design that
+   removes provider I/O from the transaction is specified in
+   `docs/operations/master-chief-runtime-reliability.md` §5a but not yet
+   implemented.
 2. **Guard breadth.** The static guard now flags any `.execute(...).fetch*`
    whose receiver is not a lock-held connection (`conn`, `c`, `active_conn`,
    `self._conn`). Verified against the pre-fix `registry.py` (10 sites flagged)

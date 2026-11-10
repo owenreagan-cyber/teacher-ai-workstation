@@ -79,9 +79,11 @@ enable it.
 **Residual risk (medium, deferred).** `approve()` performs envelope encryption
 and credential-provider I/O while holding the shared connection lock. A stalled
 provider (for example a slow Keychain call) can briefly serialize unrelated
-device reads. This is availability-only and pre-existing in shape; it is
-tracked for a follow-up that moves that I/O outside the transaction without
-weakening the "no false APPROVED state" guarantee.
+device reads. Measured baseline (1 s provider delay per write): approval 2.01 s,
+unrelated reads median 1000 ms / p95 1999 ms, unrelated write 1.51 s.
+P0.3c specifies a durable-reservation design that moves that I/O outside the
+lock while keeping "no credential row until the final commit"; implementation
+is pending. Device pairing stays disabled.
 
 Legend: **PASS** = adequately mitigated at target architecture; **WARN** = partial / depends on implementation discipline; **FAIL** = unacceptable without planned control.
 

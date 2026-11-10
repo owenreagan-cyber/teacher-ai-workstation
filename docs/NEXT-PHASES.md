@@ -62,7 +62,9 @@ fix does not activate pairing.
 `HEALTHY`/`DEGRADED`/`RECOVERING`/`BLOCKED` from state rather than from the socket, detects when the
 checkout has moved past the running process, and refuses to start on an occupied port or a pid file
 that points at an unrelated process. Credential-provider I/O still runs inside the approval
-transaction (measured WARN). Record: `docs/operations/master-chief-runtime-reliability.md`.
+transaction (measured WARN: 2.0 s unrelated reads, 1.5 s unrelated write under a 1 s provider
+delay). A durable-reservation design is specified but not implemented. Record:
+`docs/operations/master-chief-runtime-reliability.md` §5a.
 
 **Known operational limits:** `cosd` does not start at login (no LaunchAgent, by design); the app
 resolves its runtime at `~/Projects/teacher-ai-workstation/bin/cos`, so that checkout must stay in

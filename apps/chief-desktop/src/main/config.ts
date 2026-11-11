@@ -8,15 +8,44 @@ export const DESKTOP_CONFIG_PATH = path.join(COS_STATE_DIR, "desktop.json");
 export const DEFAULT_COS_PATH = "~/Projects/teacher-ai-workstation/bin/cos"; // the main checkout since MERGE-1
 export const DEFAULT_HOTKEY = "Control+Alt+C"; // Control+Option+C
 
-export type DesktopConfig = { cosPath: string; hotkey: string; error: string | null };
+export type DesktopConfig = {
+  cosPath: string;
+  hotkey: string;
+  error: string | null;
+  /** "packaged" when the immutable runtime ships inside the app bundle. */
+  runtimeSource?: "packaged" | "development";
+};
+
+/** The runtime staged into Resources/runtime by scripts/stage-runtime.mjs. */
+export function packagedRuntimePath(resourcesPath?: string): string | null {
+  if (!resourcesPath) return null;
+  const candidate = path.join(resourcesPath, "runtime", "cos");
+  try {
+    return fs.existsSync(candidate) ? candidate : null;
+  } catch {
+    return null;
+  }
+}
+
+export function runtimeResourcesPath(): string | undefined {
+  return (process as unknown as { resourcesPath?: string }).resourcesPath;
+}
 
 /** A leading "~" or "~/" becomes the home folder; "~user/..." is not expanded (and is then refused). */
 export function expandHome(p: string): string {
   return p === "~" ? os.homedir() : p.startsWith("~/") ? path.join(os.homedir(), p.slice(2)) : p;
 }
 
-export function loadDesktopConfig(file = DESKTOP_CONFIG_PATH): DesktopConfig {
-  const config: DesktopConfig = { cosPath: expandHome(DEFAULT_COS_PATH), hotkey: DEFAULT_HOTKEY, error: null };
+export function loadDesktopConfig(file = DESKTOP_CONFIG_PATH, resourcesPath = runtimeResourcesPath()): DesktopConfig {
+  // A packaged build always uses its own immutable runtime. The development
+  // checkout path is a fallback for unpackaged runs only.
+  const packaged = packagedRuntimePath(resourcesPath);
+  const config: DesktopConfig = {
+    cosPath: packaged ?? expandHome(DEFAULT_COS_PATH),
+    hotkey: DEFAULT_HOTKEY,
+    error: null,
+    runtimeSource: packaged ? "packaged" : "development",
+  };
   let raw: string;
   try {
     raw = fs.readFileSync(file, "utf-8");
@@ -37,7 +66,9 @@ export function loadDesktopConfig(file = DESKTOP_CONFIG_PATH): DesktopConfig {
     if (typeof obj.cosPath !== "string" || !path.isAbsolute(expandHome(obj.cosPath))) {
       return { ...config, error: `cosPath in ${file} must be an absolute path (or start with ~/)` };
     }
-    config.cosPath = expandHome(obj.cosPath);
+    // In a packaged build the runtime is authoritative; only allow an
+    // override when there is no bundled runtime.
+    if (config.runtimeSource !== "packaged") config.cosPath = expandHome(obj.cosPath);
   }
   if (obj.hotkey !== undefined) {
     if (typeof obj.hotkey !== "string" || !obj.hotkey.trim()) {

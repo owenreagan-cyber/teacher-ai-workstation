@@ -13,6 +13,10 @@ files:
   - out/shared/**
   - dist/renderer/**
 asar: true
+extraResources:
+  - from: build/runtime
+    to: runtime
+
 electronFuses:
   runAsNode: false
   enableCookieEncryption: true

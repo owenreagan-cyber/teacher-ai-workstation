@@ -28,7 +28,8 @@ export type CosdTask = {
   priority: number;
   created_at: string;
   updated_at: string;
-  attempt_count: number;
+  // The daemon does not report an attempt count on task records yet; null means unknown.
+  attempt_count: number | null;
   blocked_reason: string | null;
   last_error: string | null;
   next_retry_at: string | null;

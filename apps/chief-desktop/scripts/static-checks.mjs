@@ -87,7 +87,8 @@ const preload = read("src/preload/preload.ts");
 const ALLOWED = [
   "ask", "cancelAsk", "history", "openLink", "brief", "home", "configGet", "configSet", "status",
   "cosdConnection", "cosdReconnect", "listTasks", "getTask", "createTask", "cancelTask", "retryTask",
-  "taskHistory", "queueSnapshot", "listDevices", "getDevice", "createDevice", "updateDevice",
+  "taskHistory", "queueSnapshot", "devScanRoots", "devScanAddRoot", "devScanRemoveRoot", "devScanRun", "devScanExecute",
+  "devScanReport", "listDevices", "getDevice", "createDevice", "updateDevice",
   "disableDevice", "enableDevice", "revokeDevice", "removeDevice", "bootstrapDevice", "deviceCredentials",
   "rotateDeviceCredential", "revokeDeviceCredential", "createEnrollmentInvitation", "listPendingEnrollments",
   "getEnrollment", "approveEnrollment", "rejectEnrollment", "cancelEnrollment", "cosdStart", "cosdStop", "cosdRestart", "runtimeSnapshot", "opsPrefsGet", "opsPrefsSet",
@@ -100,6 +101,27 @@ check("preload exposes only window.chief", (preload.match(/exposeInMainWorld\(/g
 const invokes = [...preload.matchAll(/ipcRenderer\.invoke\(([^,)]+)/g)].map((m) => m[1]);
 check("every invoke uses a literal chief: channel", invokes.length === ALLOWED.length - 1 && invokes.every((c) => /^"chief:[a-z0-9-]+"$/.test(c)), invokes.join(","));
 check("preload never sends or exposes ipcRenderer", !/ipcRenderer\.(send|sendSync|postMessage)\b/.test(preload) && !/exposeInMainWorld\([^)]*ipcRenderer/.test(preload));
+
+// 6a. Development scan (V0): the renderer can only send one boolean or a task id. The task kind and
+// the approved roots are fixed in the main process; the native folder picker lives only there.
+const devScanIpc = read("src/main/dev-scan-ipc.ts");
+const devScanMain = read("src/main/dev-scan.ts");
+const runtimeTs = read("src/main/chief-runtime.ts");
+check("devscan preload bridge passes a boolean or a string id only",
+  /devScanRun: \(includeProcesses\) => electron\.ipcRenderer\.invoke\("chief:devscan-run", includeProcesses === true\)/.test(preload) &&
+  /devScanAddRoot: \(\) => electron\.ipcRenderer\.invoke\("chief:devscan-add-root"\)/.test(preload) &&
+  /devScanExecute: \(taskId\) => electron\.ipcRenderer\.invoke\("chief:devscan-execute", String\(taskId\)\)/.test(preload));
+check("main validates every devscan input before use",
+  /validateDevScanRun\(includeProcesses\)/.test(devScanIpc) && /validateTaskId\(taskId\)/.test(devScanIpc) && /validateDevScanRootPath\(rootPath\)/.test(devScanIpc));
+check("dev scan roots come from the approved-roots file, not the renderer",
+  /readApprovedRoots\(deps\.stateDir/.test(devScanIpc) && /runDevScan\(roots, include\)/.test(devScanIpc));
+check("dev scan task kind is a constant in the main process", /kind: DEV_SCAN_KIND,/.test(runtimeTs) && /task\.kind !== DEV_SCAN_KIND/.test(runtimeTs));
+check("only the main process opens the native folder picker",
+  /dialog\.showOpenDialog/.test(mainTs) && !rendererFiles0().some((f) => /showOpenDialog|<input[^>]*type="file"/.test(read(f))));
+check("approved-roots file is written private (0600) via atomic rename",
+  /0o600/.test(devScanMain) && /fs\.renameSync\(tmp, file\)/.test(devScanMain));
+check("dev scan task payload comes only from buildScanPayload", /payload: buildScanPayload\(roots, includeProcesses\)/.test(runtimeTs));
+function rendererFiles0() { return walk("src/renderer", [".ts", ".tsx", ".html"]); }
 
 // 6b. cos warm: main process only, on launch and when shown after more than 90 minutes hidden.
 check("buildArgs has warm", /case "warm":\s*return \["warm", "--json"\];/.test(read("src/main/args.ts")));

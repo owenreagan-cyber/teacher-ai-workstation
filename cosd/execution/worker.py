@@ -9,7 +9,7 @@ from cos.audit import AuditLog
 from cos.config import load_config
 from cos.policy import KillSwitch
 
-from cosd.tasks import TaskRegistry, TaskState, _json_dumps, _utc_now
+from cosd.tasks import MAX_JSON_BYTES, TaskRegistry, TaskState, _json_dumps, _utc_now
 
 from .checkpoints import latest_checkpoint_db, write_checkpoint
 from .dispatcher import ExecutionDenied, HandlerRegistry
@@ -25,9 +25,11 @@ class WorkerRunner:
     def _audit(self, kind: str, **fields) -> None:
         AuditLog(load_config().audit_path)(kind, **fields)
 
+    def kill_switch_active(self) -> bool:
+        return KillSwitch(load_config().state_dir).is_set()
+
     def _governance(self) -> None:
-        ks = KillSwitch(load_config().state_dir)
-        if ks.is_set():
+        if self.kill_switch_active():
             raise ExecutionDenied("kill switch active", permanent=False)
 
     def execute_claimed(
@@ -38,7 +40,15 @@ class WorkerRunner:
         worker_id: str,
         lease_id: str,
     ) -> dict[str, Any]:
-        self._governance()
+        try:
+            self._governance()
+        except ExecutionDenied as exc:  # raced with the kill switch after the claim: release cleanly
+            return self._fail(
+                task_id, attempt_id, worker_id, lease_id,
+                type("spec", (), {"retryable": True, "max_attempts": 3})(),
+                error={"error": str(exc), "retriable": True},
+                permanent=False,
+            )
         task = self.registry.get_task(task_id)
         try:
             spec = self.handlers.get(task["kind"])
@@ -135,6 +145,14 @@ class WorkerRunner:
     ) -> dict[str, Any]:
         now = _utc_now()
         result_json = _json_dumps(result)
+        if len(result_json.encode("utf-8")) > MAX_JSON_BYTES:
+            # Never persist (or report as complete) a result that exceeds the task-result limit.
+            spec = type("spec", (), {"retryable": False, "max_attempts": 1})()
+            return self._fail(
+                task_id, attempt_id, worker_id, lease_id, spec,
+                error={"error": "result exceeds task-result size limit", "retriable": False},
+                permanent=True,
+            )
         with self.registry.db.transaction() as conn:
             conn.execute(
                 """UPDATE execution_attempts SET state = 'COMPLETED', finished_at = ?, heartbeat_at = ?,

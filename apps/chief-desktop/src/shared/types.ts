@@ -133,6 +133,12 @@ export interface ChiefBridge {
   retryTask(taskId: string): Promise<import("./cosd.js").TaskDetailResult>;
   taskHistory(taskId: string): Promise<import("./cosd.js").TaskHistoryResult>;
   queueSnapshot(): Promise<import("./cosd.js").QueueResult>;
+  devScanRoots(): Promise<import("./devscan.js").DevScanRootsResult>;
+  devScanAddRoot(): Promise<import("./devscan.js").DevScanRootsResult>;
+  devScanRemoveRoot(rootPath: string): Promise<import("./devscan.js").DevScanRootsResult>;
+  devScanRun(includeProcesses: boolean): Promise<import("./devscan.js").DevScanRunResult>;
+  devScanExecute(taskId: string): Promise<import("./devscan.js").DevScanRunResult>;
+  devScanReport(taskId: string): Promise<import("./devscan.js").DevScanRunResult>;
   listDevices(filter?: { status?: string; profile?: string }): Promise<import("./devices.js").DeviceListResult>;
   getDevice(deviceId: string): Promise<import("./devices.js").DeviceDetailResult>;
   createDevice(input: import("./devices.js").DeviceCreateInput): Promise<import("./devices.js").DeviceDetailResult>;

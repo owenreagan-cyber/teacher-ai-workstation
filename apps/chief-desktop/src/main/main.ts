@@ -6,6 +6,7 @@ import path from "node:path";
 import {
   app,
   BrowserWindow,
+  dialog,
   globalShortcut,
   shell,
   ipcMain,
@@ -19,6 +20,7 @@ import {
 import { addMacSample, type MacSample } from "../shared/home.js";
 import type { HomeResult, ShellEvent, StatusResult, WindowState } from "../shared/types.js";
 import {
+  COS_STATE_DIR,
   loadDesktopConfig,
   loadPrefs,
   loadWindowState,
@@ -30,6 +32,7 @@ import {
   saveWindowState,
 } from "./config.js";
 import { ChiefRuntime } from "./chief-runtime.js";
+import { createDevScanHandlers } from "./dev-scan-ipc.js";
 import { CosRunner } from "./cos.js";
 import { CosdConnectionManager } from "./cosd/connection.js";
 import { CosdEventStream, tokenForStream } from "./cosd/event-stream.js";
@@ -100,6 +103,21 @@ const cosdConnection = new CosdConnectionManager((snapshot) => {
 });
 const runtime = new ChiefRuntime(cosRunner, cosdConnection, (list) => resources.add(list));
 runtimeRef.current = runtime;
+// Development scan: approved roots change only through this native folder picker (owner action).
+const devScan = createDevScanHandlers({
+  stateDir: COS_STATE_DIR,
+  runtime,
+  pickFolder: async () => {
+    const options = {
+      title: "Approve a development folder for Chief to scan",
+      message: "Chief will read folder names, sizes, and Git status here. It never opens file contents or changes anything.",
+      buttonLabel: "Approve folder",
+      properties: ["openDirectory" as const],
+    };
+    const res = win ? await dialog.showOpenDialog(win, options) : await dialog.showOpenDialog(options);
+    return res.canceled || res.filePaths.length !== 1 ? null : res.filePaths[0];
+  },
+});
 const devUrl = devServerUrl();
 const stateFile = () => path.join(app.getPath("userData"), "window-state.json");
 const prefsFile = () => path.join(app.getPath("userData"), "prefs.json");
@@ -448,6 +466,13 @@ function registerIpc(): void {
   handle("chief:task-retry", (taskId) => runtime.retryTask(validateTaskId(taskId)));
   handle("chief:task-history", (taskId) => runtime.taskHistory(validateTaskId(taskId)));
   handle("chief:queue", () => runtime.queueSnapshot());
+  // Development scan (V0). Input is one boolean or a task id; the main process owns roots and kind.
+  handle("chief:devscan-roots", () => devScan.roots());
+  handle("chief:devscan-add-root", () => devScan.addRoot());
+  handle("chief:devscan-remove-root", (rootPath) => devScan.removeRoot(rootPath));
+  handle("chief:devscan-run", (includeProcesses) => devScan.run(includeProcesses));
+  handle("chief:devscan-execute", (taskId) => devScan.execute(taskId));
+  handle("chief:devscan-report", (taskId) => devScan.report(taskId));
   handle("chief:devices-list", (filter) => runtime.listDevices(validateDeviceFilter(filter)));
   handle("chief:device-get", (deviceId) => runtime.getDevice(validateDeviceId(deviceId)));
   handle("chief:device-create", (input) => runtime.createDevice(validateDeviceCreateInput(input)));

@@ -37,6 +37,9 @@ class ExecutionEngine:
     def execute_task(self, task_id: str, *, worker_id: str | None = None) -> dict[str, Any]:
         if not self._accepting:
             raise QueueError("engine not accepting work", http_status=503, kind="stopped")
+        # Checked before the claim so a stopped system leaves the task QUEUED, not stranded RUNNING.
+        if self.worker.kill_switch_active():
+            raise QueueError("kill switch active", http_status=503, kind="stopped")
         claim = self.queue.claim_task(task_id, worker_id=worker_id)
         return self.worker.execute_claimed(
             task_id=task_id,

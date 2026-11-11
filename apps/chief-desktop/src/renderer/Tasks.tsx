@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useState } from "react";
 
 import type { CosdConnectionSnapshot, CosdTask, TaskHistoryEvent, TaskState } from "../shared/cosd";
+import { DEV_SCAN_KIND, type DevScanReport } from "../shared/devscan";
+import { DevScanPanel, DevScanReportView } from "./DevScan";
 
 const STATES: (TaskState | "")[] = ["", "QUEUED", "RUNNING", "COMPLETED", "FAILED", "BLOCKED", "CANCELLED"];
 
@@ -28,6 +30,8 @@ export function TaskCenter() {
   const [conn, setConn] = useState<CosdConnectionSnapshot | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [queuePaused, setQueuePaused] = useState<boolean | null>(null);
+  const [scanReport, setScanReport] = useState<DevScanReport | null>(null);
+  const [scanNote, setScanNote] = useState<string | null>(null);
 
   const refreshConnection = useCallback(async () => {
     const res = await window.chief.cosdConnection();
@@ -68,10 +72,47 @@ export function TaskCenter() {
     };
   }, [loadTasks, loadQueue, refreshConnection]);
 
+  const loadScanReport = async (task: CosdTask) => {
+    setScanReport(null);
+    setScanNote(null);
+    if (task.kind !== DEV_SCAN_KIND) return;
+    const res = await window.chief.devScanReport(task.id);
+    if (!res.ok) setScanNote(res.error);
+    else if (res.report) setScanReport(res.report);
+    else if (res.error) setScanNote(res.error);
+  };
+
   const openTask = async (task: CosdTask) => {
     setSelected(task);
     const res = await window.chief.taskHistory(task.id);
     setHistory(res.ok ? res.events : []);
+    await loadScanReport(task);
+  };
+
+  // A scan the owner starts from the panel: refresh the list and show its report in the detail pane.
+  const showScan = async (taskId: string) => {
+    await loadTasks();
+    const res = await window.chief.getTask(taskId);
+    if (res.ok) await openTask(res.task);
+  };
+
+  // Retry on a scan task re-queues it and runs it again: the owner's click is the explicit start.
+  const retryOrRunScan = async (task: CosdTask) => {
+    if (task.kind !== DEV_SCAN_KIND) {
+      await window.chief.retryTask(task.id);
+      await loadTasks();
+      return;
+    }
+    if (task.state !== "QUEUED") {
+      const res = await window.chief.retryTask(task.id);
+      if (!res.ok) {
+        setError(res.error);
+        return;
+      }
+    }
+    const run = await window.chief.devScanExecute(task.id);
+    if (!run.ok) setError(run.error);
+    await showScan(task.id);
   };
 
   const reconnect = async () => {
@@ -101,6 +142,7 @@ export function TaskCenter() {
         {conn?.detail && <span className="text-warn">{conn.detail}</span>}
       </div>
       {error && <p className="text-[13px] text-bad">{error}</p>}
+      <DevScanPanel bridge={window.chief} onRan={(res) => void showScan(res.task_id)} />
       <div className="flex flex-wrap gap-2">
         {STATES.map((s) => (
           <button
@@ -127,7 +169,8 @@ export function TaskCenter() {
                 <span className="min-w-0 flex-1">
                   <div className="text-[13px] font-medium">{t.title}</div>
                   <div className="text-[12px] text-muted">
-                    {t.kind} · attempts {t.attempt_count}
+                    {t.kind}
+                    {t.attempt_count !== null ? ` · attempts ${t.attempt_count}` : ""}
                     {t.blocked_reason ? ` · ${t.blocked_reason}` : ""}
                   </div>
                 </span>
@@ -152,12 +195,18 @@ export function TaskCenter() {
                 Cancel
               </button>
             )}
-            {["FAILED", "BLOCKED"].includes(selected.state) && (
-              <button type="button" onClick={() => void window.chief.retryTask(selected.id).then(() => loadTasks())} className="rounded border border-line px-2 py-1 text-[12px]">
-                Retry
+            {(["FAILED", "BLOCKED"].includes(selected.state) || (selected.kind === DEV_SCAN_KIND && selected.state === "QUEUED")) && (
+              <button type="button" onClick={() => void retryOrRunScan(selected)} className="rounded border border-line px-2 py-1 text-[12px]">
+                {selected.kind === DEV_SCAN_KIND ? (selected.state === "QUEUED" ? "Run scan" : "Retry scan") : "Retry"}
               </button>
             )}
           </div>
+          {scanReport && (
+            <div className="mt-3 border-t border-line pt-3">
+              <DevScanReportView report={scanReport} />
+            </div>
+          )}
+          {!scanReport && scanNote && <p className="mt-3 text-[13px] text-bad">{scanNote}</p>}
           <ul className="mt-3 max-h-48 space-y-1 overflow-y-auto text-[12px] text-muted">
             {history.map((ev, i) => (
               <li key={`${ev.ts}-${i}`}>

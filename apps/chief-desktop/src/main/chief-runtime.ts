@@ -1,4 +1,8 @@
+import { randomUUID } from "node:crypto";
+
 import { stripUrls, toBlocks, type Resource, toResources } from "../shared/blocks.js";
+import { DEV_SCAN_KIND, DEV_SCAN_TITLE, type DevScanRunResult, parseDevScanReport } from "../shared/devscan.js";
+import { buildScanPayload } from "./dev-scan.js";
 import type {
   AskResult,
   Failure,
@@ -20,7 +24,7 @@ import type {
   EnrollmentListResult,
 } from "../shared/devices.js";
 import { CosRunner, toStatus } from "./cos.js";
-import { CosdClient } from "./cosd/client.js";
+import { CosdClient, type DaemonEndpoint } from "./cosd/client.js";
 import { CosdConnectionManager, daemonModeFromEnv } from "./cosd/connection.js";
 import { CosdHttpError, requestJson } from "./cosd/http.js";
 import { readDaemonToken } from "./cosd/paths.js";
@@ -59,12 +63,12 @@ function answerFromDaemon(body: Record<string, unknown>, onResources: (r: Resour
 
 export class ChiefRuntime {
   private askAbort: AbortController | null = null;
-  private readonly cosd = new CosdClient();
-
   constructor(
     readonly cos: CosRunner,
     readonly connection: CosdConnectionManager,
     private readonly onResources: (resources: Resource[]) => void,
+    // Injectable so tests can point the client at a temporary state root and a fake daemon.
+    private readonly cosd: CosdClient = new CosdClient(),
   ) {}
 
   connectionSnapshot(): CosdConnectionSnapshot {
@@ -198,6 +202,76 @@ export class ChiefRuntime {
       return { ok: true as const, task: await this.cosd.retryTask(ep, taskId) };
     } catch (e) {
       return fail("internal", e instanceof CosdHttpError ? e.message : "retry failed");
+    }
+  }
+
+  // ---------------------------------------------------------------- development scan (V0)
+  // The kind, title, and payload shape are fixed here. `roots` come from the owner-approved roots
+  // file (read by the caller in the main process); the renderer supplies no path, kind, or limit.
+
+  private async finishDevScan(ep: DaemonEndpoint, taskId: string): Promise<DevScanRunResult> {
+    const exec = await this.cosd.executeTask(ep, taskId);
+    const task = await this.cosd.getTaskRaw(ep, taskId);
+    if (task.state === "COMPLETED") {
+      const report = parseDevScanReport(task.result);
+      return report
+        ? { ok: true, task_id: taskId, state: task.state, report, error: null }
+        : { ok: true, task_id: taskId, state: "FAILED", report: null, error: "The scan finished but its report could not be read." };
+    }
+    return { ok: true, task_id: taskId, state: task.state, report: null, error: exec.error ?? task.error ?? "The scan did not complete." };
+  }
+
+  async runDevScan(roots: string[], includeProcesses: boolean): Promise<DevScanRunResult> {
+    const ep = this.connection.getEndpoint();
+    if (!ep) return fail("setup", "Development scan requires a running cosd");
+    if (roots.length === 0) return fail("usage", "Approve at least one development folder before scanning.");
+    try {
+      const { task } = await this.cosd.createTask(ep, {
+        kind: DEV_SCAN_KIND,
+        title: DEV_SCAN_TITLE,
+        description: "",
+        payload: buildScanPayload(roots, includeProcesses),
+        priority: 0,
+        idempotency_key: `dev-hq-scan-${randomUUID()}`,
+        requested_by: "chief-desktop",
+        source: "chief-app",
+        data_class: "internal",
+      });
+      return await this.finishDevScan(ep, task.id);
+    } catch (e) {
+      return fail("internal", e instanceof CosdHttpError ? e.message : "development scan failed");
+    }
+  }
+
+  /** Run an already-queued scan task (after a retry or an interrupted run). Other kinds are refused. */
+  async executeDevScan(taskId: string): Promise<DevScanRunResult> {
+    const ep = this.connection.getEndpoint();
+    if (!ep) return fail("setup", "Development scan requires a running cosd");
+    try {
+      const task = await this.cosd.getTaskRaw(ep, taskId);
+      if (task.kind !== DEV_SCAN_KIND) return fail("usage", "That task is not a development scan.");
+      if (task.state !== "QUEUED") return fail("usage", "Only a queued scan can be run.");
+      return await this.finishDevScan(ep, taskId);
+    } catch (e) {
+      return fail("internal", e instanceof CosdHttpError ? e.message : "development scan failed");
+    }
+  }
+
+  async devScanReport(taskId: string): Promise<DevScanRunResult> {
+    const ep = this.connection.getEndpoint();
+    if (!ep) return fail("setup", "Development scan requires a running cosd");
+    try {
+      const task = await this.cosd.getTaskRaw(ep, taskId);
+      if (task.kind !== DEV_SCAN_KIND) return fail("usage", "That task is not a development scan.");
+      if (task.state === "COMPLETED") {
+        const report = parseDevScanReport(task.result);
+        return report
+          ? { ok: true, task_id: taskId, state: task.state, report, error: null }
+          : { ok: true, task_id: taskId, state: "FAILED", report: null, error: "The scan report could not be read." };
+      }
+      return { ok: true, task_id: taskId, state: task.state, report: null, error: task.error };
+    } catch (e) {
+      return fail("internal", e instanceof CosdHttpError ? e.message : "report fetch failed");
     }
   }
 

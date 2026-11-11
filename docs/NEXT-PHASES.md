@@ -58,6 +58,8 @@ under the lock, transitions are validated inside the write transaction, and 18 d
 enforce a single winner. **Enrollment remains disabled** until the owner decides to enable it; the
 fix does not activate pairing.
 
+**Standalone packaging (P0.3d):** the Python core ships inside Chief.app under `Resources/runtime` with a provenance manifest; the app no longer needs the development checkout. Candidate built and verified from a copied bundle; installation is a separate owner-approved step. Record: `docs/operations/master-chief-standalone-packaging.md`.
+
 **Runtime reliability (P0.3b):** the daemon now freezes its provenance at start, reports
 `HEALTHY`/`DEGRADED`/`RECOVERING`/`BLOCKED` from state rather than from the socket, detects when the
 checkout has moved past the running process, and refuses to start on an occupied port or a pid file

@@ -28,7 +28,11 @@ memory snapshot. Findings are advisory text. Nothing is executed, moved, deleted
 | Zero approved roots? | The task fails with "no approved development roots" and is not retryable until a root is approved. |
 | What can the renderer send? | One boolean (include the process snapshot) or a task id. Never a path, task kind, limit, or command. |
 
-Approval is re-checked at execution time (D-025), not only when the task is created.
+Approval is re-checked at execution time (D-025), not only when the task is created. A stored root
+that now resolves to a different location (for example the folder was replaced by a symlink) is
+dropped with an `approved_root_moved` warning and must be approved again; Chief.app applies the same
+rule when it lists roots. Approvals are paths, not repository lists: a repository that appears under
+an approved root later (a clone, an extracted archive) is covered by the existing approval.
 
 ## Never inspected
 
@@ -36,8 +40,9 @@ Roots may not be `/`, the home folder or a parent of it, `~/Library`, `~/.Trash`
 overlapping Chief's state directory. Inside an approved root these directory names are never
 entered: `.ssh`, `.gnupg`, `.aws`, `.kube`, `.docker`, `.config`, `.npm`, `.claude`, `.cursor`,
 `.local`, `.Trash`, `Keychains`, `ChiefOfStaff`, plus any name containing `credential`, `secret`,
-`keychain`, `password`, `passwd`, `token(s)`, or `private key`. Symlinks are never followed; a
-symlink that points outside its root is counted, not entered. File contents are never opened.
+`keychain`, `password`, `passwd`, `token(s)`, or `private key`. Symlinks seen while listing a
+directory are never followed; a symlink that points outside its root is counted, not entered (see the
+traversal race under Known limitations). Project file contents are never opened.
 
 ## Defaults (conservative, tightened but never raised by a payload)
 
@@ -63,19 +68,39 @@ only, not the working tree), or `unavailable`.
 ## Git and subprocess safety
 
 Git runs with an argument array and no shell, a minimal environment, `GIT_OPTIONAL_LOCKS=0`,
-`--no-optional-locks`, `GIT_TERMINAL_PROMPT=0`, and `core.fsmonitor=false` on the command line (so a
-repository's own config cannot make Git execute a command). Only `status`, `worktree list`, and (for
-duplicate evidence) `rev-list --max-parents=0` are used. No `fetch`, `pull`, `push`, `prune`, `gc`,
-`clean`, `reset`, `stash`, `checkout`, or remote/config reads. Each child runs in its own session with
-a wall-clock deadline and output cap; on timeout only that child's process group is terminated.
+`--no-optional-locks`, and `GIT_TERMINAL_PROMPT=0`. Only `status`, `worktree list`, and (for duplicate
+evidence) `rev-list --max-parents=0` are used on repositories. No `fetch`, `pull`, `push`, `prune`,
+`gc`, `clean`, `reset`, `stash`, or `checkout`. Each child runs in its own session with a wall-clock
+deadline and output cap; on timeout only that child's process group is terminated.
 
-For an ordinary repository (`.git` is a real directory, not a link) `--git-dir` and `--work-tree` are
-pinned to the discovered folder, so `core.worktree` or a redirected git dir cannot point Git at a
-location outside the approved root (verified: unpinned, Git counted files from the redirected tree).
+**Configuration that could make Git run a command or read elsewhere is neutralised or refused:**
+
+* The user's global and system Git config is not loaded (`GIT_CONFIG_GLOBAL=/dev/null`,
+  `GIT_CONFIG_NOSYSTEM=1`), and `core.attributesFile` is `/dev/null`. A filter defined globally
+  (for example by git-lfs) therefore cannot be run by a repository's `.gitattributes`. So that dirty
+  counts still match what the owner sees, the user's global ignore file (`core.excludesFile`, or
+  `~/.config/git/ignore`) is passed back explicitly. That is the only global value read, and only as
+  a path.
+* `core.fsmonitor=false` is forced on the command line.
+* A repository whose own config (the shared config, the linked git dir's config, or
+  `config.worktree`) contains a `filter`, `include`, or `includeIf` section is **not handed to Git**.
+  It is listed with `errors: ["not inspected: ..."]`, and the scan is marked `partial`. Git can run a
+  configured clean filter while comparing a changed file, and an include can pull in more config.
+* `--git-dir` and `--work-tree` are pinned to validated locations, so `core.worktree` (including a
+  per-worktree `config.worktree`) cannot point Git at a tree outside the approved root. For a
+  linked worktree or submodule the `.git` pointer file is read (first line only, 4 KiB cap), and the
+  git dir and any `commondir` it names must lie inside a scanned root, or the repository is not
+  inspected (`linked git directory is outside the approved roots`). A linked worktree whose main
+  repository lives under a different, unscanned root is therefore reported as not inspected.
+
+The scanner reads only these Git metadata files for that check: the `.git` pointer, `commondir`, and
+the config files above. None of their values are stored or reported. The four filter and redirect
+regression tests each first prove with stock Git that their fixture really is dangerous (a filter
+marker file is created, or outside files are counted), so a passing test cannot be vacuous.
 
 `git status` may compare the content of files whose timestamps changed; that is Git's own check and
-nothing is stored or reported from it. Remote URLs and config values are never read, so credentials
-embedded in them cannot reach a result.
+nothing is stored or reported from it. No remote URL or config value reaches a result or the audit
+log (Git itself necessarily reads `.git/config`).
 
 The process snapshot runs `ps -axo pid=,ppid=,rss=,etime=,comm=` with an empty environment: no
 command-line arguments, no environment. It reports PID, executable basename, memory, and a broad
@@ -113,25 +138,47 @@ They were fixed narrowly:
 1. `acquire_lease` violated `worker_leases.task_id UNIQUE` on any second attempt, so retried or
    recovered tasks could never be re-executed. Spent lease rows are now cleared before a re-claim.
 2. The kill switch was checked after the claim, stranding the task in `RUNNING`. It is now checked
-   first (and a race after the claim fails the attempt cleanly).
+   first (and a race after the claim fails the attempt cleanly, using the handler's real retry policy,
+   not a made-up one).
 3. The desktop task and history parsers required fields the daemon never sends (`attempt_count`,
    `ts`/`event`), so the Tasks list was empty against a real daemon. They now accept the real shape.
 
-The worker also refuses to store a result larger than the task-result limit instead of persisting it.
+The worker also refuses to store a result larger than the task-result limit, and a result (or
+checkpoint) that cannot be serialised now fails the attempt immediately instead of leaving the task
+`RUNNING` until its lease expires. A concurrent claim that loses the `UNIQUE(task_id)` race reports the
+defined "already has active lease" conflict instead of a raw `IntegrityError`.
 
 ## Known limitations (V0)
 
-* **Same-user trust.** The approved-roots file, repository config, and `.gitattributes` are trusted at
-  the level of the owner's own shell. `core.fsmonitor` is forced off and the git dir is pinned, but
-  other config-driven Git behaviour (for example a configured `filter.*.clean` command, which
-  `git status` can run while comparing a changed file) is not individually neutralised. An attacker
-  who can write a repository's `.git/config` already runs as the owner.
-* **Traversal race.** Directories are checked with `lstat` semantics when listed and opened by path
-  afterwards. A same-user process that swaps a directory for a symlink between those two steps could
-  steer one `scandir` call. Closing this needs fd-relative traversal (`openat`/`O_NOFOLLOW`).
+* **Same-user trust.** The approved-roots file and the rest of a repository's own config are trusted
+  at the level of the owner's own shell. Filters and includes in repository config are refused, and
+  `core.fsmonitor`, `core.worktree`, and the global/attribute files are neutralised, but other
+  config-driven Git behaviour is not individually enumerated. Someone who can already write a
+  repository's `.git/config` runs as the owner.
+* **Traversal race (review finding 5, accepted).** Directories are checked with `lstat` semantics when
+  listed and opened by path afterwards. A same-user process that swaps a directory for a symlink
+  between those two steps could steer one `scandir` call (names and counts of one out-of-root folder
+  could enter a report; no privilege boundary is crossed). Closing it needs fd-relative traversal
+  (`openat`/`O_NOFOLLOW`). Until then the guarantee is "symlinks observed while listing are never
+  followed", not an unconditional "never".
+* **Retrying scans show as `FAILED` (review finding 6, accepted).** `_fail` records a retryable failure
+  as task state `FAILED` with `retry_after_at` set; there is no separate retry-wait task state, and
+  nothing sweeps and re-queues automatically. A scan never retries on its own: the owner presses
+  Retry scan. The attempt row does record `RETRY_WAIT`.
+* **`/v1/workers` is a snapshot (review finding 9, accepted).** Spent lease rows are deleted when a task
+  is re-claimed, so the table no longer keeps per-task lease history. Attempt history is unaffected
+  (`execution_attempts`). A short worker list does not mean missing work.
+* **Audit write failures are not surfaced (review finding 10, accepted).** The scan's audit event is
+  written best-effort; a failed write does not discard a finished scan and is not reported in the
+  result. The worker's own claim/complete/fail audit events are unchanged.
+* **Kill switch during a scan.** The switch is checked before a task is claimed and again when the
+  handler is entered. A scan already running is not interrupted (`WorkerRunner` cannot cancel a
+  thread) and finishes within its own deadline (at most 60 s) before a result is stored.
 * **Blocked I/O.** The deadline is checked between directory reads. A read that blocks inside the
   kernel (an unresponsive network mount) can outlast the deadline, and `WorkerRunner` cannot cancel
-  the thread. Approve local folders only.
+  the thread; the next task may then overlap the old thread. Approve local folders only.
+* **Process list size.** `ps` output is capped at 2 MB; on a machine with an unusual number of
+  processes the tail of the list could be dropped without being reported.
 * **Name-based classification.** Folders called `build`, `out`, `dist`, `target` are reported as
   build output by name; a source folder with one of those names is mis-labelled (and not descended).
 * **Process snapshot.** `possible_stale_process` is a heuristic (re-parented to launchd, running over

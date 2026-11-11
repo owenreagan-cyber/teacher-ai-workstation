@@ -6,16 +6,21 @@ Design rules (see docs/dev-hq-scan-v0.md):
   Chief state directory (``dev_hq_roots.json``) that cosd never writes. A task payload may
   *narrow* the scan to sub-paths of an approved root, but it can never widen it.
 * Detection is deterministic code. No model decides scope or permissions.
-* Only metadata is read. File contents are never opened. Symlinks are never followed.
+* Only metadata is read. Project file contents are never opened. Symlinks observed while listing a
+  directory are never followed (a same-user directory swap between listing and opening is a
+  documented residual race).
 * Git is run with argument arrays, a minimal environment, ``GIT_OPTIONAL_LOCKS=0``, no network
-  operations, and an explicit timeout. A repository's own config cannot make Git run commands
-  (``core.fsmonitor`` is forced off on the command line).
+  operations, and an explicit timeout. The user's global Git config is not loaded (so globally
+  configured filters cannot run), ``core.fsmonitor`` and attributes files are neutralised, the git
+  dir and work tree are pinned, and a repository whose own config defines ``filter.*`` or
+  ``include*`` is reported as not inspected instead of being handed to Git.
 * Every limit (depth, entries, repositories, time, output size) is explicit. Hitting a limit makes
   the report ``partial`` and says which limit was hit. A report is never silently truncated.
 * Nothing is modified: no processes are signalled except children this module itself started.
 """
 from __future__ import annotations
 
+import functools
 import json
 import os
 import re
@@ -230,6 +235,11 @@ def load_approved_roots(
         except ScanDenied as exc:
             warnings.append({"code": "approved_root_invalid", "message": f"an approved root was ignored: {exc.reason}"})
             continue
+        if Path(raw) != real:
+            # The approved path now resolves somewhere else (e.g. replaced by a symlink).
+            warnings.append({"code": "approved_root_moved",
+                             "message": "an approved root now resolves to a different location and was ignored; approve it again"})
+            continue
         if real not in roots:
             roots.append(real)
     return sorted(roots), warnings
@@ -370,24 +380,60 @@ def _git_env() -> dict[str, str]:
         "GIT_TERMINAL_PROMPT": "0",
         "GIT_PAGER": "cat",
         "GIT_CONFIG_NOSYSTEM": "1",
+        # The user's global config is never loaded: a filter defined there (for example git-lfs)
+        # must not be runnable by a repository's .gitattributes.
+        "GIT_CONFIG_GLOBAL": "/dev/null",
+        "GIT_ATTR_NOSYSTEM": "1",
     }
 
 
-GitRunner = Callable[[list[str], str, float, int], BoundedResult]
+# (args, cwd, timeout_s, max_bytes, git_dir=...) -> BoundedResult
+GitRunner = Callable[..., BoundedResult]
 
 
-def _real_git_runner(args: list[str], cwd: str, timeout_s: float, max_bytes: int) -> BoundedResult:
+def resolve_global_excludes() -> str | None:
+    """The user's global ignore file, so dirty counts match what they see (e.g. .DS_Store).
+
+    This is the only place the global Git config is read, and only for one path value; no config
+    value is loaded into the Git runs that inspect repositories.
+    """
+    env = _git_env()
+    env.pop("GIT_CONFIG_GLOBAL", None)
+    git = shutil.which("git", path=env["PATH"])
+    candidate: str | None = None
+    if git is not None:
+        res = run_bounded(
+            [git, "config", "--global", "--type=path", "--get", "core.excludesFile"],
+            env=env, timeout_s=3.0, max_bytes=4096,
+        )
+        if res.ok and not res.timed_out and res.stdout.strip():
+            candidate = res.stdout.strip().splitlines()[0]
+    if candidate is None:
+        candidate = os.path.join(env["HOME"], ".config", "git", "ignore") if env["HOME"] else None
+    if candidate and os.path.isabs(candidate) and os.path.isfile(candidate):
+        return candidate
+    return None
+
+
+def _real_git_runner(
+    args: list[str],
+    cwd: str,
+    timeout_s: float,
+    max_bytes: int,
+    git_dir: str | None = None,
+    excludes_file: str | None = None,
+) -> BoundedResult:
     env = _git_env()
     git = shutil.which("git", path=env["PATH"])
     if git is None:
         return BoundedResult(ok=False, error="git unavailable")
-    # For an ordinary repository pin the git dir and work tree to the discovered folder, so config
-    # such as core.worktree or a redirected gitdir cannot point Git at a location outside the root.
-    pin: list[str] = []
-    gitdir = os.path.join(cwd, ".git")
-    if os.path.isdir(gitdir) and not os.path.islink(gitdir):
-        pin = ["--git-dir", gitdir, "--work-tree", cwd]
-    argv = [git, "-c", "core.fsmonitor=false", "--no-optional-locks", *pin, "-C", cwd, *args]
+    config = ["-c", "core.fsmonitor=false", "-c", "core.attributesFile=/dev/null"]
+    if excludes_file:
+        config += ["-c", f"core.excludesFile={excludes_file}"]
+    # Pin the git dir and work tree to the validated locations, so core.worktree or a redirected
+    # gitdir cannot point Git at a place outside the approved root.
+    pin = ["--git-dir", git_dir, "--work-tree", cwd] if git_dir else []
+    argv = [git, *config, "--no-optional-locks", *pin, "-C", cwd, *args]
     return run_bounded(argv, env=env, timeout_s=timeout_s, max_bytes=max_bytes)
 
 
@@ -398,9 +444,10 @@ def _real_git_runner(args: list[str], cwd: str, timeout_s: float, max_bytes: int
 class ScanDeps:
     clock: Callable[[], float] = time.monotonic
     wall: Callable[[], datetime] = lambda: datetime.now(timezone.utc)
-    git: GitRunner = _real_git_runner
+    git: GitRunner | None = None  # None: the real runner, with the user's global ignore file
     ps: Callable[[float], str | None] | None = None
     home: Path | None = None
+    excludes_file: Callable[[], str | None] | None = None
 
 
 class _Ctx:
@@ -412,6 +459,13 @@ class _Ctx:
         self.measure_entries = 0
         self.limits_hit: set[str] = set()
         self.warnings: list[dict[str, str]] = []
+        self.roots: list[Path] = []
+        self.layouts: dict[str, str] = {}  # repo path -> validated git dir
+        if deps.git is not None:
+            self.git: GitRunner = deps.git
+        else:
+            excludes = (deps.excludes_file or resolve_global_excludes)()
+            self.git = functools.partial(_real_git_runner, excludes_file=excludes)
         self.counters = {
             "inaccessible_directories": 0,
             "excluded_directories_skipped": 0,
@@ -601,6 +655,84 @@ def _parse_status(text: str) -> dict[str, Any]:
     return info
 
 
+class _UnsafeRepo(Exception):
+    """The repository must not be handed to Git; the message is shown to the owner."""
+
+
+_CONFIG_HEADER_RE = re.compile(r"^[ \t]*\[[ \t]*([A-Za-z0-9-]+)", re.MULTILINE)
+UNSAFE_CONFIG_SECTIONS = frozenset({"filter", "include", "includeif"})
+MAX_GIT_META_BYTES = 262_144
+
+
+def _read_git_meta(path: Path, cap: int) -> str | None:
+    """Read one small Git metadata file (never a symlink). None if it does not exist."""
+    try:
+        fd = os.open(path, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK)
+    except FileNotFoundError:
+        return None
+    except OSError:
+        raise _UnsafeRepo("Git metadata is unreadable or is a link") from None
+    try:
+        st = os.fstat(fd)
+        if not stat.S_ISREG(st.st_mode) or st.st_size > cap:
+            raise _UnsafeRepo("Git metadata is not a small regular file")
+        data = os.read(fd, cap + 1)
+    except OSError:
+        raise _UnsafeRepo("Git metadata is unreadable") from None
+    finally:
+        os.close(fd)
+    return data.decode("utf-8", errors="replace")
+
+
+def _resolve_inside(raw: str, base: Path, roots: list[Path], what: str) -> Path:
+    candidate = Path(raw)
+    if not candidate.is_absolute():
+        candidate = base / candidate
+    try:
+        real = Path(os.path.realpath(candidate, strict=True))
+    except OSError:
+        raise _UnsafeRepo(f"{what} is missing") from None
+    if not real.is_dir():
+        raise _UnsafeRepo(f"{what} is not a directory")
+    if not any(_is_within(real, root) for root in roots):
+        raise _UnsafeRepo(f"{what} is outside the approved roots")
+    return real
+
+
+def _git_layout(cand: _Candidate, roots: list[Path]) -> str:
+    """Validate where Git would read from and return the git dir to pin.
+
+    Refuses (rather than guesses) when the git dir lies outside the scanned roots, or when the
+    repository's own config defines ``filter.*`` or ``include*``: Git can run a configured clean
+    filter while comparing a changed file, and an include can pull in more such config. Config
+    values are never reported.
+    """
+    if cand.git_marker == "dir":
+        gitdir = cand.path / ".git"
+    else:
+        text = _read_git_meta(cand.path / ".git", 4096)
+        first = (text or "").splitlines()[0] if text else ""
+        if not first.startswith("gitdir:"):
+            raise _UnsafeRepo("the .git file is not a valid gitdir pointer")
+        gitdir = _resolve_inside(first[len("gitdir:"):].strip(), cand.path, roots, "linked git directory")
+    common = gitdir
+    pointer = _read_git_meta(gitdir / "commondir", 4096)
+    if pointer and pointer.strip():
+        common = _resolve_inside(pointer.strip().splitlines()[0], gitdir, roots, "shared git directory")
+    configs = [common / "config"]
+    if gitdir != common:
+        configs.append(gitdir / "config")
+    configs.append(gitdir / "config.worktree")
+    for cfg in configs:
+        text = _read_git_meta(cfg, MAX_GIT_META_BYTES)
+        if text is None:
+            continue
+        sections = {m.group(1).lower() for m in _CONFIG_HEADER_RE.finditer(text)}
+        if sections & UNSAFE_CONFIG_SECTIONS:
+            raise _UnsafeRepo("repository config defines filters or includes, which are not run during a scan")
+    return str(gitdir)
+
+
 def _inspect_repo(cand: _Candidate, ctx: _Ctx) -> dict[str, Any]:
     limits = ctx.limits
     repo: dict[str, Any] = {
@@ -613,10 +745,16 @@ def _inspect_repo(cand: _Candidate, ctx: _Ctx) -> dict[str, Any]:
     if ctx.expired():
         repo["errors"] = ["skipped: scan deadline reached"]
         return repo
+    try:
+        git_dir = _git_layout(cand, ctx.roots)
+    except _UnsafeRepo as exc:
+        repo["errors"] = [f"not inspected: {exc}"]
+        return repo
+    ctx.layouts[cwd] = git_dir
     timeout = max(0.1, min(limits.git_timeout_s, ctx.remaining()))
-    res = ctx.deps.git(
+    res = ctx.git(
         ["status", "--porcelain=v2", "--branch", "--untracked-files=normal", "--no-renames"],
-        cwd, timeout, limits.git_output_bytes,
+        cwd, timeout, limits.git_output_bytes, git_dir=git_dir,
     )
     if res.timed_out:
         errors.append("git status timed out")
@@ -638,7 +776,7 @@ def _inspect_repo(cand: _Candidate, ctx: _Ctx) -> dict[str, Any]:
             ctx.limits_hit.add("git_output_cap")
     if not ctx.expired():
         timeout = max(0.1, min(limits.git_timeout_s, ctx.remaining()))
-        wt = ctx.deps.git(["worktree", "list", "--porcelain"], cwd, timeout, 65_536)
+        wt = ctx.git(["worktree", "list", "--porcelain"], cwd, timeout, 65_536, git_dir=git_dir)
         if wt.ok and not wt.timed_out:
             repo["worktree_count"] = sum(1 for ln in wt.stdout.splitlines() if ln.startswith("worktree "))
         else:
@@ -662,11 +800,12 @@ def normalize_name(name: str) -> str:
 
 
 def _root_commits(path: str, ctx: _Ctx) -> set[str] | None:
-    if ctx.expired():
+    git_dir = ctx.layouts.get(path)
+    if ctx.expired() or git_dir is None:  # a repository that was refused is never handed to Git
         return None
-    res = ctx.deps.git(
+    res = ctx.git(
         ["rev-list", "--max-parents=0", "HEAD"], path,
-        max(0.1, min(5.0, ctx.remaining())), 4_096,
+        max(0.1, min(5.0, ctx.remaining())), 4_096, git_dir=git_dir,
     )
     if not res.ok or res.timed_out:
         return None
@@ -901,6 +1040,7 @@ def run_dev_hq_scan(
 
     started_at = deps.wall().isoformat(timespec="seconds")
     ctx = _Ctx(limits, deps)
+    ctx.roots = list(roots)
     ctx.warnings.extend(approval_warnings)
 
     candidates: list[_Candidate] = []

@@ -130,6 +130,17 @@ test("entries that stop being valid are dropped on read", () => {
   assert.deepEqual(scan.readApprovedRoots(f.stateDir, f.opts), [f.projects]);
 });
 
+test("an approved root that was replaced by a symlink is dropped, not followed", () => {
+  const f = fixture();
+  const moved = path.join(f.base, "moved-projects");
+  fs.mkdirSync(moved);
+  fs.rmSync(f.projects, { recursive: true });
+  fs.symlinkSync(moved, f.projects); // the approved path now resolves somewhere else
+  fs.writeFileSync(rootsFile(f), JSON.stringify({ roots: [f.projects] }), { mode: 0o600 });
+  assert.deepEqual(scan.readApprovedRoots(f.stateDir, f.opts), []);
+  assert.deepEqual(scan.readApprovedRoots(f.stateDir, { home: f.home }), []);
+});
+
 test("the only task payload built is roots plus one boolean", () => {
   assert.deepEqual(scan.buildScanPayload(["/a"], false), { roots: ["/a"], include_processes: false });
 });

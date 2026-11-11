@@ -52,6 +52,29 @@ def write_roots(state: Path, *roots: Path | str, mode: int = 0o600) -> Path:
     return p
 
 
+def stock_git(cwd: Path, *args: str, home: Path) -> subprocess.CompletedProcess:
+    """Plain Git as a user would run it (global config visible). Used only as a canary, to prove a
+    fixture really would misbehave, so a passing regression test cannot be vacuous."""
+    env = {k: v for k, v in os.environ.items() if not k.startswith("GIT_CONFIG")}
+    env.update(HOME=str(home), GIT_AUTHOR_NAME="t", GIT_AUTHOR_EMAIL="t@example.invalid",
+               GIT_COMMITTER_NAME="t", GIT_COMMITTER_EMAIL="t@example.invalid")
+    return subprocess.run(["git", "-C", str(cwd), *args], env=env, capture_output=True, text=True)
+
+
+def edit_same_size(path: Path, text: str) -> None:
+    """Change a tracked file without changing its size and back-date its mtime. Git compares
+    timestamps at one-second granularity and hashes content (running any clean filter) only when
+    the stat data differs but the size does not."""
+    assert len(text) == len(path.read_text())
+    path.write_text(text)
+    past = time.time() - 30
+    os.utime(path, (past, past))
+
+
+def untracked_lines(status_output: str) -> int:
+    return sum(1 for line in status_output.splitlines() if line.startswith("? "))
+
+
 class StepClock:
     def __init__(self, step: float):
         self.t, self.step = 0.0, step
@@ -64,10 +87,13 @@ class StepClock:
 CLEAN_STATUS = "# branch.oid " + "a" * 40 + "\n# branch.head main\n"
 
 
-def fake_git(status: str = CLEAN_STATUS, *, timed_out: bool = False, ok: bool = True, calls: list | None = None):
-    def runner(args, cwd, timeout, cap):
+def fake_git(status: str = CLEAN_STATUS, *, timed_out: bool = False, ok: bool = True,
+             calls: list | None = None, pins: list | None = None):
+    def runner(args, cwd, timeout, cap, git_dir=None):
         if calls is not None:
             calls.append((list(args), cwd, timeout, cap))
+        if pins is not None:
+            pins.append((args[0], cwd, git_dir))
         if timed_out:
             return BoundedResult(ok=False, timed_out=True, error="timeout")
         if args[0] == "status":
@@ -89,6 +115,7 @@ class ScanTestBase(CosdStateTest):
         write_roots(self.state, self.projects)
 
     def run_scan(self, payload=None, **dep_kwargs):
+        dep_kwargs.setdefault("excludes_file", lambda: None)  # hermetic: never read the real global git config
         deps = ScanDeps(home=self.fake_home, **dep_kwargs)
         return run_dev_hq_scan(payload if payload is not None else {}, state_base=self.state, deps=deps)
 
@@ -126,6 +153,24 @@ class RootApprovalTests(ScanTestBase):
             self.run_scan({"roots": [str(self.base / "elsewhere")]})
         with self.assertRaises(ScanDenied):
             self.run_scan({"roots": [str(self.projects / "..")]})
+
+    def test_approved_root_that_was_replaced_by_a_symlink_is_not_scanned(self):  # review finding 4
+        second = self.base / "projects2"
+        second.mkdir()
+        second = Path(os.path.realpath(second))  # approvals are stored canonical
+        make_repo(second / "beta")
+        make_repo(self.projects / "alpha")
+        write_roots(self.state, self.projects, second)
+        moved = self.base / "projects-moved"
+        os.rename(self.projects, moved)
+        self.projects.symlink_to(moved)  # the approved path now resolves somewhere else
+        result = self.run_scan()
+        self.assertEqual(result["roots"], [str(second)])
+        self.assertEqual([r["name"] for r in result["repositories"]], ["beta"])
+        self.assertIn("approved_root_moved", [w["code"] for w in result["warnings"]])
+        write_roots(self.state, self.projects)  # only the moved root is approved: nothing left to scan
+        with self.assertRaises(ScanDenied):
+            self.run_scan()
 
     def test_requested_root_inside_an_excluded_folder_is_denied(self):
         for name in ("credentials", "team-secrets", ".ssh", "api_tokens"):
@@ -343,9 +388,13 @@ class GitSafetyTests(ScanTestBase):
         argv = seen["argv"]
         self.assertIsInstance(argv, list)
         self.assertIn("core.fsmonitor=false", argv)
+        self.assertIn("core.attributesFile=/dev/null", argv)
         self.assertIn("--no-optional-locks", argv)
+        self.assertNotIn("--git-dir", argv, "no pin unless a validated git dir is supplied")
         self.assertEqual(seen["env"]["GIT_OPTIONAL_LOCKS"], "0")
         self.assertEqual(seen["env"]["GIT_TERMINAL_PROMPT"], "0")
+        self.assertEqual(seen["env"]["GIT_CONFIG_GLOBAL"], "/dev/null", "the user's global git config is never loaded")
+        self.assertEqual(seen["env"]["GIT_CONFIG_NOSYSTEM"], "1")
 
     def test_git_dir_and_work_tree_are_pinned_for_ordinary_repositories(self):
         repo = make_repo(self.projects / "alpha")
@@ -356,10 +405,14 @@ class GitSafetyTests(ScanTestBase):
             return BoundedResult(ok=True, stdout=CLEAN_STATUS, returncode=0)
 
         with mock.patch.object(scan, "run_bounded", fake_run):
-            scan._real_git_runner(["status"], str(repo), 5.0, 1000)
+            scan._real_git_runner(["status"], str(repo), 5.0, 1000, git_dir=str(repo / ".git"))
         argv = seen["argv"]
         self.assertEqual(argv[argv.index("--git-dir") + 1], str(repo / ".git"))
         self.assertEqual(argv[argv.index("--work-tree") + 1], str(repo))
+        pins: list = []
+        self.run_scan(git=fake_git(pins=pins))
+        self.assertTrue(pins)
+        self.assertTrue(all(gd == str(repo / ".git") for _a, _c, gd in pins), pins)
 
     def test_core_worktree_config_cannot_redirect_git_outside_the_root(self):
         repo = make_repo(self.projects / "alpha")
@@ -692,6 +745,160 @@ class ProcessSnapshotTests(ScanTestBase):
         self.assertEqual(scan._etime_seconds("10:00"), 600)
         self.assertEqual(scan._etime_seconds("01:00:00"), 3600)
         self.assertIsNone(scan._etime_seconds("nonsense"))
+
+
+class GitFilterAndRedirectTests(ScanTestBase):
+    """Review findings 1 and 2, with real throwaway repositories. Each test first proves with stock
+    Git that the fixture really is dangerous, then that the scan is not affected."""
+
+    def _outside_tree(self, name="outside-tree") -> Path:
+        tree = self.base / name
+        tree.mkdir()
+        for i in range(5):
+            (tree / f"stray{i}.txt").write_text("x")
+        return tree
+
+    def test_globally_configured_filter_is_never_run_and_global_ignores_still_apply(self):  # finding 1
+        home = self.base / "ghome"
+        home.mkdir()
+        (home / ".gitignore_global").write_text(".DS_Store\n")
+
+        def write_global(marker: Path) -> None:
+            (home / ".gitconfig").write_text(
+                f"[core]\n\texcludesFile = {home}/.gitignore_global\n"
+                f"[filter \"x\"]\n\tclean = sh -c 'touch {marker} && cat'\n"
+            )
+
+        def build(repo: Path) -> None:
+            make_repo(repo)
+            (repo / ".gitattributes").write_text("*.txt filter=x\n")
+            git(repo, "add", "-A")
+            git(repo, "commit", "-q", "-m", "attrs")
+            edit_same_size(repo / "a.txt", "two\n")  # Git must hash it to compare
+            (repo / ".DS_Store").write_text("junk")
+
+        canary_marker, scan_marker = self.base / "canary-ran", self.base / "scan-ran"
+        canary = self.base / "canary-repo"
+        build(canary)
+        write_global(canary_marker)
+        stock_git(canary, "status", "--porcelain", home=home)
+        self.assertTrue(canary_marker.exists(), "canary: stock Git runs a globally configured clean filter here")
+
+        build(self.projects / "alpha")
+        write_global(scan_marker)
+        with mock.patch.dict(os.environ, {"HOME": str(home)}):
+            result = self.run_scan(excludes_file=scan.resolve_global_excludes)
+        self.assertFalse(scan_marker.exists(), "the scan must not run a filter from the user's global config")
+        alpha = self.repo_by_name(result, "alpha")
+        self.assertEqual(alpha["modified_count"], 1)
+        self.assertEqual(alpha["untracked_count"], 0, "the user's global ignore file must still apply (.DS_Store)")
+        self.assertNotIn("errors", alpha)
+
+    def test_repo_local_filter_and_include_are_refused_and_never_run(self):  # finding 1
+        def build(repo: Path, marker_a: Path, marker_b: Path) -> None:
+            make_repo(repo)
+            (repo / ".gitattributes").write_text("*.txt filter=x\n*.md filter=y\n")
+            (repo / "b.md").write_text("b\n")
+            git(repo, "add", "-A")
+            git(repo, "commit", "-q", "-m", "attrs")
+            extra = self.base / f"extra-{repo.name}.cfg"
+            extra.write_text(f"[filter \"y\"]\n\tclean = sh -c 'touch {marker_b} && cat'\n")
+            with open(repo / ".git" / "config", "a") as fh:  # written directly, as an attacker or tool would
+                fh.write(f"[filter \"x\"]\n\tclean = sh -c 'touch {marker_a} && cat'\n[include]\n\tpath = {extra}\n")
+            edit_same_size(repo / "a.txt", "two\n")
+            edit_same_size(repo / "b.md", "c\n")
+
+        c_a, c_b = self.base / "canary-a", self.base / "canary-b"
+        s_a, s_b = self.base / "scan-a", self.base / "scan-b"
+        canary = self.base / "canary-repo"
+        build(canary, c_a, c_b)
+        stock_git(canary, "status", "--porcelain", home=self.fake_home)
+        self.assertTrue(c_a.exists(), "canary: stock Git runs the repo-local clean filter")
+        self.assertTrue(c_b.exists(), "canary: stock Git runs the filter pulled in through include.path")
+
+        build(self.projects / "alpha", s_a, s_b)
+        result = self.run_scan()
+        self.assertFalse(s_a.exists(), "repo-local filter.* must not run during a scan")
+        self.assertFalse(s_b.exists(), "a filter reached through include.path must not run during a scan")
+        alpha = self.repo_by_name(result, "alpha")
+        self.assertIn("not inspected", alpha["errors"][0])
+        self.assertIn("filters or includes", alpha["errors"][0])
+        self.assertNotIn("branch", alpha)
+        self.assertEqual(result["status"], "partial")
+        self.assertNotIn(str(self.base / "extra-alpha.cfg"), json.dumps(result), "config values are never reported")
+
+    def test_unsafe_config_sections_are_recognised_and_benign_config_is_not(self):
+        git_dir = self.projects / "x" / ".git"
+        git_dir.mkdir(parents=True)
+        cand = scan._Candidate(self.projects / "x", "dir")
+        unsafe = [
+            "[include]\n\tpath = x\n",
+            "[includeIf \"gitdir:/x/\"]\n\tpath = y\n",
+            "[Filter \"a\"]\n\tclean = x\n",
+            "[filter.b]\n\tclean = x\n",
+            "[core]\n\tbare = false\n  [ filter \"c\" ]\n\tclean = x\n",
+        ]
+        for text in unsafe:
+            (git_dir / "config").write_text(text)
+            with self.subTest(config=text), self.assertRaises(scan._UnsafeRepo):
+                scan._git_layout(cand, [self.projects])
+        (git_dir / "config").write_text(
+            "[core]\n\tbare = false\n[remote \"origin\"]\n\turl = https://u:t@example.invalid/x.git\n[branch \"main\"]\n"
+        )
+        self.assertEqual(scan._git_layout(cand, [self.projects]), str(git_dir))
+
+    def test_git_file_pointing_outside_the_root_is_refused_not_followed(self):  # finding 2
+        outside = self._outside_tree()
+        other = make_repo(self.base / "other-repo")
+        git(other, "config", "core.worktree", str(outside))
+        evil = self.projects / "evil"
+        evil.mkdir()
+        (evil / ".git").write_text(f"gitdir: {other}/.git\n")
+        canary = stock_git(evil, "status", "--porcelain=v2", home=self.fake_home)
+        self.assertEqual(untracked_lines(canary.stdout), 5, "canary: stock Git follows the redirect and reads the outside tree")
+
+        calls: list = []
+        result = self.run_scan(git=fake_git(calls=calls))
+        self.assertEqual(calls, [], "Git is never started for a repository whose git dir is outside the roots")
+        evil_repo = self.repo_by_name(result, "evil")
+        self.assertIn("outside the approved roots", evil_repo["errors"][0])
+        self.assertNotIn("untracked_count", evil_repo)
+        real = self.run_scan()  # and with the real Git runner
+        self.assertNotIn("untracked_count", self.repo_by_name(real, "evil"))
+        self.assertEqual(real["status"], "partial")
+
+    def test_linked_worktree_config_worktree_redirect_is_pinned(self):  # finding 2
+        outside = self._outside_tree()
+        main = make_repo(self.projects / "main")
+        git(main, "worktree", "add", "-q", str(self.projects / "wt"), "-b", "wt")
+        git(main, "config", "extensions.worktreeConfig", "true")
+        gitdir = Path(git(self.projects / "wt", "rev-parse", "--absolute-git-dir").strip())
+        (gitdir / "config.worktree").write_text(f"[core]\n\tworktree = {outside}\n")
+        canary = stock_git(self.projects / "wt", "status", "--porcelain=v2", home=self.fake_home)
+        self.assertEqual(untracked_lines(canary.stdout), 5, "canary: stock Git follows config.worktree out of the root")
+
+        pins: list = []
+        self.run_scan(git=fake_git(pins=pins))
+        wt_pins = [gd for _a, cwd, gd in pins if cwd == str(self.projects / "wt")]
+        self.assertTrue(wt_pins and all(gd == str(gitdir) for gd in wt_pins), "the validated linked git dir is pinned")
+        wt = self.repo_by_name(self.run_scan(), "wt")
+        self.assertEqual(wt["untracked_count"], 0, "the redirected tree must not be read")
+        self.assertEqual(wt["worktree_count"], 2)
+        self.assertTrue(wt["linked_worktree_or_submodule"])
+        self.assertNotIn("errors", wt)
+
+    def test_malformed_or_dangling_git_file_is_reported_not_run(self):
+        junk = self.projects / "junk"
+        junk.mkdir()
+        (junk / ".git").write_text("this is not a gitdir pointer\n")
+        dangling = self.projects / "dangling"
+        dangling.mkdir()
+        (dangling / ".git").write_text(f"gitdir: {self.projects}/does-not-exist\n")
+        calls: list = []
+        result = self.run_scan(git=fake_git(calls=calls))
+        self.assertEqual(calls, [])
+        self.assertIn("not a valid gitdir pointer", self.repo_by_name(result, "junk")["errors"][0])
+        self.assertIn("is missing", self.repo_by_name(result, "dangling")["errors"][0])
 
 
 if __name__ == "__main__":

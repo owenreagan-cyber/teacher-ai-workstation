@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import json
 from concurrent.futures import ThreadPoolExecutor, TimeoutError as FuturesTimeout
+from types import SimpleNamespace
 from typing import Any
 
 from cos.audit import AuditLog
@@ -15,6 +16,10 @@ from .checkpoints import latest_checkpoint_db, write_checkpoint
 from .dispatcher import ExecutionDenied, HandlerRegistry
 from .leases import release_lease, renew_lease
 from .retry import next_retry_at
+
+
+# Policy for failures that happen before (or without) a registered handler spec.
+_NO_RETRY_SPEC = SimpleNamespace(retryable=False, max_attempts=1)
 
 
 class WorkerRunner:
@@ -40,27 +45,24 @@ class WorkerRunner:
         worker_id: str,
         lease_id: str,
     ) -> dict[str, Any]:
-        try:
-            self._governance()
-        except ExecutionDenied as exc:  # raced with the kill switch after the claim: release cleanly
-            return self._fail(
-                task_id, attempt_id, worker_id, lease_id,
-                type("spec", (), {"retryable": True, "max_attempts": 3})(),
-                error={"error": str(exc), "retriable": True},
-                permanent=False,
-            )
         task = self.registry.get_task(task_id)
         try:
             spec = self.handlers.get(task["kind"])
         except ExecutionDenied as exc:
             return self._fail(
-                task_id,
-                attempt_id,
-                worker_id,
-                lease_id,
-                type("spec", (), {"retryable": False, "max_attempts": 1})(),
+                task_id, attempt_id, worker_id, lease_id, _NO_RETRY_SPEC,
                 error={"error": str(exc), "retriable": False},
                 permanent=True,
+            )
+        try:
+            self._governance()
+        except ExecutionDenied as exc:
+            # Raced with the kill switch after the claim. Fail with the handler's REAL retry policy
+            # so a non-retryable handler is never retried and max_attempts is honoured.
+            return self._fail(
+                task_id, attempt_id, worker_id, lease_id, spec,
+                error={"error": str(exc), "retriable": True},
+                permanent=False,
             )
         attempt = self.registry.db.query_one(
             "SELECT * FROM execution_attempts WHERE id = ?", (attempt_id,)
@@ -117,19 +119,26 @@ class WorkerRunner:
 
         if isinstance(out, dict) and "_checkpoint" in out:
             cp = out.pop("_checkpoint")
-            with self.registry.db.transaction() as conn:
-                write_checkpoint(
-                    conn,
-                    task_id=task_id,
-                    attempt_id=attempt_id,
-                    checkpoint_key=cp["checkpoint_key"],
-                    data=cp["data"],
+            try:
+                with self.registry.db.transaction() as conn:
+                    write_checkpoint(
+                        conn,
+                        task_id=task_id,
+                        attempt_id=attempt_id,
+                        checkpoint_key=cp["checkpoint_key"],
+                        data=cp["data"],
+                    )
+                    conn.execute(
+                        "UPDATE execution_attempts SET state = 'CHECKPOINTED', heartbeat_at = ? WHERE id = ?",
+                        (_utc_now(), attempt_id),
+                    )
+                    renew_lease(conn, lease_id=lease_id, worker_id=worker_id)
+            except (KeyError, TypeError, ValueError):  # bad or oversized checkpoint: never strand the task RUNNING
+                return self._fail(
+                    task_id, attempt_id, worker_id, lease_id, _NO_RETRY_SPEC,
+                    error={"error": "checkpoint could not be saved", "retriable": False},
+                    permanent=True,
                 )
-                conn.execute(
-                    "UPDATE execution_attempts SET state = 'CHECKPOINTED', heartbeat_at = ? WHERE id = ?",
-                    (_utc_now(), attempt_id),
-                )
-                renew_lease(conn, lease_id=lease_id, worker_id=worker_id)
             return {"ok": True, "status": "checkpointed", "partial": out}
 
         return self._complete(task_id, attempt_id, worker_id, lease_id, result=out)
@@ -144,12 +153,19 @@ class WorkerRunner:
         result: dict,
     ) -> dict[str, Any]:
         now = _utc_now()
-        result_json = _json_dumps(result)
+        try:
+            result_json = _json_dumps(result)
+        except (TypeError, ValueError):
+            # A result json cannot encode must fail the attempt now, not strand the task RUNNING.
+            return self._fail(
+                task_id, attempt_id, worker_id, lease_id, _NO_RETRY_SPEC,
+                error={"error": "result is not JSON-serialisable", "retriable": False},
+                permanent=True,
+            )
         if len(result_json.encode("utf-8")) > MAX_JSON_BYTES:
             # Never persist (or report as complete) a result that exceeds the task-result limit.
-            spec = type("spec", (), {"retryable": False, "max_attempts": 1})()
             return self._fail(
-                task_id, attempt_id, worker_id, lease_id, spec,
+                task_id, attempt_id, worker_id, lease_id, _NO_RETRY_SPEC,
                 error={"error": "result exceeds task-result size limit", "retriable": False},
                 permanent=True,
             )

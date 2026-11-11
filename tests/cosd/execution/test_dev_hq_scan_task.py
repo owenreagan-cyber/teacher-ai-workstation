@@ -19,13 +19,38 @@ from cos.policy import KillSwitch  # noqa: E402
 from cosd.execution import dev_hq_scan as scan  # noqa: E402
 from cosd.execution.dispatcher import HandlerSpec  # noqa: E402
 from cosd.execution.engine import ExecutionEngine  # noqa: E402
+from cosd.execution.leases import acquire_lease  # noqa: E402
 from cosd.execution.queue import QueueError  # noqa: E402
 from cosd.tasks import MAX_JSON_BYTES, TaskState  # noqa: E402
+
+
+class _BlindActiveLeaseSelect:
+    """A connection proxy whose first 'active lease?' SELECT sees nothing: the state a claimer that
+    lost a race is in (it read before the winner inserted, then tries to insert itself)."""
+
+    def __init__(self, conn):
+        self._conn, self._blinded = conn, False
+
+    def execute(self, sql, params=()):
+        if not self._blinded and "FROM worker_leases WHERE task_id = ? AND state = 'active'" in sql:
+            self._blinded = True
+            return type("Empty", (), {"fetchone": staticmethod(lambda: None)})()
+        return self._conn.execute(sql, params)
+
+
+def _isolate_home(test: CosdStateTest) -> None:
+    """The scan resolves the user's global git ignore file from $HOME; never read the real one."""
+    home = test.state.parent / "home"
+    home.mkdir(exist_ok=True)
+    patcher = mock.patch.dict(os.environ, {"HOME": str(home)})
+    patcher.start()
+    test.addCleanup(patcher.stop)
 
 
 class TaskTestBase(CosdStateTest):
     def setUp(self):
         super().setUp()
+        _isolate_home(self)
         self.base = self.state.parent
         self.projects = Path(os.path.realpath(self.base / "projects"))
         self.projects.mkdir()
@@ -143,6 +168,74 @@ class DurableTaskTests(TaskTestBase):
         self.assertFalse(out["ok"])
         self.assertEqual(self.engine.registry.get_task(task["id"])["state"], TaskState.FAILED.value)
 
+    def _register(self, name, *, retryable, max_attempts, execute=lambda payload, cp: {"ok": True}):
+        self.engine.handlers._handlers[name] = HandlerSpec(name, 5.0, max_attempts, "safe_replay", retryable, {}, execute)
+        task, _ = self.engine.registry.create_task(kind=name, title=name)
+        return task
+
+    def test_kill_switch_race_uses_the_handlers_real_retry_policy(self):  # review finding 3
+        for name, retryable, max_attempts in (("no-retry", False, 3), ("one-shot", True, 1)):
+            with self.subTest(handler=name):
+                task = self._register(name, retryable=retryable, max_attempts=max_attempts)
+                claim = self.engine.queue.claim_task(task["id"])
+                KillSwitch(self.state).stop("test")
+                try:
+                    out = self.engine.worker.execute_claimed(
+                        task_id=task["id"], attempt_id=claim["attempt_id"],
+                        worker_id=claim["worker_id"], lease_id=claim["lease_id"],
+                    )
+                finally:
+                    KillSwitch(self.state).resume()
+                self.assertFalse(out["ok"])
+                self.assertIsNone(out["retry_after_at"], "the handler's policy allows no retry")
+                self.assertEqual(self.engine.list_attempts(task["id"])["attempts"][0]["state"], "FAILED")
+                stored = self.engine.registry.get_task(task["id"])
+                self.assertEqual(stored["state"], TaskState.FAILED.value)
+        # control: a handler that really is retryable with attempts left is scheduled for retry
+        task = self._register("retryable", retryable=True, max_attempts=3)
+        claim = self.engine.queue.claim_task(task["id"])
+        KillSwitch(self.state).stop("test")
+        try:
+            out = self.engine.worker.execute_claimed(
+                task_id=task["id"], attempt_id=claim["attempt_id"],
+                worker_id=claim["worker_id"], lease_id=claim["lease_id"],
+            )
+        finally:
+            KillSwitch(self.state).resume()
+        self.assertIsNotNone(out["retry_after_at"])
+        self.assertEqual(self.engine.list_attempts(task["id"])["attempts"][0]["state"], "RETRY_WAIT")
+
+    def test_unserialisable_result_fails_the_attempt_instead_of_stranding_it(self):  # review finding 7
+        task = self._register("weird", retryable=True, max_attempts=3, execute=lambda p, c: {"x": object()})
+        out = self.engine.execute_task(task["id"])
+        self.assertFalse(out["ok"])
+        self.assertIn("not JSON-serialisable", out["error"]["error"])
+        self.assertIsNone(out["retry_after_at"])
+        stored = self.engine.registry.get_task(task["id"])
+        self.assertEqual(stored["state"], TaskState.FAILED.value, "must not stay RUNNING until the lease expires")
+        self.assertIsNone(stored["result"])
+        self.assertEqual(self.engine.list_attempts(task["id"])["attempts"][0]["state"], "FAILED")
+        leases = self.engine.registry.db.query_all("SELECT state FROM worker_leases WHERE task_id = ?", (task["id"],))
+        self.assertEqual([r["state"] for r in leases], ["released"])
+
+    def test_oversized_checkpoint_fails_the_attempt_instead_of_stranding_it(self):  # review finding 7 (same class)
+        big = {"_checkpoint": {"checkpoint_key": "progress", "data": {"blob": "x" * 20_000}}}
+        task = self._register("bigcp", retryable=True, max_attempts=3, execute=lambda p, c: dict(big))
+        out = self.engine.execute_task(task["id"])
+        self.assertFalse(out["ok"])
+        self.assertEqual(self.engine.registry.get_task(task["id"])["state"], TaskState.FAILED.value)
+        self.assertEqual(self.engine.list_checkpoints(task["id"])["checkpoints"], [])
+
+    def test_concurrent_claim_loser_gets_the_defined_conflict_error(self):  # review finding 8
+        task, _ = self.engine.registry.create_task(kind="noop", title="race")
+        claim = self.engine.queue.claim_task(task["id"])  # the winner now holds the active lease
+        with self.engine.registry.db.transaction() as conn:
+            with self.assertRaises(RuntimeError) as cm:  # NOT sqlite3.IntegrityError
+                acquire_lease(_BlindActiveLeaseSelect(conn), task_id=task["id"], worker_id="loser", attempt_id=claim["attempt_id"])
+        self.assertIn("already has active lease", str(cm.exception))
+        leases = self.engine.registry.db.query_all("SELECT worker_id, state FROM worker_leases WHERE task_id = ?", (task["id"],))
+        self.assertEqual([(r["worker_id"], r["state"]) for r in leases], [(claim["worker_id"], "active")], "the winner keeps its lease")
+
     def test_malformed_payload_task_fails_permanently(self):  # 23
         task = self.create_scan({"command": "echo hi"})
         out = self.engine.execute_task(task["id"])
@@ -220,6 +313,7 @@ class NoSecretsTests(TaskTestBase):
 class HttpTests(CosdStateTest):
     def setUp(self):
         super().setUp()
+        _isolate_home(self)
         self.base = self.state.parent
         self.projects = Path(os.path.realpath(self.base / "projects"))
         self.projects.mkdir()

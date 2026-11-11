@@ -94,7 +94,9 @@ export function readApprovedRoots(stateDir: string, opts?: { home?: string }): s
   const roots: string[] = [];
   for (const entry of raw.slice(0, MAX_APPROVED_ROOTS)) {
     const check = validateRootCandidate(entry, { stateDir, home: opts?.home });
-    if (check.ok && !roots.includes(check.path)) roots.push(check.path);
+    // A stored root that now resolves elsewhere (for example replaced by a symlink) is no longer
+    // the folder the owner approved; cosd drops it too ("approved_root_moved").
+    if (check.ok && check.path === entry && !roots.includes(check.path)) roots.push(check.path);
   }
   return roots.sort();
 }

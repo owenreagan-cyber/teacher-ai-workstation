@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import secrets
+import sqlite3
 from datetime import datetime, timedelta, timezone
 from typing import Any
 
@@ -42,12 +43,16 @@ def acquire_lease(conn, *, task_id: str, worker_id: str, attempt_id: int) -> dic
     now = _utc_now()
     exp = _expires_from_now()
     lease_id = secrets.token_hex(12)
-    conn.execute(
-        """INSERT INTO worker_leases(
-            lease_id, task_id, worker_id, attempt_id, acquired_at, expires_at, heartbeat_at, state
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, 'active')""",
-        (lease_id, task_id, worker_id, attempt_id, now, exp, now),
-    )
+    try:
+        conn.execute(
+            """INSERT INTO worker_leases(
+                lease_id, task_id, worker_id, attempt_id, acquired_at, expires_at, heartbeat_at, state
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, 'active')""",
+            (lease_id, task_id, worker_id, attempt_id, now, exp, now),
+        )
+    except sqlite3.IntegrityError:
+        # A concurrent claimer won the UNIQUE(task_id) race: report the defined conflict (HTTP 409).
+        raise RuntimeError("task already has active lease") from None
     return {"lease_id": lease_id, "worker_id": worker_id, "expires_at": exp}
 
 

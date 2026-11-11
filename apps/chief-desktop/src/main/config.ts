@@ -14,7 +14,52 @@ export type DesktopConfig = {
   error: string | null;
   /** "packaged" when the immutable runtime ships inside the app bundle. */
   runtimeSource?: "packaged" | "development";
+  /** Set when a packaged build cannot use its bundled runtime. Calls fail closed. */
+  runtimeError?: string | null;
 };
+
+/** True when Electron is running from an installed bundle, not a source checkout. */
+export function isPackagedResources(resourcesPath?: string): boolean {
+  return typeof resourcesPath === "string" && /\.app\/Contents\/Resources\/?$/.test(resourcesPath);
+}
+
+export type PackagedRuntime = { path: string | null; error: string | null };
+
+/**
+ * Validate the bundled runtime. A packaged build must never silently degrade to
+ * the development checkout, so a missing or malformed runtime is an error.
+ */
+export function resolvePackagedRuntime(resourcesPath?: string): PackagedRuntime {
+  if (!resourcesPath) return { path: null, error: "no application resources directory" };
+  const root = path.join(resourcesPath, "runtime");
+  const cos = path.join(root, "cos");
+  const cosd = path.join(root, "cosd");
+  const manifest = path.join(root, "manifest.json");
+  for (const [label, target] of [["cos launcher", cos], ["cosd launcher", cosd]] as const) {
+    if (!fs.existsSync(target)) return { path: null, error: `packaged runtime is incomplete: ${label} is missing` };
+  }
+  for (const module of ["cos", "cosd"]) {
+    const init = path.join(root, "py", module, "__init__.py");
+    if (!fs.existsSync(init)) {
+      return { path: null, error: `packaged runtime is incomplete: ${module} sources are missing` };
+    }
+  }
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(fs.readFileSync(manifest, "utf-8"));
+  } catch {
+    return { path: null, error: "packaged runtime manifest is missing or unreadable" };
+  }
+  const m = parsed as { format?: unknown; runtime?: { version?: unknown }; source?: { commit?: unknown }; artifacts?: { cos?: { sha256?: unknown }; cosd?: { sha256?: unknown } } };
+  const valid =
+    m?.format === 1 &&
+    typeof m.runtime?.version === "string" &&
+    typeof m.source?.commit === "string" &&
+    typeof m.artifacts?.cos?.sha256 === "string" &&
+    typeof m.artifacts?.cosd?.sha256 === "string";
+  if (!valid) return { path: null, error: "packaged runtime manifest is invalid" };
+  return { path: cos, error: null };
+}
 
 /** The runtime staged into Resources/runtime by scripts/stage-runtime.mjs. */
 export function packagedRuntimePath(resourcesPath?: string): string | null {
@@ -37,14 +82,18 @@ export function expandHome(p: string): string {
 }
 
 export function loadDesktopConfig(file = DESKTOP_CONFIG_PATH, resourcesPath = runtimeResourcesPath()): DesktopConfig {
-  // A packaged build always uses its own immutable runtime. The development
-  // checkout path is a fallback for unpackaged runs only.
-  const packaged = packagedRuntimePath(resourcesPath);
+  // Inside an installed bundle the bundled runtime is authoritative. If it is
+  // missing or malformed the build fails closed: it never falls back to the
+  // development checkout.
+  const packagedBuild = isPackagedResources(resourcesPath);
+  const bundled = packagedBuild ? resolvePackagedRuntime(resourcesPath) : { path: null, error: null };
   const config: DesktopConfig = {
-    cosPath: packaged ?? expandHome(DEFAULT_COS_PATH),
+    cosPath:
+      bundled.path ?? (packagedBuild ? path.join(resourcesPath as string, "runtime", "cos") : expandHome(DEFAULT_COS_PATH)),
     hotkey: DEFAULT_HOTKEY,
-    error: null,
-    runtimeSource: packaged ? "packaged" : "development",
+    error: bundled.error && packagedBuild ? `Chief cannot start: ${bundled.error}. Reinstall Chief.app.` : null,
+    runtimeSource: packagedBuild ? "packaged" : "development",
+    runtimeError: bundled.error,
   };
   let raw: string;
   try {

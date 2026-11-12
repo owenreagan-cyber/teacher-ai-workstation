@@ -245,12 +245,37 @@ def load_approved_roots(
     return sorted(roots), warnings
 
 
+DROPPED_ROOT_CODES = frozenset({"approved_root_moved", "approved_root_invalid"})
+
+
+def _no_roots_reason(approval_warnings: list[dict[str, str]] | None = None) -> str:
+    """The no-roots error, carrying why each approved root was dropped when there is a reason.
+
+    Without this the owner sees only "approve a root" even when every approved root is still in the
+    file but was refused (moved, or now inside a private folder). The messages are path-free.
+    """
+    base = "no approved development roots: approve a root in Chief before scanning"
+    reasons: list[str] = []
+    for warning in approval_warnings or []:
+        message = warning.get("message")
+        if warning.get("code") in DROPPED_ROOT_CODES and message and message not in reasons:
+            reasons.append(message)
+    if not reasons:
+        return base
+    return f"{base} ({'; '.join(reasons)})"
+
+
 def select_scan_roots(
-    requested: Any, approved: list[Path], *, home: Path | None = None, state_base: Path | None = None
+    requested: Any,
+    approved: list[Path],
+    *,
+    home: Path | None = None,
+    state_base: Path | None = None,
+    approval_warnings: list[dict[str, str]] | None = None,
 ) -> list[Path]:
     """Roots to scan. Requested roots must each lie inside an approved root."""
     if not approved:
-        raise ScanDenied("no approved development roots: approve a root in Chief before scanning")
+        raise ScanDenied(_no_roots_reason(approval_warnings))
     if requested is None or requested == []:
         chosen = list(approved)
     else:
@@ -1034,9 +1059,12 @@ def run_dev_hq_scan(
     limits = limits_from_payload(payload.get("limits"))
 
     approved, approval_warnings = load_approved_roots(state_base, home=deps.home)
-    roots = select_scan_roots(payload.get("roots"), approved, home=deps.home, state_base=state_base)
+    roots = select_scan_roots(
+        payload.get("roots"), approved, home=deps.home, state_base=state_base,
+        approval_warnings=approval_warnings,
+    )
     if not roots:
-        raise ScanDenied("no approved development roots: approve a root in Chief before scanning")
+        raise ScanDenied(_no_roots_reason(approval_warnings))
 
     started_at = deps.wall().isoformat(timespec="seconds")
     ctx = _Ctx(limits, deps)

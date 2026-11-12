@@ -172,6 +172,28 @@ class RootApprovalTests(ScanTestBase):
         with self.assertRaises(ScanDenied):
             self.run_scan()
 
+    def test_no_roots_left_says_why_each_root_was_dropped(self):  # review W1
+        write_roots(self.state, self.projects, "/")  # one root will now move, one is never allowed
+        moved = self.base / "projects-moved"
+        os.rename(self.projects, moved)
+        self.projects.symlink_to(moved)
+        with self.assertRaises(ScanDenied) as cm:
+            self.run_scan()
+        reason = cm.exception.reason
+        self.assertIn("no approved development roots", reason)
+        self.assertIn("now resolves to a different location", reason, "the moved root's reason must reach the owner")
+        self.assertIn("filesystem root is not allowed", reason, "the refused root's reason must reach the owner")
+        self.assertNotIn(str(self.base), reason, "reasons stay path-free")
+
+    def test_no_roots_with_no_approvals_keeps_the_plain_message(self):
+        write_roots(self.state)
+        with self.assertRaises(ScanDenied) as cm:
+            self.run_scan()
+        self.assertEqual(
+            cm.exception.reason,
+            "no approved development roots: approve a root in Chief before scanning",
+        )
+
     def test_requested_root_inside_an_excluded_folder_is_denied(self):
         for name in ("credentials", "team-secrets", ".ssh", "api_tokens"):
             inner = self.projects / name / "app"

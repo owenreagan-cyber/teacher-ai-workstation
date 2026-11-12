@@ -185,6 +185,24 @@ def test_valid_q2w5_authorization_and_rejections():
         assert "PUBLISHED_VERIFIED" not in text
 
 
+def test_future_dated_authorization_is_rejected():
+    """An otherwise-valid record dated after the clock is forged, not authorization."""
+    with isolated_storage():
+        imf.save_manifest(2, 5, _manifest())
+        _authorize()
+        record = auth.load_authorization(2, 5)
+        record["authorized_at"] = (NOW + timedelta(days=2)).isoformat().replace("+00:00", "Z")
+        auth.authorization_path(2, 5).write_text(json.dumps(record), encoding="utf-8")
+        try:
+            auth.require_scoped_live_transport(quarter=2, week=5, now=NOW)
+            raise AssertionError("future-dated authorization must be blocked")
+        except auth.LiveAuthorizationError as exc:
+            assert "future-dated" in str(exc)
+        # The same record is accepted once the clock catches up to it.
+        auth.require_scoped_live_transport(quarter=2, week=5, now=NOW + timedelta(days=2))
+        auth.clear_scope()
+
+
 def test_invalid_authorization_creates_no_ledgers():
     with isolated_storage():
         imf.save_manifest(2, 5, _manifest())

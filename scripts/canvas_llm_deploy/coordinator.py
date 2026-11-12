@@ -141,15 +141,23 @@ def _load_and_validate(
     if pre is None:
         raise DeploymentBlocked("preflight not found (run preflight first)")
 
-    # Expiry.
+    # Expiry. Fail closed: a preflight without a usable, timezone-aware
+    # expires_at cannot be validated, so it is never treated as unexpired.
     from datetime import datetime as _dt
     expires = pre.get("expires_at")
-    if expires:
-        try:
-            if (now or _dt.now(timezone.utc)) > _dt.fromisoformat(expires):
-                raise DeploymentBlocked("preflight expired — rerun preflight")
-        except ValueError:
-            pass
+    if not isinstance(expires, str) or not expires.strip():
+        raise DeploymentBlocked("preflight expires_at is missing — rerun preflight")
+    try:
+        expires_at = _dt.fromisoformat(expires.replace("Z", "+00:00"))
+    except ValueError as exc:
+        raise DeploymentBlocked("preflight expires_at is malformed — rerun preflight") from exc
+    if expires_at.tzinfo is None:
+        raise DeploymentBlocked("preflight expires_at must include a timezone — rerun preflight")
+    clock = now or _dt.now(timezone.utc)
+    if clock.tzinfo is None:
+        raise DeploymentBlocked("deployment clock must include a timezone")
+    if clock > expires_at:
+        raise DeploymentBlocked("preflight expired — rerun preflight")
 
     current = plan_mod.build_plan(quarter, week)
 

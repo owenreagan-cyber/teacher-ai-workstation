@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import json
 from contextvars import ContextVar
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from typing import Any
 
 from scripts.canvas_llm_intake import manifest as imf
@@ -31,6 +31,11 @@ KNOWN_COURSE_IDS = {
     SCIENCE_COURSE_ID,
 }
 _SCOPE: ContextVar[dict[str, Any] | None] = ContextVar("live_authorization_scope", default=None)
+
+# A record minted on this machine can trail the validating clock by a few
+# milliseconds; a backward NTP step can make it lead by a second or two. Only a
+# record dated meaningfully after the clock is treated as forged.
+_AUTHORIZED_AT_SKEW = timedelta(seconds=60)
 
 
 class LiveAuthorizationError(RuntimeError):
@@ -135,6 +140,9 @@ def require_scoped_live_transport(*, quarter: int, week: int, now: datetime | No
         raise LiveAuthorizationError("authorization is not active")
     if _parse(record.get("expires_at")) <= clock:
         raise LiveAuthorizationError("authorization has expired")
+    authorized_at = record.get("authorized_at")
+    if authorized_at and _parse(authorized_at) > clock + _AUTHORIZED_AT_SKEW:
+        raise LiveAuthorizationError("authorization is future-dated")
     manifest = imf.load_manifest(quarter, week) or {}
     if not manifest.get("source_hash") or record.get("source_hash") != manifest.get("source_hash"):
         raise LiveAuthorizationError("authorization source hash does not match the current manifest")

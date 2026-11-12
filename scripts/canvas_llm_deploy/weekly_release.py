@@ -735,7 +735,7 @@ def publish_release(
         publication_at = datetime.fromisoformat(publication_time.replace("Z", "+00:00"))
     except ValueError as exc:
         raise ReleaseBlocked("publication time is not a valid timestamp") from exc
-    if publication_at.tzinfo is None or publication_at <= datetime.now(timezone.utc):
+    if publication_at.tzinfo is None or publication_at <= clock.astimezone(timezone.utc):
         raise ReleaseBlocked("publication time must be a future timezone-aware instant")
     before = _write_counts(client)
     preflight = rollover.run_preflight(
@@ -757,6 +757,7 @@ def publish_release(
         source_hash=str(intake.get("source_hash")),
         plan_fingerprint=str(intake.get("plan_fingerprint")),
         publication_time=publication_time,
+        now=clock,
         course_ids=[COURSE_IDS[name] for name in RELEASE_COURSES],
         authorized_by="OWNER_UI", reason="weekly release manager",
         expires_at=expiry.isoformat().replace("+00:00", "Z"),

@@ -80,6 +80,7 @@ def authorize_live_transport(
     authorized_by: str,
     reason: str,
     expires_at: str,
+    now: datetime | None = None,
 ) -> dict[str, Any]:
     """Record owner authorization for one week. Timestamps are supplied or taken from the clock."""
     if school_year != SCHOOL_YEAR:
@@ -90,7 +91,7 @@ def authorize_live_transport(
         raise LiveAuthorizationError("authorization names an unknown course")
     publication = _parse(publication_time)
     expiry = _parse(expires_at)
-    now = _now()
+    now = now or _now()
     if publication <= now or expiry <= now:
         raise LiveAuthorizationError("authorization publication time must be in the future")
     record = {

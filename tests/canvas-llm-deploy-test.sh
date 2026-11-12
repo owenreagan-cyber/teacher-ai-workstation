@@ -86,8 +86,13 @@ def synthetic_plan(**overrides):
     plan.update(overrides)
     return plan
 
+from datetime import datetime, timezone
+# Fixed clock: the synthetic plan schedules a 2026-12-04 announcement, which
+# must stay in the future so readback expectations do not depend on today.
+FIXED_NOW = datetime(2026, 12, 1, 14, 0, tzinfo=timezone.utc)  # before 2026-12-04 21:00Z
+
 def make_client():
-    client = FakeDeployClient(courses={26404: {"id": 26404, "name": "Math", "workflow_state": "available"}})
+    client = FakeDeployClient(now=lambda: FIXED_NOW, courses={26404: {"id": 26404, "name": "Math", "workflow_state": "available"}})
     client.assignment_groups[26404] = [
         {"id": "60321", "name": "Homework/Class Work"},
         {"id": "60319", "name": "Written Assessments"},
@@ -99,7 +104,7 @@ def make_client():
 def write_preflight(ledger_root, *, expires_past=False, source="src-hash-1", approval="appr-hash-1",
                     ready=True, plan=None):
     from datetime import datetime, timedelta, timezone
-    now = datetime.now(timezone.utc)
+    now = FIXED_NOW
     exp = (now - timedelta(minutes=1) if expires_past else now + timedelta(minutes=15)).isoformat()
     rec = {
         "preflight_id": "pf-test", "created_at": now.isoformat(), "expires_at": exp,
@@ -141,7 +146,7 @@ with tempfile.TemporaryDirectory() as tmp:
         reset_state()
         client = make_client()
         write_preflight(tmp)
-        rep = coordinator.deploy(2, 9, preflight_id="pf-test",
+        rep = coordinator.deploy(2, 9, now=FIXED_NOW, preflight_id="pf-test",
                                  expected_source_hash="src-hash-1",
                                  expected_approval_snapshot_hash="appr-hash-1",
                                  owner_confirmation="DEPLOY Q2W9", client=client)
@@ -164,7 +169,7 @@ with tempfile.TemporaryDirectory() as tmp:
 
         # ---- 2. Re-deploy after PUBLISHED_VERIFIED is blocked -------------
         try:
-            coordinator.deploy(2, 9, preflight_id="pf-test",
+            coordinator.deploy(2, 9, now=FIXED_NOW, preflight_id="pf-test",
                                expected_source_hash="src-hash-1",
                                expected_approval_snapshot_hash="appr-hash-1",
                                owner_confirmation="DEPLOY Q2W9", client=client)
@@ -179,7 +184,7 @@ with tempfile.TemporaryDirectory() as tmp:
         write_preflight(tmp, source="src-hash-1")
         planmod.build_plan = lambda q, w: synthetic_plan(source_hash="src-hash-2")
         try:
-            coordinator.deploy(2, 9, preflight_id="pf-test",
+            coordinator.deploy(2, 9, now=FIXED_NOW, preflight_id="pf-test",
                                expected_source_hash="src-hash-1",
                                expected_approval_snapshot_hash="appr-hash-1",
                                owner_confirmation="DEPLOY Q2W9", client=client2)
@@ -196,7 +201,7 @@ with tempfile.TemporaryDirectory() as tmp:
         write_preflight(tmp, approval="appr-hash-1")
         planmod.build_plan = lambda q, w: synthetic_plan(approval_snapshot_hash="appr-hash-2")
         try:
-            coordinator.deploy(2, 9, preflight_id="pf-test",
+            coordinator.deploy(2, 9, now=FIXED_NOW, preflight_id="pf-test",
                                expected_source_hash="src-hash-1",
                                expected_approval_snapshot_hash="appr-hash-1",
                                owner_confirmation="DEPLOY Q2W9", client=client3)
@@ -212,7 +217,7 @@ with tempfile.TemporaryDirectory() as tmp:
         client4 = make_client()
         write_preflight(tmp, expires_past=True)
         try:
-            coordinator.deploy(2, 9, preflight_id="pf-test",
+            coordinator.deploy(2, 9, now=FIXED_NOW, preflight_id="pf-test",
                                expected_source_hash="src-hash-1",
                                expected_approval_snapshot_hash="appr-hash-1",
                                owner_confirmation="DEPLOY Q2W9", client=client4)
@@ -226,7 +231,7 @@ with tempfile.TemporaryDirectory() as tmp:
         client5 = make_client()
         write_preflight(tmp)
         try:
-            coordinator.deploy(2, 9, preflight_id="pf-test",
+            coordinator.deploy(2, 9, now=FIXED_NOW, preflight_id="pf-test",
                                expected_source_hash="src-hash-1",
                                expected_approval_snapshot_hash="appr-hash-1",
                                owner_confirmation="", client=client5)
@@ -243,7 +248,7 @@ with tempfile.TemporaryDirectory() as tmp:
         client6 = make_client()
         client6.assignment_groups[26404] = [{"id": "60319", "name": "Written Assessments"}]
         write_preflight(tmp)
-        rep = coordinator.deploy(2, 9, preflight_id="pf-test",
+        rep = coordinator.deploy(2, 9, now=FIXED_NOW, preflight_id="pf-test",
                                  expected_source_hash="src-hash-1",
                                  expected_approval_snapshot_hash="appr-hash-1",
                                  owner_confirmation="DEPLOY Q2W9", client=client6)
@@ -264,7 +269,7 @@ with tempfile.TemporaryDirectory() as tmp:
         plan_dup["assignments"][0]["duplicate_classification"] = "EXACT_MATCH"
         planmod.build_plan = lambda q, w: plan_dup
         write_preflight(tmp, plan=plan_dup)
-        rep = coordinator.deploy(2, 9, preflight_id="pf-test",
+        rep = coordinator.deploy(2, 9, now=FIXED_NOW, preflight_id="pf-test",
                                  expected_source_hash="src-hash-1",
                                  expected_approval_snapshot_hash="appr-hash-1",
                                  owner_confirmation="DEPLOY Q2W9", client=client7)

@@ -12,6 +12,11 @@ if str(Path(__file__).resolve().parents[2]) not in sys.path:
 import json
 import tempfile
 import hashlib
+from datetime import datetime, timezone
+
+# Fixed clock: the fixture schedules (Oct 2026 / Dec 2026) must stay in the
+# future forever, so these tests never depend on the wall clock.
+NOW = datetime(2026, 10, 20, 13, 0, tzinfo=timezone.utc)  # before Q2W3's Fri 2026-10-23 16:00 ET window
 
 from scripts.canvas_llm_deploy import ledger as deploy_ledger
 from scripts.canvas_llm_deploy.client import FakeDeployClient
@@ -89,7 +94,7 @@ def _client(*, skip=None):
     courses = {cid: {"id": cid, "name": n} for cid, n in [
         (26404, "Math"), (26442, "Reading/Spelling"), (28171, "Language Arts"),
         (28166, "Science"), (26429, "Homeroom")]}
-    c = FakeDeployClient(courses=courses)
+    c = FakeDeployClient(now=lambda: NOW, courses=courses)
     c.assignment_groups[COURSES["math"]] = [{"id": "group-1", "name": "Classwork"}]
     for s in SUBJECTS:
         if s in skip:
@@ -123,7 +128,7 @@ def test_happy_path_published_verified():
     orig, orig_staging, tmp = _tmp_ledger()
     try:
         c = _client()
-        r = rollover.execute(2, 2, 2, 3, client=c, owner_confirmation="ROLLOVER Q2W3",
+        r = rollover.execute(2, 2, 2, 3, client=c, now=NOW, owner_confirmation="ROLLOVER Q2W3",
                              manifest=_manifest())
         assert r["lifecycle"] == schedule.PUBLISHED_VERIFIED, r.get("failures")
         # Academic front pages flipped.
@@ -156,9 +161,9 @@ def test_idempotent_rerun_skips():
     try:
         c = _client()
         m = _manifest()
-        r1 = rollover.execute(2, 2, 2, 3, client=c, owner_confirmation="ROLLOVER Q2W3", manifest=m)
+        r1 = rollover.execute(2, 2, 2, 3, client=c, now=NOW, owner_confirmation="ROLLOVER Q2W3", manifest=m)
         assert r1["lifecycle"] == schedule.PUBLISHED_VERIFIED
-        r2 = rollover.execute(2, 2, 2, 3, client=c, owner_confirmation="ROLLOVER Q2W3", manifest=m)
+        r2 = rollover.execute(2, 2, 2, 3, client=c, now=NOW, owner_confirmation="ROLLOVER Q2W3", manifest=m)
         assert r2.get("already_complete") is True
     finally:
         tmp.cleanup()
@@ -170,7 +175,7 @@ def test_partial_failure_blocks():
     orig, orig_staging, tmp = _tmp_ledger()
     try:
         c = _client(skip={"science"})
-        r = rollover.execute(2, 2, 2, 3, client=c, owner_confirmation="ROLLOVER Q2W3",
+        r = rollover.execute(2, 2, 2, 3, client=c, now=NOW, owner_confirmation="ROLLOVER Q2W3",
                              manifest=_manifest())
         assert r["lifecycle"] == schedule.BLOCKED
         assert any("science" in f for f in r["failures"])
@@ -197,7 +202,7 @@ def test_weekly_held_when_prior_week_same_title_still_active():
         future = "2027-06-01T20:00:00Z"
         for ann in m["weekly_announcements"]:
             ann["delayed_post_at"] = future
-        r = rollover.execute(2, 2, 2, 3, client=c, owner_confirmation="ROLLOVER Q2W3",
+        r = rollover.execute(2, 2, 2, 3, client=c, now=NOW, owner_confirmation="ROLLOVER Q2W3",
                              manifest=m)
         assert r["lifecycle"] == schedule.PUBLISHED_VERIFIED, r.get("failures")
         math = next(x for x in r["weekly_announcements"] if x["subject"] == "math")
@@ -220,7 +225,7 @@ def test_reminder_already_scheduled_skips():
             "message": "<p>Written Assessment 7 and Fact Assessment 7.</p>",
             "classification": "ALREADY_SCHEDULED_VERIFIED",
         }]
-        r = rollover.execute(2, 2, 2, 3, client=c, owner_confirmation="ROLLOVER Q2W3", manifest=m)
+        r = rollover.execute(2, 2, 2, 3, client=c, now=NOW, owner_confirmation="ROLLOVER Q2W3", manifest=m)
         assert r["lifecycle"] == schedule.PUBLISHED_VERIFIED, r.get("failures")
         rec = r["assessment_reminders"][0]
         assert rec["disposition"] == "ALREADY_SCHEDULED_VERIFIED", rec
@@ -239,7 +244,7 @@ def test_confirmation_gate_blocks():
     try:
         c = _client()
         try:
-            rollover.execute(2, 2, 2, 3, client=c, owner_confirmation="DEPLOY Q2W3",
+            rollover.execute(2, 2, 2, 3, client=c, now=NOW, owner_confirmation="DEPLOY Q2W3",
                              manifest=_manifest())
             raise AssertionError("expected RolloverBlocked")
         except rollover.RolloverBlocked:
@@ -270,7 +275,7 @@ def test_announcement_readback_css_injection_normalized():
             return a
 
         c.get_announcement = injected_get
-        r = rollover.execute(2, 2, 2, 3, client=c, owner_confirmation="ROLLOVER Q2W3", manifest=m)
+        r = rollover.execute(2, 2, 2, 3, client=c, now=NOW, owner_confirmation="ROLLOVER Q2W3", manifest=m)
         assert r["lifecycle"] == schedule.PUBLISHED_VERIFIED, r.get("failures")
         for rec in r["weekly_announcements"]:
             assert rec["verified"] is True, rec
@@ -294,7 +299,7 @@ def test_submission_type_string_or_list_normalized():
         c = _client()
         m = _manifest()
         m["assignments"][0]["submission_types"] = "on_paper"  # bare string form
-        r = rollover.execute(2, 2, 2, 3, client=c, owner_confirmation="ROLLOVER Q2W3", manifest=m)
+        r = rollover.execute(2, 2, 2, 3, client=c, now=NOW, owner_confirmation="ROLLOVER Q2W3", manifest=m)
         assert r["lifecycle"] == schedule.PUBLISHED_VERIFIED, r.get("failures")
         a = r["assignments"][0]
         assert a["verified"] is True, a

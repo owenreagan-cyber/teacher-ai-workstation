@@ -19,6 +19,9 @@ from scripts.canvas_llm_rollover import homeroom, rollover
 from scripts.canvas_llm_storage import isolated_storage
 
 NY = ZoneInfo("America/New_York")
+
+# Fixed clock: every fixture schedule must remain in the future.
+NOW = datetime(2026, 11, 2, 9, 0, tzinfo=NY)  # before Q2W5's Fri 2026-11-06 16:00 ET window
 COURSES = {
     "math": 26404, "reading_spelling": 26442, "language_arts": 28171,
     "science": 28166, "homeroom": 26429,
@@ -32,14 +35,14 @@ FINGERPRINT = "weekly-manager-fingerprint"
 
 
 def _future_owner() -> str:
-    selected = (datetime.now(NY) + timedelta(days=1)).replace(
+    selected = (NOW + timedelta(days=1)).replace(
         hour=0, minute=1, second=0, microsecond=0,
     )
     return selected.astimezone(timezone.utc).isoformat().replace("+00:00", "Z")
 
 
 def _client():
-    client = FakeDeployClient(courses={
+    client = FakeDeployClient(now=lambda: NOW, courses={
         cid: {"id": cid, "name": name} for cid, name in {
             26404: "Math", 26442: "Reading/Spelling", 28171: "Language Arts",
             28166: "Science", 26429: "Homeroom",
@@ -263,7 +266,7 @@ def test_approval_is_granular_and_a_changed_artifact_invalidates_it():
         })
         approved = weekly_release.approve_release(
             2, 5, confirmation="APPROVE Q2W5", owner_publication_time=owner,
-            now=datetime.now(NY),
+            now=NOW,
         )
         stored = intake_manifest.load_manifest(2, 5)
         assert approved["source_hash"] == SOURCE
@@ -367,7 +370,7 @@ def test_wrong_or_missing_homeroom_identity_blocks_before_approval_writes():
         try:
             weekly_release.approve_release(
                 2, 5, confirmation="APPROVE Q2W5", owner_publication_time=_future_owner(),
-                now=datetime.now(NY),
+                now=NOW,
             )
             raise AssertionError("blocked announcement was approved")
         except weekly_release.ReleaseBlocked as exc:
@@ -418,7 +421,7 @@ def test_invalid_owner_time_writes_nothing_and_blocked_packages_cannot_be_approv
             try:
                 weekly_release.approve_release(
                     2, 5, confirmation="APPROVE Q2W5", owner_publication_time=bad,
-                    now=datetime.now(NY),
+                    now=NOW,
                 )
                 raise AssertionError(bad)
             except weekly_release.ReleaseBlocked:
@@ -432,7 +435,7 @@ def test_invalid_owner_time_writes_nothing_and_blocked_packages_cannot_be_approv
         try:
             weekly_release.approve_release(
                 2, 5, confirmation="APPROVE Q2W5", owner_publication_time=_future_owner(),
-                now=datetime.now(NY),
+                now=NOW,
             )
             raise AssertionError("blocked package was approved")
         except weekly_release.ReleaseBlocked as exc:
@@ -461,11 +464,11 @@ def test_repeated_approval_is_idempotent_and_a_new_owner_time_invalidates_it():
             "approval_state": "PENDING", "source_hash": SOURCE,
             "date_range": {"start": "2026-11-09", "end": "2026-11-13"}, "history": [],
         })
-        first = weekly_release.approve_release(2, 5, confirmation="APPROVE Q2W5", owner_publication_time=owner, now=datetime.now(NY))
-        again = weekly_release.approve_release(2, 5, confirmation="APPROVE Q2W5", owner_publication_time=owner, now=datetime.now(NY))
+        first = weekly_release.approve_release(2, 5, confirmation="APPROVE Q2W5", owner_publication_time=owner, now=NOW)
+        again = weekly_release.approve_release(2, 5, confirmation="APPROVE Q2W5", owner_publication_time=owner, now=NOW)
         assert again.get("idempotent") is True
         assert again["plan_fingerprint"] == first["plan_fingerprint"]
-        later = (datetime.now(NY) + timedelta(days=2)).replace(hour=0, minute=1, second=0, microsecond=0)
+        later = (NOW + timedelta(days=2)).replace(hour=0, minute=1, second=0, microsecond=0)
         later_value = later.astimezone(timezone.utc).isoformat().replace("+00:00", "Z")
         assert weekly_release.invalidate_changed_artifacts(2, 5, owner_publication_time=later_value) is True
         assert intake_manifest.load_manifest(2, 5)["approval_state"] == "PENDING"
@@ -473,7 +476,7 @@ def test_repeated_approval_is_idempotent_and_a_new_owner_time_invalidates_it():
         intake["plan_fingerprint"] = "stale-fingerprint"
         intake_manifest.save_manifest(2, 5, intake)
         try:
-            weekly_release.approve_release(2, 5, confirmation="APPROVE Q2W5", owner_publication_time=owner, now=datetime.now(NY))
+            weekly_release.approve_release(2, 5, confirmation="APPROVE Q2W5", owner_publication_time=owner, now=NOW)
             raise AssertionError("stale fingerprint was approved")
         except weekly_release.ReleaseBlocked as exc:
             assert "fingerprint" in str(exc)
@@ -488,7 +491,7 @@ def test_publish_reaches_verified_and_rerun_writes_nothing():
         _seed_pages(client, manifest)
         report = weekly_release.publish_release(
             2, 3, client=client, confirmation="ROLLOVER Q2W3",
-            now=datetime.now(NY), manifest=manifest,
+            now=NOW, manifest=manifest,
         )
         assert report["lifecycle"] == "PUBLISHED_VERIFIED", report.get("failures")
         assert report["state"] == weekly_release.FULLY_COMPLETED
@@ -497,7 +500,7 @@ def test_publish_reaches_verified_and_rerun_writes_nothing():
         puts = client._write_counts["PUT"]
         again = weekly_release.publish_release(
             2, 3, client=client, confirmation="ROLLOVER Q2W3",
-            now=datetime.now(NY), manifest=manifest,
+            now=NOW, manifest=manifest,
         )
         assert again["already_complete"] is True
         assert client._write_counts["POST"] == posts
@@ -519,7 +522,7 @@ def test_partial_publication_and_finalizer_refusal_are_not_complete():
         client.update_page = fail_science
         partial = weekly_release.publish_release(
             2, 3, client=client, confirmation="ROLLOVER Q2W3",
-            now=datetime.now(NY), manifest=manifest,
+            now=NOW, manifest=manifest,
         )
         assert partial["lifecycle"] != "PUBLISHED_VERIFIED"
         assert partial["state"] == weekly_release.PARTIALLY_PUBLISHED
@@ -534,7 +537,7 @@ def test_partial_publication_and_finalizer_refusal_are_not_complete():
         try:
             refused = weekly_release.publish_release(
                 2, 3, client=client, confirmation="ROLLOVER Q2W3",
-                now=datetime.now(NY), manifest=manifest,
+                now=NOW, manifest=manifest,
             )
         finally:
             rollover.deploy_ledger.finalize_published_verified = original
@@ -554,7 +557,7 @@ def test_rollover_incomplete_recovers_without_canvas_writes():
         })
         client = _client()
         report = weekly_release.publish_release(
-            2, 3, client=client, confirmation="ROLLOVER Q2W3", now=datetime.now(NY),
+            2, 3, client=client, confirmation="ROLLOVER Q2W3", now=NOW,
         )
         assert report["lifecycle"] == "PUBLISHED_VERIFIED"
         assert report["canvas_writes"] == 0
@@ -572,7 +575,7 @@ def test_wrong_source_hash_blocks_before_transport():
         try:
             weekly_release.publish_release(
                 2, 3, client=client, confirmation="ROLLOVER Q2W3",
-                now=datetime.now(NY), manifest=manifest,
+                now=NOW, manifest=manifest,
             )
             raise AssertionError("source mismatch was accepted")
         except weekly_release.ReleaseBlocked as exc:

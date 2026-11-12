@@ -226,6 +226,43 @@ with tempfile.TemporaryDirectory() as tmp:
             assert "expired" in str(exc).lower()
         print("PASS expired preflight blocks deploy")
 
+        # ---- 5b. Unusable expires_at fails closed (never skips expiry) ----
+        for bad_expiry in (None, "", "not-a-timestamp", "2026-12-01T14:15:00"):
+            reset_state()
+            bad_client = make_client()
+            rec = write_preflight(tmp)
+            if bad_expiry is None:
+                rec.pop("expires_at", None)
+            else:
+                rec["expires_at"] = bad_expiry
+            ledger.write_preflight(2, 9, rec)
+            try:
+                coordinator.deploy(2, 9, now=FIXED_NOW, preflight_id="pf-test",
+                                   expected_source_hash="src-hash-1",
+                                   expected_approval_snapshot_hash="appr-hash-1",
+                                   owner_confirmation="DEPLOY Q2W9", client=bad_client)
+                raise AssertionError(f"expires_at={bad_expiry!r} must block deploy")
+            except coordinator.DeploymentBlocked:
+                pass
+            assert bad_client._write_counts["PUT"] == 0
+        print("PASS missing/empty/non-ISO/naive expires_at blocks deploy")
+
+        # ---- 5c. A timezone-naive deployment clock is rejected ------------
+        reset_state()
+        naive_client = make_client()
+        write_preflight(tmp)
+        try:
+            coordinator.deploy(2, 9, now=datetime(2026, 12, 1, 14, 0),
+                               preflight_id="pf-test",
+                               expected_source_hash="src-hash-1",
+                               expected_approval_snapshot_hash="appr-hash-1",
+                               owner_confirmation="DEPLOY Q2W9", client=naive_client)
+            raise AssertionError("naive deployment clock must block")
+        except coordinator.DeploymentBlocked:
+            pass
+        assert naive_client._write_counts["PUT"] == 0
+        print("PASS naive deployment clock blocks deploy")
+
         # ---- 6. Missing confirmation blocks deploy ------------------------
         reset_state()
         client5 = make_client()

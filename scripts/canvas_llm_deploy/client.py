@@ -22,7 +22,8 @@ Normalized object shapes (the coordinator depends on these only):
 """
 from __future__ import annotations
 
-from typing import Any
+from datetime import datetime, timezone
+from typing import Any, Callable
 
 
 class DeployClientError(RuntimeError):
@@ -259,13 +260,22 @@ class FakeDeployClient(DeployClient):
 
     transport = "fake"
 
-    def __init__(self, *, courses: dict[int, dict[str, Any]] | None = None) -> None:
+    def __init__(
+        self,
+        *,
+        courses: dict[int, dict[str, Any]] | None = None,
+        now: Callable[[], datetime] | None = None,
+    ) -> None:
         self.courses: dict[int, dict[str, Any]] = courses or {}
         self.pages: dict[tuple[int, str], dict[str, Any]] = {}
         self.assignments: dict[str, dict[str, Any]] = {}
         self.assignment_groups: dict[int, list[dict[str, Any]]] = {}
         self.announcements: dict[str, dict[str, Any]] = {}
         self._write_counts = {"POST": 0, "PUT": 0, "PATCH": 0, "DELETE": 0, "GET": 0}
+        # Injectable clock. The active feed classifies delayed_post_at against "now", so a test
+        # that asserts a scheduled announcement stays held must pin this instead of waiting for
+        # wall-clock time to make its fixture stale. Defaults to the real clock.
+        self._now = now or (lambda: datetime.now(timezone.utc))
 
     # ---- GET-only ----
     def get_course(self, course_id: int) -> dict[str, Any]:
@@ -291,8 +301,7 @@ class FakeDeployClient(DeployClient):
     def list_active_announcements(self, context_codes: list[str] | None = None) -> list[dict[str, Any]]:
         # Active = not future-scheduled (delayed_post_at None or in the past).
         # Mirrors the live contract: results are scoped to context_codes when given.
-        from datetime import datetime, timezone
-        now = datetime.now(timezone.utc)
+        now = self._now()
         wanted = {str(code) for code in (context_codes or [])}
         out = []
         for a in self.announcements.values():

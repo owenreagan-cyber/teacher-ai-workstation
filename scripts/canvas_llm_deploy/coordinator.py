@@ -248,7 +248,8 @@ def announcement_readback_disposition(*, scheduled: bool, verified: bool, state:
 def _verify_announcement(client: DeployClient, course_id: int, topic_id: Any,
                          *, title: str, scheduled: bool, delayed_post_at: str | None,
                          expect_agenda: bool, counts: dict[str, int],
-                         expected_message: str | None = None) -> tuple[bool, str, str]:
+                         expected_message: str | None = None,
+                         now: datetime | None = None) -> tuple[bool, str, str]:
     a = client.get_announcement(course_id, str(topic_id))
     counts["GET"] = counts.get("GET", 0) + 1
     msg = _canvas_message(a.get("message") or "")
@@ -268,6 +269,7 @@ def _verify_announcement(client: DeployClient, course_id: int, topic_id: Any,
         posted_at=a.get("posted_at"),
         published=a.get("published"),
         in_active_feed=in_feed,
+        now=now,
     )
     if scheduled:
         # Correct held state: future delayed_post_at + NOT in active feed.
@@ -432,7 +434,7 @@ def deploy(
             ok, detail, state = _verify_announcement(
                 client, a["course_id"], tid, title=title, scheduled=scheduled,
                 delayed_post_at=a.get("delayed_post_at"), expect_agenda=True, counts=counts,
-                expected_message=a.get("message"))
+                expected_message=a.get("message"), now=now)
             report["weekly_announcements"].append({
                 "subject": a["subject"], "title": title, "course_id": a["course_id"],
                 "delayed_post_at": a.get("delayed_post_at"), "canvas_id": tid,
@@ -472,7 +474,7 @@ def deploy(
             ok, detail, state = _verify_announcement(
                 client, a["course_id"], tid, title=title, scheduled=scheduled,
                 delayed_post_at=a.get("delayed_post_at") if scheduled else None,
-                expect_agenda=False, counts=counts, expected_message=a.get("message"))
+                expect_agenda=False, counts=counts, expected_message=a.get("message"), now=now)
             report["assessment_reminders"].append({
                 "title": title, "course_id": a["course_id"], "type": a.get("type"),
                 "notice_type": a.get("notice_type"),

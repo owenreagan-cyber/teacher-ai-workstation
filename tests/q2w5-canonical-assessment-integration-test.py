@@ -253,7 +253,11 @@ def test_four_assessment_notices_schedule_and_identity():
 
 
 def test_canvas_readback_does_not_call_scheduled_announcement_published():
-    client = FakeDeployClient(courses={28171: {"id": 28171, "name": "Language Arts"}})
+    # Pin the fake Canvas clock to the Q2W5 fixture (NOW). The readback state is decided by
+    # comparing delayed_post_at with "now", so without this the Nov 11 21:00Z schedule would
+    # become "past due" as wall-clock time advanced and the held/scheduled assertion would
+    # expire. The timestamps stay the historical Q2W5 values.
+    client = FakeDeployClient(courses={28171: {"id": 28171, "name": "Language Arts"}}, now=lambda: NOW)
     created = client.create_announcement(
         28171, title="Reminder — Shurley English Chapter 7 Test",
         message="Chapter 7 Test Friday, November 13.",
@@ -262,7 +266,7 @@ def test_canvas_readback_does_not_call_scheduled_announcement_published():
     ok, detail, state = _verify_announcement(
         client, 28171, created["id"], title=created["title"], scheduled=True,
         delayed_post_at="2026-11-11T21:00:00Z", expect_agenda=False, counts={},
-        expected_message=created["message"],
+        expected_message=created["message"], now=NOW,
     )
     assert ok, detail
     assert state == HELD_SCHEDULED
@@ -526,7 +530,8 @@ def test_coordinator_readback_rejects_wrong_announcement_and_accepts_scheduled()
 
     message = "<p>Chapter 7 on Friday.</p>"
     delayed = "2026-11-11T21:00:00Z"
-    client = FakeDeployClient(courses={28171: {"id": 28171, "name": "Language Arts", "workflow_state": "available"}})
+    # Same pinned clock as the readback test above: the Q2W5 delayed_post_at stays in the future.
+    client = FakeDeployClient(courses={28171: {"id": 28171, "name": "Language Arts", "workflow_state": "available"}}, now=lambda: NOW)
     created = client.create_announcement(
         28171, title="Reminder — Shurley English Chapter 7 Test", message=message,
         published=True, delayed_post_at=delayed,
@@ -534,11 +539,11 @@ def test_coordinator_readback_rejects_wrong_announcement_and_accepts_scheduled()
     ok, detail, state = coordinator._verify_announcement(
         client, 28171, created["id"], title=created["title"], scheduled=True,
         delayed_post_at="2026-11-11T16:00:00-05:00", expect_agenda=False, counts={},
-        expected_message=message,
+        expected_message=message, now=NOW,
     )
     assert ok and state == "HELD_SCHEDULED", detail
     assert coordinator.announcement_readback_disposition(scheduled=True, verified=True, state=state) == "SCHEDULED_VERIFIED"
-    bad_course = FakeDeployClient(courses={28171: {"id": 28171}})
+    bad_course = FakeDeployClient(courses={28171: {"id": 28171}}, now=lambda: NOW)
     other = bad_course.create_announcement(28171, title="T", message=message, delayed_post_at=delayed)
     stored = bad_course.announcements[other["id"]]
     stored["course_id"] = 26404

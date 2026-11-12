@@ -37,6 +37,7 @@ export function DevScanReportView(props: { report: DevScanReport }) {
   const r = props.report;
   const limits = describeLimits(r);
   const dirty = r.repositories.filter((repo) => repo.dirty === true);
+  const notInspected = r.repositories.filter((repo) => repo.errors.length > 0);
   const noUpstream = r.repositories.filter((repo) => repo.has_upstream === false).length;
   const builds = r.storage_findings.filter((s) => s.bytes !== null).slice(0, 5);
   const memory = r.process_findings.filter((p) => p.finding === "process_memory").slice(0, 5);
@@ -99,6 +100,24 @@ export function DevScanReportView(props: { report: DevScanReport }) {
         <p className="text-[12px] text-muted">
           {noUpstream} repositories have no upstream branch configured. That is normal for local-only work, not an error.
         </p>
+      )}
+
+      {notInspected.length > 0 && (
+        <>
+          <Heading>Not inspected: needs your review</Heading>
+          <p className="text-[12px] text-muted">
+            Chief did not read these repositories, so their status is unknown. Nothing was changed.
+          </p>
+          <ul className="space-y-1">
+            {notInspected.slice(0, 15).map((repo) => (
+              <li key={repo.path}>
+                <span className="font-medium">{repo.name}</span>{" "}
+                <span className="text-muted">{repo.errors[0]}</span>
+              </li>
+            ))}
+          </ul>
+          {notInspected.length > 15 && <p className="text-[12px] text-muted">{notInspected.length - 15} more not listed here.</p>}
+        </>
       )}
 
       {builds.length > 0 && (

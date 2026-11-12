@@ -103,6 +103,38 @@ test("the report shows status, counts, next steps, dirty repos, big folders, dup
   assert.ok(!/orphan/i.test(t), "never claims a confirmed orphan");
 });
 
+test("repositories Chief refused to inspect are listed by name with the reason", () => {
+  const t = text(
+    renderToStaticMarkup(
+      h(DevScanReportView, {
+        report: report({
+          status: "partial",
+          repositories: [
+            {
+              path: "/p/held",
+              name: "held",
+              branch: null,
+              detached: false,
+              head: null,
+              dirty: null,
+              modified_count: null,
+              untracked_count: null,
+              has_upstream: null,
+              errors: ["not inspected: repository config defines filters or includes, which are not run during a scan"],
+            },
+            { path: "/p/zzz-inspected", name: "zzz-inspected", branch: "main", dirty: false, modified_count: 0, untracked_count: 0 },
+          ],
+        }),
+      }),
+    ),
+  );
+  assert.match(t, /Not inspected: needs your review/);
+  assert.match(t, /held/);
+  assert.match(t, /repository config defines filters or includes/);
+  assert.match(t, /their status is unknown/);
+  assert.ok(!t.includes("zzz-inspected"), "a repository that was inspected is not listed as refused");
+});
+
 test("a partial report says it is incomplete and why", () => {
   const t = text(renderToStaticMarkup(h(DevScanReportView, { report: report({ status: "partial", limits_hit: ["depth_limit", "deadline"], coverage: { entries_visited: 5, inaccessible_directories: 2, excluded_directories_skipped: 0, symlinks_skipped: 0 } }) })));
   assert.match(t, /Scan partial: results are incomplete/);

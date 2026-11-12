@@ -131,7 +131,9 @@ def _release(**overrides) -> dict:
 
 def _client() -> FakeDeployClient:
     courses = {cid: {"id": cid, "name": name} for name, cid in COURSES.items()}
-    client = FakeDeployClient(courses=courses)
+    # Pin the fake Canvas clock to this file's NOW fixture: the active-feed filter compares
+    # delayed_post_at with "now", so the 2026-11-13 schedules would otherwise drift into the past.
+    client = FakeDeployClient(courses=courses, now=lambda: NOW)
     for subject, cid in COURSES.items():
         if subject == "homeroom":
             client.seed_page(cid, "q2w4-old", title="Homeroom Q2W4", body="<p>old</p>", front_page=True)
@@ -479,13 +481,17 @@ class NormalizingClient(FakeDeployClient):
 
 
 def _verify(raw, *, title="T", message="<p>Hello.</p>", delayed=FUTURE, scheduled=True, course=28171):
-    client = NormalizingClient(courses={course: {"id": course, "name": "Language Arts"}})
+    # Pin the fake Canvas clock to this file's NOW fixture. Readback state is decided by comparing
+    # delayed_post_at with "now" (client active-feed filter and classify_announcement), so the
+    # 2026-11-13 fixture would go "past due" against the wall clock and these assertions would
+    # expire. No timestamp is changed.
+    client = NormalizingClient(courses={course: {"id": course, "name": "Language Arts"}}, now=lambda: NOW)
     client.announcements["topic-1"] = {"id": "topic-1", **raw}
     counts = {"GET": 0}
     ok, detail, state = coordinator._verify_announcement(
         client, course, "topic-1", title=title, scheduled=scheduled,
         delayed_post_at=delayed, expect_agenda=False, counts=counts,
-        expected_message=message,
+        expected_message=message, now=NOW,
     )
     disposition = coordinator.announcement_readback_disposition(
         scheduled=scheduled, verified=ok, state=state,

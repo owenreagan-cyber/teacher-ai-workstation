@@ -1340,6 +1340,7 @@ def execute(
                 posted_at=readback.get("posted_at"),
                 published=readback.get("published"),
                 in_active_feed=in_feed,
+                now=now,
             )
             live_message = _canvas_comparable_announcement_message(readback.get("message") or "")
             live_course = readback.get("course_id")
@@ -1520,6 +1521,7 @@ def execute(
             posted_at=announcement_readback.get("posted_at"),
             published=announcement_readback.get("published"),
             in_active_feed=in_feed,
+            now=now,
         )
         live_message = _canvas_comparable_announcement_message(announcement_readback.get("message") or "")
         content_ok = (
@@ -1599,6 +1601,7 @@ def execute(
                     posted_at=readback.get("posted_at"),
                     published=readback.get("published"),
                     in_active_feed=in_feed,
+                    now=now,
                 )
                 delay_ok = state == sched.HELD_SCHEDULED and _same_instant(readback.get("delayed_post_at"), delayed)
                 if delay_ok and disposition != "ALREADY_EXISTS":

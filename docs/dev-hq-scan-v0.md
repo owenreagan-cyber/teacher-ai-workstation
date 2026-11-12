@@ -98,6 +98,13 @@ the config files above. None of their values are stored or reported. The four fi
 regression tests each first prove with stock Git that their fixture really is dangerous (a filter
 marker file is created, or outside files are counted), so a passing test cannot be vacuous.
 
+**Requires Git 2.32 or newer.** `GIT_CONFIG_GLOBAL` (the variable that suppresses the user's global
+config) was added in Git 2.32. On an older Git the variable is ignored, so a globally configured
+`filter.*.clean` could run again during `git status`; the repository-config refusal, the
+`core.fsmonitor` override and the git-dir/work-tree pin still hold. The scanner does not check the
+Git version, and the real-Git canary in the test suite is what catches this on a given machine or in
+CI. The development machine used for V0 runs Git 2.55.0.
+
 `git status` may compare the content of files whose timestamps changed; that is Git's own check and
 nothing is stored or reported from it. No remote URL or config value reaches a result or the audit
 log (Git itself necessarily reads `.git/config`).

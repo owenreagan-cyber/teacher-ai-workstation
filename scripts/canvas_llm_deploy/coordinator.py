@@ -134,6 +134,7 @@ def _load_and_validate(
     quarter: int, week: int, *, preflight_id: str,
     expected_source_hash: str, expected_approval_snapshot_hash: str,
     owner_confirmation: str,
+    now: datetime | None = None,
 ) -> tuple[dict[str, Any], dict[str, Any]]:
     """Load the preflight + re-derive the CURRENT plan; fail closed on any mismatch."""
     pre = ledger.load_preflight(quarter, week, preflight_id)
@@ -145,7 +146,7 @@ def _load_and_validate(
     expires = pre.get("expires_at")
     if expires:
         try:
-            if _dt.now(timezone.utc) > _dt.fromisoformat(expires):
+            if (now or _dt.now(timezone.utc)) > _dt.fromisoformat(expires):
                 raise DeploymentBlocked("preflight expired — rerun preflight")
         except ValueError:
             pass
@@ -305,6 +306,7 @@ def deploy(
         expected_source_hash=expected_source_hash,
         expected_approval_snapshot_hash=expected_approval_snapshot_hash,
         owner_confirmation=owner_confirmation,
+        now=now,
     )
     if plan_mod.plan_fingerprint(pre.get("plan") or {}) != plan_mod.plan_fingerprint(current):
         raise DeploymentBlocked("STALE — deployment plan changed since preflight; rerun preflight")

@@ -187,6 +187,7 @@ class DurableTaskTests(TaskTestBase):
                 finally:
                     KillSwitch(self.state).resume()
                 self.assertFalse(out["ok"])
+                self.assertEqual(out["error"]["retriable"], retryable, "the reported flag must match the real spec")
                 self.assertIsNone(out["retry_after_at"], "the handler's policy allows no retry")
                 self.assertEqual(self.engine.list_attempts(task["id"])["attempts"][0]["state"], "FAILED")
                 stored = self.engine.registry.get_task(task["id"])

@@ -58,10 +58,11 @@ class WorkerRunner:
             self._governance()
         except ExecutionDenied as exc:
             # Raced with the kill switch after the claim. Fail with the handler's REAL retry policy
-            # so a non-retryable handler is never retried and max_attempts is honoured.
+            # so a non-retryable handler is never retried and max_attempts is honoured. The reported
+            # flag must match the decision _fail will make, or the error record lies about it.
             return self._fail(
                 task_id, attempt_id, worker_id, lease_id, spec,
-                error={"error": str(exc), "retriable": True},
+                error={"error": str(exc), "retriable": spec.retryable},
                 permanent=False,
             )
         attempt = self.registry.db.query_one(

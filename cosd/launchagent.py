@@ -1,12 +1,14 @@
 """Optional macOS LaunchAgent helpers (opt-in only)."""
 from __future__ import annotations
 
+import os
 import plistlib
 import sys
 from pathlib import Path
 
 LABEL = "com.owenreagan.chief-of-staff.cosd"
 AGENT_DIR = Path.home() / "Library" / "LaunchAgents"
+AGENT_DIR_ENV = "COSD_AGENT_DIR"
 PLIST_NAME = f"{LABEL}.plist"
 
 
@@ -14,8 +16,19 @@ def repo_root() -> Path:
     return Path(__file__).resolve().parents[1]
 
 
+def agent_dir() -> Path:
+    """Where the plist lives.
+
+    ``COSD_AGENT_DIR`` exists so a test (or a dry run) can point the helper at a temporary folder:
+    without it, importing and exercising this module would write into the user's real
+    ``~/Library/LaunchAgents``. Unset, the real location is used, exactly as before.
+    """
+    override = os.environ.get(AGENT_DIR_ENV)
+    return Path(override).expanduser() if override else AGENT_DIR
+
+
 def plist_path() -> Path:
-    return AGENT_DIR / PLIST_NAME
+    return agent_dir() / PLIST_NAME
 
 
 def render_plist(*, python: str | None = None, port: int = 8765) -> dict:
@@ -42,7 +55,7 @@ def render_plist(*, python: str | None = None, port: int = 8765) -> dict:
 
 
 def write_plist(*, python: str | None = None, port: int = 8765) -> Path:
-    AGENT_DIR.mkdir(parents=True, exist_ok=True)
+    agent_dir().mkdir(parents=True, exist_ok=True)
     path = plist_path()
     data = render_plist(python=python, port=port)
     path.write_bytes(plistlib.dumps(data))

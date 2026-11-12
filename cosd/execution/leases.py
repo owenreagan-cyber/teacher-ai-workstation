@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import secrets
+import sqlite3
 from datetime import datetime, timedelta, timezone
 from typing import Any
 
@@ -34,19 +35,24 @@ def acquire_lease(conn, *, task_id: str, worker_id: str, attempt_id: int) -> dic
     ).fetchone()
     if existing and not lease_expired(existing["expires_at"]):
         raise RuntimeError("task already has active lease")
+    # worker_leases.task_id is UNIQUE, so a spent (released/expired) lease row must be cleared
+    # before a later attempt can claim the task. Attempt history lives in execution_attempts.
+    conn.execute("DELETE FROM worker_leases WHERE task_id = ? AND state != 'active'", (task_id,))
     if existing:
-        conn.execute(
-            "UPDATE worker_leases SET state = 'expired' WHERE lease_id = ?", (existing["lease_id"],)
-        )
+        conn.execute("DELETE FROM worker_leases WHERE lease_id = ?", (existing["lease_id"],))
     now = _utc_now()
     exp = _expires_from_now()
     lease_id = secrets.token_hex(12)
-    conn.execute(
-        """INSERT INTO worker_leases(
-            lease_id, task_id, worker_id, attempt_id, acquired_at, expires_at, heartbeat_at, state
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, 'active')""",
-        (lease_id, task_id, worker_id, attempt_id, now, exp, now),
-    )
+    try:
+        conn.execute(
+            """INSERT INTO worker_leases(
+                lease_id, task_id, worker_id, attempt_id, acquired_at, expires_at, heartbeat_at, state
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, 'active')""",
+            (lease_id, task_id, worker_id, attempt_id, now, exp, now),
+        )
+    except sqlite3.IntegrityError:
+        # A concurrent claimer won the UNIQUE(task_id) race: report the defined conflict (HTTP 409).
+        raise RuntimeError("task already has active lease") from None
     return {"lease_id": lease_id, "worker_id": worker_id, "expires_at": exp}
 
 

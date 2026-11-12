@@ -56,6 +56,36 @@ def _diagnostic_execute(_payload: dict, _checkpoint: dict | None, registry: Task
     return {"task_counts": registry.get_task_counts(), "read_only": True}
 
 
+def _dev_hq_scan_execute(payload: dict, _checkpoint: dict | None) -> dict:
+    """Read-only development inventory. The scan restarts from scratch on any retry or replay."""
+    from cos.audit import AuditLog
+    from cos.config import load_config
+
+    from .dev_hq_scan import ScanDenied, run_dev_hq_scan
+
+    try:
+        result = run_dev_hq_scan(payload)
+    except ScanDenied as exc:
+        raise ExecutionDenied(exc.reason, permanent=exc.permanent) from None
+    summary = result.get("summary", {})
+    try:  # counts only: no paths, names, or process details go to the audit log
+        AuditLog(load_config().audit_path)(
+            "cosd_dev_hq_scan",
+            status=result.get("status"),
+            roots_scanned=result.get("roots_scanned"),
+            repositories=summary.get("repositories"),
+            warnings=summary.get("warnings"),
+        )
+    except Exception:  # noqa: BLE001 - audit trouble must not discard a finished scan
+        pass
+    return result
+
+
+# The scan enforces its own wall-clock deadline (<= 60 s) and per-subprocess timeouts, so the
+# worker timeout below is only an outer backstop, not the mechanism that stops the scan.
+DEV_HQ_SCAN_TIMEOUT_S = 90.0
+
+
 class HandlerRegistry:
     def __init__(self, registry: TaskRegistry):
         self._registry = registry
@@ -72,6 +102,15 @@ class HandlerRegistry:
             HandlerSpec("noop", 5.0, 3, "safe_replay", True, {"optional": "object"}, _noop_execute),
             HandlerSpec("calc", 10.0, 3, "checkpoint_resume", True, {"op": "add", "values": "array"}, _calc_execute),
             HandlerSpec("diagnostic", 5.0, 2, "safe_replay", False, {}, diag),
+            HandlerSpec(
+                "dev_hq_scan",
+                DEV_HQ_SCAN_TIMEOUT_S,
+                3,
+                "safe_replay",
+                True,
+                {"roots": "array?", "include_processes": "boolean?", "limits": "object?"},
+                _dev_hq_scan_execute,
+            ),
         ):
             self._handlers[spec.kind] = spec
 

@@ -22,6 +22,15 @@ import { processAlive, readDaemonToken, readPidRecord, type PidRecord } from "./
 const execFileAsync = promisify(execFile);
 const MIN_VERSION = [0, 1, 0];
 const ASK_TIMEOUT_MS = 310_000;
+const EXECUTE_TIMEOUT_MS = 150_000;
+
+function errorMessage(value: unknown): string | null {
+  if (typeof value === "string") return value.slice(0, 300);
+  if (typeof value === "object" && value !== null && typeof (value as Record<string, unknown>).error === "string") {
+    return ((value as Record<string, unknown>).error as string).slice(0, 300);
+  }
+  return null;
+}
 
 const TASK_STATES = new Set<TaskState>([
   "QUEUED",
@@ -69,7 +78,10 @@ function toTask(raw: unknown): CosdTask | null {
   if (typeof o.id !== "string" || typeof o.kind !== "string" || typeof o.title !== "string") return null;
   if (typeof state !== "string" || !TASK_STATES.has(state as TaskState)) return null;
   if (typeof o.priority !== "number" || typeof o.created_at !== "string" || typeof o.updated_at !== "string") return null;
-  if (typeof o.attempt_count !== "number") return null;
+  // The daemon's task record carries `error: {error, retriable}` and no attempt count, so accept both
+  // the flat fields (older contract) and the real daemon shape.
+  const errorObj = typeof o.error === "object" && o.error !== null ? (o.error as Record<string, unknown>) : null;
+  const lastError = typeof o.last_error === "string" ? o.last_error : typeof errorObj?.error === "string" ? errorObj.error.slice(0, 300) : null;
   return {
     id: o.id,
     kind: o.kind,
@@ -78,9 +90,9 @@ function toTask(raw: unknown): CosdTask | null {
     priority: o.priority,
     created_at: o.created_at,
     updated_at: o.updated_at,
-    attempt_count: o.attempt_count,
+    attempt_count: typeof o.attempt_count === "number" ? o.attempt_count : null,
     blocked_reason: typeof o.blocked_reason === "string" ? o.blocked_reason : null,
-    last_error: typeof o.last_error === "string" ? o.last_error : null,
+    last_error: lastError,
     next_retry_at: typeof o.next_retry_at === "string" ? o.next_retry_at : null,
   };
 }
@@ -206,6 +218,22 @@ export class CosdClient {
     return { task, reused: body.reused === true };
   }
 
+  /** Minimal raw view used by the dev scan: kind, state, result, and error message only. */
+  async getTaskRaw(ep: DaemonEndpoint, taskId: string): Promise<{ id: string; kind: string; state: string; result: unknown; error: string | null }> {
+    const { status, body } = await this.authed(ep, "GET", `/v1/tasks/${taskId}`);
+    const t = body.task;
+    if (status !== 200 || typeof t !== "object" || t === null) throw new CosdHttpError("task fetch failed", "internal");
+    const o = t as Record<string, unknown>;
+    if (typeof o.id !== "string" || typeof o.kind !== "string" || typeof o.state !== "string") throw new CosdHttpError("invalid task", "internal");
+    return { id: o.id, kind: o.kind, state: o.state, result: o.result ?? null, error: errorMessage(o.error) };
+  }
+
+  /** Run one queued task now. Blocks until the daemon finishes it (a scan can take up to ~60 s). */
+  async executeTask(ep: DaemonEndpoint, taskId: string): Promise<{ ok: boolean; error: string | null }> {
+    const { body } = await this.authed(ep, "POST", `/v1/tasks/${taskId}/execute`, {}, EXECUTE_TIMEOUT_MS);
+    return { ok: body.ok === true, error: body.ok === true ? null : errorMessage(body.error) ?? errorMessage(body.error_kind) ?? "execution failed" };
+  }
+
   async cancelTask(ep: DaemonEndpoint, taskId: string, reason?: string): Promise<CosdTask> {
     const { body } = await this.authed(ep, "POST", `/v1/tasks/${taskId}/cancel`, reason ? { reason } : {});
     const task = toTask(body.task);
@@ -227,9 +255,13 @@ export class CosdClient {
     for (const ev of body.events) {
       if (typeof ev !== "object" || ev === null) continue;
       const o = ev as Record<string, unknown>;
-      if (typeof o.ts !== "string" || typeof o.event !== "string") continue;
-      const row: TaskHistoryEvent = { ts: o.ts, event: o.event };
-      if (typeof o.detail === "object" && o.detail !== null) row.detail = o.detail as Record<string, unknown>;
+      // The daemon reports created_at / event_type / details; accept the older ts / event / detail too.
+      const ts = typeof o.ts === "string" ? o.ts : o.created_at;
+      const event = typeof o.event === "string" ? o.event : o.event_type;
+      if (typeof ts !== "string" || typeof event !== "string") continue;
+      const row: TaskHistoryEvent = { ts, event };
+      const detail = o.detail ?? o.details;
+      if (typeof detail === "object" && detail !== null) row.detail = detail as Record<string, unknown>;
       out.push(row);
     }
     return out;

@@ -51,6 +51,16 @@ export function validateCreateTask(title: unknown, kind: unknown, idempotencyKey
   };
 }
 
+/** Dev scan input from the renderer is exactly one boolean. No path, kind, or limit is accepted. */
+export function validateDevScanRun(includeProcesses: unknown): boolean {
+  if (typeof includeProcesses !== "boolean") throw new Error("includeProcesses must be true or false");
+  return includeProcesses;
+}
+
+export function validateDevScanRootPath(value: unknown): string {
+  return requireString(value, 1024, "root");
+}
+
 export function validateOptionalState(state: unknown): string | undefined {
   if (state === undefined || state === null || state === "") return undefined;
   return requireString(state, 40, "state");

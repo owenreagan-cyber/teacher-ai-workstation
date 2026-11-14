@@ -5,6 +5,8 @@ import os from "node:os";
 import path from "node:path";
 import { createRequire } from "node:module";
 import { test } from "node:test";
+import { execFileSync } from "node:child_process";
+import { fileURLToPath } from "node:url";
 
 const require = createRequire(import.meta.url);
 const { loadDesktopConfig, resolvePackagedRuntime } = require("../out/main/config.js");
@@ -88,4 +90,45 @@ test("development builds still accept the checkout path", () => {
   assert.equal(config.runtimeSource, "development");
   assert.equal(config.cosPath, "/opt/example/bin/cos");
   assert.equal(config.error, null);
+});
+
+// F.1 (P0.3e 7959914 packet): running the packaged runtime must never write
+// bytecode into the bundle, or codesign --verify fails after first launch.
+function findPython312() {
+  for (const candidate of ["python3.12", "/opt/homebrew/bin/python3.12"]) {
+    try {
+      const v = execFileSync(candidate, ["-c", "import sys; print('%d.%d' % sys.version_info[:2])"], { encoding: "utf8" }).trim();
+      if (v === "3.12") return candidate;
+    } catch {}
+  }
+  return null;
+}
+
+function bytecodeUnder(root) {
+  const found = [];
+  const walk = (dir) => {
+    for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+      const full = path.join(dir, entry.name);
+      if (entry.name === "__pycache__" || entry.name.endsWith(".pyc")) found.push(path.relative(root, full));
+      if (entry.isDirectory()) walk(full);
+    }
+  };
+  walk(root);
+  return found;
+}
+
+test("running the staged launchers writes no bytecode into the runtime", { skip: findPython312() ? false : "Python 3.12 not available" }, () => {
+  const out = fs.mkdtempSync(path.join(os.tmpdir(), "chief-stage-"));
+  const home = fs.mkdtempSync(path.join(os.tmpdir(), "chief-home-"));
+  const script = path.join(path.dirname(fileURLToPath(import.meta.url)), "..", "scripts", "stage-runtime.mjs");
+  execFileSync(process.execPath, [script], { env: { ...process.env, CHIEF_STAGE_OUT: out }, stdio: "pipe" });
+  assert.match(fs.readFileSync(path.join(out, "cos"), "utf8"), / -B -s -E -P /);
+  assert.deepEqual(bytecodeUnder(out), [], "staging must not ship bytecode");
+
+  const env = { ...process.env, HOME: home, CHIEF_PYTHON: findPython312() };
+  for (const launcher of ["cos", "cosd"]) {
+    const version = execFileSync(path.join(out, launcher), ["--version"], { env, cwd: "/", encoding: "utf8" });
+    assert.match(version, new RegExp(`^${launcher} `));
+  }
+  assert.deepEqual(bytecodeUnder(out), [], "running the launchers must not write bytecode");
 });

@@ -13,7 +13,10 @@ import { fileURLToPath } from "node:url";
 const here = path.dirname(fileURLToPath(import.meta.url));
 const appDir = path.resolve(here, "..");
 const repoRoot = path.resolve(appDir, "..", "..");
-const outDir = path.join(appDir, "build", "runtime");
+// CHIEF_STAGE_OUT lets tests stage into a temporary directory.
+const outDir = process.env.CHIEF_STAGE_OUT
+  ? path.resolve(process.env.CHIEF_STAGE_OUT)
+  : path.join(appDir, "build", "runtime");
 
 const LAUNCHER = (module) => `#!/usr/bin/env bash
 # Chief packaged runtime launcher. Sources live beside this script.
@@ -37,7 +40,8 @@ if [[ "$("\${py}" -c 'import sys; print("%d.%d" % sys.version_info[:2])' 2>/dev/
   echo "chief: packaged runtime requires Python 3.12: \${py}" >&2
   exit 127
 fi
-exec "\${py}" -s -E -P -c 'import sys; sys.path.insert(0, sys.argv.pop(1)); from ${module} import main; raise SystemExit(main(sys.argv[1:]))' "\${here}/py" "$@"
+# -B: never write bytecode into the signed bundle (it would break the code seal).
+exec "\${py}" -B -s -E -P -c 'import sys; sys.path.insert(0, sys.argv.pop(1)); from ${module} import main; raise SystemExit(main(sys.argv[1:]))' "\${here}/py" "$@"
 `;
 
 function copyTree(from, to) {

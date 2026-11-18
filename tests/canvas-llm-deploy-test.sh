@@ -63,8 +63,8 @@ def synthetic_plan(**overrides):
                    "action": "UPDATE", "live_page_id": "page-26404-q2w9-test",
                    "approved": True}],
         "assignments": [
-            {"course": "math", "course_id": 26404, "title": "SM5: Lesson 50 Homework",
-             "assignment_group": "Homework/Class Work", "due_date": "2026-12-07",
+            {"course": "math", "course_id": 26404, "title": "SM5: Written Assessment 50",
+             "assignment_group": "Written Assessments", "due_date": "2026-12-07",
              "due_utc": "2026-12-08T03:59:00Z", "points_possible": 100, "grading_type": "percent",
              "submission_types": ["on_paper"], "omit_from_final_grade": False,
              "action": "CREATE", "duplicate_classification": "NEW",
@@ -139,7 +139,7 @@ with tempfile.TemporaryDirectory() as tmp:
     ledger.DEPLOY_ROOT = tmp / "deployments"
     imf.staging_dir = lambda q, w: tmp / "intake" / f"q{q}w{w}"
     try:
-        planmod.build_plan = lambda q, w: synthetic_plan()
+        planmod.build_plan = lambda q, w, **kwargs: synthetic_plan()
         planmod.load_packet = lambda q, w: {"page_bodies": {"math": PAGE_BODY}}
 
         # ---- 1. Happy path: preflight-ready plan deploys + verifies -------
@@ -182,7 +182,7 @@ with tempfile.TemporaryDirectory() as tmp:
         reset_state()
         client2 = make_client()
         write_preflight(tmp, source="src-hash-1")
-        planmod.build_plan = lambda q, w: synthetic_plan(source_hash="src-hash-2")
+        planmod.build_plan = lambda q, w, **kwargs: synthetic_plan(source_hash="src-hash-2")
         try:
             coordinator.deploy(2, 9, now=FIXED_NOW, preflight_id="pf-test",
                                expected_source_hash="src-hash-1",
@@ -196,10 +196,10 @@ with tempfile.TemporaryDirectory() as tmp:
 
         # ---- 4. Stale approval blocks deploy ------------------------------
         reset_state()
-        planmod.build_plan = lambda q, w: synthetic_plan()
+        planmod.build_plan = lambda q, w, **kwargs: synthetic_plan()
         client3 = make_client()
         write_preflight(tmp, approval="appr-hash-1")
-        planmod.build_plan = lambda q, w: synthetic_plan(approval_snapshot_hash="appr-hash-2")
+        planmod.build_plan = lambda q, w, **kwargs: synthetic_plan(approval_snapshot_hash="appr-hash-2")
         try:
             coordinator.deploy(2, 9, now=FIXED_NOW, preflight_id="pf-test",
                                expected_source_hash="src-hash-1",
@@ -213,7 +213,7 @@ with tempfile.TemporaryDirectory() as tmp:
 
         # ---- 5. Expired preflight blocks deploy ---------------------------
         reset_state()
-        planmod.build_plan = lambda q, w: synthetic_plan()
+        planmod.build_plan = lambda q, w, **kwargs: synthetic_plan()
         client4 = make_client()
         write_preflight(tmp, expires_past=True)
         try:
@@ -281,9 +281,9 @@ with tempfile.TemporaryDirectory() as tmp:
         # ---- 7. Partial failure stops remaining writes --------------------
         # Remove the assignment group so create_assignment fails AFTER page update.
         reset_state()
-        planmod.build_plan = lambda q, w: synthetic_plan()
+        planmod.build_plan = lambda q, w, **kwargs: synthetic_plan()
         client6 = make_client()
-        client6.assignment_groups[26404] = [{"id": "60319", "name": "Written Assessments"}]
+        client6.assignment_groups[26404] = []
         write_preflight(tmp)
         rep = coordinator.deploy(2, 9, now=FIXED_NOW, preflight_id="pf-test",
                                  expected_source_hash="src-hash-1",
@@ -304,7 +304,7 @@ with tempfile.TemporaryDirectory() as tmp:
         client7 = make_client()
         plan_dup = synthetic_plan()
         plan_dup["assignments"][0]["duplicate_classification"] = "EXACT_MATCH"
-        planmod.build_plan = lambda q, w: plan_dup
+        planmod.build_plan = lambda q, w, **kwargs: plan_dup
         write_preflight(tmp, plan=plan_dup)
         rep = coordinator.deploy(2, 9, now=FIXED_NOW, preflight_id="pf-test",
                                  expected_source_hash="src-hash-1",
@@ -323,7 +323,7 @@ with tempfile.TemporaryDirectory() as tmp:
         print("PASS duplicate classification (EXACT_MATCH / AMBIGUOUS / NEW)")
 
         # ---- 10. Preflight blocks: missing page / wrong course / missing group
-        planmod.build_plan = lambda q, w: synthetic_plan()
+        planmod.build_plan = lambda q, w, **kwargs: synthetic_plan()
         # missing page
         c10a = FakeDeployClient(courses={26404: {"id": 26404, "name": "Math", "workflow_state": "available"}})
         c10a.assignment_groups[26404] = [{"id": "60321", "name": "Homework/Class Work"}]
@@ -337,7 +337,7 @@ with tempfile.TemporaryDirectory() as tmp:
         # missing assignment group (routing fail-closed)
         c10c = FakeDeployClient(courses={26404: {"id": 26404, "name": "Math", "workflow_state": "available"}})
         c10c.seed_page(26404, SLUG, title="Q2W9", body="<div id='kl_wrapper_3'>x</div>")
-        c10c.assignment_groups[26404] = [{"id": "60319", "name": "Written Assessments"}]
+        c10c.assignment_groups[26404] = []
         rec = preflightmod.run_preflight(2, 9, c10c)
         assert any("group" in b for b in rec["blockers"]), rec["blockers"]
         print("PASS preflight blocks: missing page / wrong course / missing assignment group")

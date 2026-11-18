@@ -19,6 +19,7 @@ from typing import Any
 
 from . import ledger
 from . import plan as plan_mod
+from scripts.canvas_llm_phase3 import assignment_policy as policy
 from .client import DeployClient, DeployClientError
 
 DEPLOYMENT_STATES = ("PREFLIGHT_READY", "DEPLOYING", "DEPLOYMENT_PARTIAL", "PUBLISHED_VERIFIED", "FAILED")
@@ -46,13 +47,11 @@ def _submission_type(value: Any) -> str:
 
 
 def _confirm_ok(confirmation: str, week_code: str, *, deletes: int) -> bool:
+    """Owner confirmation must name the exact week. A bare 'DEPLOY' is not enough."""
     text = (confirmation or "").strip()
     if not text:
         return False
-    upper = text.upper()
-    if deletes > 0:
-        return upper == f"DEPLOY {week_code.upper()}"
-    return "DEPLOY" in upper
+    return text.upper() == f"DEPLOY {week_code.upper()}"
 
 
 def _future_label_blocker(item: dict[str, Any], label: str, now: datetime) -> str | None:
@@ -116,12 +115,28 @@ def _plan_prewrite_blockers(plan: dict[str, Any], *, now: datetime | None = None
         if future_problem:
             blockers.append(future_problem)
     for assignment in plan.get("assignments") or []:
-        if assignment.get("action") == "BLOCKED":
-            blockers.append(f"assignment {assignment.get('title')!r} is blocked")
-        elif assignment.get("approved") is not True and assignment.get("approval_state") != "APPROVED":
-            blockers.append(f"assignment {assignment.get('title')!r} approved is not true")
+        action = assignment.get("action")
+        title = assignment.get("title")
+        if action == "BLOCKED":
+            blockers.append(f"assignment {title!r} is blocked")
+        elif action == "UPDATE":
+            blockers.append(
+                f"assignment {title!r}: automatic update of an existing assignment is "
+                "not authorized (preserve the live object)"
+            )
+        elif action not in ("CREATE", "SKIP"):
+            blockers.append(f"assignment {title!r} has unknown action {action!r}")
+        if assignment.get("duplicate_classification") in ("AMBIGUOUS", "SEMANTIC_MATCH"):
+            blockers.append(
+                f"assignment {title!r}: live duplicate identity is "
+                f"{assignment.get('duplicate_classification')}"
+            )
+        if action == "SKIP" and not assignment.get("assignment_id"):
+            blockers.append(f"assignment {title!r}: SKIP has no live assignment id")
+        if assignment.get("approved") is not True and assignment.get("approval_state") != "APPROVED":
+            blockers.append(f"assignment {title!r} approved is not true")
         if not assignment.get("course_id"):
-            blockers.append(f"assignment {assignment.get('title')!r} has no course id")
+            blockers.append(f"assignment {title!r} has no course id")
     for page in plan.get("pages") or []:
         if not page.get("course_id"):
             blockers.append(f"page {page.get('subject')} has no course id")
@@ -159,7 +174,15 @@ def _load_and_validate(
     if clock > expires_at:
         raise DeploymentBlocked("preflight expired — rerun preflight")
 
-    current = plan_mod.build_plan(quarter, week)
+    current = plan_mod.build_plan(quarter, week, now=clock)
+
+    # D-028: the Friday rollover engine is the only weekly publisher. A scoped
+    # preflight may be reviewed here but can never execute through this module.
+    if pre.get("scope_only"):
+        raise DeploymentBlocked(
+            "restricted releases execute through the Friday rollover publisher "
+            "(D-028); use bin/canvas-intake restricted-release"
+        )
 
     # Hash re-check (source + approval) vs preflight.
     if pre.get("source_hash") != current.get("source_hash"):
@@ -198,6 +221,76 @@ def _verify_page(client: DeployClient, course_id: int, slug: str, expected_page_
     )
     detail = "" if ok else f"page_id={pid} kl_wrapper_3={'kl_wrapper_3' in body} Reminders={'Reminders' in body}"
     return ok, detail
+
+
+def _assignment_before_state(assignment: dict[str, Any]) -> dict[str, Any]:
+    """Full pre-write metadata snapshot for a preserved assignment."""
+    submission = assignment.get("submission_types")
+    if isinstance(submission, str):
+        submission = [submission]
+    return {
+        "assignment_id": assignment.get("id"),
+        "course_id": assignment.get("course_id"),
+        "title": assignment.get("name") or assignment.get("title"),
+        "description": assignment.get("description"),
+        "assignment_group_id": assignment.get("assignment_group_id"),
+        "due_at": assignment.get("due_at"),
+        "points_possible": assignment.get("points_possible"),
+        "grading_type": assignment.get("grading_type"),
+        "submission_types": list(submission or []),
+        "omit_from_final_grade": assignment.get("omit_from_final_grade"),
+        "published": assignment.get("published"),
+        "workflow_state": assignment.get("workflow_state"),
+    }
+
+
+def _safe_slug(text: str) -> str:
+    import re
+    slug = re.sub(r"[^a-z0-9]+", "-", (text or "").lower()).strip("-")
+    return slug[:80] or "assignment"
+
+
+def _verify_preserved_assignment(
+    client: DeployClient, entry: dict[str, Any], counts: dict[str, int],
+) -> tuple[bool, str]:
+    """Read back a preserved assignment and require the exact reconciled state."""
+    expected = entry.get("live_snapshot") or {}
+    assignment_id = entry.get("assignment_id")
+    course_id = entry.get("course_id")
+    try:
+        live = client.get_assignment(course_id, str(assignment_id))
+        counts["GET"] = counts.get("GET", 0) + 1
+        groups = {
+            g.get("id"): g.get("name")
+            for g in client.list_assignment_groups(int(course_id))
+        }
+        counts["GET"] = counts.get("GET", 0) + 1
+    except Exception as exc:  # noqa: BLE001 - fail closed
+        return False, f"readback failed ({type(exc).__name__})"
+    snapshot = _assignment_before_state(live)
+    checks = {
+        "title": (expected.get("title"), snapshot["title"]),
+        "due_at": (expected.get("due_at"), snapshot["due_at"]),
+        "points_possible": (expected.get("points_possible"), snapshot["points_possible"]),
+        "grading_type": (expected.get("grading_type"), snapshot["grading_type"]),
+        "submission_types": (
+            sorted(expected.get("submission_types") or []),
+            sorted(snapshot["submission_types"]),
+        ),
+        "omit_from_final_grade": (
+            expected.get("omit_from_final_grade"), snapshot["omit_from_final_grade"],
+        ),
+        "published": (expected.get("published"), snapshot["published"]),
+        "assignment_group": (
+            expected.get("assignment_group"),
+            groups.get(live.get("assignment_group_id")),
+        ),
+    }
+    mismatches = [
+        f"{name}: expected {pair[0]!r}, live {pair[1]!r}"
+        for name, pair in checks.items() if pair[0] != pair[1]
+    ]
+    return (not mismatches), "; ".join(mismatches)
 
 
 def _verify_assignment(client: DeployClient, course_id: int, assignment_id: Any,
@@ -372,6 +465,27 @@ def deploy(
             report["failures"].append(f"backup {p['subject']} failed: {type(exc).__name__}")
             return _finish_partial(quarter, week, report, "FAILED")
 
+    # ---- 1b. Assignment before-state backups (SKIP / protected) -----------
+    for a in plan.get("assignments", []):
+        if a.get("action") != "SKIP" or not a.get("assignment_id"):
+            continue
+        try:
+            current = client.get_assignment(a["course_id"], str(a["assignment_id"]))
+            counts["GET"] += 1
+            snapshot = _assignment_before_state(current)
+            snapshot["retrieved_at"] = _now()
+            ledger.write_backup(
+                quarter, week,
+                "assignment-" + _safe_slug(a.get("title", "")) + "-before",
+                snapshot,
+            )
+        except Exception as exc:  # noqa: BLE001
+            report["failures"].append(
+                f"assignment {a.get('title')!r}: pre-state backup failed "
+                f"({type(exc).__name__})"
+            )
+            return _finish_partial(quarter, week, report, "FAILED")
+
     # ---- 2. Page updates + 3. readback ------------------------------------
     for p in plan.get("pages", []):
         subject = p["subject"]
@@ -393,10 +507,58 @@ def deploy(
     # ---- 4. Assignment writes + 5. readback ------------------------------
     for a in plan.get("assignments", []):
         title = a["title"]
-        if a.get("duplicate_classification") == "EXACT_MATCH":
+        group = a.get("assignment_group")
+        action = a.get("action")
+        if action == "BLOCKED":
+            report["failures"].append(
+                f"assignment {title!r}: blocked ({a.get('block_reason') or 'unresolved'})"
+            )
+            return _finish_partial(quarter, week, report, "FAILED")
+        if action == "UPDATE":
+            report["failures"].append(
+                f"assignment {title!r}: automatic update of an existing assignment is "
+                "not authorized; preserve the live object"
+            )
+            return _finish_partial(quarter, week, report, "FAILED")
+        if action not in ("CREATE", "SKIP"):
+            report["failures"].append(
+                f"assignment {title!r}: unknown action {action!r}"
+            )
+            return _finish_partial(quarter, week, report, "FAILED")
+        kind = policy.classify_assignment(title=title, group=group)
+        proposed = {"course": a.get("course_id"), "kind": kind, "title": title}
+        if not policy.auto_prepare_allowed(kind, course=a.get("course_id"), group=group,
+                                           approval=a.get("owner_approval"), proposed=proposed):
+            report["failures"].append(f"assignment {title!r}: assignment policy blocked")
+            return _finish_partial(quarter, week, report, "FAILED")
+        settings_violations = policy.validate_assignment_settings(a)
+        if settings_violations:
+            report["failures"].append(
+                f"assignment {title!r}: settings violation ({', '.join(settings_violations)})"
+            )
+            return _finish_partial(quarter, week, report, "FAILED")
+        if action == "SKIP":
+            ok, detail = _verify_preserved_assignment(
+                client, a, counts,
+            )
             report["assignments"].append({
-                "title": title, "course_id": a["course_id"], "disposition": "ALREADY_EXISTS",
-                "verified": True, "canvas_id": None,
+                "title": title, "course_id": a["course_id"],
+                "assignment_group": group, "canvas_id": a.get("assignment_id"),
+                "disposition": "ALREADY_EXISTS" if ok else "FAILED",
+                "verified": ok, "detail": detail, "wrote": False,
+            })
+            if not ok:
+                report["failures"].append(
+                    f"assignment {title!r}: preserved live object changed ({detail})"
+                )
+                return _finish_partial(quarter, week, report, "DEPLOYMENT_PARTIAL")
+            continue
+        if a.get("duplicate_classification") == "EXACT_MATCH":
+            # Legacy idempotent path: a live exact duplicate is never re-POSTed.
+            report["assignments"].append({
+                "title": title, "course_id": a["course_id"],
+                "disposition": "ALREADY_EXISTS", "verified": True,
+                "canvas_id": a.get("assignment_id"), "wrote": False,
             })
             continue
         try:
@@ -413,7 +575,7 @@ def deploy(
                 "title": title, "course_id": a["course_id"], "assignment_group": a["assignment_group"],
                 "due_at": a["due_utc"], "canvas_id": aid,
                 "disposition": "PUBLISHED_VERIFIED" if ok else "FAILED",
-                "verified": ok, "detail": detail,
+                "verified": ok, "detail": detail, "wrote": True,
             })
             if not ok:
                 report["failures"].append(f"assignment {title!r}: readback mismatch ({detail})")
@@ -502,13 +664,52 @@ def deploy(
             report["failures"].append(f"assessment reminder {title!r}: write failed: {type(exc).__name__}")
             return _finish_partial(quarter, week, report, "DEPLOYMENT_PARTIAL")
 
+    # ---- 8b. Explicitly protected assignments (read-only) -----------------
+    protected_results: list[dict[str, Any]] = []
+    for evidence in (pre.get("live") or {}).get("protected_assignments") or []:
+        predicted = evidence.get("snapshot") or {}
+        try:
+            live = client.get_assignment(evidence["course_id"], evidence["assignment_id"])
+            counts["GET"] += 1
+            current = _assignment_before_state(live)
+        except Exception as exc:  # noqa: BLE001 - fail closed
+            report["failures"].append(
+                f"protected assignment {evidence.get('assignment_id')}: readback failed "
+                f"({type(exc).__name__})"
+            )
+            return _finish_partial(quarter, week, report, "DEPLOYMENT_PARTIAL")
+        mismatches = [
+            name for name in (
+                "title", "assignment_group_id", "due_at", "points_possible",
+                "grading_type", "submission_types", "omit_from_final_grade", "published",
+            )
+            if predicted.get(name) != current.get(name)
+        ]
+        ok = not mismatches
+        protected_results.append({
+            "course_id": evidence["course_id"],
+            "assignment_id": str(evidence["assignment_id"]),
+            "title": current.get("title"),
+            "verified": ok,
+            "detail": "" if ok else "changed: " + ", ".join(mismatches),
+        })
+        if not ok:
+            report["failures"].append(
+                f"protected assignment {evidence.get('assignment_id')}: changed "
+                f"({', '.join(mismatches)})"
+            )
+            return _finish_partial(quarter, week, report, "DEPLOYMENT_PARTIAL")
+    report["protected_assignments"] = protected_results
+
     # ---- 9/10. Final sweep + finalize -------------------------------------
     report["finished_at"] = _now()
     report["deployment_state"] = "PUBLISHED_VERIFIED"
     report["communication"] = {"email_sends": 0, "canvas_inbox_sends": 0}
-    report["notes"].append("All writes passed post-write readback; every artifact has an explicit final disposition.")
+    report["notes"].append(
+        "All writes passed post-write readback; every artifact has an explicit "
+        "final disposition."
+    )
     ledger.write_ledger(quarter, week, report)
-
     # Canonical published-verified ledger (the adapter reads this).
     ledger.finalize_published_verified(quarter, week, _published_ledger(report))
     return report

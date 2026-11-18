@@ -14,7 +14,9 @@ from typing import Any
 
 from . import ledger
 from . import plan as plan_mod
+from . import scope as scope_mod
 from .client import DeployClient
+from scripts.canvas_llm_phase3 import assignment_policy as assignment_policy
 
 PREFLIGHT_TTL_MINUTES = 15
 
@@ -45,13 +47,88 @@ def _canvas_owned_message(message: str) -> str:
     return text
 
 
+def _assignment_snapshot(assignment: dict[str, Any] | None) -> dict[str, Any]:
+    """Normalize the identity fields used for preserved-object readback."""
+    assignment = assignment or {}
+    submission = assignment.get("submission_types")
+    if isinstance(submission, str):
+        submission = [submission]
+    return {
+        "assignment_id": assignment.get("id"),
+        "course_id": assignment.get("course_id"),
+        "title": assignment.get("name") or assignment.get("title"),
+        "assignment_group_id": assignment.get("assignment_group_id"),
+        "due_at": assignment.get("due_at"),
+        "points_possible": assignment.get("points_possible"),
+        "grading_type": assignment.get("grading_type"),
+        "submission_types": list(submission or []),
+        "omit_from_final_grade": assignment.get("omit_from_final_grade"),
+        "published": assignment.get("published"),
+    }
+
+
+def _verify_reconciled_live_assignment(
+    entry: dict[str, Any],
+    existing_by_course: dict[int, list[dict[str, Any]]],
+    groups_by_course: dict[int, dict[Any, str]],
+    client: DeployClient,
+    course_id: int,
+) -> tuple[bool, str]:
+    """Prove a SKIP target still matches the GET-only reconciliation snapshot."""
+    expected = entry.get("live_snapshot") or {}
+    assignment_id = entry.get("assignment_id")
+    live = next(
+        (a for a in existing_by_course.get(course_id, [])
+         if str(a.get("id")) == str(assignment_id)),
+        None,
+    )
+    if live is None:
+        return False, f"assignment id {assignment_id} is not in the live course list"
+    if course_id not in groups_by_course:
+        try:
+            groups_by_course[course_id] = {
+                g.get("id"): g.get("name")
+                for g in client.list_assignment_groups(int(course_id))
+            }
+        except Exception as exc:  # noqa: BLE001 - fail closed
+            return False, f"assignment group lookup failed ({type(exc).__name__})"
+    snapshot = _assignment_snapshot(live)
+    expected_group = expected.get("assignment_group")
+    actual_group = groups_by_course[course_id].get(live.get("assignment_group_id"))
+    checks = {
+        "title": (expected.get("title"), snapshot["title"]),
+        "due_at": (expected.get("due_at"), snapshot["due_at"]),
+        "points_possible": (expected.get("points_possible"), snapshot["points_possible"]),
+        "grading_type": (expected.get("grading_type"), snapshot["grading_type"]),
+        "submission_types": (
+            sorted(expected.get("submission_types") or []),
+            sorted(snapshot["submission_types"]),
+        ),
+        "omit_from_final_grade": (
+            expected.get("omit_from_final_grade"), snapshot["omit_from_final_grade"],
+        ),
+        "published": (expected.get("published"), snapshot["published"]),
+        "assignment_group": (expected_group, actual_group),
+    }
+    mismatches = [
+        f"{name}: expected {pair[0]!r}, live {pair[1]!r}"
+        for name, pair in checks.items() if pair[0] != pair[1]
+    ]
+    if mismatches:
+        return False, "; ".join(mismatches)
+    return True, ""
+
+
 def classify_assignment(proposed_title: str, existing_names: list[str]) -> str:
     """Classify a proposed assignment against existing live assignment names.
 
-    EXACT_MATCH — identical normalized name (safe idempotent skip)
-    AMBIGUOUS   — same base title modulo a trailing retake/copy/revised marker
-                  (block before write)
-    NEW         — no existing equivalent (create)
+    EXACT_MATCH     — identical normalized name (safe idempotent skip)
+    AMBIGUOUS       — same base title modulo a trailing retake/copy/revised
+                      marker (block before write)
+    SEMANTIC_MATCH  — same course, kind family, and lesson/test number, but a
+                      different title form or weekday (block before write;
+                      preserve the existing object and surface an owner choice)
+    NEW             — no existing equivalent (create)
     """
     n = _norm_name(proposed_title)
     existing = {_norm_name(e) for e in existing_names if (e or "").strip()}
@@ -61,6 +138,8 @@ def classify_assignment(proposed_title: str, existing_names: list[str]) -> str:
     for e in existing:
         if _strip_retake_marker(e) == base:
             return "AMBIGUOUS"
+    if assignment_policy.semantic_match(proposed_title, existing_names):
+        return "SEMANTIC_MATCH"
     return "NEW"
 
 
@@ -252,26 +331,60 @@ def _sha(text: str) -> str:
     return hashlib.sha256(text.encode("utf-8")).hexdigest()
 
 
-def run_preflight(quarter: int, week: int, client: DeployClient | None = None) -> dict[str, Any]:
+def run_preflight(
+    quarter: int,
+    week: int,
+    client: DeployClient | None = None,
+    *,
+    scoped: bool = False,
+    now: datetime | None = None,
+) -> dict[str, Any]:
     """Build + validate the deployment preflight (GET-only; no writes).
 
     ``client=None`` produces a plan-only (dry-run) preflight: it evaluates the
-    READY_TO_PUBLISH gate and emits the exact write plan, but performs no Canvas
-    GETs and marks live context unavailable. ``client`` performs GET-only live
+    readiness gate and emits the exact write plan, but performs no Canvas GETs
+    and marks live context unavailable. ``client`` performs GET-only live
     object resolution (course/page/group/duplicate).
+
+    ``scoped=True`` evaluates the explicit restricted-deployment scope instead
+    of the full-week READY_TO_PUBLISH gate. The global readiness result is still
+    recorded, never overwritten, and a scoped preflight requires live GETs.
     """
     import json as _json
 
-    plan = plan_mod.build_plan(quarter, week)
+    clock = now or datetime.now(timezone.utc)
+    if clock.tzinfo is None:
+        raise ValueError("preflight clock must include a timezone")
+    plan = plan_mod.build_plan(quarter, week, now=clock)
     blockers: list[str] = []
     warnings: list[str] = []
 
-    # ---- Hard gate: lifecycle must be READY_TO_PUBLISH -------------------
-    if not plan.get("ready_to_publish"):
-        blockers.append("week is not READY_TO_PUBLISH")
-        blockers.extend(plan.get("publish_blockers", []))
-    elif plan.get("status") != "READY_TO_PUBLISH":
-        blockers.append(f"lifecycle is {plan.get('status')!r}, not READY_TO_PUBLISH")
+    scope_record: dict[str, Any] = {}
+    scope_errors: list[str] = []
+    if scoped:
+        scope_record, scope_errors = scope_mod.load_scope(quarter, week)
+
+    # ---- Hard gate: full-week readiness OR explicit restricted scope ------
+    if scoped:
+        if scope_errors:
+            blockers.extend(scope_errors)
+        else:
+            blockers.extend(scope_mod.validate_scope(
+                scope_record, plan, quarter=quarter, week=week, now=clock,
+            ))
+        if client is None:
+            blockers.append(
+                "scoped deployment requires a live GET preflight (no plan-only scope)"
+            )
+    else:
+        if not plan.get("ready_to_publish"):
+            blockers.append("week is not READY_TO_PUBLISH")
+            blockers.extend(plan.get("publish_blockers", []))
+        elif plan.get("status") != "READY_TO_PUBLISH":
+            blockers.append(f"lifecycle is {plan.get('status')!r}, not READY_TO_PUBLISH")
+
+    # Assignment reconciliation is a release-wide hard gate in both modes.
+    blockers.extend(plan.get("reconciliation_blockers") or [])
 
     live: dict[str, Any] = {"courses": {}, "pages": {}, "assignment_groups": {},
                             "assignments": {}, "announcements": {}}
@@ -362,21 +475,80 @@ def run_preflight(quarter: int, week: int, client: DeployClient | None = None) -
 
     # ---- Assignment duplicate classification -----------------------------
     existing_cache: dict[int, list[str]] = {}
+    existing_by_course: dict[int, list[dict[str, Any]]] = {}
+    groups_by_course: dict[int, dict[Any, str]] = {}
     for a in plan.get("assignments", []):
         cid = a["course_id"]
         if client is None:
             continue
         if cid not in existing_cache:
             try:
-                existing_cache[cid] = [x.get("name") or "" for x in client.list_assignments(int(cid))]
+                existing_by_course[cid] = client.list_assignments(int(cid))
+                existing_cache[cid] = [x.get("name") or "" for x in existing_by_course[cid]]
             except Exception as exc:  # noqa: BLE001
                 blockers.append(f"assignment list failed for course {cid}: {type(exc).__name__}")
                 existing_cache[cid] = []
+                existing_by_course[cid] = []
         cls = classify_assignment(a.get("title", ""), existing_cache[cid])
         a["duplicate_classification"] = cls
         live["assignments"].setdefault(a["title"], cls)
         if cls == "AMBIGUOUS":
             blockers.append(f"assignment {a.get('title')!r}: ambiguous near-duplicate exists")
+        if cls == "SEMANTIC_MATCH":
+            blockers.append(
+                f"assignment {a.get('title')!r}: semantic duplicate candidate exists; "
+                "preserve the live object and surface an owner decision (no POST, no rename)"
+            )
+        # The plan action must agree with the live classification. A mismatch is
+        # never resolved by falling back to CREATE.
+        action = a.get("action")
+        if action == "CREATE" and cls != "NEW":
+            blockers.append(
+                f"assignment {a.get('title')!r}: reconciliation says CREATE but live "
+                f"classification is {cls}"
+            )
+        if action == "SKIP":
+            if cls != "EXACT_MATCH":
+                blockers.append(
+                    f"assignment {a.get('title')!r}: reconciliation says SKIP but live "
+                    f"classification is {cls}"
+                )
+            ok, detail = _verify_reconciled_live_assignment(
+                a, existing_by_course, groups_by_course, client, cid,
+            )
+            a["preserved_verified"] = ok
+            if not ok:
+                blockers.append(
+                    f"assignment {a.get('title')!r}: preserved live object changed ({detail})"
+                )
+
+    # ---- Explicitly protected assignments (read-only proof) ---------------
+    protected_evidence: list[dict[str, Any]] = []
+    for item in (scope_record.get("protected_assignments") or []) if scoped else []:
+        cid = item.get("course_id")
+        aid = item.get("assignment_id")
+        if client is None or cid is None or aid in (None, ""):
+            continue
+        try:
+            assignment = client.get_assignment(int(cid), str(aid))
+        except Exception as exc:  # noqa: BLE001 - fail closed
+            blockers.append(
+                f"protected assignment {aid}: GET failed ({type(exc).__name__})"
+            )
+            continue
+        snapshot = _assignment_snapshot(assignment)
+        if item.get("title") and snapshot.get("title") != item.get("title"):
+            blockers.append(
+                f"protected assignment {aid}: title is {snapshot.get('title')!r}, "
+                f"expected {item.get('title')!r}"
+            )
+        protected_evidence.append({
+            "course_id": int(cid),
+            "assignment_id": str(aid),
+            "expected_title": item.get("title"),
+            "snapshot": snapshot,
+        })
+    live["protected_assignments"] = protected_evidence
 
     # ---- Announcement duplicate identity (week-aware idempotency) ---------
     ann_cache: dict[int, list[dict[str, Any]]] = {}
@@ -414,11 +586,11 @@ def run_preflight(quarter: int, week: int, client: DeployClient | None = None) -
 
     ready = len(blockers) == 0
 
-    preflight_id = _sha(_json.dumps(plan, sort_keys=True, ensure_ascii=False) + _now())[:16]
+    preflight_id = _sha(_json.dumps(plan, sort_keys=True, ensure_ascii=False) + clock.isoformat())[:16]
     record = {
         "preflight_id": preflight_id,
-        "created_at": _now(),
-        "expires_at": (datetime.now(timezone.utc) + timedelta(minutes=PREFLIGHT_TTL_MINUTES)).isoformat(),
+        "created_at": clock.isoformat(),
+        "expires_at": (clock + timedelta(minutes=PREFLIGHT_TTL_MINUTES)).isoformat(),
         "ttl_minutes": PREFLIGHT_TTL_MINUTES,
         "quarter": quarter,
         "week": week,
@@ -431,6 +603,13 @@ def run_preflight(quarter: int, week: int, client: DeployClient | None = None) -
         "blockers": blockers,
         "ready": ready,
         "canvas_writes": 0,
+        "scope_only": bool(scoped),
+        "scope": scope_record if scoped else None,
+        "global_ready_to_publish": bool(plan.get("ready_to_publish")),
+        "global_publish_blockers": list(plan.get("publish_blockers") or []),
+        "exclusion_evidence": (
+            scope_mod.exclusion_evidence(plan, scope_record) if scoped else {}
+        ),
     }
     ledger.write_preflight(quarter, week, record)
     return record
@@ -444,6 +623,14 @@ def command_self_test() -> int:
     assert classify_assignment("SM5: Lesson 39 Homework", ["SM5: Lesson 39 Homework"]) == "EXACT_MATCH"
     assert classify_assignment("SM5: Lesson 39 Homework", ["SM5: Lesson 39 Homework (Retake)"]) == "AMBIGUOUS"
     assert classify_assignment("SM5: Lesson 39 Homework", ["SM5: Lesson 40 Homework"]) == "NEW"
+    assert classify_assignment(
+        "RM4: Tuesday Comprehension Questions \u2014 Lesson 60",
+        ["RM4: Thursday Comprehension Questions \u2014 Lesson 60"],
+    ) == "SEMANTIC_MATCH"
+    assert classify_assignment(
+        "RM4: Mastery Test 6", ["RM4: Reading Mastery Test 6"]
+    ) == "SEMANTIC_MATCH"
+    assert classify_assignment("MATH THNK", ["SM5: Lesson 40 Homework"]) == "NEW"
 
     # Weekly-announcement same-week identity must tolerate Canvas global assets.
     css = '<link rel="stylesheet" href="https://instructure-uploads/canvas_global_app.css">'

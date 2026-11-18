@@ -134,9 +134,16 @@ def cmd_approve(args: argparse.Namespace) -> int:
 
     hashes = summary["draft_hashes"].get(args.subject, {})
     src_hash = summary.get("source_hash")
+    # Bind the approval to the exact plan the owner reviewed. The fingerprint is
+    # derived from publish actions only, so it is stable across rebuilds and
+    # independent of approval state.
+    from scripts.canvas_llm_deploy import plan as deploy_plan
+    plan = deploy_plan.build_plan(quarter, week)
+    fingerprint = plan.get("plan_fingerprint")
     for g in targets:
         ap.set_state(quarter, week, args.subject, g, "APPROVED",
-                     draft_hash=hashes.get(g, ""), source_hash=src_hash, subjects=active)
+                     draft_hash=hashes.get(g, ""), source_hash=src_hash, subjects=active,
+                     plan_fingerprint=fingerprint)
 
     # Recompute the gate now that approvals changed.
     intake.build_intake(quarter=quarter, week=week, fresh=False, canvas=None, include_canvas_context=False)

@@ -174,17 +174,31 @@ def load_packet(quarter: int, week: int) -> dict[str, Any]:
     }
 
 
-def _load_assignment_reconciliation(quarter: int, week: int) -> dict[str, Any]:
-    """Read the staged GET-only assignment reconciliation (local, read-only).
+def _load_assignment_reconciliation(
+    quarter: int, week: int, *,
+    proposals: list[dict[str, Any]],
+    source_hash: str | None,
+    now: datetime | None = None,
+) -> tuple[dict[str, Any], list[str]]:
+    """Read and validate the staged GET-only assignment reconciliation.
 
-    Absent or unreadable reconciliation data leaves every proposal on the
-    historical CREATE path; it never fabricates an UPDATE identity.
+    Fail closed: an absent, malformed, stale, or mismatched report returns
+    errors. The caller must never fall back to CREATE when errors are present.
     """
-    path = imf.staging_dir(quarter, week) / "planner" / "assignment-reconciliation.json"
-    try:
-        return json.loads(path.read_text(encoding="utf-8"))
-    except (OSError, json.JSONDecodeError):
-        return {}
+    from scripts.canvas_llm_intake import assignment_reconciliation as ar
+
+    report, errors = ar.load_report(quarter, week)
+    if errors:
+        return report, errors
+    if not source_hash:
+        return report, [
+            "intake source_hash is missing; reconciliation cannot be bound to this release"
+        ]
+    errors = ar.validate_report(
+        report, quarter=quarter, week=week, proposals=proposals,
+        source_hash=source_hash, now=now,
+    )
+    return report, errors
 
 
 def _slug_for(week_code: str) -> str:
@@ -346,13 +360,22 @@ def build_plan(
 
     # Assignments: approved bundle only. The staged GET-only reconciliation
     # binds each proposal to its live identity and the exact correction, so an
-    # existing assignment is updated in place instead of duplicated.
-    reconciliation = _load_assignment_reconciliation(quarter, week)
+    # existing assignment is skipped in place instead of duplicated. When the
+    # report is missing, malformed, stale, or incomplete EVERY proposal becomes
+    # BLOCKED — there is no CREATE fallback for a production deployment.
+    reconciliation, reconciliation_errors = _load_assignment_reconciliation(
+        quarter, week,
+        proposals=list(pkt["assignments"]),
+        source_hash=summary.get("source_hash"),
+        now=now,
+    )
     reconciled = {
         (str(rec.get("course")), str(rec.get("title"))): rec
         for rec in reconciliation.get("results", [])
+        if isinstance(rec, dict)
     }
     assignments: list[dict[str, Any]] = []
+    reconciliation_blockers: list[str] = list(reconciliation_errors)
     for subject in active:
         if subjects.get(subject, {}).get("assignments", {}).get("state") != "APPROVED":
             continue
@@ -371,25 +394,56 @@ def build_plan(
                 "submission_types": a.get("submission_types", ["on_paper"]),
                 "omit_from_final_grade": a.get("omit_from_final_grade", False),
                 "description": a.get("description", ""),
-                "action": "CREATE",
+                "action": "BLOCKED",
             }
+            if reconciliation_errors:
+                entry["block_reason"] = (
+                    "assignment reconciliation is not usable for this release: "
+                    + "; ".join(reconciliation_errors)
+                )
+                entry["reconciliation_status"] = (
+                    "MISSING" if not reconciliation else "INVALID"
+                )
+                assignments.append(entry)
+                continue
             rec = reconciled.get((subject, str(a.get("title"))))
-            if rec:
-                classification = rec.get("classification")
-                live = rec.get("live") or {}
-                if classification == "UPDATE_REQUIRED":
-                    entry["action"] = "UPDATE"
-                    entry["assignment_id"] = live.get("assignment_id")
-                    entry["corrections"] = rec.get("corrections") or {}
-                    entry["live_due_at"] = live.get("due_at")
-                elif classification == "MATCH":
-                    entry["action"] = "SKIP"
-                    entry["assignment_id"] = live.get("assignment_id")
-                elif classification == "CREATE_REQUIRED":
-                    entry["action"] = "CREATE"
-                else:
-                    entry["action"] = "BLOCKED"
-                    entry["block_reason"] = rec.get("reason") or str(classification)
+            if rec is None:
+                reason = "reconciliation has no entry for this exact proposal"
+                entry["block_reason"] = reason
+                entry["reconciliation_status"] = "INCOMPLETE"
+                reconciliation_blockers.append(f"{a.get('title')!r}: {reason}")
+                assignments.append(entry)
+                continue
+            classification = rec.get("classification")
+            live = rec.get("live") or {}
+            entry["reconciliation_classification"] = classification
+            entry["reconciliation_verified_at"] = reconciliation.get("checked_at")
+            if classification == "UPDATE_REQUIRED":
+                # Never silently rewrite an existing teacher/student object.
+                entry["action"] = "BLOCKED"
+                entry["assignment_id"] = live.get("assignment_id")
+                entry["corrections"] = rec.get("corrections") or {}
+                entry["live_snapshot"] = live
+                entry["block_reason"] = (
+                    "existing assignment differs from the proposal; preserving the "
+                    "live object requires a separate explicit correction approval"
+                )
+                reconciliation_blockers.append(
+                    f"{a.get('title')!r}: live assignment differs "
+                    f"({', '.join(rec.get('differences') or [])})"
+                )
+            elif classification == "MATCH":
+                entry["action"] = "SKIP"
+                entry["assignment_id"] = live.get("assignment_id")
+                entry["live_snapshot"] = live
+            elif classification == "CREATE_REQUIRED":
+                entry["action"] = "CREATE"
+            else:
+                entry["action"] = "BLOCKED"
+                entry["block_reason"] = rec.get("reason") or str(classification)
+                reconciliation_blockers.append(
+                    f"{a.get('title')!r}: {rec.get('reason') or classification}"
+                )
             assignments.append(entry)
 
     # Weekly announcements: CREATE only for approved announcement artifact.
@@ -481,8 +535,10 @@ def build_plan(
 
     counts = {
         "pages_update": len(pages),
-        "assignments_create": len(assignments),
-        "assignments_update": 0,
+        "assignments_create": sum(1 for a in assignments if a.get("action") == "CREATE"),
+        "assignments_skip": sum(1 for a in assignments if a.get("action") == "SKIP"),
+        "assignments_update": sum(1 for a in assignments if a.get("action") == "UPDATE"),
+        "assignments_blocked": sum(1 for a in assignments if a.get("action") == "BLOCKED"),
         "announcements_create": len(announcements_plan) + len(reminders_plan),
         "announcements_update": 0,
         "deletes": 0,
@@ -507,6 +563,17 @@ def build_plan(
         "deletes": [],
         "untouched": untouched,
         "counts": counts,
+        "assignment_reconciliation": {
+            "status": ("INVALID" if reconciliation_errors else "VALID"),
+            "source": "planner/assignment-reconciliation.json",
+            "checked_at": reconciliation.get("checked_at"),
+            "source_hash": reconciliation.get("source_hash"),
+            "proposal_digest": reconciliation.get("proposal_digest"),
+            "schemaVersion": reconciliation.get("schemaVersion"),
+            "counts": reconciliation.get("counts") or {},
+            "errors": reconciliation_errors,
+        },
+        "reconciliation_blockers": reconciliation_blockers,
         "owner_publication_time": owner_publication_time,
     }
     result["agenda_hash"] = agenda_composite_hash(week_code, {

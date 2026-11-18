@@ -79,6 +79,55 @@ request and is not invoked by any LaunchAgent, script, or maintained runbook.
 Use `bin/canvas-weekly-rollover`; Owen's current commands are in
 `docs/canvas-planner-1-steps.md`.
 
+## Restricted (owner-scoped) release
+
+D-028 still holds: the rollover engine is the only publisher. A restricted
+release is a *narrower* rollover, never a second publisher.
+
+```bash
+# 1. GET-only assignment reconciliation -> local planner report (no writes)
+bin/canvas-intake reconcile --quarter 2 --week 6 --live
+
+# 2. Record the exact restricted scope, bound to the plan fingerprint
+bin/canvas-intake scope-authorize --quarter 2 --week 6 \
+  --subjects math,reading_spelling --artifacts page,assignments \
+  --protect "26442:1063967=RM4: Thursday Comprehension Questions — Lesson 60" \
+  --confirm "SCOPE Q2W6"
+
+# 3. GET-only scoped preflight (15-minute record, full live identity proof)
+bin/canvas-intake preflight --quarter 2 --week 6 --production --scoped
+
+# 4. Owner-confirmed restricted release through rollover.execute(early_content_only=True)
+bin/canvas-intake restricted-release --quarter 2 --week 6 --production \
+  --preflight-id <id> --confirm "ROLLOVER Q2W6" --authorize-live
+```
+
+The scope record (`planner/deployment-scope.json`) names the exact subjects,
+artifact types, exclusions, protected assignments, source hash, and plan
+fingerprint. `preflight --scoped` requires every scoped artifact to be approved
+against that exact plan and independently records zero actions for every
+excluded subject and artifact type. It never changes the intake manifest's
+global `ready_to_publish` or `status`; a scoped release and a full-week release
+remain distinguishable.
+
+The restricted manifest passed to rollover contains only the scoped academic
+pages and the CREATE/SKIP assignment actions. Weekly announcements, assessment
+reminders, Homeroom, front-page switches, and deletes are *absent*, not merely
+blocked. The result is `EARLY_CONTENT_PUBLISHED_VERIFIED` (never full-week
+`PUBLISHED_VERIFIED`). Local page and assignment before-state backups are
+written under the gitignored deployment ledger before the first write.
+
+## Assignment reconciliation is fail-closed
+
+`planner/assignment-reconciliation.json` must be GET-derived (schema 2), fresh
+(≤24 hours), bound to the current intake `source_hash`, and cover every
+proposal exactly once. Missing, malformed, stale, incomplete, or mismatched
+reconciliation makes **every** proposal `BLOCKED`; the planner never falls back
+to CREATE. Semantic or duplicate matches stay blocked and preserve the live
+object. Existing assignments are SKIP-only: an `UPDATE_REQUIRED` result blocks
+the release unless a separate explicit correction is approved.
+
+
 ## Write ordering (stop-on-failure)
 
 1. page backups (local, untracked, no token)

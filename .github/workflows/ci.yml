@@ -103,6 +103,7 @@ jobs:
           bash tests/canvas-llm-intake-test.sh
           bash tests/canvas-llm-deploy-test.sh
           python3 tests/canvas-llm-phase-3-announcement-test.py
+          python3 tests/canvas-llm-restricted-deployment-test.py
 
       - name: Live authorization
         run: python3 tests/canvas-live-authorization-test.py

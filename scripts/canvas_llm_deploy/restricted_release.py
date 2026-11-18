@@ -74,9 +74,19 @@ def build_manifest(
     courses: list[dict[str, Any]] = []
     for page in plan.get("pages") or []:
         subject = page["subject"]
+        if page.get("action") != "UPDATE":
+            raise RestrictedReleaseBlocked(
+                f"{subject}: page action {page.get('action')!r} is not UPDATE"
+            )
+        if page.get("approved") is not True:
+            raise RestrictedReleaseBlocked(f"{subject}: page is not approved for this plan")
         body = packet["page_bodies"].get(subject, "")
         if not body:
             raise RestrictedReleaseBlocked(f"{subject}: approved page body is missing")
+        if plan_mod._sha(body) != page.get("body_sha256"):
+            raise RestrictedReleaseBlocked(
+                f"{subject}: staged page body changed after approval"
+            )
         body_hash = rollover._canvas_body_hash(body)
         courses.append({
             "subject": subject,
@@ -97,6 +107,10 @@ def build_manifest(
         if action not in ("CREATE", "SKIP"):
             raise RestrictedReleaseBlocked(
                 f"{item.get('title')!r}: action {action!r} is not CREATE/SKIP"
+            )
+        if item.get("approved") is not True:
+            raise RestrictedReleaseBlocked(
+                f"{item.get('title')!r}: assignment is not approved for this plan"
             )
         assignments.append({
             "course": item.get("course"),
@@ -411,11 +425,13 @@ def command_self_test() -> int:
         (d / "drafts" / "math-page.html").write_text(
             "<div id='kl_wrapper_3'>agenda</div>", encoding="utf-8"
         )
+        body_sha = plan_mod._sha("<div id='kl_wrapper_3'>agenda</div>")
         plan = {
             "quarter": 2, "week": 6, "week_code": "Q2W6", "slug": "q2w6-test",
             "source_hash": "src-1", "plan_fingerprint": "fp-1",
             "pages": [{"subject": "math", "course_id": 26404, "action": "UPDATE",
-                       "title": "Q2W6", "approved": True}],
+                       "title": "Q2W6", "approved": True,
+                       "body_sha256": body_sha}],
             "assignments": [{
                 "course": "math", "course_id": 26404, "title": "SM5: Lesson 49 Homework",
                 "action": "CREATE", "due_date": "2026-11-16",

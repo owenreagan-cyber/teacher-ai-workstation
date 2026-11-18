@@ -1,0 +1,1824 @@
+{
+  "schemaVersion": 1,
+  "status": "PROPOSED_STANDARD",
+  "generatedAt": "2026-11-14T22:00:37.890544+00:00",
+  "schoolYear": "2026-2027",
+  "owner": "Owen Reagan",
+  "class": "4A - Reagan",
+  "room": "203",
+  "companionDocument": "docs/programs/canvas-llm/weekly-canvas-production-workflow-2026-2027.md",
+  "historicalAudit": ".local/canvas-llm/weekly-consistency-audit-q1w6-q2w5/",
+  "runtimeActivation": "none — documentation only",
+  "authorityLevels": {
+    "OWNER_APPROVED_POLICY": "Explicit owner approval in config or mission text. Binding.",
+    "LIVE_CANVAS_OBSERVED": "Observed live Canvas behavior. Evidence, not policy.",
+    "HISTORICAL_PRECEDENT": "Older approved example. Reference only.",
+    "IMPLEMENTED_CODE": "Enforced by repo code.",
+    "PROPOSED_STANDARD": "Introduced by this workflow. Needs owner ratification.",
+    "SUPERSEDED": "Replaced. Do not copy forward.",
+    "UNRESOLVED": "Cannot be settled from current evidence."
+  },
+  "globalBoundaries": [
+    {
+      "rule": "Canvas is GET-only until per-week deployment approval is recorded",
+      "authority": "OWNER_APPROVED_POLICY"
+    },
+    {
+      "rule": "No student grades, submissions, rosters, parent accounts, or private records are read",
+      "authority": "OWNER_APPROVED_POLICY"
+    },
+    {
+      "rule": "Credentials only from scripts/canvas_llm_phase22/canvas_credentials.py; token never printed or stored",
+      "authority": "IMPLEMENTED_CODE"
+    },
+    {
+      "rule": "Authoritative pacing tab is '4A - Reagan'; '4B - Reagan' is never used",
+      "authority": "OWNER_APPROVED_POLICY"
+    },
+    {
+      "rule": "Course identity is by course ID plus Reagan section, never title alone; Homeroom is 26429, never 26427",
+      "authority": "OWNER_APPROVED_POLICY"
+    },
+    {
+      "rule": "Blank pacing cells stay blank; nothing is invented",
+      "authority": "OWNER_APPROVED_POLICY"
+    },
+    {
+      "rule": "Inactive quarter subject pages stay untouched except the approved History redirect",
+      "authority": "OWNER_APPROVED_POLICY"
+    },
+    {
+      "rule": "Historical artifacts and backups are never overwritten",
+      "authority": "OWNER_APPROVED_POLICY"
+    }
+  ],
+  "canonicalSources": [
+    {
+      "concern": "identity",
+      "path": "config/fpk/identity.json",
+      "authority": "OWNER_APPROVED_POLICY"
+    },
+    {
+      "concern": "pacingSource",
+      "path": "config/fpk/pacing-source.json",
+      "authority": "OWNER_APPROVED_POLICY"
+    },
+    {
+      "concern": "instructionalWeeks",
+      "path": "config/curriculum/canvas/instructional-weeks-2026-2027.json",
+      "authority": "OWNER_APPROVED_POLICY"
+    },
+    {
+      "concern": "courseMappings",
+      "path": "config/curriculum/canvas-course-mappings.json",
+      "authority": "OWNER_APPROVED_POLICY"
+    },
+    {
+      "concern": "agendaStandard",
+      "path": "config/curriculum/canvas/weekly-agenda-standard-2026-2027.json",
+      "authority": "OWNER_APPROVED_POLICY"
+    },
+    {
+      "concern": "agendaPageRules",
+      "path": "config/curriculum/canvas/agenda-page-rules.json",
+      "authority": "OWNER_APPROVED_POLICY"
+    },
+    {
+      "concern": "assessmentPolicy",
+      "path": "config/curriculum/canvas/assessment-announcement-policy-2026-2027.json",
+      "authority": "OWNER_APPROVED_POLICY"
+    },
+    {
+      "concern": "weeklyUpdateContract",
+      "path": "config/curriculum/canvas/weekly-update-announcement-contract-2026-2027.json",
+      "authority": "OWNER_APPROVED_POLICY"
+    },
+    {
+      "concern": "assignmentRouting",
+      "path": "config/curriculum/canvas/assignment-routing-contract-2026-2027.json",
+      "authority": "OWNER_APPROVED_POLICY"
+    },
+    {
+      "concern": "mathPatterns",
+      "path": "config/curriculum/canvas/math-work-patterns-2026-2027.json",
+      "authority": "OWNER_APPROVED_POLICY"
+    },
+    {
+      "concern": "readingSpellingPatterns",
+      "path": "config/curriculum/canvas/reading-spelling-work-patterns-2026-2027.json",
+      "authority": "OWNER_APPROVED_POLICY"
+    },
+    {
+      "concern": "pacingTranslation",
+      "path": "config/curriculum/canvas/pacing-translation-rules-2026-2027.json",
+      "authority": "OWNER_APPROVED_POLICY"
+    },
+    {
+      "concern": "quarterActivation",
+      "path": "config/curriculum/canvas/quarter-subject-activation-2026-2027.json",
+      "authority": "OWNER_APPROVED_POLICY"
+    },
+    {
+      "concern": "factTestPowerUpMap",
+      "path": "config/curriculum/math/saxon-math-5/fact-test-practice-map.json",
+      "authority": "OWNER_APPROVED_POLICY"
+    },
+    {
+      "concern": "homeroomContent",
+      "path": "config/curriculum/canvas/homeroom-newsletter-content-2026-2027.json",
+      "authority": "OWNER_APPROVED_POLICY"
+    },
+    {
+      "concern": "birthdayAuthorization",
+      "path": "config/curriculum/canvas/homeroom-birthday-authorization-2026-2027.json",
+      "authority": "OWNER_APPROVED_POLICY"
+    },
+    {
+      "concern": "assignmentPolicyGate",
+      "path": "scripts/canvas_llm_phase3/assignment_policy.py",
+      "authority": "IMPLEMENTED_CODE"
+    },
+    {
+      "concern": "assignmentPolicyTest",
+      "path": "tests/canvas-llm-workflow-assignment-policy-test.sh",
+      "authority": "IMPLEMENTED_CODE"
+    },
+    {
+      "concern": "announcementSchedulingPolicy",
+      "path": "scripts/canvas_llm_phase3/announcement_scheduling.py",
+      "authority": "IMPLEMENTED_CODE"
+    },
+    {
+      "concern": "asapSchedulingTest",
+      "path": "tests/canvas-llm-asap-scheduling-test.sh",
+      "authority": "IMPLEMENTED_CODE"
+    },
+    {
+      "concern": "announcementLifecycle",
+      "path": "scripts/canvas_llm_intake/scheduling.py",
+      "authority": "IMPLEMENTED_CODE"
+    },
+    {
+      "concern": "announcementVerification",
+      "path": "scripts/canvas_llm_intake/announcement_verification.py",
+      "authority": "IMPLEMENTED_CODE"
+    },
+    {
+      "concern": "writeLedger",
+      "path": "scripts/canvas_llm_intake/write_ledger.py",
+      "authority": "IMPLEMENTED_CODE"
+    },
+    {
+      "concern": "announcementLifecycleTest",
+      "path": "tests/canvas-llm-announcement-lifecycle-test.sh",
+      "authority": "IMPLEMENTED_CODE"
+    },
+    {
+      "concern": "announcementMonitor",
+      "path": "scripts/canvas_llm_intake/announcement_monitor.py",
+      "authority": "IMPLEMENTED_CODE"
+    },
+    {
+      "concern": "announcementMonitorTest",
+      "path": "tests/canvas-llm-announcement-monitor-test.sh",
+      "authority": "IMPLEMENTED_CODE"
+    }
+  ],
+  "courses": [
+    {
+      "subject": "Math",
+      "courseId": 26404,
+      "section": "1A-Math-Reagan",
+      "quarterActivation": "all",
+      "agendaStandard": "two-column/full-width hybrid",
+      "authority": "OWNER_APPROVED_POLICY"
+    },
+    {
+      "subject": "Reading/Spelling",
+      "courseId": 26442,
+      "section": "1-Reading-Reagan",
+      "quarterActivation": "all",
+      "agendaStandard": "Reading + Spelling sub-headings with At Home",
+      "authority": "OWNER_APPROVED_POLICY"
+    },
+    {
+      "subject": "Language Arts",
+      "courseId": 28171,
+      "section": "1-Language Arts-Reagan",
+      "quarterActivation": "all",
+      "agendaStandard": "full-width In Class",
+      "authority": "OWNER_APPROVED_POLICY"
+    },
+    {
+      "subject": "History",
+      "courseId": 28165,
+      "section": "1-History / Science-Reagan",
+      "quarterActivation": "Q1,Q3 active; Q2,Q4 redirect-only",
+      "agendaStandard": "full-width In Class when active",
+      "authority": "OWNER_APPROVED_POLICY"
+    },
+    {
+      "subject": "Science",
+      "courseId": 28166,
+      "section": "1-History / Science-Reagan",
+      "quarterActivation": "Q2,Q4 active; Q1,Q3 untouched",
+      "agendaStandard": "full-width In Class",
+      "authority": "OWNER_APPROVED_POLICY"
+    },
+    {
+      "subject": "Homeroom",
+      "courseId": 26429,
+      "section": "11-Homeroom-Reagan",
+      "quarterActivation": "all",
+      "agendaStandard": "weekly newsletter page",
+      "authority": "OWNER_APPROVED_POLICY"
+    }
+  ],
+  "weeklyProcedure": [
+    {
+      "stage": 1,
+      "name": "Source acquisition",
+      "authority": "OWNER_APPROVED_POLICY",
+      "outputs": [
+        "raw pacing snapshot",
+        "normalized week",
+        "read timestamp"
+      ],
+      "prohibitions": [
+        "no inferred content",
+        "no alternate pacing tab"
+      ]
+    },
+    {
+      "stage": 2,
+      "name": "Canonical interpretation",
+      "authority": "OWNER_APPROVED_POLICY",
+      "outputs": [
+        "WeeklyPlan",
+        "assessment list",
+        "assignment list",
+        "announcement plan"
+      ],
+      "prohibitions": [
+        "no model-selected numbers, dates, courses, groups, or Power Ups"
+      ]
+    },
+    {
+      "stage": 3,
+      "name": "Teacher review",
+      "authority": "OWNER_APPROVED_POLICY",
+      "outputs": [
+        "teacher corrections",
+        "approval record"
+      ],
+      "prohibitions": [
+        "no implicit approval"
+      ]
+    },
+    {
+      "stage": 4,
+      "name": "Artifact planning",
+      "authority": "OWNER_APPROVED_POLICY",
+      "outputs": [
+        "manifest with object identity and action"
+      ]
+    },
+    {
+      "stage": 5,
+      "name": "Local generation",
+      "authority": "OWNER_APPROVED_POLICY",
+      "outputs": [
+        "HTML artifacts",
+        "announcement drafts"
+      ],
+      "prohibitions": [
+        "no Canvas calls"
+      ]
+    },
+    {
+      "stage": 6,
+      "name": "Validation",
+      "authority": "OWNER_APPROVED_POLICY",
+      "outputs": [
+        "machine-readable validation report"
+      ],
+      "prohibitions": [
+        "fail closed on any miss"
+      ]
+    },
+    {
+      "stage": 7,
+      "name": "Teacher approval",
+      "authority": "OWNER_APPROVED_POLICY",
+      "outputs": [
+        "explicit per-week deployment approval"
+      ]
+    },
+    {
+      "stage": 8,
+      "name": "Deployment",
+      "authority": "OWNER_APPROVED_POLICY",
+      "outputs": [
+        "page updates",
+        "new assignments only",
+        "announcement create/update",
+        "front-page actions"
+      ]
+    },
+    {
+      "stage": 9,
+      "name": "Readback",
+      "authority": "OWNER_APPROVED_POLICY",
+      "outputs": [
+        "verified object evidence"
+      ],
+      "prohibitions": [
+        "no partial-success claims"
+      ]
+    },
+    {
+      "stage": 10,
+      "name": "Archive",
+      "authority": "OWNER_APPROVED_POLICY",
+      "outputs": [
+        "before/after hashes",
+        "deployment report",
+        "readback evidence"
+      ]
+    }
+  ],
+  "agendaStandard": {
+    "authority": "OWNER_APPROVED_POLICY",
+    "wrapperId": "kl_wrapper_3",
+    "wrapperClasses": [
+      "kl_circle_left",
+      "kl_wrapper"
+    ],
+    "wrapperInlineStyle": "border-style: none;",
+    "bannerId": "kl_banner",
+    "firstActivitiesId": "kl_activities2",
+    "dayBlockIds": [
+      "kl_activities2",
+      "kl_custom_block_4",
+      "kl_custom_block_3",
+      "kl_custom_block_2",
+      "kl_custom_block_1"
+    ],
+    "dayOrder": [
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday"
+    ],
+    "colors": {
+      "blue": "#0065a7",
+      "pink": "#c51062",
+      "darkGray": "#333333",
+      "white": "#ffffff"
+    },
+    "banner": {
+      "title": "Weekly Agenda",
+      "titleSize": "18pt",
+      "subtitleSize": "10pt"
+    },
+    "subtitle": {
+      "template": "Quarter {Q}, Week {W} | Monday, {StartMonth StartDay} through Friday, {EndMonth EndDay}",
+      "authority": "PROPOSED_STANDARD",
+      "basis": "Q2W2 date standardization and Q2W2-Q2W5 live pages",
+      "note": "weekly-agenda-standard-2026-2027.json still records the compact form; update pending owner ratification"
+    },
+    "reminders": {
+      "heading": "Reminders",
+      "style": "pink #c51062 background, white text",
+      "content": "assessment names and dates only",
+      "forbidden": [
+        "study instructions",
+        "resource links",
+        "fact-skill detail",
+        "Reminders & Resources"
+      ],
+      "authority": "OWNER_APPROVED_POLICY"
+    },
+    "dayLayout": {
+      "twoColumn": "display:flex with two width:49% columns when In Class and At Home both have content",
+      "fullWidth": "single width:100% column when At Home is absent",
+      "readingSpelling": "left column: Reading then Spelling sub-headings; right column: At Home",
+      "authority": "OWNER_APPROVED_POLICY"
+    },
+    "labels": {
+      "inClass": "In Class",
+      "atHome": "At Home",
+      "reading": "Reading",
+      "spelling": "Spelling"
+    },
+    "contentRules": [
+      {
+        "rule": "No invented content; blank pacing stays blank",
+        "authority": "OWNER_APPROVED_POLICY"
+      },
+      {
+        "rule": "Non-instructional day shows exactly that fact (e.g. Labor Day — No School)",
+        "authority": "PROPOSED_STANDARD"
+      },
+      {
+        "rule": "Canonical assessment names only",
+        "authority": "OWNER_APPROVED_POLICY"
+      },
+      {
+        "rule": "En dashes in parent-facing ranges",
+        "authority": "PROPOSED_STANDARD"
+      },
+      {
+        "rule": "No study guides, no resource section, no subject-agenda links",
+        "authority": "OWNER_APPROVED_POLICY"
+      },
+      {
+        "rule": "Never use Q2W5 Math as a template (nested Thursday heading, duplicate Lesson 46)",
+        "authority": "LIVE_CANVAS_OBSERVED"
+      }
+    ],
+    "pageLifecycle": {
+      "rule": "One existing QxWx page per course per week. Update in place. Never create a weekly page.",
+      "missingPage": "FAIL — do not create replacement",
+      "duplicatePage": "FAIL",
+      "authority": "OWNER_APPROVED_POLICY"
+    },
+    "modulePolicy": {
+      "moduleName": "2026-2027 Agenda Pages",
+      "rule": "Keep the established QxWx position",
+      "authority": "OWNER_APPROVED_POLICY"
+    },
+    "frontPagePolicy": {
+      "activeSubjects": "Set the QxWx page as front page at activation (Friday 4:00 PM ET or approved owner-selected time)",
+      "inactiveSubjects": "Untouched",
+      "homeroom": "Newsletter page becomes Homeroom front page at deployment",
+      "authority": "OWNER_APPROVED_POLICY"
+    },
+    "atHomePolicy": {
+      "authority": "OWNER_APPROVED_POLICY",
+      "decidedAt": "2026-11-14",
+      "mathAndReading": {
+        "includeUnfinishedClassworkWhereEstablished": true,
+        "includeExactAssignedHomeworkWhereSupported": true,
+        "omitEntireSectionWhenNoHomework": true
+      },
+      "languageArtsScienceHistory": {
+        "omitEntireSectionWhenNoHomework": true
+      },
+      "neverInventHomework": true
+    }
+  },
+  "assessmentAnnouncements": {
+    "math": {
+      "authority": "OWNER_APPROVED_POLICY",
+      "pairing": [
+        "Written Assessment N (cumulative)",
+        "Fact Assessment N (40 facts)"
+      ],
+      "gradebookAssignments": 2,
+      "announcementCount": 1,
+      "requiredContent": [
+        "written assessment name and date",
+        "explicit statement that the written assessment is cumulative",
+        "fact assessment name and date",
+        "exact fact skill",
+        "Power Up letter from fact-test-practice-map.json",
+        "verified Canvas Power Up PDF link",
+        "closing"
+      ],
+      "powerUpSource": "config/curriculum/math/saxon-math-5/fact-test-practice-map.json#tests.N.powerUpCode",
+      "resourceRule": "FAIL CLOSED unless the Canvas file was fetched and confirmed",
+      "firstNotice": {
+        "targetLeadDays": 5,
+        "minimumLeadDays": 3
+      },
+      "reminder": {
+        "minLeadDays": 1,
+        "maxLeadDays": 2
+      },
+      "sendTime": "16:00 America/New_York",
+      "titleTemplate": "Written Assessment {N} & Fact Assessment {N} — {Weekday, Month D}",
+      "titleAuthority": "PROPOSED_STANDARD",
+      "titleMustContain": "both assessment numbers"
+    },
+    "reading": {
+      "authority": "OWNER_APPROVED_POLICY",
+      "pairing": [
+        "Reading Mastery Test N",
+        "Fluency Checkout N"
+      ],
+      "gradebookAssignments": 2,
+      "groups": {
+        "mastery": "Assessments",
+        "checkout": "Check Out"
+      },
+      "announcementCount": 1,
+      "sectionsRequired": 2,
+      "masterySection": "correct lesson/story range and only supported vocabulary, concepts, story details, practiced skills",
+      "fluencyGoal": {
+        "checkouts1to7": {
+          "wpm": 100,
+          "maxErrors": 2,
+          "wording": "read 100 words in less than one minute with no more than 2 errors",
+          "authority": "OWNER_APPROVED_POLICY"
+        },
+        "checkouts8to13": {
+          "status": "UNRESOLVED",
+          "authority": "UNRESOLVED"
+        },
+        "checkout14": "does not exist"
+      },
+      "titleTemplate": "Reading Mastery Test {N} & Fluency Checkout {N} — {Weekday, Month D}",
+      "titleAuthority": "PROPOSED_STANDARD",
+      "firstNotice": {
+        "targetLeadDays": 5,
+        "minimumLeadDays": 3
+      },
+      "reminder": {
+        "minLeadDays": 1,
+        "maxLeadDays": 2
+      }
+    },
+    "spelling": {
+      "authority": "OWNER_APPROVED_POLICY",
+      "courseId": 26442,
+      "group": "Assessments",
+      "announcementTitle": "RM4: Spelling Test {N} - Announcement",
+      "practiceRange": "Lessons N-4 through N-1",
+      "wordListSource": "config/curriculum/spelling/cumulative-test-word-lists.json",
+      "test25Gate": "explicit owner approval required",
+      "combineWithReading": "only when both assessments fall in the same week and the contract supports it",
+      "firstNotice": {
+        "targetLeadDays": 5,
+        "minimumLeadDays": 3
+      },
+      "reminder": {
+        "minLeadDays": 1,
+        "maxLeadDays": 2
+      },
+      "readingSpellingCourseId": 26442,
+      "assessmentTitle": "RM4: Spelling Test {N} - Assessment",
+      "announcementCourseId": 26442,
+      "languageArtsCourseId": 28171,
+      "languageArtsAssessmentTitle": "ELA4A Spelling Test {N} - Assessment",
+      "languageArtsAnnouncement": "forbidden",
+      "historicalPlacement": "ACCEPTED — eight historical LA spelling assessments are not repaired",
+      "dualCourseAuthority": "OWNER_APPROVED_POLICY"
+    },
+    "languageArts": {
+      "authority": "OWNER_APPROVED_POLICY",
+      "trigger": "Shurley Chapter Test only",
+      "notTriggeredBy": [
+        "checkup",
+        "review",
+        "classroom practice",
+        "lesson"
+      ],
+      "titleTemplate": "Shurley English Chapter {N} Test — {Weekday, Month D}",
+      "titleAuthority": "PROPOSED_STANDARD",
+      "firstNotice": true,
+      "reminder": true,
+      "terminology": "use only supported skill language; do not expand unexplained pacing codes"
+    },
+    "history": {
+      "authority": "OWNER_APPROVED_POLICY",
+      "activation": "Q1,Q3",
+      "q2q4": "maintain approved redirect when refreshed; no instructional announcements",
+      "announcementRule": "only clearly identified tests; no manufactured templates"
+    },
+    "science": {
+      "authority": "OWNER_APPROVED_POLICY",
+      "activation": "Q2,Q4",
+      "announcementRule": "only clearly identified tests/quizzes; a Check is not a quiz; no manufactured templates"
+    }
+  },
+  "weeklyUpdate": {
+    "authority": "OWNER_APPROVED_POLICY",
+    "structure": [
+      "greeting",
+      "week recap",
+      "upcoming preview",
+      "transition sentence",
+      "complete verified agenda HTML",
+      "Have a great weekend!",
+      "Mr. Reagan"
+    ],
+    "transitionTemplate": "The Canvas {Subject} page has been updated. Please see the upcoming week ahead.",
+    "agendaRequirement": "complete verified upcoming agenda, byte-for-byte the live page agenda HTML",
+    "forbidden": [
+      "link instead of agenda",
+      "missing weekday",
+      "missing Reminders",
+      "missing At Home",
+      "rebuilt agenda",
+      "unsupported information",
+      "two competing updates"
+    ],
+    "schedule": {
+      "day": "Friday",
+      "time": "16:00 America/New_York",
+      "fallback": "prior instructional day"
+    },
+    "scope": "one per active subject course; History only when active",
+    "validation": "embedded agenda hash equals live page agenda hash",
+    "creationRule": "For every active subject, create or update exactly one weekly agenda announcement for the upcoming week.",
+    "everyActiveSubject": true,
+    "requiredElements": [
+      "brief previous-week recap",
+      "upcoming-week preview",
+      "message directing families to the updated Canvas page",
+      "complete verified upcoming agenda embedded in the announcement",
+      "appropriate closing"
+    ],
+    "homeroom": "The weekly Homeroom family announcement uses the same approved content as the Homeroom weekly agenda page.",
+    "missedDeadlinePolicy": {
+      "authority": "OWNER_APPROVED_POLICY",
+      "approvedAt": "2026-11-15",
+      "timezone": "America/New_York",
+      "rule": "When the normal Friday 4:00 PM weekly announcement deadline has passed, use ASAP delivery.",
+      "appliesTo": [
+        "Math weekly update",
+        "Reading/Spelling weekly update",
+        "Language Arts weekly update",
+        "Science weekly update",
+        "History weekly update when active",
+        "Homeroom newsletter announcement"
+      ],
+      "doesNotApplyTo": [
+        "Math assessment first notice",
+        "Math assessment reminder",
+        "Reading assessment first notice",
+        "Reading assessment reminder",
+        "Spelling assessment scheduling",
+        "Other custom announcements"
+      ],
+      "boundaries": {
+        "08:00-19:59:59": {
+          "action": "PUBLISH_IMMEDIATELY",
+          "detail": "Publish and send immediately after deployment authorization."
+        },
+        "before-08:00": {
+          "action": "SCHEDULE_TODAY_08_00",
+          "detail": "Schedule for 8:00 AM that same day."
+        },
+        "20:00-or-later": {
+          "action": "SCHEDULE_NEXT_DAY_08_00",
+          "detail": "Schedule for 8:00 AM the following day."
+        }
+      },
+      "pseudoCode": [
+        "if time >= 08:00 and time < 20:00: action = PUBLISH_IMMEDIATELY",
+        "elif time < 08:00: action = SCHEDULE_TODAY_08_00",
+        "else: action = SCHEDULE_NEXT_DAY_08_00"
+      ],
+      "evaluationInput": "actual local date and time at deployment preparation, not a hardcoded date",
+      "recomputeAtDeployment": true,
+      "executionRequiresDeploymentAuthorization": true,
+      "examples": [
+        {
+          "local": "Saturday 10:00 AM",
+          "action": "PUBLISH_IMMEDIATELY"
+        },
+        {
+          "local": "Saturday 7:00 PM",
+          "action": "PUBLISH_IMMEDIATELY"
+        },
+        {
+          "local": "Saturday 10:00 PM",
+          "action": "SCHEDULE_NEXT_DAY_08_00",
+          "scheduled": "Sunday 8:00 AM"
+        },
+        {
+          "local": "Sunday 6:00 AM",
+          "action": "SCHEDULE_TODAY_08_00",
+          "scheduled": "Sunday 8:00 AM"
+        },
+        {
+          "local": "Sunday 10:00 AM",
+          "action": "PUBLISH_IMMEDIATELY"
+        },
+        {
+          "local": "Sunday 9:00 PM",
+          "action": "SCHEDULE_NEXT_DAY_08_00",
+          "scheduled": "Monday 8:00 AM"
+        }
+      ],
+      "implementationModule": "scripts/canvas_llm_phase3/announcement_scheduling.py",
+      "regressionTest": "tests/canvas-llm-asap-scheduling-test.sh"
+    }
+  },
+  "assignmentStandard": {
+    "authority": "OWNER_APPROVED_POLICY",
+    "universalSettings": {
+      "pointsPossible": 100,
+      "gradingType": "percent",
+      "submissionTypes": [
+        "on_paper"
+      ],
+      "omitFromFinalGrade": false,
+      "dueTime": "23:59",
+      "timezone": "America/New_York",
+      "dueDate": "same calendar day as instructional day",
+      "unlockLock": "none",
+      "published": true,
+      "publishedNote": "Only after teacher approval and live readback; preparation itself never publishes."
+    },
+    "paperHomeworkRule": {
+      "rule": "Ordinary paper homework assigned on a school day is due that same day at 11:59 PM ET in Canvas",
+      "authority": "OWNER_APPROVED_POLICY",
+      "note": "Canvas reporting due date is not the physical hand-in time"
+    },
+    "archetypes": [
+      {
+        "archetype": "math_lesson_homework",
+        "kind": "math_homework",
+        "courseId": 26404,
+        "group": "Homework/Class Work",
+        "naming": "SM5: Lesson {N} Homework",
+        "descriptionRule": "Keep the canonical short title. Put the problem set in the description.",
+        "authority": "OWNER_APPROVED_POLICY",
+        "autoPrepareGradebook": true
+      },
+      {
+        "archetype": "math_classwork",
+        "kind": "math_classwork",
+        "courseId": 26404,
+        "group": "Homework/Class Work",
+        "naming": "SM5: Lesson {N} Classwork",
+        "descriptionRule": "Keep the canonical short title. Put problems such as 1-10 in the description.",
+        "authority": "OWNER_APPROVED_POLICY",
+        "autoPrepareGradebook": true
+      },
+      {
+        "archetype": "math_written_assessment",
+        "courseId": 26404,
+        "group": "Written Assessments",
+        "naming": "SM5: Written Assessment {N}",
+        "authority": "OWNER_APPROVED_POLICY",
+        "autoPrepareGradebook": true
+      },
+      {
+        "archetype": "math_fact_assessment",
+        "courseId": 26404,
+        "group": "Fact Assessments",
+        "naming": "SM5: Fact Assessment {N}",
+        "authority": "OWNER_APPROVED_POLICY",
+        "autoPrepareGradebook": true
+      },
+      {
+        "archetype": "reading_workbook_classwork",
+        "kind": "reading_classwork",
+        "courseId": 26442,
+        "group": "Homework",
+        "naming": "RM4: {weekday} Workbook Classwork — Lesson {N}",
+        "authority": "OWNER_APPROVED_POLICY",
+        "autoPrepareGradebook": true
+      },
+      {
+        "archetype": "reading_comprehension",
+        "kind": "reading_homework",
+        "courseId": 26442,
+        "group": "Homework",
+        "naming": "RM4: {weekday} Comprehension Questions — Lesson {N}",
+        "authority": "OWNER_APPROVED_POLICY",
+        "autoPrepareGradebook": true
+      },
+      {
+        "archetype": "reading_workbook",
+        "courseId": 26442,
+        "group": "Homework",
+        "naming": "RM4: Lesson {N} Workbook",
+        "authority": "OWNER_APPROVED_POLICY",
+        "autoPrepareGradebook": true,
+        "legacyNaming": true,
+        "note": "Historical workbook title form. New work uses the weekday Workbook Classwork form."
+      },
+      {
+        "archetype": "reading_workbook_comprehension",
+        "courseId": 26442,
+        "group": "Homework",
+        "naming": "RM4: Lesson {N} Workbook and Comprehension",
+        "authority": "OWNER_APPROVED_POLICY",
+        "autoPrepareGradebook": true,
+        "legacyNaming": true,
+        "note": "Historical combined workbook/comprehension title form. New work emits separate objects."
+      },
+      {
+        "archetype": "reading_mastery_test",
+        "courseId": 26442,
+        "group": "Assessments",
+        "naming": "RM4: Mastery Test {N}",
+        "authority": "OWNER_APPROVED_POLICY",
+        "autoPrepareGradebook": true
+      },
+      {
+        "archetype": "reading_fluency_checkout",
+        "courseId": 26442,
+        "group": "Check Out",
+        "naming": "RM4: Fluency Checkout {N}",
+        "authority": "OWNER_APPROVED_POLICY",
+        "autoPrepareGradebook": true
+      },
+      {
+        "archetype": "spelling_test",
+        "courseId": 26442,
+        "group": "Assessments",
+        "naming": "RM4: Spelling Test {N} - Assessment",
+        "authority": "OWNER_APPROVED_POLICY",
+        "autoPrepareGradebook": true,
+        "dualCourse": true,
+        "announcementTitle": "RM4: Spelling Test {N} - Announcement",
+        "languageArtsTitle": "ELA4A Spelling Test {N} - Assessment"
+      },
+      {
+        "archetype": "la_classroom_practice",
+        "courseId": 28171,
+        "group": "Classwork",
+        "naming": "Classroom Practice {N}",
+        "authority": "OWNER_APPROVED_POLICY",
+        "autoPrepareGradebook": false
+      },
+      {
+        "archetype": "la_chapter_test",
+        "courseId": 28171,
+        "group": "Assessments",
+        "naming": "ELA4: Chapter {N} Test",
+        "authority": "OWNER_APPROVED_POLICY",
+        "autoPrepareGradebook": true
+      },
+      {
+        "archetype": "history_assessment",
+        "courseId": 28165,
+        "group": "Assignments",
+        "naming": "HIST4: Chapter {N} Assessment",
+        "authority": "PROPOSED_STANDARD",
+        "autoPrepareGradebook": "conditional",
+        "autoPrepareNote": "only when the WeeklyPlan explicitly identifies a test",
+        "condition": "explicitly identified as a test in the reviewed WeeklyPlan"
+      },
+      {
+        "archetype": "science_chapter",
+        "courseId": 28166,
+        "group": "Assignments",
+        "naming": "SCI4: Chapter {N}",
+        "authority": "PROPOSED_STANDARD",
+        "autoPrepareGradebook": false
+      },
+      {
+        "archetype": "science_unit_test",
+        "courseId": 28166,
+        "group": "Assignments",
+        "naming": "SCI4: Unit Test — {unit}",
+        "authority": "PROPOSED_STANDARD",
+        "autoPrepareGradebook": true
+      },
+      {
+        "archetype": "science_quiz",
+        "courseId": 28166,
+        "group": "Assignments",
+        "naming": "SCI4: Chapter {N} Quiz",
+        "autoPrepareGradebook": false,
+        "authority": "OWNER_APPROVED_POLICY"
+      },
+      {
+        "archetype": "math_investigation",
+        "courseId": 26404,
+        "group": null,
+        "naming": "Investigation {N}",
+        "autoPrepareGradebook": false,
+        "authority": "OWNER_APPROVED_POLICY"
+      },
+      {
+        "archetype": "history_activity",
+        "courseId": 28165,
+        "group": "Assignments",
+        "naming": "HIST4: {activity}",
+        "autoPrepareGradebook": false,
+        "authority": "OWNER_APPROVED_POLICY"
+      }
+    ],
+    "duplicateIdentity": "course + archetype + canonical title",
+    "historicalAnomalies": {
+      "status": "SUPERSEDED",
+      "examples": [
+        "pass_fail grading",
+        "submission_types none",
+        "omit_from_final_grade true",
+        "unpublished sample assignment"
+      ],
+      "spellingPlacement": "ACCEPTED — not a defect, not migrated"
+    },
+    "autoPrepare": {
+      "authority": "OWNER_APPROVED_POLICY",
+      "decidedAt": "2026-11-17",
+      "supersedes": {
+        "decidedAt": "2026-11-14",
+        "rule": "Automatically prepare gradebook assignments ONLY for tests explicitly identified in the approved pacing and teacher-reviewed WeeklyPlan.",
+        "status": "SUPERSEDED",
+        "scope": "The tests-only restriction is superseded only for pacing-derived Math homework, Math classwork, Reading workbook classwork, and Reading comprehension work as defined below. Tests and assessments remain permitted."
+      },
+      "rule": "Automatically prepare gradebook assignments for tests/assessments explicitly identified in the approved pacing and teacher-reviewed WeeklyPlan, AND for legitimate pacing-derived Math and Reading homework, classwork, Reading workbook, and comprehension work. Preparation is not publication. Quizzes, chapter activities, worksheets, investigations, projects, ordinary practice, and all other subjects remain agenda-only unless a complete structured owner approval matches the exact proposed object.",
+      "allowedKinds": [
+        "written_assessment",
+        "fact_assessment",
+        "mastery_test",
+        "fluency_checkout",
+        "spelling_test",
+        "chapter_test",
+        "unit_test",
+        "math_homework",
+        "math_classwork",
+        "reading_homework",
+        "reading_classwork"
+      ],
+      "forbiddenKinds": [
+        "quiz",
+        "chapter_activity",
+        "worksheet",
+        "homework",
+        "classwork",
+        "practice",
+        "investigation",
+        "project",
+        "review",
+        "checkup"
+      ],
+      "scopedKinds": {
+        "math_homework": {
+          "courseId": 26404,
+          "course": "Math",
+          "group": "Homework/Class Work",
+          "archetype": "math_lesson_homework",
+          "internalAliases": ["homework_accuracy_grade"],
+          "source": "pacing-derived Math lesson homework on the owner homework schedule"
+        },
+        "math_classwork": {
+          "courseId": 26404,
+          "course": "Math",
+          "group": "Homework/Class Work",
+          "archetype": "math_classwork",
+          "internalAliases": ["classwork_accuracy_grade"],
+          "source": "pacing-derived Math accuracy classwork on the designated classwork day"
+        },
+        "reading_homework": {
+          "courseId": 26442,
+          "course": "Reading/Spelling",
+          "group": "Homework",
+          "archetype": "reading_comprehension",
+          "internalAliases": ["reading_homework"],
+          "source": "pacing-derived Reading comprehension homework"
+        },
+        "reading_classwork": {
+          "courseId": 26442,
+          "course": "Reading/Spelling",
+          "group": "Homework",
+          "archetype": "reading_workbook_classwork",
+          "internalAliases": ["reading_classwork"],
+          "source": "pacing-derived Reading workbook classwork"
+        }
+      },
+      "scopeLimits": {
+        "subjects": ["math", "reading_spelling"],
+        "courses": [26404, 26442],
+        "neverBroadens": [
+          "quizzes",
+          "chapter activities",
+          "worksheets",
+          "investigations",
+          "projects",
+          "ordinary practice",
+          "Language Arts classroom practice",
+          "Science chapter work or quizzes",
+          "History activities",
+          "any unknown or ambiguous object"
+        ],
+        "historyQ2": "inactive; protected; never auto-prepared while inactive",
+        "notes": "Generic homework/classwork kinds remain forbidden. Only the four subject-scoped internal kinds may auto-prepare, and only in their verified course and assignment group."
+      },
+      "preparation": {
+        "preparationIsNotPublication": true,
+        "requiresTeacherApproval": true,
+        "requiresLiveReadback": true,
+        "published": false,
+        "note": "Preparing a draft never publishes. Teacher approval and post-write live readback remain mandatory."
+      },
+      "universalInvariants": {
+        "pointsPossible": 100,
+        "gradingType": "percent",
+        "submissionTypes": ["on_paper"],
+        "omitFromFinalGrade": false,
+        "dueTime": "23:59",
+        "timezone": "America/New_York",
+        "dueDate": "same instructional day",
+        "unlockLock": "none"
+      },
+      "duplicateIdentity": "course + kind + canonical title",
+      "semanticDuplicateIdentity": "course + kind family + lesson/test number",
+      "semanticDuplicateBehavior": "Do not silently POST another assignment. Do not rename an existing assignment. Preserve live assignment IDs, due dates, groups, and user work; surface an owner decision.",
+      "unknownKindBehavior": "fail closed — no gradebook assignment",
+      "ambiguousObjectBehavior": "fail closed — no gradebook assignment or write; surface an owner question",
+      "unresolvedTokenBehavior": "preserve the pacing token verbatim as a question; never invent an assessment family",
+      "agendaEligibleKinds": [
+        "quiz",
+        "chapter_activity",
+        "worksheet",
+        "classwork",
+        "homework",
+        "investigation",
+        "project"
+      ],
+      "explicitOwnerRequest": {
+        "allowed": true,
+        "requiresApprovalRecord": true,
+        "requiredFields": [
+          "owner_identity",
+          "request_id",
+          "course",
+          "assignment_type",
+          "assignment_title",
+          "approval_status",
+          "timestamp"
+        ],
+        "optionalFields": [
+          "expires_at",
+          "revoked_at"
+        ],
+        "validation": "fail closed on missing field, wrong owner, wrong course, wrong title, wrong type, non-APPROVED status, future timestamp, revoked approval, or expired approval",
+        "booleanBypass": "forbidden",
+        "note": "If Owen explicitly requests an additional assignment, follow that specific instruction and its approval requirements."
+      },
+      "spellingDualCourse": {
+        "authority": "OWNER_APPROVED_POLICY",
+        "decidedAt": "2026-11-14",
+        "readingSpelling": {
+          "courseId": 26442,
+          "assessmentTitle": "RM4: Spelling Test {N} - Assessment",
+          "assessmentGroup": "Assessments",
+          "announcementTitle": "RM4: Spelling Test {N} - Announcement"
+        },
+        "languageArts": {
+          "courseId": 28171,
+          "assessmentTitle": "ELA4A Spelling Test {N} - Assessment",
+          "assessmentGroup": "Assessments",
+          "announcement": "forbidden"
+        },
+        "historicalPlacement": {
+          "status": "ACCEPTED",
+          "rule": "Eight historical spelling assessments in Language Arts are accepted history. They are not a defect and must not be repaired retroactively."
+        }
+      }
+    }
+  },
+  "homeroomNewsletter": {
+    "authority": "OWNER_APPROVED_POLICY",
+    "architecture": "one rolling family newsletter updated weekly in the existing QxWx Homeroom page slot",
+    "frontPage": {
+      "rule": "newsletter page becomes Homeroom front page at deployment",
+      "authority": "OWNER_APPROVED_POLICY"
+    },
+    "preserve": [
+      "approved visual design",
+      "important dates",
+      "birthday section",
+      "evergreen content",
+      "Family Quick Links",
+      "classroom updates",
+      "approved flyer links"
+    ],
+    "birthdays": {
+      "source": "owner-approved private roster",
+      "privacy": "never in git, tests, logs, or model prompts",
+      "rule": "exactly one section and one card per student",
+      "authority": "OWNER_APPROVED_POLICY"
+    },
+    "expiredEvents": "remove on every update",
+    "duplicatePrevention": "one birthday section, unique section headings, balanced wrapper, no duplicate blocks",
+    "flyerRule": "no blank iframe; only verified links",
+    "cadence": "weekly",
+    "cadenceStatus": "OWNER_APPROVED_POLICY",
+    "cadenceConfigConflict": {
+      "status": "RESOLVED",
+      "previous": "monthly",
+      "updatedFiles": [
+        "config/curriculum/canvas/agenda-page-rules.json",
+        "config/curriculum/canvas-course-mappings.json"
+      ],
+      "authority": "OWNER_APPROVED_POLICY",
+      "decidedAt": "2026-11-14"
+    },
+    "dualRole": {
+      "authority": "OWNER_APPROVED_POLICY",
+      "decidedAt": "2026-11-14",
+      "weeklyAgendaPage": true,
+      "familyAnnouncement": true,
+      "sameApprovedContent": true,
+      "rule": "The weekly Homeroom newsletter is both the Homeroom weekly agenda page and the Homeroom family announcement. Use the same approved content for both."
+    },
+    "announcement": {
+      "courseId": 26429,
+      "rule": "one family announcement per week using the same approved newsletter content",
+      "authority": "OWNER_APPROVED_POLICY"
+    }
+  },
+  "duplicatePrevention": {
+    "authority": "OWNER_APPROVED_POLICY",
+    "announcementIdentity": "course + announcement family + source event + assessment date + notice type",
+    "rules": [
+      "create only when no object with the identity exists",
+      "update in place when it exists",
+      "never duplicate a weekly update because the page changed",
+      "never backdate new objects to fix history",
+      "if two objects already share an identity, stop and report"
+    ],
+    "pageIdentity": "course + QxWx slug",
+    "assignmentIdentity": "course + archetype + canonical title"
+  },
+  "gates": [
+    {
+      "gate": "G1",
+      "name": "Teacher review",
+      "proof": "approved Monday–Friday plan"
+    },
+    {
+      "gate": "G2",
+      "name": "Local build",
+      "proof": "artifacts generated locally, zero Canvas writes"
+    },
+    {
+      "gate": "G3",
+      "name": "Validation",
+      "proof": "all checks PASS"
+    },
+    {
+      "gate": "G4",
+      "name": "Deployment approval",
+      "proof": "explicit per-week approval naming objects"
+    },
+    {
+      "gate": "G5",
+      "name": "Deployment",
+      "proof": "only approved objects and times"
+    },
+    {
+      "gate": "G6",
+      "name": "Readback",
+      "proof": "every changed object re-GET and verified"
+    },
+    {
+      "gate": "G7",
+      "name": "Archive",
+      "proof": "complete evidence package"
+    }
+  ],
+  "readback": {
+    "authority": "OWNER_APPROVED_POLICY",
+    "pageFields": [
+      "id",
+      "course",
+      "slug",
+      "title",
+      "published",
+      "moduleId",
+      "modulePosition",
+      "bodyHash",
+      "frontPage"
+    ],
+    "assignmentFields": [
+      "id",
+      "course",
+      "group",
+      "title",
+      "points",
+      "gradingType",
+      "submissionTypes",
+      "dueDate",
+      "dueTime",
+      "omitFromFinalGrade",
+      "published"
+    ],
+    "announcementFields": [
+      "id",
+      "course",
+      "title",
+      "messageHash",
+      "published",
+      "delayedPostAt",
+      "duplicateIdentity"
+    ],
+    "homeroomFields": [
+      "pageId",
+      "frontPage",
+      "birthdaySectionCount",
+      "duplicateBlocks",
+      "tagBalance"
+    ],
+    "mismatchBehavior": "FAIL and report the exact object"
+  },
+  "archive": {
+    "authority": "OWNER_APPROVED_POLICY",
+    "weeklyDirectory": ".local/canvas-llm/<week>-build-preview/",
+    "required": [
+      "pacing snapshot",
+      "WeeklyPlan",
+      "final HTML",
+      "assignment manifest",
+      "announcement manifest",
+      "deployment report",
+      "before/after hashes",
+      "readback evidence"
+    ]
+  },
+  "modelParticipation": {
+    "authority": "OWNER_APPROVED_POLICY",
+    "deterministicOwns": [
+      "pacing values",
+      "dates",
+      "course identity",
+      "assignment settings",
+      "assessment numbers",
+      "Power Up mappings",
+      "due dates",
+      "scheduling",
+      "object identity"
+    ],
+    "modelMay": [
+      "translate terse entries",
+      "draft family-facing prose",
+      "match approved style",
+      "suggest improvements",
+      "explain differences"
+    ],
+    "modelMayNot": [
+      "change numbers",
+      "change dates",
+      "change courses",
+      "change groups",
+      "change Power Ups",
+      "change due dates",
+      "change schedules",
+      "invent curriculum",
+      "select resources"
+    ],
+    "teacherCorrections": {
+      "storage": "structured learning examples",
+      "autoTrain": false
+    }
+  },
+  "historicalLessons": [
+    {
+      "lesson": "Q1W8–Q2W1 Reading/Spelling lost At Home columns",
+      "rule": "At Home mandatory when homework exists"
+    },
+    {
+      "lesson": "Q2W2 changed subtitle and RS labels",
+      "rule": "one subtitle form, one RS sub-heading pattern"
+    },
+    {
+      "lesson": "Q1W9 short Agenda Updated announcements",
+      "rule": "weekly update must embed full agenda"
+    },
+    {
+      "lesson": "Q2W1/Q2W5 Math announcement != page",
+      "rule": "validate embedded agenda hash against live page"
+    },
+    {
+      "lesson": "Q1W6/Q2W2 reminders only",
+      "rule": "first notice + reminder or recorded exception"
+    },
+    {
+      "lesson": "Spelling tests were placed in Language Arts only",
+      "rule": "future spelling uses the dual-course set; historical placement is accepted and not repaired"
+    },
+    {
+      "lesson": "Q2W5 Math nested Thursday heading",
+      "rule": "day heading belongs to its own block; no template reuse"
+    },
+    {
+      "lesson": "Q2W5 duplicate birthday fragment",
+      "rule": "one birthday section; balanced wrapper"
+    },
+    {
+      "lesson": "Homeroom newsletter moved between surfaces",
+      "rule": "one weekly page slot; front page at deployment"
+    },
+    {
+      "lesson": "Q1W6/Q2W3 page/pacing mismatches",
+      "rule": "pacing is source of truth; overrides explicit"
+    },
+    {
+      "lesson": "monthly cadence config vs weekly live",
+      "rule": "weekly practice recorded; config update unresolved"
+    },
+    {
+      "lesson": "Historical homework/classwork/quizzes were created as gradebook assignments",
+      "rule": "Pacing-derived Math/Reading homework and classwork auto-prepare under the 2026-11-17 policy; quizzes, activities, worksheets, investigations, projects, and ordinary practice remain agenda content only"
+    }
+  ],
+  "unresolvedDecisionsFile": ".local/canvas-llm/weekly-consistency-audit-q1w6-q2w5/unresolved-decisions.json",
+  "unresolvedDecisions": [
+    "Ratify the weekday subtitle form and update the machine-readable standard",
+    "Ratify mandatory Reading/Spelling sub-headings",
+    "Decide whether historical weekly-update gaps are left as history or backfilled",
+    "Confirm Q1W6/Q1W7/Q2W5 page-vs-pacing intent"
+  ],
+  "reconciledAt": "2026-11-17T00:00:00.000000+00:00",
+  "reconciledBy": "Owen Reagan",
+  "reconciliationStatus": "OWNER_APPROVED_POLICY_APPLIED",
+  "reconciledDecisions": [
+    {
+      "decision": "Gradebook assignments are prepared for tests only",
+      "authority": "OWNER_APPROVED_POLICY",
+      "decidedAt": "2026-11-14",
+      "status": "SUPERSEDED",
+      "supersededAt": "2026-11-17",
+      "supersededBy": "Pacing-derived Math/Reading homework, classwork, workbook, and comprehension work auto-prepare; tests and assessments remain permitted"
+    },
+    {
+      "decision": "Spelling test uses the dual-course object set",
+      "authority": "OWNER_APPROVED_POLICY",
+      "decidedAt": "2026-11-14"
+    },
+    {
+      "decision": "Every active subject gets one weekly agenda announcement",
+      "authority": "OWNER_APPROVED_POLICY",
+      "decidedAt": "2026-11-14"
+    },
+    {
+      "decision": "At Home omitted entirely when no homework exists",
+      "authority": "OWNER_APPROVED_POLICY",
+      "decidedAt": "2026-11-14"
+    },
+    {
+      "decision": "Homeroom newsletter serves as weekly page and family announcement",
+      "authority": "OWNER_APPROVED_POLICY",
+      "decidedAt": "2026-11-14"
+    },
+    {
+      "decision": "Historical Spelling placement in Language Arts is accepted and not repaired",
+      "authority": "OWNER_APPROVED_POLICY",
+      "decidedAt": "2026-11-14"
+    },
+    {
+      "decision": "Pacing-derived Math and Reading homework, classwork, workbook, and comprehension work auto-prepare as 100-point percent on-paper assignments with same-day 11:59 PM ET due dates; preparation does not authorize publication; teacher approval and live readback remain required",
+      "authority": "OWNER_APPROVED_POLICY",
+      "decidedAt": "2026-11-17"
+    }
+  ],
+  "implementationFollowUps": [
+    {
+      "id": "FU-01",
+      "area": "legacy phase22 assignment draft generator",
+      "detail": "Migrated to gradebook_allowed and the 2026-11-17 scoped Math/Reading policy filter.",
+      "status": "RESOLVED",
+      "resolvedAt": "2026-11-17"
+    },
+    {
+      "id": "FU-02",
+      "area": "legacy phase22/23/24 monthly newsletter demos",
+      "detail": "These fixtures still serialize a monthly newsletter object. The standardized weekly workflow uses the weekly page slot; the demos are not the production weekly path.",
+      "status": "UNRESOLVED (legacy fixture)",
+      "recommendation": "Either regenerate the demos as weekly or mark them historical in a later cleanup."
+    },
+    {
+      "id": "FU-03",
+      "area": "Phase 21D sandbox learning agent and Q1W2 live harness",
+      "detail": "Sandbox/historical entrypoints remain in the repo. The Q1W2 live harness is a historical fixture path; the Phase 21D sandbox requires explicit allow-writes and an approval phrase. Neither is a standard production path.",
+      "status": "DOCUMENTED — not a standard production path",
+      "recommendation": "Keep excluded from the standardized weekly workflow."
+    }
+  ],
+  "entrypointInventory": [
+    {
+      "entrypoint": "scripts/canvas_llm_phase3/pacing_math.py",
+      "role": "math WeeklyPlan translation",
+      "protection": "plan_gradebook_assignments filter",
+      "status": "PROTECTED"
+    },
+    {
+      "entrypoint": "scripts/canvas_llm_phase3/pacing_reading.py",
+      "role": "reading/spelling translation",
+      "protection": "plan_gradebook_assignments + dual-course spelling",
+      "status": "PROTECTED"
+    },
+    {
+      "entrypoint": "scripts/canvas_llm_phase3/pacing_translation.py",
+      "role": "LA/history/science translation",
+      "protection": "plan_gradebook_assignments filter",
+      "status": "PROTECTED"
+    },
+    {
+      "entrypoint": "scripts/canvas_llm_phase3/pacing_routing.py",
+      "role": "auto-create routing decision",
+      "protection": "assignment_policy delegation",
+      "status": "PROTECTED"
+    },
+    {
+      "entrypoint": "scripts/canvas_llm_phase22/phase22_workstation.py",
+      "role": "graded spec builder for phase23/24/26 and live deployment",
+      "protection": "_policy_filter_specs scoped Math/Reading policy + dual-course spelling",
+      "status": "PROTECTED"
+    },
+    {
+      "entrypoint": "scripts/canvas_llm_phase22/assignment_draft_generator.py",
+      "role": "draft preview generator",
+      "protection": "gradebook_allowed per draft",
+      "status": "PROTECTED"
+    },
+    {
+      "entrypoint": "scripts/canvas_llm_phase22/canvas_writer.py",
+      "role": "live assignment POST",
+      "protection": "policy gate + structured approval",
+      "status": "PROTECTED"
+    },
+    {
+      "entrypoint": "scripts/canvas_llm_phase23/phase23_content_engine.py",
+      "role": "weekly packet builder",
+      "protection": "build_assignments policy filter",
+      "status": "PROTECTED"
+    },
+    {
+      "entrypoint": "scripts/canvas_llm_phase26/deployment_manifest.py",
+      "role": "deployment manifest",
+      "protection": "disallowed kinds omitted by canonical policy",
+      "status": "PROTECTED"
+    },
+    {
+      "entrypoint": "scripts/canvas_llm_phase26/readiness.py",
+      "role": "readiness counts",
+      "protection": "counts permitted assignments only",
+      "status": "PROTECTED"
+    },
+    {
+      "entrypoint": "scripts/canvas_llm_phase26/export_package.py",
+      "role": "export package",
+      "protection": "disallowed kinds excluded",
+      "status": "PROTECTED"
+    },
+    {
+      "entrypoint": "bin/canvas-week",
+      "role": "read-only planning loop",
+      "protection": "delegates to gated phase3 planners",
+      "status": "PROTECTED"
+    },
+    {
+      "entrypoint": "bin/canvas-launch",
+      "role": "deployment wrapper",
+      "protection": "delegates to gated phase22 specs/writer",
+      "status": "PROTECTED"
+    },
+    {
+      "entrypoint": "scripts/canvas_llm_phase22/assignment_drafts_for_week",
+      "role": "legacy draft helper",
+      "protection": "uses filtered selected_graded_assignment_specs",
+      "status": "PROTECTED (via spec builder)"
+    },
+    {
+      "entrypoint": "scripts/canvas_llm_deploy/coordinator.py",
+      "role": "guarded production deployment",
+      "protection": "canonical policy + universal-settings check before create_assignment",
+      "status": "PROTECTED"
+    },
+    {
+      "entrypoint": "scripts/canvas_llm_deploy/preflight.py",
+      "role": "duplicate preflight",
+      "protection": "exact, near, and semantic duplicate candidates block before write",
+      "status": "PROTECTED"
+    },
+    {
+      "entrypoint": "scripts/canvas_llm_intake/intake.py",
+      "role": "weekly intake and drafting",
+      "protection": "assignment policy gate before drafting; no Canvas write verbs",
+      "status": "PROTECTED"
+    },
+    {
+      "entrypoint": "scripts/canvas_llm_intake/assignment_reconciliation.py",
+      "role": "live assignment reconciliation",
+      "protection": "exact and semantic duplicate review; preserves live ids; zero writes",
+      "status": "PROTECTED"
+    },
+    {
+      "entrypoint": "scripts/canvas_llm_phase22/live_q1w2_deployment.py",
+      "role": "historical Q1W2 live harness",
+      "protection": "canonical policy + writer gate; historical fixture path only",
+      "status": "UNSUPPORTED — legacy Q1W2 harness, not standardized workflow"
+    },
+    {
+      "entrypoint": "scripts/canvas-llm/canvas_learning_agent.py",
+      "role": "Phase 21D sandbox learning agent",
+      "protection": "sandbox-only; requires --allow-writes plus approval phrase; not a standard production path",
+      "status": "SANDBOX_ONLY"
+    }
+  ],
+  "assessmentSchedulingPolicy": {
+    "authority": "OWNER_APPROVED_POLICY",
+    "timezone": "America/New_York",
+    "firstNotice": "approximately five calendar days before assessment",
+    "reminder": "normally two calendar days before assessment",
+    "reminderTime": "16:00 America/New_York",
+    "asapPolicyApplies": false,
+    "note": "Assessment first notices and reminders retain the separate approved policy."
+  },
+  "announcementLifecycle": {
+    "authority": "OWNER_APPROVED_POLICY",
+    "approvedAt": "2026-11-15",
+    "states": [
+      "DRAFT",
+      "TEACHER_APPROVED",
+      "SCHEDULED_PENDING",
+      "RELEASE_TIME_ELAPSED",
+      "POSTED_VERIFIED",
+      "DELIVERY_UNVERIFIED",
+      "FAILED",
+      "CANCELLED"
+    ],
+    "definitions": {
+      "DRAFT": "Content exists locally but is not approved.",
+      "TEACHER_APPROVED": "Owen approved content and intended delivery.",
+      "SCHEDULED_PENDING": "Canvas returned an ID and a future delayed_post_at was verified by GET.",
+      "RELEASE_TIME_ELAPSED": "Intended release time passed; a fresh readback is required.",
+      "POSTED_VERIFIED": "An authoritative Canvas signal confirms release.",
+      "DELIVERY_UNVERIFIED": "Release time passed but teacher/admin API evidence cannot establish student visibility.",
+      "FAILED": "Canvas rejected the write, the object is missing, or required verification failed.",
+      "CANCELLED": "Authorized cancellation confirmed."
+    },
+    "canvasSemantics": {
+      "scheduledState": "published=true with future delayed_post_at",
+      "postedAtEqualsCreatedAt": "not evidence of premature publication",
+      "adminFeed": "Canvas returns future-scheduled announcements to course administrators; admin active-feed membership is not student-visibility proof",
+      "unpublishRestriction": "Published announcements may reject published=false with HTTP 400; do not toggle published to repair scheduling",
+      "deleteRecreate": "forbidden without explicit owner authorization"
+    },
+    "releaseObservation": {
+      "field": "release_observed",
+      "informationalOnly": true,
+      "neverPromotesState": true,
+      "source": "CANVAS_POSTED_AT_TRANSITION",
+      "trueWhen": [
+        "fresh Canvas GET succeeds",
+        "announcement exists",
+        "published is explicitly true",
+        "content verification passes",
+        "identity verification passes",
+        "intended delayed release timestamp exists",
+        "posted_at exists",
+        "created_at exists",
+        "posted_at differs from created_at",
+        "posted_at is at or after the intended delayed release time",
+        "posted_at is not in the future"
+      ],
+      "records": [
+        "intended_release_at",
+        "actual_posted_at",
+        "delta_seconds",
+        "source"
+      ],
+      "excludes": [
+        "immediate publication with no delayed_post_at",
+        "posted_at equal to created_at",
+        "posted_at earlier than created_at",
+        "posted_at earlier than the intended release",
+        "posted_at in the future",
+        "published not explicitly true",
+        "content drift",
+        "unverified or duplicate identity"
+      ],
+      "doesNotEstablish": "student visibility",
+      "implementation": "scripts/canvas_llm_intake/scheduling.py"
+    },
+    "q2w6HistoricalReconciliation": {
+      "source": ".local/canvas-llm/q2w6-deployment/monitor/release-investigation-2026-11-15.json",
+      "rawSnapshotsModified": false,
+      "reading": {
+        "announcementId": 168496,
+        "courseId": 26442,
+        "intendedReleaseAt": "2026-11-15T21:00:00Z",
+        "actualPostedAt": "2026-11-15T21:00:01Z",
+        "delayedPostAtAfterRelease": "2026-11-15T21:00:00Z",
+        "publishedAfterRelease": true,
+        "canvasPublication": "CONFIRMED",
+        "studentVisibility": "UNVERIFIED",
+        "lifecycle": "DELIVERY_UNVERIFIED"
+      },
+      "math": {
+        "announcementId": 168497,
+        "courseId": 26404,
+        "intendedReleaseAt": "2026-11-15T21:00:00Z",
+        "actualPostedAt": "2026-11-15T21:00:01Z",
+        "delayedPostAtAfterRelease": "2026-11-15T21:00:00Z",
+        "publishedAfterRelease": true,
+        "canvasPublication": "CONFIRMED",
+        "studentVisibility": "UNVERIFIED",
+        "lifecycle": "DELIVERY_UNVERIFIED"
+      }
+    },
+    "postReleaseVerification": {
+      "requiredFields": [
+        "course_id",
+        "announcement_id",
+        "title",
+        "content_hash",
+        "created_at",
+        "intended_delayed_post_at",
+        "timezone",
+        "last_verified_at",
+        "lifecycle_state",
+        "evidence",
+        "release_observation"
+      ],
+      "steps": [
+        "fresh GET",
+        "exists",
+        "title and course",
+        "semantic content hash",
+        "compare intended release time to now",
+        "inspect Canvas publication fields",
+        "record evidence",
+        "determine whether release can be confirmed"
+      ],
+      "defaultWhenStudentVisibilityUnproven": "DELIVERY_UNVERIFIED",
+      "authoritativeSources": [
+        "student_visibility_confirmed",
+        "canvas_release_confirmation",
+        "owner_confirmed_student_visible"
+      ],
+      "implementation": "scripts/canvas_llm_intake/announcement_verification.py"
+    },
+    "htmlNormalization": {
+      "allowCourseScopedFileRewrite": true,
+      "allowedCanvasAttributes": [
+        "data-api-endpoint",
+        "data-api-returntype"
+      ],
+      "verifyExactFileId": true,
+      "verifyCourse": true,
+      "verifyResourceAccessible": true,
+      "neverIgnoreMeaningfulLinkOrTextDifferences": true,
+      "implementation": "scripts/canvas_llm_intake/announcement_verification.py"
+    },
+    "writeLedger": {
+      "counters": [
+        "successful",
+        "rejected",
+        "unknown",
+        "total_attempts",
+        "get_requests"
+      ],
+      "missingStatus": "UNKNOWN — never invent an HTTP status",
+      "implementation": "scripts/canvas_llm_intake/write_ledger.py"
+    },
+    "schedulingPolicies": {
+      "weeklyAsap": "see weeklyUpdate.missedDeadlinePolicy",
+      "assessment": "separate five-day first notice and one-to-two-day reminder at 4:00 PM ET; spelling 4:30 PM precedent",
+      "missedFirstNotice": "MISSED_NOT_SENT — never backdated or auto-sent",
+      "reminderApproval": "explicit owner approval required"
+    },
+    "q2w6Evidence": {
+      "directory": ".local/canvas-llm/q2w6-deployment/",
+      "readingReminderId": 168496,
+      "mathReminderId": 168497,
+      "note": "historical evidence only; not permanent IDs or templates"
+    },
+    "implementation": "scripts/canvas_llm_intake/scheduling.py",
+    "regressionTest": "tests/canvas-llm-announcement-lifecycle-test.sh",
+    "regressionTests": [
+      "tests/canvas-llm-announcement-lifecycle-test.sh",
+      "tests/canvas-llm-canvas-readonly-announcements-test.sh"
+    ]
+  },
+  "announcementMonitor": {
+    "authority": "OWNER_APPROVED_POLICY",
+    "command": "bin/chief-of-staff --announcement-status",
+    "implementation": "scripts/canvas_llm_intake/announcement_monitor.py",
+    "readOnly": true,
+    "canvasWrites": 0,
+    "recordsPath": ".local/canvas-llm/announcement-monitor/records.json",
+    "snapshotPath": ".local/canvas-llm/announcement-monitor/snapshots/",
+    "q2w6Snapshot": ".local/canvas-llm/q2w6-deployment/monitor/latest.json",
+    "polling": {
+      "upcomingHorizonHours": 24,
+      "cooldownMinutes": 15,
+      "postReleaseCooldownMinutes": 60,
+      "distantFuturePolled": false,
+      "maxGetRetries": 2,
+      "retryableStatuses": [
+        408,
+        429,
+        "5xx"
+      ],
+      "nonRetryableStatuses": [
+        400,
+        401,
+        403,
+        404,
+        422
+      ],
+      "maxAttempts": 3,
+      "countsEveryAttempt": true,
+      "retryAppliesTo": [
+        "announcement detail GET",
+        "duplicate listing GET"
+      ],
+      "countsBreakdown": [
+        "detail_attempts",
+        "detail_successes",
+        "detail_not_found",
+        "detail_failures",
+        "duplicate_listing_attempts"
+      ]
+    },
+    "statesReported": [
+      "DRAFT",
+      "TEACHER_APPROVED",
+      "SCHEDULED_PENDING",
+      "RELEASE_TIME_ELAPSED",
+      "POSTED_VERIFIED",
+      "DELIVERY_UNVERIFIED",
+      "FAILED",
+      "CANCELLED"
+    ],
+    "postRelease": "Fresh GET; POSTED_VERIFIED only with authoritative student-visibility evidence; otherwise DELIVERY_UNVERIFIED. release_observed is informational and never promotes the state.",
+    "publicationVsVisibility": {
+      "dimensions": [
+        "canvasPublication",
+        "releaseObserved",
+        "studentVisibility",
+        "contentIntegrity",
+        "lifecycleState"
+      ],
+      "canvasPublicationConfirmed": "release_observed true",
+      "canvasPublicationNotDue": "state SCHEDULED_PENDING",
+      "canvasPublicationNotConfirmed": "no posted_at transition observed after the intended release",
+      "studentVisibilityIsIndependent": true,
+      "studentVisibilityNeverInferredFrom": [
+        "published=true",
+        "delayed_post_at",
+        "posted_at transition",
+        "admin active-feed membership",
+        "teacher permissions"
+      ],
+      "informationalFields": [
+        "release_observed",
+        "intended_release_at",
+        "actual_posted_at",
+        "delta_seconds",
+        "source"
+      ]
+    },
+    "duplicateCheckContract": {
+      "transport": "scripts/canvas_llm_intake/canvas_readonly.py",
+      "successEmptyMeans": "zero duplicates (does not verify announcement identity)",
+      "httpFailure": "CanvasTransportError; recorded as a verification error; never an empty list",
+      "missingAnnouncement": "get_announcement returns None only for HTTP 404; other failures raise",
+      "uncertaintyNeverProducesPass": true,
+      "blocksReleaseObservation": true,
+      "reporting": "duplicate_check.status UNAVAILABLE appears in verification errors",
+      "identityRequires": [
+        "exactly one inventory row with the expected announcement id",
+        "exactly one inventory row with the expected title",
+        "the same row satisfies both",
+        "course context matches for every row"
+      ],
+      "zeroMatches": "identity unverified; release observation blocked",
+      "multipleMatches": "FAILED duplicate identity; release observation blocked",
+      "malformedEntry": "DUPLICATE_CHECK_UNAVAILABLE; never a crash or PASS",
+      "unverifiedIdentityIsVerificationError": true
+    },
+    "alerts": [
+      "missing before release",
+      "title change",
+      "content hash change",
+      "scheduled timestamp change",
+      "release passed without evidence",
+      "repeated authorization/server errors",
+      "duplicate identity",
+      "duplicate check unavailable",
+      "transport error on announcement listing"
+    ],
+    "repairPolicy": "No automatic repair; present evidence and recommended action to Owen.",
+    "scheduledIntegration": {
+      "status": "NOT APPLIED",
+      "reason": "Existing scheduler changes require Owen approval",
+      "existingScheduler": "launchd/com.teacher-ai-workstation.canvas-friday.plist",
+      "proposedSchedule": "Weekday 07:00 and 13:00 plus release-aware on-demand checks",
+      "ownerApprovalRequired": true
+    },
+    "q2w6Records": [
+      {
+        "announcement_id": 168496,
+        "course_id": 26442,
+        "title": "Reading Assessment Reminder — November 18"
+      },
+      {
+        "announcement_id": 168497,
+        "course_id": 26404,
+        "title": "Math Assessment Reminder — November 19"
+      }
+    ],
+    "regressionTest": "tests/canvas-llm-announcement-monitor-test.sh",
+    "regressionTests": [
+      "tests/canvas-llm-announcement-monitor-test.sh",
+      "tests/canvas-llm-canvas-readonly-announcements-test.sh"
+    ]
+  }
+}

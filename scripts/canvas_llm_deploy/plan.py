@@ -369,9 +369,12 @@ def build_plan(
         source_hash=summary.get("source_hash"),
         now=now,
     )
+    raw_results = reconciliation.get("results")
+    if not isinstance(raw_results, list):
+        raw_results = []
     reconciled = {
         (str(rec.get("course")), str(rec.get("title"))): rec
-        for rec in reconciliation.get("results", [])
+        for rec in raw_results
         if isinstance(rec, dict)
     }
     assignments: list[dict[str, Any]] = []

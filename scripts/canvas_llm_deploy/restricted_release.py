@@ -253,6 +253,10 @@ def release(
             raise RestrictedReleaseBlocked(
                 f"{page.get('subject')}: page backup failed ({type(exc).__name__})"
             ) from exc
+        if not current or (current.get("page_id") or current.get("id")) in (None, ""):
+            raise RestrictedReleaseBlocked(
+                f"{page.get('subject')}: page backup returned no authoritative page"
+            )
         deploy_ledger.write_backup(
             quarter, week, f"{page.get('subject')}-page-before",
             {
@@ -276,6 +280,10 @@ def release(
                 f"{assignment.get('title')!r}: pre-state backup failed "
                 f"({type(exc).__name__})"
             ) from exc
+        if not current or str(current.get("id")) != str(assignment["assignment_id"]):
+            raise RestrictedReleaseBlocked(
+                f"{assignment.get('title')!r}: pre-state backup returned no matching assignment"
+            )
         deploy_ledger.write_backup(
             quarter, week, "assignment-" + _safe_slug(assignment.get("title", "")) + "-before",
             dict(current or {}, retrieved_at=clock.isoformat()),
@@ -290,6 +298,11 @@ def release(
                 f"protected assignment {item.get('assignment_id')}: backup failed "
                 f"({type(exc).__name__})"
             ) from exc
+        if not current or str(current.get("id")) != str(item["assignment_id"]):
+            raise RestrictedReleaseBlocked(
+                f"protected assignment {item.get('assignment_id')}: "
+                "backup returned no matching assignment"
+            )
         deploy_ledger.write_backup(
             quarter, week, f"protected-assignment-{item['assignment_id']}-before",
             dict(current or {}, retrieved_at=clock.isoformat()),

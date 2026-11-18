@@ -134,9 +134,12 @@ def cmd_restricted_release(args: Any) -> int:
             confirmation=args.confirm or "",
             authorize_live=args.authorize_live,
         )
-    except (restricted_release.RestrictedReleaseBlocked, Exception) as exc:  # noqa: BLE001
-        print(f"BLOCKED: {type(exc).__name__}: {exc}")
+    except restricted_release.RestrictedReleaseBlocked as exc:
+        print(f"BLOCKED: {exc}")
         return 2
+    except Exception as exc:  # noqa: BLE001 - never mask an unexpected write-path error
+        print(f"FAILED: {type(exc).__name__}: {exc}")
+        return 1
     print(json.dumps(report, indent=2, ensure_ascii=False))
     return 0 if report.get("lifecycle") in (
         "EARLY_CONTENT_PUBLISHED_VERIFIED", "PARTIAL_PUBLISHED_VERIFIED",

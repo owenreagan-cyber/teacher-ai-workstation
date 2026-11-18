@@ -182,6 +182,20 @@ def _assert_no_create(plan):
     assert plan["assignment_reconciliation"]["status"] != "VALID"
 
 
+def test_assignment_policy_contract_present():
+    """The PR depends on the owner-approved assignment policy contract."""
+    from scripts.canvas_llm_phase3 import assignment_policy as policy
+    spec = policy.auto_prepare_policy()
+    assert spec["authority"] == "OWNER_APPROVED_POLICY"
+    assert spec["decidedAt"] == "2026-11-17"
+    assert policy.auto_prepare_allowed(
+        "math_homework", course=MATH, group="Homework/Class Work"
+    ) is True
+    assert policy.auto_prepare_allowed(
+        "classwork", course=READING, group="Homework"
+    ) is False
+
+
 def test_reconciliation_fail_closed():
     with isolated_storage():
         # Missing report.
@@ -209,6 +223,12 @@ def test_reconciliation_fail_closed():
         digested = plan_mod.build_plan(2, 6, now=NOW)
         _assert_no_create(digested)
         assert any("proposal_digest" in e for e in digested["assignment_reconciliation"]["errors"])
+
+        # Malformed results shape (null) must block, never crash.
+        report = _base_report()
+        report["results"] = None
+        _stage(report)
+        _assert_no_create(plan_mod.build_plan(2, 6, now=NOW))
 
         # Wrong week.
         report = _base_report()
@@ -482,6 +502,7 @@ def test_local_q2w6_packet_if_staged():
 
 
 def main() -> int:
+    test_assignment_policy_contract_present()
     test_reconciliation_fail_closed()
     test_duplicate_and_semantic_never_create()
     test_valid_plan_and_approval_hashes()

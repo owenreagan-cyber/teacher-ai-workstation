@@ -416,6 +416,46 @@ def test_production_gates_still_enforced():
     print("PASS production confirmation, expiry, and action gates enforced")
 
 
+def test_update_required_blocks_restricted_release():
+    """An existing assignment that differs is never auto-updated or re-created."""
+    with isolated_storage():
+        results = [
+            {"course": "math", "course_id": MATH, "title": PROPOSALS[0]["title"],
+             "classification": "CREATE_REQUIRED", "live": CREATE_LIVE},
+            {"course": "math", "course_id": MATH, "title": PROPOSALS[1]["title"],
+             "classification": "UPDATE_REQUIRED", "live": MATCH_LIVE,
+             "differences": ["due_at"],
+             "corrections": {"due_at": {"actual": MATCH_LIVE["due_at"],
+                                       "required": "2026-11-21T04:59:00Z"}}},
+        ]
+        _stage(_base_report(results))
+        _approve_math()
+        plan = plan_mod.build_plan(2, 6, now=NOW)
+        updated = next(a for a in plan["assignments"] if a["title"] == PROPOSALS[1]["title"])
+        assert updated["action"] == "BLOCKED", updated
+        assert plan["counts"]["assignments_update"] == 0
+        assert plan["counts"]["assignments_blocked"] == 1
+        assert any("live assignment differs" in b for b in plan["reconciliation_blockers"])
+        try:
+            _scope(plan, now=NOW)
+            raise AssertionError("expected ScopeError")
+        except scope_mod.ScopeError:
+            pass
+
+        # Defense in depth: the restricted manifest builder refuses UPDATE.
+        bad_plan = copy.deepcopy(plan)
+        bad_plan["assignments"][1]["action"] = "UPDATE"
+        bad_plan["assignments"][1]["approved"] = True
+        try:
+            restricted_release.build_manifest(2, 6, bad_plan, scope={
+                "subjects": ["math"], "artifacts": ["page", "assignments"],
+            })
+            raise AssertionError("expected RestrictedReleaseBlocked")
+        except restricted_release.RestrictedReleaseBlocked:
+            pass
+    print("PASS UPDATE_REQUIRED blocks the restricted release (no silent rewrite)")
+
+
 def test_restricted_release_uses_canonical_rollover():
     """D-028: the restricted release must run through the rollover publisher."""
     with isolated_storage():
@@ -509,6 +549,7 @@ def main() -> int:
     test_scope_rejects_out_of_scope_and_global_stays_false()
     test_scoped_preflight_and_coordinator_refusal()
     test_production_gates_still_enforced()
+    test_update_required_blocks_restricted_release()
     test_restricted_release_uses_canonical_rollover()
     test_local_q2w6_packet_if_staged()
     print("PASS restricted Canvas deployment safety tests")

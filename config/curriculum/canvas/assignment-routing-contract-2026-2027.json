@@ -18,7 +18,9 @@
         "written_assessment": {"group": "Written Assessments", "aliases": ["Math Test", "Written Assessment"]},
         "fact_assessment": {"group": "Fact Assessments", "aliases": ["Fact Assessment"]},
         "homework": {"group": "Homework/Class Work", "aliases": ["Homework"]},
-        "classwork": {"group": "Homework/Class Work", "aliases": ["Classwork"]}
+        "classwork": {"group": "Homework/Class Work", "aliases": ["Classwork"]},
+        "math_homework": {"group": "Homework/Class Work", "aliases": ["Lesson Homework", "Homework Accuracy Grade"]},
+        "math_classwork": {"group": "Homework/Class Work", "aliases": ["Lesson Classwork", "Classwork Accuracy Grade"]}
       }
     },
     "reading_spelling": {
@@ -27,6 +29,8 @@
       "routing": {
         "workbook": {"group": "Homework", "aliases": ["Workbook"]},
         "workbook_and_comprehension": {"group": "Homework", "aliases": ["Workbook and Comprehension"]},
+        "reading_classwork": {"group": "Homework", "aliases": ["Workbook Classwork"]},
+        "reading_homework": {"group": "Homework", "aliases": ["Comprehension Questions"]},
         "mastery_test": {"group": "Assessments", "aliases": ["Reading Mastery Test"]},
         "fluency_checkout": {"group": "Check Out", "aliases": ["Fluency Checkout"]},
         "spelling_test": {"group": "Assessments", "aliases": ["Spelling Test"]}

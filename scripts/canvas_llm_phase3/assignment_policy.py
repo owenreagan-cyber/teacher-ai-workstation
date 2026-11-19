@@ -217,10 +217,10 @@ def classify_assignment(
         if "homework" in title_l:
             return "math_homework"
     if re.match(r"^rm4\s*:", title_l):
-        if "workbook" in title_l:
-            return "reading_classwork"
         if "comprehension" in title_l:
             return "reading_homework"
+        if "workbook" in title_l:
+            return "reading_classwork"
 
     # Generic work stays generic and remains forbidden.
     if "worksheet" in blob:
@@ -285,12 +285,12 @@ def semantic_identity(title: str | None) -> tuple[str, int] | None:
     match = _READING_LEGACY_LESSON_RE.match(text)
     if match:
         role = match.group("role").lower()
-        family = "reading_classwork" if "workbook" in role else "reading_homework"
+        family = "reading_homework" if "comprehension" in role else "reading_classwork"
         return family, int(match.group("n"))
     match = _READING_LESSON_RE.match(text)
     if match and (match.group("n1") or match.group("n2")):
         role = match.group("role").lower()
-        family = "reading_classwork" if "workbook" in role else "reading_homework"
+        family = "reading_homework" if "comprehension" in role else "reading_classwork"
         return family, int(match.group("n1") or match.group("n2"))
     match = _MATH_CANONICAL_LESSON_RE.match(text) or _MATH_LESSON_RE.match(text)
     if match and (match.groupdict().get("n1") or match.groupdict().get("n2")
@@ -572,7 +572,7 @@ def command_self_test() -> int:
     assert semantic_identity("RM4: Thursday Comprehension Questions — Lesson 60") == \
         ("reading_homework", 60)
     assert semantic_identity("RM4: Lesson 60 Workbook and Comprehension") == \
-        ("reading_classwork", 60)
+        ("reading_homework", 60)
     assert semantic_identity("RM4: Mastery Test 6") == ("mastery_test", 6)
     assert semantic_identity("MATH THNK") is None
     assert semantic_match("RM4: Tuesday Comprehension Questions — Lesson 60",

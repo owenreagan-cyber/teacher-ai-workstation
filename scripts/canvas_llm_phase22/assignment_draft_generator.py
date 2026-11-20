@@ -161,7 +161,28 @@ def build_queue_items_for_drafts(drafts: list[AssignmentDraft]) -> list[queue.Ap
 def generate_drafts_from_plan(plan: pacing.WeeklyInstructionalPlan) -> list[AssignmentDraft]:
     applications = rules.apply_rules(plan)
     drafts = [application_to_draft(app) for app in applications if not app.needs_teacher_rule or app.subject in rules.SUBJECTS_NEEDING_TEACHER_RULES]
-    return drafts
+    return [draft for draft in drafts if gradebook_allowed(draft)]
+
+
+def gradebook_allowed(draft: AssignmentDraft) -> bool:
+    """Canonical 2026-11-17 Math/Reading policy gate.
+
+    Tests/assessments plus pacing-derived Math homework/classwork and Reading
+    workbook/comprehension work may become gradebook drafts. Generic
+    homework/classwork and unrelated kinds stay out. An explicit structured
+    owner approval may admit a specific draft.
+    """
+    from scripts.canvas_llm_phase3 import assignment_policy as policy
+    course_by_subject = {'math': 26404, 'reading': 26442, 'spelling': 26442,
+                         'language-arts': 28171, 'history': 28165, 'science': 28166}
+    kind = policy.classify_assignment(title=draft.title, source_rule=draft.source_rule,
+                                      group=draft.category)
+    course = course_by_subject.get((draft.subject or '').strip().lower())
+    group = policy.default_group(kind) or draft.category
+    approval = getattr(draft, 'owner_approval', None)
+    proposed = {'course': course, 'kind': kind, 'title': draft.title}
+    return policy.auto_prepare_allowed(kind, course=course, group=group,
+                                       approval=approval, proposed=proposed)
 
 
 def generate_drafts_from_db(db: p22.WorkstationDB, weekly_plan_id: str) -> list[AssignmentDraft]:
@@ -275,14 +296,16 @@ def command_self_test() -> int:
     ]
     plan = pacing.parse_rows_to_plan(week_meta, rows)
     drafts = generate_drafts_from_plan(plan)
-    assert len(drafts) >= 8
-
-    ready = [d for d in drafts if d.queue_status == 'READY']
-    needs_review = [d for d in drafts if d.queue_status == 'NEEDS_REVIEW']
-    blocked = [d for d in drafts if d.queue_status == 'BLOCKED']
-    assert ready
-    assert needs_review
-    assert blocked
+    # 2026-11-17 policy: pacing-derived Math/Reading work is admitted.
+    assert len(drafts) == 9, [d.title for d in drafts]
+    assert all(gradebook_allowed(d) for d in drafts)
+    assert any('Lesson 2 Homework' in d.title for d in drafts)
+    assert any('Lesson 3 Classwork' in d.title for d in drafts)
+    assert any('Workbook and Comprehension' in d.title for d in drafts)
+    assert any(' Workbook' in d.title and 'Comprehension' not in d.title for d in drafts)
+    assert any('Spelling Test 5' in d.title for d in drafts)
+    assert not any('quiz' in d.title.lower() or 'project' in d.title.lower()
+                   or 'investigation' in d.title.lower() for d in drafts)
 
     for draft in drafts:
         assert draft.artifact_id
@@ -297,7 +320,6 @@ def command_self_test() -> int:
     assert len(queue_items) == len(drafts)
 
     decision_points = teacher_decision_points_for_drafts(drafts)
-    assert decision_points
     assert all(point['automatic_selection'] is False for point in decision_points)
 
     temp_db = Path(tempfile.mkstemp(suffix='.sqlite3')[1])
@@ -307,6 +329,9 @@ def command_self_test() -> int:
     wid = registry.seed_demo_week(db)
     db_drafts = generate_drafts_from_db(db, wid)
     assert db_drafts
+    assert all(gradebook_allowed(d) for d in db_drafts)
+    assert not any('quiz' in d.title.lower() or 'project' in d.title.lower()
+                   for d in db_drafts)
 
     assert generator_performs_no_canvas_writes()
     temp_db.unlink(missing_ok=True)

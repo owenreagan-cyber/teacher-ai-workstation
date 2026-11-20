@@ -37,7 +37,7 @@ apps = rules.apply_rules(plan)
 
 assert any(a.rule_id == 'math-monday-homework' for a in apps)
 assert any(a.rule_id == 'math-wednesday-homework' for a in apps)
-assert sum(1 for a in apps if 'Practice Check' in a.title) == 2
+assert sorted(a.title for a in apps if a.rule_id in ('math-tuesday-practice-check', 'math-thursday-practice-check')) == ['SM5: Lesson 3 Classwork', 'SM5: Lesson 5 Classwork']
 assert sum(1 for a in apps if 'Comprehension' in a.title) == 2
 assert sum(1 for a in apps if a.rule_id.startswith('reading-') and 'Workbook' in a.title and 'Comprehension' not in a.title) == 2
 assert any(a.rule_id == 'spelling-test' and a.title == 'Spelling Test 5' for a in apps)
@@ -45,7 +45,7 @@ assert rules.rules_have_no_canvas_writes()
 
 print('PASS Math Monday rule')
 print('PASS Math Wednesday rule')
-print('PASS Math practice checks')
+print('PASS Math Tuesday/Thursday classwork')
 print('PASS Reading comprehension rule')
 print('PASS Reading workbook rule')
 print('PASS Spelling assessment rule')

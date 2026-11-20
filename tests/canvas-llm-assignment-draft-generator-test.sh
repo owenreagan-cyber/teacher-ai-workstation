@@ -39,9 +39,19 @@ plan = pacing.parse_rows_to_plan(week_meta, rows)
 drafts = gen.generate_drafts_from_plan(plan)
 summary = gen.summarize_drafts(drafts, plan.week_code)
 
-assert summary.generated >= 8
-assert summary.needs_review >= 2
-assert summary.blocked >= 1
+# 2026-11-17 policy: pacing-derived Math/Reading work becomes gradebook drafts.
+assert summary.generated == len(drafts)
+assert len(drafts) == 9, [d.title for d in drafts]
+assert all(gen.gradebook_allowed(d) for d in drafts)
+assert any('Lesson 2 Homework' in d.title for d in drafts)
+assert any('Lesson 3 Classwork' in d.title for d in drafts)
+assert any('Workbook and Comprehension' in d.title for d in drafts)
+assert any(' Workbook' in d.title and 'Comprehension' not in d.title for d in drafts)
+assert any('Spelling Test 5' in d.title for d in drafts)
+for draft in drafts:
+    lowered = draft.title.lower()
+    assert 'quiz' not in lowered and 'project' not in lowered
+    assert 'investigation' not in lowered and 'classroom practice' not in lowered
 
 for draft in drafts:
     assert draft.artifact_id and draft.content_hash and draft.source_rule
@@ -53,7 +63,6 @@ queue_items = gen.build_queue_items_for_drafts(drafts)
 assert len(queue_items) == len(drafts)
 
 decisions = gen.teacher_decision_points_for_drafts(drafts)
-assert decisions
 assert all(d['automatic_selection'] is False for d in decisions)
 
 assert gen.generator_performs_no_canvas_writes()

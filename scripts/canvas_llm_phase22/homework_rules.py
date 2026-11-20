@@ -153,7 +153,7 @@ def configured_rules() -> list[HomeworkRule | AssessmentRule]:
             subject='math',
             trigger='math lesson exists on Monday',
             weekday='Monday',
-            title_template='Saxon Math 5 - Lesson {lesson} Homework',
+            title_template='SM5: Lesson {lesson} Homework',
             description_template='Problems: #12-30 Even',
             policy=default_math_homework_policy(),
         ),
@@ -162,7 +162,7 @@ def configured_rules() -> list[HomeworkRule | AssessmentRule]:
             subject='math',
             trigger='math lesson exists on Wednesday',
             weekday='Wednesday',
-            title_template='Saxon Math 5 - Lesson {lesson} Homework',
+            title_template='SM5: Lesson {lesson} Homework',
             description_template='Problems: #11-29 Odd',
             policy=default_math_homework_policy(),
         ),
@@ -171,7 +171,7 @@ def configured_rules() -> list[HomeworkRule | AssessmentRule]:
             subject='math',
             trigger='math lesson exists on Tuesday',
             weekday='Tuesday',
-            title_template='Saxon Math 5 - Lesson {lesson} Practice Check',
+            title_template='SM5: Lesson {lesson} Classwork',
             description_template='Problems: #1-10',
             policy=default_math_practice_policy(),
         ),
@@ -180,7 +180,7 @@ def configured_rules() -> list[HomeworkRule | AssessmentRule]:
             subject='math',
             trigger='math lesson exists on Thursday',
             weekday='Thursday',
-            title_template='Saxon Math 5 - Lesson {lesson} Practice Check',
+            title_template='SM5: Lesson {lesson} Classwork',
             description_template='Problems: #1-10',
             policy=default_math_practice_policy(),
         ),
@@ -189,7 +189,7 @@ def configured_rules() -> list[HomeworkRule | AssessmentRule]:
             subject='reading',
             trigger='reading lesson exists on Tuesday',
             weekday='Tuesday',
-            title_template='Reading Mastery 4 - Lesson {lesson} Workbook and Comprehension',
+            title_template='RM4: Lesson {lesson} Workbook and Comprehension',
             description_template='Workbook and Comprehension Questions',
             policy=default_reading_comprehension_policy(),
         ),
@@ -198,7 +198,7 @@ def configured_rules() -> list[HomeworkRule | AssessmentRule]:
             subject='reading',
             trigger='reading lesson exists on Thursday',
             weekday='Thursday',
-            title_template='Reading Mastery 4 - Lesson {lesson} Workbook and Comprehension',
+            title_template='RM4: Lesson {lesson} Workbook and Comprehension',
             description_template='Workbook and Comprehension Questions',
             policy=default_reading_comprehension_policy(),
         ),
@@ -207,7 +207,7 @@ def configured_rules() -> list[HomeworkRule | AssessmentRule]:
             subject='reading',
             trigger='reading lesson exists on Monday',
             weekday='Monday',
-            title_template='Reading Mastery 4 - Lesson {lesson} Workbook',
+            title_template='RM4: Lesson {lesson} Workbook',
             description_template='Workbook',
             policy=default_reading_workbook_policy(),
         ),
@@ -216,7 +216,7 @@ def configured_rules() -> list[HomeworkRule | AssessmentRule]:
             subject='reading',
             trigger='reading lesson exists on Wednesday',
             weekday='Wednesday',
-            title_template='Reading Mastery 4 - Lesson {lesson} Workbook',
+            title_template='RM4: Lesson {lesson} Workbook',
             description_template='Workbook',
             policy=default_reading_workbook_policy(),
         ),
@@ -387,7 +387,7 @@ def command_self_test() -> int:
     wed_hw = next(a for a in apps if a.rule_id == 'math-wednesday-homework')
     assert '#11-29 Odd' in wed_hw.description
 
-    practice = [a for a in apps if 'Practice Check' in a.title]
+    practice = [a for a in apps if a.rule_id.startswith('math-') and 'Classwork' in a.title]
     assert len(practice) == 2
     assert all(a.teacher_decision_required for a in practice)
 

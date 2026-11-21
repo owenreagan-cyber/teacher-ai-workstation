@@ -8,7 +8,8 @@ notification delivery.
 """
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
+from zoneinfo import ZoneInfo
 from typing import Any
 
 from . import change_detection as cd
@@ -22,6 +23,109 @@ from .models import SourceChangeEvent, WeeklyPlan
 
 def _now() -> str:
     return datetime.now(timezone.utc).isoformat()
+
+
+
+
+def _historical_reminder_ids(
+    current: dict[str, Any],
+    unresolved: list[dict[str, Any]],
+) -> set[str]:
+    """Identify historical false positives with exact Canvas evidence."""
+    from scripts.canvas_llm_intake import week_resolution
+    from scripts.instructional_weeks import week_range
+
+    pacing = current.get("pacing") or {}
+    canvas = current.get("canvas") or {}
+
+    if pacing.get("status") != snap.SNAPSHOT_OK:
+        return set()
+    if canvas.get("status") != snap.SNAPSHOT_OK:
+        return set()
+    if canvas.get("read_error"):
+        return set()
+
+    quarter = current.get("quarter")
+    week = current.get("week")
+    week_id = current.get("week_id")
+
+    if (
+        not isinstance(quarter, int)
+        or not isinstance(week, int)
+        or week_id != f"Q{quarter}W{week}"
+    ):
+        return set()
+
+    metadata = week_resolution.find_week(quarter, week)
+    bounds = week_range(metadata) if metadata else None
+
+    if bounds is None:
+        return set()
+
+    first_reminder_day = bounds[0] - timedelta(days=1)
+    eastern = ZoneInfo("America/New_York")
+    courses = canvas.get("courses") or {}
+
+    verified_ids = set()
+
+    for event in unresolved:
+        if event.get("classification") != cd.CHANGE_REMINDER_OBSOLETE:
+            continue
+        if event.get("source") != "canvas":
+            continue
+        if event.get("object_type") != "reminder":
+            continue
+        if event.get("week_id") != week_id:
+            continue
+        if event.get("teacher_override"):
+            continue
+
+        subject = event.get("subject")
+        identity = event.get("object_identity")
+        raw = event.get("old_value")
+        event_id = event.get("event_id")
+
+        if not all(
+            isinstance(v, str) and v
+            for v in (subject, identity, raw, event_id)
+        ):
+            continue
+
+        course = courses.get(subject)
+        if not isinstance(course, dict) or course.get("read_error"):
+            continue
+
+        matches = [
+            announcement
+            for announcement in course.get("announcements") or []
+            if isinstance(announcement, dict)
+            and identity == (
+                f"{subject}:reminder:{announcement.get('title')}"
+            )
+        ]
+
+        # Ambiguous, missing, or changed announcements fail closed.
+        if len(matches) != 1:
+            continue
+        if matches[0].get("delayed_post_at") != raw:
+            continue
+
+        try:
+            timestamp = datetime.fromisoformat(
+                raw.replace("Z", "+00:00")
+            )
+        except ValueError:
+            continue
+
+        if timestamp.tzinfo is None:
+            continue
+
+        local_day = timestamp.astimezone(eastern).date()
+
+        if local_day < first_reminder_day:
+            verified_ids.add(event_id)
+
+    return verified_ids
 
 
 def pacing_cells_from_plan(plan: WeeklyPlan) -> dict[str, Any]:
@@ -141,6 +245,14 @@ def sync_and_detect(
 
     events = list(temporal_events) + list(cross_events)
     recorded = store.record(events)
+
+    historical_ids = _historical_reminder_ids(curr, store.unresolved())
+    historical_superseded = store.supersede_exact(
+        historical_ids,
+        classification=cd.CHANGE_REMINDER_OBSOLETE,
+        reason="historical_announcement_outside_target_week",
+    )
+
     snap.save(quarter, week, curr)
 
     # Impact: affected subjects + approval invalidation (approval-by-exception).
@@ -161,6 +273,7 @@ def sync_and_detect(
         "week_id": week_id,
         "changes": [e for e in store.all() if e["event_id"] in {x.event_id for x in events}],
         "new_events_added": recorded["added"],
+        "historical_reminders_superseded": historical_superseded,
         "events": store.all(),
         "cross_source_conflicts": [
             e for e in store.unresolved()

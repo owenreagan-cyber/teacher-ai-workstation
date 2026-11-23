@@ -117,6 +117,56 @@ for old_title, new_title in historical:
     )
 
 
+
+# Whole-week generation must not add a duplicate workbook grade.
+days = {}
+for weekday, date, number in [
+    ("Monday", "2026-11-16", 59),
+    ("Tuesday", "2026-11-17", 60),
+    ("Wednesday", "2026-11-18", 61),
+    ("Thursday", "2026-11-19", 62),
+    ("Friday", "2026-11-20", 63),
+]:
+    days[weekday] = {
+        "date": date,
+        "subjects": {
+            "reading": {"raw": f"L{number}"},
+            "spelling": {"raw": ""},
+        },
+    }
+
+weekly = pacing_reading.translate_reading_spelling_week(
+    {"week": {"code": "Q2W6"}, "days": days},
+    config,
+)
+
+titles = [
+    item["title"]
+    for item in weekly["reading"]["assignments"]
+]
+
+expected_titles = [
+    "RM4: Lesson 59 Workbook",
+    "RM4: Lesson 60 Workbook and Comprehension",
+    "RM4: Lesson 61 Workbook",
+    "RM4: Lesson 62 Workbook and Comprehension",
+]
+
+check(
+    titles == expected_titles,
+    "Whole week: exactly four canonical Reading assignments",
+)
+
+check(
+    len(titles) == len(set(titles)),
+    "Whole week: no duplicate assignment titles",
+)
+
+check(
+    weekly["reading"]["days"]["Friday"]["assignments"] == [],
+    "Whole week: Friday has no regular Reading assignment",
+)
+
 print()
 print("PASS: Canonical Reading policy regression")
 print("PASS: No Canvas API calls or writes")

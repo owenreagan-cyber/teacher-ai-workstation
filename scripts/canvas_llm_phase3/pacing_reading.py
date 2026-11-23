@@ -380,18 +380,6 @@ def translate_reading_spelling_week(week: dict[str, Any], config: dict[str, Any]
             reading_days[rmt_fco_weekday]["assignments"] = reading_assessment_assignments(n, rmt_fco_date) if rmt_resolution["checkoutExists"] else reading_assessment_assignments(n, rmt_fco_date)[:1]
             reading_assignments.extend(reading_days[rmt_fco_weekday]["assignments"])
 
-    # Single workbook-classwork accuracy grade: Monday default, displaced to
-    # Wednesday when Monday carries a Reading assessment.
-    monday_raw = (week.get("days") or {}).get("Monday", {}).get("subjects", {}).get("reading", {}).get("raw", "")
-    monday_assessment = parse_reading_token(monday_raw)["kind"] == "rmt_fco"
-    classwork_day = "Wednesday" if monday_assessment else "Monday"
-    cw_day = reading_days.get(classwork_day)
-    if cw_day and cw_day["token_kind"] == "lesson" and cw_day["number"]:
-        cw_date = (week.get("days") or {}).get(classwork_day, {}).get("date", "")
-        cw_assign = _reading_accuracy_assignment("classwork", classwork_day, cw_day["number"], cw_date)
-        cw_day["assignments"] = list(cw_day.get("assignments") or []) + [cw_assign]
-        reading_assignments.append(cw_assign)
-
     # Spelling.
     spelling_days: dict[str, dict[str, Any]] = {}
     spelling_assignments: list[dict[str, Any]] = []

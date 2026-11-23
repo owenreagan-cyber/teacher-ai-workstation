@@ -298,7 +298,20 @@ def test_weekly_release_hashes_homeroom_page_and_five_targets():
             staged = root / "q2w5"
             assignments = json.loads((staged / "drafts" / "assignments.json").read_text())
             titles = [item["title"] for item in assignments]
-            assert len(assignments) == 9, titles
+            # Four Math + four Reading + one Spelling + one ELA.
+            assert len(assignments) == 10, titles
+            expected_reading = [
+                "RM4: Lesson 54 Workbook",
+                "RM4: Lesson 55 Workbook and Comprehension",
+                "RM4: Lesson 56 Workbook",
+                "RM4: Lesson 57 Workbook and Comprehension",
+            ]
+            actual_reading = [
+                title for title in titles
+                if title.startswith("RM4: Lesson ")
+            ]
+            assert actual_reading == expected_reading, titles
+            assert len(titles) == len(set(titles)), titles
             assert titles.count("ELA4: Chapter 7 Test") == 1
             assert not any("Checkup" in title for title in titles)
             announcements = json.loads((staged / "drafts" / "announcements.json").read_text())
@@ -480,6 +493,7 @@ def test_owner_time_propagates_and_invalid_times_stay_blocked():
 def test_blocked_direct_execution_performs_zero_canvas_writes():
     from scripts.canvas_llm_deploy.client import FakeDeployClient
     from scripts.canvas_llm_rollover import rollover
+    from scripts.canvas_llm_storage import isolated_storage
 
     def _run(manifest):
         client = FakeDeployClient(courses={
@@ -520,7 +534,11 @@ def test_blocked_direct_execution_performs_zero_canvas_writes():
         {**base, "homeroom_announcement": {"title": "News", "course_id": 26429, "page_id": 1, "schedule_state": "FUTURE_SCHEDULED", "delayed_post_at": "2026-11-08T21:00:00Z", "approval_state": "APPROVED", "publication_dependency": "MISSING", "message": "<p>x</p>"}},
     ]
     for manifest in cases:
-        _run(manifest)
+        # Each blocked scenario starts with empty, isolated ledgers.
+        # Never consult or modify real Q2W5 publication history.
+        with isolated_storage():
+            assert rollover.ledger.load_rollover_ledger(2, 5) is None
+            _run(manifest)
 
 
 def test_coordinator_readback_rejects_wrong_announcement_and_accepts_scheduled():

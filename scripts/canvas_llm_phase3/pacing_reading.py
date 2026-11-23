@@ -30,6 +30,7 @@ import sys
 from datetime import datetime
 from typing import Any
 
+from . import assignment_policy as policy
 from . import constants as C
 
 # --------------------------------------------------------------------------- #
@@ -180,9 +181,12 @@ def parse_spelling_token(raw: str) -> dict[str, Any]:
 
 def _base_assignment(day_date: str) -> dict[str, Any]:
     return {
+        "course": 26442,
         "points_possible": 100,
         "grading_type": "percent",
         "submission_types": "on_paper",
+        "omit_from_final_grade": False,
+        "counts_toward_final_grade": True,
         "due_date": day_date,
         "due_date_display": _display_date(day_date),
         "due_time": "11:59 PM",
@@ -268,10 +272,10 @@ def reading_day_plan(raw: str, weekday: str, day_date: str, config: dict[str, An
 
         # Preserve the existing Tuesday/Thursday comprehension
         # assignment logic.
-        if weekday in ("Tuesday", "Thursday"):
+        if weekday in ("Monday", "Tuesday", "Wednesday", "Thursday"):
             assignments.append(
                 _reading_accuracy_assignment(
-                    "homework", weekday, n, day_date
+                    ("homework" if weekday in ("Tuesday", "Thursday") else "classwork"), weekday, n, day_date
                 )
             )
 
@@ -308,10 +312,27 @@ def reading_day_plan(raw: str, weekday: str, day_date: str, config: dict[str, An
 def _reading_accuracy_assignment(role: str, weekday: str, n: int, day_date: str) -> dict[str, Any]:
     a = _base_assignment(day_date)
     if role == "homework":
-        a.update({"kind": "reading_homework", "title": f"RM4: {weekday} Comprehension Questions — Lesson {n}", "assignment_group": "Homework", "role": "homework"})
+        a.update({
+            "kind": "reading_homework",
+            "policyKind": "reading_homework",
+            "title": f"RM4: Lesson {n} Workbook and Comprehension",
+            "description": (
+                f"Reading Workbook - front and back\nLesson {n} comprehension questions - "
+                "Complete, restated sentences on lined paper"
+            ),
+            "assignment_group": "Homework",
+            "role": "homework",
+        })
     else:
-        a.update({"kind": "reading_classwork", "title": f"RM4: {weekday} Workbook Classwork — Lesson {n}", "assignment_group": "Homework", "role": "classwork"})
-    a["title_authority"] = "TEACHER_APPROVED (Phase 22 convention; not explicit in operating contract)"
+        a.update({
+            "kind": "reading_classwork",
+            "policyKind": "reading_classwork",
+            "title": f"RM4: Lesson {n} Workbook",
+            "description": "Workbook pages, front and back. The workbook will be checked and graded.",
+            "assignment_group": "Homework",
+            "role": "classwork",
+        })
+    a["title_authority"] = "OWNER_APPROVED_POLICY (Phase 22 convention; canonical)"
     return a
 
 
@@ -359,18 +380,6 @@ def translate_reading_spelling_week(week: dict[str, Any], config: dict[str, Any]
             reading_days[rmt_fco_weekday]["assignments"] = reading_assessment_assignments(n, rmt_fco_date) if rmt_resolution["checkoutExists"] else reading_assessment_assignments(n, rmt_fco_date)[:1]
             reading_assignments.extend(reading_days[rmt_fco_weekday]["assignments"])
 
-    # Single workbook-classwork accuracy grade: Monday default, displaced to
-    # Wednesday when Monday carries a Reading assessment.
-    monday_raw = (week.get("days") or {}).get("Monday", {}).get("subjects", {}).get("reading", {}).get("raw", "")
-    monday_assessment = parse_reading_token(monday_raw)["kind"] == "rmt_fco"
-    classwork_day = "Wednesday" if monday_assessment else "Monday"
-    cw_day = reading_days.get(classwork_day)
-    if cw_day and cw_day["token_kind"] == "lesson" and cw_day["number"]:
-        cw_date = (week.get("days") or {}).get(classwork_day, {}).get("date", "")
-        cw_assign = _reading_accuracy_assignment("classwork", classwork_day, cw_day["number"], cw_date)
-        cw_day["assignments"] = list(cw_day.get("assignments") or []) + [cw_assign]
-        reading_assignments.append(cw_assign)
-
     # Spelling.
     spelling_days: dict[str, dict[str, Any]] = {}
     spelling_assignments: list[dict[str, Any]] = []
@@ -417,6 +426,12 @@ def translate_reading_spelling_week(week: dict[str, Any], config: dict[str, Any]
         needs_owen.append({"field": "checkout_fluency_targets", "status": "UNRESOLVED",
                            "detail": f"Checkout {rmt_resolution['checkoutNumber']} WPM/error targets unresolved"})
 
+    reading_assignments = policy.plan_gradebook_assignments(reading_assignments)
+    spelling_assignments = policy.plan_gradebook_assignments(spelling_assignments)
+    for day in reading_days.values():
+        day["assignments"] = policy.plan_gradebook_assignments(day.get("assignments") or [])
+    for day in spelling_days.values():
+        day["assignments"] = policy.plan_gradebook_assignments(day.get("assignments") or [])
     return {
         "subject": "reading_spelling",
         "deterministic": True,
@@ -575,6 +590,16 @@ def command_self_test() -> int:
     reading_assess = [a for a in report["reading"]["days"]["Friday"]["assignments"]]
     assert [a["kind"] for a in reading_assess] == ["mastery_test", "fluency_checkout"], reading_assess
     assert reading_assess[0]["assignment_group"] == "Assessments" and reading_assess[1]["assignment_group"] == "Check Out"
+    # Pacing-derived Reading workbook/comprehension work auto-prepares.
+    reading_titles = [a["title"] for a in report["reading"]["assignments"]]
+    assert "RM4: Lesson 37 Workbook" in reading_titles, reading_titles
+    assert "RM4: Lesson 38 Workbook and Comprehension" in reading_titles, reading_titles
+    assert "RM4: Lesson 40 Workbook and Comprehension" in reading_titles, reading_titles
+    assert all(a["course"] == 26442 and a["points_possible"] == 100
+               and a["grading_type"] == "percent"
+               and a["submission_types"] == "on_paper"
+               and a["omit_from_final_grade"] is False
+               for a in report["reading"]["assignments"])
     spelling_assign = report["spelling"]["assignments"]
     assert len(spelling_assign) == 1 and spelling_assign[0]["course"] == 26442
     assert spelling_assign[0]["courseAuthority"] == "OWNER_POLICY (Phase 3.4; 28171 route superseded)"

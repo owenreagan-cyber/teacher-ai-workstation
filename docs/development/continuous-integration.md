@@ -61,6 +61,8 @@ python3 tests/canvas-live-authorization-test.py
 
 Open the failed step in the Actions log. The step name is the suite. Fix the test or the code, and do not mark a failure as success. New tests that read or write `.local`, call Canvas, or need a secret do not belong in this workflow until they use a temporary root and a fake client.
 
+One failure is a writing rule rather than a code defect. `tests/cos/test_fastpath.py` asserts that the assembled system prompt contains no current timestamp, and the prompt carries a condensed copy of `assistant/memory/*.md`. A dated entry in one of those files whose date equals the day CI runs fails `test_system_prompt_contains_no_current_timestamp`. Keep the date in `docs/build-queue.md`, which is not loaded into the prompt, or leave it off the memory entry.
+
 ## Adding a suite
 
 Add a named step to `.github/workflows/ci.yml`. Keep the step's command identical to the local command. Document it in the table above. Do not attach the new step to the Saxon deployment workflow.

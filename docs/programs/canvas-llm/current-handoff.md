@@ -9,9 +9,16 @@ Phase 21 — Codex Autonomous Sandbox Learning Agent
 ```text
 Repo: ~/Projects/teacher-ai-workstation
 Branch: main
-Commit: 8275c77
-Latest merged PR: #309 — Add Canvas LLM Phase 21 autonomous sandbox learning agent
+Commit: 708b73b
+Latest merged PR: #467 — Fix canonical Math and Reading Canvas assignment generation
+CI: run #140 PASS on the pull request; run #141 PASS on main push
+Release record: docs/programs/canvas-llm/pr467-canonical-assignment-release-closeout.md
 ```
+
+The production block above is the verified merged baseline. It replaces an
+earlier block that still named commit `8275c77` and PR #309; that older state is
+preserved in the breadcrumb sections below, which are kept for regression
+scripts.
 
 ## Current Work
 
@@ -723,3 +730,32 @@ Then implement one real-SQLite Math vertical slice.
 ```
 
 The first vertical slice must remain preview-only and perform no Canvas mutation.
+
+---
+
+## PR #467 Canonical Assignment Release Closeout
+
+PR #467 is merged at `708b73b` with CI run #140 PASS. It corrects canonical Math
+and Reading assignment generation, removes the duplicate Reading homework
+assignment, adds whole-week Reading regression coverage, and isolates the Q2W5
+safety tests from real publication history. Local and remote `main` are the same
+commit; the PR branch is deleted.
+
+Canonical record:
+
+```text
+docs/programs/canvas-llm/pr467-canonical-assignment-release-closeout.md
+```
+
+State after the merge:
+
+- Q2W5 regression suites pass locally and in CI. This is test-level evidence,
+  not a live publication claim.
+- The Q2W6 restricted release path is merged but Q2W6 is **not complete**: no
+  live restricted release has been recorded.
+- Uncommitted Q2W6 work in the protected development checkout was preserved and
+  not touched by the closeout.
+
+Next step is the no-write Q2W6 restricted release readiness verification in the
+release record above. Live publication remains a separate owner-run, explicitly
+approved step.

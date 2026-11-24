@@ -1,6 +1,6 @@
 # Build Queue
 
-Last updated: 2026-10-24
+Last updated: 2026-11-23
 
 Agent quick-start: `AGENTS.md`
 
@@ -20,6 +20,7 @@ Handoff and status clarity. Start from `docs/phase-1-chief-of-staff-status-audit
 
 ## Recently Completed
 
+- Canonical Math and Reading assignment release closeout (PR #467, 2026-11-23): merge commit `708b73b`, CI run #140 PASS; canonical Math/Reading assignment naming, duplicate Reading homework removed, whole-week Reading regression added, Q2W5 safety tests isolated from real publication history; deployment and rollover safeguards unchanged; no live Canvas writes. Record: `docs/programs/canvas-llm/pr467-canonical-assignment-release-closeout.md`. Next: no-write Q2W6 restricted release readiness verification.
 - Weekly Planner Agent Change Detection + Reconciliation (2026-10-24): `scripts/weekly_planner_agent/{snapshot,change_detection,event_store,impact,canvas_observation,freshness,reconciliation}.py`; persistent versioned snapshots, real diff-based change detection (stable event IDs + dedup), durable event lifecycle + teacher-override persistence, read-only Canvas planning observation, assessment communication contract, change cards in the Teacher Workstation UI, `/api/agent/{changes,sync,resolve}` routes; `docs/programs/canvas-llm/weekly-planner-change-detection.md`. Planning/review layer only — no Canvas writes, no notification delivery, no LaunchAgent install.
 - Weekly Planner Agent Foundation (2026-10-24): `scripts/weekly_planner_agent/` (WeeklyPlan, SourceChangeEvent, teacher-instruction parser, Assessment Date Watch, communication rules, notification model, Friday Review state machine, agent service); `apps/teacher-workstation/` Weekly Planner Agent view (Today / Week plan / Friday review / Agent); `scripts/teacher_workstation/server.py` `/api/agent/*` routes; active-announcement `context_codes[]` HTTP 400 fix; `scripts/weekly-planner-agent-status.sh`; `docs/programs/canvas-llm/weekly-planner-agent-foundation.md`; `tests/weekly_planner_agent/`. Planning/review foundation only — no LaunchAgent install, no autonomous Canvas writes, no notification delivery.
 - Manual Curriculum Intake & Lesson Package Workflow (2026-07-28): `scripts/curriculum_production/curriculum_intake.py`, `approval_workflow.py`, `workflow.py`, `lesson_package.py`, `intake_validation.py`; manual priority workflow; teacher approval states; Lesson Package Plan output; `--lesson-package-status`; fictional fixtures; no generation, scanning, OCR, or network.

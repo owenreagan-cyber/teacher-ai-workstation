@@ -117,6 +117,26 @@ blocked. The result is `EARLY_CONTENT_PUBLISHED_VERIFIED` (never full-week
 `PUBLISHED_VERIFIED`). Local page and assignment before-state backups are
 written under the gitignored deployment ledger before the first write.
 
+## Canonical assignment naming (PR #467)
+
+The assignment names this path emits are the canonical names described below.
+PR #467 corrected them; the merge did not change any deployment or rollover
+module.
+
+- Math assignments follow the pacing-routing resolution path.
+- A Reading title containing `Comprehension` is homework, even when it also
+  contains `Workbook`; classification and semantic identity use this precedence.
+- `pacing_reading.py` no longer appends a second weekly accuracy-grade assignment
+  after day-level assignments have already been generated. Together, these
+  corrections eliminate the duplicate Reading assignment.
+- A week therefore carries four canonical Reading assignments, one per paced
+  lesson, and no Reading assignment on Friday.
+- `tests/canvas-llm-reading-canonical-policy-test.py` fails if a duplicate
+  Reading title or a fifth weekly Reading assignment reappears.
+
+Release record and evidence:
+`docs/programs/canvas-llm/pr467-canonical-assignment-release-closeout.md`.
+
 ## Assignment reconciliation is fail-closed
 
 `planner/assignment-reconciliation.json` must be GET-derived (schema 2), fresh

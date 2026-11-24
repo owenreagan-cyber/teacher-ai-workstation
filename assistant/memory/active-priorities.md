@@ -106,6 +106,7 @@ Agent quick-start: `AGENTS.md`
 
 ### Now
 
+- **Canonical Math and Reading assignment release closeout (PR #467)** — merge commit `708b73b`; CI run #140 PASS; PR branch deleted; local and `origin/main` identical. Canonical assignment naming, duplicate Reading homework removed, whole-week Reading regression, Q2W5 safety-test storage isolation; deployment/rollover safeguards unchanged; no live Canvas writes. Canonical record: `docs/programs/canvas-llm/pr467-canonical-assignment-release-closeout.md`. Q2W6 is **not** complete; next is the no-write Q2W6 restricted release readiness verification.
 - **Whole-system master roadmap build-state report complete (2026-07-03)** — `docs/whole-system-master-roadmap-build-state-report.md`; `--whole-system-master-roadmap-status`; 15-lane evidence classification; next safe lane selector; production registry parked (Option D). No runtime activation.
 - **Presentation Engine renderer-foundation planning complete (2026-07-03)** — `docs/presentation-engine-renderer-foundation.md`; `--presentation-engine-renderer-foundation-status`; fake/local fixtures; runtime render/export/generation blocked. No runtime activation.
 - **A4–A7 fixture optional-field enrichment complete (2026-07-03)** — `docs/curriculum-builder-registry-a4-a7-fixture-evidence.md`; `--curriculum-registry-a4-a7-fixture-schema-status`; targeted WARNs 7 → 0. No ingestion or registry mutation.

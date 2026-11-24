@@ -125,8 +125,10 @@ module.
 
 - Math assignments follow the pacing-routing resolution path.
 - A Reading title containing `Comprehension` is homework, even when it also
-  contains `Workbook`. That ordering removed the duplicate Reading homework
-  assignment.
+  contains `Workbook`; classification and semantic identity use this precedence.
+- `pacing_reading.py` no longer appends a second weekly accuracy-grade assignment
+  after day-level assignments have already been generated. Together, these
+  corrections eliminate the duplicate Reading assignment.
 - A week therefore carries four canonical Reading assignments, one per paced
   lesson, and no Reading assignment on Friday.
 - `tests/canvas-llm-reading-canonical-policy-test.py` fails if a duplicate

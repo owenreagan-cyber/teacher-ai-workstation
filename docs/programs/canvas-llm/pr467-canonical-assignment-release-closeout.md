@@ -48,17 +48,25 @@ reconcile.
   canonical names.
 - `scripts/canvas_llm_phase3/assignment_draft_generator.py` drafts assignments
   from the resolved canonical policy rather than a per-call convention.
-- `config/curriculum/normalized/assignment-routing-contract-2026-2027.json`
+- `config/curriculum/canvas/assignment-routing-contract-2026-2027.json`
   carries the matching routing contract entries.
 
-### 2.2 Duplicate Reading homework removed
+### 2.2 Duplicate Reading assignment removed
 
-The duplicate came from one Reading lesson being classified twice under two
-families. With the classification order fixed, the workbook-plus-comprehension
-lesson is one homework assignment, and the legacy compatibility identities
-(`RM4: Thursday Comprehension Questions — Lesson <n>`,
-`RM4: Lesson <n> Workbook`) still resolve to the same semantic family they did
-before. Historical titles remain compatible; they are not re-emitted.
+Two distinct corrections contributed to the final result:
+
+- `assignment_policy.py` now checks `Comprehension` before `Workbook` in
+  classification and semantic identity. This classifies combined workbook-and-
+  comprehension titles as Reading homework.
+- `pacing_reading.py` removed the obsolete weekly accuracy-grade append block.
+  That block generated an extra classwork assignment on Monday, or Wednesday
+  when Monday contained a Reading assessment, after the day-level assignments
+  had already been generated.
+
+Together these corrections preserve the canonical Reading assignment identities
+and prevent the extra assignment. Historical comprehension-only and workbook-
+only titles retain their established semantic families and remain supported for
+compatibility rather than being generated as new assignment titles.
 
 ### 2.3 Whole-week Reading regression coverage
 
